@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.migration.test.dummy" version="1.0">
+
+  <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
+
+    <migration id="dummy-migration">
+      <description label="migration.dummy">Dummy Migration</description>
+      <class>org.nuxeo.runtime.migration.DummyMigrator</class>
+      <defaultState>before</defaultState>
+      <state id="before">
+        <description label="migration.dummy.before">before dummy migration state</description>
+      </state>
+      <state id="after">
+        <description label="migration.dummy.after">after dummy migration state</description>
+      </state>
+      <state id="reallyAfter">
+        <description label="migration.dummy.reallyAfter">after dummy migration state</description>
+      </state>
+
+      <step id="before-to-after" fromState="before" toState="after">
+        <description label="migration.dummy.before-to-after">Migrate dummy state from before to after</description>
+      </step>
+      <step id="after-to-reallyAfter" fromState="after" toState="reallyAfter">
+        <description label="migration.dummy.after-to-really-after">Migrate dummy state from after to really after</description>
+      </step>
+    </migration>
+
+    <migration id="dummy-multi-migration">
+      <description label="multi.migration.dummy">Dummy Multi Migration</description>
+      <class>org.nuxeo.runtime.migration.DummyMigrator</class>
+      <defaultState>before</defaultState>
+      <state id="before">
+        <description label="multi.migration.dummy.before">before multi-dummy migration state</description>
+      </state>
+      <state id="after">
+        <description label="multi.migration.dummy.after">after multi-dummy migration state</description>
+      </state>
+      <state id="reallyAfter">
+        <description label="multi.migration.dummy.reallyAfter">after multi-dummy migration state</description>
+      </state>
+
+      <step id="before-to-after" fromState="before" toState="after">
+        <description label="multi.migration.dummy.before-to-after">Migrate multi-dummy state from before to after</description>
+      </step>
+      <step id="before-to-reallyAfter" fromState="before" toState="reallyAfter">
+        <description label="multi.migration.dummy.before-to-reallyAfter">Migrate multi-dummy state from before to reallyAfter</description>
+      </step>
+    </migration>
+
+  </extension>
+
+</component>
