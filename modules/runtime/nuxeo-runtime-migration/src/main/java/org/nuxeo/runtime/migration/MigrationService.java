@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.migration;
 
+import java.util.List;
+
 /**
  * Migration Service.
  *
@@ -206,6 +208,23 @@ public interface MigrationService {
     }
 
     /**
+     * Gets a migration object.
+     *
+     * @param id the migration id
+     * @return the migration, or {@code null} if the migration is unknown
+     * @since 11.2
+     */
+    Migration getMigration(String id);
+
+    /**
+     * Gets all the migration objects.
+     *
+     * @return a list of all migrations
+     * @since 11.2
+     */
+    List<Migration> getMigrations();
+
+    /**
      * Gets the current status for a migration.
      *
      * @param id the migration id
@@ -223,6 +242,16 @@ public interface MigrationService {
      * @since 10.3
      */
     String probeAndSetState(String id);
+
+    /**
+     * Probes the migration state and runs a migration.
+     * <p>
+     * THIS METHOD MAY TAKE A WHILE as it may call {@link #probeAndSetState(String)}.
+     *
+     * @param id the migration id
+     * @since 11.2
+     */
+    void probeAndRun(String id);
 
     /**
      * Runs a migration step for a migration.
