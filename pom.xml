@@ -5035,7 +5035,13 @@
         <groupId>com.google.code.externalsortinginjava</groupId>
         <artifactId>externalsortinginjava</artifactId>
         <version>0.2.5</version>
-     </dependency>
+      </dependency>
+
+      <dependency>
+        <groupId>org.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>3.1.6</version>
+      </dependency>
 
       <!-- Datadog -->
       <dependency>
