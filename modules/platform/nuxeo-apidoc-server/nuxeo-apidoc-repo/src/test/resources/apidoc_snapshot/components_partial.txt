@@ -1,7 +1,0 @@
-NXComponent: org.nuxeo.apidoc.adapterContrib *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.adapterContrib
-NXComponent: org.nuxeo.apidoc.doctypeContrib *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib
-NXComponent: org.nuxeo.apidoc.lifecycle.contrib *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.lifecycle.contrib
-NXComponent: org.nuxeo.apidoc.listener.contrib *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.listener.contrib
-NXComponent: org.nuxeo.apidoc.schemaContrib *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.schemaContrib *** [org.nuxeo.ecm.core.CoreExtensions]
-NXComponent: org.nuxeo.apidoc.snapshot.SnapshotManagerComponent *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent
-NXComponent: org.nuxeo.apidoc.test.works *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works

@@ -37,7 +37,6 @@
     <module>nuxeo-microsoft-azure-ftests</module>
     <module>nuxeo-multi-tenant-ftests</module>
     <module>nuxeo-openid-login-ftests</module>
-    <module>nuxeo-platform-explorer-ftests</module>
     <module>nuxeo-quota-ftests</module>
     <module>nuxeo-saml2-login-ftests</module>
     <module>nuxeo-scan-importer-ftests</module>

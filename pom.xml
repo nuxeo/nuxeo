@@ -1577,23 +1577,6 @@
         <version>${nuxeo.platform.version}</version>
       </dependency>
 
-      <!-- Documentation server -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-apidoc-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-apidoc-repo</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-apidoc-webengine</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-
       <!-- Suggest Box -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -2101,17 +2084,6 @@
       <dependency>
         <groupId>org.nuxeo.packages</groupId>
         <artifactId>nuxeo-openid-login-package</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ftests</groupId>
-        <artifactId>nuxeo-explorer-ftests-base</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.packages</groupId>
-        <artifactId>nuxeo-platform-explorer-package</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>zip</type>
       </dependency>
