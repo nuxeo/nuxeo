@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://nuxeo.org/schemas/nxservice" xmlns:nxservice="http://nuxeo.org/schemas/nxservice">
-
-  <xs:element name="className" type="xs:string" />
-  <xs:element name="overriden" type="xs:boolean" default="false" />
-  <xs:element name="componentId" type="xs:string" />
-
-</xs:schema>

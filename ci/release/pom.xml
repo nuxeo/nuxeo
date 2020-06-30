@@ -120,11 +120,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.packages</groupId>
-      <artifactId>nuxeo-platform-explorer-package</artifactId>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.packages</groupId>
       <artifactId>nuxeo-quota-package</artifactId>
       <type>zip</type>
     </dependency>

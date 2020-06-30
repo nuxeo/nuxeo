@@ -1,1 +1,0 @@
-NXPackage: platform-explorer-mock-1.0.1 *** /platform-explorer-mock-1.0.1 *** [org.nuxeo.apidoc.core, org.nuxeo.apidoc.repo]

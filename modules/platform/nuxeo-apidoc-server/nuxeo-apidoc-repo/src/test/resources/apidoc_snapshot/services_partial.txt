@@ -1,2 +1,0 @@
-NXService: org.nuxeo.apidoc.search.ArtifactSearcher *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.search.ArtifactSearcher
-NXService: org.nuxeo.apidoc.snapshot.SnapshotManager *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.snapshot.SnapshotManager

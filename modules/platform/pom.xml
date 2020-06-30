@@ -15,7 +15,6 @@
     <module>login</module>
     <module>nuxeo-admin-center</module>
     <module>nuxeo-adobe-connector-core</module>
-    <module>nuxeo-apidoc-server</module>
     <module>nuxeo-audit-storage-directory</module>
     <module>nuxeo-automation</module>
     <module>nuxeo-binary-metadata</module>
