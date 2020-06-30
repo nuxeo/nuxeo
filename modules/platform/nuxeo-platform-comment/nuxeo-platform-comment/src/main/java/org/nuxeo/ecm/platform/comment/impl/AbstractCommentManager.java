@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -201,7 +202,9 @@ public abstract class AbstractCommentManager implements CommentManager {
         }
         if (StringUtils.isBlank(author)) {
             String[] contributors = (String[]) docModel.getPropertyValue("dc:contributors");
-            author = contributors[0];
+            if (ArrayUtils.isNotEmpty(contributors)) {
+                author = contributors[0];
+            }
         }
 
         NuxeoPrincipal principal = Framework.getService(UserManager.class).getPrincipal(author);
