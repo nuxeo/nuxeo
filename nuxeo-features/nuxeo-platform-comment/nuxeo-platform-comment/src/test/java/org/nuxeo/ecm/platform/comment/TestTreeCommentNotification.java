@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.comment;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.newComment;
@@ -30,11 +32,13 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
@@ -95,6 +99,18 @@ public class TestTreeCommentNotification extends AbstractTestCommentNotification
             subscriptions = notificationManager.getSubscriptionsForUserOnDocument(johnSubscription, commentedDocModel);
             assertTrue(subscriptions.isEmpty());
         }
+    }
+
+    @Test
+    public void testCommentsStructureOnDocumentWithoutDublincore() {
+        DocumentModel dublincoreLess = session.createDocumentModel("File");
+        dublincoreLess.putContextData("disableDublinCoreListener", true);
+        dublincoreLess = session.createDocument(dublincoreLess);
+        assertNull(dublincoreLess.getPropertyValue("dc:contributors"));
+        transactionalFeature.nextTransaction();
+        Comment comment = commentManager.createComment(session,
+                newComment(dublincoreLess.getId(), "Test message again"));
+        assertNotNull(comment);
     }
 
 }
