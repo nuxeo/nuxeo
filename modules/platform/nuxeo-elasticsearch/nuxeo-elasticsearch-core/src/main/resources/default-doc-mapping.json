@@ -90,9 +90,8 @@
       "type": "keyword"
     },
     "dc:title": {
-      "type": "text",
+      "type": "keyword",
       "copy_to": "all_field",
-      "fielddata": true,
       "fields": {
         "fulltext": {
           "analyzer": "fulltext",
