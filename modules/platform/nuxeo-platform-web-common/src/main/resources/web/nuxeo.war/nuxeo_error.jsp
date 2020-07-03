@@ -1,4 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%@ page session="false" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page language="java" %>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
