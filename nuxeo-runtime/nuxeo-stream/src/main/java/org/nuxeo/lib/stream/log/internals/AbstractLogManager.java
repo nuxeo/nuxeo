@@ -172,8 +172,8 @@ public abstract class AbstractLogManager implements LogManager {
         List<Latency> ret = new ArrayList<>(lags.size());
         int partition = 0;
         for (LogLag lag : lags) {
-            if (lag.upper() == 0 || lag.lower() == 0) {
-                // empty partition or the group has not consumed any message
+            if (lag.upper() == 0 || lag.lower() == 0 || lag.lag() == 0) {
+                // empty partition or the group has not consumed any message or there is no lag
                 ret.add(new Latency(0, now, lag, null));
                 partition++;
                 continue;
