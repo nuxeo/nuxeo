@@ -47,10 +47,15 @@ public class BulkAdminServiceImpl implements BulkAdminService {
 
     public static final String BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY = "nuxeo.core.bulk.scroller.produceImmediate";
 
-
     public static final int DEFAULT_SCROLL_SIZE = 100;
 
     public static final int DEFAULT_SCROLL_KEEP_ALIVE = 60;
+
+    // @since 11.2
+    public static final String BULK_SCROLL_TRANSACTION_TIMEOUT_PROPERTY = "nuxeo.core.bulk.scroller.transactionTimeout";
+
+    // @since 11.2
+    public static final Duration DEFAULT_SCROLL_TRANSACTION_TIMEOUT = Duration.ofDays(2);
 
     public static final Duration STOP_DURATION = Duration.ofSeconds(1);
 
