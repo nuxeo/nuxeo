@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.bulk.computation;
 
 import static java.lang.Math.min;
+import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.DEFAULT_SCROLL_TRANSACTION_TIMEOUT;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
@@ -53,6 +54,7 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.internals.ComputationContextImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * Materializes the document set for a command.
@@ -84,6 +86,8 @@ public class BulkScrollerComputation extends AbstractComputation {
 
     protected final boolean produceImmediate;
 
+    protected final int transactionTimeoutSeconds;
+
     protected int scrollSize;
 
     protected int bucketSize;
@@ -97,16 +101,39 @@ public class BulkScrollerComputation extends AbstractComputation {
      */
     public BulkScrollerComputation(String name, int nbOutputStreams, int scrollBatchSize, int scrollKeepAliveSeconds,
             boolean produceImmediate) {
+        this(name, nbOutputStreams, scrollBatchSize, scrollKeepAliveSeconds, DEFAULT_SCROLL_TRANSACTION_TIMEOUT,
+                produceImmediate);
+    }
+
+    // @since 11.2
+    public BulkScrollerComputation(String name, int nbOutputStreams, int scrollBatchSize, int scrollKeepAliveSeconds,
+            Duration transactionTimeout, boolean produceImmediate) {
         super(name, 1, nbOutputStreams);
         this.scrollBatchSize = scrollBatchSize;
         this.scrollKeepAliveSeconds = scrollKeepAliveSeconds;
         this.produceImmediate = produceImmediate;
+        this.transactionTimeoutSeconds = Math.toIntExact(transactionTimeout.getSeconds());
         documentIds = new ArrayList<>(scrollBatchSize);
     }
 
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-        TransactionHelper.runInTransaction(() -> processRecord(context, record));
+        boolean newTransaction = true;
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            newTransaction = false;
+            log.warn("Already inside a transaction, timeout cannot be applied, record: " + record, new Throwable("stack"));
+        } else if (!TransactionHelper.startTransaction(transactionTimeoutSeconds)) {
+            throw new TransactionRuntimeException("Cannot start transaction");
+        }
+        try {
+            processRecord(context, record);
+        } finally {
+            if (newTransaction) {
+                // Always rollback because we don't write anything
+                TransactionHelper.setTransactionRollbackOnly();
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        }
     }
 
     protected void processRecord(ComputationContext context, Record record) {
