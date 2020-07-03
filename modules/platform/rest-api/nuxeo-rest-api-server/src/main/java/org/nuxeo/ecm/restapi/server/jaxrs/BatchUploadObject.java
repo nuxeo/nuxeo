@@ -71,7 +71,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.io.NginxConstants;
 import org.nuxeo.ecm.platform.web.common.RequestContext;
-import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
@@ -201,7 +200,6 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         }
 
         // Parameters are passed as request header, the request body is the stream
-        String contentType = request.getHeader("Content-Type");
         String uploadType = request.getHeader("X-Upload-Type");
         // Use non chunked mode by default if X-Upload-Type header is not provided
         if (!UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
@@ -232,26 +230,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         // TODO NXP-18247: should be set to the actual number of bytes uploaded instead of relying on the Content-Length
         // header which is not necessarily set
         long uploadedSize = getUploadedSize(request);
-        boolean isMultipart = contentType != null && contentType.contains("multipart");
-
-        // Handle multipart case: mainly MSIE with jQueryFileupload
-        if (isMultipart) {
-            FormData formData = new FormData(request);
-            Blob blob = formData.getFirstBlob();
-            if (blob == null) {
-                throw new NuxeoException("Cannot upload in multipart with no blobs");
-            }
-            if (!UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
-                fileName = blob.getFilename();
-            }
-            // Don't change the mime-type if it was forced via the X-File-Type header
-            if (StringUtils.isBlank(mimeType)) {
-                mimeType = blob.getMimeType();
-            }
-            uploadedSize = blob.getLength();
-            addBlob(uploadType, batchId, fileIdx, blob, fileName, mimeType, uploadedSize, chunkCount, uploadChunkIndex,
-                    fileSize);
-        } else if (Framework.isBooleanPropertyTrue(NginxConstants.X_ACCEL_ENABLED)
+        if (Framework.isBooleanPropertyTrue(NginxConstants.X_ACCEL_ENABLED)
                 && StringUtils.isNotEmpty(requestBodyFile)) {
             if (StringUtils.isNotEmpty(fileName)) {
                 fileName = URLDecoder.decode(fileName, "UTF-8");
@@ -294,7 +273,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
                 }
             }
         }
-        return buildResponse(status, result, isMultipart);
+        return buildResponse(status, result);
     }
 
     protected long getUploadedSize(HttpServletRequest request) {
@@ -522,9 +501,15 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected Response buildResponse(StatusType status, Object object) throws IOException {
-        return buildResponse(status, object, false);
-    }
+        ObjectMapper mapper = new ObjectMapper();
+        String result = mapper.writeValueAsString(object);
+        return buildResponse(status, MediaType.APPLICATION_JSON, result);
+      }
 
+    /**
+     * @deprecated since 11.2, not used anymore
+     */
+    @Deprecated(since = "11.2")
     protected Response buildResponse(StatusType status, Object object, boolean html) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         String result = mapper.writeValueAsString(object);
@@ -536,10 +521,18 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         }
     }
 
+    /**
+     * @deprecated since 11.2, not used anymore
+     */
+    @Deprecated(since = "11.2")
     protected Response buildJSONResponse(StatusType status, String message) throws UnsupportedEncodingException {
         return buildResponse(status, MediaType.APPLICATION_JSON, message);
     }
 
+    /**
+     * @deprecated since 11.2, not used anymore
+     */
+    @Deprecated(since = "11.2")
     protected Response buildHTMLResponse(StatusType status, String message) throws UnsupportedEncodingException {
         message = "<html>" + message + "</html>";
         return buildResponse(status, MediaType.TEXT_HTML, message);
