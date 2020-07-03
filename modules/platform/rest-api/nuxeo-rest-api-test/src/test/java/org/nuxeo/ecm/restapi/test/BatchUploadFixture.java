@@ -28,10 +28,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerComponent.DEFAULT_BATCH_HANDLER;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -44,7 +44,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
@@ -67,9 +66,6 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.sun.jersey.multipart.BodyPart;
-import com.sun.jersey.multipart.FormDataMultiPart;
-import com.sun.jersey.multipart.file.StreamDataBodyPart;
 
 /**
  * @since 7.10
@@ -112,7 +108,7 @@ public class BatchUploadFixture extends BaseTest {
         // Get batch id, used as a session id
         String batchId = initializeDeprecatedNewBatch();
 
-        // Upload a file not in multipart
+        // Upload a file
         String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", UTF_8);
         String mimeType = "text/plain";
         String data1 = "Contenu accentué du premier fichier";
@@ -136,30 +132,23 @@ public class BatchUploadFixture extends BaseTest {
             // assertEquals(fileSize1, node.get("uploadedSize").asText());
         }
 
-        // Upload a file in multipart
+        // Upload another file
         String fileName2 = "Fichier accentué 2.txt";
         String data2 = "Contenu accentué du deuxième fichier";
         String fileSize2 = String.valueOf(getUTF8Bytes(data2).length);
         headers = new HashMap<>();
+        headers.put("X-File-Name", fileName2);
         headers.put("X-File-Size", fileSize2);
         headers.put("X-File-Type", mimeType);
 
-        BodyPart fdp = new StreamDataBodyPart(fileName2, new ByteArrayInputStream(getUTF8Bytes(data2)));
-        try (FormDataMultiPart form = new FormDataMultiPart()) {
-            form.bodyPart(fdp);
-            try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/1", form,
-                    headers)) {
-                assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-                String strResponse = IOUtils.toString(response.getEntityInputStream(), "UTF-8");
-                assertTrue(strResponse.startsWith("<html>") && strResponse.endsWith("</html>"));
-                strResponse = strResponse.substring(6, strResponse.length() - 7);
-                JsonNode node = mapper.readTree(strResponse);
-                assertEquals("true", node.get("uploaded").asText());
-                assertEquals(batchId, node.get("batchId").asText());
-                assertEquals("1", node.get("fileIdx").asText());
-                assertEquals("normal", node.get("uploadType").asText());
-                assertEquals(fileSize2, node.get("uploadedSize").asText());
-            }
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/1", data2,
+                headers)) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("true", node.get("uploaded").asText());
+            assertEquals(batchId, node.get("batchId").asText());
+            assertEquals("1", node.get("fileIdx").asText());
+            assertEquals("normal", node.get("uploadType").asText());
         }
 
         // Get batch info
@@ -240,42 +229,32 @@ public class BatchUploadFixture extends BaseTest {
      */
     @Test
     public void testObeyFileTypeHeader() throws IOException {
-        Map<String, String> headers;
-
         // Get batch id, used as a session id
         String batchId = initializeDeprecatedNewBatch();
 
-        // Upload a file in multipart, first without the X-File-Type header, the second with
-        String fileName1 = "No header.txt";
+        // Upload a file without the X-File-Type header
         String data1 = "File without explicit file type";
-        String fileSize1 = String.valueOf(getUTF8Bytes(data1).length);
-        headers = new HashMap<>();
-        headers.put("X-File-Size", fileSize1);
-
-        try (FormDataMultiPart form = new FormDataMultiPart()) {
-            BodyPart fdp = new StreamDataBodyPart(fileName1, new ByteArrayInputStream(getUTF8Bytes(data1)));
-            form.bodyPart(fdp);
-            try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0", form,
-                    headers)) {
-                assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-            }
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0", data1,
+                Map.of("X-File-Name", "No header.txt"))) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("true", node.get("uploaded").asText());
+            assertEquals(batchId, node.get("batchId").asText());
+            assertEquals("0", node.get("fileIdx").asText());
+            assertEquals("normal", node.get("uploadType").asText());
         }
 
-        String mimeType = "text/plain";
-        String fileName2 = "With header.txt";
+        // Upload a file with the X-File-Type header
         String data2 = "File with explicit X-File-Type header";
-        String fileSize2 = String.valueOf(getUTF8Bytes(data2).length);
-        headers = new HashMap<>();
-        headers.put("X-File-Size", fileSize2);
-        headers.put("X-File-Type", mimeType);
-
-        try (FormDataMultiPart form = new FormDataMultiPart()) {
-            BodyPart fdp = new StreamDataBodyPart(fileName2, new ByteArrayInputStream(getUTF8Bytes(data2)));
-            form.bodyPart(fdp);
-            try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/1", form,
-                    headers)) {
-                assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-            }
+        String mimeType = "text/plain";
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/1", data2,
+                Map.of("X-File-Type", mimeType, "X-File-Name", "With header.txt"))) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("true", node.get("uploaded").asText());
+            assertEquals(batchId, node.get("batchId").asText());
+            assertEquals("1", node.get("fileIdx").asText());
+            assertEquals("normal", node.get("uploadType").asText());
         }
 
         // Create a doc which references the uploaded blobs using the Document path endpoint
@@ -300,8 +279,8 @@ public class BatchUploadFixture extends BaseTest {
         Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
         assertNotNull(blob);
         assertEquals("No header.txt", blob.getFilename());
-        // Default multipart mime type must be set
-        assertEquals("application/octet-stream", blob.getMimeType());
+        // No mime type was set
+        assertNull(blob.getMimeType());
         assertEquals(data1, blob.getString());
         blob = (Blob) doc.getPropertyValue("mb:blobs/1/content");
         assertNotNull(blob);
@@ -964,7 +943,7 @@ public class BatchUploadFixture extends BaseTest {
         // Get batch id, used as a session id
         String batchId = initializeDeprecatedNewBatch();
 
-        // Upload an empty file not in multipart
+        // Upload an empty file
         String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", UTF_8);
         Map<String, String> headers = new HashMap<>();
         headers.put("X-File-Name", fileName1);
@@ -980,27 +959,20 @@ public class BatchUploadFixture extends BaseTest {
             assertEquals("0", node.get("uploadedSize").asText());
         }
 
-        // Upload a file in multipart
+        // Upload another empty file
         String fileName2 = "Fichier accentué 2.txt";
         headers = new HashMap<>();
+        headers.put("X-File-Name", fileName2);
         headers.put("X-File-Size", "0");
 
-        BodyPart fdp = new StreamDataBodyPart(fileName2, new ByteArrayInputStream(new byte[] {}));
-        try (FormDataMultiPart form = new FormDataMultiPart()) {
-            form.bodyPart(fdp);
-            try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/1", form,
-                    headers)) {
-                assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-                String strResponse = IOUtils.toString(response.getEntityInputStream(), "UTF-8");
-                assertTrue(strResponse.startsWith("<html>") && strResponse.endsWith("</html>"));
-                strResponse = strResponse.substring(6, strResponse.length() - 7);
-                JsonNode node = mapper.readTree(strResponse);
-                assertEquals("true", node.get("uploaded").asText());
-                assertEquals(batchId, node.get("batchId").asText());
-                assertEquals("1", node.get("fileIdx").asText());
-                assertEquals("normal", node.get("uploadType").asText());
-                assertEquals("0", node.get("uploadedSize").asText());
-            }
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/1", headers)) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("true", node.get("uploaded").asText());
+            assertEquals(batchId, node.get("batchId").asText());
+            assertEquals("1", node.get("fileIdx").asText());
+            assertEquals("normal", node.get("uploadType").asText());
+            assertEquals("0", node.get("uploadedSize").asText());
         }
 
         // Get batch info
@@ -1050,6 +1022,21 @@ public class BatchUploadFixture extends BaseTest {
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/refreshToken")) {
             assertEquals(SC_NOT_IMPLEMENTED, response.getStatus());
+        }
+    }
+
+    /** NXP-29246: Fix import of MHTML file using Chrome */
+    @Test
+    public void testUploadMHTML() throws Exception {
+        String batchId = initializeNewBatch();
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0", "dummy",
+                Map.of("Content-Type", "multipart/related", "X-File-Name", "dummy.mhtml"))) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("true", node.get("uploaded").asText());
+            assertEquals(batchId, node.get("batchId").asText());
+            assertEquals("0", node.get("fileIdx").asText());
+            assertEquals("normal", node.get("uploadType").asText());
         }
     }
 
