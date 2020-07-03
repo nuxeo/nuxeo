@@ -131,6 +131,16 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="multipart/related" binary="false" iconPath="text.png">
+      <mimetypes>
+        <mimetype>multipart/related</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>mhtml</extension>
+        <extension>mht</extension>
+      </extensions>
+    </mimetype>
+
     <mimetype normalized="text/structured" binary="false" iconPath="text.png">
       <mimetypes>
         <mimetype>text/structured</mimetype>
