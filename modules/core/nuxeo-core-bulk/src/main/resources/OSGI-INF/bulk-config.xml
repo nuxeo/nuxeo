@@ -22,6 +22,7 @@
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
     <property name="nuxeo.core.bulk.scroller.scroll.size">200</property>
     <property name="nuxeo.core.bulk.scroller.scroll.keepAliveSeconds">60</property>
+    <property name="nuxeo.core.bulk.scroller.transactionTimeout">2d</property>
     <property name="nuxeo.core.bulk.scroller.produceImmediate">false</property>
   </extension>
 

@@ -21,8 +21,10 @@ package org.nuxeo.ecm.core.bulk;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.BULK_SCROLL_KEEP_ALIVE_PROPERTY;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.BULK_SCROLL_SIZE_PROPERTY;
+import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.BULK_SCROLL_TRANSACTION_TIMEOUT_PROPERTY;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.DEFAULT_SCROLL_KEEP_ALIVE;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.DEFAULT_SCROLL_SIZE;
+import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.DEFAULT_SCROLL_TRANSACTION_TIMEOUT;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.SCROLLER_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.STATUS_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND_STREAM;
@@ -31,6 +33,7 @@ import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,11 +66,14 @@ public class BulkServiceProcessor implements StreamProcessorTopology {
         ConfigurationService confService = Framework.getService(ConfigurationService.class);
         int scrollBatchSize = confService.getInteger(BULK_SCROLL_SIZE_PROPERTY, DEFAULT_SCROLL_SIZE);
         int scrollKeepAlive = confService.getInteger(BULK_SCROLL_KEEP_ALIVE_PROPERTY, DEFAULT_SCROLL_KEEP_ALIVE);
+        Duration transactionTimeout = confService.getDuration(BULK_SCROLL_TRANSACTION_TIMEOUT_PROPERTY,
+                DEFAULT_SCROLL_TRANSACTION_TIMEOUT);
+
         boolean scrollProduceImmediate = confService.isBooleanTrue(BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY);
         return Topology.builder()
                        .addComputation( //
                                () -> new BulkScrollerComputation(SCROLLER_NAME, actions.size() + 1, scrollBatchSize,
-                                       scrollKeepAlive, scrollProduceImmediate), //
+                                       scrollKeepAlive, transactionTimeout, scrollProduceImmediate), //
                                mapping)
                        .addComputation(() -> new BulkStatusComputation(STATUS_NAME),
                                Arrays.asList(INPUT_1 + ":" + STATUS_STREAM, //
