@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.restapi.server.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      This parameter allows disabling multipart file upload.
+
+      @author Nour AL KOTOB (nalkotob@nuxeo.com)
+    </documentation>
+    <property name="nuxeo.batch.upload.multipart.disabled">false</property>
+  </extension>
+
+</component>
