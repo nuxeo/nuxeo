@@ -75,6 +75,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -113,6 +114,9 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     protected static final String OPERATION_ID = "operationId";
 
     protected static final String REQUEST_HANDLER_NAME = "handlerName";
+
+    /** @since 9.10-HF46 */
+    protected static final String MULTIPART_DISABLED_CONFIG_KEY = "nuxeo.batch.upload.multipart.disabled";
 
     public static final String UPLOAD_TYPE_NORMAL = "normal";
 
@@ -228,7 +232,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         // TODO NXP-18247: should be set to the actual number of bytes uploaded instead of relying on the Content-Length
         // header which is not necessarily set
         long uploadedSize = getUploadedSize(request);
-        boolean isMultipart = contentType != null && contentType.contains("multipart");
+        boolean isMultipart = isMultipartEnabled() && contentType != null && contentType.contains("multipart");
 
         // Handle multipart case: mainly MSIE with jQueryFileupload
         if (isMultipart) {
@@ -276,6 +280,11 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             }
         }
         return buildResponse(status, result, isMultipart);
+    }
+
+    /** @since 9.10-HF46 */
+    protected boolean isMultipartEnabled() {
+        return Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(MULTIPART_DISABLED_CONFIG_KEY);
     }
 
     protected long getUploadedSize(HttpServletRequest request) {

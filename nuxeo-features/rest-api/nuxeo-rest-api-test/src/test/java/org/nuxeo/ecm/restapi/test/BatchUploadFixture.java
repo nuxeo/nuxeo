@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,6 +55,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -1080,6 +1082,49 @@ public class BatchUploadFixture extends BaseTest {
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/refreshToken")) {
             assertEquals(SC_NOT_IMPLEMENTED, response.getStatus());
+        }
+    }
+
+    /** NXP-29246: Fix import of MHTML file using Chrome */
+    @Test
+    public void testUploadMHTMLMultipartEnabled() throws Exception {
+        String batchId;
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            batchId = node.get("batchId").getValueAsText();
+            assertNotNull(batchId);
+        }
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0",
+                "dummy", Collections.singletonMap("Content-Type", "multipart/related"))) {
+            assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        }
+    }
+
+    /** NXP-29246: Fix import of MHTML file using Chrome */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-batch-upload-properties.xml")
+    public void testUploadMHTMLMultipartDisabled() throws Exception {
+        String batchId;
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            batchId = node.get("batchId").getValueAsText();
+            assertNotNull(batchId);
+        }
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "multipart/related");
+        headers.put("X-File-Name", "dummy.mhtml");
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0",
+                "dummy", headers)) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("true", node.get("uploaded").getValueAsText());
+            assertEquals(batchId, node.get("batchId").getValueAsText());
+            assertEquals("0", node.get("fileIdx").getValueAsText());
+            assertEquals("normal", node.get("uploadType").getValueAsText());
         }
     }
 
