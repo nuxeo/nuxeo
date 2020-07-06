@@ -115,8 +115,15 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     /**
      * @since 11.1
+     * @deprecated Use {@link #WORKMANAGER_PROCESSING_ENABLED} instead
      */
+    @Deprecated(since = "11.2")
     public static final String WORKMANAGER_PROCESSING_DISABLE = "nuxeo.work.processing.disable";
+
+    /**
+     * @since 11.2
+     */
+    public static final String WORKMANAGER_PROCESSING_ENABLED = "nuxeo.work.processing.enabled";
 
     /**
      * The dead letter queue stream name.
@@ -302,7 +309,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean isProcessingEnabled() {
-        if (Boolean.parseBoolean(Framework.getProperty(WORKMANAGER_PROCESSING_DISABLE, "false"))) {
+        if (isProcessingDisabled()) {
             return false;
         }
         for (Descriptor d : getDescriptors(QUEUES_EP)) {
@@ -313,9 +320,20 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         return false;
     }
 
+    protected boolean isProcessingDisabled() {
+        if (Boolean.parseBoolean(Framework.getProperty(WORKMANAGER_PROCESSING_DISABLE, "false"))) {
+            log.warn("nuxeo.work.processing.disable=true is now deprecated, use nuxeo.work.processing.enabled=false instead");
+            return true;
+        }
+        if (Framework.isBooleanPropertyFalse(WORKMANAGER_PROCESSING_ENABLED)) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean isProcessingEnabled(String queueId) {
-        if (Boolean.parseBoolean(Framework.getProperty(WORKMANAGER_PROCESSING_DISABLE, "false"))) {
+        if (isProcessingDisabled()) {
             return false;
         }
         if (queueId == null) {
@@ -428,7 +446,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
                 @Override
                 public void afterStart(ComponentManager mgr, boolean isResume) {
-                    if (Boolean.parseBoolean(Framework.getProperty(WORKMANAGER_PROCESSING_DISABLE, "false"))) {
+                    if (isProcessingDisabled()) {
                         log.warn("WorkManager processing has been disabled on this node");
                         return;
                     }
