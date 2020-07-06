@@ -97,6 +97,12 @@ public class PositionCommand extends Command {
                                 .build());
         options.addOption(
                 Option.builder("g").longOpt("group").desc("Consumer group").hasArg().argName("GROUP").build());
+        options.addOption(Option.builder()
+                                .longOpt("codec")
+                                .desc("Codec used to read record and extract watermark when using to-watermark")
+                                .hasArg()
+                                .argName("CODEC")
+                                .build());
         options.addOption(
                 Option.builder().longOpt("reset").desc("Resets all committed positions for the group").build());
         options.addOption(Option.builder()
@@ -139,6 +145,7 @@ public class PositionCommand extends Command {
     public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
         String name = cmd.getOptionValue("log-name");
         String group = cmd.getOptionValue("group", "tools");
+        String codec = cmd.getOptionValue("codec");
         int partition = Integer.parseInt(cmd.getOptionValue("partition", "-1"));
         if (cmd.hasOption(AFTER_DATE_OPT)) {
             long timestamp = getTimestampFromDate(cmd.getOptionValue(AFTER_DATE_OPT));
@@ -148,7 +155,7 @@ public class PositionCommand extends Command {
         } else if (cmd.hasOption(TO_WATERMARK_OPT)) {
             long timestamp = getTimestampFromDate(cmd.getOptionValue(TO_WATERMARK_OPT));
             if (timestamp >= 0) {
-                return positionToWatermark(manager, group, name, partition, timestamp);
+                return positionToWatermark(manager, group, name, partition, timestamp, codec);
             }
         } else if (cmd.hasOption(TO_OFFSET_OPT)) {
             long offset = Long.parseLong(cmd.getOptionValue(TO_OFFSET_OPT));
@@ -236,7 +243,8 @@ public class PositionCommand extends Command {
         return false;
     }
 
-    protected boolean positionToWatermark(LogManager manager, String group, String name, int partition, long timestamp)
+    protected boolean positionToWatermark(LogManager manager, String group, String name, int partition, long timestamp,
+            String codec)
             throws InterruptedException {
         String newGroup = "tools";
         int size = manager.size(name);
@@ -252,7 +260,8 @@ public class PositionCommand extends Command {
                 if (partition >= 0 && part != partition) {
                     offsets.add(null);
                 }
-                try (LogTailer<Record> tailer = manager.createTailer(newGroup, new LogPartition(name, part))) {
+                try (LogTailer<Record> tailer = manager.createTailer(newGroup, new LogPartition(name, part),
+                        getRecordCodec(codec))) {
                     offsets.add(searchWatermarkOffset(tailer, timestamp));
                 }
             }
