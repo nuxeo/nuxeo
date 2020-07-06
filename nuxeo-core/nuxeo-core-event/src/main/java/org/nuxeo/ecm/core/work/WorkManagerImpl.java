@@ -112,8 +112,15 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
      * The Log Manager name to use for accessing the dead letter queue stream.
      *
      * @since 11.1
+     * @deprecated use {@link #WORKMANAGER_PROCESSING_ENABLED} instead
      */
+    @Deprecated
     public static final String DEFAULT_LOG_MANAGER = "default";
+
+    /**
+     * @since 11.2
+     */
+    public static final String WORKMANAGER_PROCESSING_ENABLED = "nuxeo.work.processing.enabled";
 
     /**
      * The dead letter queue stream name.
@@ -295,6 +302,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean isProcessingEnabled() {
+        if (isProcessingDisabled()) {
+            return false;
+        }
         for (Descriptor d : getDescriptors(QUEUES_EP)) {
             if (queuing.getQueue(d.getId()).active) {
                 return true;
@@ -303,8 +313,18 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         return false;
     }
 
+    protected boolean isProcessingDisabled() {
+        if (Framework.isBooleanPropertyFalse(WORKMANAGER_PROCESSING_ENABLED)) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean isProcessingEnabled(String queueId) {
+        if (isProcessingDisabled()) {
+            return false;
+        }
         if (queueId == null) {
             return isProcessingEnabled();
         }
@@ -415,6 +435,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
                 @Override
                 public void afterStart(ComponentManager mgr, boolean isResume) {
+                    if (isProcessingDisabled()) {
+                        log.warn("WorkManager processing has been disabled on this node");
+                        return;
+                    }
                     List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
                     for (WorkQueueDescriptor descriptor : descriptors) {
                         activateQueue(descriptor);
