@@ -70,6 +70,13 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
 
     protected final Map<String, StreamProcessor> processors = new HashMap<>();
 
+    /**
+     * @since 11.2
+     */
+    public static final String STREAM_PROCESSING_ENABLED = "nuxeo.stream.processing.enabled";
+
+    protected Boolean isStreamProcessingDisabled;
+
     @Override
     public int getApplicationStartedOrder() {
         // start after kafka config service
@@ -174,7 +181,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         }
         Settings settings = getSettings(descriptor);
         log.debug("Starting computation topology: {}\n{}", descriptor::getId, () -> topology.toPlantuml(settings));
-        if (descriptor.isStart()) {
+        if (!isProcessingDisabled() && descriptor.isStart()) {
             StreamProcessor streamProcessor = streamManager.registerAndCreateProcessor(descriptor.getId(), topology,
                     settings);
             processors.put(descriptor.getId(), streamProcessor);
@@ -246,5 +253,17 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
             stopComputations();
             Framework.getRuntime().getComponentManager().removeListener(this);
         }
+    }
+
+    protected boolean isProcessingDisabled() {
+        if (isStreamProcessingDisabled == null) {
+            if (Framework.isBooleanPropertyFalse(STREAM_PROCESSING_ENABLED)) {
+                log.warn("Stream Processing has been disabled on this node");
+                isStreamProcessingDisabled = true;
+            } else {
+                isStreamProcessingDisabled = false;
+            }
+        }
+        return isStreamProcessingDisabled;
     }
 }
