@@ -105,25 +105,11 @@ public class KeycloakUserMapper implements UserMapper {
     }
 
     private DocumentModel findGroup(String role) {
-        Map<String, Serializable> query = new HashMap<>();
-        query.put(userManager.getGroupIdField(), role);
-        DocumentModelList groups = userManager.searchGroups(query, null);
-
-        if (groups.isEmpty()) {
-            return null;
-        }
-        return groups.get(0);
+        return userManager.getGroupModel(role);
     }
 
     private DocumentModel findUser(UserIdentificationInfo userInfo) {
-        Map<String, Serializable> query = new HashMap<>();
-        query.put(userManager.getUserIdField(), userInfo.getUserName());
-        DocumentModelList users = userManager.searchUsers(query, null);
-
-        if (users.isEmpty()) {
-            return null;
-        }
-        return users.get(0);
+        return userManager.getUserModel(userInfo.getUserName());
     }
 
     private DocumentModel createUser(KeycloakUserInfo userInfo) {
