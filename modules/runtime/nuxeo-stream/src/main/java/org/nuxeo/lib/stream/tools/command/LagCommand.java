@@ -42,6 +42,8 @@ public class LagCommand extends Command {
 
     protected boolean verbose = false;
 
+    protected boolean quiet = false;
+
     @Override
     public String name() {
         return NAME;
@@ -52,12 +54,14 @@ public class LagCommand extends Command {
         options.addOption(
                 Option.builder("l").longOpt("log-name").desc("Log name").hasArg().argName("LOG_NAME").build());
         options.addOption(Option.builder().longOpt("verbose").desc("Display lag for each partition").build());
+        options.addOption(Option.builder("q").longOpt("quiet").desc("No output for consumer group without lag").build());
     }
 
     @Override
     public boolean run(LogManager manager, CommandLine cmd) {
         String logName = cmd.getOptionValue("log-name");
         verbose = cmd.hasOption("verbose");
+        quiet = cmd.hasOption("quiet");
         if (logName != null) {
             lag(manager, Name.ofUrn(logName));
         } else {
@@ -84,10 +88,14 @@ public class LagCommand extends Command {
     }
 
     protected void renderLag(Name group, List<LogLag> lags) {
+        LogLag all = LogLag.of(lags);
+        if (quiet && all.lag() == 0) {
+            log.info("### Group: " + group + " no lag end: " + all.upper());
+            return;
+        }
         log.info("### Group: " + group);
         log.info("| partition | lag | pos | end | posOffset | endOffset |\n"
                 + "| --- | ---: | ---: | ---: | ---: | ---: |");
-        LogLag all = LogLag.of(lags);
         log.info(String.format("|All|%d|%d|%d|%d|%d|", all.lag(), all.lower(), all.upper(), all.lowerOffset(),
                 all.upperOffset()));
         if (verbose && lags.size() > 1) {
