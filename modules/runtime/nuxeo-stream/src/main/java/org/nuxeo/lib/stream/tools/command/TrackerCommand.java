@@ -40,7 +40,7 @@ import org.nuxeo.lib.stream.log.Name;
  */
 public class TrackerCommand extends Command {
 
-    public static final String COMPUTATION_NAME = "LatencyTracker";
+    public static final String COMPUTATION_NAME = "tools/LatencyTracker";
 
     public static final String INPUT_STREAM = "input/null";
 

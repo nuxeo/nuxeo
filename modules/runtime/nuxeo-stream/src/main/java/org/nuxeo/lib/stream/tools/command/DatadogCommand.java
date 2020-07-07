@@ -36,7 +36,7 @@ import org.nuxeo.lib.stream.log.LogManager;
  */
 public class DatadogCommand extends MonitorCommand {
 
-    public static final String COMPUTATION_NAME = "LatencyMonitorDatadog";
+    public static final String COMPUTATION_NAME = "tools/LatencyMonitorDatadog";
 
     protected static final String NAME = "datadog";
 
