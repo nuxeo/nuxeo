@@ -115,8 +115,7 @@ public class Name {
 
     @Override
     public String toString() {
-        return "Name{" + "namespace='" + namespace + '\'' + ", name='" + name + '\'' + ", id='" + id + '\'' + ", urn='"
-                + urn + '\'' + '}';
+        return "Name{id='" + id + "', urn='" + urn + "'}";
     }
 
     protected static void checkLogName(String name) {
@@ -132,7 +131,7 @@ public class Name {
     }
 
     protected static void checkNameSpace(String name) {
-        if (!VALID_NAMESPACE_PATTERN.matcher(name).matches() & !NAMESPACE_GLOBAL.equals(name)) {
+        if (!VALID_NAMESPACE_PATTERN.matcher(name).matches() && !NAMESPACE_GLOBAL.equals(name)) {
             throw new IllegalArgumentException("Invalid namespace: '" + name + "'");
         }
     }
@@ -145,8 +144,8 @@ public class Name {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Name name = (Name) o;
-        return Objects.equals(urn, name.urn);
+        Name otherName = (Name) o;
+        return Objects.equals(urn, otherName.urn);
     }
 
     @Override
