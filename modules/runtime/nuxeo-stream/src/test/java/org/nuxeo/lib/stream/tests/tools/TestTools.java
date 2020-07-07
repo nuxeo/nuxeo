@@ -55,9 +55,9 @@ import org.nuxeo.lib.stream.tools.Main;
 public abstract class TestTools {
     protected static final int NB_RECORD = 10;
 
-    protected static final String LOG_NAME = "myLog";
+    protected static final String LOG_NAME = "test/myLog";
 
-    protected static final String LOG_NAME_2 = "myLog2";
+    protected static final String LOG_NAME_2 = "test/myLog2";
 
     protected static final int LOG_SIZE = 1;
 
@@ -124,7 +124,7 @@ public abstract class TestTools {
 
     @Test
     public void testCatWithGroup() {
-        run(String.format("cat %s -l %s -n 1 --group aGroup", getManagerOptions(), LOG_NAME));
+        run(String.format("cat %s -l %s -n 1 --group test/aGroup", getManagerOptions(), LOG_NAME));
     }
 
     @Test
@@ -174,18 +174,18 @@ public abstract class TestTools {
 
     @Test
     public void testPositionOnPartition() throws InterruptedException {
-        run(String.format("position %s --to-end --log-name %s --group anotherGroup", getManagerOptions(), LOG_NAME));
-        List<LogLag> lags = getManager().getLagPerPartition(Name.ofUrn(LOG_NAME), Name.ofUrn("anotherGroup"));
+        run(String.format("position %s --to-end --log-name %s --group test/anotherGroup", getManagerOptions(), LOG_NAME));
+        List<LogLag> lags = getManager().getLagPerPartition(Name.ofUrn(LOG_NAME), Name.ofUrn("test/anotherGroup"));
         assertEquals(0, lags.get(0).lag());
         // then reset a the first partition
-        run(String.format("position %s --reset --log-name %s --partition 0 --group anotherGroup", getManagerOptions(),
+        run(String.format("position %s --reset --log-name %s --partition 0 --group test/anotherGroup", getManagerOptions(),
                 LOG_NAME));
-        lags = getManager().getLagPerPartition(Name.ofUrn(LOG_NAME), Name.ofUrn("anotherGroup"));
+        lags = getManager().getLagPerPartition(Name.ofUrn(LOG_NAME), Name.ofUrn("test/anotherGroup"));
         assertTrue(lags.get(0).lag() > 0);
         // then go to a specific offset
-        run(String.format("position %s --log-name %s --partition 0 --to-offset %d --group anotherGroup", getManagerOptions(),
+        run(String.format("position %s --log-name %s --partition 0 --to-offset %d --group test/anotherGroup", getManagerOptions(),
                 LOG_NAME, targetOffset.offset()));
-        try (LogTailer<Record> tailer = getManager().createTailer(Name.ofUrn("anotherGroup"), Name.ofUrn(LOG_NAME))) {
+        try (LogTailer<Record> tailer = getManager().createTailer(Name.ofUrn("test/anotherGroup"), Name.ofUrn(LOG_NAME))) {
             LogRecord<Record> rec = tailer.read(DEF_TIMEOUT);
             assertNotNull(rec);
             assertEquals(targetRecord, rec.message());
@@ -195,24 +195,24 @@ public abstract class TestTools {
     @Test
     public void testPositionToWatermark() throws InterruptedException {
         // move before all records, lag is maximum
-        run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
+        run(String.format("position %s --to-watermark %s --log-name %s --group test/anotherGroup", getManagerOptions(),
                 Instant.now().minus(30, ChronoUnit.DAYS), LOG_NAME));
         LogManager manager = getManager();
-        LogLag lag = manager.getLag(Name.ofUrn(LOG_NAME), Name.ofUrn("anotherGroup"));
+        LogLag lag = manager.getLag(Name.ofUrn(LOG_NAME), Name.ofUrn("test/anotherGroup"));
         assertTrue(lag.toString(), lag.lag() > 1);
 
         // move to the position to the last record,
         // consumer will process the last message of each partition so lag is equal to the number o partitions
-        run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
+        run(String.format("position %s --to-watermark %s --log-name %s --group test/anotherGroup", getManagerOptions(),
                 Instant.now().plus(1, ChronoUnit.DAYS), LOG_NAME));
-        lag = manager.getLag(Name.ofUrn(LOG_NAME), Name.ofUrn("anotherGroup"));
+        lag = manager.getLag(Name.ofUrn(LOG_NAME), Name.ofUrn("test/anotherGroup"));
         assertEquals(lag.toString(), LOG_SIZE, lag.lag());
 
         // move to the watermark of targetRecord, this work as expected because each record as a unique timestamp
-        run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
+        run(String.format("position %s --to-watermark %s --log-name %s --group test/anotherGroup", getManagerOptions(),
                 Instant.ofEpochMilli(Watermark.ofValue(targetRecord.getWatermark()).getTimestamp()), LOG_NAME));
         // open a tailer with the moved group we should be on the same record
-        try (LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("anotherGroup"), Name.ofUrn(LOG_NAME))) {
+        try (LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("test/anotherGroup"), Name.ofUrn(LOG_NAME))) {
             LogRecord<Record> rec = tailer.read(DEF_TIMEOUT);
             assertNotNull(rec);
             assertEquals(targetRecord, rec.message());
@@ -248,7 +248,7 @@ public abstract class TestTools {
     @Test
     public void testTrackerAndRestore() throws InterruptedException {
         // Set a consumer position
-        Name group = Name.ofUrn("aGroup2Track");
+        Name group = Name.ofUrn("test/aGroup2Track");
         Record nextRecord;
         try (LogTailer<Record> tailer = getTailer(group)) {
             read(tailer);
@@ -297,8 +297,6 @@ public abstract class TestTools {
 
     @Test
     public void testDump() {
-        run("help dump");
-
         run(String.format("dump %s --log-name %s --count 4 --partition 0 --output /tmp/foo.avro", getManagerOptions(),
                 LOG_NAME));
     }

@@ -43,7 +43,7 @@ import org.nuxeo.lib.stream.log.Name;
  */
 public class MonitorCommand extends Command {
 
-    public static final String COMPUTATION_NAME = "LatencyMonitor";
+    public static final String COMPUTATION_NAME = "tools/LatencyMonitor";
 
     public static final String INPUT_STREAM = "log_null";
 
