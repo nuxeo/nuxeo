@@ -1875,7 +1875,10 @@ public class ConfigurationGenerator {
         if (nuxeoDefaultsEnv.exists()) {
             loadTrimmedProperties(properties, nuxeoDefaultsEnv);
         }
-        return properties;
+        Properties targetProps = new Properties();
+        properties.stringPropertyNames()
+                  .forEach(p -> targetProps.put(p, replaceEnvironmentVariables(properties.getProperty(p))));
+        return targetProps;
     }
 
     /**

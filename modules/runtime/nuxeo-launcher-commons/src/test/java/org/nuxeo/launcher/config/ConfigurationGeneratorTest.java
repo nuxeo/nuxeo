@@ -561,4 +561,23 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         return configGenerator.getIncludedTemplates().stream().map(File::getName).anyMatch(isEqual(template));
     }
 
+    /**
+     * Checks environment variable replacement within templates (NXP-29392).
+     *
+     * @throws ConfigurationException
+     * @since 11.2
+     */
+    @Test
+    public void testEnvironmentVariableInNuxeoDefaults() throws ConfigurationException {
+        assertEquals("myprop1defaultvalue", configGenerator.getUserConfig().getProperty("my.prop1"));
+        assertEquals("", configGenerator.getUserConfig().getProperty("my.prop2"));
+
+        env.put("MY_PROP_1", "myprop1newvalue");
+        env.put("MY_PROP_2", "myprop2newvalue");
+        assertTrue(configGenerator.init(true));
+
+        assertEquals("myprop1newvalue", configGenerator.getUserConfig().getProperty("my.prop1"));
+        assertEquals("myprop2newvalue", configGenerator.getUserConfig().getProperty("my.prop2"));
+    }
+
 }
