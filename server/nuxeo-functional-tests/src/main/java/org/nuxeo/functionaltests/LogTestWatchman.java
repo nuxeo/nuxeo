@@ -196,11 +196,11 @@ public class LogTestWatchman extends TestWatchman {
 
     @Override
     public void succeeded(FrameworkMethod method) {
-        if (lastPageSource != null) {
-            new File(lastPageSource).delete();
+        if (lastPageSource != null && !new File(lastPageSource).delete()) {
+            log.warn("file deletion failed for: " + lastPageSource);
         }
-        if (lastScreenshot != null) {
-            new File(lastScreenshot).delete();
+        if (lastScreenshot != null && !new File(lastScreenshot).delete()) {
+            log.warn("file deletion failed for: " + lastScreenshot);
         }
     }
 
