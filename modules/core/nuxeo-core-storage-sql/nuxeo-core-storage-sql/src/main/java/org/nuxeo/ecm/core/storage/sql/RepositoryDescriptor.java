@@ -161,6 +161,14 @@ public class RepositoryDescriptor {
         return isDefault;
     }
 
+    @XNode("@headless")
+    private Boolean headless;
+
+    /** @since 11.2 */
+    public Boolean isHeadless() {
+        return headless;
+    }
+
     // compat, when used with old-style extension point syntax
     // and nested repository
     @XNode("repository")
@@ -411,6 +419,7 @@ public class RepositoryDescriptor {
         name = other.name;
         label = other.label;
         isDefault = other.isDefault;
+        headless = other.headless;
         pool = other.pool == null ? null : new NuxeoConnectionManagerConfiguration(other.pool);
         backendClass = other.backendClass;
         clusterInvalidatorClass = other.clusterInvalidatorClass;
@@ -449,6 +458,9 @@ public class RepositoryDescriptor {
         }
         if (other.isDefault != null) {
             isDefault = other.isDefault;
+        }
+        if (other.headless != null) {
+            headless = other.headless;
         }
         if (other.pool != null) {
             if (pool == null) {

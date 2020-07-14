@@ -138,7 +138,7 @@ public class SQLRepositoryService extends DefaultComponent {
         // and pass it to high-level registry
         RepositoryFactory repositoryFactory = new PoolingRepositoryFactory(repositoryName);
         Repository repository = new Repository(repositoryName, descriptor.label, descriptor.isDefault(),
-                repositoryFactory);
+                descriptor.isHeadless(), repositoryFactory);
         repositoryManager.addRepository(repository);
     }
 
