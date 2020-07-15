@@ -35,6 +35,7 @@
         <fixedPart>
           file:content/name IS NOT NULL
           AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:isTrashed = 0
         </fixedPart>
         <predicate parameter="ecm:fulltext" operator="FULLTEXT">
           <field schema="retention_search" name="ecm_fulltext" />
@@ -100,8 +101,8 @@
         <quickFilter name="hasNotLegalHold">
           <clause>ecm:hasLegalHold = 0</clause>
         </quickFilter>
-        <quickFilter name="exceptTrashed">
-          <clause>ecm:isTrashed = 0</clause>
+        <quickFilter name="includeTrashed">
+          <clause>ecm:isTrashed = 1</clause>
         </quickFilter>
       </quickFilters>
       <pageSize>20</pageSize>
