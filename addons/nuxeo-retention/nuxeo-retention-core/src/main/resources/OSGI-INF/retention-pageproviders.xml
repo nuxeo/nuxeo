@@ -103,6 +103,9 @@
         <quickFilter name="exceptTrashed">
           <clause>ecm:isTrashed = 0</clause>
         </quickFilter>
+        <quickFilter name="includeTrashed">
+          <clause>ecm:isTrashed = 1</clause>
+        </quickFilter>
       </quickFilters>
       <pageSize>20</pageSize>
     </genericPageProvider>
