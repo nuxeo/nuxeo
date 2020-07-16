@@ -284,6 +284,26 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
         ObjectMetadata newMetadata = amazonS3.getObjectMetadata(bucket, bucketKey);
 
+        // if we did a multipart upload but can do a non multipart copy we can get back the digest as key
+        boolean isMultipartUpload = key.matches(".+-\\d+$");
+        boolean canDoNonMultipartCopy = newMetadata.getContentLength() < getTransferManager().getConfiguration()
+                .getMultipartCopyThreshold();
+        if (isMultipartUpload && canDoNonMultipartCopy) {
+            key = newMetadata.getETag();
+            String previousBucketKey = bucketKey;
+            bucketKey = bucketPrefix + key;
+            CopyObjectRequest renameRequest = new CopyObjectRequest(bucket, previousBucketKey, bucket, bucketKey);
+            Copy rename = getTransferManager().copy(renameRequest);
+            try {
+                rename.waitForCompletion();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new NuxeoException(e);
+            } finally {
+                amazonS3.deleteObject(bucket, previousBucketKey);
+            }
+        }
+
         blobInfo.key = key;
         blobInfo.digest = defaultString(newMetadata.getContentMD5(), key);
         Blob blob;
