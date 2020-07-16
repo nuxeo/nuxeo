@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.routing.core.listener;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE;
 import static org.nuxeo.ecm.platform.task.TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME;
+import static org.nuxeo.ecm.platform.task.TaskConstants.TASK_TYPE_NAME;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -37,8 +38,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  */
 public class DocumentRouteDeletedListener implements PostCommitEventListener {
 
-    protected static final String QUERY_GET_TASKS_RELATED_TO_DOCUMENT_ROUTE = "SELECT * FROM Document WHERE "
-            + TASK_PROCESS_ID_PROPERTY_NAME + " = '%s'";
+    protected static final String QUERY_GET_TASKS_RELATED_TO_DOCUMENT_ROUTE = "SELECT * FROM " + TASK_TYPE_NAME
+            + " WHERE " + TASK_PROCESS_ID_PROPERTY_NAME + " = '%s'";
 
     @Override
     public void handleEvent(EventBundle events) {
