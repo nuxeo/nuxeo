@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,14 @@ public class FileManagerImport {
     @Context
     protected OperationContext context;
 
+    /** @deprecated since 11.2, use overwrite instead. No more used. */
     @Param(name = "overwite", required = false)
+    @Deprecated(since = "11.2")
     protected Boolean overwite = false;
+
+    /** @since 11.2 */
+    @Param(name = "overwrite", alias = "overwite", required = false)
+    protected Boolean overwrite = false;
 
     @Param(name = "noMimeTypeCheck", required = false)
     protected Boolean noMimeTypeCheck = false;
@@ -82,7 +88,7 @@ public class FileManagerImport {
         DocumentModel currentDocument = getCurrentDocument();
         String path = currentDocument.getPathAsString();
         FileImporterContext fileCreationContext = FileImporterContext.builder(session, blob, path)
-                                                                     .overwrite(overwite)
+                                                                     .overwrite(overwrite)
                                                                      .mimeTypeCheck(!noMimeTypeCheck)
                                                                      .build();
         DocumentModel doc = fileManager.createOrUpdateDocument(fileCreationContext);
