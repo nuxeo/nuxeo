@@ -144,7 +144,6 @@
     <h:panelGroup rendered="#{registredConnectInstance}">
 
 
-      <c:if test="#{!connectStatus.status.isError()}">
       <nxu:set var="expirationDate" value="#{connectStatus.registrationExpirationDate}" cache="true">
 
         <div class="processMessage completeSuccess">#{messages['connect.message.registred']}</div>
@@ -158,8 +157,15 @@
           <tr>
             <td class="focusColumn"><h:outputText
                 value="#{messages['label.nuxeo.connect.contractStatus']}" /></td>
-            <td id="contractStatus"><h:outputText
-                value="#{messages[connectStatus.status.contractStatusLabel]}" />
+            <td id="contractStatus">
+              <c:if test="#{!connectStatus.status.isError()}">
+                <h:outputText value="#{messages[connectStatus.status.contractStatusLabel]}" />
+              </c:if>
+              <c:if test="#{connectStatus.status.isError()}">
+                <div class="processMessage completeWarning">
+                  <h:outputText value="#{messages['connect.message.registred.problem']}" />
+                </div>
+              </c:if>
             </td>
           </tr>
           <tr>
@@ -218,11 +224,7 @@
           </tr>
         </table>
       </nxu:set>
-      </c:if>
       <c:if test="#{connectStatus.status.isError()}">
-        <br />
-        <div class="processMessage completeWarning">
-          #{messages['connect.message.registred.problem']}</div>
         <br />
         <h:form>
           <h:outputText value="&#160;" />
@@ -234,19 +236,12 @@
           <h:outputText value="#{messages['label.nuxeo.connect.securityError']}" />
           <br />
           (<h:outputText value="#{connectStatus.status.errorMessage}" />)
-      </c:if>
+        </c:if>
 
         <c:if test="#{!connectStatus.status.isSecurityError()}">
           <h:outputText value="#{messages['label.nuxeo.connect.statusError']}" />
           <h:outputText value="#{connectStatus.status.errorMessage}" />
         </c:if>
-        <h:form>
-          <h:outputText value="#{messages['label.nuxeo.connect.unregister']}" />
-          <h:outputText value="&#160;" />
-          <a4j:commandButton value="#{messages['action.connect.unregister']}"
-            styleClass="button" action="#{connectStatus.unregister}"
-            render="connectStatusPanel" />
-        </h:form>
       </c:if>
 
     </h:panelGroup>
