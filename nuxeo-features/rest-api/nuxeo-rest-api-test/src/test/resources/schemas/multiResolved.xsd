@@ -4,10 +4,10 @@
   targetNamespace="http://www.nuxeo.org/ecm/project/schemas/test/v1/multiResolved">
   <!-- used by org.nuxeo.ecm.restapi.test.DocWithMultiResolvedFieldTest -->
 
-  <xs:element name="countries">
+  <xs:element name="coverages">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="country" minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="coverage" minOccurs="0" maxOccurs="unbounded">
           <xs:simpleType>
             <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="coverage" />
           </xs:simpleType>
