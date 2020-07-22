@@ -88,6 +88,16 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
         return ComponentStartOrders.REPOSITORY - 10;
     }
 
+    @SuppressWarnings("resource") // client closed by stop()
+    @Override
+    public MongoClient getClient(String id) {
+        MongoClient client = clients.get(id);
+        if (client == null) {
+            client = clients.get(DEFAULT_CONNECTION_ID);
+        }
+        return client;
+    }
+
     @Override
     public MongoDBConnectionConfig getConfig(String id) {
         MongoDBConnectionConfig config = getDescriptor(XP_CONNECTION, id);
