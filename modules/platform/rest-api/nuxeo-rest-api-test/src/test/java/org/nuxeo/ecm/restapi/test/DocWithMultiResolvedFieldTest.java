@@ -74,20 +74,20 @@ public class DocWithMultiResolvedFieldTest extends BaseTest {
         headers.put("fetch-directoryEntry", "parent");
         JsonNode node = null;
         try (CloseableClientResponse response = getResponse(RequestType.POST, "path/",
-                createDocumentJSON("\"mr:countries\": [\"Albania\"]"), headers)) {
+                createDocumentJSON("\"mr:coverages\": [\"Albania\"]"), headers)) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
             node = mapper.readTree(response.getEntityInputStream());
             assertNotNull(node);
             JsonNode props = node.get("properties");
             assertNotNull(props);
-            assertNotNull(props.has("mr:countries"));
-            ArrayNode countries = (ArrayNode) props.get("mr:countries");
-            assertEquals(1, countries.size());
-            JsonNode firstCountry = countries.get(0);
-            assertTrue(firstCountry.isObject());
-            assertTrue(firstCountry.has("properties"));
-            assertTrue(firstCountry.get("properties").has("parent"));
-            assertTrue(firstCountry.get("properties").get("parent").isObject());
+            assertNotNull(props.has("mr:coverages"));
+            ArrayNode coverages = (ArrayNode) props.get("mr:coverages");
+            assertEquals(1, coverages.size());
+            JsonNode firstCoverage = coverages.get(0);
+            assertTrue(firstCoverage.isObject());
+            assertTrue(firstCoverage.has("properties"));
+            assertTrue(firstCoverage.get("properties").has("parent"));
+            assertTrue(firstCoverage.get("properties").get("parent").isObject());
         }
         // Re-Post identical
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "path/doc1", node.toString())) {
