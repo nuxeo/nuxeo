@@ -123,14 +123,13 @@ public class DirectoryEntryJsonReader extends EntityJsonReader<DirectoryEntry> {
      */
     protected Closeable openWrappedContext(Directory directory) {
         String directorySchema = directory.getSchema();
-        String directoryName = directory.getName();
 
         WrappedContext specializedContext = ctx.wrap().with(DEFAULT_SCHEMA_NAME, directorySchema);
         if (directorySchema.endsWith("xvocabulary")) {
             // create dynamically a resolver for parent field because the schema can't hold the directory name
             // for the resolver definition
             DirectoryEntryResolver resolver = new DirectoryEntryResolver();
-            resolver.configure(Map.of(PARAM_DIRECTORY, directoryName));
+            resolver.configure(Map.of(PARAM_DIRECTORY, directory.getParentDirectory()));
             specializedContext.with(FALLBACK_RESOLVER + "parent", resolver);
         }
         return specializedContext.open();
