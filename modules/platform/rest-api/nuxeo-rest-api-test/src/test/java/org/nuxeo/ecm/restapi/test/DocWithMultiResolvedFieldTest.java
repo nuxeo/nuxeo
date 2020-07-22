@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,33 +68,41 @@ public class DocWithMultiResolvedFieldTest extends BaseTest {
     }
 
     @Test
-    public void testRePostResolvedXVocabularyEntry() throws Exception {
+    public void testRePostResolvedXVocabularyEntrySameParentDirectory() throws Exception {
+        createDocumentThenRePostResolved("mr:coverages", "Albania");
+    }
+
+    @Test
+    public void testRePostResolvedXVocabularyEntryDifferentParentDirectory() throws Exception {
+        createDocumentThenRePostResolved("mr:countries", "Algeria");
+    }
+
+    protected void createDocumentThenRePostResolved(String propertyName, String value) throws IOException {
         Map<String, String> headers = new HashMap<>();
         headers.put("fetch-document", "properties");
         headers.put("properties", "*");
         headers.put("fetch-directoryEntry", "parent");
         JsonNode node = null;
         try (CloseableClientResponse response = getResponse(RequestType.POST, "path/",
-                createDocumentJSON("\"mr:coverages\": [\"Albania\"]"), headers)) {
+                createDocumentJSON("\"" + propertyName + "\": [\"" + value + "\"]"), headers)) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
             node = mapper.readTree(response.getEntityInputStream());
             assertNotNull(node);
             JsonNode props = node.get("properties");
             assertNotNull(props);
-            assertNotNull(props.has("mr:coverages"));
-            ArrayNode coverages = (ArrayNode) props.get("mr:coverages");
-            assertEquals(1, coverages.size());
-            JsonNode firstCoverage = coverages.get(0);
-            assertTrue(firstCoverage.isObject());
-            assertTrue(firstCoverage.has("properties"));
-            assertTrue(firstCoverage.get("properties").has("parent"));
-            assertTrue(firstCoverage.get("properties").get("parent").isObject());
+            assertNotNull(props.has(propertyName));
+            ArrayNode propertyValue = (ArrayNode) props.get(propertyName);
+            assertEquals(1, propertyValue.size());
+            JsonNode firstPropertyValue = propertyValue.get(0);
+            assertTrue(firstPropertyValue.isObject());
+            assertTrue(firstPropertyValue.has("properties"));
+            assertTrue(firstPropertyValue.get("properties").has("parent"));
+            assertTrue(firstPropertyValue.get("properties").get("parent").isObject());
         }
         // Re-Post identical
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "path/doc1", node.toString())) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         }
-
     }
 
 }
