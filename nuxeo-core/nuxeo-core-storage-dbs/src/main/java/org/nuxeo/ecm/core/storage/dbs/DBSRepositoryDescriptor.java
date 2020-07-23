@@ -51,6 +51,14 @@ public class DBSRepositoryDescriptor implements Cloneable {
         return isDefault;
     }
 
+    @XNode("@headless")
+    protected Boolean headless;
+
+    /** @since 11.2 */
+    public Boolean isHeadless() {
+        return headless;
+    }
+
     @XNode("idType")
     public String idType; // "varchar", "uuid", "sequence"
 
