@@ -19,8 +19,11 @@
 package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.nuxeo.ecm.core.api.model.Delta;
@@ -47,13 +50,25 @@ final class MarkLogicHelper {
     public static final String SCHEMA_MARKLOGIC_DELIMITER = "__";
 
     public static String serializeCalendar(Calendar cal) {
-        return DateTime.now().withMillis(cal.getTimeInMillis()).toString(DATE_TIME_FORMATTER);
+        return serializeCalendar(cal, DateTimeZone.getDefault());
+    }
+
+    // exists for tests
+    protected static String serializeCalendar(Calendar cal, DateTimeZone dateTimeZone) {
+        return DateTime.now().withMillis(cal.getTimeInMillis()).toString(DATE_TIME_FORMATTER.withZone(dateTimeZone));
     }
 
     public static Calendar deserializeCalendar(String calString) {
-        DateTime dateTime = DATE_TIME_FORMATTER.parseDateTime(calString);
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dateTime.toDate());
+        return deserializeCalendar(calString, DateTimeZone.getDefault());
+    }
+
+    // exists for tests
+    protected static Calendar deserializeCalendar(String calString, DateTimeZone dateTimeZone) {
+        TimeZone timeZone = dateTimeZone.toTimeZone();
+
+        LocalDateTime dateTime = DATE_TIME_FORMATTER.parseLocalDateTime(calString);
+        Calendar cal = Calendar.getInstance(timeZone);
+        cal.setTime(dateTime.toDate(timeZone));
         return cal;
     }
 
