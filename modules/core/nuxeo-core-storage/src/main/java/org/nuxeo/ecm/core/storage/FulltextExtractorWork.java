@@ -187,7 +187,7 @@ public class FulltextExtractorWork extends AbstractWork {
     }
 
     protected void extractAndUpdateSimpleText() {
-        if (fulltextConfiguration.fulltextSearchDisabled) {
+        if (fulltextConfiguration == null || fulltextConfiguration.fulltextSearchDisabled) {
             // if fulltext search is disabled, we don't extract simple text at all
             return;
         }

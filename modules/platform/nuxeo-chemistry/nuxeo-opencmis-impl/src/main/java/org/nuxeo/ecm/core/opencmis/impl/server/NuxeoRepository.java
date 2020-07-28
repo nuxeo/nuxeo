@@ -95,6 +95,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryInfoImpl
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 
 import org.nuxeo.common.Environment;
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
@@ -176,9 +177,11 @@ public class NuxeoRepository {
         if (Framework.isBooleanPropertyTrue(ELASTICSEARCH_PROP)) {
             setUseElasticsearch(true);
         }
-        repositoryFulltextSearchDisabled = Framework.getService(RepositoryService.class)
+        FulltextConfiguration fulltextConfiguration = Framework.getService(RepositoryService.class)
                                                     .getRepository(repositoryId)
-                                                    .getFulltextConfiguration().fulltextSearchDisabled;
+                                                    .getFulltextConfiguration();
+        repositoryFulltextSearchDisabled = fulltextConfiguration == null
+                || fulltextConfiguration.fulltextSearchDisabled;
     }
 
     public void setSupportsJoins(boolean supportsJoins) {
