@@ -7025,14 +7025,6 @@
       </modules>
     </profile>
 
-    <!-- NXP-27709: Temporary profile to clone and build nuxeo-jsf-ui as part of the T&P and nightly build -->
-    <profile>
-      <id>nuxeo-jsf-ui</id>
-      <modules>
-        <module>nuxeo-jsf-ui</module>
-      </modules>
-    </profile>
-
     <profile>
       <id>sonar</id>
       <properties>
