@@ -187,7 +187,7 @@ def buildUnitTestStage(env) {
       retry(2) {
         container("maven-${env}") {
           script {
-            setGitHubBuildStatus("platform/utests/${env}", "Unit tests - ${env} environment", 'PENDING')
+            setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'PENDING')
             try {
               echo """
               ----------------------------------------
@@ -258,9 +258,9 @@ def buildUnitTestStage(env) {
                   test
               """
 
-              setGitHubBuildStatus("platform/utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
+              setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
             } catch(err) {
-              setGitHubBuildStatus("platform/utests/${env}", "Unit tests - ${env} environment", 'FAILURE')
+              setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'FAILURE')
               throw err
             } finally {
               try {
@@ -416,9 +416,9 @@ pipeline {
       }
     }
 
-    stage('Compile') {
+    stage('Build') {
       steps {
-        setGitHubBuildStatus('platform/compile', 'Compile', 'PENDING')
+        setGitHubBuildStatus('maven/build', 'Build', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
@@ -430,10 +430,10 @@ pipeline {
       }
       post {
         success {
-          setGitHubBuildStatus('platform/compile', 'Compile', 'SUCCESS')
+          setGitHubBuildStatus('maven/build', 'Build', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/compile', 'Compile', 'FAILURE')
+          setGitHubBuildStatus('maven/build', 'Build', 'FAILURE')
         }
       }
     }
@@ -442,7 +442,7 @@ pipeline {
       steps {
         container('maven') {
           script {
-            setGitHubBuildStatus('platform/utests/runtime', 'Unit tests - runtime', 'PENDING')
+            setGitHubBuildStatus('utests/runtime', 'Unit tests - runtime', 'PENDING')
             def testNamespace = "${TEST_NAMESPACE_PREFIX}-runtime"
             def redisHost = "${TEST_REDIS_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
             def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
@@ -481,9 +481,9 @@ pipeline {
                 """
               }
 
-              setGitHubBuildStatus('platform/utests/runtime', 'Unit tests - runtime', 'SUCCESS')
+              setGitHubBuildStatus('utests/runtime', 'Unit tests - runtime', 'SUCCESS')
             } catch(err) {
-              setGitHubBuildStatus('platform/utests/runtime', 'Unit tests - runtime', 'FAILURE')
+              setGitHubBuildStatus('utests/runtime', 'Unit tests - runtime', 'FAILURE')
               throw err
             } finally {
               try {
@@ -518,9 +518,9 @@ pipeline {
       }
     }
 
-    stage('Package') {
+    stage('Build Nuxeo Packages') {
       steps {
-        setGitHubBuildStatus('platform/package', 'Package', 'PENDING')
+        setGitHubBuildStatus('packages/build', 'Build Nuxeo packages', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
@@ -532,17 +532,17 @@ pipeline {
       }
       post {
         success {
-          setGitHubBuildStatus('platform/package', 'Package', 'SUCCESS')
+          setGitHubBuildStatus('packages/build', 'Build Nuxeo packages', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/package', 'Package', 'FAILURE')
+          setGitHubBuildStatus('packages/build', 'Build Nuxeo packages', 'FAILURE')
         }
       }
     }
 
     stage('Run "dev" functional tests') {
       steps {
-        setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'PENDING')
+        setGitHubBuildStatus('ftests/dev', 'Functional tests - dev environment', 'PENDING')
         retry(2) {
           container('maven') {
             echo """
@@ -559,17 +559,17 @@ pipeline {
           junit testResults: '**/target/failsafe-reports/*.xml'
         }
         success {
-          setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
+          setGitHubBuildStatus('ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'FAILURE')
+          setGitHubBuildStatus('ftests/dev', 'Functional tests - dev environment', 'FAILURE')
         }
       }
     }
 
     stage('Build Docker images') {
       steps {
-        setGitHubBuildStatus('platform/docker/build', 'Build Docker images', 'PENDING')
+        setGitHubBuildStatus('docker/build', 'Build Docker images', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
@@ -585,17 +585,17 @@ pipeline {
       }
       post {
         success {
-          setGitHubBuildStatus('platform/docker/build', 'Build Docker images', 'SUCCESS')
+          setGitHubBuildStatus('docker/build', 'Build Docker images', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/docker/build', 'Build Docker images', 'FAILURE')
+          setGitHubBuildStatus('docker/build', 'Build Docker images', 'FAILURE')
         }
       }
     }
 
     stage('Test Docker images') {
       steps {
-        setGitHubBuildStatus('platform/docker/test', 'Test Docker images', 'PENDING')
+        setGitHubBuildStatus('docker/test', 'Test Docker images', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
@@ -625,10 +625,10 @@ pipeline {
       }
       post {
         success {
-          setGitHubBuildStatus('platform/docker/test', 'Test Docker images', 'SUCCESS')
+          setGitHubBuildStatus('docker/test', 'Test Docker images', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/docker/test', 'Test Docker images', 'FAILURE')
+          setGitHubBuildStatus('docker/test', 'Test Docker images', 'FAILURE')
         }
       }
     }
@@ -677,7 +677,7 @@ pipeline {
         }
       }
       steps {
-        setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'PENDING')
+        setGitHubBuildStatus('maven/deploy', 'Deploy Maven artifacts', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
@@ -691,15 +691,15 @@ pipeline {
       }
       post {
         success {
-          setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'SUCCESS')
+          setGitHubBuildStatus('maven/deploy', 'Deploy Maven artifacts', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'FAILURE')
+          setGitHubBuildStatus('maven/deploy', 'Deploy Maven artifacts', 'FAILURE')
         }
       }
     }
 
-    stage('Upload Nuxeo Packages') {
+    stage('Deploy Nuxeo Packages') {
       when {
         allOf {
           not {
@@ -711,7 +711,7 @@ pipeline {
         }
       }
       steps {
-        setGitHubBuildStatus('platform/upload/packages', 'Upload Nuxeo Packages', 'PENDING')
+        setGitHubBuildStatus('packages/deploy', 'Deploy Nuxeo Packages', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
@@ -729,10 +729,10 @@ pipeline {
       }
       post {
         success {
-          setGitHubBuildStatus('platform/upload/packages', 'Upload Nuxeo Packages', 'SUCCESS')
+          setGitHubBuildStatus('packages/deploy', 'Deploy Nuxeo Packages', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/upload/packages', 'Upload Nuxeo Packages', 'FAILURE')
+          setGitHubBuildStatus('packages/deploy', 'Deploy Nuxeo Packages', 'FAILURE')
         }
       }
     }
@@ -749,7 +749,7 @@ pipeline {
         }
       }
       steps {
-        setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'PENDING')
+        setGitHubBuildStatus('docker/deploy', 'Deploy Docker images', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
@@ -764,22 +764,22 @@ pipeline {
       }
       post {
         success {
-          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'SUCCESS')
+          setGitHubBuildStatus('docker/deploy', 'Deploy Docker images', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'FAILURE')
+          setGitHubBuildStatus('docker/deploy', 'Deploy Docker images', 'FAILURE')
         }
       }
     }
 
-    stage('Deploy Preview') {
+    stage('Deploy Server Preview') {
       when {
         not {
           branch 'PR-*'
         }
       }
       steps {
-        setGitHubBuildStatus('nuxeo/preview', 'Deploy nuxeo preview', 'PENDING')
+        setGitHubBuildStatus('server/preview', 'Deploy server preview', 'PENDING')
         container('maven') {
           dir('ci/helm/preview') {
             echo """
@@ -824,10 +824,10 @@ pipeline {
           archiveArtifacts allowEmptyArchive: true, artifacts: '**/requirements.lock, **/target/**/*.yaml'
         }
         success {
-          setGitHubBuildStatus('nuxeo/preview', 'Deploy nuxeo preview', 'SUCCESS')
+          setGitHubBuildStatus('server/preview', 'Deploy server preview', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('nuxeo/preview', 'Deploy nuxeo preview', 'FAILURE')
+          setGitHubBuildStatus('server/preview', 'Deploy server preview', 'FAILURE')
         }
       }
     }
