@@ -57,7 +57,7 @@ def isPullRequest() {
 }
 
 String getVersion() {
-  return isPullRequest() ? getPullRequestVersion() : getReleaseVersion()
+  return isPullRequest() ? readMavenPom().getVersion() : getReleaseVersion()
 }
 
 String getReleaseVersion() {
@@ -74,10 +74,6 @@ String getReleaseVersion() {
     }
   }
   return version
-}
-
-String getPullRequestVersion() {
-  return "${BRANCH_NAME}-" + readMavenPom().getVersion()
 }
 
 String getDockerTagFrom(String version) {
@@ -360,6 +356,11 @@ pipeline {
     }
 
     stage('Update version') {
+      when {
+        not {
+          branch 'PR-*'
+        }
+      }
       steps {
         container('maven') {
           echo """
