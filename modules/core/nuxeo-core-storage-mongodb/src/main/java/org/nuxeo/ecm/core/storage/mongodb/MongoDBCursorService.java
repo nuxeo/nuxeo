@@ -35,7 +35,7 @@ import com.mongodb.client.MongoCursor;
 public class MongoDBCursorService extends CursorService<MongoCursor<Document>, Document, String> {
 
     public MongoDBCursorService(MongoDBConverter converter) {
-        super(ob -> (String) ob.get(converter.keyToBson(KEY_ID)));
+        super(ob -> (String) converter.getFromBson(ob, converter.keyToBson(KEY_ID), KEY_ID));
     }
 
 }
