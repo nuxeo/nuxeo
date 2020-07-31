@@ -97,7 +97,7 @@ public class Repository {
     public boolean isHeadless() {
         // for compatibility reasons, before 11.2, a repository is headless by default unless it's the default
         // repository and not explicitly flagged as headless
-        if (isDefault()) {
+        if (isDefault() || "default".equals(name)) {
             return Boolean.TRUE.equals(headless);
         }
         return !Boolean.FALSE.equals(headless);
