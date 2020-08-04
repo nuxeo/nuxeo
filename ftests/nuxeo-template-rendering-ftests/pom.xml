@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ftests</groupId>
     <artifactId>nuxeo-ftests</artifactId>
-    <version>11.2-SNAPSHOT</version>
+    <version>11.2.14</version>
   </parent>
 
   <artifactId>nuxeo-template-rendering-ftests</artifactId>
