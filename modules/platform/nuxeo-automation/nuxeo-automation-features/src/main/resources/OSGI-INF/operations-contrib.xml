@@ -2,6 +2,7 @@
 <component name="org.nuxeo.ecm.core.automation.features.operations" version="1.0">
 
   <alias>org.nuxeo.ecm.core.automation.featuresContrib</alias>
+  <require>org.nuxeo.ecm.core.automation.coreContrib</require>
 
   <documentation>@author Bogdan Stefanescu (bs@nuxeo.com)</documentation>
 
