@@ -38,7 +38,7 @@ public class OperationContribution {
      * The operation class that must be annotated using {@link Operation} annotation.
      */
     @XNode("@class")
-    public Class<?> type;
+    public String type;
 
     /**
      * Put it to true to override an existing contribution having the same ID. By default overriding is not permitted

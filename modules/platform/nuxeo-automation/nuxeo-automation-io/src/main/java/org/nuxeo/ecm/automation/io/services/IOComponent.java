@@ -18,11 +18,13 @@
  */
 package org.nuxeo.ecm.automation.io.services;
 
+import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.io.services.codec.CodecDescriptor;
+import org.nuxeo.ecm.automation.io.services.codec.ObjectCodec;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
@@ -61,13 +63,19 @@ public class IOComponent extends DefaultComponent {
         jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
         codecs = new ObjectCodecService(jsonFactoryManager.getJsonFactory());
         List<CodecDescriptor> descriptors = getDescriptors(XP_CODECS);
-        descriptors.forEach(d -> {
+        for (CodecDescriptor d : descriptors) {
             try {
-                codecs.addCodec(d.klass.getDeclaredConstructor().newInstance());
-            } catch (ReflectiveOperationException e) {
-                log.error("Unable to instantiate codec", e);
+                Class<?> clazz = Class.forName(d.klass);
+                Constructor<?> constructor = clazz.getDeclaredConstructor();
+                ObjectCodec<?> codec = (ObjectCodec<?>) constructor.newInstance();
+                codecs.addCodec(codec);
+            } catch (ClassCastException | ReflectiveOperationException e) {
+                String msg = String.format("Failed to register codec on '%s': error initializing class '%s' (%s).",
+                        name, d.getId(), e.toString());
+                log.error(msg, e);
+                Framework.getRuntime().getMessageHandler().addError(msg);
             }
-        });
+        }
         codecs.postInit();
     }
 
