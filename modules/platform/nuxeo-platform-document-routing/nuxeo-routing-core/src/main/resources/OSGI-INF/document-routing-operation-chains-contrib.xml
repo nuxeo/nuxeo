@@ -1,5 +1,6 @@
 <component name="org.nuxeo.ecm.platform.routing.operation.chains"
   version="1.0">
+  <require>org.nuxeo.ecm.platform.routing.operations</require>
   <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="chains">
