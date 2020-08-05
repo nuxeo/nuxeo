@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
@@ -120,6 +121,7 @@ public class OAuth2Client {
      * <li>It doesn't start with http, e.g. nuxeo://authorize</li>
      * <li>It starts with http://localhost with localhost not part of the domain name, e.g. http://localhost:8080/nuxeo,
      * a counter-example being http://localhost.somecompany.com</li>
+     * <li>The Nuxeo node is in Dev mode</li>
      * </ul>
      *
      * @since 9.2
@@ -127,7 +129,7 @@ public class OAuth2Client {
     public static boolean isRedirectURIValid(String redirectURI) {
         String trimmed = redirectURI.trim();
         return !trimmed.isEmpty() && (trimmed.startsWith("https") || !trimmed.startsWith("http")
-                || LOCALHOST_PATTERN.matcher(trimmed).matches());
+                || LOCALHOST_PATTERN.matcher(trimmed).matches() || Framework.isDevModeSet());
     }
 
     public boolean isValidWith(String clientId, String clientSecret) {
