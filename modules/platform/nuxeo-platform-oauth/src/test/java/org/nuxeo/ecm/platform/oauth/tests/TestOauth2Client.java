@@ -32,8 +32,10 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
@@ -52,6 +54,18 @@ public class TestOauth2Client {
         assertFalse(OAuth2Client.isRedirectURIValid("http://redirect.uri"));
         assertFalse(OAuth2Client.isRedirectURIValid(" http://redirect.uri"));
         assertFalse(OAuth2Client.isRedirectURIValid("http://localhost.somecompany.com"));
+        assertTrue(OAuth2Client.isRedirectURIValid("nuxeo://authorize"));
+        assertTrue(OAuth2Client.isRedirectURIValid("http://localhost:8080/nuxeo"));
+        assertTrue(OAuth2Client.isRedirectURIValid("https://redirect.uri"));
+    }
+
+    @Test
+    @WithFrameworkProperty(name = Framework.NUXEO_DEV_SYSTEM_PROP, value = "true")
+    public void testValidRedirectURIInDevMode() {
+        assertFalse(OAuth2Client.isRedirectURIValid(""));
+        assertTrue(OAuth2Client.isRedirectURIValid("http://redirect.uri"));
+        assertTrue(OAuth2Client.isRedirectURIValid(" http://redirect.uri"));
+        assertTrue(OAuth2Client.isRedirectURIValid("http://localhost.somecompany.com"));
         assertTrue(OAuth2Client.isRedirectURIValid("nuxeo://authorize"));
         assertTrue(OAuth2Client.isRedirectURIValid("http://localhost:8080/nuxeo"));
         assertTrue(OAuth2Client.isRedirectURIValid("https://redirect.uri"));
