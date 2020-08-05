@@ -29,11 +29,11 @@ import org.nuxeo.runtime.model.Descriptor;
 public class CodecDescriptor implements Descriptor {
 
     @XNode("@class")
-    public Class<ObjectCodec<?>> klass;
+    public String klass;
 
     @Override
     public String getId() {
-        return klass.getName();
+        return klass;
     }
 
 }

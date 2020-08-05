@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.automation.rest.test.faultyOperationContrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.automation.io.services.IOComponent" point="codecs">
+    <codec class="org.nuxeo.ecm.automation.server.test.NonExistingCodec" />
+  </extension>
+
+</component>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.automation.rest.test.faultyOperationContrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="testchain">
+      <operation id="NonExistingOperation" />
+    </chain>
+  </extension>
+
+</component>
