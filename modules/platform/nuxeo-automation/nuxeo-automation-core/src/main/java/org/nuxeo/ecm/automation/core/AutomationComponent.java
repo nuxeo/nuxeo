@@ -38,7 +38,7 @@ import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.context.ContextHelperDescriptor;
 import org.nuxeo.ecm.automation.context.ContextHelperRegistry;
@@ -136,20 +136,27 @@ public class AutomationComponent extends DefaultComponent {
                 }
             }
             try {
-                service.putOperation(opc.type, opc.replace, contributor.getName().toString(), widgetDefinitionList);
+                Class<?> type = Class.forName(opc.type);
+                service.putOperation(type, opc.replace, contributor.getName().toString(), widgetDefinitionList);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException("Invalid operation class '" + opc.type + "': class not found.");
             } catch (OperationException e) {
                 throw new RuntimeException(e);
             }
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
-            // Register the chain
             try {
-                OperationType docChainType = new ChainTypeImpl(service,
+                ChainTypeImpl docChainType = new ChainTypeImpl(service,
                         occ.toOperationChain(contributor.getContext().getBundle()), occ,
                         contributor.getName().toString());
+                List<OperationParameters> opps = docChainType.getChain().getOperations();
+                for (OperationParameters opp : opps) {
+                    if (!service.hasOperation(opp.id())) {
+                        throw new OperationException("Operation with id '" + opp.id() + "' could not be found.");
+                    }
+                }
                 service.putOperation(docChainType, occ.replace);
             } catch (OperationException e) {
-                // TODO Auto-generated catch block
                 throw new RuntimeException(e);
             }
         } else if (XP_CHAIN_EXCEPTION.equals(extensionPoint)) {
@@ -184,7 +191,12 @@ public class AutomationComponent extends DefaultComponent {
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_OPERATIONS.equals(extensionPoint)) {
-            service.removeOperation(((OperationContribution) contribution).type);
+            try {
+                Class<?> type = Class.forName(((OperationContribution) contribution).type);
+                service.removeOperation(type);
+            } catch (ClassNotFoundException e) {
+                // ignore
+            }
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
             service.removeOperationChain(occ.getId());
