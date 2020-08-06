@@ -1,7 +1,6 @@
 <component name="org.nuxeo.ecm.automation.server.test-bindings" version="1.0">
 
-  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
-             point="bindings">
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer" point="bindings">
     <binding name="principals" chain="true" disabled="true" />
     <binding name="audit" chain="true">
       <administrator>true</administrator>
@@ -10,14 +9,25 @@
     </binding>
   </extension>
 
-  <extension target="org.nuxeo.ecm.automation.io.services.IOComponent"
-             point="codecs">
+  <extension target="org.nuxeo.ecm.automation.io.services.IOComponent" point="codecs">
     <codec class="org.nuxeo.ecm.automation.server.test.MyObjectCodec" />
     <codec class="org.nuxeo.ecm.automation.server.test.json.SimplePojoObjectCodec" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
-             point="chains">
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
+    <operation class="org.nuxeo.ecm.automation.server.test.ExitOperation" />
+    <operation class="org.nuxeo.ecm.automation.server.test.ReturnOperation" />
+    <operation class="org.nuxeo.ecm.automation.server.test.TestNumberParamAdaptersOperation" />
+    <operation class="org.nuxeo.ecm.automation.server.test.WaitForTxTimeoutOperation" />
+    <operation class="org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation" />
+    <operation class="org.nuxeo.ecm.automation.server.test.json.JSONOperationWithArrays" />
+    <operation class="org.nuxeo.ecm.automation.test.helpers.HttpStatusOperationTest" />
+    <operation class="org.nuxeo.ecm.automation.server.test.operations.ContextTraceOperation" />
+    <operation class="org.nuxeo.ecm.automation.server.test.operations.ContextInjectionOperation" />
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
     <chain id="testchain">
       <operation id="Context.FetchDocument" />
       <operation id="Document.Create">
@@ -89,28 +99,6 @@
         <param type="string" name="param">expr:Context["item"]</param>
       </operation>
     </chain>
-  </extension>
-
-  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
-             point="operations">
-    <operation
-            class="org.nuxeo.ecm.automation.server.test.ExitOperation" />
-    <operation
-            class="org.nuxeo.ecm.automation.server.test.ReturnOperation" />
-    <operation
-            class="org.nuxeo.ecm.automation.server.test.TestNumberParamAdaptersOperation" />
-    <operation
-            class="org.nuxeo.ecm.automation.server.test.WaitForTxTimeoutOperation" />
-    <operation
-            class="org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation" />
-    <operation
-            class="org.nuxeo.ecm.automation.server.test.json.JSONOperationWithArrays" />
-    <operation
-            class="org.nuxeo.ecm.automation.test.helpers.HttpStatusOperationTest"/>
-    <operation
-            class="org.nuxeo.ecm.automation.server.test.operations.ContextTraceOperation"/>
-    <operation
-            class="org.nuxeo.ecm.automation.server.test.operations.ContextInjectionOperation"/>
   </extension>
 
 </component>
