@@ -71,10 +71,7 @@ public class TestInvalidContributions {
     @Deploy("org.nuxeo.ecm.automation.core:test-invalid-chain.xml")
     public void testInvalidChain() {
         checkStartupError(
-                "Failed to register extension to: service:org.nuxeo.ecm.core.operation.OperationServiceComponent, "
-                        + "xpoint: chains in component: service:org.nuxeo.automation.rest.test.faultyOperationContrib "
-                        + "(java.lang.RuntimeException: org.nuxeo.ecm.automation.OperationException: Operation with id "
-                        + "'NonExistingOperation' could not be found.)");
+                "Operation chain with id 'testchain' references unknown operation with id 'NonExistingOperation'");
     }
 
 }
