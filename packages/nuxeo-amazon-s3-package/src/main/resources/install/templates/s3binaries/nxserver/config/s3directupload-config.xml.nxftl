@@ -84,6 +84,7 @@
       <property name="region">${nuxeo.s3storage.transient.region}</property>
       <property name="bucket_prefix">${nuxeo.s3storage.transient.bucket_prefix}</property>
       <property name="crypt.serverside">${nuxeo.s3storage.transient.crypt.serverside}</property>
+      <property name="crypt.kms.key">${nuxeo.s3storage.transient.crypt.kms.key}</property>
       <property name="policyTemplate">{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:PutObject","Resource":["arn:aws:s3:::${nuxeo.s3storage.transient.bucket}/*"]}]}</property>
       <property name="roleArn">${nuxeo.s3storage.transient.roleArn}</property>
     </batchHandler>
