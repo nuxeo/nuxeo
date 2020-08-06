@@ -34,4 +34,5 @@ chromedriver.log
 
 # nuxeo build process
 addons/nuxeo-shell/
+nuxeo-jsf-ui/
 marketplace/
