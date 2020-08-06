@@ -260,12 +260,6 @@ public class ComponentManagerImpl implements ComponentManager {
         // before checking for duplicates.
         if (!componentsToRemove.contains(name)) {
             if (registry.contains(name)) {
-                if (name.getName().startsWith("org.nuxeo.runtime.")) {
-                    // XXX we hide the fact that nuxeo-runtime bundles are
-                    // registered twice
-                    // TODO fix the root cause and remove this
-                    return;
-                }
                 handleError("Duplicate component name: " + name, null);
                 return;
             }
