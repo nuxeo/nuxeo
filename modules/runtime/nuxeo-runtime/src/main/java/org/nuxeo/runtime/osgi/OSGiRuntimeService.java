@@ -171,7 +171,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             // workaround to handle fragment bundles
             ctx = new OSGiRuntimeContext(bundle);
             contexts.put(bundle.getSymbolicName(), ctx);
-            loadComponents(bundle, ctx);
+            loadComponents(bundle, ctx, true);
         }
         return ctx;
     }
@@ -194,7 +194,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     @Override
     protected void doStart() {
         bundleContext.addFrameworkListener(this);
-        loadComponents(bundleContext.getBundle(), context);
+        loadComponents(bundleContext.getBundle(), context, false);
     }
 
     @Override
@@ -204,9 +204,13 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         super.doStop();
     }
 
-    protected void loadComponents(Bundle bundle, RuntimeContext ctx) {
-        String list = getComponentsList(bundle);
+    protected void loadComponents(Bundle bundle, RuntimeContext ctx, boolean isFragment) {
         String name = bundle.getSymbolicName();
+        if (isFragment && name.equals(context.getBundle().getSymbolicName())) {
+            // avoid deploying again runtime components as a fragment (already handled in #doStart)
+            return;
+        }
+        String list = getComponentsList(bundle);
         if (list == null) {
             log.debug("Bundle {} doesn't have components", name);
             return;

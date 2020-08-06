@@ -33,9 +33,9 @@ public class OSGiRuntimeTestService extends OSGiRuntimeService {
     }
 
     @Override
-    protected void loadComponents(Bundle bundle, RuntimeContext ctx) {
+    protected void loadComponents(Bundle bundle, RuntimeContext ctx, boolean isFragment) {
         if (!(bundle instanceof RootRuntimeBundle)) {
-            super.loadComponents(bundle, ctx);
+            super.loadComponents(bundle, ctx, isFragment);
         }
     }
 
