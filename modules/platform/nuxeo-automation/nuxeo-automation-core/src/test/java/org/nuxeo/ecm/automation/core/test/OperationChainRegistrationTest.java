@@ -20,6 +20,8 @@ package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Properties;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -54,10 +56,12 @@ public class OperationChainRegistrationTest {
         OperationChain chain = service.getOperationChain("chainWithEscapedParams");
         assertEquals(2, chain.getOperations().size());
         OperationParameters params = chain.getOperations().get(1);
-        assertEquals(2, params.map().size());
-        assertEquals("NXQL", params.map().get("language"));
-        assertEquals("SELECT * FROM Document WHERE dc:created" + "\n          < DATE '2013-08-19'",
-                params.map().get("query"));
+        assertEquals(3, params.map().size());
+        assertEquals("Note", params.map().get("type"));
+        assertEquals("My note > other notes", params.map().get("name"));
+        Properties props = new Properties();
+        props.put("dc:title", "My note > other notes");
+        assertEquals(props, params.map().get("properties"));
     }
 
 }

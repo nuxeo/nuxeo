@@ -1,17 +1,13 @@
-<component name="org.nuxeo.ecm.core.rules.test-parametrization-chain"
-  version="1.0">
+<component name="org.nuxeo.ecm.core.rules.test-parametrization-chain" version="1.0">
 
-  <extension point="chains"
-    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+  <extension point="chains" target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
 
     <chain id="chainWithEscapedParams">
       <operation id="Context.FetchDocument" />
-      <operation id="Repository.Query">
-        <param type="string" name="query">
-          SELECT * FROM Document WHERE dc:created
-          &lt; DATE '2013-08-19'
-        </param>
-        <param type="string" name="language">NXQL</param>
+      <operation id="Document.Create">
+        <param type="string" name="type">Note</param>
+        <param type="string" name="name">My note &gt; other notes</param>
+        <param type="properties" name="properties">dc:title=My note &gt; other notes</param>
       </operation>
     </chain>
 

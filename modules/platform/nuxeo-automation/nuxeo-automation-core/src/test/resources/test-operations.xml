@@ -17,6 +17,7 @@
     <operation class="org.nuxeo.ecm.automation.core.test.ExitOperation" />
     <operation class="org.nuxeo.ecm.automation.core.test.ParamNameWithAliasOperation" />
     <operation class="org.nuxeo.ecm.automation.core.test.SetTransactionRollbackOnlyOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.test.RunOnListItem" />
   </extension>
 
   <extension point="chains"
