@@ -25,6 +25,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.ACCELERATE_MODE_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_ID_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SECRET_PROPERTY;
@@ -41,6 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.amazonaws.services.s3.model.SSEAwsKeyManagementParams;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -146,6 +148,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     protected boolean useServerSideEncryption;
 
+    protected String serverSideKMSKeyID;
+
     protected String blobProviderId;
 
     @Override
@@ -174,6 +178,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         policy = properties.get(POLICY_TEMPLATE_PROPERTY);
 
         useServerSideEncryption = Boolean.parseBoolean(properties.get(S3BinaryManager.SERVERSIDE_ENCRYPTION_PROPERTY));
+        serverSideKMSKeyID = properties.get(S3BinaryManager.SERVERSIDE_ENCRYPTION_KMS_KEY_PROPERTY);
 
         AWSCredentialsProvider credentials = S3Utils.getAWSCredentialsProvider(awsSecretKeyId, awsSecretAccessKey,
                 awsSessionToken);
@@ -260,11 +265,18 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
             String bucketKey = bucketPrefix + key;
             CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucket, fileKey, bucket, bucketKey);
             // server-side encryption
-            if (useServerSideEncryption) { // TODO KMS
-                // SSE-S3
-                ObjectMetadata newObjectMetadata = new ObjectMetadata();
-                newObjectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-                copyObjectRequest.setNewObjectMetadata(newObjectMetadata);
+            if (useServerSideEncryption) {
+                if (isNotBlank(serverSideKMSKeyID)) {
+                    // SSE-KMS
+                    SSEAwsKeyManagementParams params = new SSEAwsKeyManagementParams(serverSideKMSKeyID);
+                    copyObjectRequest.setSSEAwsKeyManagementParams(params);
+                } else {
+                    // SSE-S3
+                    ObjectMetadata newObjectMetadata = new ObjectMetadata();
+                    newObjectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+                    copyObjectRequest.setNewObjectMetadata(newObjectMetadata);
+                }
+                // TODO SSE-C
             }
 
             Copy copy = getTransferManager().copy(copyObjectRequest);

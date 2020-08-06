@@ -408,6 +408,10 @@ public class S3BlobStore extends AbstractBlobStore {
                 // can't efficiently check the decrypted digest
                 return true;
             }
+            if (config.useServerSideEncryption && isNotBlank(config.serverSideKMSKeyID)) {
+                // can't get digest from key when using KMS
+                return true;
+            }
             if (byteRange != null) {
                 // can't check digest if we have a byte range
                 return true;

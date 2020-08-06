@@ -30,6 +30,7 @@ nuxeo.s3storage.crypt.keystore.password=
 nuxeo.s3storage.crypt.key.alias=
 nuxeo.s3storage.crypt.key.password=
 nuxeo.s3storage.crypt.serverside=false
+nuxeo.s3storage.crypt.kms.key=
 
 nuxeo.s3storage.useDirectUpload=false
 
@@ -53,3 +54,4 @@ nuxeo.s3storage.transient.pathstyleaccess=false
 nuxeo.s3storage.transient.accelerateMode=false
 nuxeo.s3storage.transient.bucket_prefix=
 nuxeo.s3storage.transient.crypt.serverside=false
+nuxeo.s3storage.transient.crypt.kms.key=
