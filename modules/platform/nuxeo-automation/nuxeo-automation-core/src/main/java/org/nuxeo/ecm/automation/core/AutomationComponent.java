@@ -37,6 +37,7 @@ import org.nuxeo.ecm.automation.AutomationAdmin;
 import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.ChainException;
+import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.TypeAdapter;
@@ -149,12 +150,6 @@ public class AutomationComponent extends DefaultComponent {
                 ChainTypeImpl docChainType = new ChainTypeImpl(service,
                         occ.toOperationChain(contributor.getContext().getBundle()), occ,
                         contributor.getName().toString());
-                List<OperationParameters> opps = docChainType.getChain().getOperations();
-                for (OperationParameters opp : opps) {
-                    if (!service.hasOperation(opp.id())) {
-                        throw new OperationException("Operation with id '" + opp.id() + "' could not be found.");
-                    }
-                }
                 service.putOperation(docChainType, occ.replace);
             } catch (OperationException e) {
                 throw new RuntimeException(e);
@@ -242,6 +237,7 @@ public class AutomationComponent extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
+        checkOperationChains();
         if (!tracerFactory.getRecordingState()) {
             log.info("You can activate automation trace mode to get more informations on automation executions");
         }
@@ -249,6 +245,26 @@ public class AutomationComponent extends DefaultComponent {
             bindManagement();
         } catch (JMException e) {
             throw new RuntimeException("Cannot bind management", e);
+        }
+    }
+
+    /**
+     * Checks operation references in chains
+     *
+     * @since 11.3
+     */
+    protected void checkOperationChains() {
+        List<OperationChain> chains = service.getOperationChains();
+        for (OperationChain chain : chains) {
+            List<OperationParameters> opps = chain.getOperations();
+            for (OperationParameters opp : opps) {
+                if (!service.hasOperation(opp.id())) {
+                    String msg = String.format("Operation chain with id '%s' references unknown operation with id '%s'",
+                            chain.getId(), opp.id());
+                    log.error(msg);
+                    Framework.getRuntime().getMessageHandler().addError(msg);
+                }
+            }
         }
     }
 
