@@ -30,6 +30,13 @@ import java.io.OutputStream;
 public interface KeyStrategy {
 
     /**
+     * Separator between object key and version id in the returned key.
+     *
+     * @since 11.2
+     */
+    char VER_SEP = '@';
+
+    /**
      * Checks whether this key strategy uses de-duplication. When de-duplication is used, two blobs with identical
      * contents have identical keys.
      */

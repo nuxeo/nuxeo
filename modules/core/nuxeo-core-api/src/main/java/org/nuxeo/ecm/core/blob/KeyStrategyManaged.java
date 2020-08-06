@@ -41,7 +41,8 @@ public class KeyStrategyManaged implements KeyStrategy {
     @Override
     public BlobWriteContext getBlobWriteContext(BlobContext blobContext)  {
         if (blobContext.blob instanceof ManagedBlob) {
-            String key = ((ManagedBlob) blobContext.blob).getKey();
+            // strip version id if part of file key
+            String key = ((ManagedBlob) blobContext.blob).getKey().split(String.valueOf(VER_SEP))[0];
             return new BlobWriteContext(blobContext, null, () -> key, this);
         } else {
             return strategy.getBlobWriteContext(blobContext);
