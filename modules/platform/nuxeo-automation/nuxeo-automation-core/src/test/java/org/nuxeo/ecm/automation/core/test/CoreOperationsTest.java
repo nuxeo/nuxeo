@@ -94,7 +94,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-// For version label info
 @Deploy("org.nuxeo.ecm.automation.core:test-operations.xml")
 public class CoreOperationsTest {
 
@@ -683,45 +682,35 @@ public class CoreOperationsTest {
 
     @Test
     public void testRunOperatioOnList() throws Exception {
-        try {
-            service.putOperation(RunOnListItem.class);
-            try (OperationContext ctx = new OperationContext(session)) {
-                String input = "dummyInput";
-                ctx.setInput(input);
-                ArrayList<String> users = new ArrayList<>();
-                users.add("foo");
-                users.add("bar");
-                ctx.put("users", users);
-                OperationChain chain = new OperationChain("testChain");
-                chain.add(RunOperationOnList.ID).set("list", "users").set("id", "runOnList").set("isolate", "false");
-                service.run(ctx, chain);
-                String result = (String) ctx.get("result");
-                assertEquals("foo, bar", result);
-            }
-        } finally {
-            service.removeOperation(RunOnListItem.class);
+        try (OperationContext ctx = new OperationContext(session)) {
+            String input = "dummyInput";
+            ctx.setInput(input);
+            ArrayList<String> users = new ArrayList<>();
+            users.add("foo");
+            users.add("bar");
+            ctx.put("users", users);
+            OperationChain chain = new OperationChain("testChain");
+            chain.add(RunOperationOnList.ID).set("list", "users").set("id", "runOnList").set("isolate", "false");
+            service.run(ctx, chain);
+            String result = (String) ctx.get("result");
+            assertEquals("foo, bar", result);
         }
     }
 
     @Test
     public void testRunOperationOnArray() throws Exception {
-        try {
-            service.putOperation(RunOnListItem.class);
-            try (OperationContext ctx = new OperationContext(session)) {
-                String input = "dummyInput";
-                ctx.setInput(input);
-                String[] groups = new String[2];
-                groups[0] = "tic";
-                groups[1] = "tac";
-                ctx.put("groups", groups);
-                OperationChain chain = new OperationChain("testChain");
-                chain.add(RunOperationOnList.ID).set("list", "groups").set("id", "runOnList").set("isolate", "false");
-                service.run(ctx, chain);
-                String result = (String) ctx.get("result");
-                assertEquals("tic, tac", result);
-            }
-        } finally {
-            service.removeOperation(RunOnListItem.class);
+        try (OperationContext ctx = new OperationContext(session)) {
+            String input = "dummyInput";
+            ctx.setInput(input);
+            String[] groups = new String[2];
+            groups[0] = "tic";
+            groups[1] = "tac";
+            ctx.put("groups", groups);
+            OperationChain chain = new OperationChain("testChain");
+            chain.add(RunOperationOnList.ID).set("list", "groups").set("id", "runOnList").set("isolate", "false");
+            service.run(ctx, chain);
+            String result = (String) ctx.get("result");
+            assertEquals("tic, tac", result);
         }
     }
 
