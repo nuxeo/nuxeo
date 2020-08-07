@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.automation.test-multi-repo">
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="second">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+    </blobprovider>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService" point="repository">
+    <repository name="second">
+      <indexing>
+        <fulltext disabled="true" searchDisabled="true"/>
+      </indexing>
+    </repository>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <datasource name="jdbc/repository_second" driverClassName="org.h2.Driver">
+      <property name="url">jdbc:h2:mem:other;DB_CLOSE_DELAY=-1</property>
+      <property name="second">pfouh</property>
+    </datasource>
+  </extension>
+
+  <extension point="elasticSearchIndex" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <elasticSearchIndex name="second" repository="second" type="doc" />
+  </extension>
+
+</component>
