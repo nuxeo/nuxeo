@@ -261,7 +261,11 @@ def buildUnitTestStage(env) {
               setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
             } catch(err) {
               setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'FAILURE')
-              throw err
+              // TODO NXP-29512: only fail the build for the dev env for now
+              // to remove when other environments will be mandatory
+              if (env == 'dev') {
+                throw err
+              }
             } finally {
               try {
                 junit testResults: "**/target-${env}/surefire-reports/*.xml"
