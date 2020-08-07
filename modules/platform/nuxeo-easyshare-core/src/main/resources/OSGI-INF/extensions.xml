@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <component name="studio.extensions.easyshare" version="1.0.0">
-  <require>org.nuxeo.runtime.started</require>
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="easysharefolder" prefix="eshare" src="data/schemas/easysharefolder.xsd"/>
   </extension>
@@ -40,17 +40,6 @@
       <default-view>view_documents</default-view>
     </type>
   </extension>
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
-    <action id="TAB_CONTENT">
-      <filter-id>denyForEasyShareFolder</filter-id>
-    </action>
-    <action id="TAB_VIEW">
-      <filter-id>denyForEasyShareFolder</filter-id>
-    </action>
-    <action id="TAB_RELATIONS">
-      <filter-id>denyForEasyShareFolder</filter-id>
-    </action>
-  </extension>
   <extension target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" point="notifications">
     <notification name="easyShareDownload" channel="email"
                   enabled="true" availableIn="Workspace" autoSubscribed="true"
@@ -70,63 +59,12 @@
     <template name="easyShareDownload" src="templates/easyShareDownload.ftl"/>
     <template name="easyShareExpired" src="templates/easyShareExpired.ftl"/>
     <template name="easyShareDownloadSubject" src="templates/easyShareDownloadSubject.ftl"/>
-    <template name="easyShareExpiredSubject" src="templates/easyShareExpiredSubject.ftl"/>
-  </extension>
-  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
-    <chain id="addToAShareDocument">
-      <operation id="Seam.GetCurrentDocument"/>
-      <operation id="Context.SetInputAsVar">
-        <param type="string" name="name">shareDocument</param>
-      </operation>
-      <operation id="Context.SetVar">
-        <param type="string" name="name">shareDocumentPath</param>
-        <param type="object" name="value">expr:Document.path</param>
-      </operation>
-      <operation id="Seam.FetchFromWorklist"/>
-      <operation id="CreateProxyLive">
-        <param type="string" name="Destination Path">expr:shareDocumentPath</param>
-      </operation>
-      <operation id="Context.RestoreDocumentInput">
-        <param type="string" name="name">shareDocument</param>
-      </operation>
-      <operation id="Audit.Log">
-        <param type="string" name="event">Documents added to the share</param>
-        <param type="string" name="category">EasyShareFolderCategory</param>
-        <param type="string" name="comment">expr:Some documents were added to the share folder @{Document["dc:title"]}</param>
-      </operation>
-      <operation id="Seam.Refresh"/>
-      <operation id="Seam.AddInfoMessage">
-        <param type="string" name="message">Added</param>
-      </operation>
-    </chain>
-    <chain id="navToParent">
-      <operation id="Context.FetchDocument"/>
-      <operation id="Document.GetParent"/>
-      <operation id="Seam.NavigateTo"/>
-    </chain>
-  </extension>
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
-    <filter id="create" append="true">
-      <rule grant="true">
-        <permission>AddChildren</permission>
-        <type>EasyShareFolder</type>
-        <condition>!document.isImmutable()</condition>
-        <condition>#{typeManager.getAllowedSubTypes(document.getType(), document).size() &gt; 0}</condition>
-      </rule>
-    </filter>
-    <filter id="denyForEasyShareFolder">
-      <rule grant="false">
-        <type>EasyShareFolder</type>
-      </rule>
-    </filter>
-
+    <template name="easyShareExpiredSubject" src="templates/easyShareExpiredSubject.ftl" />
   </extension>
   <extension target="org.nuxeo.ecm.core.security.SecurityService"
              point="permissionsVisibility">
-
     <visibility type="EasyShareFolder">
       <item show="true" order="20">ReadCanCollect</item>
     </visibility>
-
   </extension>
 </component>
