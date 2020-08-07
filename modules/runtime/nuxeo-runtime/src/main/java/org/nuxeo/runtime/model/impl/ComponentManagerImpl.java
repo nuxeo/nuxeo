@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Anahide Tchertchian
  */
 package org.nuxeo.runtime.model.impl;
 
@@ -49,6 +50,7 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -255,11 +257,10 @@ public class ComponentManagerImpl implements ComponentManager {
             return;
         }
 
-        Set<ComponentName> componentsToRemove = stash.toRemove;
-        // Look if the component is not going to be removed when applying the stash
+        // Look if the component is not going to be removed when applying the stash,
         // before checking for duplicates.
-        if (!componentsToRemove.contains(name)) {
-            if (registry.contains(name)) {
+        if (!stash.isRemoving(name)) {
+            if (registry.contains(name) || stash.isAdding(name)) {
                 handleError("Duplicate component name: " + name, null);
                 return;
             }
@@ -271,8 +272,8 @@ public class ComponentManagerImpl implements ComponentManager {
             }
         }
 
-        if (shouldStash()) { // stash the registration
-            // should stash before calling ri.attach.
+        if (shouldStash()) {
+            // stash before calling ri.attach.
             stash.add(ri);
             return;
         }
@@ -291,7 +292,7 @@ public class ComponentManagerImpl implements ComponentManager {
             log.debug("Registering component: {}", name);
             if (!registry.addComponent(ri)) {
                 log.info("Registration delayed for component: " + name + ". Waiting for: "
-                        + registry.getMissingDependencies(ri.getName()));
+                        + registry.getMissingDependencies(name));
             }
         } catch (RuntimeException e) {
             // don't raise this exception,
@@ -495,7 +496,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     protected static void handleError(String message, Exception e) {
         log.error(message, e);
-        Framework.getRuntime().getMessageHandler().addWarning(message);
+        Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
     }
 
     /**
@@ -563,7 +564,7 @@ public class ComponentManagerImpl implements ComponentManager {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addError(msg);
+                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 }
             }
         }
@@ -586,12 +587,11 @@ public class ComponentManagerImpl implements ComponentManager {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addError(msg);
+                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 }
             }
         }
 
-        // register services
         registerServices(ri);
 
         ri.setState(RegistrationInfo.ACTIVATED);
@@ -645,8 +645,6 @@ public class ComponentManagerImpl implements ComponentManager {
         }
 
         ri.setState(RegistrationInfo.DEACTIVATING);
-        // TODO no unregisters before, try to do it in new implementation
-        // unregister services
         unregisterServices(ri);
 
         // unregister contributed extensions if any
@@ -659,7 +657,7 @@ public class ComponentManagerImpl implements ComponentManager {
                     String message = "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
                             + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint();
                     log.error(message, e);
-                    Framework.getRuntime().getMessageHandler().addError(message);
+                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
                 }
             }
         }
@@ -1176,6 +1174,20 @@ public class ComponentManagerImpl implements ComponentManager {
                 }
             }
             return ris;
+        }
+
+        /**
+         * @since 11.3
+         */
+        public boolean isAdding(ComponentName name) {
+            return toAdd.stream().anyMatch(ri -> name.equals(ri.getName()));
+        }
+
+        /**
+         * @since 11.3
+         */
+        public boolean isRemoving(ComponentName name) {
+            return toRemove.contains(name);
         }
 
     }

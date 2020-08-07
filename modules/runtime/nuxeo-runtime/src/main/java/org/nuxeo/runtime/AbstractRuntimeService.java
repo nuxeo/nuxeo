@@ -99,7 +99,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         // get errors set by NuxeoDeployer
         String errs = System.getProperty("org.nuxeo.runtime.deployment.errors");
         if (errs != null) {
-            Arrays.asList(errs.split("\n")).forEach(messageHandler::addError);
+            Arrays.asList(errs.split("\n")).forEach(err -> messageHandler.addMessage(RuntimeMessage.Level.ERROR, err));
             System.clearProperty("org.nuxeo.runtime.deployment.errors");
         }
     }
@@ -283,8 +283,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
      */
     @Override
     public boolean getStatusMessage(StringBuilder msg) {
-        List<String> warnings = messageHandler.getWarnings();
-        List<String> errors = messageHandler.getErrors();
+        List<String> warnings = messageHandler.getMessages(RuntimeMessage.Level.WARNING);
+        List<String> errors = messageHandler.getMessages(RuntimeMessage.Level.ERROR);
         String hr = "======================================================================";
         if (!warnings.isEmpty()) {
             msg.append(hr).append("\n= Component Loading Warnings:\n");

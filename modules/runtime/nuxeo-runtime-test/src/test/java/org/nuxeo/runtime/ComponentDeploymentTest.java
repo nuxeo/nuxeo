@@ -92,17 +92,14 @@ public class ComponentDeploymentTest {
                 missing.get(new ComponentName("CompB")).toString());
         StringBuilder builder = new StringBuilder();
         assertFalse(runtime.getStatusMessage(builder));
-        // it is error prone to assert hard coded values for . A change not impacting this test like removing a
-        // deprecated component will break the test
-        // quick fix (use the real total registrations number)
-        int totalContribs = mgr.getRegistrations().size();
-        assertEquals(
+        String status = String.format(
                 "======================================================================\n"
-                        + "= Component Loading Status: Pending: 1 / Missing: 1 / Unstarted: 0 / Total: "
-                        + totalContribs + "\n" + "  * service:CompA requires [service:CompC]\n"
+                        + "= Component Loading Status: Pending: 1 / Missing: 1 / Unstarted: 0 / Total: %s\n"
+                        + "  * service:CompA requires [service:CompC]\n"
                         + "  * service:CompB references missing [target=my.comp3;point=xp, target=my.comp4;point=xp]\n"
                         + "======================================================================",
-                builder.toString());
+                mgr.getRegistrations().size());
+        assertEquals(status, builder.toString());
     }
 
 }

@@ -15,15 +15,16 @@
  *
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
+ *     Anahide Tchertchian
  */
 package org.nuxeo.runtime;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.model.ComponentManager;
 
 /**
@@ -34,30 +35,32 @@ import org.nuxeo.runtime.model.ComponentManager;
  */
 public class RuntimeMessageHandlerImpl implements RuntimeMessageHandler, ComponentManager.Listener {
 
-    protected final List<Message> messages = new ArrayList<>();
+    protected ComponentManagerStep step;
 
-    protected ComponentManagerStep step = ComponentManagerStep.ACTIVATING;
+    protected final List<RuntimeMessage> messages = new ArrayList<>();
 
     @Override
+    @Deprecated
     public void addWarning(String message) {
-        messages.add(new Message(step, Level.WARNING, message));
+        addMessage(Level.WARNING, message);
     }
 
     @Override
+    @Deprecated
     public List<String> getWarnings() {
-        return messages.stream().filter(msg -> Level.WARNING.equals(msg.getLevel())).map(Message::getMessage).collect(
-                Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+        return getMessages(Level.WARNING);
     }
 
     @Override
+    @Deprecated
     public void addError(String message) {
-        messages.add(new Message(step, Level.SEVERE, message));
+        addMessage(Level.ERROR, message);
     }
 
     @Override
+    @Deprecated
     public List<String> getErrors() {
-        return messages.stream().filter(msg -> Level.SEVERE.equals(msg.getLevel())).map(Message::getMessage).collect(
-                Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+        return getMessages(Level.ERROR);
     }
 
     @Override
@@ -86,44 +89,35 @@ public class RuntimeMessageHandlerImpl implements RuntimeMessageHandler, Compone
     }
 
     protected void changeStep(ComponentManagerStep step) {
-        messages.removeIf(msg -> step.equals(msg.getStep()));
+        if (this.step == ComponentManagerStep.RUNNING) {
+            // reset messages when previous step was "running"
+            messages.clear();
+        }
         this.step = step;
     }
 
-    /**
-     * @since 9.10
-     */
-    protected static class Message {
-
-        protected final ComponentManagerStep step;
-
-        protected final Level level;
-
-        protected final String message;
-
-        public Message(ComponentManagerStep step, Level level, String message) {
-            this.step = step;
-            this.level = level;
-            this.message = message;
-        }
-
-        public ComponentManagerStep getStep() {
-            return step;
-        }
-
-        public Level getLevel() {
-            return level;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
+    protected void addMessage(RuntimeMessage message) {
+        messages.add(message);
     }
 
-    /**
-     * @since 9.10
-     */
+    @Override
+    public void addMessage(Level level, String message) {
+        addMessage(new RuntimeMessage(level, message));
+    }
+
+    @Override
+    public List<String> getMessages(Level level) {
+        return getMessages(msg -> level.equals(msg.getLevel()));
+    }
+
+    @Override
+    public List<String> getMessages(Predicate<RuntimeMessage> predicate) {
+        return messages.stream()
+                       .filter(predicate)
+                       .map(RuntimeMessage::getMessage)
+                       .collect(Collectors.toUnmodifiableList());
+    }
+
     protected enum ComponentManagerStep {
 
         ACTIVATING,

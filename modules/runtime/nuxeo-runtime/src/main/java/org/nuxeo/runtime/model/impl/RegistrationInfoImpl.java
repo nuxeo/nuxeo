@@ -35,6 +35,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.ComponentEvent;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Component;
@@ -342,7 +343,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             String msg = "Failed to instantiate component: " + implementation;
             log.error(msg, e);
             msg += " (" + e.toString() + ')';
-            Framework.getRuntime().getMessageHandler().addError(msg);
+            Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
             throw e;
         }
     }
@@ -443,7 +444,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addError(msg);
+                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 }
             }
         }
@@ -466,7 +467,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addError(msg);
+                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 }
             }
         }
@@ -501,7 +502,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                         String message = "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
                                 + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint();
                         log.error(message, e);
-                        Framework.getRuntime().getMessageHandler().addError(message);
+                        Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
                     }
                 }
             }
@@ -574,27 +575,13 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     public void checkExtensions() {
-        // HashSet<String> targets = new HashSet<String>();
         for (ExtensionImpl xt : extensions) {
             if (xt.target == null) {
-                Framework.getRuntime().getMessageHandler().addWarning(
-                        "Bad extension declaration (no target attribute specified). Component: " + getName());
+                String msg = String.format(
+                        "Bad extension declaration (no target attribute specified) on component 's%'", getName());
+                Framework.getRuntime().getMessageHandler().addMessage(Level.WARNING, msg);
                 continue;
             }
-            // TODO do nothing for now -> fix the faulty components and then
-            // activate these warnings
-            // String key = xt.target.getName()+"#"+xt.getExtensionPoint();
-            // if (targets.contains(key)) { // multiple extensions to same
-            // target point declared in same component
-            // String message =
-            // "Component "+getName()+" contains multiple extensions to "+key;
-            // Framework.getRuntime().getMessageHandler().addWarning(message);
-            // //TODO: un-comment the following line if you want to treat this
-            // as a dev. error
-            // //Framework.handleDevError(new Error(message));
-            // } else {
-            // targets.add(key);
-            // }
         }
     }
 

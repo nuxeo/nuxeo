@@ -27,6 +27,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Adaptable;
@@ -243,7 +244,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
             ee = ExceptionUtils.unwrapInvoke(e);
         }
         log.error(message, ee);
-        Framework.getRuntime().getMessageHandler().addError(message);
+        Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
     }
 
     @Override
