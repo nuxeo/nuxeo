@@ -32,6 +32,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -112,11 +113,11 @@ public class TestConfigurationService {
     @LogCaptureFeature.FilterOn(logLevel = "WARN")
     public void testCompatWarn() throws Exception {
         Framework.getProperties().setProperty("nuxeo.test.dummyStringProperty", "anotherDummyValue");
-        assertEquals(0, Framework.getRuntime().getMessageHandler().getWarnings().size());
+        assertEquals(0, Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING).size());
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml");
 
         // The deprecation warning messages should not be appended to the runtime, but logged by the DeprecationLogger class
-        assertEquals(0, Framework.getRuntime().getMessageHandler().getWarnings().size());
+        assertEquals(0, Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING).size());
 
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         assertEquals(1, caughtEvents.size());

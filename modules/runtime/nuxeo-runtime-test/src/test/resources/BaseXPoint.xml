@@ -3,7 +3,7 @@
 
   <documentation>
     This component is declaring one extension point that will be
-    overrided by another extension point from OverrindingXPoint.xml
+    overridden by another extension point from OverrindingXPoint.xml
   </documentation>
 
   <implementation class="org.nuxeo.runtime.ComponentWithXPoint"/>
