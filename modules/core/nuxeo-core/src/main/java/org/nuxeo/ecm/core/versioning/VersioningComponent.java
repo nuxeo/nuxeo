@@ -81,8 +81,11 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
         }
 
         public Map<String, VersioningPolicyDescriptor> getVersioningPolicyDescriptors() {
-            return currentContribs.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(
-                    Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+            return currentContribs.entrySet()
+                                  .stream()
+                                  .sorted(Map.Entry.comparingByValue())
+                                  .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1,
+                                          LinkedHashMap::new));
         }
 
     }

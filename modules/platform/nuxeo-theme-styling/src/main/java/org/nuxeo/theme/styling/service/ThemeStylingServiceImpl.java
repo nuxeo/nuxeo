@@ -95,10 +95,11 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         } else if (contribution instanceof SimpleStyle) {
             SimpleStyle style = (SimpleStyle) contribution;
             log.info(String.format("Register style '%s'", style.getName()));
-            String message = String.format("Style '%s' on component %s should now be contributed to extension "
-                    + "point '%s': a compatibility registration was performed but it may not be "
-                    + "accurate. Note that the 'flavor' processor should be used with this resource.", style.getName(),
-                    contributor.getName(), WR_EX);
+            String message = String.format(
+                    "Style '%s' on component %s should now be contributed to extension "
+                            + "point '%s': a compatibility registration was performed but it may not be "
+                            + "accurate. Note that the 'flavor' processor should be used with this resource.",
+                    style.getName(), contributor.getName(), WR_EX);
             DeprecationLogger.log(message, "7.4");
             Framework.getRuntime().getMessageHandler().addWarning(message);
             ResourceDescriptor resource = getResourceFromStyle(style);
@@ -117,8 +118,9 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         } else if (contribution instanceof ResourceDescriptor) {
             ResourceDescriptor resource = (ResourceDescriptor) contribution;
             log.info(String.format("Register resource '%s'", resource.getName()));
-            String message = String.format("Resource '%s' on component %s should now be contributed to extension "
-                    + "point '%s': a compatibility registration was performed but it may not be accurate.",
+            String message = String.format(
+                    "Resource '%s' on component %s should now be contributed to extension "
+                            + "point '%s': a compatibility registration was performed but it may not be accurate.",
                     resource.getName(), contributor.getName(), WR_EX);
             DeprecationLogger.log(message, "7.4");
             Framework.getRuntime().getMessageHandler().addWarning(message);
@@ -136,8 +138,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             negReg.addContribution(neg);
             log.info(String.format("Done registering negotiation for '%s'", neg.getTarget()));
         } else {
-            log.error(String.format(
-                    "Unknown contribution to the theme " + "styling service, extension point '%s': '%s",
+            log.error(String.format("Unknown contribution to the theme " + "styling service, extension point '%s': '%s",
                     extensionPoint, contribution));
         }
     }
@@ -164,8 +165,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             NegotiationDescriptor neg = (NegotiationDescriptor) contribution;
             negReg.removeContribution(neg);
         } else {
-            log.error(String.format(
-                    "Unknown contribution to the theme " + "styling service, extension point '%s': '%s",
+            log.error(String.format("Unknown contribution to the theme " + "styling service, extension point '%s': '%s",
                     extensionPoint, contribution));
         }
     }
@@ -480,8 +480,10 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                             presetsByCat.put(cat, allEntries);
                         }
                     } catch (PaletteParseException e) {
-                        log.error(String.format("Could not parse palette for "
-                                + "preset with source '%s' in flavor '%s'", myPreset.getSrc(), flavorName), e);
+                        log.error(
+                                String.format("Could not parse palette for " + "preset with source '%s' in flavor '%s'",
+                                        myPreset.getSrc(), flavorName),
+                                e);
                     }
                 }
             }

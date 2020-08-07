@@ -223,8 +223,6 @@ public class FrameworkLoader {
             }
         }
         osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, systemBundle, null));
-        // osgi.fireFrameworkEvent(new
-        // FrameworkEvent(FrameworkEvent.AFTER_START, systemBundle, null));
     }
 
     private static void doStop() throws BundleException {

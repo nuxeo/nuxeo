@@ -21,9 +21,13 @@
 
 package org.nuxeo.runtime;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class TestVersion {
 
@@ -52,11 +56,10 @@ public class TestVersion {
         assertEquals("3.1.0", version.toString());
     }
 
-    @SuppressWarnings({ "SimplifiableJUnitAssertion", "EqualsBetweenInconvertibleTypes" })
     @Test
     public void testEquals() {
         assertTrue(version.equals(new Version(1, 2, 3)));
-        assertFalse(version.equals(""));
+        assertNotEquals("", version.toString());
     }
 
     @Test

@@ -139,7 +139,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void reload() {
         log.debug("Starting reload");
 
@@ -271,8 +270,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
         // Reload resources
         if (reloadResources) {
-            List<URL> undeployedBundleURLs = result.undeployedBundles.stream().map(this::toURL).collect(
-                    Collectors.toList());
+            List<URL> undeployedBundleURLs = result.undeployedBundles.stream()
+                                                                     .map(this::toURL)
+                                                                     .collect(Collectors.toList());
             Framework.reloadResourceLoader(null, undeployedBundleURLs);
         }
 
@@ -522,17 +522,20 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      * {@link sun.net.www.protocol.jar.JarFileFactory} otherwise we'll have resource conflict when opening
      * {@link InputStream stream} from {@link URL url}.
      */
-    @SuppressWarnings({ "unchecked", "SynchronizationOnLocalVariableOrMethodParameter" })
+    @SuppressWarnings({ "unchecked" })
     protected void clearJarFileFactoryCache(ReloadResult result) {
         try {
-            List<String> jarLocations = result.undeployedBundlesAsStream().map(Bundle::getLocation).collect(
-                    Collectors.toList());
+            List<String> jarLocations = result.undeployedBundlesAsStream()
+                                              .map(Bundle::getLocation)
+                                              .collect(Collectors.toList());
             log.debug("Clear JarFileFactory caches for jars={}", jarLocations);
             Class<?> jarFileFactory = Class.forName("sun.net.www.protocol.jar.JarFileFactory");
 
             Object factoryInstance = FieldUtils.readStaticField(jarFileFactory, "instance", true);
-            Map<String, JarFile> fileCache = (Map<String, JarFile>) FieldUtils.readStaticField(jarFileFactory, "fileCache", true);
-            Map<JarFile, URL> urlCache = (Map<JarFile, URL>) FieldUtils.readStaticField(jarFileFactory, "urlCache", true);
+            Map<String, JarFile> fileCache = (Map<String, JarFile>) FieldUtils.readStaticField(jarFileFactory,
+                    "fileCache", true);
+            Map<JarFile, URL> urlCache = (Map<JarFile, URL>) FieldUtils.readStaticField(jarFileFactory, "urlCache",
+                    true);
 
             synchronized (factoryInstance) {
                 // collect keys of cache
@@ -567,7 +570,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                         log.info("Unable to close JarFile={}", urlCacheRemoveKey, e);
                     }
                     if (remove != null) {
-                        log.trace("Removed item from urlCache={}",  remove);
+                        log.trace("Removed item from urlCache={}", remove);
                     }
                 }
             }
