@@ -52,6 +52,10 @@ String getMavenArgs() {
   return args
 }
 
+String getMavenFailArgs() {
+  return (isPullRequest() && pullRequest.labels.contains('failatend')) ? "--fail-at-end" : ""
+}
+
 def isPullRequest() {
   return BRANCH_NAME =~ /PR-.*/
 }
@@ -86,7 +90,7 @@ String getDockerTagFrom(String version) {
 
 void runFunctionalTests(String baseDir) {
   try {
-    sh "mvn ${MAVEN_ARGS} -f ${baseDir}/pom.xml verify"
+    sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -f ${baseDir}/pom.xml verify"
   } finally {
     try {
       archiveArtifacts allowEmptyArchive: true, artifacts: "${baseDir}/**/target/failsafe-reports/*, ${baseDir}/**/target/**/*.log, ${baseDir}/**/target/*.png, ${baseDir}/**/target/*.html, ${baseDir}/**/target/**/distribution.properties, ${baseDir}/**/target/**/configuration.properties"
@@ -249,7 +253,7 @@ def buildUnitTestStage(env) {
               def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
               def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
               sh """
-                mvn ${MAVEN_ARGS} -rf :nuxeo-core-parent \
+                mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
                   -Dcustom.environment=${env} \
                   -Dcustom.environment.log.dir=target-${env} \
                   -Dnuxeo.test.core=${testCore} \
@@ -326,6 +330,7 @@ pipeline {
     NUXEO_DOCKER_REGISTRY = 'docker-private.packages.nuxeo.com'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     MAVEN_ARGS = getMavenArgs()
+    MAVEN_FAIL_ARGS = getMavenFailArgs()
     VERSION = getVersion()
     DOCKER_TAG = getDockerTagFrom("${VERSION}")
     CHANGE_BRANCH = "${env.CHANGE_BRANCH != null ? env.CHANGE_BRANCH : BRANCH_NAME}"
@@ -474,7 +479,7 @@ pipeline {
               // run unit tests
               dir('modules/runtime') {
                 sh """
-                  mvn ${MAVEN_ARGS} \
+                  mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} \
                     -Dnuxeo.test.redis.host=${redisHost} \
                     -Pkafka -Dkafka.bootstrap.servers=${kafkaHost} \
                     test
