@@ -69,10 +69,8 @@ import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.storage.sql.VCSClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.ColumnType.WrappedId;
-import org.nuxeo.ecm.core.storage.sql.VCSInvalidations;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -80,6 +78,8 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
+import org.nuxeo.ecm.core.storage.sql.VCSClusterInvalidator;
+import org.nuxeo.ecm.core.storage.sql.VCSInvalidations;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
@@ -441,9 +441,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             try {
                 checkConcurrentUpdate(e);
             } catch (ConcurrentUpdateException cue) {
-                cue.addInfo(
-                        "Duplicate cluster node with id: " + nodeId
-                                + " (a crashed node must be cleaned up, or the cluster configuration fixed)");
+                cue.addInfo("Duplicate cluster node with id: " + nodeId
+                        + " (a crashed node must be cleaned up, or the cluster configuration fixed)");
                 throw cue;
             }
             throw new NuxeoException(e);
@@ -931,7 +930,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @SuppressWarnings("resource") // PreparedStatement + ResultSet for cursor, must not be closed
-    protected ScrollResult<String> scrollSearch(String query, QueryFilter queryFilter, int batchSize, int keepAliveSeconds) {
+    protected ScrollResult<String> scrollSearch(String query, QueryFilter queryFilter, int batchSize,
+            int keepAliveSeconds) {
         QueryMaker queryMaker = findQueryMaker("NXQL");
         QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model, pathResolver, query, queryFilter);
         if (q == null) {
