@@ -264,6 +264,7 @@ def buildUnitTestStage(env) {
 
               setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
             } catch(err) {
+              echo "${env} unit tests error: ${err}"
               setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'FAILURE')
               // TODO NXP-29512: only fail the build for the dev env for now
               // to remove when other environments will be mandatory
@@ -492,6 +493,7 @@ pipeline {
 
               setGitHubBuildStatus('utests/runtime', 'Unit tests - runtime', 'SUCCESS')
             } catch(err) {
+              echo "runtime unit tests error: ${err}"
               setGitHubBuildStatus('utests/runtime', 'Unit tests - runtime', 'FAILURE')
               throw err
             } finally {
