@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -455,8 +456,9 @@ public class SAMLAuthenticationProvider
             return null;
         }
 
-        String userId = Framework.doPrivileged(() -> userResolver.findOrCreateNuxeoUser(credential));
-        if (userId == null) {
+        Optional<String> userId  = findOrCreateNuxeoUser(userResolver, credential);
+
+        if (!userId.isPresent()) {
             log.warn("Failed to resolve user with NameID \"" + credential.getNameID().getValue() + "\".");
             sendError(request, ERROR_USER);
             return null;
@@ -481,7 +483,7 @@ public class SAMLAuthenticationProvider
             }
         }
 
-        return new UserIdentificationInfo(userId);
+        return new UserIdentificationInfo(userId.get());
     }
 
     protected AbstractSAMLProfile getProcessor(@SuppressWarnings("rawtypes") SAMLMessageContext context) {
@@ -659,5 +661,9 @@ public class SAMLAuthenticationProvider
         cookie.setMaxAge(0);
         cookie.setValue("");
         httpResponse.addCookie(cookie);
+    }
+
+    protected Optional<String> findOrCreateNuxeoUser(UserResolver userResolver, SAMLCredential credential) {
+        return Optional.ofNullable(Framework.doPrivileged(() -> userResolver.findOrCreateNuxeoUser(credential)));
     }
 }
