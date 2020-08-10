@@ -130,6 +130,16 @@ public class TestMimetypeIconUpdater {
         assertNull(icon); // default icon, not overridden by mime type
     }
 
+    @Test
+    public void testEmptyMimeTypeWithCharset() throws Exception {
+        DocumentModel doc = createWithCharsetAndEmptyMimeTypeBlobDocument();
+        Blob blob = (Blob) doc.getProperty("file", "content");
+        assertNotNull(blob);
+        String mt = blob.getMimeType();
+        assertNotNull(mt);
+        assertEquals("application/pdf", mt);
+    }
+
     protected DocumentModel createWithoutPrefixBlobDocument(boolean setMimeType) {
         DocumentModel withoutPrefixBlobDoc = coreSession.createDocumentModel("/", "testFile", "WithoutPrefixDocument");
         withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
@@ -182,6 +192,19 @@ public class TestMimetypeIconUpdater {
         coreSession.save();
 
         return fileDoc;
+    }
+
+    protected DocumentModel createWithCharsetAndEmptyMimeTypeBlobDocument() {
+        DocumentModel blobDoc = coreSession.createDocumentModel("/", "testFile", "File");
+        blobDoc.setProperty("dublincore", "title", "TestFile");
+
+        Blob blob = Blobs.createBlob("SOMEDUMMYDATA", "application/octet-stream; charset=UTF-8", null, "test.pdf");
+        blobDoc.setProperty("file", "content", blob);
+
+        blobDoc = coreSession.createDocument(blobDoc);
+        coreSession.save();
+
+        return blobDoc;
     }
 
     protected DocumentModel removeMainBlob(DocumentModel doc) {
