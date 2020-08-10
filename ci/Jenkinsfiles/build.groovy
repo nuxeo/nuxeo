@@ -53,7 +53,7 @@ String getMavenArgs() {
 }
 
 String getMavenFailArgs() {
-  return (isPullRequest() && pullRequest.labels.contains('failatend')) ? "--fail-at-end" : ""
+  return (isPullRequest() && pullRequest.labels.contains('failatend')) ? "--fail-at-end" : " "
 }
 
 def isPullRequest() {
