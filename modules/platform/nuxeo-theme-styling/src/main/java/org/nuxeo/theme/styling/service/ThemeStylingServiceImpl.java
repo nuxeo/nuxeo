@@ -35,6 +35,7 @@ import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.ecm.web.resources.core.ResourceDescriptor;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -101,7 +102,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                             + "accurate. Note that the 'flavor' processor should be used with this resource.",
                     style.getName(), contributor.getName(), WR_EX);
             DeprecationLogger.log(message, "7.4");
-            Framework.getRuntime().getMessageHandler().addWarning(message);
+            addRuntimeMessage(Level.WARNING, message);
             ResourceDescriptor resource = getResourceFromStyle(style);
             registerResource(resource, contributor.getContext());
             log.info(String.format("Done registering style '%s'", style.getName()));
@@ -123,7 +124,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                             + "point '%s': a compatibility registration was performed but it may not be accurate.",
                     resource.getName(), contributor.getName(), WR_EX);
             DeprecationLogger.log(message, "7.4");
-            Framework.getRuntime().getMessageHandler().addWarning(message);
+            addRuntimeMessage(Level.WARNING, message);
             // ensure path is absolute, consider that resource is in the war, and if not, user will have to declare it
             // directly to the WRM endpoint
             String path = resource.getPath();

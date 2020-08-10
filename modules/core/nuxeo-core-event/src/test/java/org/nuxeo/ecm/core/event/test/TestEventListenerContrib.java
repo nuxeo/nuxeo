@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.script.ScriptingPostCommitEventListener;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -110,7 +111,7 @@ public class TestEventListenerContrib {
         hotDeployer.deploy("org.nuxeo.ecm.core.event.test:test-InvalidListeners.xml");
 
         assertEquals(0, getService().getEventListenerList().getAsyncPostCommitListeners().size());
-        List<String> errors = Framework.getRuntime().getMessageHandler().getErrors();
+        List<String> errors = Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR);
         assertNotNull(errors);
         assertEquals(3, errors.size());
 

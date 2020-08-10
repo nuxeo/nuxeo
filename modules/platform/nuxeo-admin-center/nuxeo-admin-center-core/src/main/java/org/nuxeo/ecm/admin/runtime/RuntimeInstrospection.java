@@ -37,6 +37,7 @@ import org.nuxeo.connect.update.Version;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.osgi.JarBundleFile;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeMessageHandler;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
@@ -77,8 +78,8 @@ public class RuntimeInstrospection {
             info.setBundleInfos(bundles);
             info.setRuntimeVersion(runtime.getVersion().toString());
             RuntimeMessageHandler runtimeMessageHandler = runtime.getMessageHandler();
-            info.setWarnings(runtimeMessageHandler.getWarnings());
-            info.setErrors(runtimeMessageHandler.getErrors());
+            info.setWarnings(runtimeMessageHandler.getMessages(Level.WARNING));
+            info.setErrors(runtimeMessageHandler.getMessages(Level.ERROR));
         }
         return info;
     }

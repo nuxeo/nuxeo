@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -87,7 +88,7 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
         } else if (EXTENSION_POINT_SEQUENCER_FACTORY.equals(extPoint)) {
             String msg = "UIDSequencer factory no more supported from version 5.4. Faulty component: "
                     + extension.getComponent();
-            Framework.getRuntime().getMessageHandler().addWarning(msg);
+            addRuntimeMessage(Level.WARNING, msg);
             log.error(msg);
         } else {
             log.warn("extension not handled: " + extPoint);

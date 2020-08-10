@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectPostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectSQLServer;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreProvider;
@@ -486,7 +487,9 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
                 String message = column.checkJdbcType(actual, actualName, actualSize);
                 if (message != null) {
                     log.error(message);
-                    Framework.getRuntime().getMessageHandler().addError(message);
+                    Framework.getRuntime()
+                             .getMessageHandler()
+                             .addMessage(Level.ERROR, message);
                 }
             }
         }
