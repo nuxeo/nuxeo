@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
@@ -54,6 +55,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.BlobStoreBlobProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.aws.NuxeoAWSRegionProvider;
 
@@ -251,65 +253,71 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     public boolean completeUpload(String batchId, String fileIndex, BatchFileInfo fileInfo) {
         String fileKey = fileInfo.getKey();
         ObjectMetadata metadata = amazonS3.getObjectMetadata(bucket, fileKey);
-        String key = metadata.getETag();
-        if (isEmpty(key)) {
-            return false;
+
+        String key;
+
+        if (!useDeDuplication()) {
+            key = StringUtils.removeStart(fileKey, bucketPrefix);
+        } else {
+            key = metadata.getETag();
+            if (isEmpty(key)) {
+                return false;
+            }
+            String bucketKey = bucketPrefix + key;
+            CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucket, fileKey, bucket, bucketKey);
+            // server-side encryption
+            if (useServerSideEncryption) { // TODO KMS
+                // SSE-S3
+                ObjectMetadata newObjectMetadata = new ObjectMetadata();
+                newObjectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+                copyObjectRequest.setNewObjectMetadata(newObjectMetadata);
+            }
+
+            Copy copy = getTransferManager().copy(copyObjectRequest);
+            try {
+                copy.waitForCompletion();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new NuxeoException(e);
+            } finally {
+                amazonS3.deleteObject(bucket, fileKey);
+            }
+
+            metadata = amazonS3.getObjectMetadata(bucket, bucketKey);
+
+            // if we did a multipart upload but can do a non multipart copy we can get back the digest as key
+            boolean isMultipartUpload = key.matches(".+-\\d+$");
+            boolean canDoNonMultipartCopy = metadata.getContentLength() < getTransferManager().getConfiguration()
+                    .getMultipartCopyThreshold();
+            if (isMultipartUpload && canDoNonMultipartCopy) {
+                key = metadata.getETag();
+                String previousBucketKey = bucketKey;
+                bucketKey = bucketPrefix + key;
+                CopyObjectRequest renameRequest = new CopyObjectRequest(bucket, previousBucketKey, bucket, bucketKey);
+                Copy rename = getTransferManager().copy(renameRequest);
+                try {
+                    rename.waitForCompletion();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new NuxeoException(e);
+                } finally {
+                    amazonS3.deleteObject(bucket, previousBucketKey);
+                }
+            }
         }
-        String bucketKey = bucketPrefix + key;
 
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.mimeType = metadata.getContentType();
         blobInfo.encoding = metadata.getContentEncoding();
         blobInfo.filename = fileInfo.getFilename();
         blobInfo.length = metadata.getContentLength();
-
-        CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucket, fileKey, bucket, bucketKey);
-        // server-side encryption
-        if (useServerSideEncryption) { // TODO KMS
-            // SSE-S3
-            ObjectMetadata newObjectMetadata = new ObjectMetadata();
-            newObjectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-            copyObjectRequest.setNewObjectMetadata(newObjectMetadata);
-        }
-
-        Copy copy = getTransferManager().copy(copyObjectRequest);
-        try {
-            copy.waitForCompletion();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new NuxeoException(e);
-        } finally {
-            amazonS3.deleteObject(bucket, fileKey);
-        }
-
-        ObjectMetadata newMetadata = amazonS3.getObjectMetadata(bucket, bucketKey);
-
-        // if we did a multipart upload but can do a non multipart copy we can get back the digest as key
-        boolean isMultipartUpload = key.matches(".+-\\d+$");
-        boolean canDoNonMultipartCopy = newMetadata.getContentLength() < getTransferManager().getConfiguration()
-                .getMultipartCopyThreshold();
-        if (isMultipartUpload && canDoNonMultipartCopy) {
-            key = newMetadata.getETag();
-            String previousBucketKey = bucketKey;
-            bucketKey = bucketPrefix + key;
-            CopyObjectRequest renameRequest = new CopyObjectRequest(bucket, previousBucketKey, bucket, bucketKey);
-            Copy rename = getTransferManager().copy(renameRequest);
-            try {
-                rename.waitForCompletion();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new NuxeoException(e);
-            } finally {
-                amazonS3.deleteObject(bucket, previousBucketKey);
-            }
-        }
-
         blobInfo.key = key;
-        blobInfo.digest = defaultString(newMetadata.getContentMD5(), key);
+        blobInfo.digest = defaultString(metadata.getContentMD5(), metadata.getETag());
+
         Blob blob;
+
         try {
-            BlobManager blobManager = Framework.getService(BlobManager.class);
-            blob = blobManager.getBlobProvider(blobProviderId).readBlob(blobInfo);
+            blob = getBlobProvider().readBlob(blobInfo);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -318,10 +326,22 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         try {
             batch.addFile(fileIndex, blob, blob.getFilename(), blob.getMimeType());
         } catch (NuxeoException e) {
-            amazonS3.deleteObject(bucket, bucketKey);
+            amazonS3.deleteObject(bucket, fileKey);
             throw e;
         }
 
+        return true;
+    }
+
+    protected BlobProvider getBlobProvider() {
+        return Framework.getService(BlobManager.class).getBlobProvider(blobProviderId);
+    }
+
+    protected boolean useDeDuplication() {
+        BlobProvider blobProvider = getBlobProvider();
+        if (blobProvider instanceof BlobStoreBlobProvider) {
+            return ((BlobStoreBlobProvider) blobProvider).getKeyStrategy().useDeDuplication();
+        }
         return true;
     }
 

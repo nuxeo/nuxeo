@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.blob.s3;
 
 import static java.lang.Boolean.TRUE;
-import static org.nuxeo.ecm.blob.s3.S3BlobStore.VER_SEP;
+import static org.nuxeo.ecm.core.blob.KeyStrategy.VER_SEP;
 
 import java.io.IOException;
 import java.net.URI;
