@@ -21,6 +21,7 @@ package org.nuxeo.ecm.blob.s3;
 import static org.apache.commons.io.output.NullOutputStream.NULL_OUTPUT_STREAM;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.ALLOW_BYTE_RANGE;
+import static org.nuxeo.ecm.core.blob.KeyStrategy.VER_SEP;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,9 +95,6 @@ import com.amazonaws.services.s3.transfer.model.UploadResult;
 public class S3BlobStore extends AbstractBlobStore {
 
     private static final Logger log = LogManager.getLogger(S3BlobStore.class);
-
-    /** Separator between object key and version id in the returned key. */
-    protected static final char VER_SEP = '@';
 
     // x-amz-meta-username header
     protected static final String USER_METADATA_USERNAME = "username";
