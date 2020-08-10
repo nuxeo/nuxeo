@@ -54,6 +54,7 @@ import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -262,7 +263,7 @@ public class AutomationComponent extends DefaultComponent {
                     String msg = String.format("Operation chain with id '%s' references unknown operation with id '%s'",
                             chain.getId(), opp.id());
                     log.error(msg);
-                    Framework.getRuntime().getMessageHandler().addError(msg);
+                    addRuntimeMessage(Level.ERROR, msg);
                 }
             }
         }

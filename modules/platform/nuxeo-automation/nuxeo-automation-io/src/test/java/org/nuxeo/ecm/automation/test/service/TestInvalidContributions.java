@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.webengine.test.WebEngineFeatureCore;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -44,7 +45,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestInvalidContributions {
 
     protected void checkStartupError(String message) {
-        List<String> errors = Framework.getRuntime().getMessageHandler().getErrors();
+        List<String> errors = Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR);
         assertEquals(1, errors.size());
         assertEquals(message, errors.get(0));
     }

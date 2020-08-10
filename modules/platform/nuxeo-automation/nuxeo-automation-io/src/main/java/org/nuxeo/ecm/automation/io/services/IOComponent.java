@@ -27,6 +27,7 @@ import org.nuxeo.ecm.automation.io.services.codec.CodecDescriptor;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodec;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -73,7 +74,7 @@ public class IOComponent extends DefaultComponent {
                 String msg = String.format("Failed to register codec on '%s': error initializing class '%s' (%s).",
                         name, d.getId(), e.toString());
                 log.error(msg, e);
-                Framework.getRuntime().getMessageHandler().addError(msg);
+                addRuntimeMessage(Level.ERROR, msg);
             }
         }
         codecs.postInit();

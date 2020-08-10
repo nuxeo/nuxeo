@@ -58,6 +58,7 @@ import org.nuxeo.ecm.platform.filemanager.service.extension.VersioningDescriptor
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -209,7 +210,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             String message = "Extension point 'versioning' has been deprecated and corresponding behavior removed from "
                     + "Nuxeo Platform. Please use versioning policy instead.";
             DeprecationLogger.log(message, "9.1");
-            Framework.getRuntime().getMessageHandler().addWarning(message);
+            addRuntimeMessage(Level.WARNING, message);
 
             String defver = versioningDescriptor.defaultVersioningOption;
             if (!StringUtils.isBlank(defver)) {
