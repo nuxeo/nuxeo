@@ -264,6 +264,7 @@ def buildUnitTestStage(env) {
 
               setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
             } catch(err) {
+              echo "${env} unit tests error: ${err}"
               setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'FAILURE')
               throw err
             } finally {
@@ -488,6 +489,7 @@ pipeline {
 
               setGitHubBuildStatus('utests/runtime', 'Unit tests - runtime', 'SUCCESS')
             } catch(err) {
+              echo "runtime unit tests error: ${err}"
               setGitHubBuildStatus('utests/runtime', 'Unit tests - runtime', 'FAILURE')
               throw err
             } finally {
