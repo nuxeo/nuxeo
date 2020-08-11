@@ -229,6 +229,7 @@ pipeline {
       steps {
         container('maven') {
           script {
+            sh "git checkout master"
             // increment minor version
             def nextVersion = sh(returnStdout: true, script: "perl -pe 's/\\b(\\d+)(?=\\D*\$)/\$1+1/e' <<< ${CURRENT_VERSION}").trim()
             echo """
@@ -237,8 +238,6 @@ pipeline {
             -----------------------------------------------
             """
             sh """
-              git checkout master
-
               # root POM
               mvn ${MAVEN_ARGS} -Pdistrib,docker versions:set -DnewVersion=${nextVersion} -DgenerateBackupPoms=false
               perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${nextVersion}</nuxeo.platform.version>|' pom.xml
@@ -246,11 +245,9 @@ pipeline {
 
               # nuxeo-parent POM
               perl -i -pe 's|<version>.*?</version>|<version>${nextVersion}</version>|' parent/pom.xml
-              mvn ${MAVEN_ARGS} -f parent/pom.xml validate
 
               # nuxeo-promote-packages POM
               perl -i -pe 's|<version>.*?</version>|<version>${nextVersion}</version>|' ci/release/pom.xml
-              mvn ${MAVEN_ARGS} -f ci/release/pom.xml validate
 
               git commit -a -m "Release ${RELEASE_VERSION}, update ${CURRENT_VERSION} to ${nextVersion}"
             """
