@@ -146,7 +146,7 @@ public class MimetypeIconUpdater implements EventListener {
         if (blob == null) {
             return;
         }
-        if (blob.getMimeType() == null || blob.getMimeType().equals(DEFAULT_MIMETYPE)) {
+        if (blob.getMimeType() == null || blob.getMimeType().startsWith(DEFAULT_MIMETYPE)) {
             // update the mime type (if not set) using the mimetype registry service
             blob = mimetypeService.updateMimetype(blob);
             doc.setPropertyValue(fieldPath, (Serializable) blob);
