@@ -127,6 +127,14 @@ public class TestMimetypeIconUpdater {
     }
 
     @Test
+    public void testEmptyMimeTypeWithCharset() throws Exception {
+        DocumentModel doc = createDocument("File", PDF_EXTENSION, "application/octet-stream; charset=UTF-8");
+        Blob blob = (Blob) doc.getProperty("file", "content");
+        assertNotNull(blob);
+        assertEquals("application/pdf", blob.getMimeType());
+    }
+
+    @Test
     public void testMimeTypeUpdaterFolderish() {
         // Workspace is folderish and contains the file schema
         DocumentModel doc = createDocument("Workspace", PDF_EXTENSION, null);
