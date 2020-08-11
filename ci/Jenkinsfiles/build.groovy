@@ -90,7 +90,9 @@ String getDockerTagFrom(String version) {
 
 void runFunctionalTests(String baseDir) {
   try {
-    sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -f ${baseDir}/pom.xml verify"
+    retry(2) {
+      sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -f ${baseDir}/pom.xml verify"
+    }
   } finally {
     try {
       archiveArtifacts allowEmptyArchive: true, artifacts: "${baseDir}/**/target/failsafe-reports/*, ${baseDir}/**/target/**/*.log, ${baseDir}/**/target/*.png, ${baseDir}/**/target/*.html, ${baseDir}/**/target/**/distribution.properties, ${baseDir}/**/target/**/configuration.properties"
@@ -188,70 +190,71 @@ def buildUnitTestStage(env) {
   def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
   return {
     stage("Run ${env} unit tests") {
-      retry(2) {
-        container("maven-${env}") {
-          script {
-            setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'PENDING')
-            try {
-              echo """
-              ----------------------------------------
-              Run ${env} unit tests
-              ----------------------------------------"""
+      container("maven-${env}") {
+        script {
+          setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'PENDING')
+          try {
+            echo """
+            ----------------------------------------
+            Run ${env} unit tests
+            ----------------------------------------"""
 
-              echo "${env} unit tests: install external services"
-              // initialize Helm without Tiller and add local repository
-              sh """
-                helm init --client-only
-                helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
-              """
-              // prepare values to disable nuxeo and activate external services in the nuxeo Helm chart
-              def testValues = '--set-file=ci/helm/nuxeo-test-base-values.yaml~gen'
-              if (!isDev) {
-                testValues += " --set-file=ci/helm/nuxeo-test-${env}-values.yaml~gen"
-                testValues += " --set-file=ci/helm/nuxeo-test-elasticsearch-values.yaml~gen"
-                testValues += " --set-file=ci/helm/nuxeo-test-kafka-values.yaml~gen"
-              }
-              // install the nuxeo Helm chart into a dedicated namespace that will be cleaned up afterwards
-              sh """
-                jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO} \
-                  --name=${TEST_HELM_CHART_RELEASE} \
-                  --namespace=${testNamespace} \
-                  ${testValues}
-              """
-              // wait for external services to be ready
-              rolloutStatusRedis(testNamespace)
-              if (!isDev) {
-                if (env == 'mongodb') {
-                  rolloutStatusMongoDB(testNamespace)
-                } else {
-                  rolloutStatusPostgreSQL(testNamespace)
-                }
-                rolloutStatusElasticsearch(testNamespace)
-                rolloutStatusKafka(testNamespace)
-              }
-
-              echo "${env} unit tests: run Maven"
-              if (isDev) {
-                // empty file required by the read-project-properties goal of the properties-maven-plugin with the
-                // customEnvironment profile
-                sh "touch ${HOME}/nuxeo-test-${env}.properties"
+            echo "${env} unit tests: install external services"
+            // initialize Helm without Tiller and add local repository
+            sh """
+              helm init --client-only
+              helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
+            """
+            // prepare values to disable nuxeo and activate external services in the nuxeo Helm chart
+            def testValues = '--set-file=ci/helm/nuxeo-test-base-values.yaml~gen'
+            if (!isDev) {
+              testValues += " --set-file=ci/helm/nuxeo-test-${env}-values.yaml~gen"
+              testValues += " --set-file=ci/helm/nuxeo-test-elasticsearch-values.yaml~gen"
+              testValues += " --set-file=ci/helm/nuxeo-test-kafka-values.yaml~gen"
+            }
+            // install the nuxeo Helm chart into a dedicated namespace that will be cleaned up afterwards
+            sh """
+              jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO} \
+                --name=${TEST_HELM_CHART_RELEASE} \
+                --namespace=${testNamespace} \
+                ${testValues}
+            """
+            // wait for external services to be ready
+            rolloutStatusRedis(testNamespace)
+            if (!isDev) {
+              if (env == 'mongodb') {
+                rolloutStatusMongoDB(testNamespace)
               } else {
-                // prepare test framework system properties
-                sh """
-                  cat ci/mvn/nuxeo-test-${env}.properties \
-                    ci/mvn/nuxeo-test-elasticsearch.properties \
-                    > ci/mvn/nuxeo-test-${env}.properties~gen
-                  CHART_RELEASE=${TEST_HELM_CHART_RELEASE} NAMESPACE=${testNamespace} DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
-                    envsubst < ci/mvn/nuxeo-test-${env}.properties~gen > ${HOME}/nuxeo-test-${env}.properties
-                """
+                rolloutStatusPostgreSQL(testNamespace)
               }
-              // run unit tests:
-              // - in modules/core and dependent projects only (modules/runtime is run in a dedicated stage)
-              // - for the given environment (see the customEnvironment profile in pom.xml):
-              //   - in an alternative build directory
-              //   - loading some test framework system properties
-              def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
-              def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
+              rolloutStatusElasticsearch(testNamespace)
+              rolloutStatusKafka(testNamespace)
+            }
+
+            echo "${env} unit tests: run Maven"
+            if (isDev) {
+              // empty file required by the read-project-properties goal of the properties-maven-plugin with the
+              // customEnvironment profile
+              sh "touch ${HOME}/nuxeo-test-${env}.properties"
+            } else {
+              // prepare test framework system properties
+              sh """
+                cat ci/mvn/nuxeo-test-${env}.properties \
+                  ci/mvn/nuxeo-test-elasticsearch.properties \
+                  > ci/mvn/nuxeo-test-${env}.properties~gen
+                CHART_RELEASE=${TEST_HELM_CHART_RELEASE} NAMESPACE=${testNamespace} DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
+                  envsubst < ci/mvn/nuxeo-test-${env}.properties~gen > ${HOME}/nuxeo-test-${env}.properties
+              """
+            }
+            // run unit tests:
+            // - in modules/core and dependent projects only (modules/runtime is run in a dedicated stage)
+            // - for the given environment (see the customEnvironment profile in pom.xml):
+            //   - in an alternative build directory
+            //   - loading some test framework system properties
+            def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
+            def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
+
+            retry(2) {
               sh """
                 mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
                   -Dcustom.environment=${env} \
@@ -261,33 +264,33 @@ def buildUnitTestStage(env) {
                   ${kafkaOptions} \
                   test
               """
+            }
 
-              setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
-            } catch(err) {
-              echo "${env} unit tests error: ${err}"
-              setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'FAILURE')
-              // TODO NXP-29512: only fail the build for the dev env for now
-              // to remove when other environments will be mandatory
-              if (env == 'dev') {
-                throw err
+            setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
+          } catch(err) {
+            echo "${env} unit tests error: ${err}"
+            setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'FAILURE')
+            // TODO NXP-29512: only fail the build for the dev env for now
+            // to remove when other environments will be mandatory
+            if (env == 'dev') {
+              throw err
+            }
+          } finally {
+            try {
+              junit testResults: "**/target-${env}/surefire-reports/*.xml"
+              if (!isDev) {
+                archiveKafkaLogs(testNamespace, "${env}-kafka.log")
               }
             } finally {
-              try {
-                junit testResults: "**/target-${env}/surefire-reports/*.xml"
-                if (!isDev) {
-                  archiveKafkaLogs(testNamespace, "${env}-kafka.log")
-                }
-              } finally {
-                echo "${env} unit tests: clean up test namespace"
-                // uninstall the nuxeo Helm chart
-                sh """
-                  jx step helm delete ${TEST_HELM_CHART_RELEASE} \
-                    --namespace=${testNamespace} \
-                    --purge
-                """
-                // clean up the test namespace
-                sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
-              }
+              echo "${env} unit tests: clean up test namespace"
+              // uninstall the nuxeo Helm chart
+              sh """
+                jx step helm delete ${TEST_HELM_CHART_RELEASE} \
+                  --namespace=${testNamespace} \
+                  --purge
+              """
+              // clean up the test namespace
+              sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
             }
           }
         }
@@ -442,7 +445,7 @@ pipeline {
         success {
           setGitHubBuildStatus('maven/build', 'Build', 'SUCCESS')
         }
-        failure {
+        unsuccessful {
           setGitHubBuildStatus('maven/build', 'Build', 'FAILURE')
         }
       }
@@ -483,12 +486,14 @@ pipeline {
               echo "runtime unit tests: run Maven"
               // run unit tests
               dir('modules/runtime') {
-                sh """
-                  mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} \
-                    -Dnuxeo.test.redis.host=${redisHost} \
-                    -Pkafka -Dkafka.bootstrap.servers=${kafkaHost} \
-                    test
-                """
+                retry(2) {
+                  sh """
+                    mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} \
+                      -Dnuxeo.test.redis.host=${redisHost} \
+                      -Pkafka -Dkafka.bootstrap.servers=${kafkaHost} \
+                      test
+                  """
+                }
               }
 
               setGitHubBuildStatus('utests/runtime', 'Unit tests - runtime', 'SUCCESS')
@@ -545,7 +550,7 @@ pipeline {
         success {
           setGitHubBuildStatus('packages/build', 'Build Nuxeo packages', 'SUCCESS')
         }
-        failure {
+        unsuccessful {
           setGitHubBuildStatus('packages/build', 'Build Nuxeo packages', 'FAILURE')
         }
       }
@@ -554,16 +559,14 @@ pipeline {
     stage('Run "dev" functional tests') {
       steps {
         setGitHubBuildStatus('ftests/dev', 'Functional tests - dev environment', 'PENDING')
-        retry(2) {
-          container('maven') {
-            echo """
-            ----------------------------------------
-            Run "dev" functional tests
-            ----------------------------------------"""
-            runFunctionalTests('ftests')
-          }
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Run "dev" functional tests
+          ----------------------------------------"""
+          runFunctionalTests('ftests')
         }
-        findText regexp: ".*ERROR.*", fileSet: "ftests/**/log/server.log", unstableIfFound: true
+        findText regexp: ".*ERROR.*", fileSet: "ftests/**/log/server.log"
       }
       post {
         always {
@@ -572,7 +575,7 @@ pipeline {
         success {
           setGitHubBuildStatus('ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
         }
-        failure {
+        unsuccessful {
           setGitHubBuildStatus('ftests/dev', 'Functional tests - dev environment', 'FAILURE')
         }
       }
@@ -598,7 +601,7 @@ pipeline {
         success {
           setGitHubBuildStatus('docker/build', 'Build Docker images', 'SUCCESS')
         }
-        failure {
+        unsuccessful {
           setGitHubBuildStatus('docker/build', 'Build Docker images', 'FAILURE')
         }
       }
@@ -638,7 +641,7 @@ pipeline {
         success {
           setGitHubBuildStatus('docker/test', 'Test Docker images', 'SUCCESS')
         }
-        failure {
+        unsuccessful {
           setGitHubBuildStatus('docker/test', 'Test Docker images', 'FAILURE')
         }
       }
@@ -704,7 +707,7 @@ pipeline {
         success {
           setGitHubBuildStatus('maven/deploy', 'Deploy Maven artifacts', 'SUCCESS')
         }
-        failure {
+        unsuccessful {
           setGitHubBuildStatus('maven/deploy', 'Deploy Maven artifacts', 'FAILURE')
         }
       }
@@ -742,7 +745,7 @@ pipeline {
         success {
           setGitHubBuildStatus('packages/deploy', 'Deploy Nuxeo Packages', 'SUCCESS')
         }
-        failure {
+        unsuccessful {
           setGitHubBuildStatus('packages/deploy', 'Deploy Nuxeo Packages', 'FAILURE')
         }
       }
@@ -777,7 +780,7 @@ pipeline {
         success {
           setGitHubBuildStatus('docker/deploy', 'Deploy Docker images', 'SUCCESS')
         }
-        failure {
+        unsuccessful {
           setGitHubBuildStatus('docker/deploy', 'Deploy Docker images', 'FAILURE')
         }
       }
@@ -837,7 +840,7 @@ pipeline {
         success {
           setGitHubBuildStatus('server/preview', 'Deploy server preview', 'SUCCESS')
         }
-        failure {
+        unsuccessful {
           setGitHubBuildStatus('server/preview', 'Deploy server preview', 'FAILURE')
         }
       }
