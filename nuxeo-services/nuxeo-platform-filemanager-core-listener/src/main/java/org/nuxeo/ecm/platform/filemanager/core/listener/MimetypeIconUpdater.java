@@ -120,7 +120,7 @@ public class MimetypeIconUpdater implements EventListener {
         }
 
         Blob blob = dirtyProperty.getValue(Blob.class);
-        if (blob != null && (blob.getMimeType() == null || blob.getMimeType().equals(OCTET_STREAM_MT))) {
+        if (blob != null && (blob.getMimeType() == null || blob.getMimeType().startsWith(OCTET_STREAM_MT))) {
             // update the mimetype (if not set) using the the mimetype registry
             // service
             blob = mimetypeService.updateMimetype(blob);
