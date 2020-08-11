@@ -135,9 +135,7 @@ public class TestMimetypeIconUpdater {
         DocumentModel doc = createWithCharsetAndEmptyMimeTypeBlobDocument();
         Blob blob = (Blob) doc.getProperty("file", "content");
         assertNotNull(blob);
-        String mt = blob.getMimeType();
-        assertNotNull(mt);
-        assertEquals("application/pdf", mt);
+        assertEquals("application/pdf", blob.getMimeType());
     }
 
     protected DocumentModel createWithoutPrefixBlobDocument(boolean setMimeType) {
