@@ -50,8 +50,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(RenditionFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-public class PublicationJsonEnricherTest
-    extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
+public class PublicationJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
     public PublicationJsonEnricherTest() {
         super(DocumentModelJsonWriter.class, DocumentModel.class);
