@@ -23,6 +23,7 @@ package org.nuxeo.ecm.automation.test;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.AutomationCoreFeature;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -43,8 +44,7 @@ import com.google.inject.Provider;
  * @since 5.7
  * @since 5.6-HF02
  */
-@Features(PlatformFeature.class)
-@Deploy("org.nuxeo.ecm.automation.core")
+@Features({ PlatformFeature.class, AutomationCoreFeature.class })
 @Deploy("org.nuxeo.ecm.actions")
 @Deploy("org.nuxeo.ecm.automation.features")
 @Deploy("org.nuxeo.ecm.automation.scripting")
