@@ -93,12 +93,14 @@ public class TestPictureBlobHolder {
         DocumentModel picturebook = session.createDocumentModel("/", "picturebook", PICTUREBOOK_TYPE_NAME);
         session.createDocument(picturebook);
         DocumentModel picture = session.createDocumentModel(picturebook.getPathAsString(), "pic1", PICTURE_TYPE_NAME);
-        picture.setPropertyValue("file:content", (Serializable) Blobs.createBlob(
-                getFileFromPath("images/exif_sample.jpg"), "image/jpeg", null, "mysample.jpg"));
+        picture.setPropertyValue("file:content",
+                (Serializable) Blobs.createBlob(getFileFromPath("images/exif_sample.jpg"), "image/jpeg", null,
+                        "mysample.jpg"));
         picture = session.createDocument(picture);
         DocumentModel picture2 = session.createDocumentModel(picturebook.getPathAsString(), "pic2", PICTURE_TYPE_NAME);
-        picture2.setPropertyValue("file:content", (Serializable) Blobs.createBlob(
-                getFileFromPath("images/exif_sample.jpg"), "image/jpeg", null, "mysample.jpg"));
+        picture2.setPropertyValue("file:content",
+                (Serializable) Blobs.createBlob(getFileFromPath("images/exif_sample.jpg"), "image/jpeg", null,
+                        "mysample.jpg"));
         session.createDocument(picture2);
         session.save();
 

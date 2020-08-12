@@ -83,14 +83,16 @@ public class TestPictureMigrationHandler {
         List<Map<String, Serializable>> views = new ArrayList<>();
         Map<String, Serializable> map = new HashMap<>();
         map.put("title", "Original");
-        Blob originalBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER
-                + "test.jpg"), "image/jpeg", null, null);
+        Blob originalBlob = Blobs.createBlob(
+                FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER + "test.jpg"),
+                "image/jpeg", null, null);
         originalBlob.setFilename(filename); // don't default to file's name when null
         map.put("content", (Serializable) originalBlob);
         map.put("filename", filename);
         views.add(map);
-        Blob thumbnailBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER
-                + "test.jpg"), "image/jpeg", null, "Thumbnail_test.jpg");
+        Blob thumbnailBlob = Blobs.createBlob(
+                FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER + "test.jpg"),
+                "image/jpeg", null, "Thumbnail_test.jpg");
         map = new HashMap<>();
         map.put("title", "Thumbnail");
         map.put("content", (Serializable) thumbnailBlob);
