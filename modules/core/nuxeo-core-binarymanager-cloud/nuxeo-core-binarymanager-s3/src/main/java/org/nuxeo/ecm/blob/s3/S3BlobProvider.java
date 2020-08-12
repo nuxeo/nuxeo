@@ -178,8 +178,13 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
     }
 
     protected URI getURIS3(String bucketKey, ManagedBlob blob, Date expiration) throws URISyntaxException {
-        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(config.bucketName, bucketKey,
+        // split version id if part of file key
+        String[] parts = bucketKey.split(String.valueOf(VER_SEP));
+        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(config.bucketName, parts[0],
                 HttpMethod.GET);
+        if (parts.length > 1) {
+            request.setVersionId(parts[1]);
+        }
         request.addRequestParameter("response-content-type", getContentTypeHeader(blob));
         request.addRequestParameter("response-content-disposition", getContentDispositionHeader(blob));
         request.setExpiration(expiration);
