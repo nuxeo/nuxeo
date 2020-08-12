@@ -40,6 +40,7 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.common.function.ThrowableRunnable;
 import org.nuxeo.common.function.ThrowableSupplier;
+import org.nuxeo.runtime.NuxeoRuntimeService;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceException;
@@ -128,7 +129,10 @@ public final class Framework {
         }
         runtime = runtimeService;
         reloadResourceLoader();
-        runtime.start();
+        // former behavior - now RuntimeService is responsible to start/stop itself
+        if (!(runtime instanceof NuxeoRuntimeService)) {
+            runtime.start();
+        }
     }
 
     public static void reloadResourceLoader() {
@@ -198,7 +202,10 @@ public final class Framework {
             throw new IllegalStateException("runtime not exist");
         }
         try {
-            runtime.stop();
+            // former behavior - now RuntimeService is responsible to start/stop itself
+            if (!(runtime instanceof NuxeoRuntimeService)) {
+                runtime.stop();
+            }
         } finally {
             runtime = null;
         }

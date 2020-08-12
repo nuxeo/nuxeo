@@ -289,7 +289,7 @@ public class StreamWorkManager extends WorkManagerImpl {
         if (started) {
             return;
         }
-        WorkManagerImpl wmi = (WorkManagerImpl) Framework.getRuntime().getComponent("org.nuxeo.ecm.core.work.service");
+        WorkManagerImpl wmi = Framework.getRuntime().getComponent("org.nuxeo.ecm.core.work.service");
         wmi.active = false;
         log.debug("Initializing");
         synchronized (this) {

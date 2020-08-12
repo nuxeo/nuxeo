@@ -232,9 +232,9 @@ public class ElasticSearchComponent extends DefaultComponent
 
     @Override
     public int getApplicationStartedOrder() {
-        RepositoryService component = (RepositoryService) Framework.getRuntime()
-                                                                   .getComponent(
-                                                                           "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
+        RepositoryService component = Framework.getRuntime()
+                                               .getComponent(
+                                                       "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
         return component.getApplicationStartedOrder() / 2;
     }
 

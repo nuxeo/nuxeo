@@ -37,7 +37,7 @@ public class TestService {
 
     @Test
     public void testServiceLookup() {
-        EventService eventComponent = (EventService) Framework.getRuntime().getComponent(EventService.NAME);
+        EventService eventComponent = Framework.getRuntime().getComponent(EventService.NAME);
         EventService eventService = Framework.getRuntime().getService(EventService.class);
         assertSame(eventComponent, eventService);
     }

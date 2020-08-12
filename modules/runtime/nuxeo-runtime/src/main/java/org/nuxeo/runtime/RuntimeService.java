@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -116,7 +117,9 @@ public interface RuntimeService {
      * @param name the property name
      * @return the property value if any or null if none
      */
-    String getProperty(String name);
+    default String getProperty(String name) {
+        return getProperty(name, null);
+    }
 
     /**
      * Gets a property value using a default value if the property was not set.
@@ -147,9 +150,11 @@ public interface RuntimeService {
      * Gets a component given its name as a string.
      *
      * @param name the component name as a string
+     * @param <C> the returned type, could be an instance of {@link Component} or {@link ComponentInstance}
      * @return the component
+     * @apiNote since 11.1, returns the instance in desired type
      */
-    default Object getComponent(String name) {
+    default <C> C getComponent(String name) {
         return getComponent(new ComponentName(name));
     }
 
@@ -157,9 +162,15 @@ public interface RuntimeService {
      * Gets a component given its name.
      *
      * @param name the component name
+     * @param <C> the returned type, could be an instance of {@link Component} or {@link ComponentInstance}
      * @return the component, or null if no such component was registered
+     * @apiNote since 11.1, returns the instance in desired type
      */
-    Object getComponent(ComponentName name);
+    @SuppressWarnings("unchecked")
+    default <C> C getComponent(ComponentName name) {
+        ComponentInstance co = getComponentInstance(name);
+        return co != null ? (C) co.getInstance() : null;
+    }
 
     /**
      * Gets a component implementation instance given its name as a string.

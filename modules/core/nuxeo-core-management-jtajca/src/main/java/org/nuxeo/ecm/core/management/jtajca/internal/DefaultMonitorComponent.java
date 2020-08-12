@@ -100,7 +100,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
     @Override
     public int getApplicationStartedOrder() {
         // should deploy after metrics service
-        Component component = (Component) Framework.getRuntime().getComponent(MetricsService.class.getName());
+        Component component = Framework.getRuntime().getComponent(MetricsService.class.getName());
         return component.getApplicationStartedOrder() + 1;
     }
 
