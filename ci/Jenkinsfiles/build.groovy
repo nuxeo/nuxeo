@@ -93,6 +93,9 @@ void runFunctionalTests(String baseDir) {
     retry(2) {
       sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -f ${baseDir}/pom.xml verify"
     }
+  } catch(err) {
+    echo "${baseDir} functional tests error: ${err}"
+    throw err
   } finally {
     try {
       archiveArtifacts allowEmptyArchive: true, artifacts: "${baseDir}/**/target/failsafe-reports/*, ${baseDir}/**/target/**/*.log, ${baseDir}/**/target/*.png, ${baseDir}/**/target/*.html, ${baseDir}/**/target/**/distribution.properties, ${baseDir}/**/target/**/configuration.properties"
@@ -194,104 +197,105 @@ def buildUnitTestStage(env) {
         script {
           setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'PENDING')
           try {
-            echo """
-            ----------------------------------------
-            Run ${env} unit tests
-            ----------------------------------------"""
-
-            echo "${env} unit tests: install external services"
-            // initialize Helm without Tiller and add local repository
-            sh """
-              helm init --client-only
-              helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
-            """
-            // prepare values to disable nuxeo and activate external services in the nuxeo Helm chart
-            def testValues = '--set-file=ci/helm/nuxeo-test-base-values.yaml~gen'
-            if (!isDev) {
-              testValues += " --set-file=ci/helm/nuxeo-test-${env}-values.yaml~gen"
-              testValues += " --set-file=ci/helm/nuxeo-test-elasticsearch-values.yaml~gen"
-              testValues += " --set-file=ci/helm/nuxeo-test-kafka-values.yaml~gen"
-            }
-            // install the nuxeo Helm chart into a dedicated namespace that will be cleaned up afterwards
-            sh """
-              jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO} \
-                --name=${TEST_HELM_CHART_RELEASE} \
-                --namespace=${testNamespace} \
-                ${testValues}
-            """
-            // wait for external services to be ready
-            rolloutStatusRedis(testNamespace)
-            if (!isDev) {
-              if (env == 'mongodb') {
-                rolloutStatusMongoDB(testNamespace)
-              } else {
-                rolloutStatusPostgreSQL(testNamespace)
-              }
-              rolloutStatusElasticsearch(testNamespace)
-              rolloutStatusKafka(testNamespace)
-            }
-
-            echo "${env} unit tests: run Maven"
-            if (isDev) {
-              // empty file required by the read-project-properties goal of the properties-maven-plugin with the
-              // customEnvironment profile
-              sh "touch ${HOME}/nuxeo-test-${env}.properties"
-            } else {
-              // prepare test framework system properties
-              sh """
-                cat ci/mvn/nuxeo-test-${env}.properties \
-                  ci/mvn/nuxeo-test-elasticsearch.properties \
-                  > ci/mvn/nuxeo-test-${env}.properties~gen
-                CHART_RELEASE=${TEST_HELM_CHART_RELEASE} NAMESPACE=${testNamespace} DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
-                  envsubst < ci/mvn/nuxeo-test-${env}.properties~gen > ${HOME}/nuxeo-test-${env}.properties
-              """
-            }
-            // run unit tests:
-            // - in modules/core and dependent projects only (modules/runtime is run in a dedicated stage)
-            // - for the given environment (see the customEnvironment profile in pom.xml):
-            //   - in an alternative build directory
-            //   - loading some test framework system properties
-            def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
-            def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
-
-            retry(2) {
-              sh """
-                mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
-                  -Dcustom.environment=${env} \
-                  -Dcustom.environment.log.dir=target-${env} \
-                  -Dnuxeo.test.core=${testCore} \
-                  -Dnuxeo.test.redis.host=${redisHost} \
-                  ${kafkaOptions} \
-                  test
-              """
-            }
-
-            setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
-          } catch(err) {
-            echo "${env} unit tests error: ${err}"
-            setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'FAILURE')
-            // TODO NXP-29512: only fail the build for the dev env for now
-            // to remove when other environments will be mandatory
-            if (env == 'dev') {
-              throw err
-            }
-          } finally {
             try {
-              junit testResults: "**/target-${env}/surefire-reports/*.xml"
-              if (!isDev) {
-                archiveKafkaLogs(testNamespace, "${env}-kafka.log")
-              }
-            } finally {
-              echo "${env} unit tests: clean up test namespace"
-              // uninstall the nuxeo Helm chart
+              echo """
+              ----------------------------------------
+              Run ${env} unit tests
+              ----------------------------------------"""
+
+              echo "${env} unit tests: install external services"
+              // initialize Helm without Tiller and add local repository
               sh """
-                jx step helm delete ${TEST_HELM_CHART_RELEASE} \
-                  --namespace=${testNamespace} \
-                  --purge
+                helm init --client-only
+                helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
               """
-              // clean up the test namespace
-              sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
+              // prepare values to disable nuxeo and activate external services in the nuxeo Helm chart
+              def testValues = '--set-file=ci/helm/nuxeo-test-base-values.yaml~gen'
+              if (!isDev) {
+                testValues += " --set-file=ci/helm/nuxeo-test-${env}-values.yaml~gen"
+                testValues += " --set-file=ci/helm/nuxeo-test-elasticsearch-values.yaml~gen"
+                testValues += " --set-file=ci/helm/nuxeo-test-kafka-values.yaml~gen"
+              }
+              // install the nuxeo Helm chart into a dedicated namespace that will be cleaned up afterwards
+              sh """
+                jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO} \
+                  --name=${TEST_HELM_CHART_RELEASE} \
+                  --namespace=${testNamespace} \
+                  ${testValues}
+              """
+              // wait for external services to be ready
+              rolloutStatusRedis(testNamespace)
+              if (!isDev) {
+                if (env == 'mongodb') {
+                  rolloutStatusMongoDB(testNamespace)
+                } else {
+                  rolloutStatusPostgreSQL(testNamespace)
+                }
+                rolloutStatusElasticsearch(testNamespace)
+                rolloutStatusKafka(testNamespace)
+              }
+
+              echo "${env} unit tests: run Maven"
+              if (isDev) {
+                // empty file required by the read-project-properties goal of the properties-maven-plugin with the
+                // customEnvironment profile
+                sh "touch ${HOME}/nuxeo-test-${env}.properties"
+              } else {
+                // prepare test framework system properties
+                sh """
+                  cat ci/mvn/nuxeo-test-${env}.properties \
+                    ci/mvn/nuxeo-test-elasticsearch.properties \
+                    > ci/mvn/nuxeo-test-${env}.properties~gen
+                  CHART_RELEASE=${TEST_HELM_CHART_RELEASE} NAMESPACE=${testNamespace} DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
+                    envsubst < ci/mvn/nuxeo-test-${env}.properties~gen > ${HOME}/nuxeo-test-${env}.properties
+                """
+              }
+              // run unit tests:
+              // - in modules/core and dependent projects only (modules/runtime is run in a dedicated stage)
+              // - for the given environment (see the customEnvironment profile in pom.xml):
+              //   - in an alternative build directory
+              //   - loading some test framework system properties
+              def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
+              def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
+
+              retry(2) {
+                sh """
+                  mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
+                    -Dcustom.environment=${env} \
+                    -Dcustom.environment.log.dir=target-${env} \
+                    -Dnuxeo.test.core=${testCore} \
+                    -Dnuxeo.test.redis.host=${redisHost} \
+                    ${kafkaOptions} \
+                    test
+                """
+              }
+
+              setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
+            } catch(err) {
+              echo "${env} unit tests error: ${err}"
+              setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'FAILURE')
+              throw err
+            } finally {
+              try {
+                junit testResults: "**/target-${env}/surefire-reports/*.xml"
+                if (!isDev) {
+                  archiveKafkaLogs(testNamespace, "${env}-kafka.log")
+                }
+              } finally {
+                echo "${env} unit tests: clean up test namespace"
+                // uninstall the nuxeo Helm chart
+                sh """
+                  jx step helm delete ${TEST_HELM_CHART_RELEASE} \
+                    --namespace=${testNamespace} \
+                    --purge
+                """
+                // clean up the test namespace
+                sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
+              }
             }
+          } catch(err) {
+            // TODO NXP-29512: workaround to know which env is failing later on
+            throw new Exception("${env}: ${err.message}", err)
           }
         }
       }
@@ -529,7 +533,16 @@ pipeline {
           for (env in testEnvironments) {
             stages["Run ${env} unit tests"] = buildUnitTestStage(env);
           }
-          parallel stages
+          try {
+            parallel stages
+          } catch (err) {
+            // TODO NXP-29512: on PR, make the build continue even if there is a test error
+            // on other environments than the dev one
+            // to remove when all test environments will be mandatory
+            if (!isPullRequest() || err.message.startsWith("dev:")) {
+              throw err
+            }
+          }
         }
       }
     }
