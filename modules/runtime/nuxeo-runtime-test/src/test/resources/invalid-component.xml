@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="invalid.comp">
+
+  <implementation class="org.nuxeo.runtime.RuntimeInitializationTestComponent" />
+
+  <extension target="invalid.comp" point="xp">
+    <echo>Unknown target</echo>
+  </extension>
+
+  <extension target="invalid.comp">
+    <echo>No 'point' in extension</echo>
+  </extension>
+
+  <extension point="xp">
+    <echo>No 'target' in extension</echo>
+  </extension>
+
+</component>

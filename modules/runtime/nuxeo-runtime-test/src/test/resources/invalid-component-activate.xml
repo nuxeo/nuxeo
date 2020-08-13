@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="invalid.comp">
+
+  <implementation class="org.nuxeo.runtime.RuntimeInitializationTestComponent" />
+  <property name="actionType" value="fail" />
+  <property name="actionTypeOn" value="activate" />
+
+</component>

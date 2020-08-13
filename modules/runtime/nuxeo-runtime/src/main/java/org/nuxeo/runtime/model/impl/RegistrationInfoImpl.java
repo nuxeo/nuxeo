@@ -231,7 +231,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             // we shouldn't check extension points here because it is done each time we get the extensions
             // do it like that for new system for now (which will be used only when we will switch xml contributions to
             // new component lifecycle system)
-            checkExtensions();
+            return checkExtensions();
         }
         return extensions;
     }
@@ -336,18 +336,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
     }
 
-    protected ComponentInstance createComponentInstance() {
-        try {
-            return new ComponentInstanceImpl(this);
-        } catch (RuntimeException e) {
-            String msg = "Failed to instantiate component: " + implementation;
-            log.error(msg, e);
-            msg += " (" + e.toString() + ')';
-            Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
-            throw e;
-        }
-    }
-
     /**
      * @deprecated since 9.2 seems unused
      */
@@ -386,8 +374,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             state = STARTED;
             manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_STARTED, this));
         } catch (RuntimeException e) {
-            log.error(String.format("Component %s notification of application started failed: %s",
-                    component == null ? null : component.getName(), e.getMessage()), e);
+            String message = String.format("Component %s notification of application started failed: %s",
+                    component == null ? null : component.getName(), e.getMessage());
+            log.error(message, e);
+            Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
             state = START_FAILURE;
         }
     }
@@ -420,22 +410,37 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             return;
         }
 
-        component = createComponentInstance();
+        try {
+            component = new ComponentInstanceImpl(this);
+        } catch (RuntimeException e) {
+            String msg = "Failed to instantiate component: " + implementation;
+            log.error(msg, e);
+            msg += " (" + e.toString() + ')';
+            Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+            return;
+        }
 
         state = ACTIVATING;
         manager.sendEvent(new ComponentEvent(ComponentEvent.ACTIVATING_COMPONENT, this));
 
         // activate component
-        component.activate();
-        log.debug("Component activated: {}", name);
+        try {
+            component.activate();
+        } catch (RuntimeException e) {
+            String msg = "Failed to activate component: " + implementation;
+            log.error(msg, e);
+            msg += " (" + e.toString() + ')';
+            Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+            return;
+        }
 
+        log.debug("Component activated: {}", name);
         state = ACTIVATED;
         manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_ACTIVATED, this));
 
         // register contributed extensions if any
         if (extensions != null) {
-            checkExtensions();
-            for (Extension xt : extensions) {
+            for (Extension xt : checkExtensions()) {
                 xt.setComponent(component);
                 try {
                     manager.registerExtension(xt);
@@ -574,15 +579,24 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return implementation;
     }
 
-    public void checkExtensions() {
+    /**
+     * Checks extensions and returns only valid ones.
+     *
+     * @since 11.3
+     */
+    protected Extension[] checkExtensions() {
+        var validExtensions = new ArrayList<Extension>();
         for (ExtensionImpl xt : extensions) {
             if (xt.target == null) {
                 String msg = String.format(
-                        "Bad extension declaration (no target attribute specified) on component 's%'", getName());
-                Framework.getRuntime().getMessageHandler().addMessage(Level.WARNING, msg);
+                        "Bad extension declaration (no target attribute specified) on component '%s'", getName());
+                Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 continue;
+            } else {
+                validExtensions.add(xt);
             }
         }
+        return validExtensions.toArray(Extension[]::new);
     }
 
     @Override

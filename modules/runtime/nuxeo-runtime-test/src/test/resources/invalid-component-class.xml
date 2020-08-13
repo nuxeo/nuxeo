@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<component name="invalid.comp">
+
+  <implementation class="org.nuxeo.runtime.Foo" />
+
+</component>
