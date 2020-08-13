@@ -192,7 +192,6 @@ public class BulkCommand implements Serializable {
          * @param action the registered bulk action name
          * @param nxqlQuery by default an NXQL query that represents the document set to apply the action. When using a
          *            generic scroller the query syntax is a convention with the scroller implementation.
-         * @deprecated since 11.1, use {@link #Builder(String, String, String)} constructor with username instead
          */
         public Builder(String action, String nxqlQuery) {
             if (isEmpty(action)) {
