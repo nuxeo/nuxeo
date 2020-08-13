@@ -95,7 +95,7 @@ public class BackingServiceConfigurator {
             if (checker.accepts(configurationGenerator)) {
                 try {
                     Failsafe.with(retryPolicy)
-                            .onFailedAttempt(failure -> log.error(failure.getMessage())) //
+                            .onFailedAttempt(failure -> log.error(failure.getMessage(), failure)) //
                             .onRetry((c, f,
                                     ctx) -> log.warn(String.format("Failure %d. Retrying....", ctx.getExecutions()))) //
                             .run(() -> checker.check(configurationGenerator)); //
