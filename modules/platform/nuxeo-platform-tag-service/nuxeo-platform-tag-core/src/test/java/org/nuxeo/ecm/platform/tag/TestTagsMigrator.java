@@ -157,11 +157,10 @@ public class TestTagsMigrator {
         testMigration(() -> {
             migrationService.runStep(MIGRATION_ID, MIGRATION_STEP_RELATIONS_TO_FACETS);
 
-            // wait a bit for the migration to start
-            await().atLeast(ONE_SECOND);
-
             // poll until migration done
-            await().atMost(ONE_MINUTE).until(() -> !migrationService.getStatus(MIGRATION_ID).isRunning());
+            await().pollDelay(ONE_SECOND) // wait a bit for the migration to start
+                   .atMost(ONE_MINUTE)
+                   .until(() -> !migrationService.getStatus(MIGRATION_ID).isRunning());
         });
 
         tagService = Framework.getService(TagService.class);

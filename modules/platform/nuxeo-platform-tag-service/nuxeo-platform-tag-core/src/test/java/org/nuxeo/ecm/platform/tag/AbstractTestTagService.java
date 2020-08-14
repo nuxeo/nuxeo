@@ -117,7 +117,7 @@ public abstract class AbstractTestTagService {
     public void maybeSleep() {
         StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
         if (storageConfiguration.isVCSOracle() || storageConfiguration.isVCSSQLServer()) {
-            await().atLeast(Duration.FIVE_SECONDS);
+            await().pollDelay(Duration.FIVE_SECONDS).until(() -> true);
         }
     }
 
