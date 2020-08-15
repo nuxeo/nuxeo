@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import org.nuxeo.ecm.core.io.CoreIOFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterFeature;
 import org.nuxeo.runtime.stream.RuntimeStreamFeature;
@@ -36,7 +35,10 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.ecm.core.bulk")
 @Deploy("org.nuxeo.ecm.core.bulk.test")
-@Features({ ClusterFeature.class, TransactionalFeature.class, RuntimeStreamFeature.class, CoreIOFeature.class })
+@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.core.io")
+@Features({ ClusterFeature.class, TransactionalFeature.class, RuntimeStreamFeature.class })
 public class CoreBulkFeature implements RunnerFeature {
 
     @Override
