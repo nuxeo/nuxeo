@@ -22,8 +22,8 @@ package org.nuxeo.ecm.platform.rendition.service;
 import java.io.Serializable;
 import java.util.List;
 
+import org.nuxeo.ecm.automation.core.AutomationCoreFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -39,13 +39,12 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 /**
  * @since 7.3
  */
-@Features({ CoreFeature.class, NuxeoLoginFeature.class, KeyValueBlobTransientStoreFeature.class })
+@Features({ AutomationCoreFeature.class, NuxeoLoginFeature.class, KeyValueBlobTransientStoreFeature.class })
 @Deploy("org.nuxeo.ecm.platform.convert")
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.actions")
 @Deploy("org.nuxeo.ecm.platform.rendition.api")
 @Deploy("org.nuxeo.ecm.platform.rendition.core")
-@Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.platform.io.core")
 @Deploy("org.nuxeo.ecm.platform.dublincore")
 @Deploy("org.nuxeo.ecm.platform.rendition.core:test-automation-contrib.xml")
