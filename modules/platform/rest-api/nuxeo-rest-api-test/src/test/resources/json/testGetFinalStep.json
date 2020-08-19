@@ -1,0 +1,17 @@
+{
+  "entity-type": "migration",
+  "id": "dummy-migration",
+  "description": "Dummy Migration",
+  "descriptionLabel": "migration.dummy",
+  "status": {
+    "state": "reallyAfter",
+    "step": null,
+    "startTime": 0,
+    "pingTime": 0,
+    "progressMessage": null,
+    "progressNum": 0,
+    "progressTotal": 0,
+    "running": false
+  },
+  "steps": []
+}

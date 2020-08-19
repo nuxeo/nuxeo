@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.rest.management.stream.default.config.test" version="1.0">
+  <require>org.nuxeo.ecm.core.work.service</require>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
+    <logConfig name="default" />
+  </extension>
+
+</component>

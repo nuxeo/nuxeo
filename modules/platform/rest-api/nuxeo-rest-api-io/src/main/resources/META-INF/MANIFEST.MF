@@ -4,3 +4,4 @@ Bundle-Name: nuxeo-restapi-io
 Bundle-SymbolicName: org.nuxeo.ecm.platform.restapi.io;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/marshallers-contrib.xml

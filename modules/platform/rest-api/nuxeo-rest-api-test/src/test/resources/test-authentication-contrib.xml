@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.rest.management.auth.test">
+
+  <require>org.nuxeo.ecm.platform.login.anonymous.config</require>
+
+  <extension  target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="chain">
+
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>JWT_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+
+  </extension>
+
+</component>

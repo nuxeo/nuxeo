@@ -1,0 +1,32 @@
+{
+  "entity-type": "migration",
+  "id": "dummy-multi-migration",
+  "description": "Dummy Multi Migration",
+  "descriptionLabel": "multi.migration.dummy",
+  "status": {
+    "state": "before",
+    "step": null,
+    "startTime": 0,
+    "pingTime": 0,
+    "progressMessage": null,
+    "progressNum": 0,
+    "progressTotal": 0,
+    "running": false
+  },
+  "steps": [
+    {
+      "id": "before-to-after",
+      "fromState": "before",
+      "toState": "after",
+      "description": "Migrate multi-dummy state from before to after",
+      "descriptionLabel": "multi.migration.dummy.before-to-after"
+    },
+    {
+      "id": "before-to-reallyAfter",
+      "fromState": "before",
+      "toState": "reallyAfter",
+      "description": "Migrate multi-dummy state from before to reallyAfter",
+      "descriptionLabel": "multi.migration.dummy.before-to-reallyAfter"
+    }
+  ]
+}
