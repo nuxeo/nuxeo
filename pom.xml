@@ -1199,6 +1199,18 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-core</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-rest</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-thumbnail</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
