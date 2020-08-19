@@ -10,15 +10,19 @@
   <artifactId>nuxeo-rest-api-io</artifactId>
   <name>Nuxeo Rest API io</name>
   <description>io part of the Nuxeo REST API</description>
-  <dependencies>
 
+  <dependencies>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-management</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-admin-center-core</artifactId>
     </dependency>
   </dependencies>
 </project>

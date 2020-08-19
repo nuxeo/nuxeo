@@ -122,6 +122,21 @@
     </Connector>
 </#if>
 
+<#if (nuxeo.management.api.http.port)?has_content>
+    <Connector port="${nuxeo.management.api.http.port}" protocol="HTTP/1.1" URIEncoding="UTF-8"
+               address="${nuxeo.bind.address}"
+<#if nuxeo.server.signature??>
+               server="${nuxeo.server.signature}"
+</#if>
+               maxThreads="2"
+               acceptCount="10"
+               compression="on"
+               compressionMinSize="512"
+               compressibleMimeType="text/css,application/javascript,text/xml,text/html"
+               connectionTimeout="20000"
+               disableUploadTimeout="false"
+               connectionUploadTimeout="${nuxeo.server.http.connectionUploadTimeout}" />
+</#if>
 
 <#if nuxeo.server.http.drivePort??>
 <!-- Http Connector for Nuxeo Drive taffic -->

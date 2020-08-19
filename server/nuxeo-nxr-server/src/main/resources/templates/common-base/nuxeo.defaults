@@ -287,3 +287,7 @@ tracing.datadog.enabled=false
 tracing.datadog.url=http://localhost:8126/v0.3/traces
 tracing.datadog.service=nuxeo
 tracing.datadog.timeout=10s
+
+# Management API
+nuxeo.management.api.http.port=
+nuxeo.management.api.user=

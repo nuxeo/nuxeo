@@ -1,0 +1,25 @@
+{
+  "entity-type": "migration",
+  "id": "dummy-migration",
+  "description": "Dummy Migration",
+  "descriptionLabel": "migration.dummy",
+  "status": {
+    "state": "after",
+    "step": null,
+    "startTime": 0,
+    "pingTime": 0,
+    "progressMessage": null,
+    "progressNum": 0,
+    "progressTotal": 0,
+    "running": false
+  },
+  "steps": [
+    {
+      "id": "after-to-reallyAfter",
+      "fromState": "after",
+      "toState": "reallyAfter",
+      "description": "Migrate dummy state from after to really after",
+      "descriptionLabel": "migration.dummy.after-to-really-after"
+    }
+  ]
+}

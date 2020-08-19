@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_HTTP_PORT;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 
@@ -48,6 +50,7 @@ public class ServletContainerFeature implements RunnerFeature {
         }
         this.port = port;
         System.setProperty(ServerComponent.PORT_SYSTEM_PROP, String.valueOf(port));
+        System.setProperty(PARAM_HTTP_PORT, String.valueOf(port));
     }
 
     protected int findFreePort() {
