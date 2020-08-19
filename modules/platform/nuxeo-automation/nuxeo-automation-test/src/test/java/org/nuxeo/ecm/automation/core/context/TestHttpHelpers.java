@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.automation.core.context;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -57,8 +58,7 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 @Deploy("org.nuxeo.ecm.platform.url.core")
 @Deploy("org.nuxeo.ecm.platform.types.api")
 @Deploy("org.nuxeo.ecm.platform.types.core")
-@Deploy("org.nuxeo.ecm.platform.restapi.io")
-@Deploy("org.nuxeo.ecm.platform.restapi.server")
+@Deploy("org.nuxeo.ecm.automation.test.test:test-servletcontainer-contrib.xml")
 @RepositoryConfig(init = AutomationRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestHttpHelpers {
 
@@ -87,49 +87,47 @@ public class TestHttpHelpers {
         int port = servletContainerFeature.getPort();
         return "http://localhost:" + port;
     }
+
     @Test
     public void canUseHttpHelperGET() throws OperationException, IOException {
         Map<String, Object> params = new HashMap<>();
-        params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \""
-                + getBaseURL() + "/api/v1/path/default-domain\");");
+        params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \"" + getBaseURL()
+                + "/dummy/string\");");
         automationService.run(ctx, "RunScript", params);
         String result = ((Blob) ctx.get("result")).getString();
-        assertNotEquals("Internal Server Error", result);
-        assertTrue(result.contains("entity-type"));
+        assertEquals("dummy", result);
     }
 
     @Test
     public void canUseHttpHelperPOST() throws OperationException, IOException {
-        String data = "{\"entity-type\": \"document\",\"type\": \"Workspace\",\"name\":\"newName\",\"properties\": {\"dc:title\":\"My title\",\"dc:description\":\" \"}}";
+        String data = "dummy data";
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-type", MediaType.APPLICATION_JSON);
         Map<String, Object> params = new HashMap<>();
         ctx.put("data", data);
         ctx.put("headers", headers);
         params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"POST\", \""
-                + getBaseURL() + "/api/v1/path/default-domain\", Context.data, Context.headers);");
+                + getBaseURL() + "/dummy/post\", Context.data, Context.headers);");
         automationService.run(ctx, "RunScript", params);
         String result = ((Blob) ctx.get("result")).getString();
-        assertNotEquals("Internal Server Error", result);
-        assertTrue(result.contains("entity-type"));
+        assertEquals("dummy data", result);
     }
 
     @Test
     public void canUseHttpHelperGETStringBlob() throws OperationException, IOException {
         Map<String, Object> params = new HashMap<>();
-        params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \""
-                + getBaseURL() + "/api/v1/path/testBlob/@blob/file:content\");");
+        params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \"" + getBaseURL()
+                + "/dummy/stringblob\");");
         automationService.run(ctx, "RunScript", params);
         String result = ((Blob) ctx.get("result")).getString();
-        assertNotEquals("Internal Server Error", result);
-        assertTrue(result.contains("one"));
+        assertEquals("dummy string blob", result);
     }
 
     @Test
     public void canUseHttpHelperGETBlob() throws OperationException, IOException {
         Map<String, Object> params = new HashMap<>();
-        params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \""
-                + getBaseURL() + "/api/v1/path/testBlob2/@blob/file:content\");");
+        params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \"" + getBaseURL()
+                + "/dummy/blob\");");
         automationService.run(ctx, "RunScript", params);
         Blob result = ((Blob) ctx.get("result"));
         assertNotNull(result);
