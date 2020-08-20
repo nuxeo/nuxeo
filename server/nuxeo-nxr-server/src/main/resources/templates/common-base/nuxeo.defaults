@@ -147,6 +147,9 @@ elasticsearch.restClient.keystore.path=
 elasticsearch.restClient.keystore.password=
 elasticsearch.restClient.keystore.type=
 
+elasticsearch.check.classpath=${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-{common,core-api,elasticsearch-core}*.jar
+elasticsearch.check.class=org.nuxeo.elasticsearch.ElasticSearchChecker
+
 # Kafka
 kafka.enabled=false
 kafka.bootstrap.servers=localhost:9092
