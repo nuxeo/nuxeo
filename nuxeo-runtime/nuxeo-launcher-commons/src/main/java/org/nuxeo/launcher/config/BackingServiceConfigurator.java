@@ -134,6 +134,7 @@ public class BackingServiceConfigurator {
             List<String> items = configurationGenerator.getTemplateList();
             // Add backing without template
             items.add("elasticsearch");
+            items.add("kafka");
             for (String item : items) {
                 try {
                     log.debug("checker: " + item);
