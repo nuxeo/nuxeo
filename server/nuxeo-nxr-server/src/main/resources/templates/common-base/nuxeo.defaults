@@ -151,6 +151,9 @@ elasticsearch.check.classpath=${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/
 elasticsearch.check.class=org.nuxeo.elasticsearch.ElasticSearchChecker
 
 # Kafka
+kafka.check.classpath=${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-{common,core-api,runtime-stream}*.jar
+kafka.check.class=org.nuxeo.runtime.kafka.KafkaChecker
+
 kafka.enabled=false
 kafka.bootstrap.servers=localhost:9092
 kafka.default.replication.factor=1
