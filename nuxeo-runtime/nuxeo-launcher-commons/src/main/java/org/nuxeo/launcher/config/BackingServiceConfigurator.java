@@ -131,29 +131,42 @@ public class BackingServiceConfigurator {
 
         if (checkers == null) {
             checkers = new HashSet<>();
-
-            for (String template : configurationGenerator.getTemplateList()) {
+            List<String> items = configurationGenerator.getTemplateList();
+            // Add backing without template
+            items.add("elasticsearch");
+            for (String item : items) {
                 try {
-                    File templateDir = configurationGenerator.getTemplateConf(template).getParentFile();
-                    String classPath = getClasspathForTemplate(template);
+                    log.debug("checker: " + item);
+                    File templateDir = getTemplateDir(item);
+                    String classPath = getClasspathForTemplate(item);
                     String checkClass = configurationGenerator.getUserConfig()
-                                                              .getProperty(template + PARAM_CHECK_SUFFIX);
-
+                                                              .getProperty(item + PARAM_CHECK_SUFFIX);
                     Optional<URLClassLoader> ucl = getClassLoaderForTemplate(templateDir, classPath);
                     if (ucl.isPresent()) {
                         Class<?> klass = Class.forName(checkClass, true, ucl.get());
-                        checkers.add((BackingChecker) klass.newInstance());
+                        if (log.isDebugEnabled()) {
+                            log.debug("Adding checker " + item + " with class path: "
+                                    + Arrays.toString(ucl.get().getURLs()));
+                        }
+                        checkers.add((BackingChecker) klass.getDeclaredConstructor().newInstance());
                     }
-
                 } catch (IOException e) {
-                    log.warn("Unable to read check configuration for template : " + template, e);
+                    log.warn("Unable to read check configuration for template : " + item, e);
                 } catch (ReflectiveOperationException | ClassCastException e) {
-                    throw new ConfigurationException("Unable to check configuration for backing service " + template,
+                    throw new ConfigurationException("Unable to check configuration for backing service " + item,
                             e);
                 }
             }
         }
         return checkers;
+    }
+
+    protected File getTemplateDir(String item) throws ConfigurationException {
+        try {
+            return configurationGenerator.getTemplateDirectory(item);
+        } catch (ConfigurationException e) {
+            return configurationGenerator.getTemplateDirectory("default");
+        }
     }
 
     /**
