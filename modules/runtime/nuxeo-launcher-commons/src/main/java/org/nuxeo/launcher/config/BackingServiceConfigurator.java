@@ -39,8 +39,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.launcher.config.backingservices.BackingChecker;
 
@@ -55,7 +55,7 @@ import net.jodah.failsafe.RetryPolicy;
  */
 public class BackingServiceConfigurator {
 
-    protected static final Log log = LogFactory.getLog(BackingServiceConfigurator.class);
+    protected static final Logger log = LogManager.getLogger(BackingServiceConfigurator.class);
 
     public static final String PARAM_RETRY_POLICY_ENABLED = "nuxeo.backing.check.retry.enabled";
 
@@ -138,7 +138,7 @@ public class BackingServiceConfigurator {
             items.add("kafka");
             for (String item : items) {
                 try {
-                    log.debug("checker: " + item);
+                    log.debug("checker: {}", item);
                     File templateDir = getTemplateDir(item);
                     String classPath = getClasspathForTemplate(item);
                     String checkClass = configurationGenerator.getUserConfig()
@@ -146,14 +146,12 @@ public class BackingServiceConfigurator {
                     Optional<URLClassLoader> ucl = getClassLoaderForTemplate(templateDir, classPath);
                     if (ucl.isPresent()) {
                         Class<?> klass = Class.forName(checkClass, true, ucl.get());
-                        if (log.isDebugEnabled()) {
-                            log.debug("Adding checker " + item + " with class path: "
-                                    + Arrays.toString(ucl.get().getURLs()));
-                        }
+                        log.debug("Adding checker: {} with class path: {}", () -> item,
+                                () -> Arrays.toString(ucl.get().getURLs()));
                         checkers.add((BackingChecker) klass.getDeclaredConstructor().newInstance());
                     }
                 } catch (IOException e) {
-                    log.warn("Unable to read check configuration for template : " + item, e);
+                    log.warn("Unable to read check configuration for template: {}", item, e);
                 } catch (ReflectiveOperationException | ClassCastException e) {
                     throw new ConfigurationException("Unable to check configuration for backing service " + item,
                             e);
@@ -209,7 +207,7 @@ public class BackingServiceConfigurator {
             for (File file : files) {
                 try {
                     urlsList.add(new URL("jar:file:" + file.getPath() + "!/"));
-                    log.debug("Added " + file.getPath());
+                    log.debug("Adding url: {}", file.getPath());
                 } catch (MalformedURLException e) {
                     log.error(e);
                 }
