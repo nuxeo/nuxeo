@@ -21,10 +21,12 @@ package org.nuxeo.runtime;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.model.ComponentManager;
 
 /**
@@ -90,8 +92,9 @@ public class RuntimeMessageHandlerImpl implements RuntimeMessageHandler, Compone
 
     protected void changeStep(ComponentManagerStep step) {
         if (this.step == ComponentManagerStep.RUNNING) {
-            // reset messages when previous step was "running"
-            messages.clear();
+            // reset bundle/component/extension messages when previous step was "running"
+            messages.removeIf(m -> m.getSource() != null
+                    && Set.of(Source.BUNDLE, Source.COMPONENT, Source.EXTENSION).contains(m.getSource()));
         }
         this.step = step;
     }
