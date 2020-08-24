@@ -39,6 +39,13 @@ public interface RuntimeMessageHandler {
     void addMessage(Level level, String message);
 
     /**
+     * Adds the following message.
+     *
+     * @since 11.3
+     */
+    void addMessage(RuntimeMessage message);
+
+    /**
      * Returns all messages strings, filtered by given level.
      *
      * @since 11.3
@@ -51,6 +58,20 @@ public interface RuntimeMessageHandler {
      * @since 11.3
      */
     List<String> getMessages(Predicate<RuntimeMessage> predicate);
+
+    /**
+     * Returns all messages, filtered by given level.
+     *
+     * @since 11.3
+     */
+    List<RuntimeMessage> getRuntimeMessages(Level level);
+
+    /**
+     * Returns all messages, filtered by given predicate.
+     *
+     * @since 11.3
+     */
+    List<RuntimeMessage> getRuntimeMessages(Predicate<RuntimeMessage> predicate);
 
     /**
      * Warning messages don't block server startup.
