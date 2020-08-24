@@ -50,7 +50,9 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
+import org.nuxeo.runtime.RuntimeMessage;
 import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -252,8 +254,9 @@ public class ComponentManagerImpl implements ComponentManager {
     @Override
     public synchronized void register(RegistrationInfo ri) {
         ComponentName name = ri.getName();
-        if (blacklist.contains(name.getName())) {
-            log.debug("Component {} was blacklisted. Ignoring.", name.getName());
+        String stringName = name.getName();
+        if (blacklist.contains(stringName)) {
+            log.debug("Component {} was blacklisted. Ignoring.", stringName);
             return;
         }
 
@@ -261,12 +264,12 @@ public class ComponentManagerImpl implements ComponentManager {
         // before checking for duplicates.
         if (!stash.isRemoving(name)) {
             if (registry.contains(name) || stash.isAdding(name)) {
-                handleError("Duplicate component name: " + name, null);
+                handleError("Duplicate component name: " + name, stringName, null);
                 return;
             }
             for (ComponentName n : ri.getAliases()) {
                 if (registry.contains(n)) {
-                    handleError("Duplicate component name: " + n + " (alias for " + name + ")", null);
+                    handleError("Duplicate component name: " + n + " (alias for " + name + ")", stringName, null);
                     return;
                 }
             }
@@ -296,7 +299,7 @@ public class ComponentManagerImpl implements ComponentManager {
         } catch (RuntimeException e) {
             // don't raise this exception,
             // we want to isolate component errors from other components
-            handleError("Failed to register component: " + name + " (" + e.toString() + ')', e);
+            handleError("Failed to register component: " + name + " (" + e.toString() + ')', stringName, e);
         }
     }
 
@@ -463,7 +466,8 @@ public class ComponentManagerImpl implements ComponentManager {
                       Object[] contribs = xp.loadContributions(ri, xt);
                       xt.setContributions(contribs);
                   } catch (RuntimeException e) {
-                      handleError("Failed to load contributions for component " + xt.getComponent().getName(), e);
+                      ComponentName compName = xt.getComponent().getName();
+                      handleError("Failed to load contributions for component " + compName, compName.getName(), e);
                   }
               });
         }
@@ -495,9 +499,11 @@ public class ComponentManagerImpl implements ComponentManager {
         return services.keySet().toArray(new String[0]);
     }
 
-    protected static void handleError(String message, Exception e) {
+    protected static void handleError(String message, String componentName, Exception e) {
         log.error(message, e);
-        Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
+        Framework.getRuntime()
+                 .getMessageHandler()
+                 .addMessage(new RuntimeMessage(Level.ERROR, message, Source.COMPONENT, componentName));
     }
 
     /**
@@ -597,7 +603,10 @@ public class ComponentManagerImpl implements ComponentManager {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+                    Framework.getRuntime()
+                             .getMessageHandler()
+                             .addMessage(new RuntimeMessage(Level.ERROR, msg, Source.COMPONENT,
+                                     xt.getComponent().getName().getName()));
                 }
             }
         }
@@ -616,11 +625,14 @@ public class ComponentManagerImpl implements ComponentManager {
                 try {
                     component.registerExtension(xt);
                 } catch (RuntimeException e) {
+                    ComponentName compName = xt.getComponent().getName();
                     String msg = "Failed to register extension to: " + xt.getTargetComponent() + ", xpoint: "
-                            + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
+                            + xt.getExtensionPoint() + " in component: " + compName;
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+                    Framework.getRuntime()
+                             .getMessageHandler()
+                             .addMessage(new RuntimeMessage(Level.ERROR, msg, Source.EXTENSION, compName.getName()));
                 }
             }
         }
@@ -687,10 +699,13 @@ public class ComponentManagerImpl implements ComponentManager {
                 try {
                     unregisterExtension(xt);
                 } catch (RuntimeException e) {
-                    String message = "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
+                    String msg = "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
                             + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint();
-                    log.error(message, e);
-                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
+                    log.error(msg, e);
+                    Framework.getRuntime()
+                             .getMessageHandler()
+                             .addMessage(new RuntimeMessage(Level.ERROR, msg, Source.COMPONENT,
+                                     xt.getComponent().getName().getName()));
                 }
             }
         }

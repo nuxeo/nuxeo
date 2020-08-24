@@ -54,7 +54,9 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectPostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectSQLServer;
+import org.nuxeo.runtime.RuntimeMessage;
 import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreProvider;
@@ -489,7 +491,8 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
                     log.error(message);
                     Framework.getRuntime()
                              .getMessageHandler()
-                             .addMessage(Level.ERROR, message);
+                             .addMessage(
+                                     new RuntimeMessage(Level.ERROR, message, Source.CODE, this.getClass().getName()));
                 }
             }
         }
