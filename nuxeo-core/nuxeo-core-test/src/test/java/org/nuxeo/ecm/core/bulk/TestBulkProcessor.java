@@ -44,6 +44,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.bulk.action.SetPropertiesAction;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -114,19 +115,25 @@ public class TestBulkProcessor {
 
         // invalid query
         String nxql = "DROP DATABASE is not a valid NXQL command";
-        String commandId = service.submit(new BulkCommand.Builder("setProperties", nxql).build());
-        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
-        BulkStatus status = service.getStatus(commandId);
-        assertEquals(commandId, status.getId());
-        assertEquals(COMPLETED, status.getState());
-        assertEquals(0, status.getTotal());
-        assertTrue(status.hasError());
+        submitAndAssertAnInvalidNXQLQuery(nxql);
 
         // query with error
         nxql = "SELECT * FROM Document WHERE ecm:path = 'non/existing/path'";
-        commandId = service.submit(new BulkCommand.Builder("setProperties", nxql).build());
+        submitAndAssertAnInvalidNXQLQuery(nxql);
+
+        // un-existing type
+        nxql = "SELECT * FROM Image";
+        submitAndAssertAnInvalidNXQLQuery(nxql);
+
+        // invalid IN operator
+        nxql = "SELECT * FROM Document WHERE ecm:primaryType IN (1, 2, 3)";
+        submitAndAssertAnInvalidNXQLQuery(nxql);
+    }
+
+    protected void submitAndAssertAnInvalidNXQLQuery(String nxql) throws InterruptedException {
+        String commandId = service.submit(new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql).build());
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
-        status = service.getStatus(commandId);
+        BulkStatus status = service.getStatus(commandId);
         assertEquals(commandId, status.getId());
         assertEquals(COMPLETED, status.getState());
         assertEquals(0, status.getTotal());
