@@ -24,6 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -41,15 +42,17 @@ public class TestRuntimeMessageHandler {
 
     protected static final String PATTERN = "%s (Level '%s')";
 
+    protected static RuntimeMessageHandler getMessageHandler() {
+        return Framework.getRuntime().getMessageHandler();
+    }
+
     protected static void addTestMessages(String prefix) {
-        Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, String.format(PATTERN, prefix, Level.ERROR));
-        Framework.getRuntime()
-                 .getMessageHandler()
-                 .addMessage(Level.WARNING, String.format(PATTERN, prefix, Level.WARNING));
+        getMessageHandler().addMessage(Level.ERROR, String.format(PATTERN, prefix, Level.ERROR));
+        getMessageHandler().addMessage(Level.WARNING, String.format(PATTERN, prefix, Level.WARNING));
     }
 
     protected void checkHasMessage(boolean hasMessage, Level level, String msg) {
-        assertEquals(hasMessage, Framework.getRuntime().getMessageHandler().getMessages(level).contains(msg));
+        assertEquals(hasMessage, getMessageHandler().getMessages(level).contains(msg));
     }
 
     protected void checkHasMessages(boolean hasMessage, String prefix) {
@@ -64,20 +67,33 @@ public class TestRuntimeMessageHandler {
 
     @Test
     public void testAddMessageBefore() {
-        assertEquals(2, Framework.getRuntime().getMessageHandler().getMessages(m -> true).size());
+        assertEquals(2, getMessageHandler().getMessages(m -> true).size());
         checkHasMessages(true, "Before class message");
     }
 
     @Test
     public void testAddMessage() {
         checkHasMessages(false, "foo");
-        assertEquals(2, Framework.getRuntime().getMessageHandler().getMessages(m -> true).size());
+        assertEquals(2, getMessageHandler().getMessages(m -> true).size());
 
         addTestMessages("Test add message");
 
         checkHasMessages(false, "foo");
         checkHasMessages(true, "Test add message");
-        assertEquals(4, Framework.getRuntime().getMessageHandler().getMessages(m -> true).size());
+        assertEquals(4, getMessageHandler().getMessages(m -> true).size());
+
+        getMessageHandler().addMessage(
+                new RuntimeMessage(Level.ERROR, "test message with source", Source.CODE, "testId"));
+
+        checkHasMessage(true, Level.ERROR, "test message with source");
+        assertEquals(5, getMessageHandler().getMessages(m -> true).size());
+        assertEquals(3, getMessageHandler().getMessages(Level.ERROR).size());
+        assertEquals(3, getMessageHandler().getRuntimeMessages(Level.ERROR).size());
+        assertEquals(2, getMessageHandler().getMessages(Level.WARNING).size());
+        assertEquals(2, getMessageHandler().getRuntimeMessages(Level.WARNING).size());
+
+        assertEquals(1, getMessageHandler().getRuntimeMessages(m -> Source.CODE.equals(m.getSource())).size());
+        assertEquals(1, getMessageHandler().getRuntimeMessages(m -> "testId".equals(m.getSourceId())).size());
     }
 
 }

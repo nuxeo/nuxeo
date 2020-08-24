@@ -96,7 +96,8 @@ public class RuntimeMessageHandlerImpl implements RuntimeMessageHandler, Compone
         this.step = step;
     }
 
-    protected void addMessage(RuntimeMessage message) {
+    @Override
+    public void addMessage(RuntimeMessage message) {
         messages.add(message);
     }
 
@@ -116,6 +117,16 @@ public class RuntimeMessageHandlerImpl implements RuntimeMessageHandler, Compone
                        .filter(predicate)
                        .map(RuntimeMessage::getMessage)
                        .collect(Collectors.toUnmodifiableList());
+    }
+
+    @Override
+    public List<RuntimeMessage> getRuntimeMessages(Level level) {
+        return getRuntimeMessages(msg -> level.equals(msg.getLevel()));
+    }
+
+    @Override
+    public List<RuntimeMessage> getRuntimeMessages(Predicate<RuntimeMessage> predicate) {
+        return messages.stream().filter(predicate).collect(Collectors.toUnmodifiableList());
     }
 
     protected enum ComponentManagerStep {

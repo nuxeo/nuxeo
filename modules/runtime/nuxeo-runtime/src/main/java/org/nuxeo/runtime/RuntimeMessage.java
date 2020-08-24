@@ -32,9 +32,19 @@ public class RuntimeMessage {
 
     protected final String message;
 
-    public RuntimeMessage(Level level, String message) {
+    protected final Source source;
+
+    protected final String sourceId;
+
+    public RuntimeMessage(Level level, String message, Source source, String sourceId) {
         this.level = level;
         this.message = message;
+        this.source = source;
+        this.sourceId = sourceId;
+    }
+
+    public RuntimeMessage(Level level, String message) {
+        this(level, message, null, null);
     }
 
     public Level getLevel() {
@@ -45,11 +55,45 @@ public class RuntimeMessage {
         return message;
     }
 
+    /**
+     * Returns the type of source that produced the message.
+     */
+    public Source getSource() {
+        return source;
+    }
+
+    /**
+     * Returns a string identifier for the source that produce the message.
+     */
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s {level=%s, message=%s, source=%s, sourceId=%s}", getClass().getName(), level, message,
+                source, sourceId);
+    }
+
     public enum Level {
 
         ERROR,
 
         WARNING
+
+    }
+
+    /**
+     * The type of source that produced a message.
+     * <p>
+     * Useful to track errors on components, extension, etc...
+     */
+    public enum Source {
+
+        BUNDLE, //
+        COMPONENT, //
+        EXTENSION, //
+        CODE,
 
     }
 
