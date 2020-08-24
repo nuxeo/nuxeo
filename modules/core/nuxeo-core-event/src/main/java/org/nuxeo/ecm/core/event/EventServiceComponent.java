@@ -26,9 +26,11 @@ import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor;
 import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -87,9 +89,10 @@ public class EventServiceComponent extends DefaultComponent {
             try {
                 service.addEventListener(descriptor);
             } catch (RuntimeException e) {
-                String msg = "Failed to register event listener in component '" + contributor.getName()
+                ComponentName compName = contributor.getName();
+                String msg = "Failed to register event listener in component '" + compName
                         + "': error initializing event listener '" + descriptor.getName() + "' (" + e.toString() + ')';
-                addRuntimeMessage(Level.ERROR, msg);
+                addRuntimeMessage(Level.ERROR, msg, Source.EXTENSION, compName.getName());
             }
         } else if (EVENT_PIPE_XP.equals(extensionPoint)) {
             EventPipeDescriptor descriptor = (EventPipeDescriptor) contribution;

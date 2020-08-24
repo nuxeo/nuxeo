@@ -40,6 +40,7 @@ import org.nuxeo.ecm.platform.audit.service.extension.AuditStorageDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -264,11 +265,12 @@ public class NXAuditEventsService extends DefaultComponent {
             backendConfig = (AuditBackendDescriptor) contribution;
         } else if (contribution instanceof AuditBulkerDescriptor) {
             bulkerConfig = (AuditBulkerDescriptor) contribution;
+            ComponentName compName = contributor.getName();
             String message = String.format(
                     "AuditBulker on component %s is deprecated because it is now handled with nuxeo-stream, no replacement.",
-                    contributor.getName());
+                    compName);
             DeprecationLogger.log(message, "10.10");
-            addRuntimeMessage(Level.WARNING, message);
+            addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
         } else if (contribution instanceof AuditStorageDescriptor) {
             AuditStorageDescriptor auditStorageDesc = (AuditStorageDescriptor) contribution;
             auditStorageDescriptors.put(auditStorageDesc.getId(), auditStorageDesc);
