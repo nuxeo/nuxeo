@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,22 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Anahide Tchertchian
  */
 package org.nuxeo.runtime;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
@@ -35,6 +43,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.test.tests:component-manager-listener.xml")
 public class TestComponentManager {
 
     protected MyListener listener = new MyListener();
@@ -98,6 +107,32 @@ public class TestComponentManager {
             Assert.assertEquals(beforeStop, info.beforeStop);
             Assert.assertEquals(afterStop, info.afterStop);
         }
+    }
+
+    @Test
+    public void testComponentListener() {
+        String mockComponentName = "component.manager.listener";
+        Object component = Framework.getRuntime().getComponent(mockComponentName);
+        assertTrue(component instanceof MockComponentManagerListener);
+        MockComponentManagerListener mockComponent = (MockComponentManagerListener) component;
+        List<ComponentEvent> events = mockComponent.getEvents();
+        assertFalse(events.isEmpty());
+        ComponentEvent firstEvent = events.get(0);
+        assertEquals("ACTIVATING_COMPONENT: service:org.nuxeo.runtime.EventService", firstEvent.toString());
+        for (String testedComp : List.of("org.nuxeo.runtime.EventService", mockComponentName)) {
+            for (int event : List.of(ComponentEvent.ACTIVATING_COMPONENT, ComponentEvent.COMPONENT_ACTIVATED,
+                    ComponentEvent.STARTING_COMPONENT, ComponentEvent.COMPONENT_STARTED)) {
+                assertTrue(
+                        String.format("No event %s for component %s", ComponentEvent.getEventName(event), testedComp),
+                        mockComponent.hasEvent(event, testedComp));
+            }
+        }
+        // too late
+        assertFalse(mockComponent.hasEvent(ComponentEvent.COMPONENT_REGISTERED, mockComponentName));
+        assertFalse(mockComponent.hasEvent(ComponentEvent.COMPONENT_RESOLVED, mockComponentName));
+        // check extension registration event
+        assertTrue(mockComponent.hasEvent(ComponentEvent.EXTENSION_REGISTERED,
+                "org.nuxeo.runtime.trackers.files.threadstracking.config"));
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Anahide Tchertchian
  */
 package org.nuxeo.runtime.model.impl;
 
@@ -342,6 +343,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     @Deprecated
     public synchronized void restart() {
         deactivate();
+        instantiate();
         activate();
     }
 
@@ -405,18 +407,34 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_STOPPED, this));
     }
 
-    public synchronized void activate() {
+    /**
+     * Instantiates corresponding component.
+     * <p>
+     * Allows registering listeners on ComponentManager at component instantiation, before all components activation.
+     * <p>
+     * Should be called before {@link #activate()}.
+     *
+     * @return false in case of error during instantiation, true otherwise.
+     * @since 11.3
+     */
+    public synchronized boolean instantiate() {
         if (state != RESOLVED) {
-            return;
+            return false;
         }
-
         try {
             component = new ComponentInstanceImpl(this);
+            return true;
         } catch (RuntimeException e) {
             String msg = "Failed to instantiate component: " + implementation;
             log.error(msg, e);
             msg += " (" + e.toString() + ')';
             Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+            return false;
+        }
+    }
+
+    public synchronized void activate() {
+        if (state != RESOLVED) {
             return;
         }
 
