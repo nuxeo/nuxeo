@@ -292,7 +292,7 @@ public abstract class QueryOptimizer {
     protected Set<String> getDocumentTypeNamesExtending(String typeName) {
         Set<String> types = schemaManager.getDocumentTypeNamesExtending(typeName);
         if (types == null) {
-            throw new RuntimeException("Unknown type: " + typeName);
+            throw new QueryParseException("Unknown type: " + typeName);
         }
         return types;
     }
@@ -451,7 +451,7 @@ public abstract class QueryOptimizer {
         Set<String> set = new HashSet<>();
         for (Literal literal : list) {
             if (!(literal instanceof StringLiteral)) {
-                throw new RuntimeException("requires string literals");
+                throw new QueryParseException("requires string literals");
             }
             set.add(((StringLiteral) literal).value);
         }
