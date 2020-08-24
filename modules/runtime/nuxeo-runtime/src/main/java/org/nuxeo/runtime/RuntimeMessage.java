@@ -89,12 +89,11 @@ public class RuntimeMessage {
      * Useful to track errors on components, extension, etc...
      */
     public enum Source {
-
+        DEPLOYMENT, //
         BUNDLE, //
         COMPONENT, //
         EXTENSION, //
         CODE,
-
     }
 
 }

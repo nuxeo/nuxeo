@@ -48,7 +48,9 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.AbstractRuntimeService;
+import org.nuxeo.runtime.RuntimeMessage;
 import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
@@ -233,7 +235,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             } else {
                 String message = "Unknown component '" + path + "' referenced by bundle '" + name + "'";
                 log.error(message + ". Check the MANIFEST.MF");
-                messageHandler.addMessage(Level.ERROR, message);
+                messageHandler.addMessage(new RuntimeMessage(Level.ERROR, message, Source.BUNDLE, name));
             }
         }
     }

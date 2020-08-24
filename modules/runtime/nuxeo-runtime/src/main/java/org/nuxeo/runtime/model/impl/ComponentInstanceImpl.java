@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Anahide Tchertchian
  */
 package org.nuxeo.runtime.model.impl;
 
@@ -27,7 +28,9 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.runtime.RuntimeMessage;
 import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Adaptable;
@@ -128,7 +131,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } catch (NoSuchMethodException e) {
             // ignore this exception since the activate method is not mandatory
         } catch (ReflectiveOperationException e) {
-            handleError("Failed to activate component: " + getName(), e);
+            handleError("Failed to activate component: " + getName(), Source.COMPONENT, getName().getName(), e);
         }
     }
 
@@ -147,7 +150,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } catch (NoSuchMethodException e) {
             // ignore this exception since the deactivate method is not mandatory
         } catch (ReflectiveOperationException e) {
-            handleError("Failed to deactivate component: " + getName(), e);
+            handleError("Failed to deactivate component: " + getName(), Source.COMPONENT, getName().getName(), e);
         }
     }
 
@@ -183,7 +186,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } catch (NoSuchMethodException e) {
             // ignore this exception since the reload method is not mandatory
         } catch (ReflectiveOperationException e) {
-            handleError("Failed to reload component: " + getName(), e);
+            handleError("Failed to reload component: " + getName(), Source.COMPONENT, getName().getName(), e);
         }
     }
 
@@ -211,14 +214,16 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 try {
                     MethodUtils.invokeMethod(instance, true, "registerExtension", extension);
                 } catch (ReflectiveOperationException e) {
-                    handleError("Error registering " + extension.getComponent().getName(), e);
+                    ComponentName compName = extension.getComponent().getName();
+                    handleError("Error registering " + compName, Source.EXTENSION, compName.getName(), e);
                 }
             }
         } else {
+            ComponentName compName = extension.getComponent().getName();
             String message = "Warning: target extension point '" + extension.getExtensionPoint() + "' of '"
                     + extension.getTargetComponent().getName() + "' is unknown. Check your extension in component "
-                    + extension.getComponent().getName();
-            handleError(message, null);
+                    + compName;
+            handleError(message, Source.EXTENSION, compName.getName(), null);
         }
     }
 
@@ -233,18 +238,21 @@ public class ComponentInstanceImpl implements ComponentInstance {
             try {
                 MethodUtils.invokeMethod(instance, true, "unregisterExtension", extension);
             } catch (ReflectiveOperationException e) {
-                handleError("Error unregistering " + extension.getComponent().getName(), e);
+                ComponentName compName = extension.getComponent().getName();
+                handleError("Error unregistering " + compName, Source.EXTENSION, compName.getName(), e);
             }
         }
     }
 
-    protected void handleError(String message, Exception e) {
+    protected void handleError(String message, Source source, String sourceId, Exception e) {
         Exception ee = e;
         if (e != null) {
             ee = ExceptionUtils.unwrapInvoke(e);
         }
         log.error(message, ee);
-        Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
+        Framework.getRuntime()
+                 .getMessageHandler()
+                 .addMessage(new RuntimeMessage(Level.ERROR, message, source, sourceId));
     }
 
     @Override
