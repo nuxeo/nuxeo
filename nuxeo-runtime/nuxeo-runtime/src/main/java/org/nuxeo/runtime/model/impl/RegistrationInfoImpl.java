@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Anahide Tchertchian
  */
 package org.nuxeo.runtime.model.impl;
 
@@ -35,6 +36,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.ComponentEvent;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Component;
@@ -230,7 +232,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             // we shouldn't check extension points here because it is done each time we get the extensions
             // do it like that for new system for now (which will be used only when we will switch xml contributions to
             // new component lifecycle system)
-            checkExtensions();
+            return checkExtensions();
         }
         return extensions;
     }
@@ -335,24 +337,13 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
     }
 
-    protected ComponentInstance createComponentInstance() {
-        try {
-            return new ComponentInstanceImpl(this);
-        } catch (RuntimeException e) {
-            String msg = "Failed to instantiate component: " + implementation;
-            log.error(msg, e);
-            msg += " (" + e.toString() + ')';
-            Framework.getRuntime().getMessageHandler().addError(msg);
-            throw e;
-        }
-    }
-
     /**
      * @deprecated since 9.2 seems unused
      */
     @Deprecated
     public synchronized void restart() {
         deactivate();
+        instantiate();
         activate();
     }
 
@@ -385,8 +376,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             state = STARTED;
             manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_STARTED, this));
         } catch (RuntimeException e) {
-            log.error(String.format("Component %s notification of application started failed: %s",
-                    component == null ? null : component.getName(), e.getMessage()), e);
+            String message = String.format("Component %s notification of application started failed: %s",
+                    component == null ? null : component.getName(), e.getMessage());
+            log.error(message, e);
+            Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
             state = START_FAILURE;
         }
     }
@@ -414,27 +407,58 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_STOPPED, this));
     }
 
+    /**
+     * Instantiates corresponding component.
+     * <p>
+     * Allows registering listeners on ComponentManager at component instantiation, before all components activation.
+     * <p>
+     * Should be called before {@link #activate()}.
+     *
+     * @return false in case of error during instantiation, true otherwise.
+     * @since 11.3
+     */
+    public synchronized boolean instantiate() {
+        if (state != RESOLVED) {
+            return false;
+        }
+        try {
+            component = new ComponentInstanceImpl(this);
+            return true;
+        } catch (RuntimeException e) {
+            String msg = "Failed to instantiate component: " + implementation;
+            log.error(msg, e);
+            msg += " (" + e.toString() + ')';
+            Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+            return false;
+        }
+    }
+
     public synchronized void activate() {
         if (state != RESOLVED) {
             return;
         }
 
-        component = createComponentInstance();
-
         state = ACTIVATING;
         manager.sendEvent(new ComponentEvent(ComponentEvent.ACTIVATING_COMPONENT, this));
 
         // activate component
-        component.activate();
-        log.debug("Component activated: {}", name);
+        try {
+            component.activate();
+        } catch (RuntimeException e) {
+            String msg = "Failed to activate component: " + implementation;
+            log.error(msg, e);
+            msg += " (" + e.toString() + ')';
+            Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+            return;
+        }
 
+        log.debug("Component activated: {}", name);
         state = ACTIVATED;
         manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_ACTIVATED, this));
 
         // register contributed extensions if any
         if (extensions != null) {
-            checkExtensions();
-            for (Extension xt : extensions) {
+            for (Extension xt : checkExtensions()) {
                 xt.setComponent(component);
                 try {
                     manager.registerExtension(xt);
@@ -443,7 +467,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addError(msg);
+                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 }
             }
         }
@@ -466,7 +490,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addError(msg);
+                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 }
             }
         }
@@ -501,7 +525,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                         String message = "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
                                 + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint();
                         log.error(message, e);
-                        Framework.getRuntime().getMessageHandler().addError(message);
+                        Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
                     }
                 }
             }
@@ -573,29 +597,24 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return implementation;
     }
 
-    public void checkExtensions() {
-        // HashSet<String> targets = new HashSet<String>();
+    /**
+     * Checks extensions and returns only valid ones.
+     *
+     * @since 11.3
+     */
+    protected Extension[] checkExtensions() {
+        var validExtensions = new ArrayList<Extension>();
         for (ExtensionImpl xt : extensions) {
             if (xt.target == null) {
-                Framework.getRuntime().getMessageHandler().addWarning(
-                        "Bad extension declaration (no target attribute specified). Component: " + getName());
+                String msg = String.format(
+                        "Bad extension declaration (no target attribute specified) on component '%s'", getName());
+                Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 continue;
+            } else {
+                validExtensions.add(xt);
             }
-            // TODO do nothing for now -> fix the faulty components and then
-            // activate these warnings
-            // String key = xt.target.getName()+"#"+xt.getExtensionPoint();
-            // if (targets.contains(key)) { // multiple extensions to same
-            // target point declared in same component
-            // String message =
-            // "Component "+getName()+" contains multiple extensions to "+key;
-            // Framework.getRuntime().getMessageHandler().addWarning(message);
-            // //TODO: un-comment the following line if you want to treat this
-            // as a dev. error
-            // //Framework.handleDevError(new Error(message));
-            // } else {
-            // targets.add(key);
-            // }
         }
+        return validExtensions.toArray(Extension[]::new);
     }
 
     @Override

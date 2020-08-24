@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Anahide Tchertchian
  */
 package org.nuxeo.runtime.model.impl;
 
@@ -49,6 +50,7 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -255,17 +257,10 @@ public class ComponentManagerImpl implements ComponentManager {
             return;
         }
 
-        Set<ComponentName> componentsToRemove = stash.toRemove;
-        // Look if the component is not going to be removed when applying the stash
+        // Look if the component is not going to be removed when applying the stash,
         // before checking for duplicates.
-        if (!componentsToRemove.contains(name)) {
-            if (registry.contains(name)) {
-                if (name.getName().startsWith("org.nuxeo.runtime.")) {
-                    // XXX we hide the fact that nuxeo-runtime bundles are
-                    // registered twice
-                    // TODO fix the root cause and remove this
-                    return;
-                }
+        if (!stash.isRemoving(name)) {
+            if (registry.contains(name) || stash.isAdding(name)) {
                 handleError("Duplicate component name: " + name, null);
                 return;
             }
@@ -277,8 +272,8 @@ public class ComponentManagerImpl implements ComponentManager {
             }
         }
 
-        if (shouldStash()) { // stash the registration
-            // should stash before calling ri.attach.
+        if (shouldStash()) {
+            // stash before calling ri.attach.
             stash.add(ri);
             return;
         }
@@ -288,7 +283,6 @@ public class ComponentManagerImpl implements ComponentManager {
             changed = true;
         }
 
-        // TODO it is just about giving manager to RegistrationInfo, do we need that ?
         if (ri.useFormerLifecycleManagement()) {
             ((RegistrationInfoImpl) ri).attach(this);
         }
@@ -297,7 +291,7 @@ public class ComponentManagerImpl implements ComponentManager {
             log.debug("Registering component: {}", name);
             if (!registry.addComponent(ri)) {
                 log.info("Registration delayed for component: " + name + ". Waiting for: "
-                        + registry.getMissingDependencies(ri.getName()));
+                        + registry.getMissingDependencies(name));
             }
         } catch (RuntimeException e) {
             // don't raise this exception,
@@ -415,7 +409,9 @@ public class ComponentManagerImpl implements ComponentManager {
     public synchronized void registerExtension(Extension extension) {
         ComponentName name = extension.getTargetComponent();
         RegistrationInfo ri = registry.getComponent(name);
-        if (ri != null && ri.getComponent() != null) {
+
+        if (ri != null && ri.getComponent() != null
+                && Set.of(RegistrationInfo.ACTIVATED, RegistrationInfo.STARTED).contains(ri.getState())) {
             log.debug("Register contributed extension: {}", extension);
             loadContributions(ri, extension);
             ri.getComponent().registerExtension(extension);
@@ -501,7 +497,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     protected static void handleError(String message, Exception e) {
         log.error(message, e);
-        Framework.getRuntime().getMessageHandler().addWarning(message);
+        Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
     }
 
     /**
@@ -511,29 +507,59 @@ public class ComponentManagerImpl implements ComponentManager {
      * @since 9.2
      */
     protected List<RegistrationInfo> activateComponents() {
+        log.info("Instantiate components");
+        Watch iwatch = new Watch();
+        iwatch.start();
+
+        // first instantiate resolved components: that allows some to register as listeners on ComponentManager before
+        // all components activation.
+        List<RegistrationInfo> iris = new ArrayList<>();
+        // first activate resolved components
+        for (RegistrationInfo ri : registry.getResolvedRegistrationInfo()) {
+            iwatch.start(ri.getName().getName());
+            if (instantiateComponent(ri)) {
+                iris.add(ri);
+            }
+            iwatch.stop(ri.getName().getName());
+        }
+        log.debug("Components instantiated in {}s", iwatch.total::formatSeconds);
+        writeDevMetrics(iwatch, "instantiate");
+
         log.info("Activate components");
-        Watch watch = new Watch();
-        watch.start();
+        Watch awatch = new Watch();
+        awatch.start();
         listeners.beforeActivation();
         // make sure we start with a clean pending registry
         pendingExtensions.clear();
-
         List<RegistrationInfo> ris = new ArrayList<>();
         // first activate resolved components
-        for (RegistrationInfo ri : registry.getResolvedRegistrationInfo()) {
-            // TODO catch and handle errors
-            watch.start(ri.getName().getName());
+        for (RegistrationInfo ri : iris) {
+            awatch.start(ri.getName().getName());
             activateComponent(ri);
             ris.add(ri);
-            watch.stop(ri.getName().getName());
+            awatch.stop(ri.getName().getName());
         }
         listeners.afterActivation();
-        watch.stop();
+        awatch.stop();
 
-        log.debug("Components activated in {}s", watch.total::formatSeconds);
-        writeDevMetrics(watch, "activate");
+        log.debug("Components activated in {}s", awatch.total::formatSeconds);
+        writeDevMetrics(awatch, "activate");
 
         return ris;
+    }
+
+    /**
+     * Instantiates the given {@link RegistrationInfo}. This step will instantiate the component.
+     * <p>
+     * Allows registering listeners on ComponentManager at component instantiation, before all components activation.
+     * <p>
+     * Should be called before {@link #activateComponent(RegistrationInfo)}.
+     *
+     * @return false in case of error during instantiation, true otherwise.
+     * @since 11.3.
+     */
+    protected boolean instantiateComponent(RegistrationInfo ri) {
+        return ((RegistrationInfoImpl) ri).instantiate();
     }
 
     /**
@@ -547,12 +573,14 @@ public class ComponentManagerImpl implements ComponentManager {
             ((RegistrationInfoImpl) ri).activate();
             return;
         }
-        // TODO should be synchronized on ri ? test without it for now
         if (ri.getState() != RegistrationInfo.RESOLVED) {
             return;
         }
         ri.setState(RegistrationInfo.ACTIVATING);
 
+        if (!instantiateComponent(ri)) {
+            return;
+        }
         ComponentInstance component = ri.getComponent();
         component.activate();
         log.debug("Component activated: {}", ri.getName());
@@ -569,7 +597,7 @@ public class ComponentManagerImpl implements ComponentManager {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addError(msg);
+                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 }
             }
         }
@@ -592,12 +620,11 @@ public class ComponentManagerImpl implements ComponentManager {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addError(msg);
+                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 }
             }
         }
 
-        // register services
         registerServices(ri);
 
         ri.setState(RegistrationInfo.ACTIVATED);
@@ -651,8 +678,6 @@ public class ComponentManagerImpl implements ComponentManager {
         }
 
         ri.setState(RegistrationInfo.DEACTIVATING);
-        // TODO no unregisters before, try to do it in new implementation
-        // unregister services
         unregisterServices(ri);
 
         // unregister contributed extensions if any
@@ -665,7 +690,7 @@ public class ComponentManagerImpl implements ComponentManager {
                     String message = "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
                             + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint();
                     log.error(message, e);
-                    Framework.getRuntime().getMessageHandler().addError(message);
+                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
                 }
             }
         }
@@ -1014,6 +1039,9 @@ public class ComponentManagerImpl implements ComponentManager {
         // activate components to add (and add them to standby list if needed)
         for (RegistrationInfo ri : stash.toAdd) {
             if (ri.isResolved()) {
+                if (!instantiateComponent(ri)) {
+                    continue;
+                }
                 activateComponent(ri);
                 if (isStandby()) {
                     // add new components to standby list in order to start them latter
@@ -1182,6 +1210,20 @@ public class ComponentManagerImpl implements ComponentManager {
                 }
             }
             return ris;
+        }
+
+        /**
+         * @since 11.3
+         */
+        public boolean isAdding(ComponentName name) {
+            return toAdd.stream().anyMatch(ri -> name.equals(ri.getName()));
+        }
+
+        /**
+         * @since 11.3
+         */
+        public boolean isRemoving(ComponentName name) {
+            return toRemove.contains(name);
         }
 
     }
