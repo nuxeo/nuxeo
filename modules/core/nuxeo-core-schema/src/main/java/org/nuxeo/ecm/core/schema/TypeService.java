@@ -20,10 +20,12 @@
 package org.nuxeo.ecm.core.schema;
 
 import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -86,11 +88,12 @@ public class TypeService extends DefaultComponent {
             xp = computeSchemaExtensionPoint(PropertyDescriptor.class);
             PropertyDescriptor contrib = ((PropertyDeprecationDescriptor) contribution).toPropertyDescriptor();
             super.registerContribution(contrib, xp, component);
+            ComponentName compName = component.getName();
             String message = String.format(
                     "Deprecation contribution on component: %s should now be contributed to extension point: %s ",
-                    component.getName(), XP_SCHEMA);
+                    compName, XP_SCHEMA);
             DeprecationLogger.log(message, "11.1");
-            addRuntimeMessage(Level.WARNING, message);
+            addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
             break;
         default:
             throw new RuntimeServiceException("Unknown extension point: " + xp);

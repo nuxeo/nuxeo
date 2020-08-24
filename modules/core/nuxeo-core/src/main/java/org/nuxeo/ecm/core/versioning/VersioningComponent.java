@@ -34,9 +34,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
@@ -195,20 +197,22 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
             if (contrib instanceof VersioningRuleDescriptor) {
                 VersioningRuleDescriptor rule = (VersioningRuleDescriptor) contrib;
                 registerVersioningRule(rule);
+                ComponentName compName = contributor.getName();
                 String message = String.format(
                         "Versioning rule for '%s' on component %s should now be contributed to extension points '%s', "
                                 + "'%s' and '%s': a compatibility registration was performed but it may not be accurate.",
-                        (rule).getTypeName(), contributor.getName(), VERSIONING_POLICY_XP, VERSIONING_FILTER_XP,
+                        (rule).getTypeName(), compName, VERSIONING_POLICY_XP, VERSIONING_FILTER_XP,
                         VERSIONING_RESTRICTION_XP);
                 DeprecationLogger.log(message, "9.1");
-                addRuntimeMessage(Level.WARNING, message);
+                addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
             } else if (contrib instanceof DefaultVersioningRuleDescriptor) {
                 registerDefaultVersioningRule((DefaultVersioningRuleDescriptor) contrib);
+                ComponentName compName = contributor.getName();
                 String message = String.format("Default versioning rule on component %s should now be contributed to "
                         + "extension points '%s' and '%s': a compatibility registration was performed but it may not be "
-                        + "accurate.", contributor.getName(), VERSIONING_POLICY_XP, VERSIONING_RESTRICTION_XP);
+                        + "accurate.", compName, VERSIONING_POLICY_XP, VERSIONING_RESTRICTION_XP);
                 DeprecationLogger.log(message, "9.1");
-                addRuntimeMessage(Level.WARNING, message);
+                addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
             } else {
                 throw new RuntimeException("Unknown contribution to " + point + ": " + contrib.getClass());
             }

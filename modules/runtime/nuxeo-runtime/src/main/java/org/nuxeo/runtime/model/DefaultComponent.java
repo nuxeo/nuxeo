@@ -68,9 +68,13 @@ public class DefaultComponent implements Component, Adaptable {
     }
 
     protected void addRuntimeMessage(Level level, String message) {
+        addRuntimeMessage(level, message, Source.COMPONENT, name);
+    }
+
+    protected void addRuntimeMessage(Level level, String message, Source source, String sourceComponent) {
         Framework.getRuntime()
                  .getMessageHandler()
-                 .addMessage(new RuntimeMessage(level, message, Source.COMPONENT, name));
+                 .addMessage(new RuntimeMessage(level, message, source, sourceComponent));
     }
 
     @Override

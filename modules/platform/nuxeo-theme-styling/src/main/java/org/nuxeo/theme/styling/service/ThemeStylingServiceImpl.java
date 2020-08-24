@@ -36,10 +36,12 @@ import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.ecm.web.resources.core.ResourceDescriptor;
 import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.styling.negotiation.Negotiator;
@@ -96,13 +98,14 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         } else if (contribution instanceof SimpleStyle) {
             SimpleStyle style = (SimpleStyle) contribution;
             log.info(String.format("Register style '%s'", style.getName()));
+            ComponentName compName = contributor.getName();
             String message = String.format(
                     "Style '%s' on component %s should now be contributed to extension "
                             + "point '%s': a compatibility registration was performed but it may not be "
                             + "accurate. Note that the 'flavor' processor should be used with this resource.",
-                    style.getName(), contributor.getName(), WR_EX);
+                    style.getName(), compName, WR_EX);
             DeprecationLogger.log(message, "7.4");
-            addRuntimeMessage(Level.WARNING, message);
+            addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
             ResourceDescriptor resource = getResourceFromStyle(style);
             registerResource(resource, contributor.getContext());
             log.info(String.format("Done registering style '%s'", style.getName()));
@@ -119,12 +122,13 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         } else if (contribution instanceof ResourceDescriptor) {
             ResourceDescriptor resource = (ResourceDescriptor) contribution;
             log.info(String.format("Register resource '%s'", resource.getName()));
+            ComponentName compName = contributor.getName();
             String message = String.format(
                     "Resource '%s' on component %s should now be contributed to extension "
                             + "point '%s': a compatibility registration was performed but it may not be accurate.",
-                    resource.getName(), contributor.getName(), WR_EX);
+                    resource.getName(), compName, WR_EX);
             DeprecationLogger.log(message, "7.4");
-            addRuntimeMessage(Level.WARNING, message);
+            addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
             // ensure path is absolute, consider that resource is in the war, and if not, user will have to declare it
             // directly to the WRM endpoint
             String path = resource.getPath();
