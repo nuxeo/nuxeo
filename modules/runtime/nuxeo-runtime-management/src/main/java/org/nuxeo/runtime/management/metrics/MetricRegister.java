@@ -22,20 +22,15 @@ package org.nuxeo.runtime.management.metrics;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import javax.management.MBeanServer;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
 import org.nuxeo.runtime.management.ResourcePublisher;
-import org.nuxeo.runtime.management.ServerLocator;
 
 public class MetricRegister {
 
     protected static final Log log = LogFactory.getLog(MetricRegister.class);
-
-    protected final MBeanServer server = Framework.getService(ServerLocator.class).lookupServer();
 
     protected final HashMap<String, String> cnames = new HashMap<>();
 
