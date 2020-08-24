@@ -122,7 +122,7 @@
     </Connector>
 </#if>
 
-<#if (nuxeo.management.api.http.port)?has_content>
+<#if (nuxeo.management.api.http.port)??>
     <Connector port="${nuxeo.management.api.http.port}" protocol="HTTP/1.1" URIEncoding="UTF-8"
                address="${nuxeo.bind.address}"
 <#if nuxeo.server.signature??>
