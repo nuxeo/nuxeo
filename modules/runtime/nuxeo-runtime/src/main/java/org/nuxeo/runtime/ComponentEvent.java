@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Anahide Tchertchian
  */
 package org.nuxeo.runtime;
 
@@ -98,11 +99,11 @@ public class ComponentEvent implements Serializable {
     }
 
     /**
-     * Gets the event name as a string.
+     * Returns the event name given an integer id.
      *
-     * @return the event name
+     * @since 11.3
      */
-    public final String getEventName() {
+    public static final String getEventName(int id) {
         switch (id) {
         case COMPONENT_REGISTERED:
             return "COMPONENT_REGISTERED";
@@ -136,6 +137,15 @@ public class ComponentEvent implements Serializable {
             return "EXTENSION_PENDING";
         }
         return "UNKNOWN_" + id;
+    }
+
+    /**
+     * Gets the event name as a string.
+     *
+     * @return the event name
+     */
+    public final String getEventName() {
+        return getEventName(id);
     }
 
     @Override

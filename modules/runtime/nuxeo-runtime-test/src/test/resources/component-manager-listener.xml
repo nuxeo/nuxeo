@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<component name="component.manager.listener">
+
+  <implementation class="org.nuxeo.runtime.MockComponentManagerListener" />
+
+</component>
