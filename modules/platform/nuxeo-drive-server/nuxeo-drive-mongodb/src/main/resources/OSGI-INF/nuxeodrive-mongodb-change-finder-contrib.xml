@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.mongodb.change.finder" version="1.0">
+
+  <require>org.nuxeo.drive.change.finder</require>
+  <require>org.nuxeo.mongodb.audit.contrib</require>
+
+  <extension target="org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl" point="changeFinder">
+    <changeFinder class="org.nuxeo.drive.mongodb.MongoDBAuditChangeFinder" />
+  </extension>
+
+</component>
