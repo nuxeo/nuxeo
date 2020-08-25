@@ -193,7 +193,8 @@ public class DocumentBrowsingTest extends BaseTest {
 
         // Given a document
         DocumentModel note = RestServerInit.getNote(0, session);
-        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + note.getId())) {
+        String noteId = note.getId();
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + noteId)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
         }
@@ -202,10 +203,14 @@ public class DocumentBrowsingTest extends BaseTest {
         // and pass an old/invalid change token
         jsonDoc.setPropertyValue("dc:title", "New title");
         jsonDoc.node.put("changeToken", "9999-1234"); // old/invalid change token
-        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson())) {
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + noteId, jsonDoc.asJson())) {
 
             // Then we get a 409 CONFLICT
             assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
+            // Assert the response is a JSON entity
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            String error = getErrorMessage(node);
+            assertEquals(noteId, error);
 
             // And the document is NOT updated
             fetchInvalidations();
