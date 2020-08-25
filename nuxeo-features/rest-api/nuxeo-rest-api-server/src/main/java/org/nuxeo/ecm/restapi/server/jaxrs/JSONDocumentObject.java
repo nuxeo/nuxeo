@@ -36,10 +36,10 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
@@ -76,19 +76,14 @@ public class JSONDocumentObject extends DocumentObject {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response doPut(DocumentModel inputDoc, @Context HttpHeaders headers) {
+    public DocumentModel doPut(DocumentModel inputDoc, @Context HttpHeaders headers) {
         DocumentModelJsonReader.applyPropertyValues(inputDoc, doc);
         CoreSession session = ctx.getCoreSession();
         versioningDocFromHeaderIfExists(doc, headers);
         updateCommentFromHeader(headers);
-        try {
-            doc = session.saveDocument(doc);
-            session.save();
-        } catch (ConcurrentUpdateException e) {
-            return Response.status(Status.CONFLICT).entity("Invalid change token").build();
-        }
-        DocumentModel returnedDoc = isVersioning ? session.getLastDocumentVersion(doc.getRef()) : doc;
-        return Response.ok(returnedDoc).build();
+        doc = session.saveDocument(doc);
+        session.save();
+        return isVersioning ? session.getLastDocumentVersion(doc.getRef()) : doc;
     }
 
     @POST
@@ -96,7 +91,7 @@ public class JSONDocumentObject extends DocumentObject {
     public Response doPost(DocumentModel inputDoc) {
         CoreSession session = ctx.getCoreSession();
         if (StringUtils.isBlank(inputDoc.getType()) || StringUtils.isBlank(inputDoc.getName())) {
-            return Response.status(Status.BAD_REQUEST).entity("type or name property is missing").build();
+            throw new NuxeoException("type or name property is missing", Status.BAD_REQUEST.getStatusCode());
         }
         DocumentModel createdDoc = session.createDocumentModel(doc.getPathAsString(), inputDoc.getName(),
                 inputDoc.getType());
