@@ -326,7 +326,7 @@ public abstract class AbstractAutomationClientTest {
                               .set("properties", "dc:title=Update 3")
                               .executeReturningExceptionEntity(SC_CONFLICT);
         String expectedError = String.format(
-                "Failed to invoke operation: Document.Update, Failed to invoke operation Document.Update, %s",
+                "Failed to invoke operation: Document.Update, Failed to invoke operation Document.Update, %s, Invalid change token",
                 getId(doc));
         assertEquals(expectedError, error);
 

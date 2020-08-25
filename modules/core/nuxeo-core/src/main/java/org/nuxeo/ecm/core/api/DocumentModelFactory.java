@@ -212,7 +212,7 @@ public class DocumentModelFactory {
         String changeToken = (String) docModel.getContextData(CoreSession.CHANGE_TOKEN);
         boolean userChange = StringUtils.isNotEmpty(changeToken);
         if (!doc.validateUserVisibleChangeToken(changeToken)) {
-            throw new ConcurrentUpdateException(doc.getUUID());
+            throw new ConcurrentUpdateException("Invalid change token").addInfo(doc.getUUID());
         }
         userChange = userChange || Boolean.TRUE.equals(docModel.getContextData(CoreSession.USER_CHANGE));
         docModel.putContextData(CoreSession.USER_CHANGE, null);

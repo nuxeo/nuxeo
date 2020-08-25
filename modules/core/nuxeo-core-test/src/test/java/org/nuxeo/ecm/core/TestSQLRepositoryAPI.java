@@ -5272,7 +5272,7 @@ public class TestSQLRepositoryAPI {
             }
         } catch (ConcurrentUpdateException e) {
             TransactionHelper.setTransactionRollbackOnly();
-            assertEquals(doc.getId(), e.getMessage());
+            assertEquals(doc.getId() + ", Invalid change token", e.getMessage());
         }
     }
 
@@ -5298,7 +5298,7 @@ public class TestSQLRepositoryAPI {
             }
         } catch (ConcurrentUpdateException e) {
             TransactionHelper.setTransactionRollbackOnly();
-            assertEquals(doc.getId(), e.getMessage());
+            assertEquals(doc.getId() + ", Invalid change token", e.getMessage());
         }
     }
 
