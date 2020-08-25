@@ -2,3 +2,5 @@
 mongodb-audit.target=.
 
 nuxeo.template.includes=mongodb
+# used to be aware of the mongodb-audit template activation, for instance in blacklist.nxftl
+nuxeo.mongodb.audit.enabled=true

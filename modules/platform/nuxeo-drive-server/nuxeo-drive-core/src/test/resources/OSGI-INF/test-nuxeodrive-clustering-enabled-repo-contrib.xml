@@ -5,4 +5,7 @@
       <clustering id="1" enabled="true" delay="1000" />
     </repository>
   </extension>
+  <extension target="org.nuxeo.runtime.cluster.ClusterService" point="configuration">
+    <clusterNode id="42" enabled="true" />
+  </extension>
 </component>
