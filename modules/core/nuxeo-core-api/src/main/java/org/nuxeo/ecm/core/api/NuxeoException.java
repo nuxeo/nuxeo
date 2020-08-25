@@ -99,11 +99,12 @@ public class NuxeoException extends RuntimeException {
      * @param info the information
      * @since 7.4
      */
-    public void addInfo(String info) {
+    public NuxeoException addInfo(String info) {
         if (infos == null) {
             infos = new LinkedList<>();
         }
         infos.addFirst(info);
+        return this;
     }
 
     /**
