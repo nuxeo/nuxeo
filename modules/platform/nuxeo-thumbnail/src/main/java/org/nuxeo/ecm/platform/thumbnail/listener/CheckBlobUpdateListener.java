@@ -23,6 +23,8 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.platform.thumbnail.listener.UpdateThumbnailListener.THUMBNAIL_UPDATED;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
@@ -34,11 +36,16 @@ import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Thumbnail listener handling document blob update and checking changes. Fire an event if it's the case
+ * Thumbnail listener handling document blob update, checking for changes, for documents holding default the schema
+ * named "file".
+ * <P>
+ * Fires an event if it's the case, caught by asynchronous listener at {@link UpdateThumbnailListener}.
  *
  * @since 5.7
  */
 public class CheckBlobUpdateListener implements EventListener {
+
+    private static final Logger log = LogManager.getLogger(CheckBlobUpdateListener.class);
 
     @Override
     public void handleEvent(Event event) {
@@ -48,6 +55,10 @@ public class CheckBlobUpdateListener implements EventListener {
         }
         DocumentEventContext context = (DocumentEventContext) ec;
         DocumentModel doc = context.getSourceDocument();
+        if (Boolean.TRUE.equals(context.getProperty(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION))) {
+            log.trace("Thumbnail computation is disabled for document {}", doc::getId);
+            return;
+        }
         if (!doc.hasSchema("file")) {
             return;
         }
