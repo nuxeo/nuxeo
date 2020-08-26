@@ -51,7 +51,8 @@ import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Thumbnail listener handling creation and update document event to store doc thumbnail preview (only for DocType File)
+ * Thumbnail listener handling creation and update of thumbnail preview on main blob update, for documents holding the
+ * schema "file".
  *
  * @since 5.7
  */
