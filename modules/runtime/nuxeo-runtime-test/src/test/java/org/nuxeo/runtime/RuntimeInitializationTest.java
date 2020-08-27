@@ -218,6 +218,11 @@ public class RuntimeInitializationTest {
                         + "The markup in the document preceding the root element must be well-formed.)");
         checkInvalidXML("org.nuxeo.runtime.test.tests:log4j2-test.xml", "Could not resolve registration from file:",
                 "log4j2-test.xml");
+        // Non-regression test for NXP-21203
+        checkInvalidXML("org.nuxeo.runtime.test.tests:invalid-xml-missing-component.xml",
+                "Could not resolve registration from file:",
+                "invalid-xml-missing-component.xml (Expected \"<component>\" tag for component registration, "
+                        + "resolved object 'ExtensionImpl {target: service:my.comp, point:xp, contributor:null}' instead.)");
     }
 
     /**
@@ -229,7 +234,7 @@ public class RuntimeInitializationTest {
         harness.deployBundle("org.nuxeo.runtime.test.tests");
 
         List<RuntimeMessage> messages = Framework.getRuntime().getMessageHandler().getRuntimeMessages(Level.ERROR);
-        assertEquals(3, messages.size());
+        assertEquals(4, messages.size());
 
         RuntimeMessage message = messages.get(0);
         assertTrue(message.getMessage().startsWith("Could not resolve registration from file:"));
@@ -250,6 +255,17 @@ public class RuntimeInitializationTest {
         message = messages.get(2);
         assertEquals("Unknown component 'invalid-file.xml' referenced by bundle 'org.nuxeo.runtime.test.tests'",
                 message.getMessage());
+        assertEquals(Level.ERROR, message.getLevel());
+        assertEquals(Source.BUNDLE, message.getSource());
+        assertEquals("org.nuxeo.runtime.test.tests", message.getSourceId());
+
+        message = messages.get(3);
+        assertTrue(message.getMessage().startsWith("Could not resolve registration from file:"));
+        assertTrue(
+                message.getMessage()
+                       .endsWith(
+                               "invalid-xml-missing-component.xml (Expected \"<component>\" tag for component registration, "
+                                       + "resolved object 'ExtensionImpl {target: service:my.comp, point:xp, contributor:null}' instead.)"));
         assertEquals(Level.ERROR, message.getLevel());
         assertEquals(Source.BUNDLE, message.getSource());
         assertEquals("org.nuxeo.runtime.test.tests", message.getSourceId());

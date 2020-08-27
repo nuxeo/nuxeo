@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- * $Id$
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.runtime.model.impl;
@@ -73,7 +73,13 @@ public class ComponentDescriptorReader {
     public RegistrationInfoImpl read(RuntimeContext ctx, InputStream in) throws IOException {
         Object[] result = xmap.loadAll(new XMapContext(ctx), in);
         if (result.length > 0) {
-            return (RegistrationInfoImpl) result[0];
+            if (result[0] instanceof RegistrationInfoImpl) {
+                return (RegistrationInfoImpl) result[0];
+            } else {
+                throw new IOException(String.format(
+                        "Expected \"<component>\" tag for component registration, resolved object '%s' instead.",
+                        result[0]));
+            }
         }
         return null;
     }

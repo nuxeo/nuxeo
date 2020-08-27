@@ -1,0 +1,3 @@
+<extension target="my.comp" point="xp">
+  <echo>OOps, forgot the component tag</echo>
+</extension>

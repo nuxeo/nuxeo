@@ -42,6 +42,7 @@ public class RuntimeInitializationConfigErrorFeature implements RunnerFeature, W
     protected Set<String> TEST_FILES = Set.of( //
             "empty-xml.xml", //
             "invalid-xml.xml", //
+            "invalid-xml-missing-component.xml", //
             "invalid-component-activate-message.xml", //
             "invalid-component-activate.xml", //
             "invalid-component-class.xml", //

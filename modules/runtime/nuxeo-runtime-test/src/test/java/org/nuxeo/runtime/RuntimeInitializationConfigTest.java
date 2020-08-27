@@ -64,7 +64,7 @@ public class RuntimeInitializationConfigTest {
     public void testLoadConfig() throws Exception {
         // errors
         List<RuntimeMessage> errors = Framework.getRuntime().getMessageHandler().getRuntimeMessages(Level.ERROR);
-        assertEquals(14, errors.size());
+        assertEquals(15, errors.size());
 
         Iterator<RuntimeMessage> errorsIt = errors.iterator();
         checkMessage(errorsIt.next(), "Error deploying config empty-xml-config.xml (Empty registration from file:",
@@ -76,6 +76,11 @@ public class RuntimeInitializationConfigTest {
                 "config/invalid-xml-config.xml (org.xml.sax.SAXParseException; lineNumber: 1; columnNumber: 2; "
                         + "The markup in the document preceding the root element must be well-formed.))",
                 Level.ERROR, Source.CONFIG, "invalid-xml-config.xml");
+        checkMessage(errorsIt.next(),
+                "Error deploying config invalid-xml-missing-component-config.xml (Could not resolve registration from file:",
+                "config/invalid-xml-missing-component-config.xml (Expected \"<component>\" tag for component registration, "
+                        + "resolved object 'ExtensionImpl {target: service:my.comp, point:xp, contributor:null}' instead.))",
+                Level.ERROR, Source.CONFIG, "invalid-xml-missing-component-config.xml");
         checkMessage(errorsIt.next(),
                 "Error deploying config log4j2-test-config.xml (Could not resolve registration from file:",
                 "config/log4j2-test-config.xml)", Level.ERROR, Source.CONFIG, "log4j2-test-config.xml");
