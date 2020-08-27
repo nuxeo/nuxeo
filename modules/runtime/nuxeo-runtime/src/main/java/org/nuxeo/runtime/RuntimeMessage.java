@@ -43,10 +43,6 @@ public class RuntimeMessage {
         this.sourceId = sourceId;
     }
 
-    public RuntimeMessage(Level level, String message) {
-        this(level, message, null, null);
-    }
-
     public Level getLevel() {
         return level;
     }
@@ -59,6 +55,9 @@ public class RuntimeMessage {
      * Returns the type of source that produced the message.
      */
     public Source getSource() {
+        if (source == null) {
+            return Source.UNKNOWN;
+        }
         return source;
     }
 
@@ -66,6 +65,9 @@ public class RuntimeMessage {
      * Returns a string identifier for the source that produce the message.
      */
     public String getSourceId() {
+        if (sourceId == null) {
+            return getClass().getName();
+        }
         return sourceId;
     }
 
@@ -89,6 +91,7 @@ public class RuntimeMessage {
      * Useful to track errors on components, extension, etc...
      */
     public enum Source {
+        UNKNOWN, //
         DEPLOYMENT, //
         BUNDLE, //
         COMPONENT, //
