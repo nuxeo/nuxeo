@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Anahide Tchertchian
  */
 package org.nuxeo.runtime.model.impl;
 
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.RuntimeService;
@@ -131,10 +133,6 @@ public class DefaultRuntimeContext implements RuntimeContext {
     public RegistrationInfo deploy(StreamRef ref) throws IOException {
         String name = ref.getId();
         RegistrationInfoImpl ri = createRegistrationInfo(ref);
-        if (ri == null || ri.name == null) {
-            // not parsed correctly, e.g., faces-config.xml
-            return null;
-        }
         log.debug("Deploying component from url {}", name);
         ri.sourceId = name;
         ri.context = this;
@@ -148,7 +146,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
             }
         }
         runtime.getComponentManager().register(ri);
-        components.add(ri.name);
+        components.add(ri.getName());
         return ri;
     }
 
@@ -223,10 +221,21 @@ public class DefaultRuntimeContext implements RuntimeContext {
         try (InputStream stream = ref.getStream()) {
             source = IOUtils.toString(stream, UTF_8);
         }
-        String expanded = Framework.expandVars(source);
-        try (InputStream in = new ByteArrayInputStream(expanded.getBytes())) {
-            return createRegistrationInfo(in);
+        if (StringUtils.isBlank(source)) {
+            throw new IOException("Empty registration from " + ref.getId());
         }
+        String expanded = Framework.expandVars(source);
+        RegistrationInfoImpl ri;
+        try (InputStream in = new ByteArrayInputStream(expanded.getBytes())) {
+            ri = createRegistrationInfo(in);
+        } catch (IOException e) {
+            throw new IOException(
+                    String.format("Could not resolve registration from %s (%s)", ref.getId(), e.getMessage()), e);
+        }
+        if (ri == null || ri.getName() == null) {
+            throw new IOException("Could not resolve registration from " + ref.getId());
+        }
+        return ri;
     }
 
     public RegistrationInfoImpl createRegistrationInfo(InputStream in) throws IOException {

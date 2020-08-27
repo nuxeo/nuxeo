@@ -57,17 +57,17 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
             runtime.bundles.put(name, bundle);
             int state = bundle.getState();
             log.debug("Install bundle: {} {}", () -> name, () -> bundleStateAsString(state));
-            if ((state & mask) != 0) { // check only resolved bundles
+            // check only resolved bundles
+            if ((state & mask) != 0) {
+                // check only bundles containing nuxeo components
                 if (OSGiRuntimeService.getComponentsList(bundle) != null) {
                     log.debug("Install bundle: {} component list: {}", name,
                             OSGiRuntimeService.getComponentsList(bundle));
-                    // check only bundles containing nuxeo comp.
                     try {
                         runtime.createContext(bundle);
                     } catch (RuntimeException e) {
-                        // don't raise this exception,
-                        // we want to isolate bundle errors from other bundles
-                        log.warn("Failed to load components for bundle: " + name, e);
+                        // only log error to keep on deploying other bundles
+                        log.error(e, e);
                     }
                 } else {
                     log.debug("Install bundle: {} has no components", name);
@@ -118,6 +118,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
                 break;
             }
         } catch (RuntimeException e) {
+            // only log error to keep on deploying other bundles
             log.error(e, e);
         }
     }

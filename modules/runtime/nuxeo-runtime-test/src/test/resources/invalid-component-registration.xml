@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="invalid.comp">
+<component name="invalid.comp.registration">
 
   <implementation class="org.nuxeo.runtime.RuntimeInitializationTestComponent" />
   <property name="actionType" value="fail" />
@@ -8,7 +8,7 @@
   <extension-point name="xp">
     <object class="org.nuxeo.runtime.DummyContribution" />
   </extension-point>
-  <extension target="invalid.comp" point="xp">
+  <extension target="invalid.comp.registration" point="xp">
     <printer>
       <message>Hello World!</message>
     </printer>

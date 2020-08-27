@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="invalid.comp">
+<component name="invalid.comp.activate.message">
 
   <implementation class="org.nuxeo.runtime.RuntimeInitializationTestComponent" />
   <property name="actionType" value="message" />

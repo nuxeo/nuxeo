@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  *     Julien Carsique
+ *     Anahide Tchertchian
  */
 package org.nuxeo.runtime.osgi;
 
@@ -51,7 +52,6 @@ import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeMessage;
 import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeMessage.Source;
-import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
@@ -228,9 +228,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                 try {
                     ctx.deploy(url);
                 } catch (IOException e) {
-                    // just log error to know where is the cause of the exception
-                    log.error("Error deploying resource: {}", url);
-                    throw new RuntimeServiceException("Cannot deploy: " + url, e);
+                    log.error(e, e);
+                    messageHandler.addMessage(new RuntimeMessage(Level.ERROR, e.getMessage(), Source.BUNDLE, name));
                 }
             } else {
                 String message = "Unknown component '" + path + "' referenced by bundle '" + name + "'";
@@ -309,7 +308,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         boolean isNotJBoss4 = !isJBoss4(env);
 
         File dir = env.getConfig();
-        // File dir = new File(configDir);
         String[] names = dir.list();
         if (names != null) {
             Arrays.sort(names, String::compareToIgnoreCase);
@@ -326,7 +324,9 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                         try {
                             context.deploy(file.toURI().toURL());
                         } catch (IOException e) {
-                            throw new IllegalArgumentException("Cannot load config from " + file, e);
+                            String message = String.format("Error deploying config %s (%s)", name, e.getMessage());
+                            log.error(message, e);
+                            messageHandler.addMessage(new RuntimeMessage(Level.ERROR, message, Source.CONFIG, name));
                         }
                     }
                 } else if (name.endsWith(".config") || name.endsWith(".ini") || name.endsWith(".properties")) {

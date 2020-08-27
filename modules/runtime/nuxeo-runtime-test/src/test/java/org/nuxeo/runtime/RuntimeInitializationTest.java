@@ -23,7 +23,9 @@ package org.nuxeo.runtime;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
@@ -46,6 +49,9 @@ public class RuntimeInitializationTest {
 
     @Inject
     protected HotDeployer hotDeployer;
+
+    @Inject
+    public RuntimeHarness harness;
 
     @Test
     @Deploy("org.nuxeo.runtime.test.tests:MyComp1.xml")
@@ -68,11 +74,11 @@ public class RuntimeInitializationTest {
         }
     }
 
-    protected void checkErrorSource(Source source) {
+    protected void checkErrorSource(Source source, String sourceId) {
         List<RuntimeMessage> errors = Framework.getRuntime().getMessageHandler().getRuntimeMessages(Level.ERROR);
         assertFalse(errors.isEmpty());
         errors.forEach(e -> assertEquals(source, e.getSource()));
-        errors.forEach(e -> assertEquals("invalid.comp", e.getSourceId()));
+        errors.forEach(e -> assertEquals(sourceId, e.getSourceId()));
     }
 
     @Test
@@ -114,7 +120,7 @@ public class RuntimeInitializationTest {
         assertEquals(List.of(
                 "Failed to activate component: org.nuxeo.runtime.RuntimeInitializationTestComponent (java.lang.RuntimeException: Fail on activate)"),
                 Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR));
-        checkErrorSource(Source.COMPONENT);
+        checkErrorSource(Source.COMPONENT, "invalid.comp.activate");
         assertTrue(Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING).isEmpty());
     }
 
@@ -123,7 +129,7 @@ public class RuntimeInitializationTest {
     public void testInvalidComponentActivateMessage() {
         assertEquals(List.of("Error message on activate"),
                 Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR));
-        checkErrorSource(Source.COMPONENT);
+        checkErrorSource(Source.COMPONENT, "invalid.comp.activate.message");
         assertEquals(List.of("Warn message on activate"),
                 Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING));
     }
@@ -136,7 +142,7 @@ public class RuntimeInitializationTest {
                 "Warning: target extension point 'xp' of 'invalid.comp' is unknown. Check your extension in component service:invalid.comp",
                 "Warning: target extension point 'null' of 'invalid.comp' is unknown. Check your extension in component service:invalid.comp"),
                 Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR));
-        checkErrorSource(Source.EXTENSION);
+        checkErrorSource(Source.EXTENSION, "invalid.comp");
         assertTrue(Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING).isEmpty());
     }
 
@@ -146,17 +152,17 @@ public class RuntimeInitializationTest {
         assertEquals(List.of(
                 "Failed to instantiate component: org.nuxeo.runtime.Foo (org.nuxeo.runtime.RuntimeServiceException: java.lang.ClassNotFoundException: org.nuxeo.runtime.Foo)"),
                 Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR));
-        checkErrorSource(Source.COMPONENT);
+        checkErrorSource(Source.COMPONENT, "invalid.comp.class");
         assertTrue(Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING).isEmpty());
     }
 
     @Test
     @Deploy("org.nuxeo.runtime.test.tests:invalid-component-start.xml")
     public void testInvalidComponentStart() {
-        assertEquals(
-                List.of("Component service:invalid.comp notification of application started failed: Fail on start"),
+        assertEquals(List.of(
+                "Component service:invalid.comp.start notification of application started failed: Fail on start"),
                 Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR));
-        checkErrorSource(Source.COMPONENT);
+        checkErrorSource(Source.COMPONENT, "invalid.comp.start");
         assertTrue(Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING).isEmpty());
     }
 
@@ -165,7 +171,7 @@ public class RuntimeInitializationTest {
     public void testInvalidComponentStartMessage() {
         assertEquals(List.of("Error message on start"),
                 Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR));
-        checkErrorSource(Source.COMPONENT);
+        checkErrorSource(Source.COMPONENT, "invalid.comp.start.message");
         assertEquals(List.of("Warn message on start"),
                 Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING));
     }
@@ -173,10 +179,10 @@ public class RuntimeInitializationTest {
     @Test
     @Deploy("org.nuxeo.runtime.test.tests:invalid-component-registration.xml")
     public void testInvalidComponentRegistration() {
-        assertEquals(List.of(
-                "Failed to register extension to: service:invalid.comp, xpoint: xp in component: service:invalid.comp (java.lang.RuntimeException: Fail on register)"),
+        assertEquals(List.of("Failed to register extension to: service:invalid.comp.registration, xpoint: xp "
+                + "in component: service:invalid.comp.registration (java.lang.RuntimeException: Fail on register)"),
                 Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR));
-        checkErrorSource(Source.EXTENSION);
+        checkErrorSource(Source.EXTENSION, "invalid.comp.registration");
         assertTrue(Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING).isEmpty());
     }
 
@@ -185,9 +191,68 @@ public class RuntimeInitializationTest {
     public void testInvalidComponentRegistrationMessage() {
         assertEquals(List.of("Error message on register"),
                 Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR));
-        checkErrorSource(Source.COMPONENT);
+        checkErrorSource(Source.COMPONENT, "invalid.comp.registration.message");
         assertEquals(List.of("Warn message on register"),
                 Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING));
+    }
+
+    protected void checkInvalidXML(String url, String errorStartsWith, String errorEndsWith) throws Exception {
+        try {
+            hotDeployer.deploy(url);
+            fail("IOException expected");
+        } catch (IOException e) {
+            assertTrue(e.getMessage(), e.getMessage().startsWith(errorStartsWith));
+            assertTrue(e.getMessage(), e.getMessage().endsWith(errorEndsWith));
+        }
+    }
+
+    /**
+     * @since 11.3
+     */
+    @Test
+    public void testInvalidXML() throws Exception {
+        // use cases for NXP-29547
+        checkInvalidXML("org.nuxeo.runtime.test.tests:empty-xml.xml", "Empty registration from file:", "empty-xml.xml");
+        checkInvalidXML("org.nuxeo.runtime.test.tests:invalid-xml.xml", "Could not resolve registration from file:",
+                "invalid-xml.xml (org.xml.sax.SAXParseException; lineNumber: 1; columnNumber: 2; "
+                        + "The markup in the document preceding the root element must be well-formed.)");
+        checkInvalidXML("org.nuxeo.runtime.test.tests:log4j2-test.xml", "Could not resolve registration from file:",
+                "log4j2-test.xml");
+    }
+
+    /**
+     * @since 11.3
+     */
+    @Test
+    public void testInvalidBundle() throws Exception {
+        // hot deploy bundle as FeaturesRunner logics would have emptied messages if deployed with annotations
+        harness.deployBundle("org.nuxeo.runtime.test.tests");
+
+        List<RuntimeMessage> messages = Framework.getRuntime().getMessageHandler().getRuntimeMessages(Level.ERROR);
+        assertEquals(3, messages.size());
+
+        RuntimeMessage message = messages.get(0);
+        assertTrue(message.getMessage().startsWith("Could not resolve registration from file:"));
+        assertTrue(message.getMessage()
+                          .endsWith("invalid-xml.xml (org.xml.sax.SAXParseException; lineNumber: 1; columnNumber: 2; "
+                                  + "The markup in the document preceding the root element must be well-formed.)"));
+        assertEquals(Level.ERROR, message.getLevel());
+        assertEquals(Source.BUNDLE, message.getSource());
+        assertEquals("org.nuxeo.runtime.test.tests", message.getSourceId());
+
+        message = messages.get(1);
+        assertTrue(message.getMessage().startsWith("Could not resolve registration from file:"));
+        assertTrue(message.getMessage().endsWith("log4j2-test.xml"));
+        assertEquals(Level.ERROR, message.getLevel());
+        assertEquals(Source.BUNDLE, message.getSource());
+        assertEquals("org.nuxeo.runtime.test.tests", message.getSourceId());
+
+        message = messages.get(2);
+        assertEquals("Unknown component 'invalid-file.xml' referenced by bundle 'org.nuxeo.runtime.test.tests'",
+                message.getMessage());
+        assertEquals(Level.ERROR, message.getLevel());
+        assertEquals(Source.BUNDLE, message.getSource());
+        assertEquals("org.nuxeo.runtime.test.tests", message.getSourceId());
     }
 
 }
