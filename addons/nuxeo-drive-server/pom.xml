@@ -19,6 +19,7 @@
     <module>nuxeo-drive-core</module>
     <module>nuxeo-drive-operations</module>
     <module>nuxeo-drive-elasticsearch</module>
+    <module>nuxeo-drive-mongodb</module>
     <module>nuxeo-drive-rest-api</module>
     <module>nuxeo-drive-web-ui</module>
     <module>nuxeo-drive-core-dependencies</module>
