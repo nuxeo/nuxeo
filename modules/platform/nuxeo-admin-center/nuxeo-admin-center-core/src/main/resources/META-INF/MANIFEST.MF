@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.nuxeo.admin.center;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
- OSGI-INF/deployment-fragment.xml,
  OSGI-INF/pageproviders-contrib.xml,
  OSGI-INF/admin-properties.xml,
  OSGI-INF/workmanager-contrib.xml,
