@@ -12,4 +12,9 @@ org.nuxeo.drive.elasticsearch.automation.server.bindings
 org.nuxeo.drive.elasticsearch.change.finder
 org.nuxeo.drive.elasticsearch.operations
 </#if>
+<#if ((nuxeo.mongodb.audit.enabled)!"false") != "true">
+org.nuxeo.drive.mongodb.change.finder
+<#elseif elasticsearch.enabled == "true" && audit.elasticsearch.enabled == "true">
+org.nuxeo.drive.elasticsearch.change.finder
+</#if>
 </#escape>

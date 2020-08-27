@@ -78,14 +78,18 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
         log.trace("Register a sync root for Administrator");
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder1, session);
         txFeature.nextTransaction();
+
         // Check changes, expecting 2:
         // - rootRegistered for folder1
         // - documentCreated for folder1
+
         List<FileSystemItemChange> changes = getChanges();
         assertEquals(2, changes.size());
+
         log.trace("Unregister the sync root for Administrator");
         nuxeoDriveManager.unregisterSynchronizationRoot(session.getPrincipal(), folder1, session);
         txFeature.nextTransaction();
+
         // Check changes for another user than Administrator, expecting 0:
         changes = getChanges(user1Session.getPrincipal());
         assertEquals(0, changes.size());
