@@ -44,7 +44,7 @@ public class RuntimeMessageHandlerImpl implements RuntimeMessageHandler, Compone
     @Override
     @Deprecated
     public void addWarning(String message) {
-        addMessage(Level.WARNING, message);
+        addMessage(new RuntimeMessage(Level.WARNING, message, Source.UNKNOWN, null));
     }
 
     @Override
@@ -56,7 +56,7 @@ public class RuntimeMessageHandlerImpl implements RuntimeMessageHandler, Compone
     @Override
     @Deprecated
     public void addError(String message) {
-        addMessage(Level.ERROR, message);
+        addMessage(new RuntimeMessage(Level.ERROR, message, Source.UNKNOWN, null));
     }
 
     @Override
@@ -93,8 +93,7 @@ public class RuntimeMessageHandlerImpl implements RuntimeMessageHandler, Compone
     protected void changeStep(ComponentManagerStep step) {
         if (this.step == ComponentManagerStep.RUNNING) {
             // reset bundle/component/extension messages when previous step was "running"
-            messages.removeIf(m -> m.getSource() != null
-                    && Set.of(Source.BUNDLE, Source.COMPONENT, Source.EXTENSION).contains(m.getSource()));
+            messages.removeIf(m -> Set.of(Source.BUNDLE, Source.COMPONENT, Source.EXTENSION).contains(m.getSource()));
         }
         this.step = step;
     }
@@ -102,11 +101,6 @@ public class RuntimeMessageHandlerImpl implements RuntimeMessageHandler, Compone
     @Override
     public void addMessage(RuntimeMessage message) {
         messages.add(message);
-    }
-
-    @Override
-    public void addMessage(Level level, String message) {
-        addMessage(new RuntimeMessage(level, message));
     }
 
     @Override

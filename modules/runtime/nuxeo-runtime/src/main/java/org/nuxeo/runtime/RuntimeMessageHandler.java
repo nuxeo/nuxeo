@@ -36,13 +36,6 @@ public interface RuntimeMessageHandler {
      *
      * @since 11.3
      */
-    void addMessage(Level level, String message);
-
-    /**
-     * Adds the following message.
-     *
-     * @since 11.3
-     */
     void addMessage(RuntimeMessage message);
 
     /**
@@ -76,7 +69,7 @@ public interface RuntimeMessageHandler {
     /**
      * Warning messages don't block server startup.
      *
-     * @deprecated since 11.3, use {@link #addMessage(Level, String)} instead.
+     * @deprecated since 11.3, use {@link #addMessage(RuntimeMessage)} instead.
      */
     @Deprecated
     void addWarning(String message);
@@ -93,7 +86,7 @@ public interface RuntimeMessageHandler {
      * <p />
      * Error messages block server startup in strict mode.
      *
-     * @deprecated since 11.3, use {@link #addMessage(Level, String)} instead.
+     * @deprecated since 11.3, use {@link #addMessage(RuntimeMessage)} instead.
      */
     @Deprecated
     void addError(String message);
