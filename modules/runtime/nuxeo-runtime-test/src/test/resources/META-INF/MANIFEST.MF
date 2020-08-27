@@ -8,4 +8,5 @@ Import-Package: org.nuxeo.common,
 Nuxeo-Component: MyComp4.xml,
  invalid-xml.xml,
  log4j2-test.xml,
- invalid-file.xml
+ invalid-file.xml,
+ invalid-xml-missing-component.xml
