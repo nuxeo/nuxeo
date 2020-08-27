@@ -27,6 +27,7 @@ import java.net.URL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.RuntimeService;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -78,7 +79,7 @@ public abstract class NXRuntimeApplication {
         try {
             Framework.getRuntime().getContext().deploy(url);
         } catch (IOException e) {
-            log.error(e, e);
+            throw new RuntimeServiceException("Cannot deploy: " + url, e);
         }
     }
 
