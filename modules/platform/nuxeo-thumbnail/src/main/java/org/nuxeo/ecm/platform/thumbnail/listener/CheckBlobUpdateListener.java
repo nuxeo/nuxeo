@@ -55,10 +55,6 @@ public class CheckBlobUpdateListener implements EventListener {
         }
         DocumentEventContext context = (DocumentEventContext) ec;
         DocumentModel doc = context.getSourceDocument();
-        if (Boolean.TRUE.equals(context.getProperty(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION))) {
-            log.trace("Thumbnail computation is disabled for document {}", doc::getId);
-            return;
-        }
         if (!doc.hasSchema("file")) {
             return;
         }
@@ -76,6 +72,12 @@ public class CheckBlobUpdateListener implements EventListener {
 
             if (content.getValue() != null) {
                 doc.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
+
+                // only skip sending the event: facet addition is needed for later recomputation
+                if (Boolean.TRUE.equals(context.getProperty(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION))) {
+                    log.trace("Thumbnail computation is disabled for document {}", doc::getId);
+                    return;
+                }
                 Framework.getService(EventService.class)
                          .fireEvent(ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name(), context);
             }
