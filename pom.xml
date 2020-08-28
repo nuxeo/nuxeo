@@ -66,8 +66,8 @@
     <nuxeo.java.client.version>3.2.0</nuxeo.java.client.version>
 
     <servlet-api.version>4.0.1</servlet-api.version>
-    <jaxb-api.version>2.2.11</jaxb-api.version>
-    <jaxb.version>2.3.0.1</jaxb.version>
+    <jaxb-api.version>2.3.3</jaxb-api.version>
+    <jaxb.version>2.3.3</jaxb.version>
     <tomcat.version>9.0.37</tomcat.version>
     <lucene.version>7.5.0</lucene.version>
     <elasticsearch.version>6.5.3</elasticsearch.version> <!-- when changing this make sure JNA version is in sync -->
@@ -2238,16 +2238,16 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- javax -->
+      <!-- jakarta xml - (former javax) -->
       <dependency>
-        <!-- moved to endorsed/ directory -->
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
         <version>${jaxb-api.version}</version>
         <exclusions>
           <exclusion>
-            <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
+            <!-- use com.sun.activation:javax.activation-api instead -->
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -2256,22 +2256,10 @@
         <artifactId>jaxb-impl</artifactId>
         <version>${jaxb.version}</version>
         <exclusions>
-          <!-- use javax.xml.bind:jaxb-api instead -->
           <exclusion>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jsr173_api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-core</artifactId>
-        <version>${jaxb.version}</version>
-        <exclusions>
-          <!-- already included in com.sun.xml.bind:jaxb-core itself... -->
-          <exclusion>
-            <groupId>com.sun.istack</groupId>
-            <artifactId>istack-commons-runtime</artifactId>
+            <!-- use com.sun.activation:javax.activation instead -->
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -4609,6 +4597,12 @@
         <groupId>javax.xml.ws</groupId>
         <artifactId>jaxws-api</artifactId>
         <version>2.3.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
