@@ -18,10 +18,9 @@
  */
 package org.nuxeo.runtime.osgi.util.jar.tests;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,14 +62,14 @@ public class TestClassLoaderInstrumentation {
         URL otherURL = jarBuilder.buildOther();
         URL[] jarURLs = new URL[] { firstURL, otherURL };
         try (URLClassLoader ucl = new URLClassLoader(jarURLs, null)) {
-            assertThat(ucl.loadClass(JarBuilder.First.class.getName()), notNullValue());
+            assertNotNull(ucl.loadClass(JarBuilder.First.class.getName()));
             JarFile jarFile = new JarFile(jarURLs[1].getFile());
             jarFile.getManifest();
             jarFile.close();
             File file = new File(jarFile.getName());
-            assertThat(file.delete(), is(true));
-            assertThat(ucl.findResource("first.marker"), notNullValue());
-            assertThat(ucl.findResource("other.marker"), nullValue());
+            assertTrue(file.delete());
+            assertNotNull(ucl.findResource("first.marker"));
+            assertNull(ucl.findResource("other.marker"));
         }
     }
 

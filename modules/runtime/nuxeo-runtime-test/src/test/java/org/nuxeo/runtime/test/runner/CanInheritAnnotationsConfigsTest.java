@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 public class CanInheritAnnotationsConfigsTest {
@@ -53,8 +53,8 @@ public class CanInheritAnnotationsConfigsTest {
     public void inheritsDefaultsFromBase() {
         AnnotationScanner scanner = new AnnotationScanner();
         Annotation annotation = scanner.getAnnotation(Specialized.class, Annotation.class);
-        Assert.assertThat("no default", annotation.noDefault(), Matchers.is("specialized"));
-        Assert.assertThat("with default", annotation.withDefault(), Matchers.is("base"));
+        MatcherAssert.assertThat("no default", annotation.noDefault(), Matchers.is("specialized"));
+        MatcherAssert.assertThat("with default", annotation.withDefault(), Matchers.is("base"));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class CanInheritAnnotationsConfigsTest {
         Annotation base = scanner.getAnnotation(Base.class, Annotation.class);
         Annotation another = scanner.getAnnotation(Another.class, Annotation.class);
         Annotation annotation = Defaults.of(Annotation.class, another, base);
-        Assert.assertThat("no default", annotation.noDefault(), Matchers.is("another"));
-        Assert.assertThat("with default", annotation.withDefault(), Matchers.is("base"));
+        MatcherAssert.assertThat("no default", annotation.noDefault(), Matchers.is("another"));
+        MatcherAssert.assertThat("with default", annotation.withDefault(), Matchers.is("base"));
     }
 }
