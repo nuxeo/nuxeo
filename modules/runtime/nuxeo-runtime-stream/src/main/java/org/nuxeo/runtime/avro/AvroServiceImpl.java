@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AvroServiceImpl implements AvroService {
 
-    private static final AvroMapper<Object, Object> NULL = new AvroMapper<Object, Object>(null) {
+    private static final AvroMapper<Object, Object> NULL = new AvroMapper<>(null) {
 
         @Override
         public Object fromAvro(Schema schema, Object input) {

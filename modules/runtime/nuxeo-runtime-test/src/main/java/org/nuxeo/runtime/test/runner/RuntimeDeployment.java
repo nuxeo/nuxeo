@@ -226,7 +226,7 @@ public class RuntimeDeployment {
                 errors.addSuppressed(error);
             }
         }
-        // this block is dreprecated since 10.1 with @LocalDeploy
+        // this block is deprecated since 10.1 with @LocalDeploy
         for (Map.Entry<String, String> resource : localIndex.entries()) {
             try {
                 contexts.add(harness.deployTestContrib(resource.getKey(), resource.getValue()));

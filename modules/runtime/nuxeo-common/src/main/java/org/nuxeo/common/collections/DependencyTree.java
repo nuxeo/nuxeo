@@ -35,7 +35,6 @@ import java.util.Set;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // TODO handle dependencies cycles.
-@SuppressWarnings({ "ClassWithoutToString" })
 public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>> {
 
     private final Map<K, Entry<K, T>> registry;

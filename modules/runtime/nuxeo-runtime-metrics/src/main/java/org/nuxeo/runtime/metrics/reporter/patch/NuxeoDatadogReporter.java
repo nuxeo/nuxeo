@@ -307,7 +307,7 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
             this.durationUnit = TimeUnit.MILLISECONDS;
             this.filter = MetricFilter.ALL;
             this.metricNameFormatter = new DefaultMetricNameFormatter();
-            this.tags = new ArrayList<String>();
+            this.tags = new ArrayList<>();
         }
 
         public Builder withHost(String host) {

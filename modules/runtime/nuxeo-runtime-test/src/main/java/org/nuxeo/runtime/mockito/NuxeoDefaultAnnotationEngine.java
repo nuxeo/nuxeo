@@ -54,7 +54,6 @@ public class NuxeoDefaultAnnotationEngine extends DefaultAnnotationEngine {
      * @see org.mockito.AnnotationEngine#createMockFor(java.lang.annotation.Annotation , java.lang.reflect.Field)
      */
     @Override
-    @SuppressWarnings("deprecation")
     public Object createMockFor(Annotation annotation, Field field) {
         return forAnnotation(annotation).process(annotation, field);
     }
@@ -63,7 +62,7 @@ public class NuxeoDefaultAnnotationEngine extends DefaultAnnotationEngine {
         if (annotationProcessorMap.containsKey(annotation.annotationType())) {
             return (FieldAnnotationProcessor<A>) annotationProcessorMap.get(annotation.annotationType());
         }
-        return new FieldAnnotationProcessor<A>() {
+        return new FieldAnnotationProcessor<>() {
             @Override
             public Object process(A annotation, Field field) {
                 return null;

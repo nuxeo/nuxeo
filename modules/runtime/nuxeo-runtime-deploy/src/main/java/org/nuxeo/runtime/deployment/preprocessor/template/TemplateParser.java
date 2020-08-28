@@ -26,8 +26,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -40,19 +40,19 @@ public class TemplateParser {
     }
 
     public static Template parse(File file) throws IOException {
-        try (InputStream in = new BufferedInputStream(new FileInputStream(file))){
+        try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
             return parse(in);
         }
     }
 
     public static Template parse(URL url) throws IOException {
-        try (InputStream in = new BufferedInputStream(url.openStream())){
+        try (InputStream in = new BufferedInputStream(url.openStream())) {
             return parse(in);
         }
     }
 
     public static Template parse(InputStream in) throws IOException {
-        String s = IOUtils.toString(in, Charsets.UTF_8);
+        String s = IOUtils.toString(in, StandardCharsets.UTF_8);
         return parse(s.toCharArray());
     }
 

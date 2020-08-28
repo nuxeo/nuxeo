@@ -107,7 +107,6 @@ public interface RunnerFeature {
     /**
      * Before entering in the @Before methods
      */
-    @SuppressWarnings("deprecation")
     default void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         beforeSetup(runner); // forward calls for backward compatibility
     }
@@ -124,7 +123,6 @@ public interface RunnerFeature {
     /**
      * After the call of the @After methods
      */
-    @SuppressWarnings("deprecation")
     default void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         afterTeardown(runner); // forward calls for backward compatibility
     }

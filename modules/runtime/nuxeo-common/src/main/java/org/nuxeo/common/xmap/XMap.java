@@ -76,7 +76,6 @@ import org.xml.sax.SAXException;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@SuppressWarnings({ "SuppressionAnnotation" })
 public class XMap {
 
     private static DocumentBuilderFactory initFactory() {

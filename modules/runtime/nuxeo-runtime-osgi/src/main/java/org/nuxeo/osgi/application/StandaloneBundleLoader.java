@@ -25,8 +25,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.osgi.OSGiAdapter;
@@ -36,8 +34,6 @@ import org.osgi.framework.BundleException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class StandaloneBundleLoader extends ApplicationLoader {
-
-    private static final Log log = LogFactory.getLog(StandaloneBundleLoader.class);
 
     protected SharedClassLoader loader;
 

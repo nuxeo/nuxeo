@@ -57,7 +57,6 @@ public class TestPath {
         assertEquals(new Path("/a/b/c"), path.removeLastSegments(1));
     }
 
-    @SuppressWarnings({ "ObjectEqualsNull" })
     @Test
     public void testEquals() {
         Path path = new Path("/a/b/c/d");

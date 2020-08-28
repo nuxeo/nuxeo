@@ -71,7 +71,7 @@ public class BundleWalker extends FileWalker.Visitor {
     }
 
     public void visit(File root) {
-        new FileWalker().walk(root, this);
+        FileWalker.walk(root, this);
     }
 
     public void visit(Collection<File> files) {

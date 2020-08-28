@@ -21,8 +21,6 @@ package org.nuxeo.runtime.stream.tests;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.computation.Topology;
 
 /**
@@ -31,7 +29,6 @@ import org.nuxeo.lib.stream.computation.Topology;
  * @since 11.1
  */
 public class MyStreamProcessor2 extends MyStreamProcessor {
-    private static final Log log = LogFactory.getLog(MyStreamProcessor2.class);
 
     @Override
     public Topology getTopology(Map<String, String> options) {
@@ -40,4 +37,5 @@ public class MyStreamProcessor2 extends MyStreamProcessor {
                                Arrays.asList("i1:input2", "o1:output2"))
                        .build();
     }
+
 }

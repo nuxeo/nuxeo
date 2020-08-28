@@ -26,7 +26,6 @@ import static org.junit.Assert.assertEquals;
 
 public class TestExceptionUtils {
 
-    @SuppressWarnings({ "ThrowableResultOfMethodCallIgnored" })
     @Test
     public void testExceptionCause() {
         Exception e1 = new Exception("root");

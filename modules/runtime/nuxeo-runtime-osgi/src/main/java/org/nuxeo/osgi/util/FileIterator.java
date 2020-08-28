@@ -42,7 +42,7 @@ public class FileIterator implements Iterator<File>, Enumeration<File> {
     protected boolean skipDirs = false;
 
     public static Iterator<URL> asUrlIterator(final Iterator<File> it) {
-        return new Iterator<URL>() {
+        return new Iterator<>() {
             @Override
             public boolean hasNext() {
                 return it.hasNext();
@@ -65,7 +65,7 @@ public class FileIterator implements Iterator<File>, Enumeration<File> {
     }
 
     public static Enumeration<URL> asUrlEnumeration(final Iterator<File> it) {
-        return new Enumeration<URL>() {
+        return new Enumeration<>() {
             @Override
             public boolean hasMoreElements() {
                 return it.hasNext();
