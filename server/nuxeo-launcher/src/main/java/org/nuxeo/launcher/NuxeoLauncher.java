@@ -119,6 +119,7 @@ import org.nuxeo.log4j.Log4JHelper;
 
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.json.impl.writer.JsonXmlStreamWriter;
+import com.sun.xml.bind.marshaller.MinimumEscapeHandler;
 
 /**
  * @author jcarsique
@@ -1836,6 +1837,10 @@ public class NuxeoLauncher {
         XMLStreamWriter writer = jsonOutput ? jsonWriter(context, out) : xmlWriter(context, out);
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        if (jsonOutput) {
+            // replace the character escape handler as the one for XML doesn't correctly print newline in JSON
+            marshaller.setProperty("com.sun.xml.bind.characterEscapeHandler", MinimumEscapeHandler.theInstance);
+        }
         marshaller.marshal(object, writer);
     }
 
@@ -2267,13 +2272,18 @@ public class NuxeoLauncher {
      */
     protected void printInstanceXMLOutput(InstanceInfo instance) {
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(InstanceInfo.class, DistributionInfo.class,
-                    PackageInfo.class, ConfigurationInfo.class, KeyValueInfo.class);
-            printXMLOutput(jaxbContext, instance, System.out);
+            printInstanceXMLOutput(instance, System.out);
         } catch (JAXBException | XMLStreamException | FactoryConfigurationError e) {
             throw new NuxeoLauncherException("Output serialization failed: " + e.getMessage(), EXIT_CODE_NOT_RUNNING,
                     e);
         }
+    }
+
+    protected void printInstanceXMLOutput(InstanceInfo instance, OutputStream out)
+            throws JAXBException, XMLStreamException, FactoryConfigurationError {
+        JAXBContext jaxbContext = JAXBContext.newInstance(InstanceInfo.class, DistributionInfo.class, PackageInfo.class,
+                ConfigurationInfo.class, KeyValueInfo.class);
+        printXMLOutput(jaxbContext, instance, out);
     }
 
     /**
