@@ -538,10 +538,17 @@ pipeline {
           try {
             parallel stages
           } catch (err) {
-            // TODO NXP-29512: on PR, make the build continue even if there is a test error
+            // TODO NXP-29512: on a PR, make the build continue even if there is a test error
             // on other environments than the dev one
             // to remove when all test environments will be mandatory
-            if (!isPullRequest() || err.message.startsWith("dev:")) {
+            def errorMessage = err.message
+            if (isPullRequest() && !errorMessage.startsWith("dev:")) {
+              echo """
+                Unit tests error: ${errorMessage}
+                Waiting for NXP-29512, on a PR, the build continues even if there is a unit test error in other
+                environments than the dev one.
+              """
+            } else {
               throw err
             }
           }
