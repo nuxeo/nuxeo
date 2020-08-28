@@ -295,7 +295,9 @@ def buildUnitTestStage(env) {
             }
           } catch(err) {
             // TODO NXP-29512: workaround to know which env is failing later on
-            throw new Exception("${env}: ${err.message}", err)
+            def errorMessage = "${env}: ${err.message}"
+            echo "Throwing error with message: ${errorMessage}"
+            error "${errorMessage}"
           }
         }
       }
