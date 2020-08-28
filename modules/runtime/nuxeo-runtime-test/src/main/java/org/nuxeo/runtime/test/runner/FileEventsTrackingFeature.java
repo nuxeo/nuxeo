@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.trackers.concurrent.ThreadEvent;
@@ -68,11 +68,11 @@ public class FileEventsTrackingFeature implements RunnerFeature {
     public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         listener.uninstall();
         try {
-            Assert.assertThat(tracked, CoreMatchers.is(created)); // replace
+            MatcherAssert.assertThat(tracked, CoreMatchers.is(created)); // replace
                                                                   // with
                                                                   // contains
             for (File each : created) {
-                Assert.assertThat("File should have been deleted: " + each,
+                MatcherAssert.assertThat("File should have been deleted: " + each,
                         each.exists(), CoreMatchers.is(false));
             }
         } finally {

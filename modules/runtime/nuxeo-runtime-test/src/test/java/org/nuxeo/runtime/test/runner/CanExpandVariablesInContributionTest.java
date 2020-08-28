@@ -18,8 +18,8 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +40,8 @@ public class CanExpandVariablesInContributionTest {
         RuntimeContext ctx = runtime.getContext();
         System.setProperty("nuxeo.test.domain", "test");
         Framework.getProperties().setProperty("nuxeo.test.contrib", "contrib");
-        InlineRef contribRef = new InlineRef("test", "<component name=\"${nuxeo.test.domain}:${nuxeo.test.contrib}\"/>");
+        InlineRef contribRef = new InlineRef("test",
+                "<component name=\"${nuxeo.test.domain}:${nuxeo.test.contrib}\"/>");
 
         ctx.deploy(contribRef);
         // force components refresh since components are already started in @Before methods

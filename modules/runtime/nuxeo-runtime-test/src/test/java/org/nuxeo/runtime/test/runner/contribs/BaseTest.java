@@ -15,9 +15,9 @@
  */
 package org.nuxeo.runtime.test.runner.contribs;
 
-import javax.inject.Inject;
+import static org.junit.Assert.assertTrue;
 
-import junit.framework.Assert;
+import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,7 @@ public class BaseTest {
 
     @Test
     public void something() {
-        Assert.assertTrue(runner.getFeature(BaseFeature.class).enabled);
+        assertTrue(runner.getFeature(BaseFeature.class).enabled);
     }
 
 }
