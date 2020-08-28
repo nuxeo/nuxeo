@@ -24,7 +24,6 @@ import org.openqa.selenium.WebDriverException;
  * A simple exception that is thrown if an {@link ExpectedCondition} is not met met by a {@link Wait}. See the
  * documentation in {@link WebDriverWait} for more information.
  */
-@SuppressWarnings("serial")
 public class TimeoutException extends WebDriverException {
     private static final long serialVersionUID = 1L;
 

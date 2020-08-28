@@ -27,7 +27,6 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
-import org.nuxeo.common.utils.BatchUtils;
 
 public class TestBatchUtils {
 

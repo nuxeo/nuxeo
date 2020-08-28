@@ -30,8 +30,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import org.nuxeo.common.utils.FileVersion;
-
 public class FileVersionTest {
 
     @Test

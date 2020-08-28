@@ -30,7 +30,6 @@ import org.w3c.dom.Node;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@SuppressWarnings({ "SuppressionAnnotation" })
 public class XAnnotatedMap extends XAnnotatedList {
 
     protected static final ElementMapVisitor elementMapVisitor = new ElementMapVisitor();

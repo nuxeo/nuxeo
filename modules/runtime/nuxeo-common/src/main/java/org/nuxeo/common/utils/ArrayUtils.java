@@ -33,7 +33,6 @@ import java.util.Set;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-@SuppressWarnings({ "SuppressionAnnotation" })
 public final class ArrayUtils {
 
     // This is an utility class.
