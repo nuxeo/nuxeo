@@ -26,7 +26,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,6 +48,7 @@ import org.nuxeo.launcher.config.AbstractConfigurationTest;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.ServerConfigurator;
 import org.nuxeo.launcher.info.InstanceInfo;
+import org.nuxeo.launcher.info.PackageInfo;
 
 public class TestNuxeoLauncher extends AbstractConfigurationTest {
 
@@ -170,6 +173,29 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
                 launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_ENCRYPT, "AES/ECB/PKCS5Padding"));
         assertArrayEquals(new String[] { "value1", "value2" }, launcher.params);
         launcher.encrypt();
+    }
+
+    /**
+     * NXP-29401
+     */
+    @Test
+    public void testPrintInstanceXMLOutputInJSON() throws Exception {
+        NuxeoLauncher launcher = NuxeoLauncher.createLauncher(new String[] { "showconf", "--json" });
+
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.description = "Download and install the latest hotfix to keep your Nuxeo up-to-date.\n    "
+                + "Changes will take effects after restart.";
+
+        InstanceInfo instanceInfo = new InstanceInfo();
+        instanceInfo.packages.add(packageInfo);
+
+        try (OutputStream os = new ByteArrayOutputStream()) {
+            launcher.printInstanceXMLOutput(instanceInfo, os);
+            String json = os.toString();
+            assertEquals("{\"packages\":{\"package\":{\"supportsHotReload\":\"false\",\"description\":\"Download and "
+                    + "install the latest hotfix to keep your Nuxeo up-to-date.\\n    Changes will take "
+                    + "effects after restart.\"}}}", json);
+        }
     }
 
 }
