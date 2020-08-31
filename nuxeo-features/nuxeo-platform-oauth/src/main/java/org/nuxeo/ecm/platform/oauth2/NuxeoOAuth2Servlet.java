@@ -335,16 +335,13 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             }
         } else if (JWT_BEARER_GRANT_TYPE.equals(grantType)) {
             String jwtToken = tokenRequest.getAssertion();
-            Map<String, Object> claims = Framework.getService(JWTService.class).verifyToken(jwtToken);
-            OAuth2Error error = null;
-            if (claims == null) {
-                error = OAuth2Error.invalidClient("Secret not configured or invalid token");
-            }
-
             String clientId = tokenRequest.getClientId();
             String clientSecret = tokenRequest.getClientSecret();
 
-            if (StringUtils.isBlank(clientId)) {
+            OAuth2Error error = null;
+            if (StringUtils.isBlank(jwtToken)) {
+                error = OAuth2Error.invalidRequest("Empty assertion");
+            } else if (StringUtils.isBlank(clientId)) {
                 error = OAuth2Error.invalidRequest("Empty client id");
             } else if (!clientService.hasClient(clientId)) {
                 error = OAuth2Error.invalidClient(String.format("Invalid client: %s", clientId));
@@ -354,6 +351,13 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             }
 
             if (error != null) {
+                handleJsonError(error, response);
+                return;
+            }
+
+            Map<String, Object> claims = Framework.getService(JWTService.class).verifyToken(jwtToken);
+            if (claims == null) {
+                error = OAuth2Error.invalidClient("Secret not configured or invalid token");
                 handleJsonError(error, response);
                 return;
             }

@@ -631,6 +631,16 @@ public class OAuth2ChallengeFixture {
 
         Map<String, String> params = new HashMap<>();
         params.put(GRANT_TYPE_PARAM, JWT_BEARER_GRANT_TYPE);
+
+        // Test empty assertion
+        try (CloseableClientResponse cr = responseFromTokenWith(params)) {
+            assertEquals(400, cr.getStatus());
+            String json = cr.getEntity(String.class);
+            Map<String, Serializable> error = new ObjectMapper().readValue(json, Map.class);
+            assertEquals(INVALID_REQUEST, error.get(ERROR_PARAM));
+            assertEquals("Empty assertion", error.get(ERROR_DESCRIPTION_PARAM));
+        }
+
         params.put(ASSERTION_PARAM, jwtToken);
 
         // Test empty client id
