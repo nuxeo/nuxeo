@@ -14,7 +14,7 @@
 //
 // Contributors:
 //     Florent Guillaume
-// v1.0
+// v1.1
 
 // This script analyzes the blobs in a repository in order to extract
 // information about their total size.
@@ -155,19 +155,23 @@ logProcessedDisplay();
 
 print("Done processing documents");
 print("Computing blobs statistics...");
+print(Date());
 
 var nBlobs = destColl.count();
 print("  Number of blobs: " + nBlobs);
+print(Date());
 
-var ag = destColl.aggregate([{$group: {_id: null, sum: {$sum: "$length"}}}]);
+var ag = destColl.aggregate([{$group: {_id: null, sum: {$sum: '$length'}}}], {allowDiskUse: true});
 var sizeBlobs = ag.next().sum;
 print("  Size without deduplication: " + sizeBlobs);
+print(Date());
 
-var ag = destColl.aggregate([{$group: {_id: '$key'}}, {$group: {_id: null, count: {$sum: 1}}}])
+var ag = destColl.aggregate([{$group: {_id: '$key'}}, {$group: {_id: null, count: {$sum: 1}}}], {allowDiskUse: true});
 var nBlobsDedup = ag.next().count;
 print("  Number of deduplicated blobs: " + nBlobsDedup);
+print(Date());
 
-var ag = destColl.aggregate([{$group: {_id: '$key', 'length': {$last: '$length'}}}, {$group: {_id: null, sum: {$sum: "$length"}}}])
+var ag = destColl.aggregate([{$group: {_id: '$key', 'length': {$last: '$length'}}}, {$group: {_id: null, sum: {$sum: '$length'}}}], {allowDiskUse: true});
 var sizeBlobsDedup = ag.next().sum;
 print("  Size with deduplication: " + sizeBlobsDedup);
 
