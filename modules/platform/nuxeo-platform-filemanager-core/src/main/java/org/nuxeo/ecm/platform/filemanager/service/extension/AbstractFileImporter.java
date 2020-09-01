@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -214,7 +213,12 @@ public abstract class AbstractFileImporter implements FileImporter {
         if (targetDocType == null) {
             targetDocType = getDefaultDocType();
         }
-        doSecurityCheck(session, path, targetDocType);
+        // always check security
+        checkSecurity(session, path);
+        // check allowed subtypes unless bypassed
+        if (!context.isBypassAllowedSubtypeCheck()) {
+            checkAllowedSubtypes(session, path, targetDocType);
+        }
 
         Blob blob = context.getBlob();
         String filename = FileManagerUtils.fetchFileName(context.getFileName());
@@ -370,11 +374,19 @@ public abstract class AbstractFileImporter implements FileImporter {
 
     /**
      * @since 10.10
+     * @deprecated since 11.3, use {@link #checkSecurity(CoreSession, String) and #checkAllowedSubtypes(CoreSession,
+     *             String, String)} instead
      */
+    @Deprecated
     protected void doSecurityCheck(CoreSession documentManager, String path, String typeName) {
         doSecurityCheck(documentManager, path, typeName, Framework.getService(TypeManager.class));
     }
 
+    /**
+     * @deprecated since 11.3, use {@link #checkSecurity(CoreSession, String) and #checkAllowedSubtypes(CoreSession,
+     *             String, String)} instead
+     */
+    @Deprecated
     protected void doSecurityCheck(CoreSession documentManager, String path, String typeName, TypeManager typeService) {
         // perform the security checks
         PathRef containerRef = new PathRef(path);
@@ -384,6 +396,34 @@ public abstract class AbstractFileImporter implements FileImporter {
         }
         DocumentModel container = documentManager.getDocument(containerRef);
 
+        Type containerType = typeService.getType(container.getType());
+        if (containerType == null) {
+            return;
+        }
+
+        if (!typeService.isAllowedSubType(typeName, container.getType(), container)) {
+            throw new NuxeoException(String.format("Cannot create document of type %s in container with type %s",
+                    typeName, containerType.getId()));
+        }
+    }
+
+    /**
+     * @since 11.3
+     */
+    protected void checkSecurity(CoreSession session, String path) {
+        PathRef containerRef = new PathRef(path);
+        if (!session.hasPermission(containerRef, ADD_CHILDREN)) {
+            throw new DocumentSecurityException("Not enough rights to create document");
+        }
+    }
+
+    /**
+     * @since 11.3
+     */
+    protected void checkAllowedSubtypes(CoreSession session, String path, String typeName) {
+        PathRef containerRef = new PathRef(path);
+        DocumentModel container = session.getDocument(containerRef);
+        TypeManager typeService = Framework.getService(TypeManager.class);
         Type containerType = typeService.getType(container.getType());
         if (containerType == null) {
             return;
