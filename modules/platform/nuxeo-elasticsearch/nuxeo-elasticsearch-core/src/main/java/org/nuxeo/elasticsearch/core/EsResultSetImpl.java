@@ -95,7 +95,7 @@ public class EsResultSetImpl implements IterableQueryResult, Iterator<Map<String
      * @since 9.1
      */
     public long totalSize() {
-        return response.getHits().getTotalHits();
+        return response.getHits().getTotalHits().value;
     }
 
     @Override

@@ -20,6 +20,7 @@
 package org.nuxeo.elasticsearch.core;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.InternalSettingsPreparer;
@@ -31,11 +32,8 @@ import org.elasticsearch.plugins.Plugin;
  */
 public class PluginConfigurableNode extends Node {
     public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
-        super(InternalSettingsPreparer.prepareEnvironment(settings, null), classpathPlugins, true);
+        super(InternalSettingsPreparer.prepareEnvironment(settings, Collections.emptyMap(), null, () -> "someNodeName"), classpathPlugins,
+                true);
     }
 
-    @Override
-    protected void registerDerivedNodeNameWithLogger(String nodeName) {
-
-    }
 }

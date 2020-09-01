@@ -46,7 +46,7 @@ import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
-import org.elasticsearch.cluster.metadata.AliasMetaData;
+import org.elasticsearch.cluster.metadata.AliasMetadata;
 import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -148,7 +148,6 @@ public class ESTransportClient implements ESClient {
         client.admin()
               .indices()
               .preparePutMapping(indexName)
-              .setType(type)
               .setSource(jsonMapping, XContentType.JSON)
               .get();
     }
@@ -170,7 +169,7 @@ public class ESTransportClient implements ESClient {
 
     @Override
     public String getFirstIndexForAlias(String aliasName) {
-        ImmutableOpenMap<String, List<AliasMetaData>> aliases = client.admin()
+        ImmutableOpenMap<String, List<AliasMetadata>> aliases = client.admin()
                                                                       .indices()
                                                                       .prepareGetAliases(aliasName)
                                                                       .get()

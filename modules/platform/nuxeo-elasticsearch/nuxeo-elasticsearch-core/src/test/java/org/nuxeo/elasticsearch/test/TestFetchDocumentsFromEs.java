@@ -107,7 +107,7 @@ public class TestFetchDocumentsFromEs {
 
         // check indexing
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(10, searchResponse.getHits().getTotalHits().value);
 
     }
 
@@ -147,7 +147,7 @@ public class TestFetchDocumentsFromEs {
                 new NxQueryBuilder(session).nxql("select * from Document").limit(20).onlyElasticsearchResponse());
         Assert.assertNull(result.getDocuments());
         Assert.assertNull(result.getAggregates());
-        Assert.assertEquals(10, result.getElasticsearchResponse().getHits().getTotalHits());
+        Assert.assertEquals(10, result.getElasticsearchResponse().getHits().getTotalHits().value);
         // System.out.println(result.getElasticsearchResponse());
 
         result = ess.queryAndAggregate(new NxQueryBuilder(session).nxql("select * from Document")
@@ -156,7 +156,7 @@ public class TestFetchDocumentsFromEs {
                                                                   .onlyElasticsearchResponse());
         Assert.assertNull(result.getDocuments());
         Assert.assertNull(result.getAggregates());
-        Assert.assertEquals(10, result.getElasticsearchResponse().getHits().getTotalHits());
+        Assert.assertEquals(10, result.getElasticsearchResponse().getHits().getTotalHits().value);
         // System.out.println(result.getElasticsearchResponse());
 
     }

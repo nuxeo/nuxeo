@@ -140,7 +140,7 @@ public class TestESHintQueryBuilder {
         assertEquals(geoEsBuilderQuery,
                 geoBoundingBoxESHintQueryBuilder.get().make(null, ANY_FIELD_NAME, Arrays.copyOfRange(points, 0, 2)));
 
-        GeoShapeQueryBuilder geoShapeQueryBuilder = QueryBuilders.geoShapeQuery(ANY_FIELD_NAME, points[0], points[1])
+        GeoShapeQueryBuilder geoShapeQueryBuilder = QueryBuilders.geoShapeQuery(ANY_FIELD_NAME, points[0])
                                                                  .relation(ShapeRelation.WITHIN)
                                                                  .indexedShapeIndex(points[2])
                                                                  .indexedShapePath(points[3]);
@@ -221,7 +221,7 @@ public class TestESHintQueryBuilder {
             geoShapeQueryBuilder.get().make(null, ANY_FIELD_NAME, new String[10]);
             fail("Should raise a NuxeoException");
         } catch (NuxeoException ne) {
-            assertEquals("Hints: GeoShapeESHintQueryBuilder requires 4 parameters: shapeId, type, index and path",
+            assertEquals("Hints: GeoShapeESHintQueryBuilder requires 4 parameters: shapeId, type (unused), index and path",
                     ne.getMessage());
             assertEquals(SC_BAD_REQUEST, ne.getStatusCode());
         }

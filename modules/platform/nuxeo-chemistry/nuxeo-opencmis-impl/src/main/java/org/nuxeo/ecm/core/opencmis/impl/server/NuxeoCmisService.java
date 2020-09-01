@@ -1688,7 +1688,7 @@ public class NuxeoCmisService extends AbstractCmisService
                     SearchHits esHits = esResponse.getHits();
                     List<Map<String, Serializable>> list = new EsSearchHitConverter(
                             qb.getSelectFieldsAndTypes()).convert(esHits.getHits());
-                    pl = new PartialList<>(list, esHits.getTotalHits());
+                    pl = new PartialList<>(list, esHits.getTotalHits().value);
                 } else {
                     // distinct documents
                     pl = coreSession.queryProjection(nxql, NXQL.NXQL, true, limit, offset, -1);

@@ -98,11 +98,11 @@ public abstract class TestESClient {
     public void testIndexOptimisticConcurrency() {
         client.createIndex("foo-index", "{\"index\" : {\"number_of_shards\" : 1, \"number_of_replicas\" : 0}}");
         // when using external version, indexing command in disorder should be rejected
-        IndexRequest request1 = new IndexRequest("foo-index", "_doc", "123");
+        IndexRequest request1 = new IndexRequest("foo-index").id("123");
         request1.versionType(VersionType.EXTERNAL).version(100);
         request1.source("{\"foo\": \"v1\"}", XContentType.JSON);
 
-        IndexRequest request2 = new IndexRequest("foo-index", "_doc", "123");
+        IndexRequest request2 = new IndexRequest("foo-index").id("123");
         request2.versionType(VersionType.EXTERNAL).version(200);
         request2.source("{\"foo\": \"v2\"}", XContentType.JSON);
 
@@ -119,7 +119,7 @@ public abstract class TestESClient {
         }
 
         // confirms that the version 2 is the indexed version
-        GetResponse ret = client.get(new GetRequest("foo-index", "_doc", "123"));
+        GetResponse ret = client.get(new GetRequest("foo-index", "123"));
         assertEquals(request2.version(), ret.getVersion());
     }
 

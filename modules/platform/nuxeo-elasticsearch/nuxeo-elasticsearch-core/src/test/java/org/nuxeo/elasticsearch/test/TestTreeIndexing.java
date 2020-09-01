@@ -152,7 +152,7 @@ public class TestTreeIndexing {
         startTransaction();
         // check indexing at ES level
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(10, searchResponse.getHits().getTotalHits().value);
     }
 
     protected SearchResponse searchAll() {
@@ -174,7 +174,7 @@ public class TestTreeIndexing {
 
         // check sub tree search
         SearchResponse searchResponse = search(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folder2"));
-        Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(8, searchResponse.getHits().getTotalHits().value);
     }
 
     @Test
@@ -192,7 +192,7 @@ public class TestTreeIndexing {
 
         startTransaction();
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(2, searchResponse.getHits().getTotalHits().value);
     }
 
     @Test
@@ -218,17 +218,17 @@ public class TestTreeIndexing {
 
         startTransaction();
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(10, searchResponse.getHits().getTotalHits().value);
 
         // check sub tree search
         searchResponse = search(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folder2"));
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits().value);
 
         searchResponse = search(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folderA"));
-        Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(8, searchResponse.getHits().getTotalHits().value);
 
         searchResponse = search(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1"));
-        Assert.assertEquals(9, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(9, searchResponse.getHits().getTotalHits().value);
 
     }
 

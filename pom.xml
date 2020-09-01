@@ -69,8 +69,8 @@
     <jaxb-api.version>2.3.3</jaxb-api.version>
     <jaxb.version>2.3.3</jaxb.version>
     <tomcat.version>9.0.39</tomcat.version>
-    <lucene.version>7.5.0</lucene.version>
-    <elasticsearch.version>6.5.3</elasticsearch.version> <!-- when changing this make sure JNA version is in sync -->
+    <lucene.version>8.6.2</lucene.version>
+    <elasticsearch.version>7.9.2</elasticsearch.version> <!-- when changing this make sure JNA version is in sync -->
     <jna.version>4.5.2</jna.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>

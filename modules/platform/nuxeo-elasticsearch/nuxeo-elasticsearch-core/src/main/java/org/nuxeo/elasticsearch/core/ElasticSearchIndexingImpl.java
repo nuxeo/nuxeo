@@ -21,7 +21,6 @@
 package org.nuxeo.elasticsearch.core;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEX_BULK_MAX_SIZE_PROPERTY;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
 
@@ -65,14 +64,14 @@ import org.nuxeo.elasticsearch.io.JsonESDocumentWriter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+
 import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
 import io.dropwizard.metrics5.Timer.Context;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * @since 6.0
@@ -292,7 +291,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
         if (log.isDebugEnabled()) {
             logDebugMessageTruncated(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                    getWriteIndexForRepository(cmd.getRepositoryName()), DOC_TYPE, cmd.getTargetDocumentId(),
+                    getWriteIndexForRepository(cmd.getRepositoryName()), cmd.getTargetDocumentId(),
                     request.toString()), MAX_CURL_LINE);
         }
         try {
@@ -322,10 +321,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     void processDeleteCommandNonRecursive(IndexingCommand cmd) {
         String indexName = getWriteIndexForRepository(cmd.getRepositoryName());
-        DeleteRequest request = new DeleteRequest(indexName, DOC_TYPE, cmd.getTargetDocumentId());
+        DeleteRequest request = new DeleteRequest(indexName, cmd.getTargetDocumentId());
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s'", indexName,
-                    DOC_TYPE, cmd.getTargetDocumentId()));
+            log.debug(String.format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s'", indexName,
+                    cmd.getTargetDocumentId()));
         }
         esa.getClient().delete(request);
     }
@@ -351,8 +350,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         SearchRequest request = new SearchRequest(indexName).scroll(keepAlive).source(search);
         if (log.isDebugEnabled()) {
             log.debug(String.format(
-                    "Search with scroll request: curl -XGET 'http://localhost:9200/%s/%s/_search?scroll=%s' -d '%s'",
-                    indexName, DOC_TYPE, keepAlive, query.toString()));
+                    "Search with scroll request: curl -XGET 'http://localhost:9200/%s/_search?scroll=%s' -d '%s'",
+                    indexName, keepAlive, query.toString()));
         }
         for (SearchResponse response = esa.getClient().search(request); //
                 response.getHits().getHits().length > 0; //
@@ -386,11 +385,11 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
      */
     String getPathOfDocFromEs(String repository, String docId) {
         String indexName = getWriteIndexForRepository(repository);
-        GetRequest request = new GetRequest(indexName, DOC_TYPE, docId).fetchSourceContext(
+        GetRequest request = new GetRequest(indexName, docId).fetchSourceContext(
                 new FetchSourceContext(true, new String[] { PATH_FIELD }, null));
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s/%s?fields=%s'", indexName,
-                    DOC_TYPE, docId, PATH_FIELD));
+            log.debug(String.format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s?fields=%s'", indexName,
+                    docId, PATH_FIELD));
         }
         GetResponse ret = esa.getClient().get(request);
         if (!ret.isExists() || ret.getSource() == null || ret.getSource().get(PATH_FIELD) == null) {
@@ -411,7 +410,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             return null;
         }
         try {
-            IndexRequest request = new IndexRequest(getWriteIndexForRepository(cmd.getRepositoryName()), DOC_TYPE,
+            IndexRequest request = new IndexRequest(getWriteIndexForRepository(cmd.getRepositoryName())).id(
                     cmd.getTargetDocumentId()).source(source(doc), XContentType.JSON);
             if (useExternalVersion && cmd.getOrder() > 0) {
                 request.versionType(VersionType.EXTERNAL).version(cmd.getOrder());

@@ -19,8 +19,6 @@
 
 package org.nuxeo.elasticsearch.hint;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
-
 import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -81,7 +79,7 @@ public class MoreLikeThisESHintQueryBuilder implements ESHintQueryBuilder {
         }
         MoreLikeThisQueryBuilder.Item[] ret = new MoreLikeThisQueryBuilder.Item[values.length];
         for (int i = 0; i < values.length; i++) {
-            ret[i] = new MoreLikeThisQueryBuilder.Item(esIndex, DOC_TYPE, (String) values[i]);
+            ret[i] = new MoreLikeThisQueryBuilder.Item(esIndex, (String) values[i]);
         }
         return ret;
     }
