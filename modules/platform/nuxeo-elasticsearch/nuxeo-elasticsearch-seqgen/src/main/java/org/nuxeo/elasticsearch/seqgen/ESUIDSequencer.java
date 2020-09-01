@@ -88,16 +88,17 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
     public void initSequence(String key, long id) {
         String source = "{ \"ts\" : " + System.currentTimeMillis() + "}";
         esClient.index(
-                new IndexRequest(indexName, ElasticSearchConstants.SEQ_ID_TYPE, key).versionType(VersionType.EXTERNAL)
-                        .version(id)
-                        .source(source, XContentType.JSON));
+                new IndexRequest(indexName).id(key)
+                                           .versionType(VersionType.EXTERNAL)
+                                           .version(id)
+                                           .source(source, XContentType.JSON));
     }
 
     @Override
     public long getNextLong(String sequenceName) {
         String source = "{ \"ts\" : " + System.currentTimeMillis() + "}";
         IndexResponse res = esClient.index(
-                new IndexRequest(indexName, ElasticSearchConstants.SEQ_ID_TYPE, sequenceName).source(source,
+                new IndexRequest(indexName).id(sequenceName).source(source,
                         XContentType.JSON));
         return res.getVersion();
     }

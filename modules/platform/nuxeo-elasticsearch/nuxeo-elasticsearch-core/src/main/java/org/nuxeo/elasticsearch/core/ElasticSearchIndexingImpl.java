@@ -290,7 +290,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             return;
         }
         if (log.isDebugEnabled()) {
-            logDebugMessageTruncated(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
+            logDebugMessageTruncated(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s' -d '%s'",
                     getWriteIndexForRepository(cmd.getRepositoryName()), cmd.getTargetDocumentId(),
                     request.toString()), MAX_CURL_LINE);
         }
@@ -360,7 +360,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             // Build bulk delete request
             BulkRequest bulkRequest = new BulkRequest();
             for (SearchHit hit : response.getHits().getHits()) {
-                bulkRequest.add(new DeleteRequest(hit.getIndex(), hit.getType(), hit.getId()));
+                bulkRequest.add(new DeleteRequest(hit.getIndex(), hit.getId()));
             }
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Bulk delete request on %s elements", bulkRequest.numberOfActions()));
