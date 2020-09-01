@@ -21,7 +21,7 @@
 dockerNamespace = 'nuxeo'
 kubernetesNamespace = 'platform'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo'
-testEnvironments= [
+testEnvironments = [
   'dev',
   'mongodb',
   'postgresql',
@@ -353,6 +353,7 @@ pipeline {
     // jx step helm install's --name and --namespace options require alphabetic chars to be lowercase
     PREVIEW_NAMESPACE = "nuxeo-preview-${BRANCH_NAME.toLowerCase()}"
     PERSISTENCE = "${!isPullRequest()}"
+    SLACK_CHANNEL = 'platform-notifs'
   }
 
   stages {
@@ -885,6 +886,16 @@ pipeline {
       script {
         if (!isPullRequest() && env.DRY_RUN != "true") {
           currentBuild.description = "Build ${VERSION}"
+          if(!hudson.model.Result.SUCCESS.toString().equals(currentBuild.getPreviousBuild()?.getResult())) {
+            slackSend(channel: "${SLACK_CHANNEL}", color: "good", message: "Successfully built nuxeo/nuxeo ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
+          }
+        }
+      }
+    }
+    unsuccessful {
+      script {
+        if (!isPullRequest() && env.DRY_RUN != "true") {
+          slackSend(channel: "${SLACK_CHANNEL}", color: "danger", message: "Failed to build nuxeo/nuxeo ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
         }
       }
     }
