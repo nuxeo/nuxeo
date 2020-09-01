@@ -79,9 +79,20 @@ pipeline {
     DOCKER_NAMESPACE = 'nuxeo'
     NUXEO_IMAGE_NAME = 'nuxeo'
     SLIM_IMAGE_NAME = 'slim'
+    SLACK_CHANNEL = 'platform-notifs'
   }
 
   stages {
+
+    stage('Notify promotion start on slack') {
+      steps {
+        script {
+          if (env.DRY_RUN != "true") {
+            slackSend(channel: "${SLACK_CHANNEL}", color: "#0167FF", message: "Starting release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
+          }
+        }
+      }
+    }
 
     stage('Check parameters') {
       steps {
@@ -271,6 +282,14 @@ pipeline {
       script {
         if (env.DRY_RUN != "true") {
           currentBuild.description = "Release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}"
+          slackSend(channel: "${SLACK_CHANNEL}", color: "good", message: "Successfully released ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
+        }
+      }
+    }
+    unsuccessful {
+      script {
+        if (env.DRY_RUN != "true") {
+          slackSend(channel: "${SLACK_CHANNEL}", color: "danger", message: "Failed to release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
         }
       }
     }
