@@ -51,7 +51,6 @@ import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.elasticsearch.search.aggregations.bucket.histogram.ExtendedBounds;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -75,7 +74,9 @@ public class DateHistogramAggregate extends MultiBucketAggregate<BucketRangeDate
     public DateHistogramAggregationBuilder getEsAggregate() {
         DateHistogramAggregationBuilder ret = AggregationBuilders.dateHistogram(getId())
                                                                  .field(getField())
-                                                                 .timeZone(DateTimeZone.getDefault());
+                                                                 .timeZone(DateTimeZone.getDefault()
+                                                                                       .toTimeZone()
+                                                                                       .toZoneId());
         Map<String, String> props = getProperties();
         if (props.containsKey(AGG_INTERVAL_PROP)) {
             ret.dateHistogramInterval(new DateHistogramInterval(props.get(AGG_INTERVAL_PROP)));
@@ -106,10 +107,10 @@ public class DateHistogramAggregate extends MultiBucketAggregate<BucketRangeDate
                     new ExtendedBounds(props.get(AGG_EXTENDED_BOUND_MIN_PROP), props.get(AGG_EXTENDED_BOUND_MAX_PROP)));
         }
         if (props.containsKey(AGG_TIME_ZONE_PROP)) {
-            ret.timeZone(DateTimeZone.forID(props.get(AGG_TIME_ZONE_PROP)));
+            ret.timeZone(DateTimeZone.forID(props.get(AGG_TIME_ZONE_PROP)).toTimeZone().toZoneId());
         }
         if (props.containsKey(AGG_PRE_ZONE_PROP)) {
-            ret.timeZone(DateTimeZone.forID(props.get(AGG_PRE_ZONE_PROP)));
+            ret.timeZone(DateTimeZone.forID(props.get(AGG_PRE_ZONE_PROP)).toTimeZone().toZoneId());
         }
         if (props.containsKey(AGG_FORMAT_PROP)) {
             ret.format(props.get(AGG_FORMAT_PROP));
@@ -161,7 +162,7 @@ public class DateHistogramAggregate extends MultiBucketAggregate<BucketRangeDate
     public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
         List<BucketRangeDate> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
-            ZonedDateTime fromZDT = DateUtils.toZonedDateTime(((DateTime) bucket.getKey()).toDate());
+            ZonedDateTime fromZDT = (ZonedDateTime) bucket.getKey();
             ZonedDateTime toZDT = DateHelper.plusDuration(fromZDT, getInterval());
             nxBuckets.add(new BucketRangeDate(bucket.getKeyAsString(), fromZDT, toZDT, bucket.getDocCount()));
         }

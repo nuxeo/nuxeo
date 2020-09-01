@@ -145,8 +145,7 @@ public class ESRestClientFactory implements ESClientFactory {
                                                               getConnectTimeoutMs(config))
                                                                                                   .setSocketTimeout(
                                                                                                           getSocketTimeoutMs(
-                                                                                                                  config)))
-                                              .setMaxRetryTimeoutMillis(getConnectTimeoutMs(config));
+                                                                                                                  config)));
         addClientCallback(config, builder);
         RestHighLevelClient client = new RestHighLevelClient(builder); // NOSONAR (factory)
         // checkConnection(client);

@@ -18,7 +18,6 @@
  */
 package org.nuxeo.elasticsearch.aggregate;
 
-import static org.nuxeo.common.utils.DateUtils.toZonedDateTime;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_FORMAT_PROP;
 
 import java.time.ZonedDateTime;
@@ -36,7 +35,6 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.range.DateRangeAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
-import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
@@ -103,10 +101,8 @@ public class DateRangeAggregate extends MultiBucketAggregate<BucketRangeDate> {
         List<BucketRangeDate> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             Range.Bucket rangeBucket = (Range.Bucket) bucket;
-            DateTime from = (DateTime) rangeBucket.getFrom();
-            DateTime to = (DateTime) rangeBucket.getTo();
-            ZonedDateTime fromZDT = from == null ? null : toZonedDateTime(from.toDate());
-            ZonedDateTime toZDT = to == null ? null : toZonedDateTime(to.toDate());
+            ZonedDateTime fromZDT = (ZonedDateTime) rangeBucket.getFrom();
+            ZonedDateTime toZDT = (ZonedDateTime) rangeBucket.getTo();
             nxBuckets.add(new BucketRangeDate(bucket.getKeyAsString(), fromZDT, toZDT, rangeBucket.getDocCount()));
         }
         nxBuckets.sort(new BucketRangeDateComparator());

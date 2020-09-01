@@ -813,7 +813,7 @@ public class TestPageProvider {
                 "            \"fuzziness\" : \"AUTO\",\n" + //
                 "            \"prefix_length\" : 0,\n" + //
                 "            \"max_expansions\" : 50,\n" + //
-                "            \"transpositions\" : false,\n" + //
+                "            \"transpositions\" : true,\n" + //
                 "            \"boost\" : 1.0\n" + //
                 "          }\n" + //
                 "        }\n" + //
@@ -878,7 +878,7 @@ public class TestPageProvider {
                 "            \"fuzziness\" : \"AUTO\",\n" + //
                 "            \"prefix_length\" : 0,\n" + //
                 "            \"max_expansions\" : 50,\n" + //
-                "            \"transpositions\" : false,\n" + //
+                "            \"transpositions\" : true,\n" + //
                 "            \"boost\" : 1.0\n" + //
                 "          }\n" + //
                 "        }\n" + //

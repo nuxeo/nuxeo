@@ -30,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
@@ -126,9 +127,18 @@ public class TestMapping {
         // case sensitive for other operation
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE '%Case%'"));
         Assert.assertEquals(0, ret.totalSize());
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE 'Upper%'"));
-        Assert.assertEquals(0, ret.totalSize());
-
+        try {
+            ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE 'Upper%'"));
+            Assert.fail("phrase prefix on keyword should raise error on elastic 7.x");
+        } catch (NuxeoException e) {
+            // expected
+        }
+        try {
+            ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE 'UPPER%'"));
+            Assert.fail("phrase prefix on keyword should raise error on elastic 7.x");
+        } catch (NuxeoException e) {
+            // expected
+        }
         ret = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:fulltext.dc:description LIKE '%Case%'"));
         Assert.assertEquals(3, ret.totalSize());

@@ -189,7 +189,7 @@ public class TestAutomaticIndexing {
         // check no root document from search response
         startTransaction();
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits().value);
     }
 
     protected SearchResponse searchAll() {
@@ -222,7 +222,7 @@ public class TestAutomaticIndexing {
         // check no root document from search response
         startTransaction();
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits().value);
     }
 
     @Test
@@ -246,7 +246,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(10, searchResponse.getHits().getTotalHits().value);
     }
 
     @Test
@@ -266,7 +266,7 @@ public class TestAutomaticIndexing {
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
                                                            .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits().value);
     }
 
     @Test
@@ -291,7 +291,7 @@ public class TestAutomaticIndexing {
                                                            .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
 
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits().value);
         Assert.assertFalse(esa.isIndexingInProgress());
     }
 
@@ -310,7 +310,7 @@ public class TestAutomaticIndexing {
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
                                                            .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits().value);
 
         // now delete the document
         session.removeDocument(doc.getRef());
@@ -320,7 +320,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         searchResponse = esa.getClient().search(request);
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits().value);
     }
 
     @Test
@@ -341,7 +341,7 @@ public class TestAutomaticIndexing {
         startTransaction();
 
         SearchResponse searchResponse = search(QueryBuilders.matchQuery("dc:nature", "A"));
-        Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(10, searchResponse.getHits().getTotalHits().value);
 
         int i = 0;
         for (SearchHit hit : searchResponse.getHits()) {
@@ -360,10 +360,10 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         searchResponse = search(QueryBuilders.matchQuery("dc:nature", "A"));
-        Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(2, searchResponse.getHits().getTotalHits().value);
 
         searchResponse = search(QueryBuilders.matchQuery("dc:nature", "B"));
-        Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(8, searchResponse.getHits().getTotalHits().value);
     }
 
     @Test
@@ -456,7 +456,7 @@ public class TestAutomaticIndexing {
         startTransaction();
         SearchResponse searchResponse = searchAll();
         // folder, version, file and proxy
-        Assert.assertEquals(4, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(4, searchResponse.getHits().getTotalHits().value);
 
         // unpublish
         session.removeDocument(proxy.getRef());
@@ -468,7 +468,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         searchResponse = searchAll();
-        Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(3, searchResponse.getHits().getTotalHits().value);
 
     }
 
@@ -552,7 +552,7 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(2, ret.totalSize());
 
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(2, searchResponse.getHits().getTotalHits().value);
 
         trashService.purgeDocuments(session, Collections.singletonList(doc.getRef()));
 
@@ -562,7 +562,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         searchResponse = searchAll();
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits().value);
     }
 
     @Test
@@ -587,7 +587,7 @@ public class TestAutomaticIndexing {
         startTransaction();
 
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(3, searchResponse.getHits().getTotalHits().value);
     }
 
     @Test
@@ -619,7 +619,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         searchResponse = search(QueryBuilders.termQuery("ecm:tag", "mytagbis"));
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits().value);
 
         tagService.untag(session, doc.getId(), "mytag");
         session.save();
@@ -629,9 +629,9 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         searchResponse = search(QueryBuilders.termQuery("ecm:tag", "mytagbis"));
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits().value);
         searchResponse = search(QueryBuilders.termQuery("ecm:tag", "mytag"));
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits().value);
     }
 
     @Test

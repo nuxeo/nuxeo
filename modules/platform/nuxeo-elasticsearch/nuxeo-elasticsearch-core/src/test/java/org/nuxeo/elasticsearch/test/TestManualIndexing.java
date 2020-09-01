@@ -132,11 +132,11 @@ public class TestManualIndexing {
                                                            .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
         // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits().value);
 
         request.source(new SearchSourceBuilder().query(QueryBuilders.matchQuery("ecm:title", "Testme")));
         searchResponse = esa.getClient().search(request);
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits().value);
     }
 
     @Test
@@ -190,11 +190,11 @@ public class TestManualIndexing {
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
                                                            .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits().value);
 
         request.source(new SearchSourceBuilder().query(QueryBuilders.matchQuery("ecm:title", "TestMe")));
         searchResponse = esa.getClient().search(request);
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits().value);
 
         // now commit and wait for post commit indexing
         TransactionHelper.commitOrRollbackTransaction();
@@ -212,10 +212,10 @@ public class TestManualIndexing {
         request.source(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()));
         searchResponse = esa.getClient().search(request);
         // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
-        Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(2, searchResponse.getHits().getTotalHits().value);
         request.source(new SearchSourceBuilder().query(QueryBuilders.matchQuery("ecm:title", "TestMe")));
         searchResponse = esa.getClient().search(request);
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits().value);
     }
 
 }

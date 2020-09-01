@@ -58,7 +58,7 @@ public class EsIterableQueryResultImpl implements IterableQueryResult, Iterator<
         this.searchService = searchService;
         this.scrollResult = scrollResult;
         this.converter = new EsSearchHitConverter(scrollResult.getQueryBuilder().getSelectFieldsAndTypes());
-        this.size = scrollResult.getElasticsearchResponse().getHits().getTotalHits();
+        this.size = scrollResult.getElasticsearchResponse().getHits().getTotalHits().value;
     }
 
     @Override

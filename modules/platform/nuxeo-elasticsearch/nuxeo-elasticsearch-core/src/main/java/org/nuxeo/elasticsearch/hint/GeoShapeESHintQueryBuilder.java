@@ -40,8 +40,8 @@ public class GeoShapeESHintQueryBuilder extends AbstractGeoESHintQueryBuilder {
      */
     @Override
     public QueryBuilder make(EsHint hint, String fieldName, Object value) {
-        String[] values = validate(value, 4, "shapeId, type, index and path");
-        return QueryBuilders.geoShapeQuery(fieldName, values[0], values[1])
+        String[] values = validate(value, 4, "shapeId, type (unused), index and path");
+        return QueryBuilders.geoShapeQuery(fieldName, values[0])
                             .relation(ShapeRelation.WITHIN)
                             .indexedShapeIndex(values[2])
                             .indexedShapePath(values[3]);

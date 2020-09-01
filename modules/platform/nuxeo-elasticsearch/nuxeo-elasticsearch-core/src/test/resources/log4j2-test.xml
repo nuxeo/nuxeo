@@ -12,6 +12,10 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
+    <!-- Remove WARN on elastic embedded because dangling indices cannot be detected -->
+    <Logger name="org.elasticsearch.gateway.DanglingIndicesState" level="error" />
+    <!-- Remove WARN on elastic embedded because node and cluster identifiers change between test suites -->
+    <Logger name="org.elasticsearch.cluster.service.ClusterApplierService" level="error" />
     <!-- Remove pool warning from the console -->
     <Logger name="org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration" additivity="false">
       <appender-ref ref="FILE" />

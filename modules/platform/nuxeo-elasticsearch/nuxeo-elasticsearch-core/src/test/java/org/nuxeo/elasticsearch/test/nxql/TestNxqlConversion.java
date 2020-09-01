@@ -116,13 +116,13 @@ public class TestNxqlConversion {
 
         SearchResponse searchResponse = search(QueryBuilders.queryStringQuery(
                 " dc\\:nature:\"Nature1\" AND dc\\:title:\"File1\""));
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits().value);
 
         searchResponse = search(QueryBuilders.queryStringQuery(" dc\\:nature:\"Nature2\" AND dc\\:title:\"File1\""));
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits().value);
 
         searchResponse = search(QueryBuilders.queryStringQuery(" NOT " + "dc\\:nature:\"Nature2\""));
-        Assert.assertEquals(9, searchResponse.getHits().getTotalHits());
+        Assert.assertEquals(9, searchResponse.getHits().getTotalHits().value);
 
         checkNXQL("select * from Document where dc:nature='Nature2' and dc:title='File2'", 1);
         checkNXQL("select * from Document where dc:nature='Nature2' and dc:title='File1'", 0);
@@ -1572,7 +1572,7 @@ public class TestNxqlConversion {
                 "      \"fuzziness\" : \"AUTO\",\n" +
                 "      \"prefix_length\" : 0,\n" +
                 "      \"max_expansions\" : 50,\n" +
-                "      \"transpositions\" : false,\n" +
+                "      \"transpositions\" : true,\n" +
                 "      \"boost\" : 1.0\n" +
                 "    }\n" +
                 "  }\n" +
@@ -1661,7 +1661,6 @@ public class TestNxqlConversion {
                 "    \"like\" : [\n" + //
                 "      {\n" + //
                 "        \"_index\" : \"nxutest\",\n" + //
-                "        \"_type\" : \"doc\",\n" + //
                 "        \"_id\" : \"1234\"\n" + //
                 "      }\n" + //
                 "    ],\n" + //
@@ -1691,12 +1690,10 @@ public class TestNxqlConversion {
                 "        \"like\" : [\n" + //
                 "          {\n" + //
                 "            \"_index\" : \"nxutest\",\n" + //
-                "            \"_type\" : \"doc\",\n" + //
                 "            \"_id\" : \"1234\"\n" + //
                 "          },\n" + //
                 "          {\n" + //
                 "            \"_index\" : \"nxutest\",\n" + //
-                "            \"_type\" : \"doc\",\n" + //
                 "            \"_id\" : \"4567\"\n" + //
                 "          }\n" + //
                 "        ],\n" + //
@@ -1729,12 +1726,10 @@ public class TestNxqlConversion {
                 "        \"like\" : [\n" + //
                 "          {\n" + //
                 "            \"_index\" : \"nxutest\",\n" + //
-                "            \"_type\" : \"doc\",\n" + //
                 "            \"_id\" : \"1234\"\n" + //
                 "          },\n" + //
                 "          {\n" + //
                 "            \"_index\" : \"nxutest\",\n" + //
-                "            \"_type\" : \"doc\",\n" + //
                 "            \"_id\" : \"4567\"\n" + //
                 "          }\n" + //
                 "        ],\n" + //
@@ -1779,7 +1774,7 @@ public class TestNxqlConversion {
                 "            \"fuzziness\" : \"AUTO\",\n" + //
                 "            \"prefix_length\" : 0,\n" + //
                 "            \"max_expansions\" : 50,\n" + //
-                "            \"transpositions\" : false,\n" + //
+                "            \"transpositions\" : true,\n" + //
                 "            \"boost\" : 1.0\n" + //
                 "          }\n" + //
                 "        }\n" + //
@@ -1990,7 +1985,7 @@ public class TestNxqlConversion {
                 "}", es);
 
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_shape) */"
-                + "osm:location IN ('FRA', 'countries', 'shapes', 'location')").toString();
+                + "osm:location IN ('FRA', 'type-unused', 'shapes', 'location')").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"constant_score\" : {\n" +
                 "    \"filter\" : {\n" +
@@ -1998,7 +1993,6 @@ public class TestNxqlConversion {
                 "        \"osm:location\" : {\n" +
                 "          \"indexed_shape\" : {\n" +
                 "            \"id\" : \"FRA\",\n" +
-                "            \"type\" : \"countries\",\n" +
                 "            \"index\" : \"shapes\",\n" +
                 "            \"path\" : \"location\"\n" +
                 "          },\n" +

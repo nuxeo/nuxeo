@@ -179,7 +179,7 @@ public class TestElasticSearchQuery {
         startTransaction();
 
         // Query More Like This
-        MoreLikeThisQueryBuilder.Item item = new MoreLikeThisQueryBuilder.Item(null, null, doc.getId());
+        MoreLikeThisQueryBuilder.Item item = new MoreLikeThisQueryBuilder.Item(null, doc.getId());
         QueryBuilder elasticBuilder = QueryBuilders.moreLikeThisQuery(new String[] { "dc:title.fulltext" }, null,
                 new MoreLikeThisQueryBuilder.Item[] { item })
                                                    .minTermFreq(1)

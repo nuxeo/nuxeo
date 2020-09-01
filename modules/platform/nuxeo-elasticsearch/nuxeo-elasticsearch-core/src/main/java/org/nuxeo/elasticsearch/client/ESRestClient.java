@@ -154,8 +154,9 @@ public class ESRestClient implements ESClient {
 
     @Override
     public boolean mappingExists(String indexName, String type) {
+        // HEAD is not supported anymore since elastic 7.x
         Response response = performRequestWithTracing(
-                new Request("HEAD", String.format("/%s/_mapping/%s", indexName, type)));
+                new Request("GET", String.format("/%s/_mapping", indexName)));
         switch (response.getStatusLine().getStatusCode()) {
         case HttpStatus.SC_OK:
             return true;
@@ -188,7 +189,8 @@ public class ESRestClient implements ESClient {
     @Override
     public void createIndex(String indexName, String jsonSettings) {
         Request request = new Request("PUT", "/" + indexName + "?timeout=" + CREATE_INDEX_TIMEOUT);
-        request.setJsonEntity(jsonSettings);
+        // since elastic 7 REST API needs an additional level
+        request.setJsonEntity("{\"settings\": " + jsonSettings + "}");
         Response response = performRequestWithTracing(request);
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             throw new NuxeoException("Fail to create index: " + indexName + " :" + response);
@@ -197,11 +199,11 @@ public class ESRestClient implements ESClient {
 
     @Override
     public void createMapping(String indexName, String type, String jsonMapping) {
-        Request request = new Request("PUT", String.format("/%s/%s/_mapping", indexName, type));
+        Request request = new Request("PUT", String.format("/%s/_mapping", indexName));
         request.setJsonEntity(jsonMapping);
         Response response = performRequestWithTracing(request);
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new NuxeoException(String.format("Fail to create mapping on %s/%s: %s", indexName, type, response));
+            throw new NuxeoException(String.format("Fail to create mapping on %s: %s", indexName, response));
         }
     }
 
@@ -321,7 +323,8 @@ public class ESRestClient implements ESClient {
     public SearchResponse search(SearchRequest request) {
         try (Scope ignored = getScopedSpan("elastic/_search", request.toString())) {
             return client.search(request, RequestOptions.DEFAULT);
-        } catch (IOException e) {
+        } catch (IOException | ElasticsearchStatusException e) {
+            // ElasticsearchStatusException is raised when using phrase prefix on keyword type
             throw new NuxeoException(e);
         }
     }

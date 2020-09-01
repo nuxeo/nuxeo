@@ -19,9 +19,7 @@
 
 package org.nuxeo.elasticsearch.bulk;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 import static org.nuxeo.elasticsearch.bulk.IndexAction.ACTION_FULL_NAME;
-import static org.nuxeo.elasticsearch.bulk.IndexAction.ACTION_NAME;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -90,7 +88,8 @@ public class IndexRequestComputation extends AbstractBulkComputation {
         ElasticSearchIndexing esi = Framework.getService(ElasticSearchIndexing.class);
         for (DocumentModel doc : docs) {
             try {
-                append(new IndexRequest(indexName, DOC_TYPE, doc.getId()).source(esi.source(doc), XContentType.JSON)
+                append(new IndexRequest(indexName).id(doc.getId())
+                                                  .source(esi.source(doc), XContentType.JSON)
                                                                          .versionType(VersionType.EXTERNAL)
                                                                          .version(now));
             } catch (IOException e) {
