@@ -89,8 +89,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     protected List<LogEntry> queryESAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
             Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, int limit) {
 
-        SearchRequest request = new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
-                                                                   .searchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequest request = new SearchRequest(getESIndexName()).searchType(SearchType.DFS_QUERY_THEN_FETCH);
 
         QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
         QueryBuilder filterBuilder = buildFilterClauses(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
@@ -225,8 +224,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     @Override
     public long getUpperBound() {
-        SearchRequest request = new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
-                                                                   .searchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequest request = new SearchRequest(getESIndexName()).searchType(SearchType.DFS_QUERY_THEN_FETCH);
         RangeQueryBuilder filterBuilder = QueryBuilders.rangeQuery("logDate");
         SearchSourceBuilder source = new SearchSourceBuilder();
         source.sort("id", SortOrder.DESC).size(1);
@@ -290,8 +288,8 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     }
 
     protected void logSearchRequest(SearchRequest request) {
-        log.debug("Elasticsearch search request: curl -XGET 'http://localhost:9200/{}/{}/_search?pretty' -d '{}'",
-                this::getESIndexName, () -> ElasticSearchConstants.ENTRY_TYPE, () -> request);
+        log.debug("Elasticsearch search request: curl -XGET 'http://localhost:9200/{}/_search?pretty' -d '{}'",
+                this::getESIndexName, () -> request);
     }
 
     protected void logSearchResponse(SearchResponse response) {

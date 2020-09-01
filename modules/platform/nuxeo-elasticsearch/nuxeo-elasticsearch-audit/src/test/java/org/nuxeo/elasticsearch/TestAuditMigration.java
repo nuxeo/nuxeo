@@ -161,8 +161,7 @@ public class TestAuditMigration {
                 "        }\n" + //
                 "      }\n" + //
                 "    }\n" + //
-                "  }\n" + //
-                "}";
+                "  }";
         List<LogEntry> migratedEntries = (List<LogEntry>) backend.nativeQuery(singleQuery, 0, 1001);
         Assert.assertEquals(1000, migratedEntries.size());
     }

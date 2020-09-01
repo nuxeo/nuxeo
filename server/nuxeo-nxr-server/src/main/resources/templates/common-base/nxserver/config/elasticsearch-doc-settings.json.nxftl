@@ -61,7 +61,7 @@
         "type": "path_hierarchy"
       },
       "ngram_tokenizer": {
-        "type": "nGram",
+        "type": "ngram",
         "min_gram": 3,
         "max_gram": 4
       }

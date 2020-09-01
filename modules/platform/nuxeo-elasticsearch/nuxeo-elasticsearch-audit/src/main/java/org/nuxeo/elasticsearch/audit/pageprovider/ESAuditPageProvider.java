@@ -110,7 +110,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
         SearchHits hits = searchResponse.getHits();
 
         // set total number of hits ?
-        setResultsCount(hits.getTotalHits());
+        setResultsCount(hits.getTotalHits().value);
         ObjectMapper mapper = new ObjectMapper();
         for (SearchHit hit : hits) {
             try {
