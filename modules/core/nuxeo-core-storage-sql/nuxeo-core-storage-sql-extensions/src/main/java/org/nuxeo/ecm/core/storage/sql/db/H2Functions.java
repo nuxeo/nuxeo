@@ -64,7 +64,7 @@ public class H2Functions extends EmbeddedFunctions {
     }
 
     /**
-     * Compatibility signature without {@code disableVersionACL} parameter
+     * Compatibility signature without {@code disableVersionACL} or {@code disableReadVersionPermission} parameter
      */
     public static boolean isAccessAllowedString(Connection conn, String id, String principals, String permissions)
             throws SQLException {
@@ -75,8 +75,9 @@ public class H2Functions extends EmbeddedFunctions {
      * @since 11.3
      */
     public static boolean isAccessAllowed2(Connection conn, String id, String principals, String permissions,
-            boolean disableVersionACL) throws SQLException {
-        return isAccessAllowed(conn, id, split(principals), split(permissions), disableVersionACL);
+            boolean disableVersionACL, boolean disableReadVersionPermission) throws SQLException {
+        return isAccessAllowed(conn, id, split(principals), split(permissions), disableVersionACL,
+                disableReadVersionPermission);
     }
 
     /**

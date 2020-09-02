@@ -22,6 +22,8 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_VERSION;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.INITIAL_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.INITIAL_SYS_CHANGE_TOKEN;
@@ -78,6 +80,7 @@ import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.LockManager;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -162,7 +165,9 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
 
     protected final Set<String> browsePermissions;
 
-    protected final boolean disableVersionACL;
+    protected final VersionAclMode versionAclMode;
+
+    protected final boolean disableReadVersionPermission;
 
     public DBSTransactionState(DBSRepository repository, DBSSession session) {
         this.repository = repository;
@@ -170,7 +175,8 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
         this.session = session;
         SecurityService securityService = Framework.getService(SecurityService.class);
         browsePermissions = new HashSet<>(Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
-        disableVersionACL = VersionAclMode.getConfiguration() == VersionAclMode.DISABLED;
+        versionAclMode = VersionAclMode.getConfiguration();
+        disableReadVersionPermission = BaseSession.isReadVersionPermissionDisabled();
     }
 
     /**
@@ -675,11 +681,15 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
      */
     protected String[] getReadACL(State state) {
         Set<String> racls = new HashSet<>();
-        if (disableVersionACL && TRUE.equals(state.get(KEY_IS_VERSION))) {
-            String versionSeriesId = (String) state.get(KEY_VERSION_SERIES_ID);
-            if (versionSeriesId == null || (state = getStateForRead(versionSeriesId)) == null) {
-                // version with no live doc
-                return new String[0];
+        boolean replaceReadVersionPermission = false;
+        if (TRUE.equals(state.get(KEY_IS_VERSION))) {
+            replaceReadVersionPermission = !disableReadVersionPermission;
+            if (versionAclMode == VersionAclMode.DISABLED) {
+                String versionSeriesId = (String) state.get(KEY_VERSION_SERIES_ID);
+                if (versionSeriesId == null || (state = getStateForRead(versionSeriesId)) == null) {
+                    // version with no live doc
+                    return new String[0];
+                }
             }
         }
         LOOP: do {
@@ -696,6 +706,9 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
                         String permission = (String) aceMap.get(KEY_ACE_PERMISSION);
                         Boolean granted = (Boolean) aceMap.get(KEY_ACE_GRANT);
                         Long status = (Long) aceMap.get(KEY_ACE_STATUS);
+                        if (replaceReadVersionPermission && READ_VERSION.equals(permission)) {
+                            permission = READ;
+                        }
                         if (TRUE.equals(granted) && browsePermissions.contains(permission)
                                 && (status == null || status == 1)) {
                             racls.add(username);
@@ -711,7 +724,13 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
                 }
             }
             // get the parent; for a version the parent is the live document
-            String parentKey = TRUE.equals(state.get(KEY_IS_VERSION)) ? KEY_VERSION_SERIES_ID : KEY_PARENT_ID;
+            String parentKey;
+            if (TRUE.equals(state.get(KEY_IS_VERSION))) {
+                replaceReadVersionPermission = !disableReadVersionPermission;
+                parentKey = KEY_VERSION_SERIES_ID;
+            } else {
+                parentKey = KEY_PARENT_ID;
+            }
             String parentId = (String) state.get(parentKey);
             state = parentId == null ? null : getStateForRead(parentId);
         } while (state != null);

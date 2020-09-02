@@ -958,7 +958,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow, boolean excludeSpecialChildren) {
+    public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow,
+            boolean excludeSpecialChildren, boolean excludeACL) {
         // assert !model.separateMainTable; // other case not implemented
         VCSInvalidations invalidations = new VCSInvalidations();
         try {
@@ -995,6 +996,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 if (tableName.equals(Model.VERSION_TABLE_NAME)) {
                     // versions not fileable
                     // restore must not copy versions either
+                    continue;
+                }
+                if (excludeACL && tableName.equals(Model.ACL_TABLE_NAME)) {
                     continue;
                 }
                 Set<Serializable> ids = entry.getValue();

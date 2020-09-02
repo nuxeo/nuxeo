@@ -26,6 +26,7 @@
 #   INTO READ_ACL_PERMISSIONS VALUES ('Everything')
 # ${usersSeparator} default to '|'
 # ${disableVersionACL} true or false
+# ${disableReadVersionPermission} true or false
 
 # Conditions used:
 # sequenceEnabled
@@ -124,7 +125,7 @@ RETURN NUMBER IS
   curid hierarchy.id%TYPE := id;
   newid hierarchy.id%TYPE;
   isver INTEGER;
-  first BOOLEAN := TRUE;
+  replaceReadVersionPermission BOOLEAN := FALSE;
 BEGIN
   IF ${disableVersionACL} THEN
     -- if it's a version, ignore its ACL and find the live doc
@@ -139,20 +140,23 @@ BEGIN
       EXCEPTION WHEN NO_DATA_FOUND THEN
         curid := NULL;
       END;
-      first := FALSE;
+      replaceReadVersionPermission := NOT ${disableReadVersionPermission};
     END IF;
   END IF;
   WHILE curid IS NOT NULL LOOP
     FOR r IN (SELECT * FROM acls WHERE acls.id = curid ORDER BY acls.pos) LOOP
+      IF replaceReadVersionPermission AND r.permission = 'ReadVersion' THEN
+        r.permission := 'Read';
+      END IF;
       IF r.permission MEMBER OF permissions AND r.user MEMBER OF users THEN
         RETURN r."GRANT";
       END IF;
     END LOOP;
-    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
-    IF first AND newid IS NULL THEN
+    SELECT parentid, isversion INTO newid, isver FROM hierarchy WHERE hierarchy.id = curid;
+    IF isver = 1 THEN
       SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+      replaceReadVersionPermission := NOT ${disableReadVersionPermission};
     END IF;
-    first := FALSE;
     curid := newid;
   END LOOP;
   RETURN 0;
@@ -793,7 +797,9 @@ IS
   newid acls.id%TYPE;
   acl NCLOB := NULL;
   isver INTEGER;
-  first BOOLEAN := TRUE;
+  -- cannot use a BOOLEAN as this needs to be tested inside a SQL statement
+  enableReadVersionPermission INTEGER := CASE WHEN ${disableReadVersionPermission} THEN 0 ELSE 1 END;
+  replaceReadVersionPermission INTEGER := 0;
   sep VARCHAR2(1) := '${usersSeparator}';
   read_permissions NX_STRING_TABLE;
 BEGIN
@@ -811,12 +817,17 @@ BEGIN
       EXCEPTION WHEN NO_DATA_FOUND THEN
         curid := NULL;
       END;
-      first := FALSE;
+      replaceReadVersionPermission := enableReadVersionPermission;
     END IF;
   END IF;
   WHILE curid IS NOT NULL LOOP
     FOR r in (SELECT * FROM acls
-                WHERE permission MEMBER OF read_permissions
+                WHERE
+                  CASE
+                    WHEN replaceReadVersionPermission = 1 AND permission = 'ReadVersion' THEN 'Read'
+                    ELSE permission
+                  END
+                    MEMBER OF read_permissions
                 AND acls.id = curid
                 AND (status IS NULL OR status = 1)
                 ORDER BY acls.pos) LOOP
@@ -827,19 +838,20 @@ BEGIN
     END LOOP;
     -- recurse into parent
     BEGIN
-      SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
+      SELECT parentid, isversion INTO newid, isver FROM hierarchy WHERE hierarchy.id = curid;
     EXCEPTION WHEN NO_DATA_FOUND THEN
       -- curid not in hierarchy at all
       newid := NULL;
+      isver := 0;
     END;
-    IF first AND newid IS NULL THEN
+    IF isver = 1 THEN
       BEGIN
         SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+        replaceReadVersionPermission := enableReadVersionPermission;
       EXCEPTION
         WHEN NO_DATA_FOUND THEN NULL;
       END;
     END IF;
-    first := FALSE;
     curid := newid;
   END LOOP;
   RETURN NVL(acl, '-');

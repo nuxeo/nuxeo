@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -188,6 +189,18 @@ public class ACLImpl extends ArrayList<ACE>implements ACL {
         setACEs(aces.toArray(new ACE[aces.size()]));
 
         return aclChanged;
+    }
+
+    @Override
+    public void replacePermission(String oldPerm, String newPerm) {
+        ListIterator<ACE> it = listIterator();
+        while (it.hasNext()) {
+            ACE ace = it.next();
+            if (ace.getPermission().equals(oldPerm)) {
+                ace = ACE.builder(ace).permission(newPerm).build();
+                it.set(ace);
+            }
+        }
     }
 
     @Override
