@@ -65,7 +65,7 @@ public class ManagementObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected boolean requestIsOnConfiguredPort(ServletRequest request) {
-        int port = request.getServerPort();
+        int port = request.getLocalPort();
         String configPort = Framework.getProperty(MANAGEMENT_API_HTTP_PORT_PROPERTY,
                 Framework.getProperty(PARAM_HTTP_PORT));
         return Integer.parseInt(configPort) == port;
