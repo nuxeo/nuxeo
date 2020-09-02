@@ -24,6 +24,7 @@
 # ${readPermissions} SELECT 'Browse'  UNION ALL   SELECT 'Read'  UNION ALL   SELECT 'ReadProperties'  UNION ALL   SELECT 'ReadRemove'  UNION ALL   SELECT 'ReadWrite'  UNION ALL   SELECT 'Everything' ;
 # ${usersSeparator} Used to store aclr default is "|", but it depends on the configuration. Note that array parameters always use "|" separator.
 # ${disableVersionACL} true or false
+# ${disableReadVersionPermission} true or false
 
 # Conditions used:
 # sequenceEnabled
@@ -129,7 +130,8 @@ BEGIN
   DECLARE @allusers NVARCHAR(${readAclMaxSize});
   DECLARE @allperms NVARCHAR(${readAclMaxSize});
   DECLARE @isver TINYINT;
-  DECLARE @first TINYINT;
+  DECLARE @enableReadVersionPermission BIT;
+  DECLARE @replaceReadVersionPermission BIT;
   DECLARE @curid ${idType};
   DECLARE @newid ${idType};
   DECLARE @gr TINYINT;
@@ -137,14 +139,15 @@ BEGIN
   DECLARE @us NVARCHAR(1000);
   SET @allusers = N'|' + @users + N'|';
   SET @allperms = N'|' + @perms + N'|';
-  SET @first = 1;
+  SET @enableReadVersionPermission = CASE WHEN '${disableReadVersionPermission}' = 'true' THEN 0 ELSE 1 END;
+  SET @replaceReadVersionPermission = 0;
   SET @curid = @id;
   IF '${disableVersionACL}' = 'true' BEGIN
     -- if it's a version, ignore its ACL and find the live doc
     SET @isver = (SELECT isversion FROM hierarchy WHERE id = @curid);
     IF @isver = 1 BEGIN
       SET @curid = (SELECT versionableid FROM versions WHERE id = @curid);
-      SET @first = 0;
+      SET @replaceReadVersionPermission = @enableReadVersionPermission;
     END;
   END;
   WHILE @curid IS NOT NULL BEGIN
@@ -154,6 +157,9 @@ BEGIN
       WHERE [id] = @curid ORDER BY [pos];
     OPEN @cur;
     FETCH FROM @cur INTO @gr, @pe, @us;
+    IF @replaceReadVersionPermission = 1 AND @pe = 'ReadVersion' BEGIN
+      SET @pe = 'Read';
+    END;
     WHILE @@FETCH_STATUS = 0 BEGIN
       IF @allusers LIKE (N'%|' + @us + N'|%') AND @allperms LIKE (N'%|' + @pe + N'|%')
       BEGIN
@@ -165,11 +171,11 @@ BEGIN
     END;
     CLOSE @cur;
     DEALLOCATE @cur;
-    SET @newid = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @curid);
-    IF @first = 1 AND @newid IS NULL BEGIN
+    SELECT @newid = parentid, @isver = isversion FROM hierarchy WHERE [id] = @curid;
+    IF @isver = 1 BEGIN
       SET @newid = (SELECT [versionableid] FROM [versions] WHERE [id] = @curid);
+      SET @replaceReadVersionPermission = @enableReadVersionPermission;
     END;
-    SET @first = 0;
     SET @curid = @newid;
   END;
   RETURN 0;
@@ -797,7 +803,7 @@ INSERT INTO aclr_permission ${readPermissions};
 # -- FUNCTIONS --------------------------------------------------
 
 #PROC: dbo.nx_get_local_read_acl
-CREATE FUNCTION nx_get_local_read_acl(@id ${idType})
+CREATE FUNCTION nx_get_local_read_acl(@id ${idType}, @replaceReadVersionPermission BIT)
 RETURNS NVARCHAR(${readAclMaxSize}) AS
 -- Compute the read acl for hierarchy id using a local acl
 BEGIN
@@ -814,7 +820,11 @@ BEGIN
       END + [user] AS op
     FROM acls
     WHERE [id] = @curid AND
-      [permission] IN (SELECT [permission] FROM aclr_permission) AND
+      (CASE
+         WHEN @replaceReadVersionPermission = 1 AND [permission] = 'ReadVersion' THEN 'Read'
+         ELSE [permission]
+       END)
+       IN (SELECT [permission] FROM aclr_permission) AND
       ([status] IS NULL OR [status] = 1)
     ORDER BY [pos];
   OPEN @cur;
@@ -844,29 +854,32 @@ BEGIN
   DECLARE @read_acl NVARCHAR(${readAclMaxSize});
   DECLARE @ret NVARCHAR(${readAclMaxSize});
   DECLARE @isver TINYINT;
-  DECLARE @first TINYINT;
+  DECLARE @enableReadVersionPermission BIT;
+  DECLARE @replaceReadVersionPermission BIT;
   DECLARE @pos INT;
   SET @curid = @id;
-  SET @first = 1;
+  SET @enableReadVersionPermission = CASE WHEN '${disableReadVersionPermission}' = 'true' THEN 0 ELSE 1 END;
+  SET @replaceReadVersionPermission = 0;
   IF '${disableVersionACL}' = 'true' BEGIN
     -- if it's a version, ignore its ACL and find the live doc
     SET @isver = (SELECT isversion FROM hierarchy WHERE id = @curid);
     IF @isver = 1 BEGIN
       SET @curid = (SELECT versionableid FROM versions WHERE id = @curid);
-      SET @first = 0;
+      SET @replaceReadVersionPermission = @enableReadVersionPermission;
     END;
   END;
   WHILE @curid IS NOT NULL BEGIN
-    SET @read_acl = (SELECT dbo.nx_get_local_read_acl(@curid));
+    SET @read_acl = (SELECT dbo.nx_get_local_read_acl(@curid, @replaceReadVersionPermission));
     IF @read_acl IS NOT NULL
       IF @ret IS NULL
         SET @ret = @read_acl;
       ELSE
         SET @ret = @ret + N'${usersSeparator}' + @read_acl;
-    SET @newid = (SELECT parentid FROM hierarchy WHERE [id] = @curid);
-    IF @first = 1 AND @newid IS NULL
-      SET @newid = (SELECT versionableid FROM versions WHERE [id] = @curid)
-    SET @first = 0;
+    SELECT @newid = parentid, @isver = isversion FROM hierarchy WHERE [id] = @curid;
+    IF @isver = 1 BEGIN
+      SET @newid = (SELECT versionableid FROM versions WHERE [id] = @curid);
+      SET @replaceReadVersionPermission = @enableReadVersionPermission;
+    END;
     SET @curid = @newid;
     -- Stop on deny all
     SET @pos = CHARINDEX('-Everyone', @ret);

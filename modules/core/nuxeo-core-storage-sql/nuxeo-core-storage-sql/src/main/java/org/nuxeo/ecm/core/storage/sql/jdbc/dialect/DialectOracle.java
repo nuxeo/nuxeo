@@ -53,6 +53,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
@@ -96,6 +97,8 @@ public class DialectOracle extends Dialect {
     protected int pathOptimizationsVersion = 0;
 
     protected final boolean disableVersionACL;
+
+    protected final boolean disableReadVersionPermission;
 
     private static final String DEFAULT_USERS_SEPARATOR = "|";
 
@@ -159,6 +162,7 @@ public class DialectOracle extends Dialect {
             pathOptimizationsVersion = repositoryDescriptor.getPathOptimizationsVersion();
         }
         disableVersionACL = VersionAclMode.getConfiguration() == VersionAclMode.DISABLED;
+        disableReadVersionPermission = BaseSession.isReadVersionPermissionDisabled();
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
@@ -882,6 +886,7 @@ public class DialectOracle extends Dialect {
         properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
         properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
         properties.put("disableVersionACL", Boolean.valueOf(disableVersionACL));
+        properties.put("disableReadVersionPermission", Boolean.valueOf(disableReadVersionPermission));
         if (!fulltextSearchDisabled) {
             Table ft = database.getTable(Model.FULLTEXT_TABLE_NAME);
             properties.put("fulltextTable", ft.getQuotedName());

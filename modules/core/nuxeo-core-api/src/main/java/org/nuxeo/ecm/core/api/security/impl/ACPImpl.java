@@ -467,6 +467,11 @@ public class ACPImpl implements ACP {
         return changed;
     }
 
+    @Override
+    public void replacePermission(String oldPerm, String newPerm) {
+        acls.forEach(acl -> acl.replacePermission(oldPerm, newPerm));
+    }
+
     @SuppressWarnings("AutoBoxing")
     protected boolean useLegacyBehavior() {
         if (legacyBehavior == null) {

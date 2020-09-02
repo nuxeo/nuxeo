@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
@@ -56,9 +57,12 @@ public class DialectMySQL extends Dialect {
 
     protected final boolean disableVersionACL;
 
+    protected final boolean disableReadVersionPermission;
+
     public DialectMySQL(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
         disableVersionACL = VersionAclMode.getConfiguration() == VersionAclMode.DISABLED;
+        disableReadVersionPermission = BaseSession.isReadVersionPermissionDisabled();
     }
 
     @Override
@@ -446,6 +450,7 @@ public class DialectMySQL extends Dialect {
         properties.put("fulltextSearchEnabled", Boolean.valueOf(!fulltextSearchDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         properties.put("disableVersionACL", Boolean.valueOf(disableVersionACL));
+        properties.put("disableReadVersionPermission", Boolean.valueOf(disableReadVersionPermission));
         return properties;
     }
 

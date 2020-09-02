@@ -44,6 +44,8 @@ import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
+import org.nuxeo.ecm.core.model.BaseSession;
+import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
@@ -99,6 +101,10 @@ public class PersistenceContext {
     protected final RowMapper mapper;
 
     protected final SessionImpl session;
+
+    protected final VersionAclMode versionAclMode;
+
+    protected final boolean disableReadVersionPermission;
 
     // selection context for complex properties
     protected final SelectionContext hierComplex;
@@ -175,6 +181,8 @@ public class PersistenceContext {
         this.model = model;
         this.mapper = mapper;
         this.session = session;
+        versionAclMode = VersionAclMode.getConfiguration();
+        disableReadVersionPermission = BaseSession.isReadVersionPermissionDisabled();
         hierComplex = new SelectionContext(SelectionType.CHILDREN, Boolean.TRUE, mapper, this);
         hierNonComplex = new SelectionContext(SelectionType.CHILDREN, Boolean.FALSE, mapper, this);
         seriesVersions = new SelectionContext(SelectionType.SERIES_VERSIONS, null, mapper, this);
@@ -1490,7 +1498,9 @@ public class PersistenceContext {
         Long pos = getNextPos(parentId, false);
         // no special children (comments, annotations...) kept on document copy
         boolean excludeSpecialChildren = true;
-        CopyResult copyResult = mapper.copy(new IdWithTypes(source), parentId, name, null, excludeSpecialChildren);
+        boolean excludeACL = false;
+        CopyResult copyResult = mapper.copy(new IdWithTypes(source), parentId, name, null, excludeSpecialChildren,
+                excludeACL);
         Serializable newId = copyResult.copyId;
         // read new child in this session (updates children Selection)
         SimpleFragment copy = getHier(newId, false);
@@ -1555,7 +1565,9 @@ public class PersistenceContext {
         Serializable id = node.getId();
         // complex (special) children are snapshot when checking in
         boolean excludeSpecialChildren = false;
-        CopyResult res = mapper.copy(new IdWithTypes(node), null, null, null, excludeSpecialChildren);
+        // except in legacy mode, we don't copy the live ACL when creating a version
+        boolean excludeACL = versionAclMode != VersionAclMode.LEGACY;
+        CopyResult res = mapper.copy(new IdWithTypes(node), null, null, null, excludeSpecialChildren, excludeACL);
         Serializable newId = res.copyId;
         markInvalidated(res.invalidations);
         // add version as a new child of its parent
@@ -1639,8 +1651,9 @@ public class PersistenceContext {
         overwriteRow.putNew(Model.MAIN_HAS_LEGAL_HOLD_KEY, null);
         // exclude special children to avoid duplicates on restore
         boolean excludeSpecialChildren = true;
+        boolean excludeACL = true;
         CopyResult res = mapper.copy(new IdWithTypes(version), node.getParentId(), null, overwriteRow,
-                excludeSpecialChildren);
+                excludeSpecialChildren, excludeACL);
         markInvalidated(res.invalidations);
     }
 
