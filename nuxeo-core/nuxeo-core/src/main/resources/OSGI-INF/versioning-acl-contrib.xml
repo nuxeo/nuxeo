@@ -10,4 +10,12 @@
     <property name="org.nuxeo.version.acl.disabled">legacy</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Configuration property (true or false) controlling whether the ReadVersion permission is disabled.
+      @since 11.3
+    </documentation>
+    <property name="org.nuxeo.version.readversion.disabled">false</property>
+  </extension>
+
 </component>

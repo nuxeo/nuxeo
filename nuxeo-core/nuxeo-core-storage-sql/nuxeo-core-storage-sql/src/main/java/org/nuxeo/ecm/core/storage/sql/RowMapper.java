@@ -329,9 +329,34 @@ public interface RowMapper {
      *            hierarchy
      * @param excludeSpecialChildren the flag to exclude special children from copy
      * @return info about the copy
+     * @deprecated since 11.3, use other signature instead
+     */
+    @Deprecated
+    default CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow,
+            boolean excludeSpecialChildren) {
+        return copy(source, destParentId, destName, overwriteRow, excludeSpecialChildren, false);
+    }
+
+    /**
+     * Copies the hierarchy starting from a given row to a new parent with a new name.
+     * <p>
+     * If the new parent is {@code null}, then this is a version creation, which doesn't recurse in regular children.
+     * <p>
+     * If {@code overwriteRow} is passed, the copy is done onto this existing node as its root (version restore) instead
+     * of creating a new node in the parent.
+     *
+     * @param source the id, primary type and mixin types of the row to copy
+     * @param destParentId the new parent id, or {@code null}
+     * @param destName the new name
+     * @param overwriteRow when not {@code null}, the copy is done onto this existing row, and the values are set in
+     *            hierarchy
+     * @param excludeSpecialChildren the flag to exclude special children from copy
+     * @param excludeACL the flag to exclude ACL from copy
+     * @return info about the copy
+     * @since 11.3
      */
     CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow,
-            boolean excludeSpecialChildren);
+            boolean excludeSpecialChildren, boolean excludeACL);
 
     /**
      * A document id, parent id and primary type, along with the version and proxy information (the potentially impacted

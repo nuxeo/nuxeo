@@ -40,6 +40,10 @@ import java.util.regex.Pattern;
  */
 public class EmbeddedFunctions {
 
+    protected static final String READ = "Read";
+
+    protected static final String READ_VERSION = "ReadVersion";
+
     // for debug
     private static boolean isLogEnabled() {
         return false;
@@ -131,7 +135,7 @@ public class EmbeddedFunctions {
     @Deprecated
     public static boolean isAccessAllowed(Connection conn, Serializable id, Set<String> principals,
             Set<String> permissions) throws SQLException {
-        return isAccessAllowed(conn, id, principals, permissions, true);
+        return isAccessAllowed(conn, id, principals, permissions, true, true);
     }
 
     /**
@@ -144,20 +148,24 @@ public class EmbeddedFunctions {
      * @param principals the allowed identities
      * @param permissions the allowed permissions
      * @param disableVersionACL whether ACLs on a version are disabled
+     * @param disableReadVersionPermission whether the ReadVersion permission is disabled
      * @since 11.3
      */
     public static boolean isAccessAllowed(Connection conn, Serializable id, Set<String> principals,
-            Set<String> permissions, boolean disableVersionACL) throws SQLException {
+            Set<String> permissions, boolean disableVersionACL, boolean disableReadVersionPermission)
+            throws SQLException {
         try (PreparedStatement psAcl = conn.prepareStatement(
                 "SELECT \"GRANT\", \"PERMISSION\", \"USER\" FROM \"ACLS\" WHERE ID = ? AND (STATUS IS NULL OR STATUS = 1) ORDER BY POS");
                 PreparedStatement psHier = conn.prepareStatement(
                         "SELECT PARENTID, ISVERSION FROM HIERARCHY WHERE ID = ?");
                 PreparedStatement psVer = conn.prepareStatement("SELECT VERSIONABLEID FROM VERSIONS WHERE ID = ?")) {
+            boolean replaceReadVersionPermission = false;
             RowInfo rowInfo = null; // info about the row for the current id
             if (disableVersionACL) {
                 // if it's a version, ignore its ACL and find the live doc
                 rowInfo = getRowInfo(psHier, psVer, id);
                 if (rowInfo.isVersion) {
+                    replaceReadVersionPermission = !disableReadVersionPermission;
                     id = rowInfo.versionableId;
                     if (id == null) {
                         return false;
@@ -167,7 +175,7 @@ public class EmbeddedFunctions {
             }
             do {
                 // check permissions at this level
-                Boolean access = getAccess(psAcl, id, principals, permissions);
+                Boolean access = getAccess(psAcl, id, principals, permissions, replaceReadVersionPermission);
                 if (access != null) {
                     return access;
                 }
@@ -176,6 +184,7 @@ public class EmbeddedFunctions {
                     rowInfo = getRowInfo(psHier, psVer, id);
                 }
                 if (rowInfo.isVersion) {
+                    replaceReadVersionPermission = !disableReadVersionPermission;
                     id = rowInfo.versionableId;
                 } else {
                     id = rowInfo.parentId;
@@ -218,13 +227,16 @@ public class EmbeddedFunctions {
     }
 
     protected static Boolean getAccess(PreparedStatement psAcl, Serializable id, Set<String> principals,
-            Set<String> permissions) throws SQLException {
+            Set<String> permissions, boolean replaceReadVersionPermission) throws SQLException {
         psAcl.setObject(1, id);
         try (ResultSet rs = psAcl.executeQuery()) {
             while (rs.next()) {
                 boolean grant = rs.getShort(1) != 0;
                 String permission = rs.getString(2);
                 String user = rs.getString(3);
+                if (replaceReadVersionPermission && READ_VERSION.equals(permission)) {
+                    permission = READ;
+                }
                 if (principals.contains(user) && permissions.contains(permission)) {
                     return grant;
                 }

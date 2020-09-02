@@ -370,6 +370,11 @@ public final class ACE implements Serializable, Cloneable {
         return new ACE(username, permission, isGranted, creator, begin, end, contextData);
     }
 
+    /** @since 11.3 */
+    public static ACEBuilder builder(ACE ace) {
+        return new ACEBuilder(ace);
+    }
+
     public static ACEBuilder builder(String username, String permission) {
         return new ACEBuilder(username, permission);
     }
@@ -390,9 +395,32 @@ public final class ACE implements Serializable, Cloneable {
 
         private Map<String, Serializable> contextData;
 
+        /** @since 11.3 */
+        public ACEBuilder(ACE ace) {
+            this.username = ace.username;
+            this.permission = ace.permission;
+            this.isGranted = ace.isGranted;
+            this.begin = ace.begin;
+            this.end = ace.end;
+            this.creator = ace.creator;
+            this.contextData = ace.contextData;
+        }
+
         public ACEBuilder(String username, String permission) {
             this.username = username;
             this.permission = permission;
+        }
+
+        /** @since 11.3 */
+        public ACEBuilder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        /** @since 11.3 */
+        public ACEBuilder permission(String permission) {
+            this.permission = permission;
+            return this;
         }
 
         public ACEBuilder isGranted(boolean isGranted) {

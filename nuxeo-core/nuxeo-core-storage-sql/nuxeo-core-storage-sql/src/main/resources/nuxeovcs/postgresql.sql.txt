@@ -17,10 +17,11 @@
 # ${fulltextAnalyzer} english, or depending on config
 # ${fulltextTriggerStatements} repeated for all suffixes SFX:
 #   NEW.fulltextSFX := COALESCE(NEW.simpletextSFX}, ''::TSVECTOR) || COALESCE(NEW.binarytextSFX, ''::TSVECTOR);
-# ${readPermissions} ('Browse'), ('Read'), ('ReadProperties'), ('ReadRemove'), ('ReadWrite'), ('Everything')
+# ${readPermissions} ARRAY['Browse', 'Read', 'ReadProperties', 'ReadRemove', 'ReadWrite', 'Everything']
 # ${usersSeparator} default is ",", but it depends on the configuration
 # ${unlogged} empty or "UNLOGGED" if postgresql >= 9.1
 # ${disableVersionACL} true or false
+# ${disableReadVersionPermission} true or false
 
 # Conditions used:
 # sequenceEnabled
@@ -81,26 +82,29 @@ DECLARE
   newid ${idType};
   r record;
   isver boolean;
-  first boolean := true;
+  replaceReadVersionPermission boolean := false;
 BEGIN
   IF ${disableVersionACL} THEN
     SELECT isversion INTO isver FROM hierarchy WHERE hierarchy.id = curid;
     IF isver THEN
       SELECT versionableid INTO curid FROM versions WHERE versions.id = curid;
-      first := false;
+      replaceReadVersionPermission := NOT ${disableReadVersionPermission};
     END IF;
   END IF;
   WHILE curid IS NOT NULL LOOP
     FOR r in SELECT acls.grant, acls.permission, acls.user FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP
+      IF replaceReadVersionPermission AND r.permission = 'ReadVersion' THEN
+        r.permission := 'Read';
+      END IF;
       IF r.permission = ANY(permissions) AND r.user = ANY(users) THEN
         RETURN r.grant;
       END IF;
     END LOOP;
-    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
-    IF first AND newid IS NULL THEN
+    SELECT parentid, isversion INTO newid, isver FROM hierarchy WHERE hierarchy.id = curid;
+    IF isver THEN
       SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+      replaceReadVersionPermission := NOT ${disableReadVersionPermission};
     END IF;
-    first := false;
     curid := newid;
   END LOOP;
   RETURN false;
@@ -512,12 +516,12 @@ CREATE TABLE aclr_permission (
 SELECT 1 FROM aclr_permission;
 
 #IF: create_table_aclr_permission OR: emptyResult
-INSERT INTO aclr_permission VALUES ${readPermissions};
+INSERT INTO aclr_permission SELECT * FROM UNNEST(${readPermissions});
 
 
 
 #PROC: nx_get_local_read_acl
-CREATE FUNCTION nx_get_local_read_acl(id ${idTypeParam})
+CREATE FUNCTION nx_get_local_read_acl(id ${idTypeParam}, replaceReadVersionPermission boolean)
 RETURNS varchar
 AS $$
 -- Compute the read acl for a hierarchy id using a local acl
@@ -530,11 +534,13 @@ BEGIN
   FOR r IN SELECT CASE
       WHEN (NOT acls.grant) THEN '-'
       WHEN (acls.grant) THEN ''
-      ELSE NULL
     END || acls.user AS op
   FROM acls
   WHERE acls.id = curid AND
-      permission IN (SELECT permission FROM aclr_permission) AND
+      (CASE
+         WHEN replaceReadVersionPermission AND permission = 'ReadVersion' THEN true
+         ELSE permission = ANY(${readPermissions})
+       END) AND
       (status IS NULL OR status = 1)
   ORDER BY acls.pos LOOP
     IF r.op IS NULL THEN
@@ -561,7 +567,7 @@ DECLARE
   curid ${idType} := id;
   newid ${idType};
   isver boolean;
-  first boolean := true;
+  replaceReadVersionPermission boolean := false;
   read_acl varchar(${readAclMaxSize});
   ret varchar(${readAclMaxSize});
   pos integer;
@@ -571,11 +577,11 @@ BEGIN
     SELECT isversion INTO isver FROM hierarchy WHERE hierarchy.id = curid;
     IF isver THEN
       SELECT versionableid INTO curid FROM versions WHERE versions.id = curid;
-      first := false;
+      replaceReadVersionPermission := NOT ${disableReadVersionPermission};
     END IF;
   END IF;
   WHILE curid IS NOT NULL LOOP
-    SELECT nx_get_local_read_acl(curid) INTO read_acl;
+    SELECT nx_get_local_read_acl(curid, replaceReadVersionPermission) INTO read_acl;
     IF read_acl IS NOT NULL THEN
       IF ret is NULL THEN
         ret := read_acl;
@@ -583,11 +589,11 @@ BEGIN
         ret := ret || '${usersSeparator}' || read_acl;
       END IF;
     END IF;
-    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
-    IF first AND newid IS NULL THEN
+    SELECT parentid, isversion INTO newid, isver FROM hierarchy WHERE hierarchy.id = curid;
+    IF isver THEN
       SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+      replaceReadVersionPermission := NOT ${disableReadVersionPermission};
     END IF;
-    first := false;
     curid := newid;
     -- Remove everything after a deny on Everyone
     SELECT position('-${everyone}' in ret) INTO pos;
