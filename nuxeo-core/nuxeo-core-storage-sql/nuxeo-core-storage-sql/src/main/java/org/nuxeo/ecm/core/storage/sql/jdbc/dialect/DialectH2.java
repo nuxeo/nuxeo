@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
@@ -65,6 +66,8 @@ public class DialectH2 extends Dialect {
 
     protected final boolean disableVersionACL;
 
+    protected final boolean disableReadVersionPermission;
+
     public DialectH2(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
         fulltextAnalyzer = repositoryDescriptor == null ? null
@@ -74,6 +77,7 @@ public class DialectH2 extends Dialect {
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
         disableVersionACL = VersionAclMode.getConfiguration() == VersionAclMode.DISABLED;
+        disableReadVersionPermission = BaseSession.isReadVersionPermissionDisabled();
     }
 
     @Override
@@ -285,7 +289,8 @@ public class DialectH2 extends Dialect {
 
     @Override
     public String getSecurityCheckSql(String idColumnName) {
-        return String.format("NX_ACCESS_ALLOWED2(%s, ?, ?, %s)", idColumnName, disableVersionACL);
+        return String.format("NX_ACCESS_ALLOWED2(%s, ?, ?, %s, %s)", idColumnName, disableVersionACL,
+                disableReadVersionPermission);
     }
 
     @Override

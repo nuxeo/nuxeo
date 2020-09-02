@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.security.SecurityService;
@@ -107,6 +108,8 @@ public class DialectPostgreSQL extends Dialect {
 
     protected final boolean disableVersionACL;
 
+    protected final boolean disableReadVersionPermission;
+
     protected String usersSeparator;
 
     protected final DialectIdType idType;
@@ -132,6 +135,7 @@ public class DialectPostgreSQL extends Dialect {
         collectionUniqueConstraintEnabled = repositoryDescriptor != null
                 && repositoryDescriptor.getCollectionUniqueConstraintEnabled();
         disableVersionACL = VersionAclMode.getConfiguration() == VersionAclMode.DISABLED;
+        disableReadVersionPermission = BaseSession.isReadVersionPermissionDisabled();
         int major, minor;
         try {
             major = metadata.getDatabaseMajorVersion();
@@ -1207,6 +1211,7 @@ public class DialectPostgreSQL extends Dialect {
         properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
         properties.put("arrayColumnsEnabled", Boolean.valueOf(arrayColumnsEnabled));
         properties.put("disableVersionACL", Boolean.valueOf(disableVersionACL));
+        properties.put("disableReadVersionPermission", Boolean.valueOf(disableReadVersionPermission));
         if (!fulltextSearchDisabled) {
             Table ft = database.getTable(Model.FULLTEXT_TABLE_NAME);
             FulltextConfiguration fti = model.getFulltextConfiguration();
@@ -1230,11 +1235,8 @@ public class DialectPostgreSQL extends Dialect {
             properties.put("fulltextTriggerStatements", String.join("\n", lines));
         }
         String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(SecurityConstants.BROWSE);
-        List<String> permsList = new LinkedList<>();
-        for (String perm : permissions) {
-            permsList.add("('" + perm + "')");
-        }
-        properties.put("readPermissions", String.join(", ", permsList));
+        String readPermissions = Arrays.stream(permissions).collect(Collectors.joining("', '", "ARRAY['", "']"));
+        properties.put("readPermissions", readPermissions);
         properties.put("usersSeparator", getUsersSeparator());
         properties.put("everyone", SecurityConstants.EVERYONE);
         String readAclMaxSizeStr = Integer.toString(readAclMaxSize <= 0 ? 4096 : readAclMaxSize);

@@ -201,6 +201,11 @@ public class ACPImpl implements ACP {
     }
 
     @Override
+    public void replacePermission(String oldPerm, String newPerm) {
+        acls.forEach(acl -> acl.replacePermission(oldPerm, newPerm));
+    }
+
+    @Override
     public Access getAccess(String[] principals, String[] permissions) {
         for (ACL acl : acls) {
             for (ACE ace : acl) {

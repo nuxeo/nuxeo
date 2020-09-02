@@ -200,4 +200,13 @@ public interface ACP extends Serializable, Cloneable {
      */
     boolean removeACEsByUsername(String username);
 
+    /**
+     * Replaces a permission with another in this ACP.
+     *
+     * @param oldPerm the old permission
+     * @param newPerm the new permission
+     * @since 11.3
+     */
+    void replacePermission(String oldPerm, String newPerm);
+
 }

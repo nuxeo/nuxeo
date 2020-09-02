@@ -21,12 +21,18 @@ package org.nuxeo.ecm.core;
 import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.runtime.test.runner.Deploy;
 
-@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/version-acl-enabled.xml")
-public class TestVersionACLEnabled extends TestVersionACLAbstract {
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/version-acl-disabled.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/version-readversion-enabled.xml")
+public class TestVersionACLDisabledReadVersionEnabled extends TestVersionACLAbstract {
 
     @Override
     protected VersionAclMode getVersionAclMode() {
-        return VersionAclMode.ENABLED;
+        return VersionAclMode.DISABLED;
+    }
+
+    @Override
+    protected boolean isReadVersionPermissionEnabled() {
+        return true;
     }
 
 }

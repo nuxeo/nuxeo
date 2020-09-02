@@ -602,6 +602,10 @@ public class DBSSession extends BaseSession {
         verState.put(KEY_BASE_VERSION_ID, null);
         boolean isMajor = Long.valueOf(0).equals(verState.get(KEY_MINOR_VERSION));
         verState.put(KEY_IS_LATEST_MAJOR_VERSION, isMajor ? TRUE : null);
+        // except in legacy mode, we don't copy the live ACL when creating a version
+        if (versionAclMode != VersionAclMode.LEGACY) {
+            verState.put(KEY_ACP, null);
+        }
 
         // update the doc to mark it checked in
         docState.put(KEY_IS_CHECKED_IN, TRUE);
@@ -611,6 +615,8 @@ public class DBSSession extends BaseSession {
             recomputeVersionSeries(id);
         }
 
+        // update read acls
+        transaction.updateTreeReadAcls(verId);
         transaction.save();
 
         return getDocument(verId);

@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
@@ -90,6 +91,8 @@ public class DialectSQLServer extends Dialect {
 
     protected final boolean disableVersionACL;
 
+    protected final boolean disableReadVersionPermission;
+
     /** 9 = SQL Server 2005, 10 = SQL Server 2008, 11 = SQL Server 2012 / Azure */
     protected int majorVersion;
 
@@ -129,6 +132,7 @@ public class DialectSQLServer extends Dialect {
                         : repositoryDescriptor.usersSeparatorKey;
         pathOptimizationsEnabled = repositoryDescriptor != null && repositoryDescriptor.getPathOptimizationsEnabled();
         disableVersionACL = VersionAclMode.getConfiguration() == VersionAclMode.DISABLED;
+        disableReadVersionPermission = BaseSession.isReadVersionPermissionDisabled();
         String idt = repositoryDescriptor == null ? null : repositoryDescriptor.idType;
         if (idt == null || "".equals(idt) || "varchar".equalsIgnoreCase(idt)) {
             idType = DialectIdType.VARCHAR;
@@ -663,6 +667,7 @@ public class DialectSQLServer extends Dialect {
         properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
         properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
         properties.put("disableVersionACL", Boolean.valueOf(disableVersionACL));
+        properties.put("disableReadVersionPermission", Boolean.valueOf(disableReadVersionPermission));
         String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<>();
         for (String perm : permissions) {
