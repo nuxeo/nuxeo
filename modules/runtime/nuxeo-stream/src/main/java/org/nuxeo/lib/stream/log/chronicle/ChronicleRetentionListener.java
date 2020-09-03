@@ -28,11 +28,13 @@ import java.util.NavigableSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 
 import net.openhft.chronicle.queue.impl.StoreFileListener;
 import net.openhft.chronicle.queue.impl.WireStore;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
+import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueStore;
 
 /**
  * @since 9.3
@@ -80,7 +82,7 @@ public class ChronicleRetentionListener implements StoreFileListener {
     }
 
     protected void dropCycle(Integer cycle) {
-        WireStore store = queue.storeForCycle(cycle, queue.epoch(), false);
+        SingleChronicleQueueStore store = queue.storeForCycle(cycle, queue.epoch(), false, null);
         if (store == null) {
             return;
         }
@@ -90,9 +92,9 @@ public class ChronicleRetentionListener implements StoreFileListener {
         }
         log.info("Deleting Chronicle file: {} according to retention: {}", file::getAbsolutePath, () -> retention);
         try {
-            queue.release(store);
+            queue.closeStore(store);
             Files.delete(file.toPath());
-            queue.refreshDirectlyListing();
+            queue.refreshDirectoryListing();
             log.debug(file + " deleted");
         } catch (IOException | SecurityException e) {
             log.warn("Unable to delete Chronicle file: {}, {}", file::getAbsolutePath, e::getMessage);
