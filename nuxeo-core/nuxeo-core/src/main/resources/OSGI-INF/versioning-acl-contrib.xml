@@ -7,7 +7,7 @@
       The value "legacy" is also possible, to disable for direct access but enable for queries.
       @since 11.3
     </documentation>
-    <property name="org.nuxeo.version.acl.disabled">false</property>
+    <property name="org.nuxeo.version.acl.disabled">legacy</property>
   </extension>
 
 </component>
