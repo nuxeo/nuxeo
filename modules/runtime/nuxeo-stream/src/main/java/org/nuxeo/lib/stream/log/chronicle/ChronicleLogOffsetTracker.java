@@ -33,7 +33,6 @@ import org.nuxeo.lib.stream.log.Name;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.TailerDirection;
-import net.openhft.chronicle.queue.TailerState;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 
@@ -123,8 +122,17 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
                     offsetQueue.file().getAbsolutePath(), e.getMessage()));
             offsetTailer = offsetQueue.createTailer().direction(TailerDirection.BACKWARD).toEnd();
         }
-        if (offsetTailer.state() == TailerState.UNINITIALISED) {
+        switch (offsetTailer.state()) {
+        case FOUND_CYCLE:
+            // expected case continue
+            break;
+        case UNINITIALISED:
             // This is a new queue, we are not going to find anything
+            return 0;
+        default:
+            // border line cases that happens on unit tests and where the queue is not yet ready
+            log.info("Invalid offset tailer state: " + offsetQueue.file().getAbsolutePath() + ": "
+                    + offsetTailer.state() + " taken as uninitialized");
             return 0;
         }
         final long[] offset = { 0 };

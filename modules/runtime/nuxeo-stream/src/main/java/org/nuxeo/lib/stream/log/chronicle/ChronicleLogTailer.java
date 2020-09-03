@@ -196,6 +196,7 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
 
     @Override
     public void toLastCommitted() {
+        log.debug(String.format("toLastCommitted: %s", id));
         long offset = getOffsetTracker().getLastCommittedOffset();
         if (offset > 0) {
             log.debug(String.format("toLastCommitted: %s, found: %d", id, offset));
