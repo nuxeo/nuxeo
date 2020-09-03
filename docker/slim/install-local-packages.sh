@@ -21,7 +21,7 @@ if [ -n "$packages" ]; then
 $packages
 EOF
   echo
-  NUXEO_CONF=$NUXEO_HOME/bin/nuxeo.conf $NUXEO_HOME/bin/nuxeoctl mp-install --accept yes --nodeps $packages
+  NUXEO_CONF=$NUXEO_HOME/bin/nuxeo.conf $NUXEO_HOME/bin/nuxeoctl mp-install --accept yes --relax no --nodeps $packages
 else
   echo 'Found no packages to install.'
 fi
