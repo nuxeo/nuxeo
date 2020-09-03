@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -582,6 +584,28 @@ public class TestFileManagerService {
         String newDocId = doc.getId();
         assertTrue(doc.isDirty());
         assertEquals(docId, newDocId);
+    }
+
+    @Test
+    public void testBypassAllowedSubtypeCheck() throws IOException {
+        File file = getTestFile("test-data/hello.doc");
+        Blob blob = Blobs.createBlob(file, "application/msword");
+
+        // don't bypass allowed subtype check
+        FileImporterContext context = FileImporterContext.builder(coreSession, blob, "/default-domain").build();
+        try {
+            fileManager.createOrUpdateDocument(context);
+            fail("Shouldn't be able to create a File in a Domain without bypassing the allowed subtype check.");
+        } catch (NuxeoException e) {
+            assertEquals("Cannot create document of type File in container with type Domain", e.getMessage());
+        }
+
+        // bypass allowed subtype check
+        context = FileImporterContext.builder(coreSession, blob, "/default-domain")
+                                     .bypassAllowedSubtypeCheck(true)
+                                     .build();
+        DocumentModel doc = fileManager.createOrUpdateDocument(context);
+        assertNotNull(doc.getId());
     }
 
     private Object getMimeType(DocumentModel doc) {
