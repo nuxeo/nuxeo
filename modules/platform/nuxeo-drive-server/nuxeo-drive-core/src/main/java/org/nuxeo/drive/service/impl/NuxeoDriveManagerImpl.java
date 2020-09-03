@@ -127,8 +127,12 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     protected void clearCache() {
         log.debug("Invalidating synchronization root cache and collection sync root member cache for all users");
-        syncRootCache.invalidateAll();
-        collectionSyncRootMemberCache.invalidateAll();
+        if (syncRootCache != null) {
+            syncRootCache.invalidateAll();
+        }
+        if (collectionSyncRootMemberCache != null) {
+            collectionSyncRootMemberCache.invalidateAll();
+        }
     }
 
     @Override
