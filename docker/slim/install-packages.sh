@@ -43,7 +43,7 @@ if [ -n "$connect_url" ]; then
 fi
 
 echo
-NUXEO_CONF=$NUXEO_HOME/bin/nuxeo.conf $NUXEO_HOME/bin/nuxeoctl mp-install --accept yes $packages
+NUXEO_CONF=$NUXEO_HOME/bin/nuxeo.conf $NUXEO_HOME/bin/nuxeoctl mp-install --accept yes --relax no $packages
 
 echo
 if [ -n "$clid" ]; then

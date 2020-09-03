@@ -64,7 +64,7 @@ fi
 # Handle NUXEO_PACKAGES
 if [ -n "$NUXEO_PACKAGES" ]; then
   echo "ENTRYPOINT: Install Nuxeo packages: $NUXEO_PACKAGES"
-  nuxeoctl mp-install $NUXEO_PACKAGES --accept=true
+  nuxeoctl mp-install $NUXEO_PACKAGES --accept=true --relax no
 fi
 
 exec "$@"
