@@ -45,6 +45,8 @@ public class FileImporterContext {
 
     protected boolean persistDocument;
 
+    protected boolean bypassAllowedSubtypeCheck;
+
     public static Builder builder(CoreSession session, Blob blob, String parentPath) {
         return new Builder(session, blob, parentPath);
     }
@@ -58,6 +60,7 @@ public class FileImporterContext {
         excludeOneToMany = builder.excludeOneToMany;
         fileName = builder.fileName;
         persistDocument = builder.persistDocument;
+        bypassAllowedSubtypeCheck = builder.bypassAllowedSubtypeCheck;
     }
 
     public CoreSession getSession() {
@@ -92,6 +95,13 @@ public class FileImporterContext {
         return persistDocument;
     }
 
+    /**
+     * @since 11.3
+     */
+    public boolean isBypassAllowedSubtypeCheck() {
+        return bypassAllowedSubtypeCheck;
+    }
+
     public static class Builder {
 
         protected final CoreSession session;
@@ -109,6 +119,8 @@ public class FileImporterContext {
         protected boolean excludeOneToMany;
 
         protected boolean persistDocument = true;
+
+        protected boolean bypassAllowedSubtypeCheck;
 
         public Builder(CoreSession session, Blob blob, String parentPath) {
             this.session = session;
@@ -164,6 +176,17 @@ public class FileImporterContext {
          */
         public Builder persistDocument(boolean persistDocument) {
             this.persistDocument = persistDocument;
+            return this;
+        }
+
+        /**
+         * Whether to bypass the allowed subtype check.
+         * <p>
+         * Defaults to {@code false}.
+         * @since 11.3
+         */
+        public Builder bypassAllowedSubtypeCheck(boolean bypassAllowedSubtypeCheck) {
+            this.bypassAllowedSubtypeCheck = bypassAllowedSubtypeCheck;
             return this;
         }
 
