@@ -15,7 +15,7 @@
       Configuration property (true or false) controlling whether the ReadVersion permission is disabled.
       @since 11.3
     </documentation>
-    <property name="org.nuxeo.version.readversion.disabled">false</property>
+    <property name="org.nuxeo.version.readversion.disabled">true</property>
   </extension>
 
 </component>
