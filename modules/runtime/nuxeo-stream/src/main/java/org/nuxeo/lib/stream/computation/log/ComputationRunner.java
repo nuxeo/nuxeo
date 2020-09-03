@@ -232,7 +232,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
                 }
             }
             if (normalTermination || interrupted) {
-                log.debug(metadata.name() + ": Terminated");
+                log.debug(metadata.name() + ": Terminated " + (interrupted ? "interrupted" : "normal"));
             } else {
                 // Terminating because of unexpected error in the ComputationRunner code
                 log.error(String.format("Terminate computation: %s due to previous failure", metadata.name()));
@@ -278,6 +278,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected boolean continueLoop() {
         if (stop || Thread.currentThread().isInterrupted()) {
+            log.debug(metadata.name() + ": Stop processing " + (stop ? "stop required" : " interrupted"));
             return false;
         } else if (drain) {
             long now = System.currentTimeMillis();
