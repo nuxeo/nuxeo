@@ -35,8 +35,6 @@ import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.job.JobHistoryHelper;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.stream.IgnoreChronicle;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -45,7 +43,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestJobHistoryHelper {
 
     @Test
-    @ConditionalIgnoreRule.Ignore(cause = "NXP-27559", condition = IgnoreChronicle.class)
     public void testLogger() {
         StringBuilder query = new StringBuilder("from LogEntry log where ");
         query.append(" log.category='");
@@ -69,7 +66,6 @@ public class TestJobHistoryHelper {
     }
 
     @Test
-    @ConditionalIgnoreRule.Ignore(cause = "NXP-27559", condition = IgnoreChronicle.class)
     public void testLoggerHelper() throws Exception {
         JobHistoryHelper helper = new JobHistoryHelper("MyExport2");
 
