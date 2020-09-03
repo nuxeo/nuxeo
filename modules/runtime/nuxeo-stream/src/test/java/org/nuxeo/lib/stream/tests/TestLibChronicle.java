@@ -127,8 +127,7 @@ public class TestLibChronicle implements StoreFileListener {
         try (ChronicleQueue queue = createQueue()) {
             ExcerptAppender app = queue.acquireAppender();
             ExcerptTailer tailer = queue.createTailer().toEnd();
-            // assertEquals(TailerState.UNINITIALISED, tailer.state());
-
+            assertEquals(TailerState.UNINITIALISED, tailer.state());
             KeyValueMessage srcNode = KeyValueMessage.of("test");
             put(app, srcNode);
 
@@ -229,7 +228,7 @@ public class TestLibChronicle implements StoreFileListener {
         assertTrue(tailer.queue().isClosed());
         assertTrue(app.queue().isClosed());
         // the state does not help
-        assertEquals(TailerState.FOUND_CYCLE, tailer.state());
+        assertEquals(TailerState.UNINITIALISED, tailer.state());
         try {
             poll(tailer);
             fail("Expecting a exception on closed tailer");
