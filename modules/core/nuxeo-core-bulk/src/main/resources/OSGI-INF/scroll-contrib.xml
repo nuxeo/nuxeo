@@ -4,5 +4,6 @@
   <extension point="scroll" target="org.nuxeo.ecm.core.scroll.service">
     <scroll type="document" name="repository" default="true" class="org.nuxeo.ecm.core.scroll.RepositoryScroll" />
     <scroll type="static" name="list" class="org.nuxeo.ecm.core.scroll.StaticScroll" />
+    <scroll type="empty" name="list" class="org.nuxeo.ecm.core.scroll.EmptyScroll" />
   </extension>
 </component>

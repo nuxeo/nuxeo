@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.AsyncService;
+import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 
@@ -79,5 +80,24 @@ public interface BulkService extends AsyncService<String, BulkStatus, Map<String
      * @since 10.3
      */
     List<BulkStatus> getStatuses(String username);
+
+    /**
+     * Sends a {@link BulkBucket} to the right bulk action.
+     * <p/>
+     * This method is useful to produce bucket externally when using an external scroller.
+     *
+     * @param bucket the bucket to send to a bulk action
+     * @since 11.3
+     */
+    void appendExternalBucket(BulkBucket bucket);
+
+    /**
+     * Completes a running bulk computation having an external scroller.
+     *
+     * @param commandId the command id
+     * @param count the total number of elements produced by the external scroller
+     * @since 11.3
+     */
+    void completeExternalScroll(String commandId, long count);
 
 }

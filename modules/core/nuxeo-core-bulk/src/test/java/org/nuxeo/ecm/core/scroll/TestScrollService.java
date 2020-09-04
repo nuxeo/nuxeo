@@ -42,9 +42,6 @@ import org.nuxeo.ecm.core.api.scroll.Scroll;
 import org.nuxeo.ecm.core.api.scroll.ScrollRequest;
 import org.nuxeo.ecm.core.api.scroll.ScrollService;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
-import org.nuxeo.ecm.core.scroll.DocumentScrollRequest;
-import org.nuxeo.ecm.core.scroll.GenericScrollRequest;
-import org.nuxeo.ecm.core.scroll.StaticScrollRequest;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -184,6 +181,22 @@ public class TestScrollService {
             }
         }
         return tempFile.getAbsolutePath();
+    }
+
+    @Test
+    public void testEmptyScroll() {
+        ScrollRequest request = EmptyScrollRequest.of();
+        assertTrue(scrollService.exists(request));
+        try (Scroll scroll = scrollService.scroll(request)) {
+            assertNotNull(scroll);
+            assertFalse(scroll.hasNext());
+            try {
+                scroll.next();
+                fail("Exception expected");
+            } catch (NoSuchElementException e) {
+                // expected
+            }
+        }
     }
 
 }

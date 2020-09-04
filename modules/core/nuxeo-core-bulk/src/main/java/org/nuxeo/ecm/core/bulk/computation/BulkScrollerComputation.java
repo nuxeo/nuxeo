@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.scroll.DocumentScrollRequest;
+import org.nuxeo.ecm.core.scroll.EmptyScrollRequest;
 import org.nuxeo.ecm.core.scroll.GenericScrollRequest;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
@@ -57,7 +58,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
- * Materializes the document set for a command.
+ * Materializes the document set for a command if scroller is not external.
  * <p>
  * Inputs:
  * <ul>
@@ -169,7 +170,10 @@ public class BulkScrollerComputation extends AbstractComputation {
             if (!documentIds.isEmpty()) {
                 produceBucket(context, commandId, bucketSize, bucketNumber++);
             }
-            updateStatusAfterScroll(context, commandId, documentCount);
+            // update status after scroll when we handle the scroller
+            if (!command.useExternalScroller()) {
+                updateStatusAfterScroll(context, commandId, documentCount);
+            }
         } catch (IllegalArgumentException | QueryParseException | DocumentNotFoundException e) {
             log.error("Invalid query results in an empty document set: {}", command, e);
             updateStatusAfterScroll(context, commandId, "Invalid query");
@@ -186,7 +190,10 @@ public class BulkScrollerComputation extends AbstractComputation {
 
     protected Scroll buildScroll(BulkCommand command) {
         ScrollRequest request;
-        if (command.useGenericScroller()) {
+        if (command.useExternalScroller()) {
+            request = EmptyScrollRequest.of();
+
+        } else if (command.useGenericScroller()) {
             request = GenericScrollRequest.builder(command.getScroller(), command.getQuery())
                                           .options(command.getParams())
                                           .size(scrollSize)

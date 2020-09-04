@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Duration.ONE_MINUTE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -25,6 +27,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.DONE_STREAM_NAME;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
+import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.RUNNING;
+import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCROLLING_RUNNING;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -44,6 +48,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.bulk.action.SetPropertiesAction;
+import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -85,10 +90,8 @@ public class TestBulkProcessor {
             String nxql = "SELECT * from Document where ecm:parentId='nonExistentId'";
             assertEquals(0, session.query(nxql).size());
 
-            String commandId = service.submit(
-                    new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql,
-                            session.getPrincipal().getName()).repository(
-                            session.getRepositoryName()).build());
+            String commandId = service.submit(new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql,
+                    session.getPrincipal().getName()).repository(session.getRepositoryName()).build());
             assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
 
             BulkStatus status = service.getStatus(commandId);
@@ -291,6 +294,110 @@ public class TestBulkProcessor {
         } catch (IllegalArgumentException e) {
             // expected
         }
+    }
+
+    /**
+     * Tests the external scroller in the case it completes its scrolling after the processing.
+     */
+    @Test
+    public void testExternalScrollerCompleteAtEnd() {
+        final int nbDocs = 10;
+        // create some docs
+        List<String> docs = new ArrayList<>(nbDocs);
+        for (int i = 0; i < nbDocs; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "doc" + i, "File");
+            doc = session.createDocument(doc);
+            docs.add(doc.getId());
+        }
+
+        // prepare and submit the command with an external scroller and submit it
+        String commandId = service.submit(
+                new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, "ignored", "system").useExternalScroller()
+                                                                                             .build());
+        // wait for the scroller
+        await().atMost(ONE_MINUTE).until(() -> service.getStatus(commandId).getState() == SCROLLING_RUNNING);
+        BulkStatus status = service.getStatus(commandId);
+        assertEquals(0, status.getTotal());
+        assertEquals(0, status.getProcessed());
+        assertFalse(status.hasError());
+
+        // now append first bucket
+        service.appendExternalBucket(new BulkBucket(commandId, docs.subList(0, nbDocs / 2)));
+        // wait for the status
+        await().atMost(ONE_MINUTE) .until(() -> service.getStatus(commandId).getProcessed() == nbDocs / 2);
+        status = service.getStatus(commandId);
+        assertEquals(SCROLLING_RUNNING, status.getState());
+        assertEquals(0, status.getTotal());
+        assertFalse(status.hasError());
+
+        // now append second bucket
+        service.appendExternalBucket(new BulkBucket(commandId, docs.subList(nbDocs / 2, nbDocs)));
+        // wait for the status
+        await().atMost(ONE_MINUTE).until(() -> service.getStatus(commandId).getProcessed() == nbDocs);
+        status = service.getStatus(commandId);
+        assertEquals(SCROLLING_RUNNING, status.getState());
+        assertEquals(0, status.getTotal());
+        assertFalse(status.hasError());
+
+        service.completeExternalScroll(commandId, nbDocs);
+        // wait for the status
+        await().atMost(ONE_MINUTE).until(() -> service.getStatus(commandId).getState() == COMPLETED);
+        status = service.getStatus(commandId);
+        assertEquals(nbDocs, status.getTotal());
+        assertEquals(nbDocs, status.getProcessed());
+        assertFalse(status.hasError());
+    }
+
+    /**
+     * Tests the external scroller in the case it completes its scrolling before the processing.
+     */
+    @Test
+    public void testExternalScrollerCompleteAtBegin() {
+        final int nbDocs = 10;
+        // create some docs
+        List<String> docs = new ArrayList<>(nbDocs);
+        for (int i = 0; i < nbDocs; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "doc" + i, "File");
+            doc = session.createDocument(doc);
+            docs.add(doc.getId());
+        }
+
+        // prepare and submit the command with an external scroller and submit it
+        String commandId = service.submit(
+                new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, "ignored", "system").useExternalScroller()
+                        .build());
+        // wait for the scroller
+        await().atMost(ONE_MINUTE).until(() -> service.getStatus(commandId).getState() == SCROLLING_RUNNING);
+        BulkStatus status = service.getStatus(commandId);
+        assertEquals(0, status.getTotal());
+        assertEquals(0, status.getProcessed());
+        assertFalse(status.hasError());
+
+        service.completeExternalScroll(commandId, nbDocs);
+        // wait for the status
+        await().atMost(ONE_MINUTE).until(() -> service.getStatus(commandId).getState() == RUNNING);
+        status = service.getStatus(commandId);
+        assertEquals(nbDocs, status.getTotal());
+        assertEquals(0, status.getProcessed());
+        assertFalse(status.hasError());
+
+        // now append first bucket
+        service.appendExternalBucket(new BulkBucket(commandId, docs.subList(0, nbDocs / 2)));
+        // wait for the status
+        await().atMost(ONE_MINUTE).until(() -> service.getStatus(commandId).getProcessed() == nbDocs / 2);
+        status = service.getStatus(commandId);
+        assertEquals(RUNNING, status.getState());
+        assertEquals(nbDocs, status.getTotal());
+        assertFalse(status.hasError());
+
+        // now append second bucket
+        service.appendExternalBucket(new BulkBucket(commandId, docs.subList(nbDocs / 2, nbDocs)));
+        // wait for the status
+        await().atMost(ONE_MINUTE).until(() -> service.getStatus(commandId).getProcessed() == nbDocs);
+        status = service.getStatus(commandId);
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(nbDocs, status.getTotal());
+        assertFalse(status.hasError());
     }
 
     protected boolean overlapCommands(List<BulkStatus> results, boolean logOverlap) {

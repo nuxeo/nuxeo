@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import org.apache.avro.reflect.AvroEncode;
 import org.apache.avro.reflect.Nullable;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -39,7 +40,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class BulkCommand implements Serializable {
 
-    private static final long serialVersionUID = 20200526L;
+    private static final long serialVersionUID = 20200904L;
 
     protected String id;
 
@@ -63,6 +64,9 @@ public class BulkCommand implements Serializable {
     // @since 11.1
     protected boolean genericScroller;
 
+    // @since 11.3
+    protected boolean externalScroller;
+
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
     protected Map<String, Serializable> params;
 
@@ -80,7 +84,8 @@ public class BulkCommand implements Serializable {
         this.batchSize = builder.batchSize;
         this.params = builder.params;
         this.scroller = builder.scroller;
-        this.genericScroller = builder.genericScroller;
+        this.genericScroller = BooleanUtils.toBoolean(builder.genericScroller);
+        this.externalScroller = BooleanUtils.toBoolean(builder.externalScroller);
     }
 
     public String getUsername() {
@@ -110,6 +115,15 @@ public class BulkCommand implements Serializable {
      */
     public boolean useGenericScroller() {
         return genericScroller;
+    }
+
+    /**
+     * True if the command uses an external scroller.
+     *
+     * @since 11.3
+     */
+    public boolean useExternalScroller() {
+        return externalScroller;
     }
 
     public Map<String, Serializable> getParams() {
@@ -179,7 +193,9 @@ public class BulkCommand implements Serializable {
 
         protected String scroller;
 
-        protected boolean genericScroller;
+        protected Boolean genericScroller;
+
+        protected Boolean externalScroller;
 
         protected Map<String, Serializable> params = new HashMap<>();
 
@@ -187,20 +203,21 @@ public class BulkCommand implements Serializable {
          * BulkCommand builder
          *
          * @param action the registered bulk action name
-         * @param nxqlQuery by default an NXQL query that represents the document set to apply the action. When using a
-         *            generic scroller the query syntax is a convention with the scroller implementation.
+         * @param query by default an NXQL query that represents the document set to apply the action. When using a
+         *            generic scroller the query syntax is a convention with the scroller implementation. When using an
+         *            external scroller the field is null.
          * @param username the user with whose rights the computation will be executed
          * @since 11.1
          */
-        public Builder(String action, String nxqlQuery, String username) {
+        public Builder(String action, String query, String username) {
             if (isEmpty(action)) {
                 throw new IllegalArgumentException("Action cannot be empty");
             }
             this.action = action;
-            if (isEmpty(nxqlQuery)) {
+            if (isEmpty(query)) {
                 throw new IllegalArgumentException("Query cannot be empty");
             }
-            this.query = nxqlQuery;
+            this.query = query;
             if (isEmpty(username)) {
                 throw new IllegalArgumentException("Username cannot be empty");
             }
@@ -313,6 +330,7 @@ public class BulkCommand implements Serializable {
          * @since 11.1
          */
         public Builder useGenericScroller() {
+            checkScrollerType();
             this.genericScroller = true;
             return this;
         }
@@ -323,8 +341,26 @@ public class BulkCommand implements Serializable {
          * @since 11.1
          */
         public Builder useDocumentScroller() {
+            checkScrollerType();
             this.genericScroller = false;
             return this;
+        }
+
+        /**
+         * Uses an external scroller.
+         *
+         * @since 11.3
+         */
+        public Builder useExternalScroller() {
+            checkScrollerType();
+            this.externalScroller = true;
+            return this;
+        }
+
+        protected void checkScrollerType() {
+            if (this.genericScroller != null || this.externalScroller != null) {
+                throw new IllegalArgumentException("Only one useScroller method should be called");
+            }
         }
 
         public BulkCommand build() {
