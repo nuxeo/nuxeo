@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ftests</groupId>
     <artifactId>nuxeo-ftests</artifactId>
-    <version>11.3-SNAPSHOT</version>
+    <version>11.3.28</version>
   </parent>
 
   <artifactId>nuxeo-shibboleth-login-ftests</artifactId>

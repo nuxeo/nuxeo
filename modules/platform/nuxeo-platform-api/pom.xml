@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
-    <version>11.3-SNAPSHOT</version>
+    <version>11.3.28</version>
   </parent>
 
   <artifactId>nuxeo-platform-api</artifactId>
