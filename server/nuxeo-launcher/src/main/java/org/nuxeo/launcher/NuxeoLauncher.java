@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -307,6 +308,8 @@ public class NuxeoLauncher {
     private static final Logger log = LogManager.getLogger(NuxeoLauncher.class);
 
     private static final Marker NO_NEW_LINE = MarkerManager.getMarker("NO_NEW_LINE");
+
+    private static final Scanner STDIN = new Scanner(System.in).useDelimiter(System.lineSeparator());
 
     private static final Options options = initParserOptions();
 
@@ -1084,7 +1087,7 @@ public class NuxeoLauncher {
     /**
      * @since 8.3
      */
-    public String promptDescription() throws ConfigurationException, IOException {
+    public String promptDescription() throws ConfigurationException {
         return prompt("Description: ", null, null);
     }
 
@@ -1100,8 +1103,7 @@ public class NuxeoLauncher {
      *             {@code regex}
      * @since 8.3
      */
-    public String prompt(String message, Predicate<String> predicate, String error)
-            throws IOException, ConfigurationException {
+    public String prompt(String message, Predicate<String> predicate, String error) throws ConfigurationException {
         boolean doRegexMatch = predicate != null;
         String value;
         Console console = System.console();
@@ -1112,7 +1114,10 @@ public class NuxeoLauncher {
                 value = console.readLine(message);
             }
         } else { // try reading from stdin
-            value = IOUtils.toString(System.in, UTF_8);
+            if (!quiet) {
+                log.info(NO_NEW_LINE, message);
+            }
+            value = STDIN.next();
             if (value == null || doRegexMatch && !predicate.test(value)) {
                 throw new ConfigurationException(error);
             }
@@ -1124,19 +1129,22 @@ public class NuxeoLauncher {
      * @param message message to display at prompt
      * @since 8.3
      */
-    public char[] promptPassword(String message) throws IOException {
+    public char[] promptPassword(String message) {
         Console console = System.console();
         if (console != null) {
             return console.readPassword(message);
         } else { // try reading from stdin
-            return IOUtils.toCharArray(System.in, UTF_8);
+            if (!quiet) {
+                log.info(NO_NEW_LINE, message);
+            }
+            return STDIN.next().toCharArray();
         }
     }
 
     /**
      * @since 11.1
      */
-    public char[] promptToken() throws IOException {
+    public char[] promptToken() {
         return promptPassword("Please enter your token: ");
     }
 
@@ -1144,11 +1152,15 @@ public class NuxeoLauncher {
      * @return a {@link NuxeoClientInstanceType}. Never {@code null}.
      * @since 8.3
      */
-    public NuxeoClientInstanceType promptInstanceType() throws IOException, ConfigurationException {
+    public NuxeoClientInstanceType promptInstanceType() throws ConfigurationException {
         NuxeoClientInstanceType type;
         Console console = System.console();
+        String message = "Instance type (dev|preprod|prod): [dev] ";
         if (console == null) {
-            String typeStr = IOUtils.toString(System.in, UTF_8);
+            if (!quiet) {
+                log.info(NO_NEW_LINE, message);
+            }
+            String typeStr = STDIN.next();
             type = NuxeoClientInstanceType.fromString(typeStr);
             if (type == null) {
                 throw new ConfigurationException("Unknown type: " + typeStr);
@@ -1156,7 +1168,7 @@ public class NuxeoLauncher {
             return type;
         }
         do {
-            String s = console.readLine("Instance type (dev|preprod|prod): [dev] ");
+            String s = console.readLine(message);
             if (StringUtils.isBlank(s)) {
                 type = NuxeoClientInstanceType.DEV;
             } else {
@@ -1185,7 +1197,7 @@ public class NuxeoLauncher {
         String projectName;
         Console console = System.console();
         if (console == null) {
-            projectName = IOUtils.toString(System.in, UTF_8);
+            projectName = STDIN.next();
             ConnectProject project = getConnectRegistrationBroker().getProjectByName(projectName, projects);
             if (project == null) {
                 throw new ConfigurationException("Unknown project: " + projectName);
@@ -1402,15 +1414,14 @@ public class NuxeoLauncher {
         if (params.length == 0) {
             Console console = System.console();
             String encryptedString;
+            String message = "Please enter the value to encrypt: ";
             if (console != null) {
-                encryptedString = crypto.encrypt(algorithm,
-                        Crypto.getBytes(console.readPassword("Please enter the value to encrypt: ")));
+                encryptedString = crypto.encrypt(algorithm, Crypto.getBytes(console.readPassword(message)));
             } else { // try reading from stdin
-                try {
-                    encryptedString = crypto.encrypt(algorithm, IOUtils.toByteArray(System.in));
-                } catch (IOException e) {
-                    throw new NuxeoLauncherException("Encrypt failed", EXIT_CODE_ERROR, e);
+                if (!quiet) {
+                    log.info(NO_NEW_LINE, message);
                 }
+                encryptedString = crypto.encrypt(algorithm, STDIN.next().getBytes());
             }
             log.info(encryptedString);
         } else {
@@ -1432,14 +1443,14 @@ public class NuxeoLauncher {
     protected List<String> askCryptoKeyAndDecrypt(Crypto crypto, String... values) {
         boolean validKey;
         Console console = System.console();
+        String message = "Please enter the secret key: ";
         if (console != null) {
-            validKey = crypto.verifyKey(console.readPassword("Please enter the secret key: "));
+            validKey = crypto.verifyKey(console.readPassword(message));
         } else { // try reading from stdin
-            try {
-                validKey = crypto.verifyKey(IOUtils.toByteArray(System.in));
-            } catch (IOException e) {
-                throw new NuxeoLauncherException("Key verification failed", EXIT_CODE_ERROR, e);
+            if (!quiet) {
+                log.info(NO_NEW_LINE, message);
             }
+            validKey = crypto.verifyKey(STDIN.next().getBytes());
         }
         if (!validKey) {
             throw new NuxeoLauncherException("The key is not valid", EXIT_CODE_INVALID);
@@ -1530,9 +1541,9 @@ public class NuxeoLauncher {
                     value = Base64.encodeBase64String(value.getBytes());
                 }
             } else {
+                String fmt = "Please enter the value for %s: ";
                 Console console = System.console();
                 if (console != null) {
-                    final String fmt = "Please enter the value for %s: ";
                     if (doEncrypt) {
                         value = crypto.encrypt(algorithm, Crypto.getBytes(console.readPassword(fmt, key)));
                     } else if (isCryptKey) {
@@ -1541,16 +1552,15 @@ public class NuxeoLauncher {
                         value = console.readLine(fmt, key);
                     }
                 } else { // try reading from stdin
-                    try {
-                        if (doEncrypt) {
-                            value = crypto.encrypt(algorithm, IOUtils.toByteArray(System.in));
-                        } else if (isCryptKey) {
-                            value = Base64.encodeBase64String(IOUtils.toByteArray(System.in));
-                        } else {
-                            value = IOUtils.toString(System.in, UTF_8);
-                        }
-                    } catch (IOException e) {
-                        throw new NuxeoLauncherException("Reading from stdin failed", EXIT_CODE_ERROR, e);
+                    if (!quiet) {
+                        log.info(NO_NEW_LINE, String.format(fmt, key));
+                    }
+                    if (doEncrypt) {
+                        value = crypto.encrypt(algorithm, STDIN.next().getBytes());
+                    } else if (isCryptKey) {
+                        value = Base64.encodeBase64String(STDIN.next().getBytes());
+                    } else {
+                        value = STDIN.next();
                     }
                 }
             }
