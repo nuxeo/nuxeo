@@ -22,6 +22,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
+import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.RUNNING;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCHEDULED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.UNKNOWN;
 
@@ -31,11 +32,15 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.scroll.ScrollService;
+import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.scroll.DocumentScrollRequest;
@@ -95,6 +100,12 @@ public class BulkServiceImpl implements BulkService {
     // How long we keep the command and its status in the kv store once aborted
     public static final long ABORTED_TTL_SECONDS = 7_200;
 
+    // @since 11.3
+    protected final AtomicLong externalScrollerCounter = new AtomicLong();
+
+    // @since 11.3
+    protected final Map<String, BulkCommand> externalCommands = new PassiveExpiringMap<>(60, TimeUnit.SECONDS);
+
     @Override
     public String submit(BulkCommand command) {
         log.debug("Run action with command={}", command);
@@ -125,7 +136,7 @@ public class BulkServiceImpl implements BulkService {
                 command.setBatchSize(adminService.getBatchSize(command.getAction()));
             }
         }
-        if (command.getScroller() == null) {
+        if (command.getScroller() == null && !command.useExternalScroller()) {
             String actionScroller = adminService.getDefaultScroller(command.getAction());
             if (!isBlank(actionScroller)) {
                 command.setScroller(actionScroller);
@@ -157,7 +168,9 @@ public class BulkServiceImpl implements BulkService {
 
     protected void checkIfScrollerExists(BulkCommand command) {
         ScrollService scrollService = Framework.getService(ScrollService.class);
-        if (command.useGenericScroller()) {
+        if (command.useExternalScroller()) {
+            // nothing to do
+        } else if (command.useGenericScroller()) {
             if (!scrollService.exists(
                     GenericScrollRequest.builder(command.getScroller(), command.getQuery()).build())) {
                 throw new IllegalArgumentException("Unknown Generic Scroller for command: " + command);
@@ -236,16 +249,9 @@ public class BulkServiceImpl implements BulkService {
         BulkStatus delta = BulkStatus.deltaOf(commandId);
         delta.setCompletedTime(Instant.now());
         delta.setState(ABORTED);
-        byte[] statusAsBytes = BulkCodecs.getStatusCodec().encode(delta);
-        abort(commandId, statusAsBytes);
+        Record record = Record.of(commandId, BulkCodecs.getStatusCodec().encode(delta));
+        Framework.getService(StreamService.class).getStreamManager().append(STATUS_STREAM, record);
         return status;
-    }
-
-    @SuppressWarnings("resource") // LogManager not ours to close
-    protected void abort(String key, byte[] bytes) {
-        LogManager logManager = Framework.getService(StreamService.class).getLogManager();
-        LogAppender<Record> logAppender = logManager.getAppender(STATUS_STREAM_NAME);
-        logAppender.append(key, Record.of(key, bytes));
     }
 
     @Override
@@ -328,4 +334,30 @@ public class BulkServiceImpl implements BulkService {
                  .collect(Collectors.toList());
     }
 
+    @Override
+    public void appendExternalBucket(BulkBucket bucket) {
+        String commandId = bucket.getCommandId();
+
+        BulkCommand command = externalCommands.computeIfAbsent(commandId, this::getCommand);
+        String stream = Framework.getService(BulkAdminService.class).getInputStream(command.getAction());
+
+        String key = commandId + ":" + externalScrollerCounter.incrementAndGet();
+        Record record = Record.of(key, BulkCodecs.getBucketCodec().encode(bucket));
+
+        log.debug("Append key: {}, record: {}", key, record);
+        Framework.getService(StreamService.class).getStreamManager().append(stream, record);
+    }
+
+    @Override
+    public void completeExternalScroll(String commandId, long count) {
+        BulkStatus delta = BulkStatus.deltaOf(commandId);
+        delta.setState(RUNNING);
+        delta.setScrollEndTime(Instant.now());
+        delta.setTotal(count);
+
+        Record record = Record.of(commandId, BulkCodecs.getStatusCodec().encode(delta));
+
+        log.debug("Complete external scroll with key: {}, count: {}, record: {}", commandId, count, record);
+        Framework.getService(StreamService.class).getStreamManager().append(STATUS_STREAM, record);
+    }
 }
