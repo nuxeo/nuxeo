@@ -110,6 +110,7 @@ public class ComputationContextImpl implements ComputationContext {
      * {@link #produceRecord(String, Record)} when possible.
      */
     public LogOffset produceRecordImmediate(String streamName, Record record) {
+        Tracing.getTracer().getCurrentSpan().addAnnotation("Produce record immediate " + record.getKey());
         if (manager == null) {
             throw new IllegalStateException("No logManager provided in context");
         }
@@ -121,7 +122,6 @@ public class ComputationContextImpl implements ComputationContext {
     }
 
     public void produceRecordImmediate(String streamName, String key, byte[] data) {
-        Tracing.getTracer().getCurrentSpan().addAnnotation("Produce record immediate " + key);
         produceRecordImmediate(streamName, Record.of(key, data));
     }
 
