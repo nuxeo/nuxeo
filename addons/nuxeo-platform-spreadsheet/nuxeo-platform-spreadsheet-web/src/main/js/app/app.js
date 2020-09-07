@@ -20,18 +20,10 @@ import {Spreadsheet} from './ui/spreadsheet';
 import {parseNXQL} from './nuxeo/util/nxql';
 import {i18n} from './ui/i18n';
 
-// Extract the parameters (content view state and page provider)
-var {cv, pp} = parseParams();
-
-// Parse the content view state
-cv = cv && JSON.parse(atob(cv));
-
-// Check if we're in standalone mode
-var isStandalone = !cv;
-
 // Our Spreadsheet instance
 var sheet;
 
+var isStandalone;
 var log;
 
 function setupUI() {
@@ -94,11 +86,12 @@ function doQuery() {
   });
 }
 
-function run(baseURL = '/nuxeo', username = null, password = null) {
-
+function _run({ baseURL = '/nuxeo', username = null, password = null, resultLayout, resultColumns, pageProviderName, queryParameters, searchDocument, sortInfos }) {
   // Setup our connection
   var nx = new Connection(baseURL, username, password);
   nx.schemas(['*']);
+
+  isStandalone = !pageProviderName;
 
   setupUI();
 
@@ -108,9 +101,7 @@ function run(baseURL = '/nuxeo', username = null, password = null) {
     let language = (nuxeo && nuxeo.spreadsheet && nuxeo.spreadsheet.language) ? nuxeo.spreadsheet.language.split('_')[0] : 'en';
 
     // Extract content view configuration
-    let resultLayoutName = cv && cv.resultLayout && cv.resultLayout.name;
-    let resultColumns = cv && cv.resultColumns;
-    let pageProviderName = cv ? cv.pageProviderName : (pp || 'spreadsheet_query');
+    let resultLayoutName = resultLayout && resultLayout.name;
 
     // default columns
     if (!resultLayoutName && (!resultColumns || resultColumns.length === 0)) {
@@ -123,7 +114,7 @@ function run(baseURL = '/nuxeo', username = null, password = null) {
     }
 
     // Setup the SpreadSheet
-    sheet = new Spreadsheet($('#grid'), nx, resultLayoutName, resultColumns, pageProviderName, language);
+    sheet = new Spreadsheet($('#grid'), nx, resultLayoutName, resultColumns, pageProviderName || 'spreadsheet_query', language);
 
     // If we don't have a content view we're done...
     if (isStandalone) {
@@ -132,15 +123,15 @@ function run(baseURL = '/nuxeo', username = null, password = null) {
     // ... otherwise let's set it up
 
     // Add query parameters
-    if (cv.queryParameters) {
-      sheet.queryParameters = cv.queryParameters;
+    if (queryParameters) {
+      sheet.queryParameters = queryParameters;
     }
 
     // Add the search document
-    if (cv.searchDocument) {
+    if (searchDocument) {
       var namedParameters = {};
-      for (var k in cv.searchDocument.properties) {
-        var v = cv.searchDocument.properties[k];
+      for (var k in searchDocument.properties) {
+        var v = searchDocument.properties[k];
         // skip null or empty values
         if (v == null || ((typeof(v.length) !== 'undefined') && (v.length === 0))) {
           continue;
@@ -151,8 +142,8 @@ function run(baseURL = '/nuxeo', username = null, password = null) {
     }
 
     // Add sort infos
-    if (cv.sortInfos && cv.sortInfos.length > 0) {
-      sheet.sortInfos = cv.sortInfos;
+    if (sortInfos && sortInfos.length > 0) {
+      sheet.sortInfos = sortInfos;
     }
 
     // Run the query
@@ -175,5 +166,29 @@ function parseParams() {
   }
   return parameters;
 }
+
+// Extracts the parameters (content view state and page provider) either from the URL or from a message.
+const getParameters = () =>
+  new Promise((resolve) => {
+    if (window.location.search) {
+      const params = parseParams();
+      // Parse the content view state
+      resolve(JSON.parse(atob(params.cv)));
+    } else {
+      let started = false;
+      // start standalone in case no message is received
+      setTimeout(() => !started && resolve(), 1000);
+      window.addEventListener('message', ({ data }) => {
+        started = true;
+        resolve(data);
+      });
+    }
+  });
+
+const run = (baseURL = '/nuxeo') => getParameters().then((params = {}) => {
+  // traceur doesn't properly support the spread operator in this scenario, otherwise: _run({baseURL, ...params}));
+  params.baseURL = baseURL;
+  _run(params);
+});
 
 export {run};
