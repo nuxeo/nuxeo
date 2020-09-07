@@ -129,7 +129,9 @@ Contributors:
           state.searchDocument = { properties: properties };
         }
 
-        this.$.iframe.src = this.$.nxconn.url + '/spreadsheet/?cv=' + encodeURIComponent(btoa(JSON.stringify(state)));
+        this.$.iframe.onload = function() { this.$.iframe.contentWindow.postMessage(state); }.bind(this);
+        this.$.iframe.src = this.$.nxconn.url + '/spreadsheet';
+
         this.$.dialog.toggle();
       },
 
