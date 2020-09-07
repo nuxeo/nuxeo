@@ -146,10 +146,17 @@ public class FormData implements FormInstance {
         for (Map.Entry<String, List<FileItem>> entry : items.entrySet()) {
             List<FileItem> list = entry.getValue();
             String[] ar = new String[list.size()];
+            boolean hasEntries = false;
             for (int i = 0; i < ar.length; i++) {
-                ar[i] = getString(list.get(i));
+                FileItem item = list.get(i);
+                if (item.isFormField()) {
+                    ar[i] = getString(item);
+                    hasEntries = true;
+                }
             }
-            result.put(entry.getKey(), ar);
+            if (hasEntries) {
+                result.put(entry.getKey(), ar);
+            }
         }
         return result;
     }
