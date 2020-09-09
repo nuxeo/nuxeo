@@ -22,6 +22,7 @@
 
 package org.nuxeo.ecm.platform.comment.api;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -256,6 +257,16 @@ public interface CommentManager {
      */
     PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize, Long currentPageIndex,
             boolean sortAscending) throws CommentSecurityException;
+
+    /**
+     * Gets all comments for a collection of documents.
+     *
+     * @param session the core session
+     * @param documentIds the document ids
+     * @return the list of comments
+     * @since 11.3
+     */
+    List<Comment> getComments(CoreSession session, Collection<String> documentIds);
 
     /**
      * Updates a comment.

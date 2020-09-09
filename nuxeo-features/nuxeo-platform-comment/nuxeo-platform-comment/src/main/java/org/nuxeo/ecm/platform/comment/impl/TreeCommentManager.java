@@ -42,6 +42,8 @@ import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CO
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +95,8 @@ public class TreeCommentManager extends AbstractCommentManager {
     protected static final String GET_EXTERNAL_COMMENT_PAGE_PROVIDER_NAME = "GET_EXTERNAL_COMMENT_BY_ECM_ANCESTOR";
 
     protected static final String GET_COMMENTS_FOR_DOCUMENT_PAGE_PROVIDER_NAME = "GET_COMMENTS_FOR_DOCUMENT_BY_ECM_PARENT";
+    
+    protected static final String GET_COMMENTS_FOR_DOCUMENTS_PAGE_PROVIDER_NAME = "GET_COMMENTS_FOR_DOCUMENTS_BY_COMMENT_ANCESTOR";
 
     protected static final String SERVICE_WITHOUT_IMPLEMENTATION_MESSAGE = "This service implementation does not implement deprecated API.";
 
@@ -130,6 +134,18 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     @Override
+    public List<Comment> getComments(CoreSession session, Collection<String> documentIds) {
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+
+        Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
+        @SuppressWarnings("unchecked")
+        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                GET_COMMENTS_FOR_DOCUMENTS_PAGE_PROVIDER_NAME, null, null, null, props, new ArrayList<>(documentIds));
+        return pageProvider.getCurrentPage().stream().map(doc -> doc.getAdapter(Comment.class)).collect(toList());
+    }
+
+    @Override
+    @SuppressWarnings("removal")
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment) {
         throw new UnsupportedOperationException(SERVICE_WITHOUT_IMPLEMENTATION_MESSAGE);
     }
