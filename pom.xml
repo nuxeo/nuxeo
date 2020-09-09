@@ -4981,7 +4981,7 @@
       <dependency>
         <!-- unused dependency, declared to exclude affinity -->
         <groupId>net.openhft</groupId>
-        <artifactId>chronicle-Threads</artifactId>
+        <artifactId>chronicle-threads</artifactId>
         <version>${chronicle.threads.version}</version>
         <exclusions>
           <exclusion>
