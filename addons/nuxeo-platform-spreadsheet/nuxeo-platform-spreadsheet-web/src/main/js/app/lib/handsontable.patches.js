@@ -76,3 +76,20 @@ Handsontable.DataMap.prototype.set = function (row, prop, value, source) {
     this.dataSource[row][prop] = value;
   }
 };
+
+/**
+ * Returns single value from the data array (intended for clipboard copy to an external application)
+ * @param {Number} row
+ * @param {Number} prop
+ * @return {String}
+ */
+Handsontable.DataMap.prototype.getCopyable = function (row, prop) {
+  // WEBUI-32
+  // based on https://github.com/handsontable/handsontable/pull/2103
+  // on newer versions we already have copy paste hooks
+  if (copyableLookup.call(this.instance, row, this.propToCol(prop))) {
+    var cellValue = this.get(row, prop);
+    return Handsontable.hooks.execute(this.instance, 'beforeCopy', cellValue, row, prop);
+  }
+  return '';
+};
