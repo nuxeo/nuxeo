@@ -89,37 +89,18 @@ public class AnnotationAdapter extends DefaultAdapter {
     @Path("comments")
     @Deprecated(since = "11.3")
     public List<Comment> getComments(@QueryParam("annotationIds") List<String> annotationIds) {
-        return getAllComments(annotationIds);
+        return Framework.getService(CommentManager.class).getComments(getContext().getCoreSession(), annotationIds);
     }
 
     @POST
     @Path("comments")
     public List<Comment> getCommentsFromBody(String payload) {
         try {
-            return getAllComments(MAPPER.readValue(payload, LIST_STRING_TYPE));
+            List<String> annotationIds = MAPPER.readValue(payload, LIST_STRING_TYPE);
+            return Framework.getService(CommentManager.class).getComments(getContext().getCoreSession(), annotationIds);
         } catch (JsonProcessingException e) {
             throw new NuxeoException("Unable to read payload", SC_BAD_REQUEST);
         }
-    }
-
-    protected List<Comment> getAllComments(List<String> annotationIds) {
-        CommentManager commentManager = Framework.getService(CommentManager.class);
-        CoreSession session = getContext().getCoreSession();
-        List<Comment> comments = new ArrayList<>();
-        for (String annotationId : annotationIds) {
-            comments.addAll(getAllComments(annotationId, commentManager, session));
-        }
-        return comments;
-    }
-
-    protected List<Comment> getAllComments(String annotationId, CommentManager commentManager, CoreSession session) {
-        List<Comment> allComments = new ArrayList<>();
-        List<Comment> comments = commentManager.getComments(session, annotationId);
-        for (Comment comment : comments) {
-            allComments.addAll(getAllComments(comment.getId(), commentManager, session));
-            allComments.add(comment);
-        }
-        return allComments;
     }
 
     @GET

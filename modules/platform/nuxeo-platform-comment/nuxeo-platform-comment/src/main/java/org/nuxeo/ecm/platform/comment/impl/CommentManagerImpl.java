@@ -33,12 +33,14 @@ import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNA
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -461,6 +463,16 @@ public class CommentManagerImpl extends AbstractCommentManager {
                            .map(doc -> doc.getAdapter(Comment.class))
                            .collect(collectingAndThen(toList(), list -> new PartialList<>(list, comments.size())));
         });
+    }
+
+    @Override
+    public List<Comment> getComments(CoreSession session, Collection<String> documentIds) {
+        return documentIds.stream().flatMap(docId -> streamAllComments(session, docId)).collect(toList());
+    }
+
+    protected Stream<Comment> streamAllComments(CoreSession session, String docId) {
+        return getComments(session,
+                docId).stream().flatMap(c -> Stream.concat(Stream.of(c), streamAllComments(session, c.getId())));
     }
 
     @Override
