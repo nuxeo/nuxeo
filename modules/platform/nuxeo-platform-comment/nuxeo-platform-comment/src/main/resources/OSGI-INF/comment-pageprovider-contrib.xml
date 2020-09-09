@@ -67,6 +67,16 @@
       <maxPageSize>0</maxPageSize>
     </coreQueryPageProvider>
 
+    <!-- used by PropertyCommentManager & TreeCommentManager -->
+    <!-- currently not possible to do a ecm:ancestorId IN (..) -->
+    <coreQueryPageProvider name="GET_COMMENTS_FOR_DOCUMENTS_BY_COMMENT_ANCESTOR">
+      <pattern>
+        SELECT * FROM Comment WHERE comment:ancestorIds IN ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
     <!-- AnnotationService uses it when TreeCommentManager is in place-->
     <coreQueryPageProvider name="GET_ANNOTATIONS_FOR_DOCUMENT_BY_ECM_PARENT">
       <pattern>

@@ -414,6 +414,22 @@ public abstract class AbstractTestCommentManager {
     }
 
     @Test
+    public void testGetCommentsForDocuments() {
+        Comment c1 = commentManager.createComment(session, newComment(commentedDocModel.getId(), "I am a comment!"));
+        Comment c2 = commentManager.createComment(session, newComment(commentedDocModel.getId(), "Me too!"));
+        Comment c3 = commentManager.createComment(session, newComment(c1.getId(), "I am the first reply!"));
+        Comment c4 = commentManager.createComment(session, newComment(c2.getId(), "I am too, on second comment!"));
+        // getComments uses a page provider -> wait indexation
+        transactionalFeature.nextTransaction();
+
+        // test get replies
+        assertEquals(Set.of(c3, c4),
+                new HashSet<>(commentManager.getComments(session, List.of(c1.getId(), c2.getId()))));
+        assertEquals(Set.of(c1, c2, c3, c4),
+                new HashSet<>(commentManager.getComments(session, List.of(commentedDocModel.getId()))));
+    }
+
+    @Test
     public void testUpdateComment() {
         Comment comment = newComment(commentedDocModel.getId(), "I am a comment!");
         comment = commentManager.createComment(session, comment);
