@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.comment;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +37,7 @@ import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
 import org.nuxeo.ecm.platform.comment.api.Comment;
@@ -42,6 +45,10 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 10.1
@@ -51,6 +58,11 @@ import org.nuxeo.runtime.api.Framework;
 public class AnnotationAdapter extends DefaultAdapter {
 
     public static final String NAME = "annotation";
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    private static final JavaType LIST_STRING_TYPE = MAPPER.getTypeFactory()
+                                                           .constructCollectionType(List.class, String.class);
 
     @POST
     public Response createAnnotation(Annotation annotation) {
@@ -70,13 +82,32 @@ public class AnnotationAdapter extends DefaultAdapter {
         return annotationService.getAnnotations(getContext().getCoreSession(), doc.getId(), xpath);
     }
 
+    /**
+     * @deprecated since 11.3, use {@link #getCommentsFromBody(String)} instead
+     */
     @GET
     @Path("comments")
+    @Deprecated(since = "11.3")
     public List<Comment> getComments(@QueryParam("annotationIds") List<String> annotationIds) {
+        return getAllComments(annotationIds);
+    }
+
+    @POST
+    @Path("comments")
+    public List<Comment> getCommentsFromBody(String payload) {
+        try {
+            return getAllComments(MAPPER.readValue(payload, LIST_STRING_TYPE));
+        } catch (JsonProcessingException e) {
+            throw new NuxeoException("Unable to read payload", SC_BAD_REQUEST);
+        }
+    }
+
+    protected List<Comment> getAllComments(List<String> annotationIds) {
         CommentManager commentManager = Framework.getService(CommentManager.class);
+        CoreSession session = getContext().getCoreSession();
         List<Comment> comments = new ArrayList<>();
         for (String annotationId : annotationIds) {
-            comments.addAll(getAllComments(annotationId, commentManager, getContext().getCoreSession()));
+            comments.addAll(getAllComments(annotationId, commentManager, session));
         }
         return comments;
     }
