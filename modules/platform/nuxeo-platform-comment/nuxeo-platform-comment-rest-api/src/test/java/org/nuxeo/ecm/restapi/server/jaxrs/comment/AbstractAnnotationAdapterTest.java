@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -374,6 +375,7 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
         }
         fetchInvalidations();
 
+        // GET method is deprecated
         MultivaluedMap<String, String> annotationIds = new MultivaluedMapImpl();
         annotationIds.put("annotationIds", Arrays.asList(annotation1.getId(), annotation2.getId()));
         JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@annotation/comments",
@@ -382,6 +384,17 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
         Set<String> actualIds = new HashSet<>(node.findValuesAsText("id"));
         assertEquals(10, actualIds.size());
         assertEquals(expectedIds, actualIds);
+
+        // POST method is the right API to use
+        String requestBody = mapper.writeValueAsString(Arrays.asList(annotation1.getId(), annotation2.getId()));
+        try (var response = getResponse(RequestType.POST, "id/" + file.getId() + "/@annotation/comments",
+                requestBody)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            node = mapper.readTree(response.getEntityInputStream());
+            actualIds = new HashSet<>(node.findValuesAsText("id"));
+            assertEquals(10, actualIds.size());
+            assertEquals(expectedIds, actualIds);
+        }
     }
 
 }
