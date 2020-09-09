@@ -87,8 +87,7 @@ public class ElasticSearchChecker implements BackingChecker {
     }
 
     protected ClusterHealthStatus getHealthStatus(ElasticSearchClientConfig config) throws ConfigurationException {
-        try {
-            ESClient client = getClient(config);
+        try (ESClient client = getClient(config)) {
             return client.getHealthStatus(null);
         } catch (Exception e) {
             throw new ConfigurationException("Unable to connect to Elasticsearch: " + config.getOption(ADDRESS_LIST_OPT),
