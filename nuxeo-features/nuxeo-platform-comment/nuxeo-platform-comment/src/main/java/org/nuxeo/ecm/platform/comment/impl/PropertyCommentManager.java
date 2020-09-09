@@ -37,6 +37,8 @@ import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CO
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +77,8 @@ public class PropertyCommentManager extends AbstractCommentManager {
     protected static final String GET_EXTERNAL_COMMENT_PAGEPROVIDER_NAME = "GET_EXTERNAL_COMMENT_BY_COMMENT_ANCESTOR";
 
     protected static final String GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME = "GET_COMMENTS_FOR_DOCUMENT";
+
+    protected static final String GET_COMMENTS_FOR_DOCS_PAGEPROVIDER_NAME = "GET_COMMENTS_FOR_DOCUMENTS_BY_COMMENT_ANCESTOR";
 
     protected static final String HIDDEN_FOLDER_TYPE = "HiddenFolder";
 
@@ -273,6 +277,17 @@ public class PropertyCommentManager extends AbstractCommentManager {
                               .collect(collectingAndThen(toList(),
                                       list -> new PartialList<>(list, pageProvider.getResultsCount())));
         });
+    }
+
+    @Override
+    public List<Comment> getComments(CoreSession session, Collection<String> documentIds) {
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+
+        Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
+        @SuppressWarnings("unchecked")
+        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                GET_COMMENTS_FOR_DOCS_PAGEPROVIDER_NAME, null, null, null, props, new ArrayList<>(documentIds));
+        return pageProvider.getCurrentPage().stream().map(doc -> doc.getAdapter(Comment.class)).collect(toList());
     }
 
     @Override
