@@ -78,7 +78,7 @@ public class ChronicleRetentionListener implements StoreFileListener {
         purgedStamp = System.currentTimeMillis();
         cycles.subList(0, cyclesToRemove).forEach(this::dropCycle);
         // this is needed to update first cycle, it calls directoryListing.refresh()
-        queue.createTailer();
+        queue.createTailer().close();
     }
 
     protected void dropCycle(Integer cycle) {
