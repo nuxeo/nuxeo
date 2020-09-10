@@ -113,41 +113,46 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
      * Read the last committed offset from the file.
      */
     public long readLastCommittedOffset() {
-        ExcerptTailer offsetTailer;
         try {
-            offsetTailer = offsetQueue.createTailer().direction(TailerDirection.BACKWARD).toEnd();
+            return doReadLastCommittedOffset();
         } catch (IllegalStateException e) {
             // sometime the end is NOT_REACHED, may be because the queue is not yet fully initialized
             log.warn(String.format("Fail to reach the end of offset queue: %s because of: %s, retrying.",
                     offsetQueue.file().getAbsolutePath(), e.getMessage()));
-            offsetTailer = offsetQueue.createTailer().direction(TailerDirection.BACKWARD).toEnd();
+            // try again
+            return doReadLastCommittedOffset();
         }
-        switch (offsetTailer.state()) {
-        case FOUND_CYCLE:
-            // expected case continue
-            break;
-        case UNINITIALISED:
-            // This is a new queue, we are not going to find anything
-            return 0;
-        default:
-            // border line cases that happens on unit tests and where the queue is not yet ready
-            log.info("Invalid offset tailer state: " + offsetQueue.file().getAbsolutePath() + ": "
-                    + offsetTailer.state() + " taken as uninitialized");
-            return 0;
+    }
+
+    protected long doReadLastCommittedOffset() {
+        try(ExcerptTailer offsetTailer = offsetQueue.createTailer().direction(TailerDirection.BACKWARD).toEnd()) {
+            switch (offsetTailer.state()) {
+                case FOUND_CYCLE:
+                    // expected case continue
+                    break;
+                case UNINITIALISED:
+                    // This is a new queue, we are not going to find anything
+                    return 0;
+                default:
+                    // border line cases that happens on unit tests and where the queue is not yet ready
+                    log.info("Invalid offset tailer state: " + offsetQueue.file().getAbsolutePath() + ": "
+                            + offsetTailer.state() + " taken as uninitialized");
+                    return 0;
+            }
+            final long[] offset = { 0 };
+            boolean hasNext;
+            do {
+                hasNext = offsetTailer.readBytes(b -> {
+                    int queue = b.readInt();
+                    long off = b.readLong();
+                    b.readLong(); // stamp not used
+                    if (partition == queue) {
+                        offset[0] = off;
+                    }
+                });
+            } while (offset[0] == 0 && hasNext);
+            return offset[0];
         }
-        final long[] offset = { 0 };
-        boolean hasNext;
-        do {
-            hasNext = offsetTailer.readBytes(b -> {
-                int queue = b.readInt();
-                long off = b.readLong();
-                b.readLong(); // stamp not used
-                if (partition == queue) {
-                    offset[0] = off;
-                }
-            });
-        } while (offset[0] == 0 && hasNext);
-        return offset[0];
     }
 
     public void commit(long offset) {

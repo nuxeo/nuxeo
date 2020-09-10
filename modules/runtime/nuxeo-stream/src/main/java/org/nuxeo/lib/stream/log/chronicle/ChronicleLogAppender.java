@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.time.Instant;
@@ -51,6 +50,7 @@ import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 import net.openhft.chronicle.bytes.util.DecoratedBufferOverflowException;
 import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
+import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 
@@ -301,7 +301,9 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
     }
 
     public long endOffset(int partition) {
-        return partitions.get(partition).createTailer().toEnd().index();
+        try (ExcerptTailer tailer = partitions.get(partition).createTailer().toEnd()) {
+            return tailer.index();
+        }
     }
 
     public long firstOffset(int partition) {
