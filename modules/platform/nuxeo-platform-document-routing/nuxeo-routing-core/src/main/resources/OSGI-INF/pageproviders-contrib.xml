@@ -6,7 +6,7 @@
 
     <coreQueryPageProvider name="DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS">
       <pattern>
-        SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'validated'
+        SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'validated' AND ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>20</pageSize>
@@ -14,7 +14,8 @@
 
     <coreQueryPageProvider name="DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE">
       <pattern>
-        SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'validated' AND dc:title LIKE ?
+        SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'validated' AND ecm:isTrashed = 0
+        AND dc:title LIKE ?
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>20</pageSize>
@@ -23,7 +24,7 @@
     <coreQueryPageProvider name="DOC_ROUTING_SEARCH_ALL_ROUTE_INSTANCES">
       <pattern>
         SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState =
-        'running' AND dc:title LIKE ?
+        'running' AND ecm:isTrashed = 0 AND dc:title LIKE ?
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>20</pageSize>
@@ -41,7 +42,7 @@
     <coreQueryPageProvider name="SEARCH_ROUTE_BY_ATTACHED_DOC">
       <pattern>
         SELECT * FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'running'
-        OR ecm:currentLifeCycleState = 'ready') AND docri:participatingDocuments/*
+        OR ecm:currentLifeCycleState = 'ready') AND ecm:isTrashed = 0 AND docri:participatingDocuments/*
         IN (?)
       </pattern>
       <sort column="dc:title" ascending="true" />
