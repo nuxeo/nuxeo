@@ -28,16 +28,43 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  * <p>
  * The following event types are defined:
  * <ul>
- * <li> <code>COMPONENT_REGISTERED</code> Sent when registering a component after the component is created
- * <li> <code>ACTIVATING_COMPONENT</code> Sent before a component is activated
- * <li> <code>COMPONENT_ACTIVATED</code> Sent after the component is activated
- * <li> <code>DEACTIVATING_COMPONENT</code> Sent before a component is deactivated
- * <li> <code>COMPONENT_DEACTIVATED</code> Sent after a component is deactivated
- * <li> <code>COMPONENT_RESOLVED</code> Sent when a component was resolved (all dependencies are satisfied)
- * <li> <code>COMPONENT_UNRESOLVED</code> Sent when a component is unresolved (either it will be unregistered, either one
- * of its dependencies is no more satosfied)
- * <li> <code>COMPONENT_UNREGISTERED</code> Sent when unregsitering a component before the component is destroyed
- * <li> <code>COMPONENT_EVENT</code> May be used by components to end custom events
+ * <li><code>COMPONENT_REGISTERED</code> Sent when registering a component after the component is created
+ * <li><code>COMPONENT_UNREGISTERED</code> Sent when unregistering a component before the component is destroyed
+ * <li><code>ACTIVATING_COMPONENT</code> Sent before a component is activated
+ * <li><code>COMPONENT_ACTIVATED</code> Sent after the component is activated
+ * <li><code>DEACTIVATING_COMPONENT</code> Sent before a component is deactivated
+ * <li><code>COMPONENT_DEACTIVATED</code> Sent after a component is deactivated
+ * <li><code>COMPONENT_RESOLVED</code> Sent when a component was resolved (all dependencies are satisfied)
+ * <li><code>COMPONENT_UNRESOLVED</code> Sent when a component is unresolved (either it will be unregistered, either one
+ * of its dependencies is no more satisfied)
+ * <li><code>COMPONENT_STARTED</code> Sent when a component was started (even when component is not a java instance)
+ * <li><code>COMPONENT_STOPPED</code> Sent when a component was stopped (even when component is not a java instance)
+ * <li><code>EXTENSION_REGISTERED</code>Sent when a component contribution to an extension point is registered
+ * <li><code>EXTENSION_UNREGISTERED</code>Sent when a component contribution to an extension point is unregistered
+ * <li><code>EXTENSION_PENDING</code>Sent when a component contribution to an extension point is pending, waiting for
+ * dependencies to be resolved.
+ * <li><code>COMPONENT_EVENT</code> May be used by components to end custom events
+ * </ul>
+ * <p>
+ * Ordering of events for a given component:
+ * <ul>
+ * <li><code>COMPONENT_REGISTERED</code>
+ * <li><code>ACTIVATING_COMPONENT</code>
+ * <li><code>COMPONENT_ACTIVATED</code>
+ * <ul>
+ * <li><code>COMPONENT_RESOLVED</code> (if the component dependencies were satisfied)
+ * <li><code>COMPONENT_STARTED</code>
+ * <ul>
+ * <li><code>EXTENSION_PENDING</code> (if an extension is pending)
+ * <li><code>EXTENSION_REGISTERED</code> (if an extension is registered)
+ * <li><code>EXTENSION_UNREGISTERED</code> (if an extension was registered)
+ * </ul>
+ * <li><code>COMPONENT_STOPPED</code>
+ * <li><code>COMPONENT_UNRESOLVED</code>
+ * </ul>
+ * <li><code>DEACTIVATING_COMPONENT</code>
+ * <li><code>COMPONENT_DEACTIVATED</code>
+ * <li><code>COMPONENT_UNREGISTERED</code>
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
