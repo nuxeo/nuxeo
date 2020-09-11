@@ -33,8 +33,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
@@ -70,7 +70,7 @@ import com.google.cloud.storage.StorageOptions;
  */
 public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
 
-    private static final Log log = LogFactory.getLog(GoogleStorageBinaryManager.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageBinaryManager.class);
 
     public static final String BUCKET_NAME_PROPERTY = "storage.bucket";
 
@@ -125,8 +125,8 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
             bucket = getOrCreateBucket(bucketName);
 
             if (!isBlank(bucketPrefix) && !bucketPrefix.endsWith(DELIMITER)) {
-                log.warn(String.format("%s %s Google bucket prefix should end with '/' : added automatically.",
-                        BUCKET_PREFIX_PROPERTY, bucketPrefix));
+                log.warn("Google bucket prefix ({}): {} should end with '/' : added automatically.",
+                        BUCKET_PREFIX_PROPERTY, bucketPrefix);
                 bucketPrefix += DELIMITER;
             }
             if (isNotBlank(namespace)) {
@@ -149,7 +149,7 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
     public Bucket getOrCreateBucket(String bucketName) {
         Bucket bucket = storage.get(bucketName);
         if (bucket == null) {
-            log.debug(String.format("Creating a new bucket %s", bucketName));
+            log.debug("Creating a new bucket: {}", bucketName);
             return storage.create(BucketInfo.of(bucketName));
         }
         return bucket;
