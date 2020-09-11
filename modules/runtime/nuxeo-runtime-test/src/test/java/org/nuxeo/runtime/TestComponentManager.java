@@ -44,6 +44,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.runtime.test.tests:component-manager-listener.xml")
+@Deploy("org.nuxeo.runtime.test.tests:component-manager-listener-dep.xml")
 public class TestComponentManager {
 
     protected MyListener listener = new MyListener();
@@ -127,12 +128,17 @@ public class TestComponentManager {
                         mockComponent.hasEvent(event, testedComp));
             }
         }
+
         // too late
         assertFalse(mockComponent.hasEvent(ComponentEvent.COMPONENT_REGISTERED, mockComponentName));
         assertFalse(mockComponent.hasEvent(ComponentEvent.COMPONENT_RESOLVED, mockComponentName));
         // check extension registration event
         assertTrue(mockComponent.hasEvent(ComponentEvent.EXTENSION_REGISTERED,
                 "org.nuxeo.runtime.trackers.files.threadstracking.config"));
+
+        // check pending extension registration
+        assertTrue(mockComponent.hasEvent(ComponentEvent.EXTENSION_PENDING, "component.manager.listener"));
+        assertTrue(mockComponent.hasEvent(ComponentEvent.EXTENSION_REGISTERED, "component.manager.listener"));
     }
 
 }

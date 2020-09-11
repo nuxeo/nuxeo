@@ -624,6 +624,8 @@ public class ComponentManagerImpl implements ComponentManager {
             for (Extension xt : pendingExt) {
                 try {
                     component.registerExtension(xt);
+                    sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
+                            ((ComponentInstanceImpl) xt.getComponent()).ri, xt));
                 } catch (RuntimeException e) {
                     ComponentName compName = xt.getComponent().getName();
                     String msg = "Failed to register extension to: " + xt.getTargetComponent() + ", xpoint: "

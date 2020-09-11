@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="component.manager.listener.dep">
+
+  <extension-point name="point">
+  </extension-point>
+
+</component>
