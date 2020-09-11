@@ -497,6 +497,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 ComponentManagerImpl.loadContributions(this, xt);
                 try {
                     component.registerExtension(xt);
+                    manager.sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
+                            ((ComponentInstanceImpl) xt.getComponent()).ri, xt));
                 } catch (RuntimeException e) {
                     ComponentName compName = xt.getComponent().getName();
                     String msg = "Failed to register extension to: " + xt.getTargetComponent() + ", xpoint: "
