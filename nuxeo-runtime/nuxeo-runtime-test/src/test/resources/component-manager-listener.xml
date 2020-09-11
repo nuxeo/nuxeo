@@ -3,4 +3,8 @@
 
   <implementation class="org.nuxeo.runtime.MockComponentManagerListener" />
 
+  <!-- mock contribution to generate registration event -->
+  <extension target="component.manager.listener.dep" point="point">
+  </extension>
+
 </component>
