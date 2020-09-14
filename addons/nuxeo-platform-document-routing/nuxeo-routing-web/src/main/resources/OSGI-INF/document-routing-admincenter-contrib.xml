@@ -22,7 +22,7 @@
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern>SELECT * FROM DocumentRoute WHERE ecm:path STARTSWITH
-          '/document-route-models-root'
+          '/document-route-models-root' AND ecm:isTrashed = 0
         </pattern>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
