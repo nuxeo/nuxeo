@@ -7,6 +7,12 @@
         "entity-type": {
             "uniqueItems": false,
             "type": "string",
+            "required": true,
+            "enum": ["task"]
+        },
+        "id": {
+            "uniqueItems": false,
+            "type": "string",
             "required": true
         },
         "comment": {
