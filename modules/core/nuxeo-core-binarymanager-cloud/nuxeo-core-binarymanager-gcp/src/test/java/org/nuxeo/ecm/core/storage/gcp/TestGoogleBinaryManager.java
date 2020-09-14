@@ -22,6 +22,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assume.assumeFalse;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,14 +31,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.function.ThrowableRunnable;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 import org.nuxeo.ecm.blob.AbstractTestCloudBinaryManager;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.blob.binary.FileStorage;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -115,6 +121,20 @@ public class TestGoogleBinaryManager extends AbstractTestCloudBinaryManager<Goog
             }
             throw new NuxeoException(e);
         }
+    }
+
+    @Test
+    public void testConsecutiveIdenticalUploads() throws Exception {
+        FileStorage fileStorage = binaryManager.getFileStorage();
+        File blob = File.createTempFile("gcs-blob", ".txt", new File(FeaturesRunner.getBuildDirectory()));
+        @SuppressWarnings("unchecked")
+        CompletableFuture<Void>[] futures = //
+                IntStream.range(0, 100)
+                         .parallel()
+                         .mapToObj(i -> ThrowableRunnable.asRunnable(() -> fileStorage.storeFile(CONTENT_MD5, blob)))
+                         .map(CompletableFuture::runAsync)
+                         .toArray(CompletableFuture[]::new);
+        CompletableFuture.allOf(futures).get(1, TimeUnit.MINUTES);
     }
 
 }

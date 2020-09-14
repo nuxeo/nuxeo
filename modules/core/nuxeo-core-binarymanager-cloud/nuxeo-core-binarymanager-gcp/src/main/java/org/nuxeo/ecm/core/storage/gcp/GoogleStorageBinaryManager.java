@@ -125,7 +125,7 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
             bucket = getOrCreateBucket(bucketName);
 
             if (!isBlank(bucketPrefix) && !bucketPrefix.endsWith(DELIMITER)) {
-                log.warn("Google bucket prefix ({}): {} should end with '/' : added automatically.",
+                log.warn("Google bucket prefix ({}): {} should end with '/': added automatically.",
                         BUCKET_PREFIX_PROPERTY, bucketPrefix);
                 bucketPrefix += DELIMITER;
             }
@@ -180,11 +180,20 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
     public class GCPFileStorage implements FileStorage {
 
         @Override
-        public void storeFile(String key, File file) {
-            try {
-                bucket.create(bucketPrefix + key, new FileInputStream(file));
-            } catch (IOException e) {
-                throw new NuxeoException(e);
+        public void storeFile(String digest, File file) {
+            long t0 = System.currentTimeMillis();
+            log.debug("Storing blob with digest: {} to GCS", digest);
+            String key = bucketPrefix + digest;
+            // try to get the blob's metadata to check if it exists
+            if (bucket.get(key) == null) {
+                try (var fis = new FileInputStream(file)) {
+                    bucket.create(key, fis);
+                } catch (IOException e) {
+                    throw new NuxeoException(e);
+                }
+                log.debug("Stored blob with digest: {} to GCS in {}ms", digest, System.currentTimeMillis() - t0);
+            } else {
+                log.debug("Blob with digest: {} is already in GCS", digest);
             }
         }
 
