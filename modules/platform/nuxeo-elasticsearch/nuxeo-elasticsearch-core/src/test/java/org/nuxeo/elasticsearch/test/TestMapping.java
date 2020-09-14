@@ -128,8 +128,6 @@ public class TestMapping {
         Assert.assertEquals(0, ret.totalSize());
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE 'Upper%'"));
         Assert.assertEquals(0, ret.totalSize());
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE 'UPPER%'"));
-        Assert.assertEquals(0, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:fulltext.dc:description LIKE '%Case%'"));
