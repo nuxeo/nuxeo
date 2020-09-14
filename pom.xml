@@ -5181,6 +5181,7 @@
             <nuxeo.test.core>${nuxeo.test.core}</nuxeo.test.core>
             <nuxeo.test.mongodb.server>${nuxeo.test.mongodb.server}</nuxeo.test.mongodb.server>
             <nuxeo.test.mongodb.dbname>${nuxeo.test.mongodb.dbname}</nuxeo.test.mongodb.dbname>
+            <nuxeo.test.elasticsearch.addressList>${nuxeo.test.elasticsearch.addressList}</nuxeo.test.elasticsearch.addressList>
           </systemPropertyVariables>
           <includes>
             <include>**/Test*.java</include>
