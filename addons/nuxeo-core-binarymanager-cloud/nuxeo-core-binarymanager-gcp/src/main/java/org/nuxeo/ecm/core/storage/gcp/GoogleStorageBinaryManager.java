@@ -125,7 +125,7 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
             bucket = getOrCreateBucket(bucketName);
 
             if (!isBlank(bucketPrefix) && !bucketPrefix.endsWith(DELIMITER)) {
-                log.warn(String.format("%s %s Google bucket prefix should end with '/' : added automatically.",
+                log.warn(String.format("%s %s Google bucket prefix should end with '/': added automatically.",
                         BUCKET_PREFIX_PROPERTY, bucketPrefix));
                 bucketPrefix += DELIMITER;
             }
@@ -180,11 +180,27 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
     public class GCPFileStorage implements FileStorage {
 
         @Override
-        public void storeFile(String key, File file) {
-            try {
-                bucket.create(bucketPrefix + key, new FileInputStream(file));
-            } catch (IOException e) {
-                throw new NuxeoException(e);
+        public void storeFile(String digest, File file) {
+            long t0 = System.currentTimeMillis();
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Storing blob with digest: %s to GCS", digest));
+            }
+            String key = bucketPrefix + digest;
+            // try to get the blob's metadata to check if it exists
+            if (bucket.get(key) == null) {
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    bucket.create(key, fis);
+                } catch (IOException e) {
+                    throw new NuxeoException(e);
+                }
+                if (log.isDebugEnabled()) {
+                    long duration = System.currentTimeMillis() - t0;
+                    log.debug(String.format("Stored blob with digest: %s to GCS in %sms", digest, duration));
+                }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Blob with digest: %s is already in GCS", digest));
+                }
             }
         }
 
