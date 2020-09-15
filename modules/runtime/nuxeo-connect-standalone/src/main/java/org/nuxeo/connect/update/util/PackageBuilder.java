@@ -182,6 +182,11 @@ public class PackageBuilder {
         return this;
     }
 
+    public PackageBuilder platformRange(String platformRange) {
+        def.setTargetPlatformRange(platformRange);
+        return this;
+    }
+
     public PackageBuilder dependency(String expr) {
         dependencies.add(new PackageDependency(expr));
         return this;
@@ -269,7 +274,8 @@ public class PackageBuilder {
             def.setDependencies(dependencies.toArray(new PackageDependency[dependencies.size()]));
         }
         if (!optionalDependencies.isEmpty()) {
-            def.setOptionalDependencies(optionalDependencies.toArray(new PackageDependency[optionalDependencies.size()]));
+            def.setOptionalDependencies(
+                    optionalDependencies.toArray(new PackageDependency[optionalDependencies.size()]));
         }
         if (!conflicts.isEmpty()) {
             def.setConflicts(conflicts.toArray(new PackageDependency[conflicts.size()]));

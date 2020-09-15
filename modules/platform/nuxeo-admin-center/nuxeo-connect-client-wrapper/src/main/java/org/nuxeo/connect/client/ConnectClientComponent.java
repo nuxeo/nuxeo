@@ -76,7 +76,7 @@ public class ConnectClientComponent extends DefaultComponent {
             String distribVersion = Framework.getProperty(Environment.DISTRIBUTION_VERSION);
             String targetPlatform = (distribName != null && distribVersion != null) ? distribName + "-" + distribVersion
                     : null;
-            return adapter.cast(NuxeoConnectClient.getPackageManager(targetPlatform));
+            return adapter.cast(NuxeoConnectClient.getPackageManager(targetPlatform, distribVersion));
         }
 
         if (adapter.getCanonicalName().equals(PackageUpdateService.class.getCanonicalName())) {
