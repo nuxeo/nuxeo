@@ -1,0 +1,20 @@
+<package type="addon" name="R" version="1.0.2-SNAPSHOT">
+  <title>Package R</title>
+  <description>
+    <p>Description of R</p>
+  </description>
+  <home-page>http://doc.nuxeo.com/x/7YGo</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <!-- <hotreload-support>false</hotreload-support> -->
+  <!-- <require-terms-and-conditions-acceptance>false -->
+  <!-- </require-terms-and-conditions-acceptance> -->
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
+  <target-platform>[11.2,)</target-platform>
+  <license>LGPL</license>
+  <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
+  <visibility>PUBLIC</visibility>
+</package>
