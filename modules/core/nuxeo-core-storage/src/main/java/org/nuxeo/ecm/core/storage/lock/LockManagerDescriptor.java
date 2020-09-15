@@ -20,7 +20,7 @@ package org.nuxeo.ecm.core.storage.lock;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.model.LockManager;
+import org.nuxeo.ecm.core.api.lock.LockManager;
 
 /**
  * Descriptor of a {@link LockManager} for the {@link LockManagerService}.

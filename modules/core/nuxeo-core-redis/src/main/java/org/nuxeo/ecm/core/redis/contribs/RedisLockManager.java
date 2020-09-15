@@ -28,7 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.model.LockManager;
+import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisCallable;
 import org.nuxeo.ecm.core.redis.RedisExecutor;

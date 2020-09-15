@@ -27,8 +27,8 @@ import java.util.function.Consumer;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 
 /**
