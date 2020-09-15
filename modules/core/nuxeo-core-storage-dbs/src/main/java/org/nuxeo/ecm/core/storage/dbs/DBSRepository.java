@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 
 /**

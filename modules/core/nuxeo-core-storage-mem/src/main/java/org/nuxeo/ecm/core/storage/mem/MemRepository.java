@@ -35,8 +35,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
-import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;

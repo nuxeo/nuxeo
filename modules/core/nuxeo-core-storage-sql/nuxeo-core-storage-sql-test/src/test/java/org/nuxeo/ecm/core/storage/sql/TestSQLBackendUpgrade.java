@@ -38,7 +38,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Lock;
-import org.nuxeo.ecm.core.model.LockManager;
+import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 
 public class TestSQLBackendUpgrade extends SQLBackendTestCase {
