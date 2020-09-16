@@ -57,8 +57,8 @@ public class TestMapping {
 
     private int commandProcessed;
 
-    public void assertNumberOfCommandProcessed(int processed) throws Exception {
-        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
+    public void assertNumberOfCommandProcessed(int processed) {
+        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed); // NOSONAR
     }
 
     /**
@@ -78,27 +78,27 @@ public class TestMapping {
     }
 
     @Before
-    public void setUpMapping() throws Exception {
+    public void setUpMapping() {
         esa.initIndexes(true);
     }
 
     @Test
     public void testIlikeSearch() throws Exception {
         startTransaction();
-        DocumentModel doc = session.createDocumentModel("/", "testDoc1", "File");
-        doc.setPropertyValue("dc:title", "upper case");
-        doc.setPropertyValue("dc:description", "UPPER CASE DESC");
-        doc = session.createDocument(doc);
+        DocumentModel doc = session.createDocumentModel("/", "testDoc1", "File"); // NOSONAR
+        doc.setPropertyValue("dc:title", "upper case"); // NOSONAR
+        doc.setPropertyValue("dc:description", "UPPER CASE DESC"); // NOSONAR
+        session.createDocument(doc);
 
-        doc = session.createDocumentModel("/", "testDoc2", "File");
+        doc = session.createDocumentModel("/", "testDoc2", "File"); // NOSONAR
         doc.setPropertyValue("dc:title", "Mixed Case");
         doc.setPropertyValue("dc:description", "MiXeD cAsE dEsC");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
 
         doc = session.createDocumentModel("/", "testDoc3", "File");
         doc.setPropertyValue("dc:title", "lower case");
         doc.setPropertyValue("dc:description", "lower case desc");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForIndexing();
@@ -150,15 +150,15 @@ public class TestMapping {
         startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "testDoc1", "File");
         doc.setPropertyValue("dc:title", "new-york.jpg");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
 
         doc = session.createDocumentModel("/", "testDoc2", "File");
         doc.setPropertyValue("dc:title", "York.jpg");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
 
         doc = session.createDocumentModel("/", "testDoc3", "File");
         doc.setPropertyValue("dc:title", "foo_jpg");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForIndexing();
