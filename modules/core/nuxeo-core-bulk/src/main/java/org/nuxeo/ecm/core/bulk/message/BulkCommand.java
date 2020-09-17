@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.avro.reflect.AvroDefault;
 import org.apache.avro.reflect.AvroEncode;
 import org.apache.avro.reflect.Nullable;
 import org.apache.commons.lang3.BooleanUtils;
@@ -62,9 +63,11 @@ public class BulkCommand implements Serializable {
     protected String scroller;
 
     // @since 11.1
+    @AvroDefault("false")
     protected boolean genericScroller;
 
     // @since 11.3
+    @AvroDefault("false")
     protected boolean externalScroller;
 
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
