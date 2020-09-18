@@ -5173,7 +5173,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.3</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -5337,7 +5337,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>2.2.1</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -6201,8 +6201,8 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
+              <doclint>none</doclint>
               <show>protected</show>
-              <additionalparam>-Xdoclint:reference</additionalparam>
               <!-- <includeDependencySources>true</includeDependencySources> -->
               <!-- <includeTransitiveDependencySources>true</includeTransitiveDependencySources> -->
               <linksource>true</linksource>
@@ -6230,17 +6230,14 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.3</version>
             <configuration>
               <maxmemory>768m</maxmemory>
-              <!-- stylesheetfile>${basedir}/src/site/resources/css/jdstyle.css
-                </stylesheetfile -->
               <windowtitle>${project.name} ${project.version} API Documentation</windowtitle>
               <doctitle>${project.name} ${project.version} API Documentation</doctitle>
               <header>${project.name} ${project.version}</header>
               <links>
-                <link>http://download.oracle.com/javase/6/docs/api/</link>
-                <link>http://download.oracle.com/javaee/6/api/</link>
+                <link>https://docs.oracle.com/en/java/javase/11/docs/api/</link>
+                <link>https://docs.oracle.com/en/java/javase/11/</link>
                 <link>http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/</link>
                 <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
                 <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
