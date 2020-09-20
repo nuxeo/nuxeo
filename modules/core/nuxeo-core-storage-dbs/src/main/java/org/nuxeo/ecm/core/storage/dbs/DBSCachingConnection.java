@@ -25,7 +25,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +40,6 @@ import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 
 import com.google.common.cache.Cache;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Ordering;
 
 /**
  * The DBS Cache layer used to cache some method call of real repository
@@ -180,8 +178,6 @@ public class DBSCachingConnection implements DBSConnection {
         states.forEach(this::putInCache);
         // Add previous cached one
         states.addAll(statesMap.values());
-        // Sort them
-        states.sort(Comparator.comparing(state -> state.get(KEY_ID).toString(), Ordering.explicit(ids)));
         return states;
     }
 
