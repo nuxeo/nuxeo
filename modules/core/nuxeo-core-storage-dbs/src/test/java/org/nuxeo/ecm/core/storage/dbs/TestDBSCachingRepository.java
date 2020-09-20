@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.dbs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.eq;
@@ -30,7 +31,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -117,10 +117,7 @@ public class TestDBSCachingRepository {
 
         assertEquals(1, dbStates.size());
         assertEquals(2, cachedStates.size());
-        assertEquals(dbStates.get(0), cachedStates.get(0));
-        List<State> states = new ArrayList<>(dbStates);
-        states.add(cachedStates.get(1));
-        assertEquals(states, cachedStates);
+        assertTrue(cachedStates.contains(dbStates.get(0)));
     }
 
     @Test

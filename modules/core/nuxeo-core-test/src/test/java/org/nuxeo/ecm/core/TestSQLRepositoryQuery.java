@@ -3379,6 +3379,29 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
+    public void testQueryIdNotFromUuidReturnedTwice() {
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        String doc1Id = doc1.getId();
+
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
+        doc2.setPropertyValue("dc:source", doc1Id);
+        session.createDocument(doc2);
+
+        DocumentModel doc3 = session.createDocumentModel("/", "doc3", "File");
+        doc3.setPropertyValue("dc:source", doc1Id);
+        session.createDocument(doc3);
+
+        session.save();
+        nextTransaction();
+
+        DocumentModelList dml = session.query("SELECT dc:source FROM File WHERE ecm:name IN ('doc2', 'doc3')");
+        assertEquals(2, dml.size());
+        assertEquals(doc1Id, dml.get(0).getId());
+        assertEquals(doc1Id, dml.get(1).getId());
+    }
+
+    @Test
     public void testQueryIdNotFromUuidWithMissingDoc() {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         doc1 = session.createDocument(doc1);
