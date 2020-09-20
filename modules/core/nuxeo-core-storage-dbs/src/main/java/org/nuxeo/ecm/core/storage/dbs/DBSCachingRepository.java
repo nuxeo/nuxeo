@@ -269,7 +269,9 @@ public class DBSCachingRepository implements DBSRepository {
 
     @Override
     public Session getSession() {
-        return repository.getSession();
+        // don't call repository.getSession() as we want the session to have
+        // a reference to the caching repository, not to the base one
+        return new DBSSession(this);
     }
 
     @Override
