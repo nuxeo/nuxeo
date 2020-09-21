@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
-    <version>11.3-SNAPSHOT</version>
+    <version>11.3.45</version>
   </parent>
 
   <artifactId>nuxeo-quota-parent</artifactId>
   <name>Nuxeo Quota</name>
   <description>Nuxeo Quota</description>
-  <version>11.3-SNAPSHOT</version>
+  <version>11.3.45</version>
   <packaging>pom</packaging>
 
   <modules>
