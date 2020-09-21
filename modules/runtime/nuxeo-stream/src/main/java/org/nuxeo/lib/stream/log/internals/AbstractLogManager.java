@@ -99,6 +99,7 @@ public abstract class AbstractLogManager implements LogManager {
         Codec<M> tailerCodec = NO_CODEC.equals(codec) ? guessCodec(partitions) : codec;
         partitions.forEach(partition -> checkInvalidCodec(partition, tailerCodec));
         LogTailer<M> ret = doCreateTailer(partitions, group, tailerCodec);
+        cleanTailers();
         partitions.forEach(partition -> tailersAssignments.put(new LogPartitionGroup(group, partition), ret));
         tailers.add(ret);
         return ret;
@@ -124,6 +125,7 @@ public abstract class AbstractLogManager implements LogManager {
             RebalanceListener listener, Codec<M> codec) {
         Objects.requireNonNull(codec);
         LogTailer<M> ret = doSubscribe(group, names, listener, codec);
+        cleanTailers();
         tailers.add(ret);
         return ret;
     }
@@ -205,6 +207,11 @@ public abstract class AbstractLogManager implements LogManager {
             partition++;
         }
         return ret;
+    }
+
+    protected void cleanTailers() {
+        tailers.removeIf(LogTailer::closed);
+        tailersAssignments.values().removeIf(LogTailer::closed);
     }
 
     @Override
