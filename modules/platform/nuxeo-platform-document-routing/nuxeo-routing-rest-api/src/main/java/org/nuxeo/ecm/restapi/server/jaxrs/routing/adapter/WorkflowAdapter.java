@@ -52,7 +52,8 @@ public class WorkflowAdapter extends DefaultAdapter {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         final String workflowInstanceId = Framework.getService(DocumentRoutingService.class)
                                                    .createNewInstance(routingRequest.getWorkflowModelName(),
-                                                           List.of(doc.getId()), ctx.getCoreSession(), true);
+                                                           List.of(doc.getId()), routingRequest.getVariables(),
+                                                           ctx.getCoreSession(), true);
         DocumentModel result = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
         DocumentRoute route = result.getAdapter(DocumentRoute.class);
         return Response.ok(route).status(Status.CREATED).build();
