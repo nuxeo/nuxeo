@@ -45,7 +45,6 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ EmbeddedAutomationServerFeature.class, RepositoryElasticSearchFeature.class })
-@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.core.test:pageprovider-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.core.test:pageprovider2-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.core.test:pageprovider2-coretype-test-contrib.xml")
