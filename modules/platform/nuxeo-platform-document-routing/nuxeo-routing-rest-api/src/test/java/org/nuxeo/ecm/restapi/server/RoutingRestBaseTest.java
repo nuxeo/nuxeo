@@ -110,8 +110,7 @@ public class RoutingRestBaseTest extends BaseTest {
         result.append("{\"entity-type\": \"workflow\", ")
               .append("\"workflowModelName\": \"")
               .append(workflowName)
-              .append(
-                "\"");
+              .append("\"");
         if (docIds != null && !docIds.isEmpty()) {
             result.append(", \"attachedDocumentIds\": [");
             for (String docId : docIds) {
