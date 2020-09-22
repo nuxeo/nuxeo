@@ -30,6 +30,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -89,6 +90,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -332,7 +334,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     }
 
     @Test
-    public void testInvalidNodeAction() {
+    public void testInvalidNodeAction() throws JsonProcessingException {
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview"))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
@@ -1453,6 +1455,39 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             assertEquals("group:administrators", arrayAssignees.get(0).textValue());
         }
 
+    }
+
+    /**
+     * NXP-29578
+     */
+    @Test
+    public void testStartWorkflowWithVariables() throws IOException {
+        Map<String, Serializable> variables = new HashMap<>();
+        variables.put("initiatorComment", "workflow start");
+        variables.put("validationOrReview", "review");
+        DocumentModel note = RestServerInit.getNote(0, session);
+        // with workflow adapter
+        try (CloseableClientResponse response = getResponse(RequestType.POST,
+                "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME,
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null, variables))) {
+            assertWorkflowCreatedWithVariables(response, variables);
+        }
+
+        // with workflow endpoint
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview", singletonList(note.getId()),
+                        variables))) {
+            assertWorkflowCreatedWithVariables(response, variables);
+        }
+    }
+
+    protected void assertWorkflowCreatedWithVariables(CloseableClientResponse response,
+            Map<String, Serializable> expectedVariables) throws IOException {
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        JsonNode variablesNode = node.get("variables");
+        expectedVariables.forEach((k, v) -> assertEquals(v, variablesNode.get(k).asText()));
     }
 
     /**

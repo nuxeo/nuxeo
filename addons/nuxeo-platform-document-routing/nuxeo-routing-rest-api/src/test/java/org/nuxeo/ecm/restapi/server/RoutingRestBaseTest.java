@@ -24,6 +24,7 @@ import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -101,11 +103,17 @@ public class RoutingRestBaseTest extends BaseTest {
         return "{\"entity-type\": \"task\", \"id\": \"" + taskId + "\"}";
     }
 
-    protected String getCreateAndStartWorkflowBodyContent(String workflowName) {
+    protected String getCreateAndStartWorkflowBodyContent(String workflowName) throws JsonProcessingException {
         return getCreateAndStartWorkflowBodyContent(workflowName, null);
     }
 
-    protected String getCreateAndStartWorkflowBodyContent(String workflowName, List<String> docIds) {
+    protected String getCreateAndStartWorkflowBodyContent(String workflowName, List<String> docIds)
+            throws JsonProcessingException {
+        return getCreateAndStartWorkflowBodyContent(workflowName, docIds, null);
+    }
+
+    protected String getCreateAndStartWorkflowBodyContent(String workflowName, List<String> docIds,
+            Map<String, Serializable> variables) throws JsonProcessingException {
         StringBuilder result = new StringBuilder();
         result.append("{\"entity-type\": \"workflow\", " + "\"workflowModelName\": \"").append(workflowName).append(
                 "\"");
@@ -115,6 +123,11 @@ public class RoutingRestBaseTest extends BaseTest {
                 result.append("\"").append(docId).append("\"");
             }
             result.append("]");
+        }
+
+        if (variables != null && !variables.isEmpty()) {
+            result.append(", \"variables\": ");
+            result.append(mapper.writeValueAsString(variables));
         }
 
         result.append("}");

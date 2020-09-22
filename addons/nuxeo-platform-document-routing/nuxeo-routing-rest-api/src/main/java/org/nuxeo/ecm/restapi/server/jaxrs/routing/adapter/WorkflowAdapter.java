@@ -20,7 +20,7 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -51,9 +51,10 @@ public class WorkflowAdapter extends DefaultAdapter {
     @POST
     public Response doPost(WorkflowRequest routingRequest) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        final String workflowInstanceId = Framework.getService(DocumentRoutingService.class).createNewInstance(
-                routingRequest.getWorkflowModelName(), Arrays.asList(new String[] { doc.getId() }), ctx.getCoreSession(),
-                true);
+        final String workflowInstanceId = Framework.getService(DocumentRoutingService.class)
+                                                   .createNewInstance(routingRequest.getWorkflowModelName(),
+                                                           Collections.singletonList(doc.getId()),
+                                                           routingRequest.getVariables(), ctx.getCoreSession(), true);
         DocumentModel result = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
         DocumentRoute route = result.getAdapter(DocumentRoute.class);
         return Response.ok(route).status(Status.CREATED).build();
