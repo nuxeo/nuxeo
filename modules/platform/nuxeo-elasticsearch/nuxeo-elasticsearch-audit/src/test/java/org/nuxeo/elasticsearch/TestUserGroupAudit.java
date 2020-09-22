@@ -60,7 +60,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.audit")
 @Deploy("org.nuxeo.ecm.platform.uidgen.core")
 @Deploy("org.nuxeo.elasticsearch.seqgen")
-@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.audit")
 @Deploy("org.nuxeo.admin.center")

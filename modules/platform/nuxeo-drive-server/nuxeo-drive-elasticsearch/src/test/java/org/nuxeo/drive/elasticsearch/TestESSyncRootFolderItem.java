@@ -61,7 +61,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ NuxeoDriveFeature.class, RepositoryElasticSearchFeature.class })
-@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
 @Deploy("org.nuxeo.drive.elasticsearch:OSGI-INF/nuxeodrive-elasticsearch-adapter-contrib.xml")
 public class TestESSyncRootFolderItem {
 

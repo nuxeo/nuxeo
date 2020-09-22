@@ -59,7 +59,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({RepositoryElasticSearchFeature.class})
-@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-hints-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-nested-contrib.xml")
 public class TestNxqlConversion {
