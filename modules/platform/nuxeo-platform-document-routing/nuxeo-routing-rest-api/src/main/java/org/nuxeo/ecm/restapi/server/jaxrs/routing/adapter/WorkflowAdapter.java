@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -51,9 +50,9 @@ public class WorkflowAdapter extends DefaultAdapter {
     @POST
     public Response doPost(WorkflowRequest routingRequest) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        final String workflowInstanceId = Framework.getService(DocumentRoutingService.class).createNewInstance(
-                routingRequest.getWorkflowModelName(), Arrays.asList(new String[] { doc.getId() }), ctx.getCoreSession(),
-                true);
+        final String workflowInstanceId = Framework.getService(DocumentRoutingService.class)
+                                                   .createNewInstance(routingRequest.getWorkflowModelName(),
+                                                           List.of(doc.getId()), ctx.getCoreSession(), true);
         DocumentModel result = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
         DocumentRoute route = result.getAdapter(DocumentRoute.class);
         return Response.ok(route).status(Status.CREATED).build();
@@ -62,16 +61,16 @@ public class WorkflowAdapter extends DefaultAdapter {
     @GET
     public List<DocumentRoute> doGet() {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        return Framework.getService(DocumentRoutingService.class).getDocumentRelatedWorkflows(doc,
-                getContext().getCoreSession());
+        return Framework.getService(DocumentRoutingService.class)
+                        .getDocumentRelatedWorkflows(doc, getContext().getCoreSession());
     }
 
     @GET
     @Path("{workflowInstanceId}/task")
     public List<Task> doGetTasks(@PathParam("workflowInstanceId") String workflowInstanceId) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        return Framework.getService(DocumentRoutingService.class).getTasks(doc,
-                null , workflowInstanceId, null, getContext().getCoreSession());
+        return Framework.getService(DocumentRoutingService.class)
+                        .getTasks(doc, null, workflowInstanceId, null, getContext().getCoreSession());
     }
 
 }
