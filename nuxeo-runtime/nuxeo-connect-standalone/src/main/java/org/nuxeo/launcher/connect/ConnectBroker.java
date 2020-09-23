@@ -31,7 +31,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,6 +72,7 @@ import org.nuxeo.connect.packages.LocalPackageAsDownloadablePackage;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.CUDFHelper;
 import org.nuxeo.connect.packages.dependencies.DependencyResolution;
+import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageException;
@@ -117,6 +117,8 @@ public class ConnectBroker {
 
     private String targetPlatform;
 
+    private String targetPlatformVersion;
+
     private String distributionMPDir;
 
     private String relax = OPTION_RELAX_DEFAULT;
@@ -137,8 +139,8 @@ public class ConnectBroker {
         service.initialize();
         cbHolder = new StandaloneCallbackHolder(env, service);
         NuxeoConnectClient.setCallBackHolder(cbHolder);
-        targetPlatform = env.getProperty(Environment.DISTRIBUTION_NAME) + "-"
-                + env.getProperty(Environment.DISTRIBUTION_VERSION);
+        targetPlatformVersion = env.getProperty(Environment.DISTRIBUTION_VERSION);
+        targetPlatform = env.getProperty(Environment.DISTRIBUTION_NAME) + "-" + targetPlatformVersion;
         distributionMPDir = env.getProperty(PARAM_MP_DIR, DISTRIBUTION_MP_DIR_DEFAULT);
     }
 
@@ -184,7 +186,7 @@ public class ConnectBroker {
     }
 
     public PackageManager getPackageManager() {
-        return NuxeoConnectClient.getPackageManager(targetPlatform);
+        return NuxeoConnectClient.getPackageManager(targetPlatform, targetPlatformVersion);
     }
 
     public void refreshCache() {
@@ -234,7 +236,8 @@ public class ConnectBroker {
         for (Package pkg : pkgList) {
             if (pkg.getName().equals(pkgName)) {
                 foundPkgs.put(pkg.getVersion(), pkg.getId());
-                if (Arrays.asList(pkg.getTargetPlatforms()).contains(targetPlatform)) {
+                if (TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg, targetPlatform,
+                        targetPlatformVersion)) {
                     matchingPkgs.put(pkg.getVersion(), pkg.getId());
                 }
             }
@@ -485,7 +488,7 @@ public class ConnectBroker {
     public void pkgListAll() {
         if (Boolean.parseBoolean(relax)) {
             log.info("All packages (all platforms):");
-            pkgList(getPackageManager().getAllPackages(getPackageManager().getAllSources(), null, null));
+            pkgList(getPackageManager().getAllPackages(getPackageManager().getAllSources(), null, null, null));
         } else {
             log.info("All packages:");
             pkgList(getPackageManager().listAllPackages());
@@ -1307,10 +1310,12 @@ public class ConnectBroker {
     public boolean pkgRequest(List<String> pkgsToAdd, List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove, boolean keepExisting, boolean ignoreMissing, boolean upgradeMode) {
         String actualTargetPlatform = targetPlatform;
+        String actualTargetPlatformVersion = targetPlatformVersion;
         try {
             boolean cmdOk;
             if (Boolean.parseBoolean(relax)) {
                 targetPlatform = null;
+                targetPlatformVersion = null;
             }
             // Add local files
             cmdOk = pkgAdd(pkgsToAdd, ignoreMissing);
@@ -1378,6 +1383,7 @@ public class ConnectBroker {
             if ((solverInstall.size() != 0) || (solverRemove.size() != 0) || (solverUpgrade.size() != 0)) {
                 // Check whether we need to relax restriction to targetPlatform
                 String requestPlatform = actualTargetPlatform;
+                String requestPlatformVersion = actualTargetPlatformVersion;
                 List<String> requestPackages = new ArrayList<>();
                 requestPackages.addAll(solverInstall);
                 requestPackages.addAll(solverRemove);
@@ -1394,9 +1400,11 @@ public class ConnectBroker {
                         }
                     }
                 }
-                List<String> nonCompliantPkg = getPackageManager().getNonCompliantList(requestPackages, actualTargetPlatform);
+                List<String> nonCompliantPkg = getPackageManager().getNonCompliantList(requestPackages,
+                        actualTargetPlatform, actualTargetPlatformVersion);
                 if (nonCompliantPkg.size() > 0) {
                     requestPlatform = null;
+                    requestPlatformVersion = null;
                     if ("ask".equalsIgnoreCase(relax)) {
                         relax = readConsole(
                                 "Package(s) %s not available on platform version %s.\n"
@@ -1425,7 +1433,7 @@ public class ConnectBroker {
                 log.debug("solverRemove: " + solverRemove);
                 log.debug("solverUpgrade: " + solverUpgrade);
                 DependencyResolution resolution = getPackageManager().resolveDependencies(solverInstall, solverRemove,
-                        solverUpgrade, requestPlatform, allowSNAPSHOT, keepExisting);
+                        solverUpgrade, requestPlatform, requestPlatformVersion, allowSNAPSHOT, keepExisting);
                 log.info(resolution);
                 if (resolution.isFailed()) {
                     return false;
@@ -1471,7 +1479,8 @@ public class ConnectBroker {
                     // Don't use IDs to avoid downgrade instead of uninstall
                     packageIdsToRemove.addAll(resolution.getLocalPackagesToUpgrade().keySet());
                     DependencyResolution uninstallResolution = getPackageManager().resolveDependencies(null,
-                            packageIdsToRemove, null, requestPlatform, allowSNAPSHOT, keepExisting, true);
+                            packageIdsToRemove, null, requestPlatform, requestPlatformVersion, allowSNAPSHOT,
+                            keepExisting, true);
                     log.debug("Sub-resolution (uninstall) " + uninstallResolution);
                     if (uninstallResolution.isFailed()) {
                         return false;
@@ -1502,7 +1511,8 @@ public class ConnectBroker {
                     // Add list of packages uninstalled because of upgrade
                     packageIdsToInstall.addAll(packagesIdsToReInstall);
                     DependencyResolution installResolution = getPackageManager().resolveDependencies(
-                            packageIdsToInstall, null, null, requestPlatform, allowSNAPSHOT, keepExisting, true);
+                            packageIdsToInstall, null, null, requestPlatform, requestPlatformVersion, allowSNAPSHOT,
+                            keepExisting, true);
                     log.debug("Sub-resolution (install) " + installResolution);
                     if (installResolution.isFailed()) {
                         return false;
@@ -1522,6 +1532,7 @@ public class ConnectBroker {
             return false;
         } finally {
             targetPlatform = actualTargetPlatform;
+            targetPlatformVersion = actualTargetPlatformVersion;
         }
     }
 
@@ -1652,7 +1663,8 @@ public class ConnectBroker {
     }
 
     public boolean pkgHotfix() {
-        List<String> lastHotfixes = getPackageManager().listLastHotfixes(targetPlatform, allowSNAPSHOT);
+        List<String> lastHotfixes = getPackageManager().listLastHotfixes(targetPlatform, targetPlatformVersion,
+                allowSNAPSHOT);
         return pkgRequest(null, lastHotfixes, null, null, true, false);
     }
 

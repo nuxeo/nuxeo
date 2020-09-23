@@ -85,6 +85,14 @@ public class PackageDefinitionImpl implements PackageDefinition {
     protected String[] platforms;
 
     /**
+     * The target platform version range where this package may be installed.
+     *
+     * @since 10.10-HF34
+     */
+    @XNode("target-platform")
+    protected String targetPlatformRange;
+
+    /**
      * The dependency value format is: <code>package_name[:package_min_version[:package_max_version]]</code> if no min
      * and max version are specified the the last version should be used.
      */
@@ -255,6 +263,16 @@ public class PackageDefinitionImpl implements PackageDefinition {
         MutableObject packageDependencies = new MutableObject();
         this.platforms = PackageDescriptor.fixTargetPlatforms(name, platforms, packageDependencies);
         setDependencies((PackageDependency[]) packageDependencies.getValue());
+    }
+
+    @Override
+    public String getTargetPlatformRange() {
+        return targetPlatformRange;
+    }
+
+    @Override
+    public void setTargetPlatformRange(String targetPlatformRange) {
+        this.targetPlatformRange = targetPlatformRange;
     }
 
     @Override

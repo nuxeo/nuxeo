@@ -143,7 +143,8 @@ public class TestConnectBroker {
         String addonJSON = FileUtils.readFileToString(new File(testStore, "addon_remote.json"), UTF_8);
         String hotfixJSON = FileUtils.readFileToString(new File(testStore, "hotfix_remote.json"), UTF_8);
         String studioJSON = FileUtils.readFileToString(new File(testStore, "studio_remote.json"), UTF_8);
-        String addonWithPrivateJSON = FileUtils.readFileToString(new File(testStore, "addon_with_private_remote.json"), UTF_8);
+        String addonWithPrivateJSON = FileUtils.readFileToString(new File(testStore, "addon_with_private_remote.json"),
+                UTF_8);
         NuxeoConnectClient.getConnectGatewayComponent()
                           .setTestConnector(new LocalConnectFakeConnector(addonJSON, hotfixJSON, studioJSON,
                                   addonWithPrivateJSON));
@@ -184,8 +185,8 @@ public class TestConnectBroker {
         File uninstallFile = new File(testStore, "uninstall.xml");
 
         // Copy all zip from testStore
-        FileUtils.iterateFiles(testStore, new String[] { "zip" }, false).forEachRemaining(
-                pkgZip -> copyPackageToStore(nuxeoStore, uninstallFile, pkgZip));
+        FileUtils.iterateFiles(testStore, new String[] { "zip" }, false)
+                 .forEachRemaining(pkgZip -> copyPackageToStore(nuxeoStore, uninstallFile, pkgZip));
         // Copy only installed packages from testStore/local-only
         copyPackageToStore(nuxeoStore, uninstallFile, new File(TEST_LOCAL_ONLY_PATH, "K-1.0.0-SNAPSHOT.zip"));
 
@@ -247,7 +248,7 @@ public class TestConnectBroker {
                 " addon     started\tJ (id: J-1.0.1) \n" + //
                 " addon     started\tK (id: K-1.0.0-SNAPSHOT) \n" + //
                 " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
-                " addon      remote\tM (id: M-1.0.1) [REGISTRATION REQUIRED]\n" +//
+                " addon      remote\tM (id: M-1.0.1) [REGISTRATION REQUIRED]\n" + //
                 " addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT) \n" + //
                 " addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0) \n" + //
                 " addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0) \n";
@@ -302,6 +303,100 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
+    public void testListAllPackagesWithPlatformRange() throws Exception {
+        // GIVEN we are unregistered and current target platform is server-11.2
+        Environment environment = Environment.getDefault();
+        environment.setProperty(Environment.DISTRIBUTION_NAME, "server");
+        environment.setProperty(Environment.DISTRIBUTION_VERSION, "11.2");
+        connectBroker = new ConnectBroker(environment);
+        ((StandaloneCallbackHolder) NuxeoConnectClient.getCallBackHolder()).setTestMode(true);
+
+        // WHEN trying to list all packages
+        connectBroker.pkgListAll();
+
+        // THEN it shows all expected packages with "[REGISTRATION REQUIRED]" on relevant packages
+        String expectedLogs = "All packages:\n" + //
+                "studio     started\tstudioA (id: studioA-1.0.0) \n" + //
+                "studio  downloaded\tstudioA (id: studioA-1.0.1) \n" + //
+                "studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT) \n" + //
+                "hotfix     started\thfA (id: hfA-1.0.0) \n" + //
+                "hotfix  downloaded\thfA (id: hfA-1.0.8) \n" + //
+                "hotfix  downloaded\thfB (id: hfB-1.0.0) \n" + //
+                "hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT) \n" + //
+                " addon     started\tA (id: A-1.0.0) \n" + //
+                " addon  downloaded\tA (id: A-1.2.0) \n" + //
+                " addon  downloaded\tA (id: A-1.2.1-SNAPSHOT) \n" + //
+                " addon  downloaded\tA (id: A-1.2.2-SNAPSHOT) \n" + //
+                " addon  downloaded\tA (id: A-1.2.2) \n" + //
+                " addon  downloaded\tA (id: A-1.2.3-SNAPSHOT) \n" + //
+                " addon     started\tB (id: B-1.0.1-SNAPSHOT) \n" + //
+                " addon  downloaded\tB (id: B-1.0.1) \n" + //
+                " addon  downloaded\tB (id: B-1.0.2) \n" + //
+                " addon     started\tC (id: C-1.0.0) \n" + //
+                " addon  downloaded\tC (id: C-1.0.1-SNAPSHOT) \n" + //
+                " addon  downloaded\tC (id: C-1.0.2-SNAPSHOT) \n" + //
+                " addon     started\tD (id: D-1.0.2-SNAPSHOT) \n" + //
+                " addon  downloaded\tD (id: D-1.0.3-SNAPSHOT) \n" + //
+                " addon  downloaded\tD (id: D-1.0.4-SNAPSHOT) \n" + //
+                " addon     started\tG (id: G-1.0.1-SNAPSHOT) \n" + //
+                " addon     started\tH (id: H-1.0.1-SNAPSHOT) \n" + //
+                " addon     started\tJ (id: J-1.0.1) \n" + //
+                " addon     started\tK (id: K-1.0.0-SNAPSHOT) \n" + //
+                " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
+                " addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT) \n" + //
+                " addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0) \n" + //
+                " addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0) \n" + //
+                " addon      remote\tP (id: P-1.0.1) [REGISTRATION REQUIRED]\n";
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // GIVEN we are registered
+        LogicalInstanceIdentifier CLID = new LogicalInstanceIdentifier("toto--titi", "myInstance");
+        CLID.save();
+
+        // WHEN trying to list all packages
+        connectBroker.refreshCache();
+        connectBroker.pkgListAll();
+
+        // THEN it shows all expected packages without the "[REGISTRATION REQUIRED]"
+        expectedLogs = "All packages:\n" + //
+                "studio     started\tstudioA (id: studioA-1.0.0) \n" + //
+                "studio  downloaded\tstudioA (id: studioA-1.0.1) \n" + //
+                "studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT) \n" + //
+                "hotfix     started\thfA (id: hfA-1.0.0) \n" + //
+                "hotfix  downloaded\thfA (id: hfA-1.0.8) \n" + //
+                "hotfix  downloaded\thfB (id: hfB-1.0.0) \n" + //
+                "hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT) \n" + //
+                " addon     started\tA (id: A-1.0.0) \n" + //
+                " addon  downloaded\tA (id: A-1.2.0) \n" + //
+                " addon  downloaded\tA (id: A-1.2.1-SNAPSHOT) \n" + //
+                " addon  downloaded\tA (id: A-1.2.2-SNAPSHOT) \n" + //
+                " addon  downloaded\tA (id: A-1.2.2) \n" + //
+                " addon  downloaded\tA (id: A-1.2.3-SNAPSHOT) \n" + //
+                " addon     started\tB (id: B-1.0.1-SNAPSHOT) \n" + //
+                " addon  downloaded\tB (id: B-1.0.1) \n" + //
+                " addon  downloaded\tB (id: B-1.0.2) \n" + //
+                " addon     started\tC (id: C-1.0.0) \n" + //
+                " addon  downloaded\tC (id: C-1.0.1-SNAPSHOT) \n" + //
+                " addon  downloaded\tC (id: C-1.0.2-SNAPSHOT) \n" + //
+                " addon     started\tD (id: D-1.0.2-SNAPSHOT) \n" + //
+                " addon  downloaded\tD (id: D-1.0.3-SNAPSHOT) \n" + //
+                " addon  downloaded\tD (id: D-1.0.4-SNAPSHOT) \n" + //
+                " addon     started\tG (id: G-1.0.1-SNAPSHOT) \n" + //
+                " addon     started\tH (id: H-1.0.1-SNAPSHOT) \n" + //
+                " addon     started\tJ (id: J-1.0.1) \n" + //
+                " addon     started\tK (id: K-1.0.0-SNAPSHOT) \n" + //
+                " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
+                " addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT) \n" + //
+                " addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0) \n" + //
+                " addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0) \n" + //
+                " addon      remote\tP (id: P-1.0.1) \n" + //
+                " addon      remote\tprivD (id: privD-1.0.1) [PRIVATE (Owner: customer1)]\n";
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
     public void testShowPackages() throws Exception {
         // GIVEN we are unregistered
 
@@ -340,10 +435,10 @@ public class TestConnectBroker {
                 "Version: 1.0.0\n" + //
                 "Name: hfA\n" + //
                 "Type: hotfix\n" + //
-                "Target platforms: {server-8.3}\n" + // 
+                "Target platforms: {server-8.3}\n" + //
                 "Supports hot-reload: false\n" + //
                 "Title: Hot fix NXP\n" + //
-                "Description: Hot Fix for NXP\n" + // 
+                "Description: Hot Fix for NXP\n" + //
                 "License: LGPL\n" + //
                 "License URL: http://www.gnu.org/licenses/lgpl.html\n" + //
                 "****************************************\n" + //
@@ -371,10 +466,10 @@ public class TestConnectBroker {
 
         // THEN it shows all expected properties
         expectedLogs = "****************************************\n" + //
-        "Package: privA-1.0.1\n" + //
+                "Package: privA-1.0.1\n" + //
                 "State: remote [PRIVATE (Owner: customer1)]\n" + //
                 "Version: 1.0.1\n" + //
-                "Name: privA\n"+ //
+                "Name: privA\n" + //
                 "Type: addon\n" + //
                 "Target platforms: {server-8.3,server-8.4}\n" + //
                 "Supports hot-reload: false\n" + //
@@ -886,7 +981,7 @@ public class TestConnectBroker {
                 asList(TEST_LOCAL_ONLY_PATH + "/F-1.0.0-SNAPSHOT.zip", TEST_LOCAL_ONLY_PATH + "/E-1.0.1"), null, null,
                 true, false)).isTrue();
 
-        // After: [studioA-1.0.0, hfA-1.0.0, A-1.2.0, B-1.0.2, C-1.0.0, D-1.0.2-SNAPSHOT, E-1.0.1-SNAPSHOT,
+        // After: [studioA-1.0.0, hfA-1.0.0, A-1.2.0, B-1.0.2, C-1.0.0, D-1.0.2-SNAPSHOT, E-1.0.1,
         // F-1.0.0-SNAPSHOT]
         checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
                 "D-1.0.2-SNAPSHOT", "E-1.0.1", "F-1.0.0-SNAPSHOT"), PackageState.STARTED);
@@ -909,6 +1004,85 @@ public class TestConnectBroker {
                 + "\n" //
                 + "Installing E-1.0.1\n" //
                 + "Installing F-1.0.0-SNAPSHOT";
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
+    public void testInstallLocalPackageRequestWithRange() throws Exception {
+        // GIVEN current target platform is server-11.2
+        Environment environment = Environment.getDefault();
+        environment.setProperty(Environment.DISTRIBUTION_NAME, "server");
+        environment.setProperty(Environment.DISTRIBUTION_VERSION, "11.2.3");
+        connectBroker = new ConnectBroker(environment);
+        ((StandaloneCallbackHolder) NuxeoConnectClient.getCallBackHolder()).setTestMode(true);
+        connectBroker.setAllowSNAPSHOT(false);
+
+        // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        // Q-1.0.0 is not available on platform version server-11.2.3
+        assertThat(connectBroker.pkgRequest(null,
+                asList(TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip", TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT"), null, null,
+                true, false)).isFalse();
+
+        // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT", "Q-1.0.0",
+                        "R-1.0.2-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        // check that local files and directory have not been removed
+        assertThat(new File(TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip").exists()).isTrue();
+        assertThat(new File(TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT").exists()).isTrue();
+
+        // check logs
+        String expectedLogs = "Added " + TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip\n" //
+                + "Added " + TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT\n" //
+                + "org.nuxeo.connect.update.PackageException: Package(s) Q-1.0.0 not available on platform version server-11.2.3 (relax is not allowed)";
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        connectBroker.setRelax("true");
+        assertThat(connectBroker.pkgRequest(null,
+                asList(TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip", TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT"), null, null,
+                true, false)).isTrue();
+
+        // After: [studioA-1.0.0, hfA-1.0.0, A-1.2.0, B-1.0.2, C-1.0.0, D-1.0.2-SNAPSHOT, E-1.0.1,
+        // F-1.0.0-SNAPSHOT]
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "Q-1.0.0", "R-1.0.2-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        // check logs
+        expectedLogs = "The following SNAPSHOT package(s) will be replaced in local cache (if available): [src/test/resources/packages/store/local-only/R-1.0.2-SNAPSHOT]\n" //
+                + "Replacement of R-1.0.2-SNAPSHOT in local cache...\n" //
+                + "Added src/test/resources/packages/store/local-only/R-1.0.2-SNAPSHOT\n" //
+                + "Relax restriction to target platform server-11.2.3 because of package(s) Q-1.0.0\n" //
+                + "\n" //
+                + "Dependency resolution:\n" //
+                + "  Installation order (2):        Q-1.0.0/R-1.0.2-SNAPSHOT\n" //
+                + "  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
+                + "  Local packages to install (2): Q:1.0.0, R:1.0.2-SNAPSHOT\n" //
+                + "\n" //
+                + "Installing Q-1.0.0\n" //
+                + "Installing R-1.0.2-SNAPSHOT";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
