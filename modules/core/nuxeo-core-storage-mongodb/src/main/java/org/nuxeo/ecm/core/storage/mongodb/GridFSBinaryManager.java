@@ -59,7 +59,6 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.Updates;
-import com.mongodb.gridfs.GridFS;
 
 /**
  * Implements the {@link BinaryManager} and {@link BlobProvider} interface using MongoDB GridFS.
@@ -99,9 +98,6 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
     private static final String METADATA_PROPERTY_METADATA = "metadata";
 
     private static final String METADATA_PROPERTY_LENGTH = "length";
-
-    @Deprecated
-    protected GridFS gridFS;
 
     protected GridFSBucket gridFSBucket;
 
