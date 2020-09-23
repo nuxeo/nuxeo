@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
-import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientException;
 import com.mongodb.client.ClientSession;
@@ -287,8 +286,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         // TODO add a query to not scan all documents
         log.trace("MongoDB: QUERY {} KEYS {}", Document::new, () -> binaryKeys);
-        Block<Document> block = doc -> markReferencedBinaries(doc, blobManager);
-        coll.find().projection(binaryKeys).forEach(block);
+        coll.find().projection(binaryKeys).forEach(doc -> markReferencedBinaries(doc, blobManager));
     }
 
     protected void markReferencedBinaries(Document ob, DocumentBlobManager blobManager) {

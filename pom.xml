@@ -153,7 +153,7 @@
     <sonar.jacoco.reportPaths>${it.jacoco.destFile}</sonar.jacoco.reportPaths>
 
     <!-- MongoDB -->
-    <mongo.java.driver.version>3.12.1</mongo.java.driver.version>
+    <mongo.java.driver.version>4.1.0</mongo.java.driver.version>
     <quartz.mongodb.version>2.1.0-NX1</quartz.mongodb.version>
 
     <kafka.version>2.5.0</kafka.version>
@@ -3090,6 +3090,11 @@
             <groupId>org.clojure</groupId>
             <artifactId>clojure</artifactId>
           </exclusion>
+          <!-- TODO: to remove when NXP-29695 is done -->
+          <exclusion>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -4737,7 +4742,14 @@
 
       <dependency>
         <groupId>org.mongodb</groupId>
-        <artifactId>mongo-java-driver</artifactId>
+        <artifactId>mongodb-driver-sync</artifactId>
+        <version>${mongo.java.driver.version}</version>
+      </dependency>
+
+      <!-- TODO: to remove when NXP-29696 is done -->
+      <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver-legacy</artifactId>
         <version>${mongo.java.driver.version}</version>
       </dependency>
 
