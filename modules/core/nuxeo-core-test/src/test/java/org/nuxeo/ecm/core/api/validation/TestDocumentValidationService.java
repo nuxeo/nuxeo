@@ -104,8 +104,8 @@ public class TestDocumentValidationService {
     public void setUp() {
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
         doc = session.createDocument(doc);
-        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
-        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
+        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] { "aStr" }); // set mandatory list
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] { "anotherStr" }); // set mandatory list
         Map<String, String> complex = new HashMap<>();
         complex.put("a_string", "not_null");
         doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);
@@ -181,7 +181,7 @@ public class TestDocumentValidationService {
     public void testMandatorySimpleTypeDefaultValueWithoutViolation() {
         doc.setPropertyValue(SIMPLE_FIELD, 12345);
         // don't set SIMPLE_DEFAULT_MANDATORY property, use case is: property has a default value and user didn't set it
-        // in this case validation shouldn't report  any violation
+        // in this case validation shouldn't report any violation
         checkOk(validator.validate(doc));
         // check there's still a violation if user explicitly set the property to null
         doc.setPropertyValue(SIMPLE_DEFAULT_MANDATORY, null);
@@ -192,20 +192,20 @@ public class TestDocumentValidationService {
     public void testMandatoryList() {
         doc.setPropertyValue(SIMPLE_FIELD, 12345);
 
-        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"nowValid"});
+        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] { "nowValid" });
 
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, null);
         checkNotNullOnField(STRING_LIST_ARRAY_FIELD, validator.validate(doc));
 
-        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"validValue"});
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] { "validValue" });
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, (Serializable) Collections.emptyList());
         checkNotNullOnField(STRING_LIST_ARRAY_FIELD, validator.validate(doc));
 
-        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"validValue"});
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] { "validValue" });
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {});
         checkNotNullOnField(STRING_LIST_ARRAY_FIELD, validator.validate(doc));
 
-        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"nowValid"});
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] { "nowValid" });
 
         doc.setPropertyValue(STRING_LIST_PROPS_FIELD, null);
         checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(doc));
