@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.api.validation;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A managed set of {@link ValidationViolation}.
