@@ -55,8 +55,8 @@ public class XmlSerializer extends XmlWriter {
         element("classifier", def.getClassifier());
 
         element("hotreload-support", Boolean.valueOf(def.supportsHotReload()).toString());
-        element("require-terms-and-conditions-acceptance", Boolean.valueOf(def.requireTermsAndConditionsAcceptance())
-                                                                  .toString());
+        element("require-terms-and-conditions-acceptance",
+                Boolean.valueOf(def.requireTermsAndConditionsAcceptance()).toString());
 
         if (def.getInstaller() != null) {
             start("installer");
@@ -80,6 +80,7 @@ public class XmlSerializer extends XmlWriter {
             }
             end("platforms");
         }
+        element("target-platform", def.getTargetPlatformRange());
 
         if (def.getDependencies() != null && def.getDependencies().length > 0) {
             start("dependencies");

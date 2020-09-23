@@ -73,7 +73,8 @@ public class LocalPackageImpl implements LocalPackage {
      *             instead.
      */
     @Deprecated
-    public LocalPackageImpl(ClassLoader parent, File file, int state, PackageUpdateService pus) throws PackageException {
+    public LocalPackageImpl(ClassLoader parent, File file, int state, PackageUpdateService pus)
+            throws PackageException {
         this(parent, file, PackageState.getByValue(state), pus);
     }
 
@@ -198,6 +199,11 @@ public class LocalPackageImpl implements LocalPackage {
     }
 
     @Override
+    public String getTargetPlatformRange() {
+        return def.getTargetPlatformRange();
+    }
+
+    @Override
     public PackageDependency[] getDependencies() {
         return def.getDependencies();
     }
@@ -260,10 +266,12 @@ public class LocalPackageImpl implements LocalPackage {
     protected Task getTask(TaskDefinition tdef) throws PackageException {
         Task task;
         try {
-            task = (Task) data.loadClass(tdef.getType()).getConstructor(PackageUpdateService.class).newInstance(service);
+            task = (Task) data.loadClass(tdef.getType())
+                              .getConstructor(PackageUpdateService.class)
+                              .newInstance(service);
         } catch (ReflectiveOperationException e) {
-            throw new PackageException("Could not instantiate custom task " + tdef.getType() + " for package "
-                    + getId(), e);
+            throw new PackageException(
+                    "Could not instantiate custom task " + tdef.getType() + " for package " + getId(), e);
         }
         task.initialize(this, tdef.getRequireRestart());
         return task;
@@ -275,8 +283,8 @@ public class LocalPackageImpl implements LocalPackage {
             try {
                 return (Validator) data.loadClass(def.getValidator()).getConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                throw new PackageException("Could not instantiate custom validator " + def.getValidator()
-                        + " for package " + getId(), e);
+                throw new PackageException(
+                        "Could not instantiate custom validator " + def.getValidator() + " for package " + getId(), e);
             }
         }
         return null;

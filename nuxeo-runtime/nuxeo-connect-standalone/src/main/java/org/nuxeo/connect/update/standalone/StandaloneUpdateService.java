@@ -261,7 +261,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
                 return loadPackage(mfStream);
             }
         } catch (IOException e) {
-            throw new PackageException("Failed to load package definition from zip file: " + file, e);
+            throw new PackageException("Failed to load package definition from zip file", e);
         }
     }
 
@@ -270,7 +270,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
         try (FileInputStream in = new FileInputStream(file)) {
             return loadPackage(in);
         } catch (IOException e) {
-            throw new PackageException("Failed to load XML package definition from file: " + file, e);
+            throw new PackageException("Failed to load XML package definition from file", e);
         }
     }
 
