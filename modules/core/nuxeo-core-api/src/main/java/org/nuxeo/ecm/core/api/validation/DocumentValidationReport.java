@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.api.validation;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A managed set of {@link ValidationViolation}.
@@ -51,11 +52,7 @@ public class DocumentValidationReport {
     @Override
     public String toString() {
         if (violations != null) {
-            StringBuilder res = new StringBuilder();
-            for (ValidationViolation violation : violations) {
-                res.append(violation.getMessageKey()).append('\n');
-            }
-            return res.toString();
+            return violations.stream().map(v -> v.getMessage(null)).collect(Collectors.joining("\n"));
         } else {
             return "no error";
         }
