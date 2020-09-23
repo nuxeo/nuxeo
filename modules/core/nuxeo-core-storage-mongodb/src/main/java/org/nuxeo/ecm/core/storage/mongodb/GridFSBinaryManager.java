@@ -32,8 +32,8 @@ import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.BsonValue;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -49,11 +49,11 @@ import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
-import com.mongodb.Block;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
+import com.mongodb.client.gridfs.GridFSUploadStream;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
@@ -207,13 +207,11 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
     @Override
     protected Binary getBinary(InputStream in) throws IOException {
-        try {
-            // save the file to GridFS
-            String inputName = "tmp-" + System.nanoTime();
-            ObjectId id = gridFSBucket.uploadFromStream(inputName, in);
-            // now we know length and digest
-            GridFSFile inputFile = gridFSBucket.find(Filters.eq(METADATA_PROPERTY_FILENAME, inputName)).first();
-            String digest = inputFile.getMD5();
+        // save the file to GridFS
+        String inputName = "tmp-" + System.nanoTime();
+        try (in; GridFSUploadStream uploadStream = gridFSBucket.openUploadStream(inputName)) {
+            BsonValue id = uploadStream.getId();
+            String digest = storeAndDigest(in, uploadStream);
             // if the digest is already known then reuse it instead
             GridFSFile dbFile = gridFSBucket.find(Filters.eq(METADATA_PROPERTY_FILENAME, digest)).first();
             if (dbFile == null) {
@@ -224,8 +222,6 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
                 gridFSBucket.delete(id);
             }
             return new GridFSBinary(digest, blobProviderId, this);
-        } finally {
-            in.close();
         }
     }
 
@@ -315,7 +311,7 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
         @Override
         public void stop(boolean delete) {
             gridFSBucket.find(Filters.exists(String.format("%s.%s", METADATA_PROPERTY_METADATA, msKey), false)) //
-                        .forEach((Block<GridFSFile>) file -> {
+                        .forEach(file -> {
                             status.numBinariesGC += 1;
                             status.sizeBinariesGC += file.getLength();
                             if (delete) {

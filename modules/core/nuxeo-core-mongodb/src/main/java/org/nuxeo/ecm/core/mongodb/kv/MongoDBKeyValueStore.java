@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -49,7 +50,6 @@ import org.nuxeo.runtime.kv.AbstractKeyValueStoreProvider;
 import org.nuxeo.runtime.kv.KeyValueStoreDescriptor;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
-import com.mongodb.Block;
 import com.mongodb.ErrorCategory;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoWriteException;
@@ -246,7 +246,7 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
     @Override
     public Map<String, byte[]> get(Collection<String> keys) {
         Map<String, byte[]> map = new HashMap<>(keys.size());
-        Block<Document> block = doc -> {
+        Consumer<Document> block = doc -> {
             String key = doc.getString(ID_KEY);
             Object value = doc.get(VALUE_KEY);
             if (value != null) {
@@ -265,7 +265,7 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
     @Override
     public Map<String, String> getStrings(Collection<String> keys) {
         Map<String, String> map = new HashMap<>(keys.size());
-        Block<Document> block = doc -> {
+        Consumer<Document> block = doc -> {
             String key = doc.getString(ID_KEY);
             Object value = doc.get(VALUE_KEY);
             if (value != null) {
@@ -283,7 +283,7 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
     @Override
     public Map<String, Long> getLongs(Collection<String> keys) throws NumberFormatException { // NOSONAR
         Map<String, Long> map = new HashMap<>(keys.size());
-        Block<Document> block = doc -> {
+        Consumer<Document> block = doc -> {
             String key = doc.getString(ID_KEY);
             Object value = doc.get(VALUE_KEY);
             if (value != null) {
@@ -301,7 +301,7 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
     /**
      * @since 9.10
      */
-    protected void findByKeys(Collection<String> keys, Block<Document> block) {
+    protected void findByKeys(Collection<String> keys, Consumer<Document> block) {
         coll.find(in(ID_KEY, keys)).projection(include(ID_KEY, VALUE_KEY)).forEach(block);
     }
 

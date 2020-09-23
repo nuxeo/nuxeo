@@ -71,7 +71,7 @@ public class MongoDBChecker implements BackingChecker {
         MongoDBConnectionConfig config = getDescriptor(configFile, MongoDBConnectionConfig.class);
         try (MongoClient mongoClient = MongoDBConnectionHelper.newMongoClient(config,
                 builder -> builder.serverSelectionTimeout((int) TimeUnit.SECONDS.toMillis(getCheckTimeoutInSeconds(cg)))
-                                  .description("Nuxeo DB Check"))) {
+                                  .applicationName("Nuxeo DB Check"))) {
             MongoDatabase database = mongoClient.getDatabase(config.dbname);
             Document ping = new Document("ping", "1");
             database.runCommand(ping);

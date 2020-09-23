@@ -84,7 +84,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Sorts;
-import com.mongodb.util.JSON;
 
 /**
  * Implementation of the {@link AuditBackend} interface using MongoDB persistence.
@@ -148,7 +147,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
             if (id != null) {
                 doc.put(LOG_ID, id);
             }
-            return JSON.serialize(doc);
+            return doc.toJson();
         });
     }
 
