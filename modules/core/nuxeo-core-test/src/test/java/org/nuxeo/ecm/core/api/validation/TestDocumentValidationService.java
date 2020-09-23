@@ -67,6 +67,8 @@ public class TestDocumentValidationService {
     // it comes from the message bundle messages_en.properties
     private static final String MESSAGE_FOR_USERS_FIRSTNAME = "message_for_users_firstname";
 
+    private static final String MESSAGE_FOR_GROUP_CODE = "message_for_groupCode";
+
     public static final String SIMPLE_FIELD = "vs:groupCode";
 
     private static final String COMPLEX_FIELD = "vs:manager";
@@ -596,6 +598,32 @@ public class TestDocumentValidationService {
         complexDummy2.setValue(singletonMap("value", "value2"));
         DocumentValidationReport report = validator.validate(complexDummy2);
         assertEquals(1, report.numberOfErrors());
+    }
+
+    // NXP-29680
+    @Test
+    public void testDocumentValidationReportMessage() {
+        // multiple errors
+        doc.setPropertyValue("vs:users", (Serializable) List.of(Map.of("lastname", "The kid")));
+        DocumentValidationReport report = validator.validate(doc);
+        assertTrue(report.hasError());
+        String expectedMessage = String.join("\n", MESSAGE_FOR_GROUP_CODE, MESSAGE_FOR_USERS_FIRSTNAME);
+        assertEquals(expectedMessage, report.toString());
+
+        DocumentValidationException e = new DocumentValidationException(report);
+        expectedMessage = String.format(DocumentValidationException.MESSAGE, report.numberOfErrors(),
+                MESSAGE_FOR_GROUP_CODE);
+        assertEquals(expectedMessage, e.getMessage());
+
+        // one error
+        doc.setPropertyValue("vs:groupCode", 123);
+        report = validator.validate(doc);
+        assertTrue(report.hasError());
+        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, report.toString());
+
+        e = new DocumentValidationException(report);
+        expectedMessage = String.format(DocumentValidationException.MESSAGE_SINGLE, MESSAGE_FOR_USERS_FIRSTNAME);
+        assertEquals(expectedMessage, e.getMessage());
     }
 
     // //////////////////////////////////////
