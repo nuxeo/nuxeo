@@ -35,4 +35,6 @@ org.quartz.jobStore.mongoOptionKeyStorePath=${nuxeo.mongodb.keystore.path}
 org.quartz.jobStore.mongoOptionKeyStorePassword=${nuxeo.mongodb.keystore.password}
 org.quartz.jobStore.mongoOptionKeyStoreType=${nuxeo.mongodb.keystore.type}
 
+org.quartz.jobStore.checkInErrorHandler=com.novemberain.quartz.mongodb.cluster.NoOpErrorHandler
+
 org.quartz.scheduler.mongoOptionWriteConcernTimeoutMillis=5000
