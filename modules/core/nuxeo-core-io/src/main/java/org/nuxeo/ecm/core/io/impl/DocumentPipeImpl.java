@@ -100,7 +100,7 @@ public class DocumentPipeImpl implements DocumentPipe {
 
         List<DocumentTranslationMap> maps = new ArrayList<>();
         // do with privilege to be able to set secure properties
-        Framework.doPrivileged(() -> readAndWriteDocs(maps));
+        Framework.doPrivilegedThrowing(() -> readAndWriteDocs(maps));
         return DocumentTranslationMapImpl.merge(maps);
     }
 
