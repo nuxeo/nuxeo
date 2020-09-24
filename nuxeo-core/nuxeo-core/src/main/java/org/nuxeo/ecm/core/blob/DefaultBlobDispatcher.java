@@ -337,22 +337,17 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         if (!(blob instanceof ManagedBlob)) {
             return;
         }
+        String xpath = accessor.getXPath();
         // compare current provider with expected
-        String expectedProviderId = getProviderId(doc, blob, accessor.getXPath());
-        if (((ManagedBlob) blob).getProviderId().equals(expectedProviderId)) {
+        ManagedBlob managedBlob = (ManagedBlob) blob;
+        String previousProviderId = managedBlob.getProviderId();
+        String expectedProviderId = getProviderId(doc, blob, xpath);
+        if (previousProviderId.equals(expectedProviderId)) {
             return;
         }
-        // re-write blob
-        // TODO add APIs so that blob providers can copy blobs efficiently from each other
-        Blob newBlob;
-        try (InputStream in = blob.getStream()) {
-            newBlob = Blobs.createBlob(in, blob.getMimeType(), blob.getEncoding());
-            newBlob.setFilename(blob.getFilename());
-            newBlob.setDigest(blob.getDigest());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        accessor.setBlob(newBlob);
+        // re-dispatch blob to new blob provider
+        // this calls back into blobProvider.writeBlob for the expected blob provider
+        accessor.setBlob(blob);
     }
 
 }
