@@ -65,7 +65,6 @@ limitations under the License.
 
     S3Provider.prototype._upload = function(file, callback) {
       return new Promise(function(resolve, reject) {
-        callback({ type: 'uploadStarted', file });
         file.managedUpload = this.uploader.upload({
           Key: this.extraInfo.baseKey.replace(/^\/+/g, '').concat(uuid()),
           ContentType: file.type,
@@ -151,7 +150,8 @@ limitations under the License.
           httpOptions: {
             timeout:
               Number(Nuxeo && Nuxeo.UI && Nuxeo.UI.config && Nuxeo.UI.config.s3 && Nuxeo.UI.config.s3.timeout) || 0
-          }
+          },
+          correctClockSkew: true,
         });
       }.bind(this));
     };
@@ -175,18 +175,35 @@ limitations under the License.
           this._refreshBatchInfo();
         }
 
-        var promises = [];
-        for (var i = 0; i < files.length; ++i) {
-          var file = files[i];
-          file.index = this.files.length;
-          this.files.push(file);
-          promises.push(this._upload(file, callback).catch(function(error) {
-            this._handleUploadError(error, callback);
-          }.bind(this)));
-        }
-        return Promise.all(promises).then(function() {
-          callback({ type: 'batchFinished', batchId: this.batchId });
-        }.bind(this));
+        var uploadDonePromises = [];
+
+        // reduce upload started promises in sequence while building a list of upload done promisses
+        // goal is avoid creating more requests than the browser can have inflight and thus avoid clock skew
+        return Array.from(files)
+          .reduce(function (previousStartedPromise, file) {
+            file.index = this.files.length;
+            this.files.push(file);
+            callback({ type: 'uploadStarted', file });
+            return previousStartedPromise.then(function () {
+              return new Promise(function (resolveStarted) {
+                uploadDonePromises.push(
+                  this._upload(file, function (event) {
+                    // wait for upload progress to consider it as started
+                    if (event.type === 'uploadProgress') {
+                      resolveStarted(file);
+                    }
+                    callback(event);
+                  }).catch(function (error) { this._handleUploadError(error, callback); }.bind(this)),
+                );
+              }.bind(this));
+            }.bind(this));
+          }.bind(this), Promise.resolve())
+          .then(function () {
+            return Promise.all(uploadDonePromises);
+          })
+          .then(function () {
+            callback({ type: 'batchFinished', batchId: this.batchId });
+          }.bind(this));
       }.bind(this));
     };
 
