@@ -254,10 +254,12 @@ public final class Framework {
      *
      * @param runnable what to run
      * @since 8.4
-     * @since 11.1 this method now takes a {@link ThrowableRunnable}
      */
-    public static <E extends Throwable> void doPrivileged(ThrowableRunnable<E> runnable) throws E {
-        loginAndDo(Framework::loginSystem, runnable.toThrowableSupplier());
+    public static void doPrivileged(Runnable runnable) {
+        loginAndDo(Framework::loginSystem, () -> {
+            runnable.run();
+            return null;
+        });
     }
 
     /**
@@ -266,9 +268,29 @@ public final class Framework {
      * @param supplier what to call
      * @return the supplier's result
      * @since 8.4
-     * @since 11.1 this method now takes a {@link ThrowableSupplier}
      */
-    public static <T, E extends Throwable> T doPrivileged(ThrowableSupplier<T, E> supplier) throws E {
+    public static <T> T doPrivileged(Supplier<T> supplier) {
+        return loginAndDo(Framework::loginSystem, supplier::get);
+    }
+
+    /**
+     * Runs the given {@link ThrowableRunnable} while logged in as a system user.
+     *
+     * @param runnable what to run
+     * @since 11.3
+     */
+    public static <E extends Throwable> void doPrivilegedThrowing(ThrowableRunnable<E> runnable) throws E {
+        loginAndDo(Framework::loginSystem, runnable.toThrowableSupplier());
+    }
+
+    /**
+     * Calls the given {@link ThrowableSupplier} while logged in as a system user and returns its result.
+     *
+     * @param supplier what to call
+     * @return the supplier's result
+     * @since 11.3
+     */
+    public static <T, E extends Throwable> T doPrivilegedThrowing(ThrowableSupplier<T, E> supplier) throws E {
         return loginAndDo(Framework::loginSystem, supplier);
     }
 

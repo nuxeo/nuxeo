@@ -162,7 +162,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
                                              .with(MAX_DEPTH_PARAM, "max")
                                              .open()) {
                     // write buckets with privilege because we create a property to leverage marshallers
-                    Framework.doPrivileged(() -> {
+                    Framework.doPrivilegedThrowing(() -> {
                         writeBuckets("buckets", agg.getBuckets(), field, jg);
                         writeBuckets("extendedBuckets", agg.getExtendedBuckets(), field, jg);
                     });
