@@ -48,7 +48,7 @@ It requires to install [Docker](https://docs.docker.com/install/).
 There are several ways to build the images, depending on the context:
 
 - For a local build, use [Maven](#with-maven).
-- For a pipeline running in Jenkins X, use [Skaffold](#with-skaffold).
+- For a pipeline running in Jenkins on Kubernetes, use [Skaffold](#with-skaffold).
 - In any case, you can use [Docker](#with-docker).
 
 ### With Maven
@@ -67,7 +67,7 @@ mvn -nsu -f slim/pom.xml install
 
 ### With Skaffold
 
-We use Skaffold to build the images as part of the [nuxeo](http://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/nuxeo/) pipeline in our Jenkins X CI/CD platform.
+We use Skaffold to build the images as part of the [nuxeo](http://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/nuxeo/) pipeline in our Jenkins CI/CD platform.
 
 This requires to:
 

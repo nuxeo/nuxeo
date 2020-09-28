@@ -21,9 +21,6 @@ build:
     - image: slim
       context: docker/slim
       kaniko:
-        dockerfile: Dockerfile
-        buildContext:
-          localDir: {}
         buildArgs:
           BUILD_TAG: "{{.BUILD_TAG}}"
           SCM_REF: "{{.GIT_COMMIT}}"
