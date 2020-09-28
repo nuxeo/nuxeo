@@ -93,7 +93,7 @@
       <querySizeLimit>${nuxeo.ldap.query.sizeLimit}</querySizeLimit>
 
       <!-- Time to wait for a search to finish. 0 to wait indefinitely -->
-      <queryTimeLimit>0</queryTimeLimit>
+      <queryTimeLimit>${nuxeo.ldap.query.timeLimit}</queryTimeLimit>
 
       <creationBaseDn>ou=people,dc=example,dc=com</creationBaseDn>
       <creationClass>top</creationClass>
