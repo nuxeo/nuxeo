@@ -1,0 +1,18 @@
+<component name="org.nuxeo.ecm.platform.routing.filters.test" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+    <filter id="test_wf_pass">
+      <rule grant="true">
+        <condition>true</condition>
+      </rule>
+    </filter>
+
+    <filter id="test_wf_fail">
+      <rule grant="true">
+        <condition>false</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

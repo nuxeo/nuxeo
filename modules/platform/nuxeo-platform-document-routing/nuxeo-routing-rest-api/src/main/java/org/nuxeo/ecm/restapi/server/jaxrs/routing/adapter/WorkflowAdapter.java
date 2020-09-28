@@ -29,6 +29,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
@@ -50,13 +51,18 @@ public class WorkflowAdapter extends DefaultAdapter {
     @POST
     public Response doPost(WorkflowRequest routingRequest) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        final String workflowInstanceId = Framework.getService(DocumentRoutingService.class)
-                                                   .createNewInstance(routingRequest.getWorkflowModelName(),
-                                                           List.of(doc.getId()), routingRequest.getVariables(),
-                                                           ctx.getCoreSession(), true);
-        DocumentModel result = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
-        DocumentRoute route = result.getAdapter(DocumentRoute.class);
-        return Response.ok(route).status(Status.CREATED).build();
+        CoreSession session = doc.getCoreSession();
+        String workflowModelName = routingRequest.getWorkflowModelName();
+        DocumentRoutingService documentRoutingService = Framework.getService(DocumentRoutingService.class);
+        if (documentRoutingService.canCreateInstance(session, List.of(doc.getId()), workflowModelName)) {
+            String workflowInstanceId = documentRoutingService.createNewInstance(workflowModelName,
+                    List.of(doc.getId()), routingRequest.getVariables(), session, true);
+            DocumentModel result = session.getDocument(new IdRef(workflowInstanceId));
+            DocumentRoute route = result.getAdapter(DocumentRoute.class);
+            return Response.ok(route).status(Status.CREATED).build();
+        } else {
+            return Response.status(Status.BAD_REQUEST).build();
+        }
     }
 
     @GET
