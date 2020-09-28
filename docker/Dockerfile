@@ -1,9 +1,8 @@
-# Nuxeo server slim image
+# Nuxeo server image
 #
-# It includes a bare Nuxeo server distribution without any Nuxeo package installed.
-# It doesn't include any converter.
+# It includes a bare Nuxeo server without any Nuxeo package installed and some basic Open Source converters.
 #
-# It uses a multi-stage build.
+# It uses a multi-stage build to copy and unzip the Nuxeo server ZIP file.
 
 # ------------------------------------------------------------------------
 # Build stage
@@ -49,10 +48,19 @@ LABEL org.opencontainers.image.licenses="Apache 2.0"
 LABEL org.opencontainers.image.title="Nuxeo Server"
 LABEL org.opencontainers.image.vendor="Nuxeo"
 
-RUN yum -y update && yum -y --setopt=skip_missing_names_on_install=False install \
+RUN yum -y update && yum -y install epel-release && yum -y --setopt=skip_missing_names_on_install=False install \
+  ghostscript \
+  ImageMagick-6.9.10.68-3.el7 \
   java-11-openjdk java-11-openjdk-devel \
   less \
+  libreoffice-headless libreoffice-writer libreoffice-calc libreoffice-impress \
+  libwpd-tools \
+  # required by perl-Image-ExifTool to extract binary metadata from open office document
+  perl-Archive-Zip \
+  perl-Image-ExifTool \
+  poppler-utils \
   tar \
+  ufraw \
   unzip \
   wget \
   && yum clean all

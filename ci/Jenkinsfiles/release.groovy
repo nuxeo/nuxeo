@@ -78,7 +78,6 @@ pipeline {
     NUXEO_DOCKER_REGISTRY = 'docker-private.packages.nuxeo.com'
     DOCKER_NAMESPACE = 'nuxeo'
     NUXEO_IMAGE_NAME = 'nuxeo'
-    SLIM_IMAGE_NAME = 'slim'
     SLACK_CHANNEL = 'platform-notifs'
   }
 
@@ -217,7 +216,7 @@ pipeline {
       }
     }
 
-    stage('Promote Docker images') {
+    stage('Promote Docker image') {
       when {
         not {
           environment name: 'DRY_RUN', value: 'true'
@@ -227,10 +226,9 @@ pipeline {
         container('maven') {
           echo """
           -----------------------------------------------
-          Tag Docker images with version ${RELEASE_VERSION} and ${LATEST_VERSION}
+          Tag Docker image with version ${RELEASE_VERSION} and ${LATEST_VERSION}
           -----------------------------------------------
           """
-          promoteDockerImage("${SLIM_IMAGE_NAME}", "${params.BUILD_VERSION}", "${RELEASE_VERSION}", "${LATEST_VERSION}")
           promoteDockerImage("${NUXEO_IMAGE_NAME}", "${params.BUILD_VERSION}", "${RELEASE_VERSION}", "${LATEST_VERSION}")
         }
       }

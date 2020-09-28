@@ -339,7 +339,6 @@ pipeline {
     // Elasticsearch and Kafka might take longer
     TEST_LONG_ROLLOUT_STATUS_TIMEOUT = '5m'
     NUXEO_IMAGE_NAME = 'nuxeo'
-    SLIM_IMAGE_NAME = 'slim'
     // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
     NUXEO_DOCKER_REGISTRY = 'docker-private.packages.nuxeo.com'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
@@ -607,17 +606,17 @@ pipeline {
       }
     }
 
-    stage('Build Docker images') {
+    stage('Build Docker image') {
       steps {
-        setGitHubBuildStatus('docker/build', 'Build Docker images', 'PENDING')
+        setGitHubBuildStatus('docker/build', 'Build Docker image', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
-          Build Docker images
+          Build Docker image
           ----------------------------------------
           Image tag: ${VERSION}
           """
-          echo "Build and push Docker images to internal Docker registry ${DOCKER_REGISTRY}"
+          echo "Build and push Docker image to internal Docker registry ${DOCKER_REGISTRY}"
           // Fetch Nuxeo Tomcat Server and Nuxeo Content Platform packages with Maven
           sh "mvn ${MAVEN_ARGS} -T4C -f docker/pom.xml process-resources"
           skaffoldBuild('docker/skaffold.yaml')
@@ -625,34 +624,24 @@ pipeline {
       }
       post {
         success {
-          setGitHubBuildStatus('docker/build', 'Build Docker images', 'SUCCESS')
+          setGitHubBuildStatus('docker/build', 'Build Docker image', 'SUCCESS')
         }
         unsuccessful {
-          setGitHubBuildStatus('docker/build', 'Build Docker images', 'FAILURE')
+          setGitHubBuildStatus('docker/build', 'Build Docker image', 'FAILURE')
         }
       }
     }
 
-    stage('Test Docker images') {
+    stage('Test Docker image') {
       steps {
-        setGitHubBuildStatus('docker/test', 'Test Docker images', 'PENDING')
+        setGitHubBuildStatus('docker/test', 'Test Docker image', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
-          Test Docker images
+          Test Docker image
           ----------------------------------------
           """
           script {
-            // nuxeo slim image
-            def image = "${DOCKER_REGISTRY}/${dockerNamespace}/${SLIM_IMAGE_NAME}:${VERSION}"
-            echo "Test ${image}"
-            dockerPull(image)
-            echo 'Run image as root (0)'
-            dockerRun(image, 'nuxeoctl start')
-            echo 'Run image as an arbitrary user (800)'
-            dockerRun(image, 'nuxeoctl start', '800')
-
-            // nuxeo image
             image = "${DOCKER_REGISTRY}/${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
             echo "Test ${image}"
             dockerPull(image)
@@ -665,10 +654,10 @@ pipeline {
       }
       post {
         success {
-          setGitHubBuildStatus('docker/test', 'Test Docker images', 'SUCCESS')
+          setGitHubBuildStatus('docker/test', 'Test Docker image', 'SUCCESS')
         }
         unsuccessful {
-          setGitHubBuildStatus('docker/test', 'Test Docker images', 'FAILURE')
+          setGitHubBuildStatus('docker/test', 'Test Docker image', 'FAILURE')
         }
       }
     }
@@ -777,7 +766,7 @@ pipeline {
       }
     }
 
-    stage('Deploy Docker images') {
+    stage('Deploy Docker image') {
       when {
         allOf {
           not {
@@ -789,25 +778,24 @@ pipeline {
         }
       }
       steps {
-        setGitHubBuildStatus('docker/deploy', 'Deploy Docker images', 'PENDING')
+        setGitHubBuildStatus('docker/deploy', 'Deploy Docker image', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
-          Deploy Docker images
+          Deploy Docker image
           ----------------------------------------
           Image tag: ${VERSION}
           """
-          echo "Push Docker images to Docker registry ${NUXEO_DOCKER_REGISTRY}"
-          dockerDeploy("${SLIM_IMAGE_NAME}")
+          echo "Push Docker image to Docker registry ${NUXEO_DOCKER_REGISTRY}"
           dockerDeploy("${NUXEO_IMAGE_NAME}")
         }
       }
       post {
         success {
-          setGitHubBuildStatus('docker/deploy', 'Deploy Docker images', 'SUCCESS')
+          setGitHubBuildStatus('docker/deploy', 'Deploy Docker image', 'SUCCESS')
         }
         unsuccessful {
-          setGitHubBuildStatus('docker/deploy', 'Deploy Docker images', 'FAILURE')
+          setGitHubBuildStatus('docker/deploy', 'Deploy Docker image', 'FAILURE')
         }
       }
     }

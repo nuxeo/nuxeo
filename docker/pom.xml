@@ -10,30 +10,60 @@
   </parent>
 
   <groupId>org.nuxeo.docker</groupId>
-  <artifactId>nuxeo-docker-images</artifactId>
-  <name>Nuxeo Docker Images</name>
+  <artifactId>nuxeo-docker-image</artifactId>
+  <name>Nuxeo Docker Image</name>
   <packaging>pom</packaging>
 
-  <modules>
-    <module>nuxeo</module>
-    <module>slim</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-server-tomcat</artifactId>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.docker</groupId>
-        <artifactId>nuxeo-docker-image</artifactId>
-        <type>pom</type>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.docker</groupId>
-        <artifactId>nuxeo-slim-docker-image</artifactId>
-        <type>pom</type>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-distrib</id>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>nuxeo-server-tomcat</includeArtifactIds>
+              <outputDirectory>${project.build.directory}/distrib</outputDirectory>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>dockerfile-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>build</goal>
+              <goal>tag</goal>
+            </goals>
+            <configuration>
+              <repository>nuxeo/nuxeo</repository>
+              <tag>latest</tag>
+              <buildArgs>
+                <BUILD_TAG>local-nuxeo-nuxeo</BUILD_TAG>
+                <GIT_COMMIT>built-locally</GIT_COMMIT>
+                <VERSION>latest</VERSION>
+              </buildArgs>
+              <pullNewerImage>false</pullNewerImage>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

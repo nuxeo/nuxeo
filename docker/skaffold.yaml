@@ -18,8 +18,8 @@ build:
     envTemplate:
       template: "{{.DOCKER_REGISTRY}}/nuxeo/{{.IMAGE_NAME}}:{{.VERSION}}"
   artifacts:
-    - image: slim
-      context: docker/slim
+    - image: nuxeo
+      context: docker
       kaniko:
         buildArgs:
           BUILD_TAG: "{{.BUILD_TAG}}"
@@ -28,21 +28,8 @@ build:
         # TODO NXP-28052: reuse cache when Dockerfile chown workaround is removed
         # => when COPY --chown is fixed in Kaniko
         # cache:
-        #   repo: ${DOCKER_REGISTRY}/nuxeo/slim/cache
-    - image: nuxeo
-      context: docker/nuxeo
-      kaniko:
-        dockerfile: Dockerfile
-        buildContext:
-          localDir: {}
-        buildArgs:
-          BASE_IMAGE: ${DOCKER_REGISTRY}/nuxeo/slim:${VERSION}
-        # TODO NXP-28052: reuse cache when Dockerfile chown workaround is removed
-        # => when COPY --chown is fixed in Kaniko
-        # cache:
         #   repo: ${DOCKER_REGISTRY}/nuxeo/nuxeo/cache
   cluster:
-    concurrency: 1
     namespace: platform
     dockerConfig:
       secretName: jenkins-docker-cfg
