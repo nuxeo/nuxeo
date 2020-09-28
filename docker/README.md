@@ -1,31 +1,22 @@
-# Nuxeo Docker Images
+# Nuxeo Docker Image
 
-Nuxeo provides ready to use Docker images:
-
-- The [slim](#slim-nuxeoslim) image.
-- The [nuxeo](#nuxeo-nuxeonuxeo) image.
-
-These images are pushed to our Docker registry. To pull an image, run:
+Nuxeo provides a ready to use Docker image that is pushed to our Docker registry. To pull the image, run:
 
 ```bash
-docker pull DOCKER_REGISTRY/IMAGE_NAME:TAG
-```
-
-For instance, to pull the latest version of the `nuxeo/slim` image, run:
-
-```bash
-docker pull DOCKER_REGISTRY/nuxeo/slim:latest
+docker pull DOCKER_REGISTRY/nuxeo:TAG
 ```
 
 ## Disclaimer
 
-These Docker images don't aim to replace the [Nuxeo Docker official image](https://hub.docker.com/_/nuxeo/). They implement a different approach, described [here](https://jira.nuxeo.com/browse/NXP-27514), to try having immutable images configured at build time instead of runtime.
+This Docker image doesn't aim to replace the [Nuxeo Docker official image](https://hub.docker.com/_/nuxeo/). It implements a different approach to try having an immutable image configured at build time instead of runtime.
 
-## Slim: nuxeo/slim
+## Nuxeo Image
 
 Based on CentOS 7, it includes:
 
 - OpenJDK.
+- A bare Nuxeo server without any package installed.
+- Some basic Open Source converters, e.g.: ImageMagick, LibreOffice.
 - A `nuxeo` user with the `900` fixed UID.
 - The directories required to have the Nuxeo configuration, data and logs outside of the server directory, with appropriate permissions.
 - An entrypoint script to configure the server.
@@ -33,19 +24,11 @@ Based on CentOS 7, it includes:
 - The environment variables required by the server, typically `NUXEO_HOME` and `NUXEO_CONF`.
 - The exposed port `8080`.
 
-It includes a bare Nuxeo server distribution without any package installed.
-It doesn't include any converter.
-
-## Nuxeo: nuxeo/nuxeo
-
-It includes a bare Nuxeo server distribution without any package installed.
-It includes basic Open Source converters.
-
-## Build the Images
+## Build the Image
 
 It requires to install [Docker](https://docs.docker.com/install/).
 
-There are several ways to build the images, depending on the context:
+There are several ways to build the image, depending on the context:
 
 - For a local build, use [Maven](#with-maven).
 - For a pipeline running in Jenkins on Kubernetes, use [Skaffold](#with-skaffold).
@@ -53,16 +36,10 @@ There are several ways to build the images, depending on the context:
 
 ### With Maven
 
-To build all the images locally, run:
+To build the `nuxeo/nuxeo` image locally, run:
 
 ```bash
 mvn -nsu install
-```
-
-To build a single image, for instance the `nuxeo/slim` one, run:
-
-```bash
-mvn -nsu -f slim/pom.xml install
 ```
 
 ### With Skaffold
@@ -80,50 +57,44 @@ It also requires the following environment variables:
 - `DOCKER_REGISTRY`: the Docker registry to push the images to.
 - `VERSION`: the image tag, for instance `latest`.
 
-To build the `nuxeo/slim` image, run:
+To build the `nuxeo/nuxeo` image with Skaffold, you first need to fetch the Nuxeo server ZIP file and make it available for the Docker build with Maven:
 
 ```bash
-skaffold build -b slim
+mvn -nsu process-resources
 ```
 
-To build the `nuxeo/nuxeo` image, run:
+Then, from the root directory, run:
 
 ```bash
-skaffold build -b nuxeo
+skaffold build -f docker/skaffold.yaml
 ```
 
 ### With Docker
 
-To build the `nuxeo/slim` image, you first need to fetch the Nuxeo distribution and make it available for the Docker build with Maven:
+To build the `nuxeo/nuxeo` image with Docker, you first need to fetch the Nuxeo server ZIP file and make it available for the Docker build with Maven:
 
 ```bash
-mvn -nsu -f slim/pom.xml process-resources
+mvn -nsu process-resources
 ```
 
-Then run:
+Then, run:
 
 ```bash
-docker build -t nuxeo/slim:latest -f slim/Dockerfile slim
+docker build -t nuxeo/nuxeo:latest .
 ```
 
-To build the `nuxeo/nuxeo` image, run:
+## Run the Image
+
+To run a container from the `nuxeo/nuxeo` image built locally, run:
 
 ```bash
-docker build -t nuxeo/nuxeo:latest -f nuxeo/Dockerfile --build-arg BASE_IMAGE=nuxeo/slim:latest nuxeo
+docker run -it -p 8080:8080 nuxeo/nuxeo:latest
 ```
 
-## Run an Image
-
-For instance, to run a container from the `nuxeo/slim` image built locally, run:
+To pull the `nuxeo/nuxeo` image from our Docker regsitry and run a container from it, run:
 
 ```bash
-docker run -it -p 8080:8080 nuxeo/slim:latest
-```
-
-To pull the `nuxeo/slim` image from our Docker regsitry and run a container from it, run:
-
-```bash
-docker run -it -p 8080:8080 DOCKER_REGISTRY/nuxeo/slim:latest
+docker run -it -p 8080:8080 DOCKER_REGISTRY/nuxeo/nuxeo:latest
 ```
 
 ## Inspect an Image
@@ -131,16 +102,16 @@ docker run -it -p 8080:8080 DOCKER_REGISTRY/nuxeo/slim:latest
 To inspect the different layers included in an image, you can run for instance:
 
 ```bash
-docker history nuxeo/slim:latest
+docker history nuxeo/nuxeo:latest
 ```
 
 The [dive](https://github.com/wagoodman/dive) tool is also very good for exploring an image, its layer contents and discovering ways to shrink the image size:
 
 ```bash
-dive nuxeo/slim:latest
+dive nuxeo/nuxeo:latest
 ```
 
-## Configure an Image at Runtime
+## Configure the Image at Runtime
 
 Though we try to have immutable images configured at build time, in some cases it makes sense to configure a container at runtime. This typically applies to the address and credentials of each back-end store (database, Elasticsearch, S3, etc.) that are specific to a given deployment: development, staging, production, etc.
 
@@ -161,7 +132,7 @@ nuxeo.db.port=5432
 you can run:
 
 ```bash
-docker run -it -p 8080:8080 -v /path/to/postgresql.conf:/etc/nuxeo/conf.d/postgresql.conf nuxeo/slim:latest
+docker run -it -p 8080:8080 -v /path/to/postgresql.conf:/etc/nuxeo/conf.d/postgresql.conf nuxeo/nuxeo:latest
 ```
 
 ### Environment Variables
@@ -182,7 +153,7 @@ The value of `JAVA_OPTS` is appended to the `JAVA_OPTS` property defined in `nux
 For instance, to make the Nuxeo Launcher display the JVM settings in the console, run:
 
 ```bash
-docker run -it -p 8080:8080 -e JAVA_OPTS=-XshowSettings:vm nuxeo/slim:latest
+docker run -it -p 8080:8080 -e JAVA_OPTS=-XshowSettings:vm nuxeo/nuxeo:latest
 ```
 
 #### NUXEO_CLID
@@ -192,7 +163,7 @@ The value of `NUXEO_CLID` is copied to `/var/lib/nuxeo/instance.clid` at startup
 For instance, to run a container with a registered Nuxeo instance:
 
 ```bash
-docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/slim:latest
+docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/nuxeo:latest
 ```
 
 #### NUXEO_CONNECT_URL
@@ -202,7 +173,7 @@ docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/slim:latest
 For instance, to run a container with another Connect URL than the default one:
 
 ```bash
-docker run -it -p 8080:8080 -e NUXEO_CONNECT_URL=<NUXEO_CONNECT_URL> nuxeo/slim:latest
+docker run -it -p 8080:8080 -e NUXEO_CONNECT_URL=<NUXEO_CONNECT_URL> nuxeo/nuxeo:latest
 ```
 
 #### NUXEO_PACKAGES
@@ -212,5 +183,5 @@ docker run -it -p 8080:8080 -e NUXEO_CONNECT_URL=<NUXEO_CONNECT_URL> nuxeo/slim:
 For instance, to run a container with the `nuxeo-web-ui` and `nuxeo-drive` packages installed:
 
 ```bash
-docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> -e NUXEO_PACKAGES="nuxeo-web-ui nuxeo-drive" nuxeo/slim:latest
+docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> -e NUXEO_PACKAGES="nuxeo-web-ui nuxeo-drive" nuxeo/nuxeo:latest
 ```
