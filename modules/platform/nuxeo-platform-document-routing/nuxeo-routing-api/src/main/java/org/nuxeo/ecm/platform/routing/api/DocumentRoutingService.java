@@ -622,4 +622,18 @@ public interface DocumentRoutingService {
      */
     boolean isWorkflowModel(final DocumentRoute documentRoute);
 
+    /**
+     * Returns {@code true} if the workflow model can be started on the document list.
+     *
+     * @since 11.4
+     */
+    boolean canCreateInstance(CoreSession session, List<String> documentIds, String worflowModelName);
+
+    /**
+     * Returns a list of runnable document routes for the input document IDs.
+     *
+     * @since 11.4
+     */
+    List<DocumentRoute> getRunnableWorkflows(CoreSession session, List<String> documentIds);
+
 }

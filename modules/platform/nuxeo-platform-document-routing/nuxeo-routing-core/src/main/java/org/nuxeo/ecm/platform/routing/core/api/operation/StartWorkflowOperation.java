@@ -37,6 +37,7 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 
@@ -97,6 +98,10 @@ public class StartWorkflowOperation {
     }
 
     protected void startNewInstance(List<String> ids) {
+        if (!documentRoutingService.canCreateInstance(session, ids, id)) {
+            throw new NuxeoException(
+                    String.format("Cannot start the workflow model %s for the input documents %s", id, ids));
+        }
         Map<String, Serializable> vars = null;
         if (variables != null) {
             if (variables instanceof DataModelProperties) {
@@ -112,6 +117,5 @@ public class StartWorkflowOperation {
         // to be consistent with all the other workflow variablesin the context
         // @since 5.7.2
         ctx.put("workflowInstanceId", workflowId);
-
     }
 }

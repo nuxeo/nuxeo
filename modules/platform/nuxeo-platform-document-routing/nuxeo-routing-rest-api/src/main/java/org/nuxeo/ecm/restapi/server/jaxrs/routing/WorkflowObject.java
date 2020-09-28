@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -67,12 +68,18 @@ public class WorkflowObject extends DefaultObject {
 
     @POST
     public Response createWorkflowInstance(WorkflowRequest workflowRequest) {
-        final String workflowInstanceId = documentRoutingService.createNewInstance(
-                workflowRequest.getWorkflowModelName(), workflowRequest.getAttachedDocumentIds(),
-                workflowRequest.getVariables(), ctx.getCoreSession(), true);
-        DocumentModel workflowInstance = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
-        DocumentRoute route = workflowInstance.getAdapter(DocumentRoute.class);
-        return Response.ok(route).status(Status.CREATED).build();
+        CoreSession session = ctx.getCoreSession();
+        List<String> attachedDocumentIds = workflowRequest.getAttachedDocumentIds();
+        String workflowModelName = workflowRequest.getWorkflowModelName();
+        if (documentRoutingService.canCreateInstance(session, attachedDocumentIds, workflowModelName)) {
+            String workflowInstanceId = documentRoutingService.createNewInstance(workflowModelName,
+                    attachedDocumentIds, workflowRequest.getVariables(), session, true);
+            DocumentModel workflowInstance = session.getDocument(new IdRef(workflowInstanceId));
+            DocumentRoute route = workflowInstance.getAdapter(DocumentRoute.class);
+            return Response.ok(route).status(Status.CREATED).build();
+        } else {
+            return Response.status(Status.BAD_REQUEST).build();
+        }
     }
 
     @GET
