@@ -93,7 +93,10 @@ public class BackingServiceConfigurator {
         // Get all checkers
         for (BackingChecker checker : getCheckers()) {
             if (checker.accepts(configurationGenerator)) {
+                ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
                 try {
+                    // Propagate the checker's class loader for jaas
+                    Thread.currentThread().setContextClassLoader(checker.getClass().getClassLoader());
                     Failsafe.with(retryPolicy)
                             .onFailedAttempt(failure -> log.error(failure.getMessage(), failure)) //
                             .onRetry((c, f,
@@ -105,7 +108,10 @@ public class BackingServiceConfigurator {
                     } else {
                         throw e;
                     }
+                } finally {
+                    Thread.currentThread().setContextClassLoader(classLoader);
                 }
+
             }
         }
     }
