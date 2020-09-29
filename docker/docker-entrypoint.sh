@@ -57,7 +57,7 @@ fi
 if [ -n "$NUXEO_CLID" ]; then
   echo "ENTRYPOINT: Write NUXEO_CLID environment variable to /var/lib/nuxeo/instance.clid"
   # Replace -- by a carriage return
-  NUXEO_CLID="${NUXEO_CLID/--/\\n}"
+  NUXEO_CLID="${NUXEO_CLID//--/\\n}"
   printf "%b\n" "$NUXEO_CLID" > /var/lib/nuxeo/instance.clid
 fi
 
