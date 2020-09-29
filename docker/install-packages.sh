@@ -32,7 +32,7 @@ echo
 if [ -n "$clid" ]; then
   echo "Setting CLID"
   # Replace -- by a carriage return
-  clid="${clid/--/\\n}"
+  clid="${clid//--/\\n}"
   mkdir -p $NUXEO_HOME/nxserver/data/
   printf "%b\n" "$clid" >> $NUXEO_HOME/nxserver/data/instance.clid
 fi
