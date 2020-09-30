@@ -33,10 +33,22 @@ git clone git@github.com:nuxeo/nuxeo.git
 cd nuxeo
 ```
 
-Build using Maven:
+Export the relevant options for the JVM running Maven:
 
 ```shell
-mvn clean install -Paddons,distrib
+export MAVEN_OPTS='-Xmx4g -Xms2g -XX:+TieredCompilation -XX:TieredStopAtLevel=1'
+```
+
+To build everything, including the packages, server ZIP and Docker image, run:
+
+```shell
+mvn install -Pdistrib,docker -DskipTests -Dnuxeo.skip.enforcer=true -T6
+```
+
+To take the shortest path for building the Docker image, run the following command. It starts by building the Docker image's dependencies (server modules and ZIP), then the Docker image itself.
+
+```shell
+mvn install -Pdistrib,docker -pl docker -am -DskipTests -Dnuxeo.skip.enforcer=true -T6
 ```
 
 See our [Nuxeo Core Developer Guide](https://doc.nuxeo.com/n/9ib) for complete instructions and guidelines.
