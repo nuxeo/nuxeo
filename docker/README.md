@@ -97,9 +97,9 @@ To pull the `nuxeo/nuxeo` image from our Docker regsitry and run a container fro
 docker run -it -p 8080:8080 DOCKER_REGISTRY/nuxeo/nuxeo:latest
 ```
 
-## Inspect an Image
+## Inspect the Image
 
-To inspect the different layers included in an image, you can run for instance:
+To inspect the different layers included in the image, you can run:
 
 ```bash
 docker history nuxeo/nuxeo:latest

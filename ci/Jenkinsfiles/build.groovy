@@ -143,11 +143,6 @@ void dockerDeploy(String imageName) {
 
 /**
  * Replaces environment variables present in the given yaml file and then runs skaffold build on it.
- * Needed environment variables are generally:
- * - BUILD_TAG
- * - DOCKER_REGISTRY
- * - GIT_COMMIT
- * - VERSION
  */
 void skaffoldBuild(String yaml) {
   sh """
