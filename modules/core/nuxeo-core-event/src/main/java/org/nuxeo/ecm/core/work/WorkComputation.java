@@ -120,18 +120,18 @@ public class WorkComputation extends AbstractComputation {
                 context.askForCheckpoint();
             }
         } catch (Exception e) {
-            if (ExceptionUtils.hasInterruptedCause(e)) {
+            if (Thread.currentThread().isInterrupted() || ExceptionUtils.hasInterruptedCause(e)) {
                 Thread.currentThread().interrupt();
                 // propagate the interruption to stop the computation thread
                 // thread has been interrupted we don't want to mark the work as completed.
                 log.warn(
-                        String.format("Work id: %s title: %s, has been interrupted, it will be rescheduled, record: %s",
-                                work.getId(), work.getTitle(), record));
+                        String.format("Work id: %s title: %s, has been interrupted the work thread is terminating, it will be rescheduled, record: %s",
+                                work.getId(), work.getTitle(), record), e);
             } else {
                 // Report an error on the work and continue
                 log.error(String.format(
                         "Skip Work in failure: id: %s, title: %s, offset: %s, record: %s, thread: %s", work.getId(),
-                        work.getTitle(), context.getLastOffset(), record, Thread.currentThread().getName()));
+                        work.getTitle(), context.getLastOffset(), record, Thread.currentThread().getName()), e);
                 context.askForCheckpoint();
             }
             // Cleanup should take care of logging error except if exception comes from the cleanup
