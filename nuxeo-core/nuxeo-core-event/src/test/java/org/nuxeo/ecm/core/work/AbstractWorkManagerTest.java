@@ -31,6 +31,7 @@ import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
 import static org.nuxeo.ecm.core.work.api.Work.State.UNKNOWN;
 
 import java.io.File;
+import java.io.InterruptedIOException;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -128,6 +129,26 @@ public abstract class AbstractWorkManagerTest {
         public void work() {
             super.work();
             throw new RuntimeException(getTitle());
+        }
+    }
+
+    /**
+     * @since 11.3
+     */
+    protected static class SleepAndThrowWork extends SleepWork {
+        private static final long serialVersionUID = 1L;
+
+        private final Throwable throwable;
+
+        public SleepAndThrowWork(long durationMillis, Throwable throwable) {
+            super(durationMillis);
+            this.throwable = throwable;
+        }
+
+        @Override
+        public void work() {
+            super.work();
+            throw new RuntimeException(getTitle(), throwable);
         }
     }
 
@@ -685,4 +706,26 @@ public abstract class AbstractWorkManagerTest {
         assertEquals(Long.valueOf(1), kv.getLong(group1));
         assertEquals(Long.valueOf(1), kv.getLong(group2));
     }
+
+    @Test
+    public void testWorkFailOnInterruptedIO() throws InterruptedException {
+        SleepAndThrowWork work = new SleepAndThrowWork(100,
+                new InterruptedIOException("Interrupted for test purpose"));
+        service.schedule(work);
+        assertTrue(service.awaitCompletion(2000, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 1, 0);
+    }
+
+    @Test
+    // Deploy a contrib in order to restart the WorkManager on the next test
+    @Deploy("org.nuxeo.ecm.core.event:test-work-failure-listeners.xml")
+    public void testWorkInterrupted() throws InterruptedException {
+        SlowWork work = new SlowWork(4000);
+        service.schedule(work);
+        Thread.sleep(500);
+        service.shutdown(200, TimeUnit.MILLISECONDS);
+        Thread.sleep(1000);
+        tracker.assertDiff(0, 0, 0, 0);
+    }
+
 }
