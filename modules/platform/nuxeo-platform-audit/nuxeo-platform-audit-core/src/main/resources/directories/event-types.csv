@@ -44,3 +44,8 @@ id,label,obsolete,ordering
 "group_created","group_created","0","450"
 "group_modified","group_modified","0","460"
 "group_deleted","group_deleted","0","470"
+"retentionActiveChanged","retentionActiveChanged","0","480"
+"sectionContentPublished","sectionContentPublished","0","490"
+"download","download","0","500"
+"addedToCollection","addedToCollection","0","510"
+"removedFromCollection","removedFromCollection","0","520"
