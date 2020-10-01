@@ -417,7 +417,10 @@ public abstract class AbstractWork implements Work {
             map.put("tx.thread", AttributeValue.stringAttributeValue(Thread.currentThread().getName()));
             map.put("work.id", AttributeValue.stringAttributeValue(getId()));
             map.put("work.category", AttributeValue.stringAttributeValue(getCategory()));
-            map.put("work.title", AttributeValue.stringAttributeValue(getTitle()));
+            String title = getTitle();
+            if (title != null) {
+                map.put("work.title", AttributeValue.stringAttributeValue(title));
+            }
             map.put("work.parent_path", AttributeValue.stringAttributeValue(getSchedulePath().getParentPath()));
             map.put("work.caller_thread", AttributeValue.stringAttributeValue(callerThread));
             map.put("work.to_string", AttributeValue.stringAttributeValue(toString()));
