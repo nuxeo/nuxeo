@@ -166,8 +166,7 @@ public final class ExceptionUtils {
      * @since 9.3
      */
     public static boolean isInterrupted(Throwable t) {
-        return t instanceof InterruptedException || t instanceof InterruptedIOException
-                || t instanceof ClosedByInterruptException;
+        return t instanceof InterruptedException || t instanceof ClosedByInterruptException;
     }
 
 }
