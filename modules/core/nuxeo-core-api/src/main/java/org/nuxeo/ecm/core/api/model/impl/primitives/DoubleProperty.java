@@ -45,16 +45,16 @@ public class DoubleProperty extends ScalarProperty {
     }
 
     @Override
-    public Serializable normalize(Object value) throws PropertyConversionException {
+    public Serializable normalize(Object value) {
         if (isNormalized(value)) {
             return (Serializable) value;
         }
-        if (value.getClass() == String.class) {
+        if (value instanceof String) {
             String string = (String) value;
             if (string.length() == 0) {
                 return null;
             }
-            return Double.valueOf(value.toString());
+            return Double.valueOf(string);
         }
         if (value instanceof Number) {
             return ((Number) value).doubleValue();
@@ -64,7 +64,7 @@ public class DoubleProperty extends ScalarProperty {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException {
+    public <T> T convertTo(Serializable value, Class<T> toType) {
         if (value == null || Double.class == toType) {
             return (T) value;
         }
