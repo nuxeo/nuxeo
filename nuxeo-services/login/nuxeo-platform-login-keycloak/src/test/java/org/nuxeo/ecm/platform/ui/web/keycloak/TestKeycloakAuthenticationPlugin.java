@@ -191,4 +191,31 @@ public class TestKeycloakAuthenticationPlugin {
         return keycloakAuthenticationPlugin;
     }
 
+    @Test
+    public void testKeycloakBearerAuthenticationSucceedingWithNullRealmAcess() throws Exception {
+        KeycloakAuthenticationPlugin keycloakAuthenticationPlugin = new KeycloakAuthenticationPlugin();
+        initPlugin(keycloakAuthenticationPlugin);
+
+        AccessToken accessToken = new AccessToken();
+        accessToken.setEmail("username@example.com");
+        AccessToken.Access realmAccess = new AccessToken.Access();
+        realmAccess.addRole("user");
+        accessToken.setRealmAccess(null);
+        Mockito.when(requestMock.getAttribute(KEYCLOAK_ACCESS_TOKEN)).thenReturn(accessToken);
+        Mockito.when(authenticatorMock.authenticate()).thenReturn(AuthOutcome.AUTHENTICATED);
+
+        Mockito.when(providerMock.provide(any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(
+                authenticatorMock);
+        KeycloakDeployment deployment = new KeycloakDeployment();
+        deployment.setResourceName("test");
+        Mockito.when(providerMock.getResolvedDeployment()).thenReturn(deployment);
+
+        keycloakAuthenticationPlugin.setKeycloakAuthenticatorProvider(providerMock);
+
+        UserIdentificationInfo identity = keycloakAuthenticationPlugin.handleRetrieveIdentity(requestFacade,
+                responseMock);
+
+        assertNotNull(identity);
+        assertEquals("username@example.com", identity.getUserName());
+    }
 }
