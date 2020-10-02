@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataException;
 import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
@@ -55,7 +55,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
-    private static final Log log = LogFactory.getLog(BinaryMetadataServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(BinaryMetadataServiceImpl.class);
 
     protected BinaryMetadataComponent binaryMetadataComponent;
 
@@ -75,8 +75,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     @Override
-    public Map<String, Object> readMetadata(Blob blob, List<String>
-            metadataNames, boolean ignorePrefix) {
+    public Map<String, Object> readMetadata(Blob blob, List<String> metadataNames, boolean ignorePrefix) {
         try {
             BinaryMetadataProcessor processor = getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
             return processor.readMetadata(blob, metadataNames, ignorePrefix);
@@ -130,8 +129,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         try {
             // Creating mapping properties Map.
             Map<String, Object> metadataMapping = new HashMap<>();
-            MetadataMappingDescriptor mappingDescriptor = binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().get(
-                    mappingDescriptorId);
+            MetadataMappingDescriptor mappingDescriptor = binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap()
+                                                                                                 .get(mappingDescriptorId);
             for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor : mappingDescriptor.getMetadataDescriptors()) {
                 metadataMapping.put(metadataDescriptor.getName(), doc.getPropertyValue(metadataDescriptor.getXpath()));
             }
@@ -164,8 +163,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         // For each mapping descriptors, overriding mapping document properties.
         for (String mappingDescriptorId : mappingDescriptorIds) {
             if (!binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
-                log.warn("Missing binary metadata descriptor with id '" + mappingDescriptorId
-                        + "'. Or check your rule contribution with proper metadataMapping-id.");
+                log.warn(
+                        "Missing binary metadata descriptor with id: {}. Or check your rule contribution with proper metadataMapping-id.",
+                        mappingDescriptorId);
                 continue;
             }
             writeMetadata(doc, mappingDescriptorId);
@@ -177,8 +177,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         // Creating mapping properties Map.
         Map<String, String> metadataMapping = new HashMap<>();
         List<String> blobMetadata = new ArrayList<>();
-        MetadataMappingDescriptor mappingDescriptor = binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().get(
-                mappingDescriptorId);
+        MetadataMappingDescriptor mappingDescriptor = binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap()
+                                                                                             .get(mappingDescriptorId);
         boolean ignorePrefix = mappingDescriptor.ignorePrefix();
         // Extract blob from the contributed xpath
         Blob blob = doc.getProperty(mappingDescriptor.getBlobXPath()).getValue(Blob.class);
@@ -227,10 +227,11 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                     }
                     doc.setPropertyValue(property, (Serializable) metadataValue);
                 } catch (PropertyException e) {
-                    log.warn(String.format(
-                            "Failed to set property '%s' to value %s from metadata '%s' in '%s' in document '%s' ('%s')",
-                            property, metadataValue, metadata, mappingDescriptor.getBlobXPath(), doc.getId(),
-                            doc.getPath()));
+                    Object value = metadataValue;
+                    log.warn("Failed to set property: {} to value: {} from metadata: {} in: {} in document: {}: {}",
+                            () -> property, () -> value, () -> metadata, mappingDescriptor::getBlobXPath, doc::getRef,
+                            e::getMessage);
+                    log.debug(e, e);
                 }
             }
         }
@@ -262,7 +263,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                             return;
                         }
                         // if document metadata dirty, write metadata from doc to Blob
-                        Blob newBlob = writeMetadata(mappingDescriptor.getProcessor(), fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
+                        Blob newBlob = writeMetadata(mappingDescriptor.getProcessor(), fileProp.getValue(Blob.class),
+                                mappingDescriptor.getId(), doc);
                         fileProp.setValue(newBlob);
                     }
                 } else if (fileProp.isDirty()) {
@@ -345,12 +347,13 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         List<MetadataMappingDescriptor> mappingResult = new ArrayList<>();
         for (String mappingDescriptorId : mappingDescriptorIds) {
             if (!binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
-                log.warn("Missing binary metadata descriptor with id '" + mappingDescriptorId
-                        + "'. Or check your rule contribution with proper metadataMapping-id.");
+                log.warn(
+                        "Missing binary metadata descriptor with id: {}. Or check your rule contribution with proper metadataMapping-id.",
+                        mappingDescriptorId);
                 continue;
             }
-            mappingResult.add(binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().get(
-                    mappingDescriptorId));
+            mappingResult.add(
+                    binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId));
         }
         return mappingResult;
     }

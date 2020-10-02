@@ -46,16 +46,16 @@ public class LongProperty extends ScalarProperty {
     }
 
     @Override
-    public Serializable normalize(Object value) throws PropertyConversionException {
+    public Serializable normalize(Object value) {
         if (isNormalized(value)) {
             return (Serializable) value;
         }
-        if (value.getClass() == String.class) {
+        if (value instanceof String) {
             String string = (String) value;
             if (string.length() == 0) {
                 return null;
             }
-            return Long.valueOf(value.toString());
+            return Long.valueOf(string);
         }
         if (value instanceof Number) {
             return ((Number) value).longValue();
@@ -65,7 +65,7 @@ public class LongProperty extends ScalarProperty {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException {
+    public <T> T convertTo(Serializable value, Class<T> toType) {
         if (value == null || Long.class == toType) {
             return (T) value;
         }

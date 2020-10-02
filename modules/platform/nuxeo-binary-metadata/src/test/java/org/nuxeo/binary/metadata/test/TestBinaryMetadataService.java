@@ -75,7 +75,6 @@ public class TestBinaryMetadataService extends BaseBinaryMetadataTest {
         inputPSDMetadata.put("EXIF:ImageHeight", "200");
         inputPSDMetadata.put("EXIF:Software", "Nuxeo");
         inputPSDMetadata.put("IPTC:Keywords", new String[] { "keyword1", "keyword2" });
-        inputPSDMetadata.put("IPTC:Keywords", new String[] { "keyword1", "keyword2" });
         Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").parse("2018:06:15 00:00:00");
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
