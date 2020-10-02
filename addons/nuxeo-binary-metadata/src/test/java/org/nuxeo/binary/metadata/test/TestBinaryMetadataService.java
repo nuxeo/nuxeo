@@ -36,9 +36,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.binary.metadata.internals.BinaryMetadataServiceImpl;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -50,12 +54,14 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.LogFeature;
 
 /**
  * @since 7.1
  */
 @RunWith(FeaturesRunner.class)
-@Features(BinaryMetadataFeature.class)
+@Features({ BinaryMetadataFeature.class, LogFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml")
 @Deploy("org.nuxeo.binary.metadata:binary-metadata-disable-listener.xml")
 @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml")
@@ -68,6 +74,9 @@ public class TestBinaryMetadataService extends BaseBinaryMetadataTest {
     private static List<String> musicMetadata;
 
     private static List<String> PSDMetadata;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     @BeforeClass
     public static void init() throws ParseException {
@@ -235,5 +244,27 @@ public class TestBinaryMetadataService extends BaseBinaryMetadataTest {
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
+    }
+
+    // NXP-21725
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN", loggerClass = BinaryMetadataServiceImpl.class)
+    public void itShouldNotFailMappingDecimalValueToIntegerField() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/folder", "decimalToIntegerFile", "File");
+        doc.setPropertyValue("dc:title", "file_3000");
+        File binary = FileUtils.getResourceFileFromContext("data/hello.pdf");
+        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob(binary));
+
+        binaryMetadataService.writeMetadata(doc, "decimalToInteger");
+
+        assertEquals("en-US", doc.getPropertyValue("dc:description"));
+        assertNull(doc.getPropertyValue("uid:major_version"));
+
+        List<LogEvent> events = logCaptureResult.getCaughtEvents();
+        assertEquals(1, events.size());
+        LogEvent event = events.get(0);
+        assertEquals("WARN", event.getLevel().toString());
+        String message = "Failed to set property 'uid:major_version' to value 1.4 from metadata 'PDF:PDFVersion' in 'file:content' in document 'null' ('/folder/decimalToIntegerFile')";
+        assertEquals(message, event.getMessage().getFormattedMessage());
     }
 }

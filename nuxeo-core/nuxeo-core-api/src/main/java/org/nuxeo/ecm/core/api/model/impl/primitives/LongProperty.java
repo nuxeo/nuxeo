@@ -55,7 +55,11 @@ public class LongProperty extends ScalarProperty {
             if (string.length() == 0) {
                 return null;
             }
-            return Long.valueOf(value.toString());
+            try {
+                return Long.valueOf(string);
+            } catch (NumberFormatException e) {
+                throw new PropertyConversionException(value.getClass(), Long.class, e.getMessage());
+            }
         }
         if (value instanceof Number) {
             return ((Number) value).longValue();

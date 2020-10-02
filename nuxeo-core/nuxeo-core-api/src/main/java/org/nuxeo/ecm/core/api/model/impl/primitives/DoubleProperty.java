@@ -54,7 +54,11 @@ public class DoubleProperty extends ScalarProperty {
             if (string.length() == 0) {
                 return null;
             }
-            return Double.valueOf(value.toString());
+            try {
+                return Double.valueOf(string);
+            } catch (NumberFormatException e) {
+                throw new PropertyConversionException(value.getClass(), Double.class, e.getMessage());
+            }
         }
         if (value instanceof Number) {
             return ((Number) value).doubleValue();
