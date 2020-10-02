@@ -18,6 +18,13 @@
       <metadata name="PDF:Creator" xpath="dc:coverage"/>
       <metadata name="PDF:Producer" xpath="dc:description"/>
     </metadataMapping>
+
+    <!-- NXP-21725 -->
+    <metadataMapping id="decimalToInteger" processor="exifTool" blobXPath="file:content"
+                     ignorePrefix="false">
+      <metadata name="PDF:PDFVersion" xpath="uid:major_version"/>
+      <metadata name="PDF:Language" xpath="dc:description"/>
+    </metadataMapping>
   </extension>
 
 </component>
