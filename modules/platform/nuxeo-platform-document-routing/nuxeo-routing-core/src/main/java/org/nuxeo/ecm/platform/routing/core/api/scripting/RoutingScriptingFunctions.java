@@ -81,12 +81,12 @@ public class RoutingScriptingFunctions {
         }
         Calendar lastExecutionTime = rule.getLastExecutionTime();
         if (lastExecutionTime == null) {
-            log.warn("Trying to evaluate timeSinceRuleHasBeenFalse() for the rule " + rule.getId()
+            log.debug("Trying to evaluate timeSinceRuleHasBeenFalse() for the rule " + rule.getId()
                     + " that hasn't been executed yet");
             return -1L;
         }
         if (!rule.isExecuted()) {
-            log.warn("Rule " + rule.getId() + " was never executed. Use with " + BINDING_KEY
+            log.debug("Rule " + rule.getId() + " was never executed. Use with " + BINDING_KEY
                     + " ruleAlreadyExecuted().");
             return -1L;
         }
