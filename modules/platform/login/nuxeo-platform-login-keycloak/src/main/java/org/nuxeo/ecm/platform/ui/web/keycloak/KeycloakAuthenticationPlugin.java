@@ -177,10 +177,12 @@ public class KeycloakAuthenticationPlugin implements NuxeoAuthenticationPlugin,
      */
     private Set<String> getRoles(AccessToken token, String keycloakNuxeoApp) {
         Set<String> allRoles = new HashSet<>();
-        Set<String> roles = token.getRealmAccess().getRoles();
-        if (roles != null) {
-            allRoles.addAll(roles);
+
+        AccessToken.Access realmAccess = token.getRealmAccess();
+        if (realmAccess != null && realmAccess.getRoles() != null) {
+            allRoles.addAll(realmAccess.getRoles());
         }
+
         AccessToken.Access nuxeoResource = token.getResourceAccess(keycloakNuxeoApp);
         if (nuxeoResource != null) {
             Set<String> nuxeoRoles = nuxeoResource.getRoles();
