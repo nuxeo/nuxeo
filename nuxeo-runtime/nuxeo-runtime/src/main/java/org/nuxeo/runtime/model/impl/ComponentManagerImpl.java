@@ -50,7 +50,7 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
-import org.nuxeo.runtime.RuntimeMessage.Level;
+//import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -411,7 +411,7 @@ public class ComponentManagerImpl implements ComponentManager {
         RegistrationInfo ri = registry.getComponent(name);
 
         if (ri != null && ri.getComponent() != null
-                && Set.of(RegistrationInfo.ACTIVATED, RegistrationInfo.STARTED).contains(ri.getState())) {
+                && Arrays.asList(RegistrationInfo.ACTIVATED, RegistrationInfo.STARTED).contains(ri.getState())) {
             log.debug("Register contributed extension: {}", extension);
             loadContributions(ri, extension);
             ri.getComponent().registerExtension(extension);
@@ -497,7 +497,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     protected static void handleError(String message, Exception e) {
         log.error(message, e);
-        Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
+        //Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
     }
 
     /**
@@ -597,7 +597,7 @@ public class ComponentManagerImpl implements ComponentManager {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+                    //Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 }
             }
         }
@@ -620,7 +620,7 @@ public class ComponentManagerImpl implements ComponentManager {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+                    //Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 }
             }
         }
@@ -690,7 +690,7 @@ public class ComponentManagerImpl implements ComponentManager {
                     String message = "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
                             + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint();
                     log.error(message, e);
-                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
+                    //Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
                 }
             }
         }

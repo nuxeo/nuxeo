@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
@@ -119,8 +120,8 @@ public class TestComponentManager {
         assertFalse(events.isEmpty());
         ComponentEvent firstEvent = events.get(0);
         assertEquals("ACTIVATING_COMPONENT: service:org.nuxeo.runtime.EventService", firstEvent.toString());
-        for (String testedComp : List.of("org.nuxeo.runtime.EventService", mockComponentName)) {
-            for (int event : List.of(ComponentEvent.ACTIVATING_COMPONENT, ComponentEvent.COMPONENT_ACTIVATED,
+        for (String testedComp : Arrays.asList("org.nuxeo.runtime.EventService", mockComponentName)) {
+            for (int event : Arrays.asList(ComponentEvent.ACTIVATING_COMPONENT, ComponentEvent.COMPONENT_ACTIVATED,
                     ComponentEvent.STARTING_COMPONENT, ComponentEvent.COMPONENT_STARTED)) {
                 assertTrue(
                         String.format("No event %s for component %s", ComponentEvent.getEventName(event), testedComp),

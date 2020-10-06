@@ -36,7 +36,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.ComponentEvent;
-import org.nuxeo.runtime.RuntimeMessage.Level;
+//import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Component;
@@ -379,7 +379,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             String message = String.format("Component %s notification of application started failed: %s",
                     component == null ? null : component.getName(), e.getMessage());
             log.error(message, e);
-            Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
+            //Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
             state = START_FAILURE;
         }
     }
@@ -428,7 +428,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             String msg = "Failed to instantiate component: " + implementation;
             log.error(msg, e);
             msg += " (" + e.toString() + ')';
-            Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+            //Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
             return false;
         }
     }
@@ -448,7 +448,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             String msg = "Failed to activate component: " + implementation;
             log.error(msg, e);
             msg += " (" + e.toString() + ')';
-            Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+            //Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
             return;
         }
 
@@ -467,7 +467,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+                    //Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 }
             }
         }
@@ -490,7 +490,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+                    //Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 }
             }
         }
@@ -525,7 +525,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                         String message = "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
                                 + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint();
                         log.error(message, e);
-                        Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
+                        //Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, message);
                     }
                 }
             }
@@ -603,18 +603,18 @@ public class RegistrationInfoImpl implements RegistrationInfo {
      * @since 11.3
      */
     protected Extension[] checkExtensions() {
-        var validExtensions = new ArrayList<Extension>();
+        List<Extension> validExtensions = new ArrayList<Extension>();
         for (ExtensionImpl xt : extensions) {
             if (xt.target == null) {
                 String msg = String.format(
                         "Bad extension declaration (no target attribute specified) on component '%s'", getName());
-                Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
+                //Framework.getRuntime().getMessageHandler().addMessage(Level.ERROR, msg);
                 continue;
             } else {
                 validExtensions.add(xt);
             }
         }
-        return validExtensions.toArray(Extension[]::new);
+        return validExtensions.toArray(new Extension[] {});
     }
 
     @Override
