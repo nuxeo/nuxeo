@@ -423,7 +423,8 @@ public class AppCenterViewsManager implements Serializable {
                 pm.flushCache();
                 DownloadablePackage remotePkg = pm.findRemotePackageById(packageId);
                 if (remotePkg == null) {
-                    status.addError(String.format("Cannot perform validation: remote package '%s' not found", packageId));
+                    status.addError(
+                            String.format("Cannot perform validation: remote package '%s' not found", packageId));
                     return;
                 }
 
@@ -436,16 +437,19 @@ public class AppCenterViewsManager implements Serializable {
 
                 // TODO NXP-11776: replace errors by internationalized labels
                 String targetPlatform = PlatformVersionHelper.getPlatformFilter();
-                if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform)) {
+                String targetPlatformVersion = PlatformVersionHelper.getDistributionVersion();
+                if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform,
+                        targetPlatformVersion)) {
                     status.addError(String.format("This package is not validated for your current platform: %s",
                             targetPlatform));
                 }
                 // check deps requirements
                 if (pkgDeps != null && pkgDeps.length > 0) {
-                    DependencyResolution resolution = pm.resolveDependencies(packageId, targetPlatform);
+                    DependencyResolution resolution = pm.resolveDependencies(packageId, targetPlatform,
+                            targetPlatformVersion);
                     if (resolution.isFailed() && targetPlatform != null) {
                         // retry without PF filter in case it gives more information
-                        resolution = pm.resolveDependencies(packageId, null);
+                        resolution = pm.resolveDependencies(packageId, null, null);
                     }
                     if (resolution.isFailed()) {
                         status.addError(String.format("Dependency check has failed for package '%s' (%s)", packageId,
@@ -499,9 +503,11 @@ public class AppCenterViewsManager implements Serializable {
                         if (cause instanceof ConnectServerError) {
                             setStatus(SnapshotStatus.error, e.getMessage());
                         } else if (cause instanceof PackageException) {
-                            setStatus(SnapshotStatus.error, translate("label.studio.update.installation.error", e.getMessage()));
+                            setStatus(SnapshotStatus.error,
+                                    translate("label.studio.update.installation.error", e.getMessage()));
                         } else if (cause instanceof InterruptedException) {
-                            setStatus(SnapshotStatus.error, translate("label.studio.update.downloading.error", e.getMessage()));
+                            setStatus(SnapshotStatus.error,
+                                    translate("label.studio.update.downloading.error", e.getMessage()));
                             Thread.currentThread().interrupt();
                             throw e;
                         }
@@ -572,7 +578,8 @@ public class AppCenterViewsManager implements Serializable {
                     throw new NuxeoException(e);
                 } catch (PackageException e) {
                     log.error("Error while installing studio snapshot", e);
-                    setStatus(SnapshotStatus.error, translate("label.studio.update.installation.error", e.getMessage()));
+                    setStatus(SnapshotStatus.error,
+                            translate("label.studio.update.installation.error", e.getMessage()));
                 }
             } finally {
                 watch.stop();
@@ -581,12 +588,13 @@ public class AppCenterViewsManager implements Serializable {
                     message.append("Hot reload has been done in ")
                            .append(watch.getTotal().elapsed(TimeUnit.MILLISECONDS))
                            .append(" ms, detailed steps:");
-                    Stream.of(watch.getIntervals()).filter(TimeInterval::isStopped).forEach(
-                            i -> message.append("\n- ")
-                                        .append(i.getName())
-                                        .append(": ")
-                                        .append(i.elapsed(TimeUnit.MILLISECONDS))
-                                        .append(" ms"));
+                    Stream.of(watch.getIntervals())
+                          .filter(TimeInterval::isStopped)
+                          .forEach(i -> message.append("\n- ")
+                                               .append(i.getName())
+                                               .append(": ")
+                                               .append(i.elapsed(TimeUnit.MILLISECONDS))
+                                               .append(" ms"));
                     log.info(message.toString());
                 }
             }
