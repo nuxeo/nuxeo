@@ -19,7 +19,11 @@
  */
 package org.nuxeo.ecm.admin.runtime;
 
+import java.util.Arrays;
+
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.Environment;
+import org.nuxeo.connect.connector.fake.FakeDownloadablePackage;
 import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -64,7 +68,13 @@ public class PlatformVersionHelper {
      */
     @Deprecated
     public static boolean isCompatible(final String[] targetPlatforms, String currentPlatform) {
-        return TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(targetPlatforms, currentPlatform);
+        String currentPlatformVersion = StringUtils.substringAfter(currentPlatform, "-");
+        // we use a fake package here because the method of TargetPlatformFilterHelper without a package has become
+        // private
+        FakeDownloadablePackage fakePkg = new FakeDownloadablePackage(null, null);
+        fakePkg.targetPlatforms = Arrays.asList(targetPlatforms);
+        return TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(fakePkg, currentPlatform,
+                currentPlatformVersion);
     }
 
     /**

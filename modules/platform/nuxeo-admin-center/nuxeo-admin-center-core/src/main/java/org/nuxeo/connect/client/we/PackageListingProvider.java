@@ -61,11 +61,12 @@ public class PackageListingProvider extends DefaultObject {
     public Object doList(@QueryParam("type") String pkgType, @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getService(PackageManager.class);
         String targetPlatform = getTargetPlatform(filterOnPlatform);
+        String targetPlatformVersion = getTargetPlatformVersion(filterOnPlatform);
         List<DownloadablePackage> pkgs;
         if (StringUtils.isBlank(pkgType)) {
-            pkgs = pm.listPackages(targetPlatform);
+            pkgs = pm.listPackages(targetPlatform, targetPlatformVersion);
         } else {
-            pkgs = pm.listPackages(PackageType.getByValue(pkgType), targetPlatform);
+            pkgs = pm.listPackages(PackageType.getByValue(pkgType), targetPlatform, targetPlatformVersion);
         }
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
                                        .arg("showCommunityInfo", true)
@@ -86,11 +87,12 @@ public class PackageListingProvider extends DefaultObject {
             filterOnPlatform = SharedPackageListingsSettings.instance().get("updates").getPlatformFilter();
         }
         String targetPlatform = getTargetPlatform(filterOnPlatform);
+        String targetPlatformVersion = getTargetPlatformVersion(filterOnPlatform);
         List<DownloadablePackage> pkgs;
         if (StringUtils.isBlank(pkgType)) {
-            pkgs = pm.listUpdatePackages(null, targetPlatform);
+            pkgs = pm.listUpdatePackages(null, targetPlatform, targetPlatformVersion);
         } else {
-            pkgs = pm.listUpdatePackages(PackageType.getByValue(pkgType), targetPlatform);
+            pkgs = pm.listUpdatePackages(PackageType.getByValue(pkgType), targetPlatform, targetPlatformVersion);
         }
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
                                        .arg("showCommunityInfo", true)
@@ -111,11 +113,12 @@ public class PackageListingProvider extends DefaultObject {
             filterOnPlatform = SharedPackageListingsSettings.instance().get("private").getPlatformFilter();
         }
         String targetPlatform = getTargetPlatform(filterOnPlatform);
+        String targetPlatformVersion = getTargetPlatformVersion(filterOnPlatform);
         List<DownloadablePackage> pkgs;
         if (StringUtils.isBlank(pkgType)) {
-            pkgs = pm.listPrivatePackages(targetPlatform);
+            pkgs = pm.listPrivatePackages(targetPlatform, targetPlatformVersion);
         } else {
-            pkgs = pm.listPrivatePackages(PackageType.getByValue(pkgType), targetPlatform);
+            pkgs = pm.listPrivatePackages(PackageType.getByValue(pkgType), targetPlatform, targetPlatformVersion);
         }
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
                                        .arg("showCommunityInfo", true)
@@ -159,19 +162,22 @@ public class PackageListingProvider extends DefaultObject {
         }
         List<DownloadablePackage> pkgs;
         String targetPlatform = getTargetPlatform(filterOnPlatform);
+        String targetPlatformVersion = getTargetPlatformVersion(filterOnPlatform);
         if (!StringUtils.isEmpty(searchString)) { // SEARCH IS NOT IMPLEMENTED
             pkgs = pm.searchPackages(searchString);
         } else if (onlyRemote) {
             if (StringUtils.isBlank(pkgType)) {
-                pkgs = pm.listOnlyRemotePackages(targetPlatform);
+                pkgs = pm.listOnlyRemotePackages(targetPlatform, targetPlatformVersion);
             } else {
-                pkgs = pm.listOnlyRemotePackages(PackageType.getByValue(pkgType), targetPlatform);
+                pkgs = pm.listOnlyRemotePackages(PackageType.getByValue(pkgType), targetPlatform,
+                        targetPlatformVersion);
             }
         } else {
             if (StringUtils.isBlank(pkgType)) {
-                pkgs = pm.listRemoteOrLocalPackages(targetPlatform);
+                pkgs = pm.listRemoteOrLocalPackages(targetPlatform, targetPlatformVersion);
             } else {
-                pkgs = pm.listRemoteOrLocalPackages(PackageType.getByValue(pkgType), targetPlatform);
+                pkgs = pm.listRemoteOrLocalPackages(PackageType.getByValue(pkgType), targetPlatform,
+                        targetPlatformVersion);
             }
         }
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
@@ -191,6 +197,17 @@ public class PackageListingProvider extends DefaultObject {
             return null;
         }
         return PlatformVersionHelper.getPlatformFilter();
+    }
+
+    /**
+     * @return target platform version if {@code filterOnPlatform==true} else null
+     * @since 11.3
+     */
+    private String getTargetPlatformVersion(Boolean filterOnPlatform) {
+        if (filterOnPlatform != Boolean.TRUE) {
+            return null;
+        }
+        return PlatformVersionHelper.getDistributionVersion();
     }
 
     @GET
