@@ -72,10 +72,11 @@ public class UninstallHandler extends DefaultObject {
             }
             PackageManager pm = Framework.getService(PackageManager.class);
             List<DownloadablePackage> pkgToRemove = pm.getUninstallDependencies(pkg,
-                    getTargetPlatform(filterOnPlatform));
+                    getTargetPlatform(filterOnPlatform), getTargetPlatformVersion(filterOnPlatform));
             if (pkgToRemove.size() > 0) {
-                return getView("displayDependencies").arg("pkg", pkg).arg("pkgToRemove", pkgToRemove).arg("source",
-                        source);
+                return getView("displayDependencies").arg("pkg", pkg)
+                                                     .arg("pkgToRemove", pkgToRemove)
+                                                     .arg("source", source);
             }
             return getView("startUninstall").arg("status", status)
                                             .arg("uninstallTask", uninstallTask)
@@ -98,6 +99,17 @@ public class UninstallHandler extends DefaultObject {
         return PlatformVersionHelper.getPlatformFilter();
     }
 
+    /**
+     * @return target platform version if {@code filterOnPlatform==true} else null
+     * @since 11.3
+     */
+    private String getTargetPlatformVersion(Boolean filterOnPlatform) {
+        if (filterOnPlatform != Boolean.TRUE) {
+            return null;
+        }
+        return PlatformVersionHelper.getDistributionVersion();
+    }
+
     @GET
     @Produces("text/html")
     @Path(value = "run/{pkgId}")
@@ -108,7 +120,7 @@ public class UninstallHandler extends DefaultObject {
             LocalPackage pkg = pus.getPackage(pkgId);
             PackageManager pm = Framework.getService(PackageManager.class);
             List<DownloadablePackage> pkgToRemove = pm.getUninstallDependencies(pkg,
-                    getTargetPlatform(filterOnPlatform));
+                    getTargetPlatform(filterOnPlatform), getTargetPlatformVersion(filterOnPlatform));
             boolean restartRequired = InstallAfterRestart.isNeededForPackage(pkg);
             if (!restartRequired) {
                 for (DownloadablePackage rpkg : pkgToRemove) {
@@ -129,8 +141,9 @@ public class UninstallHandler extends DefaultObject {
                     performUninstall(localPackage);
                 }
                 uninstallTask = performUninstall(pkg);
-                return getView("uninstallDone").arg("uninstallTask", uninstallTask).arg("pkg", pkg).arg("source",
-                        source);
+                return getView("uninstallDone").arg("uninstallTask", uninstallTask)
+                                               .arg("pkg", pkg)
+                                               .arg("source", source);
             }
         } catch (PackageException e) {
             log.error("Error during uninstall of " + pkgId, e);

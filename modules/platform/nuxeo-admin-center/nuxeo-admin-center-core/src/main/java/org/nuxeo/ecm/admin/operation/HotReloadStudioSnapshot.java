@@ -143,7 +143,9 @@ public class HotReloadStudioSnapshot {
             pm.flushCache();
 
             String targetPlatform = PlatformVersionHelper.getPlatformFilter();
-            if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform)) {
+            String targetPlatformVersion = PlatformVersionHelper.getDistributionVersion();
+            if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform,
+                    targetPlatformVersion)) {
                 return jsonHelper(ERROR,
                         String.format("This package is not validated for your current platform: %s", targetPlatform),
                         null);
@@ -158,10 +160,11 @@ public class HotReloadStudioSnapshot {
 
             // check deps requirements
             if (pkgDeps != null && pkgDeps.length > 0) {
-                DependencyResolution resolution = pm.resolveDependencies(packageId, targetPlatform);
+                DependencyResolution resolution = pm.resolveDependencies(packageId, targetPlatform,
+                        targetPlatformVersion);
                 if (resolution.isFailed() && targetPlatform != null) {
                     // retry without PF filter in case it gives more information
-                    resolution = pm.resolveDependencies(packageId, null);
+                    resolution = pm.resolveDependencies(packageId, null, null);
                 }
                 if (resolution.isFailed()) {
                     return jsonHelper(DEPENDENCY_MISMATCH,
