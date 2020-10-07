@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.SubscriptionStatusType;
@@ -153,15 +152,17 @@ public class ConnectUpdateStatusInfo {
         }
         PackageManager pm = Framework.getService(PackageManager.class);
         String targetPlatform = PlatformVersionHelper.getPlatformFilter();
+        String targetPlatformVersion = PlatformVersionHelper.getDistributionVersion();
 
-        List<DownloadablePackage> pkgs = pm.listUpdatePackages(PackageType.HOT_FIX, targetPlatform);
+        List<DownloadablePackage> pkgs = pm.listUpdatePackages(PackageType.HOT_FIX, targetPlatform,
+                targetPlatformVersion);
 
         List<DownloadablePackage> localHotFixes = pm.listLocalPackages(PackageType.HOT_FIX);
 
         List<DownloadablePackage> applicablePkgs = new ArrayList<>();
 
         for (DownloadablePackage pkg : pkgs) {
-            if (TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg, targetPlatform)) {
+            if (TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg, targetPlatform, targetPlatformVersion)) {
                 boolean isInstalled = false;
                 for (DownloadablePackage localPkg : localHotFixes) {
                     if (localPkg.getId().equals(pkg.getId())) {
