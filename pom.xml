@@ -1491,7 +1491,7 @@
         <scope>test</scope>
       </dependency>
 
-      <!-- Filesystem connectors -->
+      <!-- WebDAV -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-webdav</artifactId>

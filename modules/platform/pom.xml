@@ -28,7 +28,6 @@
     <module>nuxeo-easyshare-core</module>
     <module>nuxeo-elasticsearch</module>
     <module>nuxeo-features-test</module>
-    <module>nuxeo-filesystem-connectors</module>
     <module>nuxeo-fsexporter</module>
     <module>nuxeo-invite</module>
     <module>nuxeo-jsf-to-web-ui</module>
@@ -110,6 +109,7 @@
     <module>nuxeo-web-resources-api</module>
     <module>nuxeo-web-resources-core</module>
     <module>nuxeo-web-resources-wro</module>
+    <module>nuxeo-webdav</module>
     <module>nuxeo-webengine</module>
     <module>nuxeo-wopi</module>
     <module>rest-api</module>
