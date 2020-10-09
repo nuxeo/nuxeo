@@ -165,6 +165,16 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
     public final boolean metadataAddUsername;
 
+    /**
+     * The retention mode with which the bucket is configured.
+     *
+     * @since 11.4
+     */
+    public final ObjectLockRetentionMode bucketRetentionMode;
+
+    /**
+     * The retention mode to use when setting the retention on an object.
+     */
     public final ObjectLockRetentionMode retentionMode;
 
     public S3BlobStoreConfiguration(Map<String, String> properties) throws IOException {
@@ -208,12 +218,13 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
         amazonS3 = getAmazonS3(s3Builder);
 
+        metadataAddUsername = getBooleanProperty(METADATA_ADD_USERNAME_PROPERTY);
+        bucketRetentionMode = computeBucketRetentionMode();
+        retentionMode = bucketRetentionMode == null ? DEFAULT_RETENTION_MODE : bucketRetentionMode;
+
         transferManager = createTransferManager();
 
         abortOldUploads();
-
-        metadataAddUsername = getBooleanProperty(METADATA_ADD_USERNAME_PROPERTY);
-        retentionMode = getRetentionMode();
     }
 
     /**
@@ -404,29 +415,40 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
             multipartCopyPartSize = configurationService.getLong(MULTIPART_COPY_PART_SIZE_PROPERTY,
                     multipartCopyPartSize);
         }
+        // when the bucket has Object Lock active, uploads need to provide an MD5
+        boolean alwaysCalculateMultipartMd5 = bucketRetentionMode != null;
         return TransferManagerBuilder.standard()
                                      .withS3Client(amazonS3)
                                      .withMinimumUploadPartSize(Long.valueOf(minimumUploadPartSize))
                                      .withMultipartUploadThreshold(Long.valueOf(multipartUploadThreshold))
                                      .withMultipartCopyThreshold(Long.valueOf(multipartCopyThreshold))
                                      .withMultipartCopyPartSize(Long.valueOf(multipartCopyPartSize))
+                                     .withAlwaysCalculateMultipartMd5(alwaysCalculateMultipartMd5)
                                      .build();
     }
 
+    /** @deprecated since 11.4, unused */
+    @Deprecated
     protected ObjectLockRetentionMode getRetentionMode() {
+        ObjectLockRetentionMode bucketRetentionMode = computeBucketRetentionMode();
+        return bucketRetentionMode == null ? DEFAULT_RETENTION_MODE : bucketRetentionMode;
+    }
+
+    protected ObjectLockRetentionMode computeBucketRetentionMode() {
         GetObjectLockConfigurationRequest request = new GetObjectLockConfigurationRequest().withBucketName(bucketName);
         GetObjectLockConfigurationResult result;
         try {
             result = amazonS3.getObjectLockConfiguration(request);
         } catch (AmazonServiceException e) {
-            return DEFAULT_RETENTION_MODE;
+            log.warn("Failed to get ObjectLockConfiguration for bucket: {}", bucketName, e);
+            return null;
         }
         return Optional.ofNullable(result.getObjectLockConfiguration())
                        .map(ObjectLockConfiguration::getRule)
                        .map(ObjectLockRule::getDefaultRetention)
                        .map(DefaultRetention::getMode)
                        .map(ObjectLockRetentionMode::valueOf)
-                       .orElse(DEFAULT_RETENTION_MODE);
+                       .orElse(null);
     }
 
     /**

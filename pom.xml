@@ -169,7 +169,7 @@
     <selenium.version>2.53.0</selenium.version>
     <pdfbox.version>1.8.16</pdfbox.version>
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
-    <aws.version>1.11.738</aws.version>
+    <aws.version>1.11.878</aws.version>
     <gcp.version>1.76.0</gcp.version>
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
