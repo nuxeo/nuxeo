@@ -40,7 +40,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-@Deploy("org.nuxeo.ecm.platform.mail.types:OSGI-INF/nxmail-core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.mail:OSGI-INF/nxmail-core-types-contrib.xml")
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 public class TestMailMessageSecurityPolicy {
