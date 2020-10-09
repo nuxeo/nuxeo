@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo CMIS Test
-Bundle-SymbolicName: org.nuxeo.ecm.webdav.test;singleton:=true
-Bundle-Vendor: Nuxeo
-Bundle-Localization: bundle
