@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Video
+Bundle-SymbolicName: org.nuxeo.ecm.platform.video
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/adapters-contrib.xml,
+ OSGI-INF/commandline-contrib.xml,
+ OSGI-INF/convert-service-contrib.xml,
+ OSGI-INF/core-types-contrib.xml,
+ OSGI-INF/filemanager-importer-contrib.xml,
+ OSGI-INF/lifecycle-contrib.xml,
+ OSGI-INF/ui-types-contrib.xml,
+ OSGI-INF/video-listeners-contrib.xml,
+ OSGI-INF/video-renditions-contrib.xml,
+ OSGI-INF/video-service-contrib.xml,
+ OSGI-INF/video-service.xml,
+ OSGI-INF/video-thumbnailfactory-contrib.xml,
+ OSGI-INF/video-tools-commandlines-contrib.xml,
+ OSGI-INF/video-tools-operations-contrib.xml,
+ OSGI-INF/video-tools-service.xml,
+ OSGI-INF/video-workmanager-config.xml
