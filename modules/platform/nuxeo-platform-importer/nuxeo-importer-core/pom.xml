@@ -48,7 +48,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-video-core</artifactId>
+      <artifactId>nuxeo-platform-video</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
