@@ -81,10 +81,6 @@ After installing the plugin, make sure before starting to include your Duo Keys 
 
 The `YOUR_APPLICATION_KEY` can be generated as followed in [Duo documentation](https://www.duosecurity.com/docs/duoweb#1.-generate-an-akey)
 
-## QA results
-
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-duoweb-authentication-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-duoweb-authentication-master/)
-
 ### Report & Contribute
 
 We are glad to welcome new developers on this initiative, and even simple usage feedback is great.

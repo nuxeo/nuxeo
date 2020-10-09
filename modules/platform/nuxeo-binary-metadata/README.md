@@ -18,10 +18,6 @@ The **Nuxeo** addon _binary-metadata_ gives the ability to extract and rewrite b
 
 Copy the built artifacts into `$NUXEO_HOME/templates/custom/bundles/` and activate the "custom" template.
 
-## QA results
-
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-binary-metadata-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-binary-metadata-master/)
-
 ##Report & Contribute
 
 We are glad to welcome new developers on this initiative, and even simple usage feedback is great.

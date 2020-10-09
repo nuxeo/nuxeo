@@ -16,9 +16,6 @@
 * See `release.py -h` and `release_mp.py -h`
 
 # Code
-## QA
-
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/nuxeo-master)](https://qa.nuxeo.org/jenkins/job/master/job/nuxeo-master)
 
 ## Running Unit Tests
 Follow the Installation steps to acquire the dependencies
