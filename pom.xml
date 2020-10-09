@@ -27,7 +27,7 @@
 
   <ciManagement>
     <system>Jenkins</system>
-    <url>http://qa.nuxeo.org/jenkins/</url>
+    <url>https://jenkins.platform.dev.nuxeo.com/</url>
     <notifiers>
       <notifier>
         <type>mail</type>
