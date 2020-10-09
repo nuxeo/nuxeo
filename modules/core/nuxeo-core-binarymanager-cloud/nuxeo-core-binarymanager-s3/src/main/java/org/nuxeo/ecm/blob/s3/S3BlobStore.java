@@ -61,6 +61,7 @@ import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkBaseException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
@@ -265,6 +266,9 @@ public class S3BlobStore extends AbstractBlobStore {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new NuxeoException(e);
+        } catch (SdkBaseException e) {
+            // catch SdkBaseException and not just AmazonServiceException
+            throw new NuxeoException("Failed to write blob: " + key, e);
         }
     }
 
