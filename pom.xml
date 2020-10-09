@@ -1228,12 +1228,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-mail-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-mail-types</artifactId>
+        <artifactId>nuxeo-platform-mail</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
