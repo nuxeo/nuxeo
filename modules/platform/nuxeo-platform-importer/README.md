@@ -19,9 +19,6 @@ https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-scan-importer
 ### Documentation
 The documentation for Nuxeo Platform Importer is available in our Documentation Center: http://doc.nuxeo.com/x/gYBVAQ
 
-### Following Project QA Status
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-platform-importer-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-platform-importer-master/)
-
 ### Reporting Issues
 You can follow the developments in the Nuxeo Platform project of our JIRA bug tracker, which includes a Nuxeo Platform Importer component:
 https://jira.nuxeo.com/browse/NXP/component/10621

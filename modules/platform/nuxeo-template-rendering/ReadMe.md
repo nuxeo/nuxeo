@@ -71,9 +71,6 @@ Nuxeo Template Rendering is available as a package add-on [from the Nuxeo Market
 ### Documentation
 The documentation for Nuxeo Template Rendering is available in our Documentation Center: http://doc.nuxeo.com/x/9YSo
 
-### Following Project QA Status
-Follow the project build status on: http://qa.nuxeo.org/jenkins/job/addons_nuxeo-template-rendering-master/
-
 ### Reporting Issues
 You can follow the developments in the Nuxeo Platform project of our JIRA bug tracker, which includes a Template Rendering component: https://jira.nuxeo.com/browse/NXP/component/11405
 

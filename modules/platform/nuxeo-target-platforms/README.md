@@ -43,10 +43,6 @@ For example, a release which uses Nuxeo `6.0-HF31` will end with `.6031`.
 
 Copy the built artifacts into `$NUXEO_HOME/templates/custom/bundles/` and activate the "custom" template.
 
-## QA results
-
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-target-platforms-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-target-platforms-master/)
-
 ## Usage
 
 Admin center tab is available at Admin Center > Target Platforms.
