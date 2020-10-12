@@ -15,6 +15,7 @@
     <Logger name="org.nuxeo.ecm.core.work.WorkQueuing" level="trace" />
     <Logger name="org.nuxeo.ecm.core.work.api.WorkSchedulePath" level="trace" />
     <Logger name="org.nuxeo.ecm.core.work" level="debug" />
+    <Logger name="net.openhft.chronicle.queue.impl.single.ReferenceCountedCache" level="error" /> <!-- Hide cache cleaning warnings -->
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />
