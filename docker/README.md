@@ -3,7 +3,7 @@
 Nuxeo provides a ready to use Docker image that is pushed to our Docker registry. To pull the image, run:
 
 ```bash
-docker pull DOCKER_REGISTRY/nuxeo:TAG
+docker pull <DOCKER_REGISTRY>/nuxeo:<TAG>
 ```
 
 ## Disclaimer
@@ -44,7 +44,7 @@ mvn -nsu install
 
 ### With Skaffold
 
-We use Skaffold to build the images as part of the [nuxeo](http://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/nuxeo/) pipeline in our Jenkins CI/CD platform.
+We use Skaffold to build the image as part of the [nuxeo](http://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/nuxeo/) pipeline in our Jenkins CI/CD platform.
 
 This requires to:
 
@@ -54,7 +54,7 @@ This requires to:
 
 It also requires the following environment variables:
 
-- `DOCKER_REGISTRY`: the Docker registry to push the images to.
+- `DOCKER_REGISTRY`: the Docker registry to push the image to.
 - `VERSION`: the image tag, for instance `latest`.
 
 To build the `nuxeo/nuxeo` image with Skaffold, you first need to fetch the Nuxeo server ZIP file and make it available for the Docker build with Maven:
@@ -94,7 +94,7 @@ docker run -it -p 8080:8080 nuxeo/nuxeo:latest
 To pull the `nuxeo/nuxeo` image from our Docker regsitry and run a container from it, run:
 
 ```bash
-docker run -it -p 8080:8080 DOCKER_REGISTRY/nuxeo/nuxeo:latest
+docker run -it -p 8080:8080 <DOCKER_REGISTRY>/nuxeo/nuxeo:latest
 ```
 
 ## Inspect the Image
