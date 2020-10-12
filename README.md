@@ -51,6 +51,8 @@ To take the shortest path for building the Docker image, run the following comma
 mvn install -Pdistrib,docker -pl docker -am -DskipTests -Dnuxeo.skip.enforcer=true -T6
 ```
 
+See the [docker](docker) directory for more information on how to build, run and configure the Nuxeo Docker Image.
+
 See our [Nuxeo Core Developer Guide](https://doc.nuxeo.com/n/9ib) for complete instructions and guidelines.
 
 ## Resources
