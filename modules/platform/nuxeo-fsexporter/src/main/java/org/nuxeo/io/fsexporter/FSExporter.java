@@ -21,10 +21,15 @@ package org.nuxeo.io.fsexporter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.nuxeo.ecm.collections.api.CollectionConstants;
+import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -63,6 +68,16 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
             DocumentModelList children = exporter.getChildren(session, doc, PageProvider);
             for (DocumentModel child : children) {
                 serializeStructure(session, serialized.getAbsolutePath(), child, PageProvider);
+            }
+        } else if (doc.hasFacet(CollectionConstants.COLLECTION_FACET)) {
+            List<DocumentModel> collectedDocs = doc.getAdapter(Collection.class)
+                                                   .getCollectedDocumentIds()
+                                                   .stream()
+                                                   .map(IdRef::new)
+                                                   .map(session::getDocument)
+                                                   .collect(Collectors.toList());
+            for (DocumentModel collected : collectedDocs) {
+                serializeStructure(session, serialized.getAbsolutePath(), collected, PageProvider);
             }
         }
     }
