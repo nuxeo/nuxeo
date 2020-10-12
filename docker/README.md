@@ -111,6 +111,27 @@ The [dive](https://github.com/wagoodman/dive) tool is also very good for explori
 dive nuxeo/nuxeo:latest
 ```
 
+## Build an Image From the Nuxeo Image
+
+We provide some utility scripts to install Nuxeo packages when building an image from the Nuxeo image:
+
+- [install-local-packages.sh](./install-local-packages.sh): install a local Nuxeo package embedded in the image as a ZIP file.
+- [install-packages.sh](./install-packages.sh): install a remote Nuxeo package from [Nuxeo Connect](https://connect.nuxeo.com/).
+
+For instance, you can use these scripts in the following `Dockerfile`:
+
+```Dockerfile
+FROM <DOCKER_REGISTRY>/nuxeo:<TAG>
+
+ARG CLID
+ARG CONNECT_URL
+
+COPY --chown=900:0 path/to/local-package-*.zip $NUXEO_HOME/local-packages/local-package.zip
+
+RUN /install-local-packages.sh $NUXEO_HOME/local-packages
+RUN /install-packages.sh --clid ${CLID} --connect-url ${CONNECT_URL} nuxeo-web-ui nuxeo-drive
+```
+
 ## Configure the Image at Runtime
 
 Though we try to have immutable images configured at build time, in some cases it makes sense to configure a container at runtime. This typically applies to the address and credentials of each back-end store (database, Elasticsearch, S3, etc.) that are specific to a given deployment: development, staging, production, etc.
