@@ -185,3 +185,8 @@ For instance, to run a container with the `nuxeo-web-ui` and `nuxeo-drive` packa
 ```bash
 docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> -e NUXEO_PACKAGES="nuxeo-web-ui nuxeo-drive" nuxeo/nuxeo:latest
 ```
+
+### Shell Scripts
+
+To run some shell scripts when running a container from a Nuxeo image, you can add
+`*.sh` files in the `/docker-entrypoint-initnuxeo.d` directory of the image. They will be executed at startup by the default `ENTRYPOINT`.
