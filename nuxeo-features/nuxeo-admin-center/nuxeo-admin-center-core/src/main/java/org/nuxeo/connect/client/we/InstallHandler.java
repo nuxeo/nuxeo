@@ -39,6 +39,7 @@ import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
+import org.nuxeo.connect.platform.PlatformId;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageException;
@@ -130,12 +131,11 @@ public class InstallHandler extends DefaultObject {
                 if (pkg.getDependencies() != null && pkg.getDependencies().length > 0) {
                     PackageManager pm = Framework.getService(PackageManager.class);
                     DependencyResolution resolution = pm.resolveDependencies(Collections.singletonList(pkgId),
-                            Collections.emptyList(), Collections.emptyList(), PlatformVersionHelper.getPlatformFilter(),
-                            PlatformVersionHelper.getDistributionVersion());
-                    if (resolution.isFailed() && PlatformVersionHelper.getPlatformFilter() != null) {
+                            Collections.emptyList(), Collections.emptyList(), PlatformVersionHelper.getPlatformId());
+                    if (resolution.isFailed() && PlatformVersionHelper.getPlatformId() != null) {
                         // retry without PF filter ...
                         resolution = pm.resolveDependencies(Collections.singletonList(pkgId), Collections.emptyList(),
-                                Collections.emptyList(), null, null);
+                                Collections.emptyList(), null);
                     }
                     if (resolution.isFailed()) {
                         return getView("dependencyError").arg("resolution", resolution)
@@ -158,10 +158,10 @@ public class InstallHandler extends DefaultObject {
             }
             Task installTask = pkg.getInstallTask();
             ValidationStatus status = installTask.validate();
-            String targetPlatform = PlatformVersionHelper.getPlatformFilter();
-            if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg, targetPlatform,
-                    PlatformVersionHelper.getDistributionVersion())) {
-                status.addWarning("This package is not validated for you current platform: " + targetPlatform);
+            PlatformId targetPlatform = PlatformVersionHelper.getPlatformId();
+            if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg, targetPlatform)) {
+                status.addWarning(
+                        "This package is not validated for you current platform: " + targetPlatform.asString());
             }
             if (status.hasErrors()) {
                 return getView("canNotInstall").arg("status", status).arg("pkg", pkg).arg("source", source);
@@ -267,12 +267,11 @@ public class InstallHandler extends DefaultObject {
         PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
         try {
             DependencyResolution resolution = pm.resolveDependencies(Collections.singletonList(pkgId),
-                    Collections.emptyList(), Collections.emptyList(), PlatformVersionHelper.getPlatformFilter(),
-                    PlatformVersionHelper.getDistributionVersion());
-            if (resolution.isFailed() && PlatformVersionHelper.getPlatformFilter() != null) {
+                    Collections.emptyList(), Collections.emptyList(), PlatformVersionHelper.getPlatformId());
+            if (resolution.isFailed() && PlatformVersionHelper.getPlatformId() != null) {
                 // retry without PF filter ...
                 resolution = pm.resolveDependencies(Collections.singletonList(pkgId), Collections.emptyList(),
-                        Collections.emptyList(), null, null);
+                        Collections.emptyList(), null);
             }
             List<String> downloadPackagesIds = resolution.getDownloadPackageIds();
             if (downloadPackagesIds.size() > 0) {
@@ -298,10 +297,10 @@ public class InstallHandler extends DefaultObject {
                     return getView("installError").arg("e", new NuxeoException("Unable to find local package " + id))
                                                   .arg("source", source);
                 }
-                String targetPlatform = PlatformVersionHelper.getPlatformFilter();
-                if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg, targetPlatform,
-                        PlatformVersionHelper.getDistributionVersion())) {
-                    warns.add("Package " + id + " is not validated for your current platform: " + targetPlatform);
+                PlatformId targetPlatform = PlatformVersionHelper.getPlatformId();
+                if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg, targetPlatform)) {
+                    warns.add("Package " + id + " is not validated for your current platform: "
+                            + targetPlatform.asString());
                 }
                 descs.add(pkg.getDescription());
             }

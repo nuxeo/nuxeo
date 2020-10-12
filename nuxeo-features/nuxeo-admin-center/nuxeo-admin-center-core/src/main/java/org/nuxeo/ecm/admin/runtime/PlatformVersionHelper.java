@@ -21,10 +21,10 @@ package org.nuxeo.ecm.admin.runtime;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.connector.fake.FakeDownloadablePackage;
 import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
+import org.nuxeo.connect.platform.PlatformId;
 import org.nuxeo.runtime.api.Framework;
 
 public class PlatformVersionHelper {
@@ -39,11 +39,11 @@ public class PlatformVersionHelper {
         return Framework.getProperty(Environment.PRODUCT_VERSION, UNKNOWN);
     }
 
-    public static String getPlatformFilter() {
-        if (getDistributionName().equals(UNKNOWN)) {
+    public static PlatformId getPlatformId() {
+        if (getDistributionName().equals(UNKNOWN) || getDistributionVersion().equals(UNKNOWN)) {
             return null;
         }
-        return getDistributionName() + "-" + getDistributionVersion();
+        return PlatformId.parse(getDistributionName(), getDistributionVersion());
     }
 
     public static String getDistributionName() {
@@ -68,23 +68,21 @@ public class PlatformVersionHelper {
      */
     @Deprecated
     public static boolean isCompatible(final String[] targetPlatforms, String currentPlatform) {
-        String currentPlatformVersion = StringUtils.substringAfter(currentPlatform, "-");
         // we use a fake package here because the method of TargetPlatformFilterHelper without a package has become
         // private
         FakeDownloadablePackage fakePkg = new FakeDownloadablePackage(null, null);
         fakePkg.targetPlatforms = Arrays.asList(targetPlatforms);
-        return TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(fakePkg, currentPlatform,
-                currentPlatformVersion);
+        return TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(fakePkg, PlatformId.parse(currentPlatform));
     }
 
     /**
      * @deprecated Since 6.0. Use {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(String[], String)}
-     * @see #getPlatformFilter()
+     * @see #getPlatformId()
      * @see TargetPlatformFilterHelper
      */
     @Deprecated
     public static boolean isCompatible(String[] targetPlatforms) {
-        return isCompatible(targetPlatforms, getPlatformFilter());
+        return isCompatible(targetPlatforms, getPlatformId().asString());
     }
 
 }

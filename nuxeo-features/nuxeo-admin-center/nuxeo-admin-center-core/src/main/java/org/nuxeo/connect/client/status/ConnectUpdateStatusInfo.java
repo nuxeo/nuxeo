@@ -31,6 +31,7 @@ import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
+import org.nuxeo.connect.platform.PlatformId;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -111,7 +112,7 @@ public class ConnectUpdateStatusInfo {
         }
 
         sb.append("?product=");
-        sb.append(PlatformVersionHelper.getPlatformFilter());
+        sb.append(PlatformVersionHelper.getPlatformId());
         if (registred) {
             sb.append("&instance=");
             try {
@@ -151,18 +152,16 @@ public class ConnectUpdateStatusInfo {
             return 0;
         }
         PackageManager pm = Framework.getService(PackageManager.class);
-        String targetPlatform = PlatformVersionHelper.getPlatformFilter();
-        String targetPlatformVersion = PlatformVersionHelper.getDistributionVersion();
+        PlatformId targetPlatform = PlatformVersionHelper.getPlatformId();
 
-        List<DownloadablePackage> pkgs = pm.listUpdatePackages(PackageType.HOT_FIX, targetPlatform,
-                targetPlatformVersion);
+        List<DownloadablePackage> pkgs = pm.listUpdatePackages(PackageType.HOT_FIX, targetPlatform);
 
         List<DownloadablePackage> localHotFixes = pm.listLocalPackages(PackageType.HOT_FIX);
 
         List<DownloadablePackage> applicablePkgs = new ArrayList<>();
 
         for (DownloadablePackage pkg : pkgs) {
-            if (TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg, targetPlatform, targetPlatformVersion)) {
+            if (TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg, targetPlatform)) {
                 boolean isInstalled = false;
                 for (DownloadablePackage localPkg : localHotFixes) {
                     if (localPkg.getId().equals(pkg.getId())) {

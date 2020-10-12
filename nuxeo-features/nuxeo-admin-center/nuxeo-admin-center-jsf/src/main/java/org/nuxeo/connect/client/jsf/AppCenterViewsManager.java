@@ -59,6 +59,7 @@ import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
+import org.nuxeo.connect.platform.PlatformId;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageException;
@@ -436,20 +437,17 @@ public class AppCenterViewsManager implements Serializable {
                 }
 
                 // TODO NXP-11776: replace errors by internationalized labels
-                String targetPlatform = PlatformVersionHelper.getPlatformFilter();
-                String targetPlatformVersion = PlatformVersionHelper.getDistributionVersion();
-                if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform,
-                        targetPlatformVersion)) {
+                PlatformId targetPlatform = PlatformVersionHelper.getPlatformId();
+                if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform)) {
                     status.addError(String.format("This package is not validated for your current platform: %s",
                             targetPlatform));
                 }
                 // check deps requirements
                 if (pkgDeps != null && pkgDeps.length > 0) {
-                    DependencyResolution resolution = pm.resolveDependencies(packageId, targetPlatform,
-                            targetPlatformVersion);
+                    DependencyResolution resolution = pm.resolveDependencies(packageId, targetPlatform);
                     if (resolution.isFailed() && targetPlatform != null) {
                         // retry without PF filter in case it gives more information
-                        resolution = pm.resolveDependencies(packageId, null, null);
+                        resolution = pm.resolveDependencies(packageId, null);
                     }
                     if (resolution.isFailed()) {
                         status.addError(String.format("Dependency check has failed for package '%s' (%s)", packageId,
