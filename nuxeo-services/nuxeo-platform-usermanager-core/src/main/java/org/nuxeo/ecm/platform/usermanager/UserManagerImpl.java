@@ -1605,6 +1605,24 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     @Override
+    public List<String> getDescendantGroups(String groupId){
+        List<String> descendantGroups = new ArrayList<>();
+        populateDescendantGroups(groupId, descendantGroups);
+        return descendantGroups;
+    }
+
+    protected void populateDescendantGroups(String groupId, List<String> descendantGroups) {
+        NuxeoGroup group = getGroup(groupId);
+        if (group != null) {
+            List<String> subGroups = group.getMemberGroups();
+            subGroups.stream().filter(subGroup -> !descendantGroups.contains(subGroup)).forEach(subGroup -> {
+                descendantGroups.add(subGroup);
+                populateDescendantGroups(subGroup, descendantGroups);
+            });
+        }
+    }
+
+    @Override
     public void handleEvent(Event event) {
         String id = event.getId();
         if (INVALIDATE_PRINCIPAL_EVENT_ID.equals(id)) {

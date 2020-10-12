@@ -143,6 +143,12 @@ public class SuggestUserEntries {
     @Param(name = "lang", required = false)
     protected String lang;
 
+    /*
+     * @since 11.4
+     */
+    @Param(name = "allowSubGroupsRestriction", required = false, description = "Suggest users from the subgroups specified in the group restriction.")
+    protected boolean allowSubGroupsRestriction;
+
     @OperationMethod
     public Blob run() throws IOException {
         List<Map<String, Object>> result = new ArrayList<>();
@@ -269,8 +275,20 @@ public class SuggestUserEntries {
                 user = userManager.getUserModel(userId);
                 UserAdapter userAdapter = user.getAdapter(UserAdapter.class);
                 List<String> groups = userAdapter.getGroups();
-                if (groups != null && groups.contains(groupRestriction)) {
-                    result.add(obj);
+                List<String> restrictedGroups = new ArrayList<>();
+                restrictedGroups.add(groupRestriction);
+                if (allowSubGroupsRestriction) {
+                    List<String> subGroups = userManager.getDescendantGroups(groupRestriction);
+                    for (String subGroup : subGroups) {
+                        restrictedGroups.add(subGroup);
+                    }
+                }
+
+                if (groups != null) {
+                    groups.retainAll(restrictedGroups);
+                    if (!groups.isEmpty()) {
+                        result.add(obj);
+                    }
                 }
             } else {
                 result.add(obj);
