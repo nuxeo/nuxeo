@@ -52,6 +52,11 @@
     <session-timeout>${session.timeout}</session-timeout>
 <#if "${session.config.tracking.mode.cookie}" == "true">
     <tracking-mode>COOKIE</tracking-mode>
+    <#if "${nuxeo.server.cookies.sameSite}" == "none">
+    <cookie-config>
+      <secure>true</secure>
+    </cookie-config>
+    </#if>
 </#if>
   </session-config>
 
