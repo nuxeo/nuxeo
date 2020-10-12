@@ -50,9 +50,7 @@
     <module>nuxeo-platform-directory</module>
     <module>nuxeo-platform-document-routing</module>
     <module>nuxeo-platform-dublincore</module>
-    <module>nuxeo-platform-filemanager-api</module>
-    <module>nuxeo-platform-filemanager-core-listener</module>
-    <module>nuxeo-platform-filemanager-core</module>
+    <module>nuxeo-platform-filemanager</module>
     <module>nuxeo-platform-forms-layout-api</module>
     <module>nuxeo-platform-forms-layout-core</module>
     <module>nuxeo-platform-forms-layout-export</module>

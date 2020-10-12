@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: NXTestFileManager
-Bundle-SymbolicName: org.nuxeo.ecm.platform.filemanager.core.listener.test
-Bundle-Localization: plugin
-Bundle-Vendor: Nuxeo
-Require-Bundle: org.nuxeo.ecm.core,
- org.nuxeo.ecm.core.event

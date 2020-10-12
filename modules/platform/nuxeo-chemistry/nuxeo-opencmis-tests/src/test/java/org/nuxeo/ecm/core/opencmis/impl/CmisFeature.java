@@ -37,9 +37,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 // MyDocType
 @Deploy("org.nuxeo.ecm.core.opencmis.tests")
 // MIME Type Icon Updater for renditions
-@Deploy("org.nuxeo.ecm.platform.filemanager.api")
-@Deploy("org.nuxeo.ecm.platform.filemanager.core")
-@Deploy("org.nuxeo.ecm.platform.filemanager.core.listener")
+@Deploy("org.nuxeo.ecm.platform.filemanager")
 @Deploy("org.nuxeo.ecm.platform.types.api")
 @Deploy("org.nuxeo.ecm.platform.types.core")
 // Rendition Service

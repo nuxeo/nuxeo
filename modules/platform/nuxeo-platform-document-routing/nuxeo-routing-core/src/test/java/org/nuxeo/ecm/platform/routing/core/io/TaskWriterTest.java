@@ -56,8 +56,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RunWith(FeaturesRunner.class)
 @Features({ WorkflowFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.platform.routing.default")
-@Deploy("org.nuxeo.ecm.platform.filemanager.api")
-@Deploy("org.nuxeo.ecm.platform.filemanager.core")
+@Deploy("org.nuxeo.ecm.platform.filemanager")
 public class TaskWriterTest extends AbstractJsonWriterTest.External<TaskWriter, Task> {
 
     @Inject
