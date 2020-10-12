@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -142,6 +143,12 @@ public class SuggestUserEntries {
 
     @Param(name = "lang", required = false)
     protected String lang;
+
+    /*
+     * @since 11.4
+     */
+    @Param(name = "allowSubGroupsRestriction", required = false, description = "Whether to take into account subgroups when evaluating groupRestriction.")
+    protected boolean allowSubGroupsRestriction;
 
     @OperationMethod
     public Blob run() throws IOException {
@@ -269,8 +276,16 @@ public class SuggestUserEntries {
                 user = userManager.getUserModel(userId);
                 UserAdapter userAdapter = user.getAdapter(UserAdapter.class);
                 List<String> groups = userAdapter.getGroups();
-                if (groups != null && groups.contains(groupRestriction)) {
-                    result.add(obj);
+                if (CollectionUtils.isNotEmpty(groups)) {
+                    List<String> restrictedGroups = new ArrayList<>();
+                    restrictedGroups.add(groupRestriction);
+                    if (allowSubGroupsRestriction) {
+                        restrictedGroups.addAll(userManager.getDescendantGroups(groupRestriction));
+                    }
+                    restrictedGroups.retainAll(groups);
+                    if (!restrictedGroups.isEmpty()) {
+                        result.add(obj);
+                    }
                 }
             } else {
                 result.add(obj);
