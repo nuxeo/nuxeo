@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -97,7 +98,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
             return folder;
         }
 
-        if (docfrom.hasFacet("Folderish")) {
+        if (docfrom.hasFacet("Folderish") || docfrom.hasFacet(CollectionConstants.COLLECTION_FACET)) {
             newFolder = new File(fsPath + "/" + docfrom.getName());
             newFolder.mkdir();
         }
