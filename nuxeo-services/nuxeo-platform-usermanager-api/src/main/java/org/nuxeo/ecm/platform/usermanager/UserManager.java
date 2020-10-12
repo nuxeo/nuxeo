@@ -419,6 +419,13 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     List<String> getAncestorGroups(String groupId);
 
     /**
+     * Returns the descendant groups of the group with the given id.
+     *
+     * @since 11.4
+     */
+    List<String> getDescendantGroups(String groupId);
+
+    /**
      * Returns the contributed {@link GroupConfig}.
      *
      * @since 9.3
@@ -463,4 +470,5 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @since 9.2
      */
     void notifyGroupChanged(String groupName, String eventId, List<String> ancestorGroupNames);
+
 }
