@@ -30,9 +30,7 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 @Deploy("org.nuxeo.ecm.platform.types.api")
 @Deploy("org.nuxeo.ecm.platform.types.core")
 @Deploy("org.nuxeo.ecm.platform.dublincore")
-@Deploy("org.nuxeo.ecm.platform.filemanager.api")
-@Deploy("org.nuxeo.ecm.platform.filemanager.core")
-@Deploy("org.nuxeo.ecm.platform.filemanager.core.listener")
+@Deploy("org.nuxeo.ecm.platform.filemanager")
 @Deploy("org.nuxeo.ecm.webdav.test.tests:OSGI-INF/servletcontainer-config.xml")
 public class WebDavServerFeature extends WebEngineFeature {
 

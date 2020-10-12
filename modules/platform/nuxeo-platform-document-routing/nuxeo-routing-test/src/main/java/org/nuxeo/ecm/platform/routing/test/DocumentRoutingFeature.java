@@ -39,7 +39,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-life-cycle-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-engine-service.xml")
 @Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-operations-contrib.xml")
-@Deploy("org.nuxeo.ecm.platform.filemanager.core")
+@Deploy("org.nuxeo.ecm.platform.filemanager")
 @Deploy("org.nuxeo.ecm.core.mimetype:OSGI-INF/nxmimetype-service.xml")
 public class DocumentRoutingFeature implements RunnerFeature {
 

@@ -48,8 +48,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(WorkflowFeature.class)
-@Deploy("org.nuxeo.ecm.platform.filemanager.api")
-@Deploy("org.nuxeo.ecm.platform.filemanager.core")
+@Deploy("org.nuxeo.ecm.platform.filemanager")
 @Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-route-contrib.xml")
 public class TaskWriterActionContextTest extends AbstractJsonWriterTest.External<TaskWriter, Task> {
 
