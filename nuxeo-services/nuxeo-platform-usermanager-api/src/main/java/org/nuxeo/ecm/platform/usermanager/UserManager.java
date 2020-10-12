@@ -463,4 +463,12 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @since 9.2
      */
     void notifyGroupChanged(String groupName, String eventId, List<String> ancestorGroupNames);
+
+    /**
+     * Returns the descendant groups of the group with the given id.
+     *
+     * @since 11.4
+     */
+    List<String> getDescendantGroups(String groupId);
+
 }
