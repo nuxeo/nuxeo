@@ -36,6 +36,7 @@ import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
+import org.nuxeo.connect.platform.PlatformId;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageException;
@@ -142,13 +143,10 @@ public class HotReloadStudioSnapshot {
         if (shouldValidate()) {
             pm.flushCache();
 
-            String targetPlatform = PlatformVersionHelper.getPlatformFilter();
-            String targetPlatformVersion = PlatformVersionHelper.getDistributionVersion();
-            if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform,
-                    targetPlatformVersion)) {
-                return jsonHelper(ERROR,
-                        String.format("This package is not validated for your current platform: %s", targetPlatform),
-                        null);
+            PlatformId targetPlatform = PlatformVersionHelper.getPlatformId();
+            if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform)) {
+                return jsonHelper(ERROR, String.format("This package is not validated for your current platform: %s",
+                        targetPlatform.asString()), null);
             }
 
             PackageDependency[] pkgDeps = remotePkg.getDependencies();
@@ -160,11 +158,10 @@ public class HotReloadStudioSnapshot {
 
             // check deps requirements
             if (pkgDeps != null && pkgDeps.length > 0) {
-                DependencyResolution resolution = pm.resolveDependencies(packageId, targetPlatform,
-                        targetPlatformVersion);
+                DependencyResolution resolution = pm.resolveDependencies(packageId, targetPlatform);
                 if (resolution.isFailed() && targetPlatform != null) {
                     // retry without PF filter in case it gives more information
-                    resolution = pm.resolveDependencies(packageId, null, null);
+                    resolution = pm.resolveDependencies(packageId, null);
                 }
                 if (resolution.isFailed()) {
                     return jsonHelper(DEPENDENCY_MISMATCH,

@@ -164,7 +164,7 @@ public class SystemInfoManager implements Serializable {
 
     @Factory(value = "nuxeoPlatformIdentifier", scope = ScopeType.APPLICATION)
     public String getNuxeoPlatformIdentifier() {
-        return PlatformVersionHelper.getPlatformFilter();
+        return PlatformVersionHelper.getPlatformId().asString();
     }
 
     @Factory(value = "nuxeoServerInfo", scope = ScopeType.EVENT)

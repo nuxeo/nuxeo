@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.packages.PackageManager;
+import org.nuxeo.connect.platform.PlatformId;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageException;
@@ -72,7 +73,7 @@ public class UninstallHandler extends DefaultObject {
             }
             PackageManager pm = Framework.getService(PackageManager.class);
             List<DownloadablePackage> pkgToRemove = pm.getUninstallDependencies(pkg,
-                    getTargetPlatform(filterOnPlatform), getTargetPlatformVersion(filterOnPlatform));
+                    getTargetPlatform(filterOnPlatform));
             if (pkgToRemove.size() > 0) {
                 return getView("displayDependencies").arg("pkg", pkg)
                                                      .arg("pkgToRemove", pkgToRemove)
@@ -92,22 +93,11 @@ public class UninstallHandler extends DefaultObject {
      * @param filterOnPlatform
      * @return
      */
-    private String getTargetPlatform(Boolean filterOnPlatform) {
+    private PlatformId getTargetPlatform(Boolean filterOnPlatform) {
         if (filterOnPlatform != Boolean.TRUE) {
             return null;
         }
-        return PlatformVersionHelper.getPlatformFilter();
-    }
-
-    /**
-     * @return target platform version if {@code filterOnPlatform==true} else null
-     * @since 10.10-HF34
-     */
-    private String getTargetPlatformVersion(Boolean filterOnPlatform) {
-        if (filterOnPlatform != Boolean.TRUE) {
-            return null;
-        }
-        return PlatformVersionHelper.getDistributionVersion();
+        return PlatformVersionHelper.getPlatformId();
     }
 
     @GET
@@ -120,7 +110,7 @@ public class UninstallHandler extends DefaultObject {
             LocalPackage pkg = pus.getPackage(pkgId);
             PackageManager pm = Framework.getService(PackageManager.class);
             List<DownloadablePackage> pkgToRemove = pm.getUninstallDependencies(pkg,
-                    getTargetPlatform(filterOnPlatform), getTargetPlatformVersion(filterOnPlatform));
+                    getTargetPlatform(filterOnPlatform));
             boolean restartRequired = InstallAfterRestart.isNeededForPackage(pkg);
             if (!restartRequired) {
                 for (DownloadablePackage rpkg : pkgToRemove) {

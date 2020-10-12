@@ -168,8 +168,8 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         InstanceInfo info = launcher.getInfo();
         assertNotNull("Failed to get instance info", info);
         List<String> clidLines = Files.readAllLines(instanceClid, UTF_8);
-        LogicalInstanceIdentifier expectedClid = new LogicalInstanceIdentifier(clidLines.get(0)
-                + LogicalInstanceIdentifier.ID_SEP + clidLines.get(1), "expected clid");
+        LogicalInstanceIdentifier expectedClid = new LogicalInstanceIdentifier(
+                clidLines.get(0) + LogicalInstanceIdentifier.ID_SEP + clidLines.get(1), "expected clid");
         assertEquals("Not the right instance.clid file: ", expectedClid.getCLID(), info.clid);
     }
 
@@ -184,10 +184,9 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
     /**
      * Command "register-trial" is deprecated since 9.3.
      * <p>
-     * Set timeout to 1 second, {@code timeout = 1000}, to prevent this test takes too long time to finish.
-     * The only case it can happen is when Nuxeo Launcher waits for user
-     * value from standard input (stdin). It means somebody has changed
-     * the implementation of #registerTrial.
+     * Set timeout to 1 second, {@code timeout = 1000}, to prevent this test takes too long time to finish. The only
+     * case it can happen is when Nuxeo Launcher waits for user value from standard input (stdin). It means somebody has
+     * changed the implementation of #registerTrial.
      */
     @Test(timeout = 1000) // 1s. Explanation in Javadoc.
     @SuppressWarnings("deprecation")
@@ -207,7 +206,8 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
     @Test
     public void testParamSeparator() throws Exception {
         // failing syntax: "value1" is parsed as an argument to "--encrypt" option
-        NuxeoLauncher launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "--encrypt", "value1", "value2" });
+        NuxeoLauncher launcher = NuxeoLauncher.createLauncher(
+                new String[] { "encrypt", "--encrypt", "value1", "value2" });
         assertTrue(launcher.commandIs("encrypt"));
         assertTrue(launcher.cmdLine.hasOption(NuxeoLauncher.OPTION_ENCRYPT));
         assertEquals("value1", launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_ENCRYPT));
@@ -224,8 +224,8 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "value1", "value2", "--encrypt" });
         checkParsing(launcher);
         // 2) option with an argument
-        launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "--encrypt", "AES/ECB/PKCS5Padding",
-                "value1", "value2" });
+        launcher = NuxeoLauncher.createLauncher(
+                new String[] { "encrypt", "--encrypt", "AES/ECB/PKCS5Padding", "value1", "value2" });
         checkParsing(launcher);
         // 3) option without argument separated with "--"
         launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "--encrypt", "--", "value1", "value2" });

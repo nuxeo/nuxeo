@@ -182,6 +182,11 @@ public class PackageBuilder {
         return this;
     }
 
+    public PackageBuilder platformName(String platformName) {
+        def.setTargetPlatformName(platformName);
+        return this;
+    }
+
     public PackageBuilder platformRange(String platformRange) {
         def.setTargetPlatformRange(platformRange);
         return this;

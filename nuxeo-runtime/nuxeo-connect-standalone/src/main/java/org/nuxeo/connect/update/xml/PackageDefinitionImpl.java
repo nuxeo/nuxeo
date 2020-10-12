@@ -89,8 +89,16 @@ public class PackageDefinitionImpl implements PackageDefinition {
      *
      * @since 10.10-HF34
      */
-    @XNode("target-platform")
+    @XNode("target-platform/version")
     protected String targetPlatformRange;
+
+    /**
+     * The target platform name where this package may be installed.
+     *
+     * @since 10.10-HF34
+     */
+    @XNode("target-platform/name")
+    protected String targetPlatformName;
 
     /**
      * The dependency value format is: <code>package_name[:package_min_version[:package_max_version]]</code> if no min
@@ -273,6 +281,16 @@ public class PackageDefinitionImpl implements PackageDefinition {
     @Override
     public void setTargetPlatformRange(String targetPlatformRange) {
         this.targetPlatformRange = targetPlatformRange;
+    }
+
+    @Override
+    public String getTargetPlatformName() {
+        return targetPlatformName;
+    }
+
+    @Override
+    public void setTargetPlatformName(String targetPlatformName) {
+        this.targetPlatformName = targetPlatformName;
     }
 
     @Override

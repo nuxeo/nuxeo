@@ -1051,7 +1051,7 @@ public class TestConnectBroker {
         // check logs
         String expectedLogs = "Added " + TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip\n" //
                 + "Added " + TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT\n" //
-                + "org.nuxeo.connect.update.PackageException: Package(s) Q-1.0.0 not available on platform version server-11.2.3 (relax is not allowed)";
+                + "org.nuxeo.connect.update.PackageException: Package(s) Q-1.0.0, R-1.0.2-SNAPSHOT not available on platform version server-11.2.3 (relax is not allowed)";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -1074,7 +1074,7 @@ public class TestConnectBroker {
         expectedLogs = "The following SNAPSHOT package(s) will be replaced in local cache (if available): [src/test/resources/packages/store/local-only/R-1.0.2-SNAPSHOT]\n" //
                 + "Replacement of R-1.0.2-SNAPSHOT in local cache...\n" //
                 + "Added src/test/resources/packages/store/local-only/R-1.0.2-SNAPSHOT\n" //
-                + "Relax restriction to target platform server-11.2.3 because of package(s) Q-1.0.0\n" //
+                + "Relax restriction to target platform server-11.2.3 because of package(s) Q-1.0.0, R-1.0.2-SNAPSHOT\n" //
                 + "\n" //
                 + "Dependency resolution:\n" //
                 + "  Installation order (2):        Q-1.0.0/R-1.0.2-SNAPSHOT\n" //
@@ -1288,9 +1288,9 @@ public class TestConnectBroker {
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
     public void testUpgradePackageRequestWithRelax() throws Exception {
-        Environment.getDefault().getProperties().remove(Environment.DISTRIBUTION_NAME);
-        Environment.getDefault().getProperties().remove(Environment.DISTRIBUTION_VERSION);
-        connectBroker = new ConnectBroker(Environment.getDefault());
+        environment.setProperty(Environment.DISTRIBUTION_NAME, "nomatching");
+        environment.setProperty(Environment.DISTRIBUTION_VERSION, "1.0");
+        connectBroker = new ConnectBroker(environment);
         ((StandaloneCallbackHolder) NuxeoConnectClient.getCallBackHolder()).setTestMode(true);
         connectBroker.setAllowSNAPSHOT(false);
         connectBroker.setRelax("true");
@@ -1320,7 +1320,7 @@ public class TestConnectBroker {
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "Relax restriction to target platform null-null because of package(s) studioA, hfA, A, B, C, D, G, H, J, K\n" //
+        String expectedLogs = "Relax restriction to target platform nomatching-1.0 because of package(s) studioA, hfA, A, B, C, D, G, H, J, K\n" //
                 + "\n" //
                 + "Dependency resolution:\n" //
                 + "  Installation order (7):        A-1.2.2/B-1.0.2/D-1.0.4-SNAPSHOT/G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/hfA-1.0.8/studioA-1.0.2-SNAPSHOT\n" //
@@ -1356,9 +1356,9 @@ public class TestConnectBroker {
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
     public void testUpgradePackageRequestWithRelaxAndSnapshot() throws Exception {
-        Environment.getDefault().getProperties().remove(Environment.DISTRIBUTION_NAME);
-        Environment.getDefault().getProperties().remove(Environment.DISTRIBUTION_VERSION);
-        connectBroker = new ConnectBroker(Environment.getDefault());
+        environment.setProperty(Environment.DISTRIBUTION_NAME, "nomatching");
+        environment.setProperty(Environment.DISTRIBUTION_VERSION, "1.0");
+        connectBroker = new ConnectBroker(environment);
         ((StandaloneCallbackHolder) NuxeoConnectClient.getCallBackHolder()).setTestMode(true);
         connectBroker.setAllowSNAPSHOT(true);
         connectBroker.setRelax("true");
@@ -1388,7 +1388,7 @@ public class TestConnectBroker {
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "Relax restriction to target platform null-null because of package(s) studioA, hfA, A, B, C, D, G, H, J, K\n" //
+        String expectedLogs = "Relax restriction to target platform nomatching-1.0 because of package(s) studioA, hfA, A, B, C, D, G, H, J, K\n" //
                 + "\nDependency resolution:\n" //
                 + "  Installation order (8):        A-1.2.3-SNAPSHOT/B-1.0.2/D-1.0.4-SNAPSHOT/G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/hfA-1.0.8/studioA-1.0.2-SNAPSHOT/C-1.0.2-SNAPSHOT\n" //
                 + "  Unchanged packages (4):        G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //

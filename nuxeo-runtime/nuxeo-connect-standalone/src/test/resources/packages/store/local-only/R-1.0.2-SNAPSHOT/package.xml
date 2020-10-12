@@ -13,7 +13,10 @@
   <nuxeo-validation>nuxeo_certified</nuxeo-validation>
   <production-state>production_ready</production-state>
   <supported>true</supported>
-  <target-platform>[11.2,)</target-platform>
+  <target-platform>
+    <version>[11.2,)</version>
+    <name>LTS</name>
+  </target-platform>
   <license>LGPL</license>
   <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
   <visibility>PUBLIC</visibility>
