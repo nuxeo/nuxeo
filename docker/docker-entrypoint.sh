@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# expand filename patterns which match no files to a null string, rather than themselves
+shopt -s nullglob
+
 # Allow supporting arbitrary user IDs
 if ! whoami &> /dev/null; then
   if [ -w /etc/passwd ]; then
@@ -52,6 +55,15 @@ if [[ ! -f $NUXEO_HOME/configured && ! -f $NUXEO_CONF ]]; then
 
   touch $NUXEO_HOME/configured
 fi
+
+# Handle shell scripts
+echo "ENTRYPOINT: Looking for shell scripts in /docker-entrypoint-initnuxeo.d"
+for f in /docker-entrypoint-initnuxeo.d/*; do
+  case "$f" in
+    *.sh)  echo "Running $f"; /bin/bash "$f" ;;
+    *)     echo "Ignoring $f" ;;
+  esac
+done
 
 # Handle instance.clid
 if [ -n "$NUXEO_CLID" ]; then

@@ -105,6 +105,10 @@ RUN mkdir /etc/nuxeo/conf.d
 # Copy base property files.
 COPY conf.d /etc/nuxeo/conf.d/
 
+# Create directory in which to copy shell scripts to run at runtime
+RUN mkdir /docker-entrypoint-initnuxeo.d \
+  && chown 900:0 /docker-entrypoint-initnuxeo.d && chmod g+rwX /docker-entrypoint-initnuxeo.d
+
 # Copy Nuxeo distribution
 COPY --from=builder /distrib $NUXEO_HOME
 
