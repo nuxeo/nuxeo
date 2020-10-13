@@ -3823,7 +3823,7 @@
       <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
-        <version>20070829</version>
+        <version>20200518</version>
       </dependency>
       <dependency>
         <groupId>net.minidev</groupId>
