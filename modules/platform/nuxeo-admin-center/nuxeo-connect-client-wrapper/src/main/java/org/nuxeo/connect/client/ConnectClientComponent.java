@@ -26,6 +26,7 @@ import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.connector.ConnectConnector;
 import org.nuxeo.connect.downloads.ConnectDownloadManager;
 import org.nuxeo.connect.packages.PackageManager;
+import org.nuxeo.connect.platform.PlatformId;
 import org.nuxeo.connect.registration.ConnectRegistrationService;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.runtime.api.Framework;
@@ -74,9 +75,10 @@ public class ConnectClientComponent extends DefaultComponent {
         if (adapter.getCanonicalName().equals(PackageManager.class.getCanonicalName())) {
             String distribName = Framework.getProperty(Environment.DISTRIBUTION_NAME);
             String distribVersion = Framework.getProperty(Environment.DISTRIBUTION_VERSION);
-            String targetPlatform = (distribName != null && distribVersion != null) ? distribName + "-" + distribVersion
+            PlatformId targetPlatform = (distribName != null && distribVersion != null)
+                    ? PlatformId.parse(distribName, distribVersion)
                     : null;
-            return adapter.cast(NuxeoConnectClient.getPackageManager(targetPlatform, distribVersion));
+            return adapter.cast(NuxeoConnectClient.getPackageManager(targetPlatform));
         }
 
         if (adapter.getCanonicalName().equals(PackageUpdateService.class.getCanonicalName())) {

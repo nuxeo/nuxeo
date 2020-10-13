@@ -80,7 +80,18 @@ public class XmlSerializer extends XmlWriter {
             }
             end("platforms");
         }
-        element("target-platform", def.getTargetPlatformRange());
+
+        if (def.getTargetPlatformRange() != null || def.getTargetPlatformName() != null) {
+            start("target-platform");
+            startContent();
+            if (def.getTargetPlatformRange() != null) {
+                element("version", def.getTargetPlatformRange());
+            }
+            if (def.getTargetPlatformName() != null) {
+                element("name", def.getTargetPlatformName());
+            }
+            end("target-platform");
+        }
 
         if (def.getDependencies() != null && def.getDependencies().length > 0) {
             start("dependencies");
