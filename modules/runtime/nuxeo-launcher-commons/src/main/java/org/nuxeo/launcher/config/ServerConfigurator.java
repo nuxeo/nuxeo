@@ -20,6 +20,7 @@
 package org.nuxeo.launcher.config;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.TEMPLATE_SEPARATOR;
 
@@ -619,8 +620,10 @@ public class ServerConfigurator {
         }
         nxInstance.config = new ConfigurationInfo();
         // profiles
-        nxInstance.config.profiles.addAll(
-                Arrays.asList(generator.getEnvironment(NUXEO_PROFILES, "").split(TEMPLATE_SEPARATOR)));
+        String profiles = generator.getEnvironment(NUXEO_PROFILES);
+        if (isNotBlank(profiles)) {
+            nxInstance.config.profiles.addAll(Arrays.asList(profiles.split(TEMPLATE_SEPARATOR)));
+        }
         // templates
         nxInstance.config.dbtemplate = generator.extractDatabaseTemplateName();
         String userTemplates = generator.getUserTemplates();
@@ -642,9 +645,16 @@ public class ServerConfigurator {
                 }
             }
         }
-        // Settings from nuxeo.conf
         CryptoProperties userConfig = generator.getUserConfig();
-        for (Object item : new TreeSet<>(userConfig.keySet())) {
+        // Settings from nuxeo.conf
+        computeKeyVals(nxInstance.config.keyvals, userConfig, userConfig.keySet());
+        // Effective configuration for environment and profiles
+        computeKeyVals(nxInstance.config.allkeyvals, userConfig, userConfig.stringPropertyNames());
+        return nxInstance;
+    }
+
+    protected void computeKeyVals(List<KeyValueInfo> keyVals, CryptoProperties userConfig, Set<?> keys) {
+        for (Object item : new TreeSet<>(keys)) {
             String key = (String) item;
             String value = userConfig.getRawProperty(key);
             if (JAVA_OPTS.equals(key)) {
@@ -654,8 +664,7 @@ public class ServerConfigurator {
                     || key.equals(Environment.SERVER_STATUS_KEY) || Crypto.isEncrypted(value)) {
                 value = "********";
             }
-            nxInstance.config.keyvals.add(new KeyValueInfo(key, value));
+            keyVals.add(new KeyValueInfo(key, value));
         }
-        return nxInstance;
     }
 }

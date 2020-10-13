@@ -23,6 +23,7 @@ package org.nuxeo.launcher;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME;
 import static org.nuxeo.common.Environment.NUXEO_CONTEXT_PATH;
 import static org.nuxeo.common.Environment.NUXEO_DATA_DIR;
@@ -32,6 +33,8 @@ import static org.nuxeo.common.Environment.NUXEO_MP_DIR;
 import static org.nuxeo.common.Environment.NUXEO_TMP_DIR;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_CONF;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_DEFAULT_CONF;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_ENVIRONMENT;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
 import static org.nuxeo.launcher.config.ServerConfigurator.TOMCAT_STARTUP_CLASS;
 
 import java.io.Console;
@@ -2336,6 +2339,12 @@ public class NuxeoLauncher {
         }
         log.info("** Settings from nuxeo.conf:");
         for (KeyValueInfo keyval : info.config.keyvals) {
+            log.info("{}={}", keyval.key, keyval.value);
+        }
+        log.info("** Effective configuration for environment: {} and profiles: {}:",
+                () -> defaultString(System.getenv(NUXEO_ENVIRONMENT), "N/A"),
+                () -> defaultString(System.getenv(NUXEO_PROFILES), "N/A"));
+        for (KeyValueInfo keyval : info.config.allkeyvals) {
             log.info("{}={}", keyval.key, keyval.value);
         }
         log.info("****************************************");

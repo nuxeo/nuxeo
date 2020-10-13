@@ -1,0 +1,103 @@
+{
+  "NUXEO_CONF": "${NUXEO_HOME}/nuxeo.conf",
+  "NUXEO_HOME": "${NUXEO_HOME}",
+  "distribution": {
+    "name": "unknown",
+    "server": "unknown",
+    "version": "unknown",
+    "date": "unknown",
+    "packaging": "unknown"
+  },
+  "packages": null,
+  "configuration": {
+    "dbtemplate": "default",
+    "basetemplates": null,
+    "pkgtemplates": null,
+    "usertemplates": null,
+    "profiles": null,
+    "keyvals": {
+      "keyval": [
+        {
+          "key": "nuxeo.db.type",
+          "value": "default"
+        },
+        {
+          "key": "nuxeo.log.dir",
+          "value": "${NUXEO_HOME}/logs"
+        },
+        {
+          "key": "nuxeo.templates",
+          "value": "default"
+        },
+        {
+          "key": "server.status.key",
+          "value": "********"
+        }
+      ]
+    },
+    "allkeyvals": {
+      "allkeyval": [
+        {
+          "value": "${NUXEO_HOME}/nuxeo.conf",
+          "key": "nuxeo.conf"
+        },
+        {
+          "value": "${NUXEO_HOME}/nxserver/data",
+          "key": "nuxeo.data.dir"
+        },
+        {
+          "value": "default",
+          "key": "nuxeo.db.type"
+        },
+        {
+          "value": "default",
+          "key": "nuxeo.dbtemplate"
+        },
+        {
+          "value": "target/launcher",
+          "key": "nuxeo.home"
+        },
+        {
+          "value": "${NUXEO_HOME}/logs",
+          "key": "nuxeo.log.dir"
+        },
+        {
+          "value": "http://127.0.0.1:8080/nuxeo",
+          "key": "nuxeo.loopback.url"
+        },
+        {
+          "value": "${NUXEO_HOME}/packages",
+          "key": "nuxeo.mp.dir"
+        },
+        {
+          "value": "${NUXEO_HOME}/logs",
+          "key": "nuxeo.pid.dir"
+        },
+        {
+          "value": "8080",
+          "key": "nuxeo.server.http.port"
+        },
+        {
+          "value": "default",
+          "key": "nuxeo.templates"
+        },
+        {
+          "value": "${NUXEO_HOME}/tmp",
+          "key": "nuxeo.tmp.dir"
+        },
+        {
+          "value": "http://localhost:8080/nuxeo",
+          "key": "nuxeo.url"
+        },
+        {
+          "value": "/nuxeo",
+          "key": "org.nuxeo.ecm.contextPath"
+        },
+        {
+          "value": "********",
+          "key": "server.status.key"
+        }
+      ]
+    }
+  }
+}
