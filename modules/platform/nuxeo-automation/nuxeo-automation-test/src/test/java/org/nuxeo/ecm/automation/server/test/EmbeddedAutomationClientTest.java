@@ -103,8 +103,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(FeaturesRunner.class)
-@Deploy("org.nuxeo.ecm.platform.url.api")
-@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.url")
 @Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml")
 @Deploy("org.nuxeo.ecm.automation.test")

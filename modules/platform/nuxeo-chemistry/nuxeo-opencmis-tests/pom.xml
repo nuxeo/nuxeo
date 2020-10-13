@@ -222,7 +222,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-url-core</artifactId>
+      <artifactId>nuxeo-platform-url</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

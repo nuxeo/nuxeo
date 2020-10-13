@@ -54,8 +54,7 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ WebEngineFeature.class, AutomationServerFeature.class })
-@Deploy("org.nuxeo.ecm.platform.url.api")
-@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.url")
 @Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.automation.test.test:test-servletcontainer-contrib.xml")
 @RepositoryConfig(init = AutomationRepositoryInit.class, cleanup = Granularity.METHOD)

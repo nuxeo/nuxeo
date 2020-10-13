@@ -45,7 +45,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.platform.rendition.core")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.platform.thumbnail")
-@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.url")
 // NuxeoCmisServiceFactoryManager registration
 @Deploy("org.nuxeo.ecm.core.opencmis.bindings")
 // QueryMaker registration
