@@ -59,7 +59,7 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.ecm.csv.core")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.features")
-@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml")
 @Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-ui-types-contrib.xml")
 public class TestImportOperation {

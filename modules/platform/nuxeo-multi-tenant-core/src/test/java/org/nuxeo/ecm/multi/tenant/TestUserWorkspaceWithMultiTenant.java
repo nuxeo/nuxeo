@@ -49,7 +49,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.automation.core")
-@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.default.config")
 @Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml")
 @Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")

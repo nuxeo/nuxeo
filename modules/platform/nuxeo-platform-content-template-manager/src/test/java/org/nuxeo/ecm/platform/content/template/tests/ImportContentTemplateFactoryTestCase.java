@@ -39,8 +39,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.content.template")
 @Deploy("org.nuxeo.ecm.platform.filemanager")
-@Deploy("org.nuxeo.ecm.platform.types.api")
-@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.content.template.tests:OSGI-INF/test-import-data-mock-type-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.content.template.tests:OSGI-INF/test-import-data-workspace-contentTemplate-contrib.xml")
 public class ImportContentTemplateFactoryTestCase {

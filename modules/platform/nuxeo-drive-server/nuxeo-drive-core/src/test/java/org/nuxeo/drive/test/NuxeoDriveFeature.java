@@ -26,7 +26,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Features({ KeyValueBlobTransientStoreFeature.class, PlatformFeature.class, CollectionFeature.class,
         SQLAuditFeature.class })
 @Deploy("org.nuxeo.drive.core")
-@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.platform.filemanager")

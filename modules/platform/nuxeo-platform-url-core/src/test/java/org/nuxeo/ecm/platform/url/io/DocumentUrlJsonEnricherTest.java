@@ -35,8 +35,7 @@ import org.nuxeo.runtime.test.runner.Features;
 
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.url.core")
-@Deploy("org.nuxeo.ecm.platform.types.api")
-@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.types")
 public class DocumentUrlJsonEnricherTest
         extends AbstractJsonWriterTest.External<DocumentModelJsonWriter, DocumentModel> {
 

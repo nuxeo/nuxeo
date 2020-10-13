@@ -45,8 +45,7 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.thumbnail")
-@Deploy("org.nuxeo.ecm.platform.types.api")
-@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.url.core")
 @Deploy("org.nuxeo.ecm.platform.thumbnail:test-thumbnail-document-contrib.xml")
 public class TestGetDefaultThumbnail {
