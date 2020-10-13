@@ -52,7 +52,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.thumbnail")
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.convert")
-@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.url")
 @Deploy("org.nuxeo.ecm.platform.thumbnail:test-thumbnail-factories-contrib.xml")
 public class TestThumbnailFactories {
 

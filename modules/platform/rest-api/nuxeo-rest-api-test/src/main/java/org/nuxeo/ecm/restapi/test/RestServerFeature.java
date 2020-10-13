@@ -29,8 +29,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  */
 @Features({ WebEngineFeature.class, AutomationServerFeature.class })
 @Deploy("org.nuxeo.ecm.automation.test")
-@Deploy("org.nuxeo.ecm.platform.url.api")
-@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.url")
 @Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.restapi.io")
 @Deploy("org.nuxeo.ecm.platform.restapi.test")

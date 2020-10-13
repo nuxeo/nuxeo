@@ -79,8 +79,7 @@
     <module>nuxeo-platform-test</module>
     <module>nuxeo-platform-types</module>
     <module>nuxeo-platform-uidgen-core</module>
-    <module>nuxeo-platform-url-api</module>
-    <module>nuxeo-platform-url-core</module>
+    <module>nuxeo-platform-url</module>
     <module>nuxeo-platform-usermanager-api</module>
     <module>nuxeo-platform-usermanager-core</module>
     <module>nuxeo-platform-userpreferences</module>

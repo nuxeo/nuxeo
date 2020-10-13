@@ -62,8 +62,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Features({ PlatformFeature.class, SmtpMailServerFeature.class })
 @Deploy("org.nuxeo.ecm.platform.notification.core")
 @Deploy("org.nuxeo.ecm.platform.notification.api")
-@Deploy("org.nuxeo.ecm.platform.url.api")
-@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.url")
 @Deploy("org.nuxeo.ecm.platform.notification.core.tests:OSGI-INF/notification-event-listener-contrib.xml")
 public class TestEmailNotification {
 

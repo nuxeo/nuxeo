@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-SymbolicName: org.nuxeo.ecm.platform.url.core.test;singleton:=true
-Nuxeo-Component: OSGI-INF/test-docviewurlservice-contrib.xml
