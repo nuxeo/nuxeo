@@ -1,26 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
-    <artifactId>nuxeo-platform-tag-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
     <version>11.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-tag-core</artifactId>
-  <name>Nuxeo Tag Service - Core</name>
-  <packaging>jar</packaging>
-  <description>Nuxeo Enterprise Platform: Tag Service Core.</description>
+  <artifactId>nuxeo-platform-tag</artifactId>
+  <name>Nuxeo Tag Service Module</name>
+  <description>Nuxeo Platform Tag Service module is the addon
+    providing tagging feature for Nuxeo.</description>
 
   <dependencies>
     <!-- Nuxeo dependencies -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-migration</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-tag-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
