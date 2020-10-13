@@ -22,6 +22,8 @@ import java.io.Serializable;
 
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Extended info for the {@link ESAuditBackend}.
  *
@@ -37,6 +39,7 @@ public class ESExtendedInfo implements ExtendedInfo {
         this.value = value;
     }
 
+    @JsonIgnore
     @Override
     public Long getId() {
         throw new UnsupportedOperationException();
