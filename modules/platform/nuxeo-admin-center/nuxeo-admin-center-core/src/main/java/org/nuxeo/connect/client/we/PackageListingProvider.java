@@ -35,6 +35,7 @@ import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.data.SubscriptionStatusType;
 import org.nuxeo.connect.packages.PackageManager;
+import org.nuxeo.connect.platform.PlatformId;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
@@ -60,13 +61,12 @@ public class PackageListingProvider extends DefaultObject {
     @Path(value = "list")
     public Object doList(@QueryParam("type") String pkgType, @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getService(PackageManager.class);
-        String targetPlatform = getTargetPlatform(filterOnPlatform);
-        String targetPlatformVersion = getTargetPlatformVersion(filterOnPlatform);
+        PlatformId targetPlatform = getTargetPlatform(filterOnPlatform);
         List<DownloadablePackage> pkgs;
         if (StringUtils.isBlank(pkgType)) {
-            pkgs = pm.listPackages(targetPlatform, targetPlatformVersion);
+            pkgs = pm.listPackages(targetPlatform);
         } else {
-            pkgs = pm.listPackages(PackageType.getByValue(pkgType), targetPlatform, targetPlatformVersion);
+            pkgs = pm.listPackages(PackageType.getByValue(pkgType), targetPlatform);
         }
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
                                        .arg("showCommunityInfo", true)
@@ -86,13 +86,12 @@ public class PackageListingProvider extends DefaultObject {
         if (filterOnPlatform == null) {
             filterOnPlatform = SharedPackageListingsSettings.instance().get("updates").getPlatformFilter();
         }
-        String targetPlatform = getTargetPlatform(filterOnPlatform);
-        String targetPlatformVersion = getTargetPlatformVersion(filterOnPlatform);
+        PlatformId targetPlatform = getTargetPlatform(filterOnPlatform);
         List<DownloadablePackage> pkgs;
         if (StringUtils.isBlank(pkgType)) {
-            pkgs = pm.listUpdatePackages(null, targetPlatform, targetPlatformVersion);
+            pkgs = pm.listUpdatePackages(null, targetPlatform);
         } else {
-            pkgs = pm.listUpdatePackages(PackageType.getByValue(pkgType), targetPlatform, targetPlatformVersion);
+            pkgs = pm.listUpdatePackages(PackageType.getByValue(pkgType), targetPlatform);
         }
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
                                        .arg("showCommunityInfo", true)
@@ -112,13 +111,12 @@ public class PackageListingProvider extends DefaultObject {
         if (filterOnPlatform == null) {
             filterOnPlatform = SharedPackageListingsSettings.instance().get("private").getPlatformFilter();
         }
-        String targetPlatform = getTargetPlatform(filterOnPlatform);
-        String targetPlatformVersion = getTargetPlatformVersion(filterOnPlatform);
+        PlatformId targetPlatform = getTargetPlatform(filterOnPlatform);
         List<DownloadablePackage> pkgs;
         if (StringUtils.isBlank(pkgType)) {
-            pkgs = pm.listPrivatePackages(targetPlatform, targetPlatformVersion);
+            pkgs = pm.listPrivatePackages(targetPlatform);
         } else {
-            pkgs = pm.listPrivatePackages(PackageType.getByValue(pkgType), targetPlatform, targetPlatformVersion);
+            pkgs = pm.listPrivatePackages(PackageType.getByValue(pkgType), targetPlatform);
         }
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
                                        .arg("showCommunityInfo", true)
@@ -161,23 +159,20 @@ public class PackageListingProvider extends DefaultObject {
             onlyRemote = SharedPackageListingsSettings.instance().get("remote").isOnlyRemote();
         }
         List<DownloadablePackage> pkgs;
-        String targetPlatform = getTargetPlatform(filterOnPlatform);
-        String targetPlatformVersion = getTargetPlatformVersion(filterOnPlatform);
+        PlatformId targetPlatform = getTargetPlatform(filterOnPlatform);
         if (!StringUtils.isEmpty(searchString)) { // SEARCH IS NOT IMPLEMENTED
             pkgs = pm.searchPackages(searchString);
         } else if (onlyRemote) {
             if (StringUtils.isBlank(pkgType)) {
-                pkgs = pm.listOnlyRemotePackages(targetPlatform, targetPlatformVersion);
+                pkgs = pm.listOnlyRemotePackages(targetPlatform);
             } else {
-                pkgs = pm.listOnlyRemotePackages(PackageType.getByValue(pkgType), targetPlatform,
-                        targetPlatformVersion);
+                pkgs = pm.listOnlyRemotePackages(PackageType.getByValue(pkgType), targetPlatform);
             }
         } else {
             if (StringUtils.isBlank(pkgType)) {
-                pkgs = pm.listRemoteOrLocalPackages(targetPlatform, targetPlatformVersion);
+                pkgs = pm.listRemoteOrLocalPackages(targetPlatform);
             } else {
-                pkgs = pm.listRemoteOrLocalPackages(PackageType.getByValue(pkgType), targetPlatform,
-                        targetPlatformVersion);
+                pkgs = pm.listRemoteOrLocalPackages(PackageType.getByValue(pkgType), targetPlatform);
             }
         }
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
@@ -192,22 +187,11 @@ public class PackageListingProvider extends DefaultObject {
      * @return target platform if {@code filterOnPlatform==true} else null
      * @since 5.6
      */
-    private String getTargetPlatform(Boolean filterOnPlatform) {
+    private PlatformId getTargetPlatform(Boolean filterOnPlatform) {
         if (filterOnPlatform != Boolean.TRUE) {
             return null;
         }
-        return PlatformVersionHelper.getPlatformFilter();
-    }
-
-    /**
-     * @return target platform version if {@code filterOnPlatform==true} else null
-     * @since 11.3
-     */
-    private String getTargetPlatformVersion(Boolean filterOnPlatform) {
-        if (filterOnPlatform != Boolean.TRUE) {
-            return null;
-        }
-        return PlatformVersionHelper.getDistributionVersion();
+        return PlatformVersionHelper.getPlatformId();
     }
 
     @GET

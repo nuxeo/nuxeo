@@ -205,6 +205,11 @@ public class LocalPackageImpl implements LocalPackage {
     }
 
     @Override
+    public String getTargetPlatformName() {
+        return def.getTargetPlatformName();
+    }
+
+    @Override
     public PackageDependency[] getDependencies() {
         return def.getDependencies();
     }
