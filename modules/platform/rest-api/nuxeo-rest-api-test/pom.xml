@@ -38,7 +38,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-tag-core</artifactId>
+      <artifactId>nuxeo-platform-tag</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -115,11 +115,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-types-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-tag-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
