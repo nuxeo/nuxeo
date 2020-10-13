@@ -64,7 +64,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-types-api</artifactId>
+      <artifactId>nuxeo-platform-types</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

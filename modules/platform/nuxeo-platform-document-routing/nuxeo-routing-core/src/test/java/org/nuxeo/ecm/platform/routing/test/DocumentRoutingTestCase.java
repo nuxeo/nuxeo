@@ -58,7 +58,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
-@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.task.api")
 @Deploy("org.nuxeo.ecm.platform.task.core")

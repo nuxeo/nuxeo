@@ -1,0 +1,31 @@
+Export-Package: org.nuxeo.ecm.platform.types;core=split
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: web,
+ stateless
+Bundle-Localization: bundle
+Bundle-Name: Nuxeo ECM Type Manager
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/contentview-local-configuration.xml,
+ OSGI-INF/listeners-contrib.xml,
+ OSGI-INF/nxtypes-contrib.xml,
+ OSGI-INF/nxtypes-framework.xml,
+ OSGI-INF/ui-types-local-configuration.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation;version="1.0",
+ org.apache.commons.logging,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.schema.types,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
+Bundle-SymbolicName: org.nuxeo.ecm.platform.types;singleton:=true

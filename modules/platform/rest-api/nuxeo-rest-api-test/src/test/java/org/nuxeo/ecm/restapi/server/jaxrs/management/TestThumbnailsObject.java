@@ -61,8 +61,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @Features(AutomationFeature.class)
 @Deploy("org.nuxeo.ecm.platform.tag")
 @Deploy("org.nuxeo.ecm.platform.convert")
-@Deploy("org.nuxeo.ecm.platform.types.api")
-@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.thumbnail")
 public class TestThumbnailsObject extends ManagementBaseTest {
 

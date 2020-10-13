@@ -35,7 +35,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
-@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.filemanager")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.api")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")

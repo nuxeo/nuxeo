@@ -47,8 +47,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 @Deploy("org.nuxeo.ecm.platform.filemanager")
-@Deploy("org.nuxeo.ecm.platform.types.core")
-@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.threed.core")
 @Deploy("org.nuxeo.ecm.platform.threed.api")
 public class Test3DCore {

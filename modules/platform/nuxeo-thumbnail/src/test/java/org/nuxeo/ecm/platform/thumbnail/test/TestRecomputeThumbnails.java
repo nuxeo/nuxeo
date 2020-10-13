@@ -56,8 +56,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RunWith(FeaturesRunner.class)
 @Features(AutomationCoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.convert")
-@Deploy("org.nuxeo.ecm.platform.types.api")
-@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.thumbnail")
 public class TestRecomputeThumbnails {
 

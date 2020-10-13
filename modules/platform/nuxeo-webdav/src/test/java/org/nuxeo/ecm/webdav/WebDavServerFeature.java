@@ -27,8 +27,7 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
  * @since 5.8
  */
 @Features(ServletContainerFeature.class)
-@Deploy("org.nuxeo.ecm.platform.types.api")
-@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.dublincore")
 @Deploy("org.nuxeo.ecm.platform.filemanager")
 @Deploy("org.nuxeo.ecm.webdav.test.tests:OSGI-INF/servletcontainer-config.xml")
