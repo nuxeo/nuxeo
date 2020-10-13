@@ -51,7 +51,7 @@ public class NuxeoPrincipalJsonWriterTest extends
         NuxeoPrincipal principal = userManager.getPrincipal("Administrator");
         JsonAssert json = jsonAssert(principal);
         json.isObject();
-        json.properties(6);
+        json.properties(7);
         json.has("entity-type").isEquals("user");
         json.has("id").isEquals("Administrator");
         json.has("isAdministrator").isTrue();
@@ -76,7 +76,7 @@ public class NuxeoPrincipalJsonWriterTest extends
         JsonAssert json = jsonAssert(principal);
         json.isObject();
         // it has no properties
-        json.properties(5);
+        json.properties(6);
         json.has("entity-type").isEquals("user");
         json.has("id").isEquals(SecurityConstants.SYSTEM_USERNAME);
         json.has("isAdministrator").isTrue();

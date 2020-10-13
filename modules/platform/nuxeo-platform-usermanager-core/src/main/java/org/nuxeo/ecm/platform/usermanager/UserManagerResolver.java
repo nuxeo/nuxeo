@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
  * References should have a prefix. NuxeoPrincipal.PREFIX for users, NuxeoGroup.PREFIX for groups.
  * </p>
  * <p>
- * If only user or group are configured, the prefix is not needed but still supported. If noth user and group are
+ * If only user or group are configured, the prefix is not needed but still supported. If both user and group are
  * configured, reference without prefix are resolved as user first.
  * </p>
  * <p>
@@ -144,7 +144,11 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
                 if (SecurityConstants.SYSTEM_USERNAME.equals(name)) {
                     return new SystemPrincipal(null);
                 }
-                return getUserManager().getPrincipal(name, false);
+                NuxeoPrincipal principal = getUserManager().getPrincipal(name, false);
+                if(principal != null) {
+                    principal.setIsComplete(false);
+                }
+                return principal;
             } else if (!includingUsers && includingGroups) {
                 if (groupPrefix) {
                     name = name.substring(NuxeoGroup.PREFIX.length());
@@ -156,7 +160,11 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
                     if (SecurityConstants.SYSTEM_USERNAME.equals(name)) {
                         return new SystemPrincipal(null);
                     }
-                    return getUserManager().getPrincipal(name, false);
+                    NuxeoPrincipal principal = getUserManager().getPrincipal(name, false);
+                    if(principal != null) {
+                        principal.setIsComplete(false);
+                    }
+                    return principal;
                 } else if (groupPrefix) {
                     name = name.substring(NuxeoGroup.PREFIX.length());
                     return getUserManager().getGroup(name);
@@ -166,6 +174,7 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
                     }
                     NuxeoPrincipal principal = getUserManager().getPrincipal(name, false);
                     if (principal != null) {
+                        principal.setIsComplete(false);
                         return principal;
                     } else {
                         return getUserManager().getGroup(name);

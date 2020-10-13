@@ -149,6 +149,11 @@ public interface NuxeoPrincipal extends Principal, Serializable {
      */
     void setPrincipalId(String principalId);
 
+    /**
+     * @since 11.4
+     */
+    void setIsComplete(boolean complete);
+
     DocumentModel getModel();
 
     void setModel(DocumentModel model);
@@ -162,6 +167,13 @@ public interface NuxeoPrincipal extends Principal, Serializable {
      * @return true if the principal is an administrator.
      */
     boolean isAdministrator();
+
+    /**
+     * @since 11.4 Used in the case where we don't want to fetch the references, where we won't be able to return
+     *        complete informations on this principal (the missing attributes will be if the principal is an
+     *        Administrator and the groups he is in).
+     */
+    boolean isComplete();
 
     /**
      * Returns the {@code tenantId} of this {@NuxeoPrincipal}, or {@code null} if there is no {@code tenantId}.

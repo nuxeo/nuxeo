@@ -111,6 +111,7 @@ public class NuxeoPrincipalJsonWriter extends ExtensibleEntityJsonWriter<NuxeoPr
 
     @Override
     protected void writeEntityBody(NuxeoPrincipal principal, JsonGenerator jg) throws IOException {
+        jg.writeBooleanField("isComplete", principal.isComplete());
         jg.writeStringField("id", principal.getName());
         writeProperties(jg, principal);
         writeExtendedGroups(jg, principal);

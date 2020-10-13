@@ -59,6 +59,11 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     protected UserConfig config = UserConfig.DEFAULT;
 
+    /**
+     * @since 11.4
+     */
+    protected boolean isComplete = true;
+
     public final List<String> roles = new LinkedList<>();
 
     // group not stored in the backend and added at login time
@@ -177,6 +182,13 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     @Override
     public void setLastName(String lastName) {
         dataModel.setData(config.lastNameKey, lastName);
+    }
+
+    /**
+     * @since 11.4
+     */
+    public void setIsComplete(boolean complete) {
+        isComplete = complete;
     }
 
     // impossible to modify the name - it is PK
@@ -492,5 +504,10 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         private Object writeReplace() throws ObjectStreamException {
             return new DataTransferObject(this);
         }
+    }
+
+    @Override
+    public boolean isComplete() {
+        return isComplete;
     }
 }
