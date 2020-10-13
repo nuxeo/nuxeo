@@ -21,7 +21,9 @@
 package org.nuxeo.launcher;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
 
 import java.io.Console;
 import java.io.File;
@@ -2792,6 +2794,11 @@ public abstract class NuxeoLauncher {
         }
         log.info("** Settings from nuxeo.conf:");
         for (KeyValueInfo keyval : info.config.keyvals) {
+            log.info(String.format("%s=%s", keyval.key, keyval.value));
+        }
+        log.info(String.format("** Effective configuration for profiles: %s:",
+                defaultString(System.getenv(NUXEO_PROFILES), "N/A")));
+        for (KeyValueInfo keyval : info.config.allkeyvals) {
             log.info(String.format("%s=%s", keyval.key, keyval.value));
         }
         log.info("****************************************");

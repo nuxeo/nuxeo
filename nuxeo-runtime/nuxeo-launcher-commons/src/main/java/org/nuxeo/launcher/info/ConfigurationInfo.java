@@ -58,4 +58,11 @@ public class ConfigurationInfo {
     @XmlElement(name = "keyval")
     public List<KeyValueInfo> keyvals = new ArrayList<>();
 
+    /**
+     * @since 11.4
+     */
+    @XmlElementWrapper(name = "allkeyvals")
+    @XmlElement(name = "allkeyval")
+    public List<KeyValueInfo> allkeyvals = new ArrayList<>();
+
 }
