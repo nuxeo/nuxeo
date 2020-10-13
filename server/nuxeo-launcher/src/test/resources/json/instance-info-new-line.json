@@ -1,0 +1,8 @@
+{
+  "packages": {
+    "package": {
+      "supportsHotReload": "false",
+      "description": "Download and install the latest hotfix to keep your Nuxeo up-to-date.\n    Changes will take effects after restart."
+    }
+  }
+}

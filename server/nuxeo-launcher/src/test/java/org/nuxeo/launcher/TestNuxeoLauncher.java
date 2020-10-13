@@ -28,27 +28,35 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.AssumptionViolatedException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.launcher.config.AbstractConfigurationTest;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.ServerConfigurator;
 import org.nuxeo.launcher.info.InstanceInfo;
 import org.nuxeo.launcher.info.PackageInfo;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 public class TestNuxeoLauncher extends AbstractConfigurationTest {
 
@@ -179,7 +187,7 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
      * NXP-29401
      */
     @Test
-    public void testPrintInstanceXMLOutputInJSON() throws Exception {
+    public void testPrintInstanceXMLOutputInJSONWithNewLine() throws Exception {
         NuxeoLauncher launcher = NuxeoLauncher.createLauncher(new String[] { "showconf", "--json" });
 
         PackageInfo packageInfo = new PackageInfo();
@@ -192,10 +200,53 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         try (OutputStream os = new ByteArrayOutputStream()) {
             launcher.printInstanceXMLOutput(instanceInfo, os);
             String json = os.toString();
-            assertEquals("{\"packages\":{\"package\":{\"supportsHotReload\":\"false\",\"description\":\"Download and "
-                    + "install the latest hotfix to keep your Nuxeo up-to-date.\\n    Changes will take "
-                    + "effects after restart.\"}}}", json);
+            checkJSON("json/instance-info-new-line.json", json);
         }
     }
 
+    @Test
+    public void testShowconf() throws Exception {
+        NuxeoLauncher launcher = NuxeoLauncher.createLauncher(new String[] { "showconf", "--json" });
+        InstanceInfo info = launcher.getInfo();
+        try (OutputStream os = new ByteArrayOutputStream()) {
+            launcher.printInstanceXMLOutput(info, os);
+            String json = os.toString();
+
+            json = removeSystemPropertiesFromAllkeyvals(json);
+
+            Map<String, String> toReplace = new HashMap<>();
+            toReplace.put("NUXEO_HOME", nuxeoHome.getAbsolutePath());
+
+            checkJSON("json/nuxeoctl-showconf.json", json, toReplace);
+        }
+    }
+
+    protected String removeSystemPropertiesFromAllkeyvals(String json) throws JSONException {
+        // remove System properties from allkeyvals
+        JSONObject jsonObject = new JSONObject(json);
+        JSONObject allkeyvals = jsonObject.getJSONObject("configuration").getJSONObject("allkeyvals");
+        Iterator<Object> it = allkeyvals.getJSONArray("allkeyval").iterator();
+        while (it.hasNext()) {
+            JSONObject obj = (JSONObject) it.next();
+            String key = obj.getString("key");
+            if ((!key.startsWith("nuxeo") || key.startsWith("nuxeo.test"))
+                    && System.getProperties().containsKey(key)) {
+                it.remove();
+            }
+        }
+        json = jsonObject.toString();
+        return json;
+    }
+
+    protected void checkJSON(String expectedJSONFile, String actualJSON) throws IOException, JSONException {
+        checkJSON(expectedJSONFile, actualJSON, Map.of());
+    }
+
+    protected void checkJSON(String expectedJSONFile, String actualJSON, Map<String, String> toReplace)
+            throws IOException, JSONException {
+        File file = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext(expectedJSONFile);
+        String expected = FileUtils.readFileToString(file, UTF_8);
+        expected = StringUtils.expandVars(expected, toReplace);
+        JSONAssert.assertEquals(expected, actualJSON, true);
+    }
 }
