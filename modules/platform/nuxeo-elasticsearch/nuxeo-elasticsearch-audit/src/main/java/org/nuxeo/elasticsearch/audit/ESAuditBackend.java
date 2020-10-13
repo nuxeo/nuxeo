@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -747,11 +746,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         BulkRequest bulkRequest = new BulkRequest();
         for (String json : jsonEntries) {
             try {
-                String entryId = new JSONObject(json).getString(LOG_ID);
-                if (StringUtils.isBlank(entryId)) {
+                Object entryId = new JSONObject(json).opt(LOG_ID);
+                if (entryId ==  null) {
                     throw new NuxeoException("A json entry has an empty id. entry=" + json);
                 }
-                IndexRequest request = new IndexRequest(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE, entryId);
+                IndexRequest request = new IndexRequest(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
+                        entryId.toString());
                 request.source(json, XContentType.JSON);
                 bulkRequest.add(request);
             } catch (JSONException e) {
