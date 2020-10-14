@@ -95,6 +95,21 @@
       <option name="samplerProbability">${tracing.sampler.probability}</option>
     </reporter>
 
+    <reporter enabled="${metrics.stackdriver.enabled}" name="stackdriver" pollInterval="${metrics.stackdriver.pollInterval}"
+      class="org.nuxeo.runtime.metrics.reporter.StackdriverReporter">
+      <option name="gcpProjectId">${metrics.stackdriver.gcpProjectId}</option>
+      <option name="timeout">${metrics.stackdriver.timeout}</option>
+    </reporter>
+
+    <reporter enabled="${tracing.stackdriver.enabled}" name="stackdriverTrace"
+      class="org.nuxeo.runtime.metrics.reporter.StackdriverTraceReporter">
+      <option name="gcpProjectId">${tracing.stackdriver.gcpProjectId}</option>
+      <option name="timeout">${tracing.stackdriver.timeout}</option>
+      <option name="maxAttributes">${tracing.attributes.max}</option>
+      <option name="maxAnnotations">${tracing.annotations.max}</option>
+      <option name="samplerProbability">${tracing.sampler.probability}</option>
+    </reporter>
+
   </extension>
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">

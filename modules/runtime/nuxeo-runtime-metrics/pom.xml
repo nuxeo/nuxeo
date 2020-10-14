@@ -41,6 +41,10 @@
       <artifactId>metrics-log4j2</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.dropwizard.metrics5</groupId>
       <artifactId>metrics-jvm</artifactId>
     </dependency>
@@ -66,6 +70,10 @@
     </dependency>
     <dependency>
       <groupId>io.opencensus</groupId>
+      <artifactId>opencensus-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opencensus</groupId>
       <artifactId>opencensus-exporter-trace-jaeger</artifactId>
     </dependency>
     <dependency>
@@ -79,6 +87,14 @@
     <dependency>
       <groupId>io.opencensus</groupId>
       <artifactId>opencensus-exporter-stats-prometheus</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opencensus</groupId>
+      <artifactId>opencensus-exporter-trace-stackdriver</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opencensus</groupId>
+      <artifactId>opencensus-exporter-stats-stackdriver</artifactId>
     </dependency>
     <dependency>
       <groupId>io.opencensus</groupId>
