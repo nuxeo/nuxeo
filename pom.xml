@@ -162,7 +162,7 @@
     <chronicle.threads.version>2.17.25</chronicle.threads.version>
     <metrics.version>5.0.0-rc3</metrics.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
-    <opencensus.version>0.26.0</opencensus.version>
+    <opencensus.version>0.27.1</opencensus.version>
   </properties>
 
   <dependencyManagement>
