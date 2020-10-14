@@ -265,6 +265,12 @@ metrics.datadog.port=8125
 metrics.prometheus.enabled=false
 metrics.prometheus.port=9090
 
+# Stackdriver reporter
+metrics.stackdriver.enabled=false
+metrics.stackdriver.gcpProjectId=
+metrics.stackdriver.pollInterval=60
+metrics.stackdriver.timeout=30s
+
 ## Open tracing
 tracing.attributes.max=128
 tracing.annotations.max=128
@@ -291,3 +297,8 @@ tracing.datadog.enabled=false
 tracing.datadog.url=http://localhost:8126/v0.3/traces
 tracing.datadog.service=nuxeo
 tracing.datadog.timeout=10s
+
+# Stackdriver trace reporter
+tracing.stackdriver.enabled=false
+tracing.stackdriver.timeout=30s
+tracing.stackdriver.gcpProjectId=
