@@ -11,6 +11,10 @@
   governing permissions and limitations under the License. -->
 <Context antiResourceLocking="false" privileged="true" docBase="../nxserver/nuxeo.war">
 
+<#if nuxeo.server.cookies.sameSite?has_content>
+  <CookieProcessor sameSiteCookies="${nuxeo.server.cookies.sameSite}" />
+</#if>
+
   <!-- Disable HTTP Session persistence between restart since webengine session objects
     are not serializable -->
   <Manager pathname="" />
