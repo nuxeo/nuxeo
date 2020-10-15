@@ -172,10 +172,6 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     }
 
     protected void initProcessor(StreamProcessorDescriptor descriptor) {
-        if (! descriptor.isEnabled()) {
-            log.info("Processor {} disabled", descriptor.getId());
-            return;
-        }
         if (processors.containsKey(descriptor.getId())) {
             log.error("Processor already initialized: {}", descriptor.getId());
             return;

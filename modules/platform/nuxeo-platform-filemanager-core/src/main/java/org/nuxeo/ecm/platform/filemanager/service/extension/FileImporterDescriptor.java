@@ -122,6 +122,7 @@ public class FileImporterDescriptor implements Descriptor, Serializable {
         this.filters = filters;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }

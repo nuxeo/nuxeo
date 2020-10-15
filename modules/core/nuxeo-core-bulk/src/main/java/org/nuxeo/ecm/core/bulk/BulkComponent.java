@@ -60,14 +60,9 @@ public class BulkComponent extends DefaultComponent {
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        bulkAdminService = new BulkAdminServiceImpl(getEnabledDescriptors());
+        bulkAdminService = new BulkAdminServiceImpl(getDescriptors(XP_ACTIONS));
         bulkService = new BulkServiceImpl();
         new ComponentListener().install();
-    }
-
-    protected List<BulkActionDescriptor> getEnabledDescriptors() {
-        List<BulkActionDescriptor> descriptors = getDescriptors(XP_ACTIONS);
-        return descriptors.stream().filter(BulkActionDescriptor::isEnabled).collect(Collectors.toList());
     }
 
     protected class ComponentListener implements ComponentManager.Listener {

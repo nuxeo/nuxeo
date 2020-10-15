@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -50,10 +51,17 @@ public class DescriptorRegistry {
     protected Map<String, Map<String, Map<String, List<Descriptor>>>> descriptors = new HashMap<>();
 
     public <T extends Descriptor> T getDescriptor(String target, String xp, String id) {
-        return (T) merge(descriptors.getOrDefault(target, Collections.emptyMap())
-                                    .getOrDefault(xp, Collections.emptyMap())
-                                    .getOrDefault(id, Collections.emptyList()));
+        return this.<T> optDescriptor(target, xp, id).orElse(null);
+    }
 
+    /**
+     * @since 11.4
+     */
+    public <T extends Descriptor> Optional<T> optDescriptor(String target, String xp, String id) {
+        return Optional.ofNullable((T) merge(descriptors.getOrDefault(target, Collections.emptyMap())
+                                                        .getOrDefault(xp, Collections.emptyMap())
+                                                        .getOrDefault(id, Collections.emptyList())))
+                       .filter(Descriptor::isEnabled);
     }
 
     public <T extends Descriptor> List<T> getDescriptors(String target, String xp) {
@@ -63,6 +71,7 @@ public class DescriptorRegistry {
                                     .stream()
                                     .map(this::merge)
                                     .filter(Objects::nonNull)
+                                    .filter(Descriptor::isEnabled)
                                     .collect(Collectors.toList());
     }
 

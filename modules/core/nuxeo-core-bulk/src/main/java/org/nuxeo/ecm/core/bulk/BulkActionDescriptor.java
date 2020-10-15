@@ -91,6 +91,7 @@ public class BulkActionDescriptor implements Descriptor {
     }
 
     // @since 11.1
+    @Override
     public boolean isEnabled() {
         return isEnabled;
     }

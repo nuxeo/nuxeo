@@ -77,6 +77,7 @@ public class ScrollDescriptor implements Descriptor {
         return type;
     }
 
+    @Override
     public boolean isEnabled() {
         return isEnabled;
     }

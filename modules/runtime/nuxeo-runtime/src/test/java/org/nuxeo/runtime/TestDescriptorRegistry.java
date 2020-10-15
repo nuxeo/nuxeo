@@ -18,6 +18,7 @@
  */
 package org.nuxeo.runtime;
 
+import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -38,20 +39,32 @@ public class TestDescriptorRegistry {
 
         public String desc;
 
+        public Boolean enabled;
+
         public TestDescriptor() {
             // do nothing
         }
 
         public TestDescriptor(String id, String name, String desc) {
+            this(id, name, desc,  null);
+        }
+
+        public TestDescriptor(String id, String name, String desc, Boolean enabled) {
             super();
             this.id = id;
             this.name = name;
             this.desc = desc;
+            this.enabled = enabled;
         }
 
         @Override
         public String getId() {
             return id;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return toBooleanDefaultIfNull(enabled, true);
         }
 
         @Override
@@ -61,6 +74,7 @@ public class TestDescriptorRegistry {
             merged.id = id;
             merged.name = defaultIfNull(other.name, name);
             merged.desc = defaultIfNull(other.desc, desc);
+            merged.enabled = defaultIfNull(other.enabled, enabled);
             return merged;
         }
 
@@ -113,6 +127,17 @@ public class TestDescriptorRegistry {
         assertNull(registry.getDescriptor(TARGET, EP, "id0"));
         registry.register(TARGET, EP, new TestDescriptor("id0", "final", null));
         assertValues("id0", "final", null, registry.getDescriptor(TARGET, EP, "id0"));
+    }
+
+    @Test
+    public void testEnabled() {
+        DescriptorRegistry registry = new DescriptorRegistry();
+        registry.register(TARGET, EP, new TestDescriptor("id1", "name1", "desc1", true));
+        assertValues("id1", "name1", "desc1", registry.getDescriptor(TARGET, EP, "id1"));
+        registry.register(TARGET, EP, new TestDescriptor("id1", "name2", "desc1", false));
+        assertNull(registry.getDescriptor(TARGET, EP, "id1"));
+        registry.register(TARGET, EP, new TestDescriptor("id1", null, "desc2", true));
+        assertValues("id1", "name2", "desc2", registry.getDescriptor(TARGET, EP, "id1"));
     }
 
     protected void assertValues(String expectedId, String expectedName, String expectedDesc, TestDescriptor actual) {

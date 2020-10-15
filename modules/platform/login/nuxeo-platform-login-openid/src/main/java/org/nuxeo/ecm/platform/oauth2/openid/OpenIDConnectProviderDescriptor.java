@@ -157,6 +157,7 @@ public class OpenIDConnectProviderDescriptor implements Descriptor {
         return icon;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }

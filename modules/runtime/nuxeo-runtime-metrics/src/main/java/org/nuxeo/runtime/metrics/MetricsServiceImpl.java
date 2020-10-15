@@ -112,7 +112,6 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
         reporterConfigs = getDescriptors(REPORTER_EP);
         updateInstrumentation(config.getInstruments(), true);
         reporters = reporterConfigs.stream()
-                                   .filter(MetricsReporterDescriptor::isEnabled)
                                    .map(MetricsReporterDescriptor::newInstance)
                                    .collect(Collectors.toList());
         reporters.forEach(reporter -> reporter.start(registry, config, config.getDeniedExpansions()));

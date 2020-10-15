@@ -57,6 +57,7 @@ public class MetricsReporterDescriptor implements Descriptor {
         return name;
     }
 
+    @Override
     public boolean isEnabled() {
         return isEnabled;
     }

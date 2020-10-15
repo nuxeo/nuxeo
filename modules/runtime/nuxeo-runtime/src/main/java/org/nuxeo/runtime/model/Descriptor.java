@@ -38,6 +38,17 @@ public interface Descriptor {
     String getId();
 
     /**
+     * Returns whether or not this descriptor is enabled.
+     * <p>
+     * Descriptors are enabled by default.
+     * 
+     * @since 11.4
+     */
+    default boolean isEnabled() {
+        return true;
+    }
+
+    /**
      * Returns a descriptor representing {@code other} merged into {@code this}
      * <p>
      * Default implementation returns {@code other}.

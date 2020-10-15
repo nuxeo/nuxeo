@@ -62,6 +62,7 @@ public class MetricsConfigurationDescriptor implements Descriptor, MetricFilter 
             return name;
         }
 
+        @Override
         public boolean isEnabled() {
             return isEnabled;
         }

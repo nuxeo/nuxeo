@@ -46,12 +46,7 @@ public class ScrollComponent extends DefaultComponent {
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        scrollService = new ScrollServiceImpl(getEnabledDescriptors());
-    }
-
-    protected List<ScrollDescriptor> getEnabledDescriptors() {
-        List<ScrollDescriptor> descriptors = getDescriptors(XP_SCROLL);
-        return descriptors.stream().filter(ScrollDescriptor::isEnabled).collect(Collectors.toList());
+        scrollService = new ScrollServiceImpl(getDescriptors(XP_SCROLL));
     }
 
 }
