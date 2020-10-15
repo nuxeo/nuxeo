@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.bulk;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -112,4 +113,19 @@ public class BulkActionDescriptor implements Descriptor {
         return defaultIfBlank(inputStream, name);
     }
 
+    @Override
+    public BulkActionDescriptor merge(Descriptor o) {
+        var other = (BulkActionDescriptor) o;
+        var merged = new BulkActionDescriptor();
+        merged.name = other.name;
+        merged.enabled = defaultIfNull(other.enabled, enabled);
+        merged.inputStream = defaultIfBlank(other.inputStream, inputStream);
+        merged.bucketSize = defaultIfNull(other.bucketSize, bucketSize);
+        merged.batchSize = defaultIfNull(other.batchSize, batchSize);
+        merged.httpEnabled = defaultIfNull(other.httpEnabled, httpEnabled);
+        merged.sequentialCommands = defaultIfNull(other.sequentialCommands, sequentialCommands);
+        merged.validationClass = defaultIfNull(other.validationClass, validationClass);
+        merged.defaultScroller = defaultIfBlank(other.defaultScroller, defaultScroller);
+        return merged;
+    }
 }

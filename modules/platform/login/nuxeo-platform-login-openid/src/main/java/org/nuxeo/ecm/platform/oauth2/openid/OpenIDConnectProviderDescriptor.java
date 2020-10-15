@@ -21,9 +21,10 @@
 package org.nuxeo.ecm.platform.oauth2.openid;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -207,18 +208,16 @@ public class OpenIDConnectProviderDescriptor implements Descriptor {
         OpenIDConnectProviderDescriptor other = (OpenIDConnectProviderDescriptor) o;
         OpenIDConnectProviderDescriptor merged = new OpenIDConnectProviderDescriptor();
         merged.name = name;
-        merged.enabled = other.enabled;
-        merged.authorizationServerURL = StringUtils.isNotBlank(other.authorizationServerURL)
-                ? other.authorizationServerURL
-                : authorizationServerURL;
-        merged.clientId = StringUtils.isNotBlank(other.clientId) ? other.clientId : clientId;
-        merged.clientSecret = StringUtils.isNotBlank(other.clientSecret) ? other.clientSecret : clientSecret;
-        merged.icon = StringUtils.isNotBlank(other.icon) ? other.icon : icon;
+        merged.enabled = defaultIfNull(other.enabled, enabled);
+        merged.authorizationServerURL = defaultIfBlank(other.authorizationServerURL, authorizationServerURL);
+        merged.clientId = defaultIfBlank(other.clientId, clientId);
+        merged.clientSecret = defaultIfBlank(other.clientSecret, clientSecret);
+        merged.icon = defaultIfBlank(other.icon, icon);
         merged.scopes = ArrayUtils.isNotEmpty(other.scopes) ? other.scopes : scopes;
-        merged.tokenServerURL = StringUtils.isNotBlank(other.tokenServerURL) ? other.tokenServerURL : tokenServerURL;
-        merged.userInfoURL = StringUtils.isNotBlank(other.userInfoURL) ? other.userInfoURL : userInfoURL;
-        merged.label = StringUtils.isNotBlank(other.label) ? other.label : label;
-        merged.description = StringUtils.isNotBlank(other.description) ? other.description : description;
+        merged.tokenServerURL = defaultIfBlank(other.tokenServerURL, tokenServerURL);
+        merged.userInfoURL = defaultIfBlank(other.userInfoURL, userInfoURL);
+        merged.label = defaultIfBlank(other.label, label);
+        merged.description = defaultIfBlank(other.description, description);
         merged.accessTokenKey = !other.accessTokenKey.equals(DEFAULT_ACCESS_TOKEN_KEY) ? other.accessTokenKey
                 : accessTokenKey;
         merged.userInfoClass = other.userInfoClass != DEFAULT_USER_INFO_CLASS ? other.userInfoClass : userInfoClass;
@@ -228,7 +227,7 @@ public class OpenIDConnectProviderDescriptor implements Descriptor {
         Class<? extends UserResolver> otherUserResolverClass = other.getUserResolverClass();
         merged.userResolverClass = otherUserResolverClass != DEFAULT_USER_RESOLVER_CLASS ? otherUserResolverClass
                 : userResolverClass;
-        merged.userMapper = StringUtils.isNotBlank(other.userMapper) ? other.userMapper : userMapper;
+        merged.userMapper = defaultIfBlank(other.userMapper, userMapper);
         merged.authenticationMethod = !other.authenticationMethod.equals(DEFAULT_AUTHENTICATION_METHOD)
                 ? other.authenticationMethod
                 : authenticationMethod;

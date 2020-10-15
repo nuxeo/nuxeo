@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.scroll;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,5 +94,19 @@ public class ScrollDescriptor implements Descriptor {
             optionsReadOnly = Collections.unmodifiableMap(options);
         }
         return optionsReadOnly;
+    }
+
+    @Override
+    public ScrollDescriptor merge(Descriptor o) {
+        var other = (ScrollDescriptor) o;
+        var merged = new ScrollDescriptor();
+        merged.type = other.type;
+        merged.name = other.name;
+        merged.enabled = defaultIfNull(other.enabled, enabled);
+        merged.isDefault = defaultIfNull(other.isDefault, isDefault);
+        merged.scrollClass = defaultIfNull(other.scrollClass, scrollClass);
+        merged.options = new HashMap<>(options);
+        merged.options.putAll(other.options);
+        return merged;
     }
 }

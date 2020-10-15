@@ -18,9 +18,6 @@
  */
 package org.nuxeo.ecm.core.scroll;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.nuxeo.ecm.core.api.scroll.ScrollService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;

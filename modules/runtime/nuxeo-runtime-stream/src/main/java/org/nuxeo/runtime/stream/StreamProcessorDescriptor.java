@@ -20,6 +20,8 @@
 package org.nuxeo.runtime.stream;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -68,6 +70,15 @@ public class StreamProcessorDescriptor implements Descriptor {
         public String getId() {
             return name;
         }
+
+        @Override
+        public ComputationDescriptor merge(Descriptor o) {
+            var other = (ComputationDescriptor) o;
+            var merged = new ComputationDescriptor();
+            merged.name = other.name;
+            merged.concurrency = defaultIfNull(other.concurrency, concurrency);
+            return merged;
+        }
     }
 
     @XObject(value = "filter")
@@ -101,6 +112,16 @@ public class StreamProcessorDescriptor implements Descriptor {
             }
         }
 
+        @Override
+        public FilterDescriptor merge(Descriptor o) {
+            var other = (FilterDescriptor) o;
+            var merged = new FilterDescriptor();
+            merged.name = other.name;
+            merged.klass = defaultIfNull(other.klass, klass);
+            merged.options = new HashMap<>(options);
+            merged.options.putAll(other.options);
+            return merged;
+        }
     }
 
     @XObject(value = "stream")
@@ -126,6 +147,18 @@ public class StreamProcessorDescriptor implements Descriptor {
         @Override
         public String getId() {
             return name;
+        }
+
+        @Override
+        public StreamDescriptor merge(Descriptor o) {
+            var other = (StreamDescriptor) o;
+            var merged = new StreamDescriptor();
+            merged.name = other.name;
+            merged.partitions = defaultIfNull(other.partitions, partitions);
+            merged.codec = defaultIfBlank(other.codec, codec);
+            merged.external = defaultIfNull(other.external, external);
+            merged.filters = Descriptor.merge(filters, other.filters);
+            return merged;
         }
     }
 
@@ -189,6 +222,22 @@ public class StreamProcessorDescriptor implements Descriptor {
                                                  .batchPolicy(batchCapacity, batchThreshold)
                                                  .continueOnFailure(continueOnFailure)
                                                  .skipFirstFailures(getSkipFirstFailures());
+        }
+
+        @Override
+        public PolicyDescriptor merge(Descriptor o) {
+            var other = (PolicyDescriptor) o;
+            var merged = new PolicyDescriptor();
+            merged.name = other.name;
+            merged.maxRetries = defaultIfNull(other.maxRetries, maxRetries);
+            merged.delay = defaultIfNull(other.delay, delay);
+            merged.maxDelay = defaultIfNull(other.maxDelay, maxDelay);
+            merged.continueOnFailure = defaultIfNull(other.continueOnFailure, continueOnFailure);
+            merged.skipFirstFailures = defaultIfNull(other.skipFirstFailures, skipFirstFailures);
+            merged.klass = defaultIfNull(other.klass, klass);
+            merged.batchCapacity = defaultIfNull(other.batchCapacity, batchCapacity);
+            merged.batchThreshold = defaultIfNull(other.batchThreshold, batchThreshold);
+            return merged;
         }
     }
 
@@ -297,5 +346,26 @@ public class StreamProcessorDescriptor implements Descriptor {
     // @since 11.1
     public void setStart(boolean start) {
         this.start = start;
+    }
+
+    @Override
+    public StreamProcessorDescriptor merge(Descriptor o) {
+        var other = (StreamProcessorDescriptor) o;
+        var merged = new StreamProcessorDescriptor();
+        merged.name = other.name;
+        merged.enabled = defaultIfNull(other.enabled, enabled);
+        merged.start = defaultIfNull(other.start, start);
+        merged.config = defaultIfBlank(other.config, config);
+        merged.klass = defaultIfNull(other.klass, klass);
+        merged.defaultConcurrency = defaultIfNull(other.defaultConcurrency, defaultConcurrency);
+        merged.defaultPartitions = defaultIfNull(other.defaultPartitions, defaultPartitions);
+        merged.defaultCodec = defaultIfBlank(other.defaultCodec, defaultCodec);
+        merged.defaultExternal = defaultIfNull(other.defaultExternal, defaultExternal);
+        merged.options = new HashMap<>(options);
+        merged.options.putAll(other.options);
+        merged.computations = Descriptor.merge(computations, other.computations);
+        merged.streams = Descriptor.merge(streams, other.streams);
+        merged.policies = Descriptor.merge(policies, other.policies);
+        return merged;
     }
 }

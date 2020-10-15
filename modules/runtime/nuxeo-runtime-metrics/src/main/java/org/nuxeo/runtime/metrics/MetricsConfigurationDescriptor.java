@@ -19,6 +19,7 @@
 package org.nuxeo.runtime.metrics;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,6 +68,15 @@ public class MetricsConfigurationDescriptor implements Descriptor, MetricFilter 
         @Override
         public boolean isEnabled() {
             return toBooleanDefaultIfNull(enabled, true);
+        }
+
+        @Override
+        public InstrumentDescriptor merge(Descriptor o) {
+            var other = (InstrumentDescriptor) o;
+            var merged = new InstrumentDescriptor();
+            merged.name = other.name;
+            merged.enabled = defaultIfNull(other.enabled, enabled);
+            return merged;
         }
     }
 
@@ -138,4 +148,13 @@ public class MetricsConfigurationDescriptor implements Descriptor, MetricFilter 
         return instruments;
     }
 
+    @Override
+    public MetricsConfigurationDescriptor merge(Descriptor o) {
+        var other = (MetricsConfigurationDescriptor) o;
+        var merged = new MetricsConfigurationDescriptor();
+        merged.enabled = defaultIfNull(other.enabled, enabled);
+        merged.instruments = Descriptor.merge(other.instruments, instruments);
+        merged.filter = defaultIfNull(other.filter, filter);
+        return merged;
+    }
 }

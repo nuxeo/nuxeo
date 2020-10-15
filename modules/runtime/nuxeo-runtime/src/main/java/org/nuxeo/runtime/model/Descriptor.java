@@ -18,6 +18,13 @@
  */
 package org.nuxeo.runtime.model;
 
+import static java.util.stream.Collectors.toMap;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
 /**
  * Descriptors implementing this interface will automatically be registered within the default registry in
  * {@code DefaultComponent}.
@@ -67,6 +74,20 @@ public interface Descriptor {
      */
     default boolean doesRemove() {
         return false;
+    }
+
+    /**
+     * Returns a list of descriptors representing {@code d2} merged into {@code d1}.
+     *
+     * @since 11.4
+     */
+    @SuppressWarnings("unchecked")
+    static <D extends Descriptor> List<D> merge(List<? extends D> d1, List<? extends D> d2) {
+        Map<String, D> aggregator = d1.stream().collect(toMap(Descriptor::getId, Function.identity()));
+        for (var d : d2) {
+            aggregator.merge(d.getId(), d, (oldD, newD) -> (D) oldD.merge(newD));
+        }
+        return new ArrayList<>(aggregator.values());
     }
 
 }

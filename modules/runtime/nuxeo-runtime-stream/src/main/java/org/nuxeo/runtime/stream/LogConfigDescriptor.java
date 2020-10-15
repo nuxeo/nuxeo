@@ -20,6 +20,8 @@
 package org.nuxeo.runtime.stream;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,6 +63,15 @@ public class LogConfigDescriptor implements Descriptor {
         public String getId() {
             return name;
         }
+
+        @Override
+        public LogDescriptor merge(Descriptor o) {
+            var other = (LogDescriptor) o;
+            var merged = new LogDescriptor();
+            merged.name = other.name;
+            merged.size = defaultIfNull(other.size, size);
+            return merged;
+        }
     }
 
     // @since 11.1
@@ -76,6 +87,15 @@ public class LogConfigDescriptor implements Descriptor {
         @Override
         public String getId() {
             return (group != null && !group.isBlank()) ? name + SEP + group : name;
+        }
+
+        @Override
+        public LogMatchDescriptor merge(Descriptor o) {
+            var other = (LogMatchDescriptor) o;
+            var merged = new LogMatchDescriptor();
+            merged.name = other.name;
+            merged.group = defaultIfNull(other.group, group);
+            return merged;
         }
     }
 
@@ -126,4 +146,18 @@ public class LogConfigDescriptor implements Descriptor {
         return matches.stream().map(LogMatchDescriptor::getId).collect(Collectors.toList());
     }
 
+    @Override
+    public LogConfigDescriptor merge(Descriptor o) {
+        var other = (LogConfigDescriptor) o;
+        var merged = new LogConfigDescriptor();
+        merged.name = other.name;
+        merged.enabled = defaultIfNull(other.enabled, enabled);
+        merged.isDefault = defaultIfNull(other.isDefault, isDefault);
+        merged.type = defaultIfBlank(other.type, type);
+        merged.options = new HashMap<>(options);
+        merged.options.putAll(other.options);
+        merged.logs = Descriptor.merge(logs, other.logs);
+        merged.matches = Descriptor.merge(matches, other.matches);
+        return merged;
+    }
 }

@@ -19,6 +19,7 @@
 package org.nuxeo.runtime.metrics;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,5 +81,18 @@ public class MetricsReporterDescriptor implements Descriptor {
         } catch (ReflectiveOperationException e) {
             throw new IllegalArgumentException("Cannot create reporter: " + getId(), e);
         }
+    }
+
+    @Override
+    public Descriptor merge(Descriptor o) {
+        var other = (MetricsReporterDescriptor) o;
+        var merged = new MetricsReporterDescriptor();
+        merged.name = other.name;
+        merged.enabled = defaultIfNull(other.enabled, enabled);
+        merged.klass = defaultIfNull(other.klass, klass);
+        merged.pollInterval = defaultIfNull(other.pollInterval, pollInterval);
+        merged.options = new HashMap<>(options);
+        merged.options.putAll(other.options);
+        return merged;
     }
 }

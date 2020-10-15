@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -149,11 +151,11 @@ public class FileImporterDescriptor implements Descriptor, Serializable {
     public FileImporter newInstance() {
         try {
             FileImporter fileImporter = klass.getDeclaredConstructor().newInstance();
-            fileImporter.setName(name);
-            fileImporter.setEnabled(enabled);
-            fileImporter.setDocType(docType);
-            fileImporter.setFilters(filters);
-            fileImporter.setOrder(order);
+            fileImporter.setName(getName());
+            fileImporter.setEnabled(isEnabled());
+            fileImporter.setDocType(getDocType());
+            fileImporter.setFilters(getFilters());
+            fileImporter.setOrder(getOrder());
             return fileImporter;
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
@@ -174,23 +176,14 @@ public class FileImporterDescriptor implements Descriptor, Serializable {
 
         FileImporterDescriptor merged = new FileImporterDescriptor();
         merged.name = other.name;
-        merged.enabled = other.enabled;
-        merged.klass = defaultValue(other.klass, klass);
-        merged.className = defaultValue(other.className, className);
-        merged.docType = defaultValue(other.docType, docType);
+        merged.enabled = defaultIfNull(other.enabled, enabled);
+        merged.klass = defaultIfNull(other.klass, klass);
+        merged.className = defaultIfBlank(other.className, className);
+        merged.docType = defaultIfBlank(other.docType, docType);
         merged.filters = new ArrayList<>();
         merged.filters.addAll(filters);
         merged.filters.addAll(other.filters);
-        merged.order = defaultValue(other.order, order);
+        merged.order = defaultIfNull(other.order, order);
         return merged;
-    }
-
-    protected <T> T defaultValue(T value, T defaultValue) {
-        return value == null ? defaultValue : value;
-    }
-
-    @Override
-    public boolean doesRemove() {
-        return !enabled;
     }
 }
