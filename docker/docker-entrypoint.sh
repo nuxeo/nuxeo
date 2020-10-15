@@ -56,15 +56,6 @@ if [[ ! -f $NUXEO_HOME/configured && ! -f $NUXEO_CONF ]]; then
   touch $NUXEO_HOME/configured
 fi
 
-# Handle shell scripts
-echo "ENTRYPOINT: Looking for shell scripts in /docker-entrypoint-initnuxeo.d"
-for f in /docker-entrypoint-initnuxeo.d/*; do
-  case "$f" in
-    *.sh)  echo "Running $f"; /bin/bash "$f" ;;
-    *)     echo "Ignoring $f" ;;
-  esac
-done
-
 # Handle instance.clid
 if [ -n "$NUXEO_CLID" ]; then
   echo "ENTRYPOINT: Write NUXEO_CLID environment variable to /var/lib/nuxeo/instance.clid"
@@ -78,5 +69,14 @@ if [ -n "$NUXEO_PACKAGES" ]; then
   echo "ENTRYPOINT: Install Nuxeo packages: $NUXEO_PACKAGES"
   nuxeoctl mp-install $NUXEO_PACKAGES --accept=true --relax no
 fi
+
+# Handle shell scripts
+echo "ENTRYPOINT: Looking for shell scripts in /docker-entrypoint-initnuxeo.d"
+for f in /docker-entrypoint-initnuxeo.d/*; do
+  case "$f" in
+    *.sh)  echo "Running $f"; /bin/bash "$f" ;;
+    *)     echo "Ignoring $f" ;;
+  esac
+done
 
 exec "$@"
