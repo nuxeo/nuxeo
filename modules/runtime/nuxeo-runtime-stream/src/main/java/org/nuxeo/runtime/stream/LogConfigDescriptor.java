@@ -120,7 +120,7 @@ public class LogConfigDescriptor implements Descriptor {
 
     // @since 11.1
     public List<String> getPatterns() {
-        return matches.stream().map(match -> match.getId()).collect(Collectors.toList());
+        return matches.stream().map(LogMatchDescriptor::getId).collect(Collectors.toList());
     }
 
 }

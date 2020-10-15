@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- *
- * $Id: PluginExtension.java 3036 2006-09-18 17:32:20Z janguenot $
  */
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
@@ -30,7 +27,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.runtime.model.Descriptor;
 
 /**
@@ -44,7 +40,7 @@ public class FileImporterDescriptor implements Descriptor, Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNode("@enabled")
-    boolean enabled = true;
+    protected boolean enabled = true;
 
     @XNode("@name")
     protected String name;

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.runtime;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -58,8 +59,8 @@ public class TestDescriptorRegistry {
             TestDescriptor other = (TestDescriptor) o;
             TestDescriptor merged = new TestDescriptor();
             merged.id = id;
-            merged.name = other.name != null ? other.name : name;
-            merged.desc = other.desc != null ? other.desc : desc;
+            merged.name = defaultIfNull(other.name, name);
+            merged.desc = defaultIfNull(other.desc, desc);
             return merged;
         }
 
@@ -80,8 +81,8 @@ public class TestDescriptorRegistry {
         registry.register(TARGET, EP, new TestDescriptor("id2", null, "desc22"));
         List<TestDescriptor> descs = registry.getDescriptors(TARGET, EP);
         assertEquals(2, descs.size());
-        assertValues(descs.get(0), "id1", "name11", "desc11");
-        assertValues(descs.get(1), "id2", "name22", "desc22");
+        assertValues("id1", "name11", "desc11", descs.get(0));
+        assertValues("id2", "name22", "desc22", descs.get(1));
 
     }
 
@@ -89,20 +90,20 @@ public class TestDescriptorRegistry {
     public void testGetSingleDescriptor() {
         DescriptorRegistry registry = new DescriptorRegistry();
         registry.register(TARGET, EP, new TestDescriptor("id1", "name1", "desc1"));
-        assertValues((TestDescriptor) registry.getDescriptor(TARGET, EP, "id1"), "id1", "name1", "desc1");
+        assertValues("id1", "name1", "desc1", registry.getDescriptor(TARGET, EP, "id1"));
         registry.register(TARGET, EP, new TestDescriptor("id1", "name2", "desc1"));
-        assertValues((TestDescriptor) registry.getDescriptor(TARGET, EP, "id1"), "id1", "name2", "desc1");
+        assertValues("id1", "name2", "desc1", registry.getDescriptor(TARGET, EP, "id1"));
         registry.register(TARGET, EP, new TestDescriptor("id1", null, "desc2"));
-        assertValues((TestDescriptor) registry.getDescriptor(TARGET, EP, "id1"), "id1", "name2", "desc2");
+        assertValues("id1", "name2", "desc2", registry.getDescriptor(TARGET, EP, "id1"));
     }
 
     @Test
     public void testRemove() {
         DescriptorRegistry registry = new DescriptorRegistry();
         registry.register(TARGET, EP, new TestDescriptor("id0", "", ""));
-        assertValues(registry.getDescriptor(TARGET, EP, "id0"), "id0", "", "");
+        assertValues("id0", "", "", registry.getDescriptor(TARGET, EP, "id0"));
         registry.register(TARGET, EP, new TestDescriptor("id0", "merged", "merged"));
-        assertValues(registry.getDescriptor(TARGET, EP, "id0"), "id0", "merged", "merged");
+        assertValues("id0", "merged", "merged", registry.getDescriptor(TARGET, EP, "id0"));
         registry.register(TARGET, EP, new TestDescriptor("id0", "", "") {
             @Override
             public boolean doesRemove() {
@@ -111,13 +112,13 @@ public class TestDescriptorRegistry {
         });
         assertNull(registry.getDescriptor(TARGET, EP, "id0"));
         registry.register(TARGET, EP, new TestDescriptor("id0", "final", null));
-        assertValues(registry.getDescriptor(TARGET, EP, "id0"), "id0", "final", null);
+        assertValues("id0", "final", null, registry.getDescriptor(TARGET, EP, "id0"));
     }
 
-    protected void assertValues(TestDescriptor d, String id, String name, String desc) {
-        assertEquals(id, d.id);
-        assertEquals(name, d.name);
-        assertEquals(desc, d.desc);
+    protected void assertValues(String expectedId, String expectedName, String expectedDesc, TestDescriptor actual) {
+        assertEquals(expectedId, actual.id);
+        assertEquals(expectedName, actual.name);
+        assertEquals(expectedDesc, actual.desc);
     }
 
 }

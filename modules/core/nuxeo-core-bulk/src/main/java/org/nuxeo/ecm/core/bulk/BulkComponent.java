@@ -18,9 +18,6 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kafka.KafkaConfigServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;

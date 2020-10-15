@@ -58,7 +58,7 @@ public class TestWordCountAction {
     protected BulkService bulkService;
 
     @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
+    public TemporaryFolder testFolder = new TemporaryFolder(new File(FeaturesRunner.getBuildDirectory()));
 
     @Test
     public void testWordCount() throws Exception {

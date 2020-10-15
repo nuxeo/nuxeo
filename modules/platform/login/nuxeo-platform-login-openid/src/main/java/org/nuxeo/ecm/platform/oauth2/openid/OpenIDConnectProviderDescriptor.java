@@ -223,7 +223,8 @@ public class OpenIDConnectProviderDescriptor implements Descriptor {
                 ? other.redirectUriResolver
                 : redirectUriResolver;
         Class<? extends UserResolver> otherUserResolverClass = other.getUserResolverClass();
-        merged.userResolverClass = otherUserResolverClass != DEFAULT_USER_RESOLVER_CLASS ? otherUserResolverClass : userResolverClass;
+        merged.userResolverClass = otherUserResolverClass != DEFAULT_USER_RESOLVER_CLASS ? otherUserResolverClass
+                : userResolverClass;
         merged.userMapper = StringUtils.isNotBlank(other.userMapper) ? other.userMapper : userMapper;
         merged.authenticationMethod = !other.authenticationMethod.equals(DEFAULT_AUTHENTICATION_METHOD)
                 ? other.authenticationMethod
