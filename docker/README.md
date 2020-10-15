@@ -209,5 +209,7 @@ docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> -e NUXEO_PACKAGES="nuxeo-
 
 ### Shell Scripts
 
-To run some shell scripts when running a container from a Nuxeo image, you can add
-`*.sh` files in the `/docker-entrypoint-initnuxeo.d` directory of the image. They will be executed at startup by the default `ENTRYPOINT`.
+To run some shell scripts when starting a container from a Nuxeo image, you can add
+`*.sh` files in the `/docker-entrypoint-initnuxeo.d` directory of the image.
+
+They will be alphabetically sorted and executed at the very end of the `ENTRYPOINT`, after handling the environment variables. Thus, if you run a container by passing the `NUXEO_CLID` environment variable, invoking `nuxeoctl` in such a shell script will work as being registered.
