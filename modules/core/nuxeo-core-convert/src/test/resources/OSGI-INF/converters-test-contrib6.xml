@@ -33,6 +33,10 @@
       <sourceMimeType>text/html</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
+
+    <converter name="testNullMimeType" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>application/pdf</sourceMimeType>
+    </converter>
   </extension>
 
 </component>
