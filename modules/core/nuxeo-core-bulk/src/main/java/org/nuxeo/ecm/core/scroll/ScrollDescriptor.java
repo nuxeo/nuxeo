@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.scroll;
 
+import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +39,7 @@ import org.nuxeo.runtime.model.Descriptor;
 public class ScrollDescriptor implements Descriptor {
 
     @XNode("@enabled")
-    protected boolean isEnabled = true;
+    protected Boolean enabled;
 
     @XNode("@type")
     protected String type;
@@ -46,7 +48,7 @@ public class ScrollDescriptor implements Descriptor {
     protected String name;
 
     @XNode("@default")
-    protected boolean isDefault;
+    protected Boolean isDefault;
 
     @XNode("@class")
     protected Class<? extends Scroll> scrollClass;
@@ -79,11 +81,11 @@ public class ScrollDescriptor implements Descriptor {
 
     @Override
     public boolean isEnabled() {
-        return isEnabled;
+        return toBooleanDefaultIfNull(enabled, true);
     }
 
     public boolean isDefault() {
-        return isDefault;
+        return toBooleanDefaultIfNull(isDefault, false);
     }
 
     public Map<String, String> getOptions() {

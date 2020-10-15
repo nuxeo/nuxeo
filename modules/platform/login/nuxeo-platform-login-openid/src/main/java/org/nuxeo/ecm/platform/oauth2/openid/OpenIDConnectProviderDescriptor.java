@@ -20,6 +20,8 @@
 
 package org.nuxeo.ecm.platform.oauth2.openid;
 
+import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -59,7 +61,7 @@ public class OpenIDConnectProviderDescriptor implements Descriptor {
     public static final String DEFAULT_AUTHENTICATION_METHOD = URL_AUTHENTICATION_METHOD;
 
     @XNode("@enabled")
-    protected boolean enabled = true;
+    protected Boolean enabled;
 
     @XNode("name")
     protected String name;
@@ -159,7 +161,7 @@ public class OpenIDConnectProviderDescriptor implements Descriptor {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return toBooleanDefaultIfNull(enabled, true);
     }
 
     public void setEnabled(boolean enabled) {

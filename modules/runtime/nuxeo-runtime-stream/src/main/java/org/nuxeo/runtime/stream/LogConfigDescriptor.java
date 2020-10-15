@@ -19,6 +19,8 @@
  */
 package org.nuxeo.runtime.stream;
 
+import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,11 +40,11 @@ public class LogConfigDescriptor implements Descriptor {
 
     // @since 11.1
     @XNode("@enabled")
-    protected boolean isEnabled = true;
+    protected Boolean enabled;
 
     // @since 11.1
     @XNode("@default")
-    protected boolean isDefault = false;
+    protected Boolean isDefault;
 
     @XObject(value = "log")
     public static class LogDescriptor implements Descriptor {
@@ -101,17 +103,17 @@ public class LogConfigDescriptor implements Descriptor {
     // @since 11.1
     @Override
     public boolean isEnabled() {
-        return isEnabled;
+        return toBooleanDefaultIfNull(enabled, true);
     }
 
     // @since 11.1
-    public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     // @since 11.1
     public boolean isDefault() {
-        return isDefault;
+        return toBooleanDefaultIfNull(isDefault, false);
     }
 
     // @since 11.1

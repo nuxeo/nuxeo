@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
+import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +42,7 @@ public class FileImporterDescriptor implements Descriptor, Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNode("@enabled")
-    protected boolean enabled = true;
+    protected Boolean enabled;
 
     @XNode("@name")
     protected String name;
@@ -124,7 +126,7 @@ public class FileImporterDescriptor implements Descriptor, Serializable {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return toBooleanDefaultIfNull(enabled, true);
     }
 
     public Integer getOrder() {

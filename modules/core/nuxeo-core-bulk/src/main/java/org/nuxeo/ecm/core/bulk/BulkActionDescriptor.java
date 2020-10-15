@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.bulk;
 
+import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -38,7 +39,7 @@ public class BulkActionDescriptor implements Descriptor {
 
     // @since 11.1
     @XNode("@enabled")
-    protected boolean isEnabled = true;
+    protected Boolean enabled;
 
     @XNode("@name")
     public String name;
@@ -93,12 +94,12 @@ public class BulkActionDescriptor implements Descriptor {
     // @since 11.1
     @Override
     public boolean isEnabled() {
-        return isEnabled;
+        return toBooleanDefaultIfNull(enabled, true);
     }
 
     // @since 11.1
-    public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     // @since 11.1

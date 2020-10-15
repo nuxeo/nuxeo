@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.metrics;
 
+import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +48,7 @@ public class MetricsConfigurationDescriptor implements Descriptor, MetricFilter 
     }
 
     @XNode("@enabled")
-    protected boolean isEnabled = true;
+    protected Boolean enabled;
 
     @XObject(value = "instrument")
     public static class InstrumentDescriptor implements Descriptor {
@@ -55,7 +57,7 @@ public class MetricsConfigurationDescriptor implements Descriptor, MetricFilter 
         protected String name;
 
         @XNode("@enabled")
-        protected boolean isEnabled = true;
+        protected Boolean enabled;
 
         @Override
         public String getId() {
@@ -64,7 +66,7 @@ public class MetricsConfigurationDescriptor implements Descriptor, MetricFilter 
 
         @Override
         public boolean isEnabled() {
-            return isEnabled;
+            return toBooleanDefaultIfNull(enabled, true);
         }
     }
 
@@ -129,7 +131,7 @@ public class MetricsConfigurationDescriptor implements Descriptor, MetricFilter 
     }
 
     public boolean isEnabled() {
-        return isEnabled;
+        return toBooleanDefaultIfNull(enabled, true);
     }
 
     public List<InstrumentDescriptor> getInstruments() {

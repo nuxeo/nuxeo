@@ -19,6 +19,8 @@
  */
 package org.nuxeo.runtime.stream;
 
+import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,11 +49,11 @@ public class StreamProcessorDescriptor implements Descriptor {
 
     // @since 11.1
     @XNode("@enabled")
-    protected boolean isEnabled = true;
+    protected Boolean enabled;
 
     // @since 11.1
     @XNode("@start")
-    protected boolean start = true;
+    protected Boolean start;
 
     @XObject(value = "computation")
     public static class ComputationDescriptor implements Descriptor {
@@ -274,12 +276,12 @@ public class StreamProcessorDescriptor implements Descriptor {
     // @since 11.1
     @Override
     public boolean isEnabled() {
-        return isEnabled;
+        return toBooleanDefaultIfNull(enabled, true);
     }
 
     // @since 11.1
-    public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -289,7 +291,7 @@ public class StreamProcessorDescriptor implements Descriptor {
 
     // @since 11.1
     public boolean isStart() {
-        return start;
+        return toBooleanDefaultIfNull(start, true);
     }
 
     // @since 11.1

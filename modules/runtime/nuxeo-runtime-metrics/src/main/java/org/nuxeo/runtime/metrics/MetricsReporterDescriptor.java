@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.metrics;
 
+import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +36,7 @@ import org.nuxeo.runtime.model.Descriptor;
 public class MetricsReporterDescriptor implements Descriptor {
 
     @XNode("@enabled")
-    protected boolean isEnabled = true;
+    protected Boolean enabled;
 
     @XNode("@name")
     public String name;
@@ -59,7 +61,7 @@ public class MetricsReporterDescriptor implements Descriptor {
 
     @Override
     public boolean isEnabled() {
-        return isEnabled;
+        return toBooleanDefaultIfNull(enabled, true);
     }
 
     public Map<String, String> getOptions() {
