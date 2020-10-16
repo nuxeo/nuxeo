@@ -64,4 +64,21 @@ public class TestDocumentPageProviderOperation {
         assertNotNull(documents);
         assertEquals(1, documents.size());
     }
+
+    @Test
+    public void testDocumentPageProviderOperationWithOffset() throws IOException {
+        // retrieve first page in order to check if offset is well taken into account
+        List<JsonNode> documents = session.newRequest(DocumentPageProviderOperation.ID)
+                                          .set("providerName", "PageProvider")
+                                          .executeReturningDocuments();
+        assertNotNull(documents);
+
+        int offset = 1;
+        List<JsonNode> documentsOffset = session.newRequest(DocumentPageProviderOperation.ID)
+                                                .set("providerName", "PageProvider")
+                                                .set("offset", offset)
+                                                .executeReturningDocuments();
+        assertNotNull(documentsOffset);
+        assertEquals(documents.get(offset), documentsOffset.get(0));
+    }
 }

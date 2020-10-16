@@ -77,6 +77,12 @@ public class DocumentPageProviderOperation {
     @Param(name = "pageSize", required = false)
     protected Integer pageSize;
 
+    /*
+     * @since 11.4
+     */
+    @Param(name = "offset", required = false)
+    protected Integer offset;
+
     @Param(name = "queryParams", alias = "searchTerm", required = false)
     protected StringList strParameters;
 
@@ -122,15 +128,16 @@ public class DocumentPageProviderOperation {
 
         Long targetPage = currentPageIndex != null ? currentPageIndex.longValue() : null;
         Long targetPageSize = pageSize != null ? pageSize.longValue() : null;
+        Long currentOffset = offset != null ? offset.longValue() : null;
 
         Object[] parameters = strParameters != null ? strParameters.toArray(new String[0]) : null;
         ActionContext actionContext = (ActionContext) context.get(GetActions.SEAM_ACTION_CONTEXT);
         if (actionContext != null) {
             parameters = PageProviderHelper.resolveELParameters(def, parameters);
         }
-
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) PageProviderHelper.getPageProvider(session, def,
-                namedParameters, sortBy, sortOrder, targetPageSize, targetPage, highlights, quickFilters, parameters);
+                namedParameters, sortBy, sortOrder, targetPageSize, targetPage, currentOffset, highlights, quickFilters,
+                parameters);
 
         HttpServletRequest request = (HttpServletRequest) context.get("request");
         if (request != null) {
