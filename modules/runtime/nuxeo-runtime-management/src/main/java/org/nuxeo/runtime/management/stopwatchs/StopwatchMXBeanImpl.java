@@ -28,7 +28,9 @@ import org.javasimon.StopwatchSample;
 
 /**
  * @author matic
+ * @deprecated since 11.4: use dropwizard metrics timer instead
  */
+@Deprecated(since = "11.4")
 public class StopwatchMXBeanImpl extends org.javasimon.jmx.StopwatchMXBeanImpl implements StopwatchMXBean {
 
     public StopwatchMXBeanImpl(Stopwatch stopwatch) {

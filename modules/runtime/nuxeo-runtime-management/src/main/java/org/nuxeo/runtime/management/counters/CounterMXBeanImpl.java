@@ -28,7 +28,9 @@ import org.javasimon.jmx.CounterSample;
 
 /**
  * @author matic
+ * @deprecated since 11.4: use dropwizard metrics instead
  */
+@Deprecated(since = "11.4")
 public class CounterMXBeanImpl extends org.javasimon.jmx.CounterMXBeanImpl implements CounterMXBean {
 
     public CounterMXBeanImpl(Counter counter) {

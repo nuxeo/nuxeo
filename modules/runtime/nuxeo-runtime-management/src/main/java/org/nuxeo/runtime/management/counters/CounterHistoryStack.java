@@ -27,7 +27,9 @@ import java.util.LinkedList;
  * Fixed length Stack that is used to store values of a counter over time
  *
  * @author Tiry (tdelprat@nuxeo.com)
+ * @deprecated since 11.4: use dropwizard metrics instead
  */
+@Deprecated(since = "11.4")
 public class CounterHistoryStack implements Iterable<long[]> {
 
     protected final LinkedList<long[]> list = new LinkedList<>();

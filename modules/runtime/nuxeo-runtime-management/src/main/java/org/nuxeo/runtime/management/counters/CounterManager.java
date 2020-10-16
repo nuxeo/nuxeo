@@ -25,7 +25,9 @@ package org.nuxeo.runtime.management.counters;
  * don't have to be dependent on Simon
  *
  * @author Tiry (tdelprat@nuxeo.com)
+ * @deprecated since 11.4: use dropwizard metrics counter instead
  */
+@Deprecated(since = "11.4")
 public interface CounterManager {
 
     /**

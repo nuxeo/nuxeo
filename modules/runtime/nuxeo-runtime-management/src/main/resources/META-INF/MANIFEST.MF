@@ -10,9 +10,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 5.4.2.qualifier
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/management-resource-publisher-service.xml,
- OSGI-INF/management-server-locator-service.xml,
- OSGI-INF/runtime-management-metrics-component.xml,
- OSGI-INF/runtime-management-counters-component.xml
+ OSGI-INF/management-server-locator-service.xml
 Import-Package: javax.management,
  javax.management.modelmbean,
  javax.management.remote,

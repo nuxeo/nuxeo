@@ -27,7 +27,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Runtime component that provides the {@link CounterManager} service. Uses Simon Counters for implementation
  *
  * @author Tiry (tdelprat@nuxeo.com)
+ * @deprecated since 11.4: use dropwizard metrics counter instead
  */
+@Deprecated(since = "11.4")
 public class CounterManagerImpl extends DefaultComponent implements CounterManager {
 
     public static final String COUNTER_PREFIX = "org.nuxeo";
