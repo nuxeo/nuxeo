@@ -24,6 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
@@ -35,6 +36,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Deploy("org.nuxeo.runtime.management")
 @Features(RuntimeFeature.class)
+@Deprecated(since = "11.4")
+@Ignore("NXP-28012")
 public class TestCounters {
 
     @Test

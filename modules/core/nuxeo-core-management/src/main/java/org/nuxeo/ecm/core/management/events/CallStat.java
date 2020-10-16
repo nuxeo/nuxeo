@@ -27,7 +27,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * Simple class to store Listeners call statistics.
  *
  * @author Thierry Delprat
+ * @deprecated since 11.4: superseded by dropwizard metrics
  */
+@Deprecated(since = "11.4")
 public class CallStat {
 
     protected AtomicLong accumulatedTime = new AtomicLong();

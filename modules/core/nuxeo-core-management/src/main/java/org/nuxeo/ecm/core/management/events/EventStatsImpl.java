@@ -23,7 +23,9 @@ import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 11.4: superseded by dropwizard metrics
  */
+@Deprecated(since = "11.4")
 public class EventStatsImpl implements EventStats {
 
     @Override

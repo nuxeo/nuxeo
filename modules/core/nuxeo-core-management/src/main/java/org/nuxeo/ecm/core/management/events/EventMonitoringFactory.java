@@ -27,7 +27,9 @@ import org.nuxeo.runtime.management.ObjectNameFactory;
  * Factory for Monitoring MBean
  *
  * @author Thierry Delprat
+ * @deprecated since 11.4: superseded by dropwizard metrics
  */
+@Deprecated(since = "11.4")
 public class EventMonitoringFactory extends AbstractResourceFactory {
 
     @Override

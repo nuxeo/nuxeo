@@ -35,7 +35,9 @@ import org.nuxeo.runtime.management.counters.CounterHelper;
  * AsyncEventListener that collects events to update the Simon counters
  *
  * @author Tiry (tdelprat@nuxeo.com)
+ * @deprecated since 11.4: superseded by dropwizard metrics
  */
+@Deprecated(since = "11.4")
 public class EventCounterListener implements PostCommitEventListener {
 
     // Counters used

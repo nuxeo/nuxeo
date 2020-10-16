@@ -24,7 +24,9 @@ package org.nuxeo.ecm.core.management.events;
  * Monitoring interface.
  *
  * @author Thierry Delprat
+ * @deprecated since 11.4: superseded by dropwizard metrics
  */
+@Deprecated(since = "11.4")
 public interface EventMonitoringMBean {
 
     /**

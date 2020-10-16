@@ -29,7 +29,9 @@ import org.nuxeo.runtime.api.Framework;
  * Monitoring MBean implementation.
  *
  * @author Thierry Delprat
+ * @deprecated since 11.4: superseded by dropwizard metrics
  */
+@Deprecated(since = "11.4")
 public class EventMonitoring implements EventMonitoringMBean {
 
     private static EventServiceAdmin getAdminService() {
