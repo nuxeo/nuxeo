@@ -161,7 +161,6 @@ public class BlobsExtractor {
      *
      * @param documentType the document type
      * @return the list of blob paths
-     *
      * @since 8.3
      */
     public List<String> getBlobPaths(DocumentType documentType) {

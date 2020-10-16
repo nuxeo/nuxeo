@@ -57,7 +57,7 @@ public class TestBlobsExtractor {
     }
 
     @Test
-    public void testGetBlobPathsVarious() throws Exception {
+    public void testGetBlobPathsVarious() {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         BlobsExtractor blobsExtractor = new BlobsExtractor();
         List<String> paths;
@@ -66,17 +66,17 @@ public class TestBlobsExtractor {
         assertEquals(Collections.emptyList(), paths);
 
         paths = blobsExtractor.getBlobPaths(schemaManager.getDocumentType("SimpleBlobDocument"));
-        assertEquals(Arrays.asList("simpleblob:blob"), paths);
+        assertEquals(List.of("simpleblob:blob"), paths);
 
         paths = blobsExtractor.getBlobPaths(schemaManager.getDocumentType("WithoutPrefixDocument"));
-        assertEquals(Arrays.asList("wihtoutpref:blob"), paths);
+        assertEquals(List.of("wihtoutpref:blob"), paths);
 
         paths = blobsExtractor.getBlobPaths(schemaManager.getDocumentType("BlobInListDocument"));
-        assertEquals(Arrays.asList("bil:files/*/file"), paths);
+        assertEquals(List.of("bil:files/*/file"), paths);
     }
 
     @Test
-    public void testGetBlobsPropertiesNoBlob() throws Exception {
+    public void testGetBlobsPropertiesNoBlob() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "NoBlobDocument");
 
         List<Property> blobProperties = new BlobsExtractor().getBlobsProperties(doc);
@@ -84,7 +84,7 @@ public class TestBlobsExtractor {
     }
 
     @Test
-    public void testGetBlobsPropertiesSimpleBlob() throws Exception {
+    public void testGetBlobsPropertiesSimpleBlob() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "SimpleBlobDocument");
         Blob blob = createBlob("test.pdf");
         doc.setPropertyValue("simpleblob:blob", (Serializable) blob);
@@ -95,7 +95,7 @@ public class TestBlobsExtractor {
     }
 
     @Test
-    public void testGetBlobsPropertiesSimpleBlobWithoutPrefix() throws Exception {
+    public void testGetBlobsPropertiesSimpleBlobWithoutPrefix() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "WithoutPrefixDocument");
         Blob blob = createBlob("test.pdf");
         doc.setPropertyValue("wihtoutpref:blob", (Serializable) blob);
@@ -106,7 +106,7 @@ public class TestBlobsExtractor {
     }
 
     @Test
-    public void testGetBlobsPropertiesBlobListEmpty() throws Exception {
+    public void testGetBlobsPropertiesBlobListEmpty() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "BlobInListDocument");
 
         List<Property> blobs = new BlobsExtractor().getBlobsProperties(doc);
@@ -114,7 +114,7 @@ public class TestBlobsExtractor {
     }
 
     @Test
-    public void testGetBlobsPropertiesBlobList() throws Exception {
+    public void testGetBlobsPropertiesBlobList() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "BlobInListDocument");
         Map<String, Object> map1 = new HashMap<>();
         map1.put("file", createBlob("test1.pdf"));
@@ -130,7 +130,7 @@ public class TestBlobsExtractor {
     }
 
     @Test
-    public void testGetBlobsFromTwoSchemas() throws Exception {
+    public void testGetBlobsFromTwoSchemas() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "BlobWithTwoSchemasContainingBlob");
         doc.setPropertyValue("simpleblob:blob", (Serializable) createBlob("test1.pdf"));
         doc.setPropertyValue("simpleblob2:blob", (Serializable) createBlob("test2.pdf"));
@@ -145,7 +145,7 @@ public class TestBlobsExtractor {
     }
 
     @Test
-    public void testGetTwoBlobsFromOneSchema() throws Exception {
+    public void testGetTwoBlobsFromOneSchema() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "BlobWithOneSchemaContainingTwoBlobs");
         doc.setPropertyValue("simpleblob3:blob", (Serializable) createBlob("test1.pdf"));
         doc.setPropertyValue("simpleblob3:blob2", (Serializable) createBlob("test2.pdf"));
@@ -160,7 +160,7 @@ public class TestBlobsExtractor {
     }
 
     @Test
-    public void testGetBlobPaths() throws Exception {
+    public void testGetBlobPaths() {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         List<String> blobPaths = new BlobsExtractor().getBlobPaths(schemaManager.getDocumentType("ComplexDoc"));
         assertEquals(
@@ -170,7 +170,7 @@ public class TestBlobsExtractor {
     }
 
     @Test
-    public void testGetBlobs() throws Exception {
+    public void testGetBlobs() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
 
         Blob blob1 = createBlob("file1.txt");
@@ -201,7 +201,7 @@ public class TestBlobsExtractor {
     }
 
     @Test
-    public void testGetBlobsEmpty() throws Exception {
+    public void testGetBlobsEmpty() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
         // don't create file:content
         List<Blob> blobs = new BlobsExtractor().getBlobs(doc);
@@ -209,7 +209,7 @@ public class TestBlobsExtractor {
     }
 
     @Test
-    public void testGetBlobsPropertiesEmpty() throws Exception {
+    public void testGetBlobsPropertiesEmpty() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
         // don't create file:content
         List<Property> properties = new BlobsExtractor().getBlobsProperties(doc);
@@ -217,20 +217,20 @@ public class TestBlobsExtractor {
     }
 
     @Test
-    public void testWithRepositoryConfiguration() throws Exception {
+    public void testWithRepositoryConfiguration() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
 
         List<Map<String, Object>> vignettes = new ArrayList<>();
         Map<String, Object> vignette = new HashMap<>();
-        vignette.put("width", Long.valueOf(0));
-        vignette.put("height", Long.valueOf(0));
+        vignette.put("width", 0L);
+        vignette.put("height", 0L);
         Blob blob1 = createBlob("file1.txt");
         vignette.put("content", blob1);
         vignettes.add(vignette);
 
         vignette = new HashMap<>();
-        vignette.put("width", Long.valueOf(0));
-        vignette.put("height", Long.valueOf(0));
+        vignette.put("width", 0L);
+        vignette.put("height", 0L);
         Blob blob2 = createBlob("file2.txt");
         vignette.put("content", blob2);
         vignettes.add(vignette);
