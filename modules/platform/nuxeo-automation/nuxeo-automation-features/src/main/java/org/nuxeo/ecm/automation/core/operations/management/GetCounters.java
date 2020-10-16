@@ -45,9 +45,11 @@ import org.nuxeo.runtime.management.counters.CounterManager;
  * Return the data collected by one or more Counters For each counter 3 series are returned , bare values, delta and
  * speed
  *
+ * @deprecated since 11.4, superseded by dropwizard metrics
  * @author Tiry (tdelprat@nuxeo.com)
  */
-@Operation(id = GetCounters.ID, category = Constants.CAT_SERVICES, label = "Retrieve counters values", description = "Retrieve data collected by one or more Counters", addToStudio = false)
+@Deprecated(since = "11.4")
+@Operation(id = GetCounters.ID, category = Constants.CAT_SERVICES, label = "Retrieve counters values", description = "Retrieve data collected by one or more Counters", addToStudio = false, deprecatedSince = "11.4")
 public class GetCounters {
 
     public static final String ID = "Counters.GET";

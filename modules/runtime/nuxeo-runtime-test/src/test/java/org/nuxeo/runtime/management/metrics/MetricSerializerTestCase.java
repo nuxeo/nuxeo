@@ -25,6 +25,7 @@ import org.javasimon.Split;
 import org.javasimon.Stopwatch;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.Features;
@@ -33,6 +34,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
+@Deprecated(since = "11.4")
+@Ignore("NXP-28012")
 public class MetricSerializerTestCase {
 
     final MetricSerializer srv = new MetricSerializer();

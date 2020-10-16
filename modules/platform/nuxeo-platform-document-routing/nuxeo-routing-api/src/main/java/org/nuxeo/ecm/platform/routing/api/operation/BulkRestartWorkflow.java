@@ -27,8 +27,6 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.javasimon.SimonManager;
-import org.javasimon.Split;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -80,7 +78,6 @@ public class BulkRestartWorkflow {
     @OperationMethod
     public void run() {
         boolean transactionStarted = false;
-        Split split = SimonManager.getStopwatch(ID).start();
         try {
             CoreSession session = CoreInstance.getCoreSession(null);
 
@@ -160,8 +157,6 @@ public class BulkRestartWorkflow {
             if (!transactionStarted) {
                 TransactionHelper.startTransaction();
             }
-            split.stop();
-            log.info(split.toString());
         }
     }
 

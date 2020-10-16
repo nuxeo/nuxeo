@@ -31,7 +31,9 @@ import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
  * Helper class to store statistics about listeners calls.
  *
  * @author Thierry Delprat
+ * @deprecated since 11.4: superseded by dropwizard metrics
  */
+@Deprecated(since = "11.4")
 public class EventStatsHolder {
 
     protected static boolean collectAsyncHandlersExecTime = false;

@@ -23,9 +23,6 @@ import javax.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hamcrest.Matchers;
-import org.javasimon.SimonManager;
-import org.javasimon.Split;
-import org.javasimon.Stopwatch;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
@@ -87,19 +84,11 @@ public class CanRenameDuplicateTest {
     @Test
     public void profileUnderLoad() {
         Assume.assumeTrue(Boolean.parseBoolean(Framework.getProperty("profile", "false")));
-        SimonManager.enable();
-        try {
-            Stopwatch watch = SimonManager.getStopwatch("test.profile");
-            DocumentModel model = repo.createDocumentModel("Document");
-            for (int i = 1; i <= 30000; ++i) {
-                String increment = String.format("%05d", i);
-                model.setPathInfo("/", "aFile-" + increment);
-                watch.start();
-                repo.createDocument(model);
-            }
-            log.info(watch);
-        } finally {
-            SimonManager.disable();
+        DocumentModel model = repo.createDocumentModel("Document");
+        for (int i = 1; i <= 30000; ++i) {
+            String increment = String.format("%05d", i);
+            model.setPathInfo("/", "aFile-" + increment);
+            repo.createDocument(model);
         }
     }
 
