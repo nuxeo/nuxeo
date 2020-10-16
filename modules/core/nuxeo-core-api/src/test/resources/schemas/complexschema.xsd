@@ -34,4 +34,32 @@
     </xs:sequence>
   </xs:complexType>
 
+  <!-- NXP-29700 -->
+  <!-- Complex with blob -->
+  <xs:element name="aComplexWithBlob" type="nxs:complexWithBlob" />
+
+  <!-- Complex of complex with blob -->
+  <xs:element name="aComplexComplexWithBlob" type="nxs:complexComplexWithBlob" />
+
+  <!-- List of complex of complex with blob -->
+  <xs:element name="aListComplexComplexWithBlob" type="nxs:listComplexComplexWithBlob" />
+
+  <xs:complexType name="listComplexComplexWithBlob">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:complexComplexWithBlob" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="complexComplexWithBlob">
+    <xs:sequence>
+      <xs:element name="complex" type="nxs:complexWithBlob"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="complexWithBlob">
+    <xs:sequence>
+      <xs:element name="blob" type="nxs:content"/>
+    </xs:sequence>
+  </xs:complexType>
+
 </xs:schema>

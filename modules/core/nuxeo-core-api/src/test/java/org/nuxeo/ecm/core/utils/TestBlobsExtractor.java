@@ -163,9 +163,9 @@ public class TestBlobsExtractor {
     public void testGetBlobPaths() {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         List<String> blobPaths = new BlobsExtractor().getBlobPaths(schemaManager.getDocumentType("ComplexDoc"));
-        assertEquals(
-                new HashSet<>(
-                        Arrays.asList("file:content", "cmpf:aList/*/content", "cmpf:attachedFile/vignettes/*/content")),
+        assertEquals(new HashSet<>(Arrays.asList("file:content", "cmpf:aList/*/content",
+                "cmpf:attachedFile/vignettes/*/content", "cmpf:aComplexWithBlob/blob",
+                "cmpf:aComplexComplexWithBlob/complex/blob", "cmpf:aListComplexComplexWithBlob/*/complex/blob")),
                 new HashSet<>(blobPaths));
     }
 
@@ -318,6 +318,56 @@ public class TestBlobsExtractor {
         blobs = extractor.getBlobs(doc);
         assertEquals(2, blobs.size());
         assertTrue(blobs.contains(blob2));
+    }
+
+    // NXP-29700
+    @Test
+    public void testComplexWithBlob() {
+        Blob blob = Blobs.createBlob("foo");
+        Map<String, Serializable> complex = Map.of("blob", (Serializable) blob);
+
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
+        doc.setPropertyValue("cmpf:aComplexWithBlob", (Serializable) complex);
+
+        BlobsExtractor blobsExtractor = new BlobsExtractor();
+        List<Blob> blobs = blobsExtractor.getBlobs(doc);
+        assertEquals(1, blobs.size());
+        assertEquals(blob, blobs.get(0));
+    }
+
+    // NXP-29700
+    @Test
+    public void testComplexComplexWithBlob() {
+        Blob blob = Blobs.createBlob("foo");
+        Map<String, Map<String, Serializable>> topComplex = Map.of("complex", Map.of("blob", (Serializable) blob));
+
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
+        doc.setPropertyValue("cmpf:aComplexComplexWithBlob", (Serializable) topComplex);
+
+        BlobsExtractor blobsExtractor = new BlobsExtractor();
+        List<Blob> blobs = blobsExtractor.getBlobs(doc);
+        assertEquals(1, blobs.size());
+        assertEquals(blob, blobs.get(0));
+    }
+
+    // NXP-29700
+    @Test
+    public void testListComplexComplexWithBlob() {
+        Blob fooBlob = Blobs.createBlob("foo");
+        Blob barBlob = Blobs.createBlob("bar");
+        List<Map<String, Map<String, Serializable>>> list = List.of( //
+                Map.of("complex", Map.of("blob", (Serializable) fooBlob)),
+                Map.of("complex", Map.of("blob", (Serializable) barBlob)) //
+        );
+
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
+        doc.setPropertyValue("cmpf:aListComplexComplexWithBlob", (Serializable) list);
+
+        BlobsExtractor blobsExtractor = new BlobsExtractor();
+        List<Blob> blobs = blobsExtractor.getBlobs(doc);
+        assertEquals(2, blobs.size());
+        assertEquals(fooBlob, blobs.get(0));
+        assertEquals(barBlob, blobs.get(1));
     }
 
 }

@@ -145,7 +145,10 @@ public class BlobsExtractor {
             if (!isInterestingPath(path)) {
                 continue;
             }
-            List<String> split = Arrays.asList(path.split("/[*]/"));
+            // split on:
+            // - "[*]" for list
+            // - "/" for complex properties
+            List<String> split = Arrays.asList(path.split("/[*]/|/"));
             if (split.isEmpty()) {
                 throw new IllegalStateException("Path detected not well-formed: " + path);
             }
@@ -182,9 +185,15 @@ public class BlobsExtractor {
                 properties.add(property);
             }
         } else {
-            for (Property childProperty : property.getChildren()) {
-                Property childSubProp = childProperty.get(split.get(0));
-                List<String> subPath = split.subList(1, split.size());
+            String name = split.get(0);
+            List<String> subPath = split.subList(1, split.size());
+            if (property.isList()) {
+                for (Property childProperty : property.getChildren()) {
+                    Property childSubProp = childProperty.get(name);
+                    findBlobsProperties(childSubProp, subPath, properties);
+                }
+            } else { // complex type
+                Property childSubProp = property.get(name);
                 findBlobsProperties(childSubProp, subPath, properties);
             }
         }
