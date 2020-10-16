@@ -24,6 +24,8 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.BundleContext;
 
+// @deprecated since 11.4: use dropwizard metrics instead
+@Deprecated(since = "11.4")
 public class MetricComponent extends DefaultComponent {
 
     protected final MetricSerializer serializer = new MetricSerializer();

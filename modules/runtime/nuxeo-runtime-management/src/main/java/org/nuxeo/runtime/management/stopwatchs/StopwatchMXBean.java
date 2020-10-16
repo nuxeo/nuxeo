@@ -23,7 +23,9 @@ import java.util.Map;
 
 /**
  * @author matic
+ * @deprecated since 11.4: use dropwizard metrics timer instead
  */
+@Deprecated(since = "11.4")
 public interface StopwatchMXBean extends org.javasimon.jmx.StopwatchMXBean {
 
     String sampleAsString();

@@ -31,7 +31,9 @@ import org.javasimon.Counter;
  * {@link CounterHistoryStack}
  *
  * @author Tiry (tdelprat@nuxeo.com)
+ * @deprecated since 11.4: use dropwizard metrics instead
  */
+@Deprecated(since = "11.4")
 public class CounterHistoryRecorder extends CallbackSkeleton {
 
     protected Map<String, CounterHistoryStack> counterHistory = new ConcurrentHashMap<>();

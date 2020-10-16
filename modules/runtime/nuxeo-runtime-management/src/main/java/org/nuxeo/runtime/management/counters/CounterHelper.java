@@ -26,7 +26,9 @@ import org.nuxeo.runtime.api.Framework;
  * Dummy helper class to be used by code that updates the counters to avoid having to do the service lookup
  *
  * @author Tiry (tdelprat@nuxeo.com)
+ * @deprecated since 11.4: use dropwizard metrics counter instead
  */
+@Deprecated(since = "11.4")
 public class CounterHelper {
 
     protected static CounterManager cm = Framework.getService(CounterManager.class);

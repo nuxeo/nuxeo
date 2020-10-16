@@ -23,7 +23,9 @@ import java.util.Map;
 
 /**
  * @author matic
+ * @deprecated since 11.4: use dropwizard metrics instead
  */
+@Deprecated(since = "11.4")
 public interface CounterMXBean extends org.javasimon.jmx.CounterMXBean {
 
     String sampleAsString();

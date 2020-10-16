@@ -33,6 +33,8 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.thoughtworks.xstream.XStream;
 
+//@deprecated since 11.4: use dropwizard metrics instead
+@Deprecated(since = "11.4")
 public class MetricSerializer implements MetricSerializerMXBean {
 
     protected File file;

@@ -28,7 +28,9 @@ import org.javasimon.SimonManager;
 import org.javasimon.jmx.JmxRegisterCallback;
 import org.javasimon.utils.LoggingCallback;
 
-public class MetricEnabler implements MetricEnablerMXBean {;
+// @deprecated since 11.4: use dropwizard metrics instead
+@Deprecated(since = "11.4")
+public class MetricEnabler implements MetricEnablerMXBean {
 
     protected MetricSerializer serializer;
 
