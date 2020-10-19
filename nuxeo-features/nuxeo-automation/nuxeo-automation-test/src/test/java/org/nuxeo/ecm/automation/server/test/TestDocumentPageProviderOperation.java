@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,15 @@
  *
  * Contributors:
  *     Funsho David
+ *     Charles Boidot
  */
 
 package org.nuxeo.ecm.automation.server.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -63,5 +66,24 @@ public class TestDocumentPageProviderOperation {
                                        .execute();
         assertNotNull(documents);
         assertEquals(1, documents.size());
+    }
+
+    @Test
+    public void testDocumentPageProviderOperationWithOffset() throws IOException {
+        // retrieve first page in order to check if offset is correctly taken into account
+
+        Documents documents = (Documents) session.newRequest(DocumentPageProviderOperation.ID)
+                                                 .set("providerName", "PageProvider")
+                                                 .set("pageSize", "4")
+                                                 .execute();
+        assertNotNull(documents);
+
+        int offset = 1;
+        Documents documentsWithOffset = (Documents) session.newRequest(DocumentPageProviderOperation.ID)
+                                                           .set("providerName", "PageProvider")
+                                                           .set("offset", offset)
+                                                           .execute();
+        assertNotNull(documentsWithOffset);
+        assertEquals(documents.get(offset + 1).getId(), documentsWithOffset.get(1).getId());
     }
 }
