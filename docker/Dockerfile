@@ -6,7 +6,7 @@
 
 # ------------------------------------------------------------------------
 # Build stage
-FROM openjdk:11-jdk-slim as builder
+FROM azul/zulu-openjdk:11 as builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   procps \
@@ -48,25 +48,30 @@ LABEL org.opencontainers.image.licenses="Apache 2.0"
 LABEL org.opencontainers.image.title="Nuxeo Server"
 LABEL org.opencontainers.image.vendor="Nuxeo"
 
-RUN yum -y update && yum -y install epel-release && yum -y --setopt=skip_missing_names_on_install=False install \
-  ghostscript \
-  ImageMagick-6.9.10.68-3.el7 \
-  java-11-openjdk java-11-openjdk-devel \
-  less \
-  libreoffice-headless libreoffice-writer libreoffice-calc libreoffice-impress \
-  libwpd-tools \
-  # required by perl-Image-ExifTool to extract binary metadata from open office document
-  perl-Archive-Zip \
-  perl-Image-ExifTool \
-  poppler-utils \
-  tar \
-  ufraw \
-  unzip \
-  wget \
-  && yum clean all
+# Configure Zulu Repository
+RUN rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems \
+  && rpm --install https://cdn.azul.com/zulu/bin/zulu-repo-1.0.0-1.noarch.rpm
 
-# Set Java 11 as default java (if libreoffice is installed in the final image, it adds Java 8 and sets it as default)
-RUN alternatives --set java java-11-openjdk.x86_64
+RUN yum -y update \
+  && yum -y --setopt=skip_missing_names_on_install=False install \
+    epel-release \
+    # install java first to provide it for depend packages (such as libreoffice)
+    zulu11-jdk \
+  && yum -y --setopt=skip_missing_names_on_install=False install \
+    ghostscript \
+    ImageMagick-6.9.10.68-3.el7 \
+    less \
+    libreoffice-headless libreoffice-writer libreoffice-calc libreoffice-impress \
+    libwpd-tools \
+    # required by perl-Image-ExifTool to extract binary metadata from open office document
+    perl-Archive-Zip \
+    perl-Image-ExifTool \
+    poppler-utils \
+    tar \
+    ufraw \
+    unzip \
+    wget \
+  && yum clean all
 
 # Remove setuid/setgid binaries from images for security
 RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
