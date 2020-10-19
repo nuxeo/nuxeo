@@ -49,21 +49,30 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  * Ordering of events for a given component:
  * <ul>
  * <li><code>COMPONENT_REGISTERED</code>
+ * <li><code>COMPONENT_RESOLVED</code> (if the component dependencies were satisfied)
+ * </ul>
+ * <ul>
  * <li><code>ACTIVATING_COMPONENT</code>
  * <li><code>COMPONENT_ACTIVATED</code>
- * <ul>
- * <li><code>COMPONENT_RESOLVED</code> (if the component dependencies were satisfied)
- * <li><code>COMPONENT_STARTED</code>
+ * </ul>
  * <ul>
  * <li><code>EXTENSION_PENDING</code> (if an extension is pending)
  * <li><code>EXTENSION_REGISTERED</code> (if an extension is registered)
+ * </ul>
+ * <ul>
+ * <li><code>STARTING_COMPONENT</code>
+ * <li><code>COMPONENT_STARTED</code>
+ * <ul>
  * <li><code>EXTENSION_UNREGISTERED</code> (if an extension was registered)
  * </ul>
+ * <ul>
+ * <li><code>STOPPING_COMPONENT</code>
  * <li><code>COMPONENT_STOPPED</code>
- * <li><code>COMPONENT_UNRESOLVED</code>
  * </ul>
+ * <ul>
  * <li><code>DEACTIVATING_COMPONENT</code>
  * <li><code>COMPONENT_DEACTIVATED</code>
+ * <li><code>COMPONENT_UNRESOLVED</code>
  * <li><code>COMPONENT_UNREGISTERED</code>
  * </ul>
  *
