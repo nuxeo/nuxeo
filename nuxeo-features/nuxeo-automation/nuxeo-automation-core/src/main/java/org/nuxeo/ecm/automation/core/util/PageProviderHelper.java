@@ -164,7 +164,14 @@ public class PageProviderHelper {
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
             Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder, Long pageSize,
             Long currentPageIndex, List<String> highlights, List<String> quickFilters, Object... parameters) {
+        return getPageProvider(session, def, namedParameters, sortBy, sortOrder, pageSize, currentPageIndex, null,
+                highlights, quickFilters, parameters);
+    }
 
+    public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
+            Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder, Long pageSize,
+            Long currentPageIndex, Long currentOffset, List<String> highlights, List<String> quickFilters,
+            Object... parameters) {
         // Ordered parameters
         if (ArrayUtils.isNotEmpty(parameters)) {
             // expand specific parameters
@@ -211,9 +218,8 @@ public class PageProviderHelper {
         DocumentModel searchDocumentModel = getSearchDocumentModel(session, def.getName(), namedParameters);
 
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
-
         return pageProviderService.getPageProvider(def.getName(), def, searchDocumentModel, sortInfos, pageSize,
-                currentPageIndex, props, highlights, quickFilterList, parameters);
+                currentPageIndex, currentOffset, props, highlights, quickFilterList, parameters);
     }
 
     public static DocumentModel getSearchDocumentModel(CoreSession session, String providerName,

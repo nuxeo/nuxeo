@@ -22,6 +22,8 @@ package org.nuxeo.ecm.automation.server.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -56,12 +58,29 @@ public class TestDocumentPageProviderOperation {
                                                  .execute();
         assertNotNull(documents);
         assertEquals(2, documents.size());
-
         documents = (Documents) session.newRequest(DocumentPageProviderOperation.ID)
                                        .set("providerName", "PageProvider")
                                        .set("quickFilters", "SectionRoot")
                                        .execute();
         assertNotNull(documents);
         assertEquals(1, documents.size());
+    }
+
+    @Test
+    public void testDocumentPageProviderOperationWithOffset() throws IOException {
+        // retrieve first page in order to check if offset is well taken into account
+
+        Documents documents = (Documents) session.newRequest(DocumentPageProviderOperation.ID)
+                                                 .set("providerName", "PageProvider")
+                                                 .set("pageSize", "4")
+                                                 .execute();
+        assertNotNull(documents);
+        int offset = 1;
+        Documents documentsOffset = (Documents) session.newRequest(DocumentPageProviderOperation.ID)
+                                                       .set("providerName", "PageProvider")
+                                                       .set("offset", offset)
+                                                       .execute();
+        assertNotNull(documentsOffset);
+        assertEquals(documents.get(offset + 1).toString(), documentsOffset.get(1).toString());
     }
 }
