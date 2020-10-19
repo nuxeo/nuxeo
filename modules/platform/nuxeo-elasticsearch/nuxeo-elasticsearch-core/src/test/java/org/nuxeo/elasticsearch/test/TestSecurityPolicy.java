@@ -20,8 +20,6 @@ package org.nuxeo.elasticsearch.test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
 import org.junit.After;
@@ -38,7 +36,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
@@ -46,6 +43,7 @@ import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -55,7 +53,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TestSecurityPolicy {
 
     @Inject
-    protected WorkManager workManager;
+    protected TransactionalFeature txFeature;
 
     @Inject
     protected CoreSession session;
@@ -72,15 +70,6 @@ public class TestSecurityPolicy {
 
     public void assertNumberOfCommandProcessed(int processed) {
         assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
-    }
-
-    /**
-     * Wait for async worker completion then wait for indexing completion
-     */
-    public void waitForCompletion() throws Exception {
-        workManager.awaitCompletion(20, TimeUnit.SECONDS);
-        esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
-        esa.refresh();
     }
 
     public void startTransaction() {
@@ -117,11 +106,10 @@ public class TestSecurityPolicy {
         }
     }
 
-    protected void buildAndIndexDocs() throws Exception {
+    protected void buildAndIndexDocs() {
         startTransaction();
         buildDocs();
-        TransactionHelper.commitOrRollbackTransaction();
-        waitForCompletion();
+        txFeature.nextTransaction();
         assertNumberOfCommandProcessed(6);
         startTransaction();
     }
@@ -142,15 +130,14 @@ public class TestSecurityPolicy {
         assertEquals(1, docs.totalSize());
     }
 
-    protected void grantBrowsePermToUser(String path, String username) throws Exception {
+    protected void grantBrowsePermToUser(String path, String username) {
         DocumentRef ref = new PathRef(path);
         ACP acp = new ACPImpl();
         ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
         acl.add(new ACE(username, SecurityConstants.READ, true));
         acp.addACL(acl);
         session.setACP(ref, acp, true);
-        TransactionHelper.commitOrRollbackTransaction();
-        waitForCompletion();
+        txFeature.nextTransaction();
         startTransaction();
     }
 
