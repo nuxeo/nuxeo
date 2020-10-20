@@ -126,8 +126,8 @@ void dockerDeploy(String imageName) {
   String fullImageName = "${dockerNamespace}/${imageName}"
   String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
   String latestInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
-  String fixedVersionPublicImage = "${NUXEO_DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
-  String latestPublicImage = "${NUXEO_DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
+  String fixedVersionPublicImage = "${PUBLIC_DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
+  String latestPublicImage = "${PUBLIC_DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
 
   dockerPull(fixedVersionInternalImage)
   echo "Push ${latestInternalImage}"
@@ -334,8 +334,6 @@ pipeline {
     // Elasticsearch and Kafka might take longer
     TEST_LONG_ROLLOUT_STATUS_TIMEOUT = '5m'
     NUXEO_IMAGE_NAME = 'nuxeo'
-    // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
-    NUXEO_DOCKER_REGISTRY = 'docker-private.packages.nuxeo.com'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     MAVEN_ARGS = getMavenArgs()
     MAVEN_FAIL_ARGS = getMavenFailArgs()
@@ -781,7 +779,7 @@ pipeline {
           ----------------------------------------
           Image tag: ${VERSION}
           """
-          echo "Push Docker image to Docker registry ${NUXEO_DOCKER_REGISTRY}"
+          echo "Push Docker image to Docker registry ${PUBLIC_DOCKER_REGISTRY}"
           dockerDeploy("${NUXEO_IMAGE_NAME}")
         }
       }
