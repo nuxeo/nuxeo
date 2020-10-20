@@ -25,11 +25,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.tools.report.ReportWriter;
 import org.nuxeo.connect.update.PackageException;
+import org.nuxeo.connect.update.PackageUpdateService;
+import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.launcher.connect.ConnectBroker;
 import org.nuxeo.launcher.info.ConfigurationInfo;
 import org.nuxeo.launcher.info.DistributionInfo;
 import org.nuxeo.launcher.info.InstanceInfo;
@@ -51,9 +53,10 @@ public class ConfigReport implements ReportWriter {
         try {
             ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
             configurationGenerator.init();
-            ConnectBroker connectBroker = new ConnectBroker(configurationGenerator.getEnv());
-            InstanceInfo info = configurationGenerator.getServerConfigurator().getInfo(getCLID(connectBroker),
-                    connectBroker.getPkgList());
+            PackageUpdateService packageUpdateService = new StandaloneUpdateService(configurationGenerator.getEnv());
+            packageUpdateService.initialize();
+            InstanceInfo info = configurationGenerator.getServerConfigurator()
+                                                      .getInfo(getCLID(), packageUpdateService.getPackages());
             JAXBContext context = JAXBContext.newInstance(InstanceInfo.class, DistributionInfo.class, PackageInfo.class,
                     ConfigurationInfo.class, KeyValueInfo.class);
             Marshaller marshaller = context.createMarshaller();
@@ -63,16 +66,19 @@ public class ConfigReport implements ReportWriter {
         }
     }
 
-    protected String getCLID(ConnectBroker connectBroker)  {
+    protected String getCLID() {
         try {
-            return connectBroker.getCLID();
+            return LogicalInstanceIdentifier.instance().getCLID();
         } catch (NoCLID cause) {
             return "no-clid";
         }
     }
 
     protected XMLStreamWriter jsonWriter(JAXBContext context, OutputStream out) {
-        JSONConfiguration config = JSONConfiguration.mapped().rootUnwrapping(true).attributeAsElement("key", "value").build();
+        JSONConfiguration config = JSONConfiguration.mapped()
+                                                    .rootUnwrapping(true)
+                                                    .attributeAsElement("key", "value")
+                                                    .build();
         config = JSONConfiguration.createJSONConfigurationWithFormatted(config, true);
         return JsonXmlStreamWriter.createWriter(new OutputStreamWriter(out), config, "");
     }
