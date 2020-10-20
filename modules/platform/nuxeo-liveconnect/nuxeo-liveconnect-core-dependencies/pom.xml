@@ -23,15 +23,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.liveconnect</groupId>
-      <artifactId>nuxeo-liveconnect-dropbox-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.liveconnect</groupId>
       <artifactId>nuxeo-liveconnect-google-drive-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.liveconnect</groupId>
-      <artifactId>nuxeo-liveconnect-onedrive-core</artifactId>
     </dependency>
 
   </dependencies>

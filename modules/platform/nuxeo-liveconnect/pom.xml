@@ -16,9 +16,7 @@
     <module>nuxeo-liveconnect-core</module>
     <module>nuxeo-liveconnect-core-dependencies</module>
     <module>nuxeo-liveconnect-google-drive-core</module>
-    <module>nuxeo-liveconnect-dropbox-core</module>
     <module>nuxeo-liveconnect-box-core</module>
-    <module>nuxeo-liveconnect-onedrive-core</module>
   </modules>
 
 </project>
