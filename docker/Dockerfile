@@ -83,6 +83,8 @@ ENV NUXEO_CONF /etc/nuxeo/nuxeo.conf
 # These directories must be owned by the root group and be readable/writable by that group.
 # See https://docs.openshift.com/container-platform/3.5/creating_images/guidelines.html#use-uid
 RUN mkdir -p $NUXEO_HOME \
+  # Create folders until `nuxeo.war` to allow it to be mounted
+  && mkdir -p $NUXEO_HOME/nxserver/nuxeo.war \
   && chown 900:0 $NUXEO_HOME && chmod g+rwX $NUXEO_HOME \
   && mkdir -p /etc/nuxeo \
   && chown 900:0 /etc/nuxeo && chmod g+rwX /etc/nuxeo \
@@ -106,8 +108,11 @@ RUN mkdir /etc/nuxeo/conf.d
 COPY conf.d /etc/nuxeo/conf.d/
 
 # Create directory in which to copy shell scripts to run at runtime
-RUN mkdir /docker-entrypoint-initnuxeo.d \
-  && chown 900:0 /docker-entrypoint-initnuxeo.d && chmod g+rwX /docker-entrypoint-initnuxeo.d
+RUN mkdir /docker-entrypoint-initnuxeo.d && chmod g+rwx,o+rx /docker-entrypoint-initnuxeo.d \
+  && chmod -R g+rwX,o+rX /etc/nuxeo/conf.d \
+  && chmod g+rwx,o+rx /docker-entrypoint.sh \
+  && chmod g+rwx,o+rx /install-packages.sh \
+  && chmod g+rwx,o+rx /install-local-packages.sh
 
 # Copy Nuxeo distribution
 COPY --from=builder /distrib $NUXEO_HOME
