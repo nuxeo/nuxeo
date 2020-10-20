@@ -132,7 +132,8 @@ public class TestSecurityPolicy {
 
         // As administrator I can see all docs
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document"));
-        Assert.assertEquals(6, docs.totalSize());
+        // don't use docs.totalSize that could be wrong, see NXP-29782
+        Assert.assertEquals(6, docs.size());
 
         // As user File document are not denied
         CoreSession restrictedSession = CoreInstance.getCoreSession(null, "toto");
