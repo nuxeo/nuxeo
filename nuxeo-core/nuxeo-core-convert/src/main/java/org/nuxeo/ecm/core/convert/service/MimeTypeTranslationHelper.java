@@ -159,7 +159,7 @@ public class MimeTypeTranslationHelper {
         }
 
         return cos.stream()
-                  .filter(co -> destinationMimeType == null || co.mimeType.equals(destinationMimeType))
+                  .filter(co -> destinationMimeType == null || destinationMimeType.equals(co.mimeType))
                   .map(co -> co.converter)
                   .collect(Collectors.toList());
     }
