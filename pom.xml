@@ -1843,17 +1843,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.liveconnect</groupId>
-        <artifactId>nuxeo-liveconnect-dropbox-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.liveconnect</groupId>
         <artifactId>nuxeo-liveconnect-box-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.liveconnect</groupId>
-        <artifactId>nuxeo-liveconnect-onedrive-core</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
 
