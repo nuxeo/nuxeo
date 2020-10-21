@@ -108,8 +108,8 @@ public abstract class RetentionTestCase {
 
     protected RetentionRule createRuleWithActions(RetentionRule.ApplicationPolicy policy,
             StartingPointPolicy startingPointPolicy, List<String> docTypes, String startingPointEventId,
-            String startingPointExpression, String startingPointValue, String metadataXPath, long years, long months, long days,
-            long durationMillis, List<String> beginActions, List<String> endActions) {
+            String startingPointExpression, String startingPointValue, String metadataXPath, long years, long months,
+            long days, long durationMillis, List<String> beginActions, List<String> endActions) {
         DocumentModel doc = session.createDocumentModel("/RetentionRules", "testRule", "RetentionRule");
         RetentionRule rule = doc.getAdapter(RetentionRule.class);
         rule.setDurationYears(years);
@@ -155,7 +155,7 @@ public abstract class RetentionTestCase {
 
     protected RetentionRule createManualMetadataBasedRuleMillis(String metadataXPath, long durationMillis) {
         return createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
-                RetentionRule.StartingPointPolicy.METADATA_BASED, null, null, null,null, metadataXPath, 0L, 0L, 0L,
+                RetentionRule.StartingPointPolicy.METADATA_BASED, null, null, null, null, metadataXPath, 0L, 0L, 0L,
                 durationMillis, null, null);
     }
 
