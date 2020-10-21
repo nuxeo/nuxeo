@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.retention.scripting.test">
+
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
+    <scriptedOperation id="MyCustomScripting">
+      <inputType>Document</inputType>
+      <script>
+        function run(input) {
+          input = Document.Update(input, {
+            "properties" : {
+              "dc:title" : "Update Title From Scripting"
+            }
+          });
+
+          return input;
+        }
+      </script>
+    </scriptedOperation>
+  </extension>
+
+</component>
