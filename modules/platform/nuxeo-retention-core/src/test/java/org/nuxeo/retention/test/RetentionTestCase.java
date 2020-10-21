@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.bulk.BulkService;
@@ -49,8 +50,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 11.1
  */
 @RunWith(FeaturesRunner.class)
-@Features(AutomationFeature.class)
+@Features(EmbeddedAutomationServerFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.core.management")
 @Deploy("org.nuxeo.retention.core:OSGI-INF/retention-core-types.xml")
 @Deploy("org.nuxeo.retention.core:OSGI-INF/retention-adapters.xml")
 @Deploy("org.nuxeo.retention.core:OSGI-INF/retention-vocabularies.xml")
