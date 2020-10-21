@@ -100,7 +100,7 @@ public class PDFTextExtractorTest {
         String text = pdfte.getAllExtractedLines();
         assertNotNull(text);
 
-        assertEquals(19047, text.length());
+        assertEquals(19045, text.length());
         assertFalse(text.contains("Something that is not in the file"));
         assertTrue(text.contains("13.1"));
 
@@ -130,7 +130,7 @@ public class PDFTextExtractorTest {
         DocumentModel documentModified = (DocumentModel) automationService.run(ctx, chain);
         String text = (String) documentModified.getPropertyValue("dc:description");
         assertNotNull(text);
-        assertEquals(19047, text.length());
+        assertEquals(19045, text.length());
         assertFalse(text.contains("Something that is not in the file"));
         assertTrue(text.contains("13.1"));
 
