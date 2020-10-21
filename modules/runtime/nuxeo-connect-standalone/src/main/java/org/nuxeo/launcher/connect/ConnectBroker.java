@@ -1187,7 +1187,7 @@ public class ConnectBroker {
 
                     if (Boolean.parseBoolean(relax)) {
                         log.warn("Relax restriction to target platform {} because of package(s) {}",
-                                () -> actualTargetPlatform.asString(), () -> String.join(", ", nonCompliantPkg));
+                                actualTargetPlatform::asString, () -> String.join(", ", nonCompliantPkg));
                     } else {
                         if (ignoreMissing) {
                             for (String pkgToInstall : nonCompliantPkg) {
