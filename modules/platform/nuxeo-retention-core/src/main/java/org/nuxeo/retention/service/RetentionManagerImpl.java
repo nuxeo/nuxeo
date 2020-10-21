@@ -105,8 +105,7 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
                 if (now.after(retainUntilCandidate)) {
                     log.info(
                             "Metabased-based rule found past date {} as retention expiration date on {} from {} property. Ignoring...",
-                            retainUntilCandidate::toInstant,
-                            document::getPathAsString, () -> xpath);
+                            retainUntilCandidate::toInstant, document::getPathAsString, () -> xpath);
                     retainUntil = null;
                 } else {
                     retainUntil = retainUntilCandidate;
@@ -134,7 +133,6 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
         DocumentModel doc = record.getDocument();
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
-        ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
         ctx.setProperty(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
         ctx.setProperty(DocumentEventContext.COMMENT_PROPERTY_KEY, rule.getDocument().getPathAsString());
         Event event = ctx.newEvent(RetentionConstants.RULE_ATTACHED_EVENT);
@@ -324,7 +322,7 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
         }
         try (Session session = dir.getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
-            filter.put(RetentionConstants.OBSOLETE_FIELD_ID, Long.valueOf(0));
+            filter.put(RetentionConstants.OBSOLETE_FIELD_ID, 0L);
             return session.getProjection(filter, session.getIdField());
         }
     }

@@ -24,8 +24,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -38,8 +40,6 @@ import org.nuxeo.retention.adapters.Record;
 import org.nuxeo.retention.adapters.RetentionRule;
 import org.nuxeo.retention.event.RetentionEventContext;
 import org.nuxeo.runtime.test.runner.Deploy;
-
-import javax.inject.Inject;
 
 /**
  * @since 11.1
@@ -65,25 +65,28 @@ public class TestRetentionManager extends RetentionTestCase {
     @Test
     public void test1DayManualImmediateRuleRunningRetention() throws InterruptedException {
         assertStillUnderRetentionAfter(file, createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
-                RetentionRule.StartingPointPolicy.IMMEDIATE, null, null, null, null, null, 0, 0, 1, 0, null, null), 1000);
+                RetentionRule.StartingPointPolicy.IMMEDIATE, null, null, null, null, null, 0, 0, 1, 0, null, null),
+                1000);
     }
 
     @Test
     public void test1MonthManualImmediateRuleRunningRetention() throws InterruptedException {
         assertStillUnderRetentionAfter(file, createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
-                RetentionRule.StartingPointPolicy.IMMEDIATE, null, null, null, null, null,0, 1, 0, 0, null, null), 1000);
+                RetentionRule.StartingPointPolicy.IMMEDIATE, null, null, null, null, null, 0, 1, 0, 0, null, null),
+                1000);
     }
 
     @Test
     public void test1YearManualImmediateRuleRunningRetention() throws InterruptedException {
         assertStillUnderRetentionAfter(file, createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
-                RetentionRule.StartingPointPolicy.IMMEDIATE, null, null, null, null, null, 1, 0, 0, 0, null, null), 1000);
+                RetentionRule.StartingPointPolicy.IMMEDIATE, null, null, null, null, null, 1, 0, 0, 0, null, null),
+                1000);
     }
 
     @Test
     public void testManualImmediateRuleWithActions() throws InterruptedException {
-        RetentionRule testRule = createImmediateRuleMillis(RetentionRule.ApplicationPolicy.MANUAL, 100,
-                null, Arrays.asList("Document.Trash"));
+        RetentionRule testRule = createImmediateRuleMillis(RetentionRule.ApplicationPolicy.MANUAL, 100, null,
+                List.of("Document.Trash"));
 
         file = service.attachRule(file, testRule, session);
         assertTrue(session.isRecord(file.getRef()));
