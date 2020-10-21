@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo 3D
+Bundle-SymbolicName: org.nuxeo.ecm.platform.threed;singleton=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/commandline-contrib.xml,
+  OSGI-INF/convert-service-contrib.xml,
+  OSGI-INF/core-types-contrib.xml,
+  OSGI-INF/filemanager-contrib.xml,
+  OSGI-INF/lifecycle-contrib.xml,
+  OSGI-INF/mimetype-contrib.xml,
+  OSGI-INF/threed-thumbnailfactory-contrib.xml,
+  OSGI-INF/threed-workmanager-config.xml,
+  OSGI-INF/threed-service.xml,
+  OSGI-INF/listeners-contrib.xml,
+  OSGI-INF/adapters-contrib.xml,
+  OSGI-INF/threed-renditions-contrib.xml,
+  OSGI-INF/threed-service-contrib.xml

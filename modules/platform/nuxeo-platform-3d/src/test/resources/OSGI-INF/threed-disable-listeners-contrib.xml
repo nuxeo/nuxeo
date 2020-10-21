@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.threed.listeners.test.disabled">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="threeDBatchGenerationListener" enabled="false" />
+    <listener name="threeDBatchCleanerListener" enabled="false" />
+  </extension>
+
+</component>
