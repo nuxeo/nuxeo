@@ -346,7 +346,8 @@ public class TestConnectBroker {
                 " addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT) \n" + //
                 " addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0) \n" + //
                 " addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0) \n" + //
-                " addon      remote\tP (id: P-1.0.1) [REGISTRATION REQUIRED]\n";
+                " addon      remote\tP (id: P-1.0.1) [REGISTRATION REQUIRED]\n" + //
+                " addon      remote\tT (id: T-1.0.1) [REGISTRATION REQUIRED]\n";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -391,7 +392,8 @@ public class TestConnectBroker {
                 " addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0) \n" + //
                 " addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0) \n" + //
                 " addon      remote\tP (id: P-1.0.1) \n" + //
-                " addon      remote\tprivD (id: privD-1.0.1) [PRIVATE (Owner: customer1)]\n";
+                " addon      remote\tprivD (id: privD-1.0.1) [PRIVATE (Owner: customer1)]\n" + //
+                " addon      remote\tT (id: T-1.0.1) \n";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1010,7 +1012,7 @@ public class TestConnectBroker {
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
     public void testInstallLocalPackageRequestWithRange() throws Exception {
-        // GIVEN current target platform is server-11.2
+        // GIVEN current target platform is server-11.2.3
         Environment environment = Environment.getDefault();
         environment.setProperty(Environment.DISTRIBUTION_NAME, "server");
         environment.setProperty(Environment.DISTRIBUTION_VERSION, "11.2.3");
@@ -1029,9 +1031,9 @@ public class TestConnectBroker {
                 PackageState.DOWNLOADED);
 
         // Q-1.0.0 is not available on platform version server-11.2.3
-        assertThat(connectBroker.pkgRequest(null,
-                asList(TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip", TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT"), null, null,
-                true, false)).isFalse();
+        assertThat(connectBroker.pkgRequest(null, asList(TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip",
+                TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT", TEST_LOCAL_ONLY_PATH + "/S-1.0.0.zip"), null, null, true,
+                false)).isFalse();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
@@ -1047,18 +1049,20 @@ public class TestConnectBroker {
         // check that local files and directory have not been removed
         assertThat(new File(TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip").exists()).isTrue();
         assertThat(new File(TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT").exists()).isTrue();
+        assertThat(new File(TEST_LOCAL_ONLY_PATH + "/S-1.0.0.zip").exists()).isTrue();
 
         // check logs
         String expectedLogs = "Added " + TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip\n" //
                 + "Added " + TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT\n" //
+                + "Added " + TEST_LOCAL_ONLY_PATH + "/S-1.0.0.zip\n" //
                 + "org.nuxeo.connect.update.PackageException: Package(s) Q-1.0.0, R-1.0.2-SNAPSHOT not available on platform version server-11.2.3 (relax is not allowed)";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
         connectBroker.setRelax("true");
-        assertThat(connectBroker.pkgRequest(null,
-                asList(TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip", TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT"), null, null,
-                true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, asList(TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip",
+                TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT", TEST_LOCAL_ONLY_PATH + "/S-1.0.0.zip"), null, null, true,
+                false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.2.0, B-1.0.2, C-1.0.0, D-1.0.2-SNAPSHOT, E-1.0.1,
         // F-1.0.0-SNAPSHOT]
@@ -1077,12 +1081,13 @@ public class TestConnectBroker {
                 + "Relax restriction to target platform server-11.2.3 because of package(s) Q-1.0.0, R-1.0.2-SNAPSHOT\n" //
                 + "\n" //
                 + "Dependency resolution:\n" //
-                + "  Installation order (2):        Q-1.0.0/R-1.0.2-SNAPSHOT\n" //
+                + "  Installation order (3):        Q-1.0.0/R-1.0.2-SNAPSHOT/S-1.0.0\n" //
                 + "  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Local packages to install (2): Q:1.0.0, R:1.0.2-SNAPSHOT\n" //
+                + "  Local packages to install (3): Q:1.0.0, R:1.0.2-SNAPSHOT, S:1.0.0\n" //
                 + "\n" //
                 + "Installing Q-1.0.0\n" //
-                + "Installing R-1.0.2-SNAPSHOT";
+                + "Installing R-1.0.2-SNAPSHOT\n" //
+                + "Installing S-1.0.0";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
