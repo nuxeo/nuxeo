@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -84,7 +85,7 @@ public class TestRetentionManager extends RetentionTestCase {
     }
 
     @Test
-    public void testManualImmediateRuleWithActions() throws InterruptedException {
+    public void testManualImmediateRuleWithDefaultOperationActions() throws InterruptedException {
         RetentionRule testRule = createImmediateRuleMillis(RetentionRule.ApplicationPolicy.MANUAL, 100,
                 null, Arrays.asList("Document.Trash"));
 
@@ -99,6 +100,47 @@ public class TestRetentionManager extends RetentionTestCase {
         // it has no retention anymore and trashed
         assertFalse(session.isUnderRetentionOrLegalHold(file.getRef()));
         assertTrue(file.isTrashed());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.retention.core.test:OSGI-INF/retention-vocabularies-test.xml")
+    @Deploy("org.nuxeo.retention.core.test:OSGI-INF/retention-automation-contrib-test.xml")
+    public void testManualImmediateRuleWithCustomOperationActions() throws InterruptedException {
+        RetentionRule testRule = createImmediateRuleMillis(RetentionRule.ApplicationPolicy.MANUAL, 100, null,
+                Collections.singletonList("MyCustomChain"));
+
+        file = service.attachRule(file, testRule, session);
+        assertTrue(session.isRecord(file.getRef()));
+        assertTrue(session.isUnderRetentionOrLegalHold(file.getRef()));
+
+        awaitRetentionExpiration(1000);
+        file = session.getDocument(file.getRef());
+        assertFalse(session.isUnderRetentionOrLegalHold(file.getRef()));
+
+        // Made by the first operation (Document.Update) of the myCustomChain
+        assertEquals("My New Title", file.getTitle());
+        assertEquals("My New Description", file.getProperty("dublincore", "description"));
+
+        // Made by the second operation (Document.AddFacet) of the myCustomChain
+        assertTrue(file.hasFacet("MyFacet"));
+    }
+
+    @Test
+    @Deploy("org.nuxeo.retention.core.test:OSGI-INF/retention-vocabularies-test.xml")
+    @Deploy("org.nuxeo.retention.core.test:OSGI-INF/retention-scripting-contrib-test.xml")
+    public void testManualImmediateRuleWithCustomScriptingActions() throws InterruptedException {
+        RetentionRule testRule = createImmediateRuleMillis(RetentionRule.ApplicationPolicy.MANUAL, 100, null,
+                Collections.singletonList("MyCustomScripting"));
+
+        file = service.attachRule(file, testRule, session);
+        assertTrue(session.isRecord(file.getRef()));
+        assertTrue(session.isUnderRetentionOrLegalHold(file.getRef()));
+
+        awaitRetentionExpiration(1000);
+        file = session.getDocument(file.getRef());
+        assertFalse(session.isUnderRetentionOrLegalHold(file.getRef()));
+
+        assertEquals("Update Title From Scripting", file.getTitle());
     }
 
     @Test
