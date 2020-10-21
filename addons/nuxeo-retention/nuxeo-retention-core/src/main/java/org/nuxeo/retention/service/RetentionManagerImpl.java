@@ -215,8 +215,6 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
                         doc = session.getDocument(doc.getRef());
                     }
                     break;
-                default:
-                    throw new NuxeoException("Invalid operation: " + operationId);
                 }
                 OperationContext context = getExecutionContext(doc, session);
                 try {
