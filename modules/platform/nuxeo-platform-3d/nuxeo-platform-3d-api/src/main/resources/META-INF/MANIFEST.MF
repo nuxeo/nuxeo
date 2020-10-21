@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo 3D API
-Bundle-SymbolicName: org.nuxeo.ecm.platform.threed.api;singleton=true
-Bundle-Vendor: Nuxeo
-Eclipse-LazyStart: true
-Export-Package: org.nuxeo.ecm.platform.threed.api
-Bundle-ClassPath: .
