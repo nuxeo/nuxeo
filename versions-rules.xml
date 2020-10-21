@@ -25,7 +25,7 @@
     <rule groupId="commons-httpclient" artifactId="commons-httpclient">
       <ignoreVersions>
         <ignoreVersion type="exact">3.1-jbossorg-1</ignoreVersion>
-        <ignoreVersion type="exact">3.1-jenkins-1</ignoreVersion>
+        <ignoreVersion type="regex">3.1-jenkins-.*</ignoreVersion>
         <ignoreVersion type="exact">3.1.SONATYPE</ignoreVersion>
       </ignoreVersions>
     </rule>
@@ -67,6 +67,26 @@
       <ignoreVersions>
         <ignoreVersion type="regex">.*-jboss</ignoreVersion>
         <ignoreVersion type="regex">.*-brew</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="com.thoughtworks.xstream" artifactId="xstream">
+      <ignoreVersions>
+        <ignoreVersion type="regex">.*-java7</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="commons-betwixt" artifactId="commons-betwixt">
+      <ignoreVersions>
+        <ignoreVersion type="regex">1\.0-dev.*</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="javax.servlet.jsp" artifactId="jsp-api">
+      <ignoreVersions>
+        <ignoreVersion type="exact">2.2.1</ignoreVersion> <!-- 2.2.1 doesn't really exist with this artifactId -->
+      </ignoreVersions>
+    </rule>
+    <rule groupId="io.dropwizard.metrics5" artifactId="*">
+      <ignoreVersions>
+        <ignoreVersion type="exact">5.0.0</ignoreVersion> <!-- an old 5.0.0 version was released before 5.0.0-rc3 -->
       </ignoreVersions>
     </rule>
 

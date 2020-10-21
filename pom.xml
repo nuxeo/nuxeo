@@ -81,14 +81,12 @@
     <chemistry.opencmis.version>1.1.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
     <apache.httpcore.version>4.4.13</apache.httpcore.version>
-    <apache.httpcomponents.version>4.5.11</apache.httpcomponents.version>
+    <apache.httpcomponents.version>4.5.13</apache.httpcomponents.version>
     <apache.poi.version>4.1.2</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0.6-NX02</jxls.version>
-    <jxls2.version>2.8.0</jxls2.version>
+    <jxls2.version>2.8.1</jxls2.version>
     <xdocreport.version>1.0.5</xdocreport.version>
-    <jclouds.version>2.2.0</jclouds.version>
-    <guava.version>28.2-jre</guava.version>
     <google.http.client.version>1.19.0</google.http.client.version>
     <google.oauth.client.version>1.20.0</google.oauth.client.version>
     <google.api.client.version>1.25.0</google.api.client.version>
@@ -97,19 +95,20 @@
     <box.api.version>1.1.0</box.api.version>
     <onedrive.api.version>2.0</onedrive.api.version>
     <selenium.version>2.53.0</selenium.version>
-    <pdfbox.version>2.0.19</pdfbox.version>
+    <pdfbox.version>2.0.21</pdfbox.version>
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
-    <aws.version>1.11.878</aws.version>
+    <aws.version>1.11.885</aws.version>
     <gcp.version>1.76.0</gcp.version>
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
-    <jackson.version>2.10.2</jackson.version>
-    <bouncycastle.version>1.64</bouncycastle.version>
+    <jackson.version>2.11.3</jackson.version>
+    <bouncycastle.version>1.66</bouncycastle.version>
     <avro.version>1.9.2</avro.version>
     <xz.version>1.8</xz.version>
     <restlet.version>2.4.2</restlet.version>
-    <batik.version>1.12</batik.version>
+    <batik.version>1.13</batik.version>
     <jmock.version>2.12.0</jmock.version>
+    <wro4j.version>1.9.0</wro4j.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.vfs>2.1.2.GA</version.org.jboss.vfs>
@@ -153,7 +152,7 @@
     <sonar.jacoco.reportPaths>${it.jacoco.destFile}</sonar.jacoco.reportPaths>
 
     <!-- MongoDB -->
-    <mongo.java.driver.version>4.1.0</mongo.java.driver.version>
+    <mongo.java.driver.version>4.1.1</mongo.java.driver.version>
     <quartz.mongodb.version>2.2.0-rc2</quartz.mongodb.version>
 
     <kafka.version>2.5.0</kafka.version>
@@ -2230,7 +2229,7 @@
       <dependency>
         <groupId>xom</groupId>
         <artifactId>xom</artifactId>
-        <version>1.3.2</version>
+        <version>1.3.5</version>
         <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
@@ -2266,7 +2265,7 @@
       <dependency>
         <groupId>org.jvnet.staxex</groupId>
         <artifactId>stax-ex</artifactId>
-        <version>1.8.2</version>
+        <version>1.8.3</version>
         <exclusions>
           <exclusion>
             <groupId>javax.xml.stream</groupId>
@@ -2277,7 +2276,7 @@
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>
         <artifactId>stax2-api</artifactId>
-        <version>4.2</version>
+        <version>4.2.1</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
@@ -2340,12 +2339,12 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.6</version>
+        <version>2.8.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.9</version>
+        <version>3.11</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -2355,7 +2354,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
-        <version>1.8</version>
+        <version>1.9</version>
       </dependency>
       <!-- Keep the dependency for external libraries -->
       <dependency>
@@ -2410,12 +2409,12 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.14</version>
+        <version>1.15</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.19</version>
+        <version>1.20</version>
       </dependency>
       <dependency>
         <groupId>commons-dbcp</groupId>
@@ -2451,12 +2450,12 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-pool2</artifactId>
-        <version>2.8.0</version>
+        <version>2.9.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-dbcp2</artifactId>
-        <version>2.7.0</version>
+        <version>2.8.0</version>
       </dependency>
       <dependency>
         <!-- not used by Nuxeo anymore, but needed by some dependencies -->
@@ -2517,7 +2516,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.10.5</version>
+        <version>2.10.6</version>
       </dependency>
 
       <!-- JNA, required by Elasticsearch and Chronicle Queue -->
@@ -2772,7 +2771,7 @@
       <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.26.0-GA</version>
+        <version>3.27.0-GA</version>
       </dependency>
       <!-- NXP-10566: EL implementation chosen, set as the default
         implementation in Tomcat by nuxeo-platform-el in file at
@@ -2975,11 +2974,6 @@
       </dependency>
 
       <dependency>
-        <groupId>com.phloc</groupId>
-        <artifactId>phloc-css</artifactId>
-        <version>3.3.1</version>
-      </dependency>
-      <dependency>
         <groupId>com.sun.xsom</groupId>
         <artifactId>xsom</artifactId>
         <version>20140925</version>
@@ -2993,7 +2987,7 @@
         <!-- also a jboss-seam-pdf dependency -->
         <groupId>com.github.librepdf</groupId>
         <artifactId>openpdf</artifactId>
-        <version>1.3.12</version>
+        <version>1.3.22</version>
       </dependency>
       <dependency>
         <!-- also a jboss-seam-pdf dependency -->
@@ -3010,7 +3004,7 @@
       <dependency>
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
-        <version>2.3.29</version>
+        <version>2.3.30</version>
       </dependency>
       <dependency>
         <groupId>concurrent</groupId>
@@ -3025,13 +3019,13 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.13</version>
+        <version>4.13.1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>3.14.0</version>
+        <version>3.17.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -3203,7 +3197,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-csv</artifactId>
-        <version>1.7</version>
+        <version>1.8</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -3235,7 +3229,7 @@
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>1.25</version>
+        <version>1.27</version>
       </dependency>
       <!-- beanshell ; Jetty use 1.3.0 -->
       <dependency>
@@ -3257,12 +3251,12 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.2.9</version>
+        <version>42.2.18</version>
       </dependency>
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>8.0.19</version>
+        <version>8.0.22</version>
       </dependency>
       <dependency>
         <groupId>org.mariadb.jdbc</groupId>
@@ -3373,7 +3367,7 @@
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>1.4.11.1</version>
+        <version>1.4.13</version>
         <exclusions>
           <exclusion>
             <groupId>xpp3</groupId>
@@ -3399,7 +3393,7 @@
       <dependency>
         <groupId>org.mvel</groupId>
         <artifactId>mvel2</artifactId>
-        <version>2.4.5.Final</version>
+        <version>2.4.10.Final</version>
       </dependency>
 
       <dependency>
@@ -3439,7 +3433,7 @@
       <dependency>
         <groupId>org.mock-server</groupId>
         <artifactId>mockserver-netty</artifactId>
-        <version>5.10.0</version>
+        <version>5.11.1</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -3494,7 +3488,7 @@
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>
-        <version>6.2.1</version>
+        <version>6.2.3</version>
       </dependency>
 
       <dependency>
@@ -3515,12 +3509,12 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.2.2</version>
+        <version>2.8.6</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>${guava.version}</version>
+        <version>30.0-jre</version>
       </dependency>
       <dependency>
         <groupId>com.google.inject.extensions</groupId>
@@ -3629,7 +3623,7 @@
       <dependency>
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j</artifactId>
-        <version>65.1</version>
+        <version>67.1</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
@@ -3675,7 +3669,7 @@
       <dependency>
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
-        <version>1.7.0</version>
+        <version>1.10.9</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jdt</groupId>
@@ -3970,7 +3964,7 @@
       <dependency>
         <groupId>xmlunit</groupId>
         <artifactId>xmlunit</artifactId>
-        <version>1.3</version>
+        <version>1.6</version>
       </dependency>
       <!-- OAUth2 libs -->
       <dependency>
@@ -4152,7 +4146,7 @@
       <dependency>
         <groupId>org.apache.santuario</groupId>
         <artifactId>xmlsec</artifactId>
-        <version>2.1.4</version>
+        <version>2.2.0</version>
       </dependency>
       <dependency>
         <groupId>org.opensaml</groupId>
@@ -4162,7 +4156,7 @@
       <dependency>
         <groupId>org.owasp.esapi</groupId>
         <artifactId>esapi</artifactId>
-        <version>2.2.0.0</version>
+        <version>2.2.1.1</version>
         <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
@@ -4248,7 +4242,7 @@
       <dependency>
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
-        <version>1.6</version>
+        <version>1.7</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -4286,7 +4280,7 @@
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-webdav</artifactId>
-        <version>2.20.0</version>
+        <version>2.21.3</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -4307,7 +4301,7 @@
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr-runtime</artifactId>
-        <version>3.1.3</version>
+        <version>3.5.2</version>
       </dependency>
 
       <dependency>
@@ -4618,7 +4612,7 @@
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-naming</artifactId>
-        <version>4.15</version>
+        <version>4.18</version>
       </dependency>
 
       <dependency>
@@ -4644,7 +4638,7 @@
       <dependency>
         <groupId>org.apache.jclouds</groupId>
         <artifactId>jclouds-allblobstore</artifactId>
-        <version>${jclouds.version}</version>
+        <version>2.2.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.cloud</groupId>
@@ -4660,7 +4654,7 @@
       <dependency>
         <groupId>com.github.kirviq</groupId>
         <artifactId>dumbster</artifactId>
-        <version>1.7</version>
+        <version>1.7.1</version>
         <exclusions>
          <exclusion>
             <!-- use com.sun.activation:javax.activation instead -->
@@ -4707,12 +4701,12 @@
       <dependency>
         <groupId>com.thetransactioncompany</groupId>
         <artifactId>cors-filter</artifactId>
-        <version>2.8</version>
+        <version>2.9</version>
       </dependency>
       <dependency>
         <groupId>io.github.classgraph</groupId>
         <artifactId>classgraph</artifactId>
-        <version>4.8.60</version>
+        <version>4.8.90</version>
       </dependency>
 
       <!-- dmk adaptor -->
@@ -4769,12 +4763,12 @@
       <dependency>
         <groupId>ro.isdc.wro4j</groupId>
         <artifactId>wro4j-core</artifactId>
-        <version>1.8.0</version>
+        <version>${wro4j.version}</version>
       </dependency>
       <dependency>
         <groupId>ro.isdc.wro4j</groupId>
         <artifactId>wro4j-extensions</artifactId>
-        <version>1.8.0</version>
+        <version>${wro4j.version}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
@@ -4835,7 +4829,7 @@
       <dependency>
         <groupId>org.codehaus.jettison</groupId>
         <artifactId>jettison</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.1</version>
         <!-- exposes a package conflicting with JDK -->
         <exclusions>
           <exclusion>
@@ -4966,7 +4960,7 @@
       <dependency>
         <groupId>io.prometheus</groupId>
         <artifactId>simpleclient_httpserver</artifactId>
-        <version>0.8.1</version>
+        <version>0.9.0</version>
       </dependency>
 
       <dependency>
@@ -5010,7 +5004,7 @@
       <dependency>
         <groupId>com.auth0</groupId>
         <artifactId>java-jwt</artifactId>
-        <version>3.9.0</version>
+        <version>3.11.0</version>
       </dependency>
       <dependency>
         <groupId>com.beetstra.jutf7</groupId>
@@ -5022,7 +5016,7 @@
       <dependency>
         <groupId>com.google.code.externalsortinginjava</groupId>
         <artifactId>externalsortinginjava</artifactId>
-        <version>0.2.5</version>
+        <version>0.6.0</version>
      </dependency>
 
      <dependency>
@@ -5409,7 +5403,7 @@
               <dependency>
                 <groupId>org.apache.maven.shared</groupId>
                 <artifactId>maven-dependency-analyzer</artifactId>
-                <version>1.11.1</version>
+                <version>1.11.3</version>
             </dependency>
           </dependencies>
           <configuration>
