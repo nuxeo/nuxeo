@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo Cold Storage Test
-Bundle-SymbolicName: org.nuxeo.coldstorage.test;singleton:=true
-Bundle-Vendor: Nuxeo
-Bundle-Localization: bundle
-Eclipse-LazyStart: true
-Nuxeo-Component: OSGI-INF/test-coldstorage-contrib.xml,
- OSGI-INF/test-dummy-thumbnail-factory-contrib.xml
