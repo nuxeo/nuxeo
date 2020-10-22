@@ -1950,13 +1950,6 @@
         <version>${nuxeo.platform.version}</version>
       </dependency>
 
-      <!-- Cold Storage -->
-      <dependency>
-        <groupId>org.nuxeo</groupId>
-        <artifactId>nuxeo-coldstorage</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-
       <!-- Nuxeo Distribution -->
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
