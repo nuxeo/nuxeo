@@ -182,6 +182,14 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
      */
     @Override
     public String writeBlob(Blob blob, Document doc, String xpath) throws IOException {
+        if (blob == null) {
+            if (MAIN_BLOB_XPATH.equals(xpath) && doc.isUnderRetentionOrLegalHold()) {
+                throw new DocumentSecurityException(
+                        "Cannot delete blob from document " + doc.getUUID() + ", it is under retention / hold");
+            }
+            return null;
+        }
+
         BlobDispatcher blobDispatcher = getBlobDispatcher();
         BlobDispatch dispatch = null;
         if (blob instanceof ManagedBlob) {

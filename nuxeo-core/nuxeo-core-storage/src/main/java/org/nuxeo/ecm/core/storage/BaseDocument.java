@@ -674,13 +674,13 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     protected void setValueBlob(T state, Blob blob, String xpath) throws PropertyException {
         BlobInfo blobInfo = new BlobInfo();
+        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
+        try {
+            blobInfo.key = blobManager.writeBlob(blob, this, xpath);
+        } catch (IOException e) {
+            throw new PropertyException("Cannot get blob info for: " + blob, e);
+        }
         if (blob != null) {
-            DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-            try {
-                blobInfo.key = blobManager.writeBlob(blob, this, xpath);
-            } catch (IOException e) {
-                throw new PropertyException("Cannot get blob info for: " + blob, e);
-            }
             blobInfo.filename = blob.getFilename();
             blobInfo.mimeType = blob.getMimeType();
             blobInfo.encoding = blob.getEncoding();
@@ -691,17 +691,13 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     }
 
     protected void setPropertyBlobData(String xpath, String string) {
+        Blob blob = string == null ? null : Blobs.createBlob(string);
+        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         String key;
-        if (string == null) {
-            key = null;
-        } else {
-            Blob blob = Blobs.createBlob(string);
-            DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-            try {
-                key = blobManager.writeBlob(blob, this, xpath);
-            } catch (IOException e) {
-                throw new PropertyException("Cannot write binary for doc: " + getUUID(), e);
-            }
+        try {
+            key = blobManager.writeBlob(blob, this, xpath);
+        } catch (IOException e) {
+            throw new PropertyException("Cannot write binary for doc: " + getUUID(), e);
         }
         setPropertyValue(xpath, key);
     }

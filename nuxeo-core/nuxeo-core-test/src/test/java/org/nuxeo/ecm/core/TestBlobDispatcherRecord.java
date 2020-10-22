@@ -95,6 +95,16 @@ public class TestBlobDispatcherRecord {
             assertEquals("Cannot change blob from document " + doc.getId() + ", it is under retention / hold",
                     e.getMessage());
         }
+
+        // the blob cannot be deleted if there is a legal hold
+        doc.setPropertyValue("file:content", null);
+        try {
+            session.saveDocument(doc);
+            fail();
+        } catch (DocumentSecurityException e) {
+            assertEquals("Cannot delete blob from document " + doc.getId() + ", it is under retention / hold",
+                    e.getMessage());
+        }
     }
 
     @Test
