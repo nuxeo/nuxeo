@@ -60,6 +60,9 @@ public interface DocumentBlobManager {
 
     /**
      * Writes a {@link Blob} to storage and returns its key.
+     * <p>
+     * The passed blob may be {@code null}, in which case a {@code null} key is returned after checking that deleting
+     * this blob is allowed.
      *
      * @param blob the blob
      * @param doc the document to which this blob belongs
