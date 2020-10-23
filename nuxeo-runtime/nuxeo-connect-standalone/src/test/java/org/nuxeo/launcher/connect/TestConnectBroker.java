@@ -880,6 +880,132 @@ public class TestConnectBroker {
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
+    private String getExpectedLogsForOnePkgAndItsDep(String pkg, String pkgVersion, String dep, String depVersion) {
+        return String.format("\n" //
+                + "Dependency resolution:\n" //
+                + "  Installation order (2):        %s-%s/%s-%s\n" //
+                + "  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
+                + "  Packages to download (2):      %s:%s, %s:%s\n" //
+                + "\n" //
+                + "Downloading [%s-%s, %s-%s]...\n" //
+                + "Aborting packages change request", dep, depVersion, pkg, pkgVersion, pkg, pkgVersion, dep,
+                depVersion, pkg, pkgVersion, dep, depVersion);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
+    public void testInstallPackageRequestSnapshotDependenciesResolution() throws Exception {
+        Environment environment = Environment.getDefault();
+        environment.setProperty(Environment.DISTRIBUTION_NAME, "server");
+        environment.setProperty(Environment.DISTRIBUTION_VERSION, "11.3");
+        connectBroker = new ConnectBroker(environment);
+        ((StandaloneCallbackHolder) NuxeoConnectClient.getCallBackHolder()).setTestMode(true);
+        connectBroker.setAllowSNAPSHOT(false);
+
+        // U-1.0.0 depends on V:1.0.0+ so it should resolve to V-1.0.0 (snapshots are not allowed)
+        connectBroker.pkgRequest(null, singletonList("U-1.0.0"), null, null, true, false);
+
+        // check logs
+        String expectedLogs = getExpectedLogsForOnePkgAndItsDep("U", "1.0.0", "V", "1.0.0");
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // U-1.0.1-SNAPSHOT depends on V:1.0.1-SNAPSHOT+ so it should fail because there is no match with snapshots not
+        // allowed
+        connectBroker.pkgRequest(null, singletonList("U-1.0.1-SNAPSHOT"), null, null, true, false);
+
+        // check logs
+        expectedLogs = "\nFailed to resolve dependencies: Couldn't order [U-1.0.1-SNAPSHOT] missing [V:1.0.1-SNAPSHOT] (consider using --relax true or --snapshot).";
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // UU-1.0.0 depends on VV so it should resolve to VV-1.0.0 (snapshots are not allowed)
+        connectBroker.pkgRequest(null, singletonList("UU-1.0.0"), null, null, true, false);
+
+        // check logs
+        expectedLogs = getExpectedLogsForOnePkgAndItsDep("UU", "1.0.0", "VV", "1.0.0");
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // UU-1.0.1-SNAPSHOT depends on VV so it should resolve to VV-1.0.0 (snapshots are not allowed and not
+        // explicitly required)
+        connectBroker.pkgRequest(null, singletonList("UU-1.0.1-SNAPSHOT"), null, null, true, false);
+
+        // check logs
+        expectedLogs = getExpectedLogsForOnePkgAndItsDep("UU", "1.0.1-SNAPSHOT", "VV", "1.0.0");
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // UUU-1.0.0 depends on VVV:1.0.0:1.0.0 so it should resolve to VVV-1.0.0 (explicitly required)
+        connectBroker.pkgRequest(null, singletonList("UUU-1.0.0"), null, null, true, false);
+
+        // check logs
+        expectedLogs = getExpectedLogsForOnePkgAndItsDep("UUU", "1.0.0", "VVV", "1.0.0");
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // UUU-1.0.1-SNAPSHOT depends on VVV:1.0.1-SNAPSHOT:1.0.1-SNAPSHOT so it should resolve to VVV-1.0.1-SNAPSHOT
+        // (explicitly required)
+        connectBroker.pkgRequest(null, singletonList("UUU-1.0.1-SNAPSHOT"), null, null, true, false);
+
+        // check logs
+        expectedLogs = getExpectedLogsForOnePkgAndItsDep("UUU", "1.0.1-SNAPSHOT", "VVV", "1.0.1-SNAPSHOT");
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        /* SET SNAPSHOT ALLOWED */
+        connectBroker.setAllowSNAPSHOT(true);
+
+        // U-1.0.0 depends on V:1.0.0+ so it should resolve to V-1.0.1-SNAPSHOT
+        connectBroker.pkgRequest(null, singletonList("U-1.0.0"), null, null, true, false);
+
+        // check logs
+        expectedLogs = getExpectedLogsForOnePkgAndItsDep("U", "1.0.0", "V", "1.0.1-SNAPSHOT");
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // U-1.0.1-SNAPSHOT depends on V:1.0.1-SNAPSHOT+ so it should resolve to V-1.0.1-SNAPSHOT
+        connectBroker.pkgRequest(null, singletonList("U-1.0.1-SNAPSHOT"), null, null, true, false);
+
+        // check logs
+        expectedLogs = getExpectedLogsForOnePkgAndItsDep("U", "1.0.1-SNAPSHOT", "V", "1.0.1-SNAPSHOT");
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // UU-1.0.0 depends on VV so it should resolve to VV-1.0.1-SNAPSHOT (snapshots are allowed)
+        connectBroker.pkgRequest(null, singletonList("UU-1.0.0"), null, null, true, false);
+
+        // check logs
+        expectedLogs = getExpectedLogsForOnePkgAndItsDep("UU", "1.0.0", "VV", "1.0.1-SNAPSHOT");
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // UU-1.0.1-SNAPSHOT depends on VV so it should resolve to VV-1.0.1-SNAPSHOT
+        connectBroker.pkgRequest(null, singletonList("UU-1.0.1-SNAPSHOT"), null, null, true, false);
+
+        // check logs
+        expectedLogs = getExpectedLogsForOnePkgAndItsDep("UU", "1.0.1-SNAPSHOT", "VV", "1.0.1-SNAPSHOT");
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // UUU-1.0.0 depends on VVV:1.0.0:1.0.0 so it should resolve to VVV-1.0.0 (explicitly required)
+        connectBroker.pkgRequest(null, singletonList("UUU-1.0.0"), null, null, true, false);
+
+        // check logs
+        expectedLogs = getExpectedLogsForOnePkgAndItsDep("UUU", "1.0.0", "VVV", "1.0.0");
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // UUU-1.0.1-SNAPSHOT depends on VVV:1.0.1-SNAPSHOT:1.0.1-SNAPSHOT so it should resolve to VVV-1.0.1-SNAPSHOT
+        // (explicitly required)
+        connectBroker.pkgRequest(null, singletonList("UUU-1.0.1-SNAPSHOT"), null, null, true, false);
+
+        // check logs
+        expectedLogs = getExpectedLogsForOnePkgAndItsDep("UUU", "1.0.1-SNAPSHOT", "VVV", "1.0.1-SNAPSHOT");
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+    }
+
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
     public void testInstallPackageRequestWithMissingDependencies() throws Exception {
@@ -914,7 +1040,7 @@ public class TestConnectBroker {
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "\nFailed to resolve dependencies: Couldn't order [L-1.0.2] missing [hfB].";
+        String expectedLogs = "\nFailed to resolve dependencies: Couldn't order [L-1.0.2] missing [hfB] (consider using --relax true or --snapshot).";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -932,7 +1058,7 @@ public class TestConnectBroker {
                 PackageState.DOWNLOADED);
 
         // check logs
-        expectedLogs = "\nFailed to resolve dependencies: Couldn't order [L-1.0.3, hfD-1.0.0] missing [hfB, hfD].";
+        expectedLogs = "\nFailed to resolve dependencies: Couldn't order [L-1.0.3, hfD-1.0.0] missing [hfB, hfD] (consider using --relax true or --snapshot).";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
