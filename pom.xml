@@ -91,9 +91,7 @@
     <google.oauth.client.version>1.20.0</google.oauth.client.version>
     <google.api.client.version>1.25.0</google.api.client.version>
     <google.api.drive.version>v2-rev161-1.19.1</google.api.drive.version>
-    <dropbox.api.version>2.1.2</dropbox.api.version>
     <box.api.version>1.1.0</box.api.version>
-    <onedrive.api.version>2.0</onedrive.api.version>
     <selenium.version>2.53.0</selenium.version>
     <pdfbox.version>2.0.21</pdfbox.version>
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
@@ -4005,19 +4003,9 @@
         <version>${google.api.drive.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.dropbox.core</groupId>
-        <artifactId>dropbox-core-sdk</artifactId>
-        <version>${dropbox.api.version}</version>
-      </dependency>
-      <dependency>
         <groupId>com.box</groupId>
         <artifactId>box-java-sdk</artifactId>
         <version>${box.api.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.lib.onedrive</groupId>
-        <artifactId>onedrive-java-client</artifactId>
-        <version>${onedrive.api.version}</version>
       </dependency>
 
       <dependency>
