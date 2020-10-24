@@ -43,7 +43,6 @@ public class NoFile2SecurityPolicy extends NoFileSecurityPolicy {
      * Transformer that adds {@code AND ecm:primaryType <> 'File'} to the query.
      */
     public static class NoFileTransformer implements Transformer {
-        private static final long serialVersionUID = 1L;
 
         public static final Predicate NO_FILE = new Predicate(new Reference("ecm:primaryType"), Operator.NOTEQ,
                 new StringLiteral("File"));

@@ -249,7 +249,7 @@ public class SQLQuery implements ASTNode {
     /**
      * Interface for a class that can transform a {@link SQLQuery} into another.
      */
-    public interface Transformer extends Serializable {
+    public interface Transformer {
 
         Transformer IDENTITY = new IdentityTransformer();
 
@@ -257,8 +257,6 @@ public class SQLQuery implements ASTNode {
     }
 
     public static class IdentityTransformer implements Transformer {
-        private static final long serialVersionUID = 1L;
-
         @Override
         public SQLQuery transform(NuxeoPrincipal principal, SQLQuery query) {
             return query;

@@ -39,8 +39,6 @@ import org.nuxeo.ecm.core.api.Filter;
  */
 public class PermissionFilter implements Filter {
 
-    private static final long serialVersionUID = 1L;
-
     private static final Log log = LogFactory.getLog(PermissionFilter.class);
 
     protected final Set<String> required;

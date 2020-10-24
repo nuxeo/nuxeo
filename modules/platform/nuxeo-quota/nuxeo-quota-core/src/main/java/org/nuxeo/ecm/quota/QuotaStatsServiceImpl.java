@@ -401,9 +401,6 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     }
 
     class QuotaFilter implements Filter {
-
-        private static final long serialVersionUID = 1L;
-
         @Override
         public boolean accept(DocumentModel doc) {
             if ("UserWorkspacesRoot".equals(doc.getType())) {

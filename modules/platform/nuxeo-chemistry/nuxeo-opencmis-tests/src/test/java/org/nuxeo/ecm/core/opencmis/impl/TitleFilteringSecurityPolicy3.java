@@ -51,8 +51,6 @@ public class TitleFilteringSecurityPolicy3 extends TitleFilteringSecurityPolicy 
      */
     public static class TitleFilteringTransformer implements Transformer {
 
-        private static final long serialVersionUID = 1L;
-
         public static final Transformer INSTANCE = new TitleFilteringTransformer();
 
         public static final Predicate NO_SECRET_TITLE = new Predicate(new Reference("dc:title"), Operator.NOTLIKE,

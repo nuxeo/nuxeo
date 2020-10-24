@@ -23,8 +23,6 @@ package org.nuxeo.ecm.core.api;
 
 public class NameFilter implements Filter {
 
-    private static final long serialVersionUID = -7722352334757582134L;
-
     private final String prefix;
 
     public NameFilter(String prefix) {

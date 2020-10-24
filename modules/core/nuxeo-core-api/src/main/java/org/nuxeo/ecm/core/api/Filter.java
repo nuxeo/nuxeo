@@ -21,14 +21,12 @@
 
 package org.nuxeo.ecm.core.api;
 
-import java.io.Serializable;
-
 /**
  * A filtering function for data models.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface Filter extends Serializable {
+public interface Filter {
 
     /**
      * Filters data models objects.

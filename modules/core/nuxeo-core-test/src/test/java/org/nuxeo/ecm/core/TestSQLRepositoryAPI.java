@@ -896,8 +896,6 @@ public class TestSQLRepositoryAPI {
         session.save();
 
         Filter filter = new Filter() {
-            private static final long serialVersionUID = 1L;
-
             @Override
             public boolean accept(DocumentModel docModel) {
                 return docModel.getName().startsWith("doc");

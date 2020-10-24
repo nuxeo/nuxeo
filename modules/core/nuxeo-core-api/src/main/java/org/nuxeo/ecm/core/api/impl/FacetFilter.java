@@ -37,8 +37,6 @@ import org.nuxeo.ecm.core.api.Filter;
  */
 public class FacetFilter implements Filter {
 
-    private static final long serialVersionUID = 1L;
-
     public static final FacetFilter ALLOW = new FacetFilter((List<String>) null, (List<String>) null);
 
     /** Set of required facets. Never {@code null}. */

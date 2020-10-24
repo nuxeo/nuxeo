@@ -64,8 +64,6 @@ public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements Secu
     public static class NoFileTransformer implements SQLQuery.Transformer {
         public static final Predicate NO_FILE;
 
-        private static final long serialVersionUID = 1L;
-
         static {
             NO_FILE = new Predicate(new Reference("ecm:primaryType"), Operator.NOTEQ, new StringLiteral("File"));
         }
