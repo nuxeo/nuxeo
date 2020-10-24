@@ -33,8 +33,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class DefaultDocumentTreeFilter implements DocumentTreeFilter {
 
-    private static final long serialVersionUID = 1L;
-
     protected List<String> includedFacets;
 
     protected List<String> excludedFacets;

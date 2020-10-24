@@ -86,7 +86,6 @@ public class FilterDocuments {
     }
 
     protected class Condition implements Filter {
-        private static final long serialVersionUID = 1L;
 
         Set<String> types;
 

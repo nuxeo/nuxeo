@@ -35,8 +35,6 @@ import org.nuxeo.ecm.core.api.Filter;
  */
 public class CompoundFilter implements Filter {
 
-    private static final long serialVersionUID = 5755619357049775017L;
-
     private final List<Filter> filters;
 
     /**

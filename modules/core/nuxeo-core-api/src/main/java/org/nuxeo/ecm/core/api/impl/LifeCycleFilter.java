@@ -34,8 +34,6 @@ import org.nuxeo.ecm.core.api.Filter;
  */
 public class LifeCycleFilter implements Filter {
 
-    private static final long serialVersionUID = -6222667096842773182L;
-
     private final List<String> accepted;
 
     private final List<String> excluded;
