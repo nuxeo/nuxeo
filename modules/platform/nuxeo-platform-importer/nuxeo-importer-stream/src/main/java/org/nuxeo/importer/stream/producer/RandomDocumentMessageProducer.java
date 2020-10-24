@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -155,6 +156,9 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
 
     @Override
     public DocumentMessage next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
         DocumentMessage ret;
         switch (currentType) {
         case Root:

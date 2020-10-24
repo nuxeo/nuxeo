@@ -31,24 +31,24 @@ public class DefaultRepositoryInit implements RepositoryInit {
     public void populate(CoreSession session) {
         DocumentModel doc = session.createDocumentModel("/", "default-domain", "Domain");
         doc.setProperty("dublincore", "title", "Domain");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
 
         doc = session.createDocumentModel("/default-domain/", "workspaces", "WorkspaceRoot");
         doc.setProperty("dublincore", "title", "Workspaces");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
 
         doc = session.createDocumentModel("/default-domain/", "sections", "SectionRoot");
         doc.setProperty("dublincore", "title", "Workspaces");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
 
         doc = session.createDocumentModel("/default-domain/", "templates", "TemplateRoot");
         doc.setProperty("dublincore", "title", "Templates");
         doc.setProperty("dublincore", "description", "Root of workspaces templates");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
 
         doc = session.createDocumentModel("/default-domain/workspaces", "test", "Workspace");
         doc.setProperty("dublincore", "title", "workspace");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
     }
 
 }

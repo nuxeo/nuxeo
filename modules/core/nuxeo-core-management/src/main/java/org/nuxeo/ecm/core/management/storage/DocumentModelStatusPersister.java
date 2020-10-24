@@ -86,7 +86,7 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
                 DocumentModel doc = session.createDocumentModel(DocumentStoreManager.newPath().toString(),
                         ADMINISTRATIVE_INFO_CONTAINER, ADMINISTRATIVE_INFO_CONTAINER_DOCUMENT_TYPE);
                 doc.setPropertyValue("dc:title", ADMINISTRATIVE_INFO_CONTAINER);
-                doc = session.createDocument(doc);
+                session.createDocument(doc);
                 session.save();
             }
 

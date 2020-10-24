@@ -48,7 +48,6 @@ public class SharedFileInputStream extends InputStream implements SharedInputStr
         this.file = file;
         this.start = 0;
         this.length = file.length();
-        this.in.skip(start);
     }
 
     protected SharedFileInputStream(SharedFileInputStream parent, long start, long len) throws IOException {
@@ -57,7 +56,19 @@ public class SharedFileInputStream extends InputStream implements SharedInputStr
         this.file = parent.file;
         this.start = start;
         this.length = len;
-        this.in.skip(start);
+        skip(this.in, start);
+    }
+
+    /** Skip reliably; this is more efficient than IOUtils.skip which calls read(). */
+    protected static void skip(InputStream in, long n) throws IOException {
+        long todo = n;
+        while (todo > 0) {
+            long skipped = in.skip(todo);
+            if (skipped <= 0) {
+                throw new IOException("Failed to skip " + n + " bytes");
+            }
+            todo -= skipped;
+        }
     }
 
     @Override
