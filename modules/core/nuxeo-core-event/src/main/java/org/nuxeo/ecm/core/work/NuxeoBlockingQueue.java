@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.work;
 import java.util.AbstractQueue;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -183,12 +184,12 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable> impleme
 
         @Override
         public Runnable next() {
-            throw new UnsupportedOperationException();
+            throw new NoSuchElementException();
         }
 
         @Override
         public void remove() {
-            throw new UnsupportedOperationException();
+            throw new IllegalStateException();
         }
     }
 

@@ -107,6 +107,9 @@ public class FileTreeIterator implements Iterator<File> {
 
         @Override
         public File next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
             File next = file;
             file = null;
             return next;
@@ -147,6 +150,9 @@ public class FileTreeIterator implements Iterator<File> {
 
         @Override
         public File next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
             return children[++pos];
         }
 

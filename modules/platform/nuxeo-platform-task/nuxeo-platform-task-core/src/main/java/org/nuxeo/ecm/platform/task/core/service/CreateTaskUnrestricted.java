@@ -280,16 +280,14 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             }
             ACP acp = taskDocument.getACP();
             ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
-            if (principal != null) {
-                acl.add(new ACE(principal.getName(), SecurityConstants.EVERYTHING, true));
+            acl.add(new ACE(principal.getName(), SecurityConstants.EVERYTHING, true));
 
-            }
             for (String actorId : actorIds) {
                 acl.add(new ACE(actorId, SecurityConstants.EVERYTHING, true));
             }
             acp.addACL(acl);
             taskDocument.setACP(acp, true);
-            taskDocument = session.saveDocument(taskDocument);
+            session.saveDocument(taskDocument);
             tasks.add(task);
         }
     }

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.importer.stream.producer;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.nuxeo.ecm.platform.importer.random.HunspellDictionaryHolder;
@@ -79,6 +80,9 @@ public class RandomStringBlobMessageProducer extends AbstractProducer<BlobMessag
 
     @Override
     public BlobMessage next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
         String filename = generateFilename();
         String content = generateContent();
         BlobMessage ret = new BlobMessage.StringMessageBuilder(content).setFilename(filename)

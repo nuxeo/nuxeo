@@ -114,7 +114,7 @@ public interface BlobStore {
 
         // constructor for unknown value
         private OptionalOrUnknown() {
-            this.value = null;
+            this.value = null; // NOSONAR
         }
 
         // constructor for missing or present value

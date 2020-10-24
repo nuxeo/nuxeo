@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -435,6 +436,9 @@ public class State implements StateAccessor, Serializable {
 
         @Override
         public Entry<String, Serializable> next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
             return new ArraysEntry(index++);
         }
     }

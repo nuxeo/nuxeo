@@ -28,6 +28,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -83,9 +84,7 @@ public class PaletteParser {
     }
 
     public static Map<String, String> parse(InputStream in, String filename) throws IOException, PaletteParseException {
-        DataInputStream dis = new DataInputStream(in);
-        byte[] bytes = new byte[dis.available()];
-        dis.read(bytes);
+        byte[] bytes = IOUtils.toByteArray(new DataInputStream(in));
         return parse(bytes, filename);
     }
 

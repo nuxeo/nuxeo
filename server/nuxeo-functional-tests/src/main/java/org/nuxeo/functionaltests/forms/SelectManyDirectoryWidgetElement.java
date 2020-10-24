@@ -45,7 +45,6 @@ public class SelectManyDirectoryWidgetElement extends WidgetElement {
         if (value != null) {
             String[] split = value.split(",");
             for (String v : split) {
-                select = new Select(getInputElement());
                 select.selectByVisibleText(v);
             }
         }
