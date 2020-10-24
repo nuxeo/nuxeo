@@ -164,7 +164,9 @@ public class MetadataCollector {
     public void addPropertyFile(File propertyFile) throws IOException {
 
         Properties mdProperties = new Properties();
-        mdProperties.load(new FileInputStream(propertyFile));
+        try (var in = new FileInputStream(propertyFile)) {
+            mdProperties.load(in);
+        }
 
         Map<String, String> stringMap = new HashMap<>();
         Enumeration<?> names = mdProperties.propertyNames();

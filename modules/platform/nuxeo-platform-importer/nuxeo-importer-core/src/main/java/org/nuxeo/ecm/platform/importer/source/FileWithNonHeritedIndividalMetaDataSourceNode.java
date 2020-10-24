@@ -96,15 +96,15 @@ public class FileWithNonHeritedIndividalMetaDataSourceNode extends FileSourceNod
         Properties mdProperties = new Properties();
         Map<String, Serializable> map = new HashMap<>();
 
-        try {
-            mdProperties.load(new FileInputStream(propertyFile));
-            Enumeration<?> names = mdProperties.propertyNames();
-            while (names.hasMoreElements()) {
-                String name = (String) names.nextElement();
-                map.put(name, parseFromString(mdProperties.getProperty(name)));
-            }
+        try (var in = new FileInputStream(propertyFile)) {
+            mdProperties.load(in);
         } catch (IOException e) {
             log.error("Unable to read property file " + propertyFile, e);
+        }
+        Enumeration<?> names = mdProperties.propertyNames();
+        while (names.hasMoreElements()) {
+            String name = (String) names.nextElement();
+            map.put(name, parseFromString(mdProperties.getProperty(name)));
         }
         return map;
     }

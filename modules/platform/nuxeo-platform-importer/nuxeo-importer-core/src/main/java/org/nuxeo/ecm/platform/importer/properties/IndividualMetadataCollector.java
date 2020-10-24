@@ -40,7 +40,9 @@ public class IndividualMetadataCollector extends MetadataCollector {
 
     public void addPropertyFile(File propertyFile, String contextPath) throws IOException {
         Properties mdProperties = new Properties();
-        mdProperties.load(new FileInputStream(propertyFile));
+        try (var in = new FileInputStream(propertyFile)) {
+            mdProperties.load(in);
+        }
         Map<String, String> stringMap = new HashMap<>();
         Enumeration<?> names = mdProperties.propertyNames();
         while (names.hasMoreElements()) {
