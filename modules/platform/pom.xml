@@ -42,7 +42,6 @@
     <module>nuxeo-platform-actions-core</module>
     <module>nuxeo-platform</module>
     <module>nuxeo-platform-api</module>
-    <module>nuxeo-platform-api-test</module>
     <module>nuxeo-platform-audio-core</module>
     <module>nuxeo-platform-audit</module>
     <module>nuxeo-platform-comment</module>
