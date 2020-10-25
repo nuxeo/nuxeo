@@ -18,7 +18,6 @@
  */
 package org.nuxeo.template.api.descriptor;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.template.api.context.ContextExtensionFactory;
 
 @XObject("contextFactory")
-public class ContextExtensionFactoryDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ContextExtensionFactoryDescriptor {
 
     protected static final Log log = LogFactory.getLog(ContextExtensionFactoryDescriptor.class);
 

@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +28,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("startURLPattern")
-public class StartURLPatternDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1771173219325532841L;
+public class StartURLPatternDescriptor {
 
     @XNodeList(value = "patterns/pattern", type = ArrayList.class, componentType = String.class)
     private List<String> startURLPatterns;

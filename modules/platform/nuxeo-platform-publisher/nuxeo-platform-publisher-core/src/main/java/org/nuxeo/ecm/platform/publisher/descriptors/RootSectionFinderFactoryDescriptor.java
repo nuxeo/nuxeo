@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.platform.publisher.descriptors;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
@@ -31,9 +29,7 @@ import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinderFactory;
  * @author tiry
  */
 @XObject("rootSectionFinderFactory")
-public class RootSectionFinderFactoryDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class RootSectionFinderFactoryDescriptor {
 
     @XNode("@class")
     private Class<? extends RootSectionFinderFactory> factory;

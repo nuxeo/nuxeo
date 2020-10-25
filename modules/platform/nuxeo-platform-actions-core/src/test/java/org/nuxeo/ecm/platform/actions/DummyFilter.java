@@ -30,8 +30,6 @@ import org.nuxeo.ecm.platform.actions.ActionContext;
  */
 public class DummyFilter extends AbstractActionFilter {
 
-    private static final long serialVersionUID = 5590825625470688497L;
-
     @Override
     public boolean accept(Action action, ActionContext context) {
         // Auto-generated method stub

@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.platform.types;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -33,9 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("layouts")
-public class Layouts implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class Layouts {
 
     @XNode("@append")
     boolean append;

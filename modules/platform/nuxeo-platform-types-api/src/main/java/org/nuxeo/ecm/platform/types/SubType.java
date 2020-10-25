@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.platform.types;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,9 +34,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
  */
 @XObject("type")
-public class SubType implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class SubType {
 
     @XNode
     protected String name;

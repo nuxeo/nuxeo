@@ -42,8 +42,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("virtualUser")
 public class VirtualUserDescriptor implements VirtualUser {
 
-    private static final long serialVersionUID = 1L;
-
     @XNode("@id")
     public String id;
 

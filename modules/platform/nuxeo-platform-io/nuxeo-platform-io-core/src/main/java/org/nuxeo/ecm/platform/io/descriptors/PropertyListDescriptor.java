@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.platform.io.descriptors;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -32,9 +30,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("properties")
-public class PropertyListDescriptor implements Serializable {
-
-    private static final long serialVersionUID = -5870562997550545838L;
+public class PropertyListDescriptor {
 
     @XNodeList(value = "value", type = String[].class, componentType = String.class)
     String[] values = new String[0];

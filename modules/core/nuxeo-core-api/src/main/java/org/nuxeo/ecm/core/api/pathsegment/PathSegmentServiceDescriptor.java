@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.api.pathsegment;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -27,9 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Descriptor to contribute a {@link PathSegmentService}.
  */
 @XObject("service")
-public class PathSegmentServiceDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class PathSegmentServiceDescriptor {
 
     @XNode("@class")
     protected String className;

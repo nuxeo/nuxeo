@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.usermanager;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -39,9 +38,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
  * @author matic
  */
 @XObject(value = "userManager")
-public class UserManagerDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class UserManagerDescriptor {
 
     @XNode("@class")
     public Class<?> userManagerClass;

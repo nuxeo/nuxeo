@@ -20,8 +20,6 @@
  */
 package org.nuxeo.ecm.platform.scanimporter.service;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -31,9 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Thierry Delprat
  */
 @XObject("blobMapping")
-public class ScanFileBlobMapping implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ScanFileBlobMapping {
 
     @XNode("@sourceXPath")
     protected String sourceXPath;

@@ -21,8 +21,6 @@
 
 package org.nuxeo.runtime.model.impl;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.XMapException;
 import org.nuxeo.common.xmap.annotation.XContent;
@@ -39,9 +37,7 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject
-public class ExtensionPointImpl implements ExtensionPoint, Serializable {
-
-    private static final long serialVersionUID = 3959978759388449332L;
+public class ExtensionPointImpl implements ExtensionPoint {
 
     @XNode("@name")
     public String name;

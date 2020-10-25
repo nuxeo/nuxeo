@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +30,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.Descriptor;
 
 @XObject("unicitySettings")
-public class UnicityExtension implements Descriptor, Serializable {
-
-    private static final long serialVersionUID = 7764225025169187266L;
+public class UnicityExtension implements Descriptor {
 
     public static final List<String> DEFAULT_FIELDS = new ArrayList<>();
 

@@ -33,7 +33,6 @@ import org.nuxeo.runtime.model.Descriptor;
 
 @XObject("provider")
 public class OpenIDConnectProviderDescriptor implements Descriptor {
-    protected static final long serialVersionUID = 1L;
 
     public static final String DEFAULT_ACCESS_TOKEN_KEY = "access_token";
 
@@ -111,10 +110,6 @@ public class OpenIDConnectProviderDescriptor implements Descriptor {
      */
     @XNode("authenticationMethod")
     protected String authenticationMethod = DEFAULT_AUTHENTICATION_METHOD;
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
 
     @Override
     public String getId() {

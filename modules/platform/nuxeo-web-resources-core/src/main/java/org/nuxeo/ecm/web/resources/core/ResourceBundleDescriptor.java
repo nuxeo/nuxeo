@@ -33,8 +33,6 @@ import org.nuxeo.ecm.web.resources.api.ResourceBundle;
 @XObject("bundle")
 public class ResourceBundleDescriptor implements ResourceBundle {
 
-    private static final long serialVersionUID = 1L;
-
     @XNode("@name")
     public String name;
 

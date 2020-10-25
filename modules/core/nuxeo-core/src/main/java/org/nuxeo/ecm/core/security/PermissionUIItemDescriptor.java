@@ -21,17 +21,13 @@
 
 package org.nuxeo.ecm.core.security;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 @XObject("item")
-public class PermissionUIItemDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class PermissionUIItemDescriptor {
 
     @XNode("@show")
     private Boolean show;

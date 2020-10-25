@@ -22,7 +22,6 @@
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,11 +36,9 @@ import org.nuxeo.runtime.model.Descriptor;
  * @author akalogeropoulos
  */
 @XObject("plugin")
-public class FileImporterDescriptor implements Descriptor, Serializable {
+public class FileImporterDescriptor implements Descriptor {
 
     public static final List<String> DEFAULT_FILTER = new ArrayList<>();
-
-    private static final long serialVersionUID = 1L;
 
     @XNode("@enabled")
     boolean enabled = true;

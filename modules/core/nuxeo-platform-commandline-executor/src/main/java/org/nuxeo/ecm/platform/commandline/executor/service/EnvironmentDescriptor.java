@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.platform.commandline.executor.service;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,9 +29,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject(value = "environment")
-public class EnvironmentDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class EnvironmentDescriptor {
 
     /**
      * If {@code name} is null, then the environment is global.<br>

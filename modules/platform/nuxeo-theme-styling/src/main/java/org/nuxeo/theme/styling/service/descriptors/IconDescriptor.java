@@ -18,8 +18,6 @@
  */
 package org.nuxeo.theme.styling.service.descriptors;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -31,9 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.4
  */
 @XObject("icon")
-public class IconDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class IconDescriptor {
 
     @XNode("@name")
     protected String name;

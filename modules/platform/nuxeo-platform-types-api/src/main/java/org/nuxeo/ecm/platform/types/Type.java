@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.platform.types;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,9 +34,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 
 @XObject("type")
-public class Type implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class Type {
 
     public static final String[] EMPTY_ACTIONS = new String[0];
 

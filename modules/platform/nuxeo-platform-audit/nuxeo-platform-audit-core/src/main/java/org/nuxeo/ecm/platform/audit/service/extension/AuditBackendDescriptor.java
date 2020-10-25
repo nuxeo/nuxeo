@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.platform.audit.service.extension;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -35,9 +33,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author tiry
  */
 @XObject("backend")
-public class AuditBackendDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class AuditBackendDescriptor {
 
     @XNode("@class")
     protected Class<? extends AuditBackend> klass = DefaultAuditBackend.class;

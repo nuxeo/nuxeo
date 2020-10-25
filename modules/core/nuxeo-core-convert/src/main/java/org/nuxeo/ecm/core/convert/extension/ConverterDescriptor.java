@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.core.convert.extension;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,11 +37,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author tiry
  */
 @XObject("converter")
-public class ConverterDescriptor implements Serializable {
+public class ConverterDescriptor {
 
     protected final Log log = LogFactory.getLog(ConverterDescriptor.class);
-
-    private static final long serialVersionUID = 1L;
 
     public static final String CUSTOM_CONVERTER_TYPE = "Custom";
 

@@ -28,8 +28,6 @@ package org.nuxeo.ecm.platform.actions;
 @Deprecated
 public abstract class AbstractActionFilter implements ActionFilter {
 
-    private static final long serialVersionUID = 6863014001035976681L;
-
     protected String id;
 
     protected String[] actions;

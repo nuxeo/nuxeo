@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +32,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
  * @since 5.4
  */
 @XObject("layouts")
-public class LayoutDescriptors implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class LayoutDescriptors {
 
     @XNodeList(value = "layout", type = ArrayList.class, componentType = LayoutDescriptor.class)
     List<LayoutDescriptor> layouts;

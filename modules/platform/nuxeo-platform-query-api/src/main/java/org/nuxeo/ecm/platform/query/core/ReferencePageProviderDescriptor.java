@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.query.core;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,9 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.4
  */
 @XObject("coreQueryPageProvider")
-public class ReferencePageProviderDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ReferencePageProviderDescriptor {
 
     @XNode("@name")
     String name;

@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.platform.query.core;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
@@ -28,10 +26,7 @@ import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
  * @since 6.0
  */
 @XObject("dateRange")
-public class AggregateRangeDateDescriptor extends AggregateRangeDescriptor implements AggregateRangeDateDefinition,
-        Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class AggregateRangeDateDescriptor extends AggregateRangeDescriptor implements AggregateRangeDateDefinition {
 
     public AggregateRangeDateDescriptor() {
     }

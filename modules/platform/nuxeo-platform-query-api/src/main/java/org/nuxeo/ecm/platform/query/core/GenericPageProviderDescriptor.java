@@ -33,8 +33,6 @@ import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 @XObject("genericPageProvider")
 public class GenericPageProviderDescriptor extends BasePageProviderDescriptor implements PageProviderDefinition {
 
-    private static final long serialVersionUID = 1L;
-
     @XNode("@class")
     protected Class<PageProvider<?>> klass;
 

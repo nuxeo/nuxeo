@@ -20,7 +20,6 @@
 package org.nuxeo.elasticsearch.config;
 
 import java.io.File;
-import java.io.Serializable;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -31,9 +30,7 @@ import org.nuxeo.runtime.api.Framework;
  * Configuration of an embedded (same JVM as Nuxeo) Elasticsearch server.
  */
 @XObject(value = "elasticSearchEmbeddedServer")
-public class ElasticSearchEmbeddedServerConfig implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ElasticSearchEmbeddedServerConfig {
 
     @XNode("@enabled")
     protected boolean isEnabled = true;

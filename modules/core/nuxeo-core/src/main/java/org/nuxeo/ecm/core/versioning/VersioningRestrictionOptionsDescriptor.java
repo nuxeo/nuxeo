@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,9 +33,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
  * @since 9.1
  */
 @XObject("options")
-public class VersioningRestrictionOptionsDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class VersioningRestrictionOptionsDescriptor {
 
     @XNode("@lifeCycleState")
     protected String lifeCycleState;
@@ -61,9 +58,7 @@ public class VersioningRestrictionOptionsDescriptor implements Serializable {
     }
 
     @XObject("option")
-    protected static class OptionDescriptor implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    protected static class OptionDescriptor {
 
         @XNode("@default")
         protected boolean defaultOpt;

@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.platform.computedgroups;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +32,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 
 @XObject("groupComputerChain")
-public class GroupComputerChainDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class GroupComputerChainDescriptor {
 
     @XNodeList(value = "computers/computer", type = ArrayList.class, componentType = String.class)
     private List<String> computerNames;

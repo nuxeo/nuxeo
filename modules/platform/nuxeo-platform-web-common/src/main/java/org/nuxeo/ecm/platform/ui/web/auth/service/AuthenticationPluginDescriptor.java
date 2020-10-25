@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -29,9 +28,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
 @XObject("authenticationPlugin")
-public class AuthenticationPluginDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 237654398643289764L;
+public class AuthenticationPluginDescriptor {
 
     @XNode("@name")
     private String name;

@@ -24,8 +24,6 @@ package org.nuxeo.ecm.platform.publisher.rules;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-import java.io.Serializable;
-
 /**
  * Validators rule descriptor.
  * <p>
@@ -36,9 +34,7 @@ import java.io.Serializable;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @XObject("validatorsRule")
-public class ValidatorsRuleDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ValidatorsRuleDescriptor {
 
     @XNode("@class")
     protected Class<ValidatorsRule> klass;

@@ -19,16 +19,12 @@
 
 package org.nuxeo.ecm.core.management.statuses;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 
 @XObject("administrableService")
-public class AdministrableServiceDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class AdministrableServiceDescriptor {
 
     @XNode("@id")
     private String id;

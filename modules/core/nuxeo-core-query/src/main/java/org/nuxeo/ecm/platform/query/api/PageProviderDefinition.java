@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.query.api;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
  * @author Anahide Tchertchian
  * @since 5.4
  */
-public interface PageProviderDefinition extends Serializable {
+public interface PageProviderDefinition {
 
     String getName();
 

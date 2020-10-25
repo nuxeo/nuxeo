@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.types;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +32,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.4
  */
 @XObject("contentViews")
-public class DocumentContentViews implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class DocumentContentViews {
 
     @XNode("@append")
     boolean append = false;

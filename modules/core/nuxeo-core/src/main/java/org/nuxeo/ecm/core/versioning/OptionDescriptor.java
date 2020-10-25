@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 /**
@@ -27,9 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @Deprecated
 @XObject("option")
-public class OptionDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class OptionDescriptor {
 
     @XNode("@default")
     private boolean defaultOption = false;

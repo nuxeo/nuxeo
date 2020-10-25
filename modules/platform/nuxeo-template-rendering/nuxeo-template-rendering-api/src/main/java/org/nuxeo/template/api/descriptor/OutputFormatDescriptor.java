@@ -19,17 +19,13 @@
  */
 package org.nuxeo.template.api.descriptor;
 
-import java.io.Serializable;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("outputFormat")
-public class OutputFormatDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class OutputFormatDescriptor {
 
     protected static final Log log = LogFactory.getLog(OutputFormatDescriptor.class);
 

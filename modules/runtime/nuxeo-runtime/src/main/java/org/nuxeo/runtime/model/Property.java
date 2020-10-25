@@ -32,9 +32,7 @@ import org.nuxeo.runtime.model.impl.PropertyDecoder;
  * @author Bogdan Stefanescu
  */
 @XObject(value = "property", order = { "@name", "@type" })
-public class Property implements Serializable {
-
-    private static final long serialVersionUID = -2661183859962287565L;
+public class Property {
 
     @XNode("@name")
     private String name;

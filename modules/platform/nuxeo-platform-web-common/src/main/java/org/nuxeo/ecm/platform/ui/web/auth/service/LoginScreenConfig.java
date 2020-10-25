@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -47,9 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7
  */
 @XObject("loginScreenConfig")
-public class LoginScreenConfig implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class LoginScreenConfig {
 
     public static final String NUXEO_NEWS_URL = "//www.nuxeo.com/login-page-embedded/";
 

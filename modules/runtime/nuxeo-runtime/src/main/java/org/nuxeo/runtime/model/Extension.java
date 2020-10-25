@@ -21,8 +21,6 @@
 
 package org.nuxeo.runtime.model;
 
-import java.io.Serializable;
-
 import org.w3c.dom.Element;
 
 /**
@@ -35,7 +33,7 @@ import org.w3c.dom.Element;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface Extension extends Serializable {
+public interface Extension {
 
     /**
      * Gets the component name where this extension should be contributed.

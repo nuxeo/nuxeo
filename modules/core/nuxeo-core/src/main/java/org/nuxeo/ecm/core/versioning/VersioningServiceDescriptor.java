@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
@@ -28,9 +26,7 @@ import org.nuxeo.ecm.core.api.versioning.VersioningService;
  * Descriptor to contribute a new {@link VersioningService}.
  */
 @XObject("service")
-public class VersioningServiceDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class VersioningServiceDescriptor {
 
     @XNode("@class")
     protected String className;

@@ -35,9 +35,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.6
  */
 @XObject("properties")
-public class ActionPropertiesDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ActionPropertiesDescriptor {
 
     @XNode("@append")
     boolean append;

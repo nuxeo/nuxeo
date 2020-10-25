@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +31,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
  * @since 9.1
  */
 @XObject("policy")
-public class VersioningPolicyDescriptor implements Serializable, Comparable<VersioningPolicyDescriptor> {
-
-    private static final long serialVersionUID = 1L;
+public class VersioningPolicyDescriptor implements Comparable<VersioningPolicyDescriptor> {
 
     @XNode("@id")
     protected String id;

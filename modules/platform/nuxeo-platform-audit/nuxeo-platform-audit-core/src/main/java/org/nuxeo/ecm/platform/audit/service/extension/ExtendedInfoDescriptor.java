@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.platform.audit.service.extension;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -33,9 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @XObject("extendedInfo")
-public class ExtendedInfoDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 5381693968565370680L;
+public class ExtendedInfoDescriptor {
 
     @XNode("@key")
     private String key;

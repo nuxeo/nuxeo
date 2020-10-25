@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.platform.preview.adapter;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -27,9 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author tiry
  */
 @XObject(value = "previewAdapter")
-public class AdapterFactoryDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class AdapterFactoryDescriptor {
 
     @XNode("@name")
     private String name;

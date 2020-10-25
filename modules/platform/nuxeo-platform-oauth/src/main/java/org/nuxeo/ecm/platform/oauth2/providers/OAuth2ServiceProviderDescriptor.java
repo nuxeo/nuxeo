@@ -22,14 +22,11 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-import java.io.Serializable;
-
 /**
  * @since 7.3
  */
 @XObject("provider")
-public class OAuth2ServiceProviderDescriptor implements Serializable {
-    protected static final long serialVersionUID = 1L;
+public class OAuth2ServiceProviderDescriptor {
 
     public static final String DEFAULT_ACCESS_TOKEN_KEY = "access_token";
 
@@ -73,10 +70,6 @@ public class OAuth2ServiceProviderDescriptor implements Serializable {
 
     @XNode("class")
     protected Class<? extends OAuth2ServiceProvider> providerClass = DEFAULT_PROVIDER_CLASS;
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
 
     public String getName() {
         return name;

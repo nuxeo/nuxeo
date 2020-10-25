@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import java.io.Serializable;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -34,9 +32,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7
  */
 @XObject("loginProvider")
-public class LoginProviderLink implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class LoginProviderLink {
 
     protected static final Log log = LogFactory.getLog(LoginProviderLink.class);
 

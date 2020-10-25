@@ -21,8 +21,6 @@
 
 package org.nuxeo.runtime.model.impl;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -31,9 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject
-public class ServiceDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 2732085252068872368L;
+public class ServiceDescriptor {
 
     // TODO: it should be an error in XMap -> normally you should specify node
     // paths relative to the current object element,

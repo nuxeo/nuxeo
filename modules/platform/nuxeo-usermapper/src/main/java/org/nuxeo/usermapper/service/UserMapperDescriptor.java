@@ -20,7 +20,6 @@
 
 package org.nuxeo.usermapper.service;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,9 +38,7 @@ import org.nuxeo.usermapper.extension.UserMapper;
  * @since 7.4
  */
 @XObject("mapper")
-public class UserMapperDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class UserMapperDescriptor {
 
     public enum Type {
         java, groovy, javascript, none

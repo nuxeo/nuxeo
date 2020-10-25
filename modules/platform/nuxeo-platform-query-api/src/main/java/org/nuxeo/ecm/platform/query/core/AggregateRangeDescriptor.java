@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.platform.query.core;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
@@ -28,9 +26,7 @@ import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
  * @since 6.0
  */
 @XObject("range")
-public class AggregateRangeDescriptor implements AggregateRangeDefinition, Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class AggregateRangeDescriptor implements AggregateRangeDefinition {
 
     @XNode("@key")
     public String key;
