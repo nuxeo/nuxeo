@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.commandline.executor.api;
 
 import java.util.List;
 
+import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
+
 /**
  * Interface for the service that manages commandline execution.
  *
@@ -42,5 +44,8 @@ public interface CommandLineExecutorService {
      * @since 7.4
      */
     CmdParameters getDefaultCmdParameters();
+
+    /** @since 11.4 */
+    CommandLineDescriptor getCommandLineDescriptor(String commandName);
 
 }

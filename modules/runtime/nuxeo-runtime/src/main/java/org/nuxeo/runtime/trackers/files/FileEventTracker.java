@@ -137,8 +137,6 @@ public class FileEventTracker extends DefaultComponent {
 
     protected final GCDelegate gc = new GCDelegate();
 
-    protected static FileEventTracker self;
-
     protected final ThreadLocal<ThreadDelegate> threads = new ThreadLocal<>();
 
     protected final ThreadEventListener threadsListener = new ThreadEventListener(new ThreadEventHandler() {
@@ -166,7 +164,6 @@ public class FileEventTracker extends DefaultComponent {
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        self = this;
         filesListener.install();
         setThreadDelegate(false);
     }
@@ -189,7 +186,6 @@ public class FileEventTracker extends DefaultComponent {
             }
             filesListener.uninstall();
         }
-        self = null;
         super.deactivate(context);
     }
 

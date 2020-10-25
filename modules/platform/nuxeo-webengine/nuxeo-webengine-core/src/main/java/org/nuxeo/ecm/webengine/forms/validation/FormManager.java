@@ -25,10 +25,10 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.forms.FormDataProvider;
@@ -150,7 +150,7 @@ public class FormManager implements InvocationHandler, Form {
         throw new UnsupportedOperationException("Method unsupported: " + method);
     }
 
-    protected static Map<Class<?>, FormDescriptor> forms = new Hashtable<>();
+    protected static Map<Class<?>, FormDescriptor> forms = new ConcurrentHashMap<>();
 
     @SuppressWarnings("unchecked")
     public static <T> T newProxy(Class<T> type) {
@@ -160,7 +160,7 @@ public class FormManager implements InvocationHandler, Form {
     }
 
     public void flushCache() {
-        forms = new Hashtable<>();
+        forms.clear();
     }
 
     static FormDescriptor getDescriptor(Class<?> type) {

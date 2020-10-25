@@ -23,6 +23,7 @@ package org.nuxeo.runtime.model.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.nuxeo.common.xmap.DOMSerializer;
 import org.nuxeo.common.xmap.annotation.XContent;
@@ -41,7 +42,7 @@ import org.w3c.dom.Element;
 public class ExtensionImpl implements Extension {
 
     // used to generate the extension id if none was provided
-    private static int cnt = 0;
+    private static AtomicInteger cnt = new AtomicInteger();
 
     private static final ExtensionDescriptorReader reader = new ExtensionDescriptorReader();
 
@@ -119,10 +120,11 @@ public class ExtensionImpl implements Extension {
     @Override
     public String getId() {
         if (id == null) {
+            var count = cnt.getAndIncrement();
             if (component != null) {
-                id = component.getName().getName() + '#' + extensionPoint + '.' + (cnt++);
+                id = component.getName().getName() + '#' + extensionPoint + '.' + count;
             } else {
-                id = "null#" + extensionPoint + '.' + (cnt++);
+                id = "null#" + extensionPoint + '.' + count;
             }
         }
         return id;

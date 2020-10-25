@@ -50,9 +50,9 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
 
     public static final String CHAIN_EP = "computerChain";
 
-    protected static Map<String, GroupComputerDescriptor> computers = new HashMap<>();
+    protected Map<String, GroupComputerDescriptor> computers = new HashMap<>();
 
-    protected static List<String> computerNames = new ArrayList<>();
+    protected List<String> computerNames = new ArrayList<>();
 
     protected boolean allowOverride = true;
 
@@ -61,8 +61,8 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        computers = new HashMap<>();
-        computerNames = new ArrayList<>();
+        computers.clear();
+        computerNames.clear();
     }
 
     @Override

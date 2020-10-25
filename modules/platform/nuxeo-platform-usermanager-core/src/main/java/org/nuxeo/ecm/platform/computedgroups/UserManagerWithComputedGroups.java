@@ -49,17 +49,12 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
 
     private static final long serialVersionUID = 1L;
 
-    protected static ComputedGroupsService cgs;
-
     protected static Boolean useComputedGroup;
 
     public static final String VIRTUAL_GROUP_MARKER = "__virtualGroup";
 
     protected ComputedGroupsService getService() {
-        if (cgs == null) {
-            cgs = Framework.getService(ComputedGroupsService.class);
-        }
-        return cgs;
+        return Framework.getService(ComputedGroupsService.class);
     }
 
     protected boolean activateComputedGroup() {

@@ -30,18 +30,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PreviewDocumentModelAdapterFactory implements DocumentAdapterFactory {
 
-    protected static PreviewAdapterManager paManager;
-
-    protected PreviewAdapterManager getPreviewAdapterManager() {
-        if (paManager == null) {
-            paManager = Framework.getService(PreviewAdapterManager.class);
-        }
-        return paManager;
-    }
-
     @Override
     public Object getAdapter(DocumentModel doc, Class<?> itf) {
-        return getPreviewAdapterManager().getAdapter(doc);
+        return Framework.getService(PreviewAdapterManager.class).getAdapter(doc);
     }
 
 }

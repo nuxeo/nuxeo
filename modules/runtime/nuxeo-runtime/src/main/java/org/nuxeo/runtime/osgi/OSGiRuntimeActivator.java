@@ -60,7 +60,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
     @Override
     public void start(BundleContext context) {
         log.info("Starting Runtime Activator");
-        instance = this;
+        instance = this; // NOSONAR OSGi singleton
         this.context = context;
 
         pkgAdmin = context.getServiceReference(PackageAdmin.class.getName());
@@ -90,7 +90,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
     @Override
     public void stop(BundleContext context) {
         log.info("Stopping Runtime Activator");
-        instance = null;
+        instance = null; // NOSONAR OSGi singleton
         pkgAdmin = null;
         // remove component loader
         componentLoader.uninstall();

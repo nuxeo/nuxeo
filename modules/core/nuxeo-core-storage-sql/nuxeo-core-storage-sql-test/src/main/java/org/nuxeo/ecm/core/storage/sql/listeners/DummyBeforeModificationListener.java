@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.sql.listeners;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.event.Event;
@@ -26,8 +28,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 public class DummyBeforeModificationListener implements EventListener {
 
-    // checked by unit test
-    public static String previousTitle = null;
+    public static AtomicReference<String> previousTitle = new AtomicReference<>();
 
     /**
      * Called on aboutToCreate and beforeDocumentModification events.
@@ -39,12 +40,20 @@ public class DummyBeforeModificationListener implements EventListener {
         DocumentModel previous = (DocumentModel) context.getProperty(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL);
         if (previous != null) {
             // beforeDocumentModification
-            previousTitle = previous.getTitle();
+            previousTitle.set(previous.getTitle());
         }
         // do the event job: rename
         DocumentModel doc = context.getSourceDocument();
         String name = doc.getTitle() + "-rename";
         context.setProperty(CoreEventConstants.DESTINATION_NAME, name);
+    }
+
+    public static void clear() {
+        previousTitle.set(null);
+    }
+
+    public static String getPreviousTitle() {
+        return previousTitle.get();
     }
 
 }

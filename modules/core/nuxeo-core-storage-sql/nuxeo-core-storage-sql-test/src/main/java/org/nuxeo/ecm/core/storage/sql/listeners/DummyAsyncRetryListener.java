@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.sql.listeners;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
@@ -28,13 +30,13 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 public class DummyAsyncRetryListener implements PostCommitEventListener {
 
-    protected static int countHandled;
+    protected static AtomicInteger countHandled = new AtomicInteger();
 
-    protected static int countOk;
+    protected static AtomicInteger countOk = new AtomicInteger();
 
     @Override
     public void handleEvent(EventBundle events) {
-        countHandled++;
+        countHandled.incrementAndGet();
 
         // accessing the iterator reconnects the events
         DocumentModel doc = null;
@@ -47,26 +49,26 @@ public class DummyAsyncRetryListener implements PostCommitEventListener {
             doc = documentEventContext.getSourceDocument();
         }
 
-        if (countHandled == 1) {
+        if (countHandled.get() == 1) {
             // simulate error
             throw new ConcurrentUpdateException();
         }
         if (doc != null && ((String) doc.getPropertyValue("dc:title")).startsWith("title")) {
-            countOk++;
+            countOk.incrementAndGet();
         }
     }
 
     public static void clear() {
-        countHandled = 0;
-        countOk = 0;
+        countHandled.set(0);
+        countOk.set(0);
     }
 
     public static int getCountHandled() {
-        return countHandled;
+        return countHandled.get();
     }
 
     public static int getCountOk() {
-        return countOk;
+        return countOk.get();
     }
 
 }

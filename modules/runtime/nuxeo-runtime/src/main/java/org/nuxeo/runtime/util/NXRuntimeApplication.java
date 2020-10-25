@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class NXRuntimeApplication {
 
-    protected static RuntimeService runtime;
+    protected RuntimeService runtime;
 
     private static final Log log = LogFactory.getLog(NXRuntimeApplication.class);
 

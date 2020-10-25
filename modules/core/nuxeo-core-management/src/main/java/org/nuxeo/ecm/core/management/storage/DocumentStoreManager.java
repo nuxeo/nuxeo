@@ -104,7 +104,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         }
 
         if (defaultInitialized && mgmtInitialized) {
-            CoreManagementComponent.getDefault().onNuxeoServerStartup();
+            Framework.getService(CoreManagementComponent.class).onNuxeoServerStartup();
         }
     }
 
