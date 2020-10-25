@@ -4140,12 +4140,12 @@ public class TestSQLRepositoryAPI {
         assertEquals("t1-rename", doc.getName());
 
         doc.setProperty("dublincore", "title", "t2");
-        DummyBeforeModificationListener.previousTitle = null;
+        DummyBeforeModificationListener.clear();;
         doc = session.saveDocument(doc);
         session.save();
         assertEquals("t2-rename", doc.getName());
         assertEquals("/t2-rename", doc.getPathAsString());
-        assertEquals("t1", DummyBeforeModificationListener.previousTitle);
+        assertEquals("t1", DummyBeforeModificationListener.getPreviousTitle());
     }
 
     @Test

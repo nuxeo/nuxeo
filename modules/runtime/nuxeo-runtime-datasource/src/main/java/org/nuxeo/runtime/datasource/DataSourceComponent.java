@@ -41,8 +41,6 @@ public class DataSourceComponent extends DefaultComponent {
 
     private final Log log = LogFactory.getLog(DataSourceComponent.class);
 
-    static DataSourceComponent instance;
-
     public static final String DATASOURCES_XP = "datasources";
 
     public static final String ENV_CTX_NAME = "java:comp/env/";
@@ -57,7 +55,6 @@ public class DataSourceComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
-        instance = this;
         datasources = new HashMap<>();
         links = new HashMap<>();
     }
@@ -67,7 +64,6 @@ public class DataSourceComponent extends DefaultComponent {
         super.deactivate(context);
         links = null;
         datasources = null;
-        instance = null;
         //TODO should poolRegistry and sorterRegistry be removed?
     }
 

@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTes
 import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTester;
 import org.nuxeo.ecm.platform.commandline.executor.service.executors.Executor;
 import org.nuxeo.ecm.platform.commandline.executor.service.executors.ShellExecutor;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -59,15 +60,15 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
     public static final String DEFAULT_EXECUTOR = "ShellExecutor";
 
-    protected static Map<String, CommandLineDescriptor> commandDescriptors = new HashMap<>();
+    protected Map<String, CommandLineDescriptor> commandDescriptors = new HashMap<>();
 
-    protected static EnvironmentDescriptor env = new EnvironmentDescriptor();
+    protected EnvironmentDescriptor env = new EnvironmentDescriptor();
 
-    protected static Map<String, EnvironmentDescriptor> envDescriptors = new HashMap<>();
+    protected Map<String, EnvironmentDescriptor> envDescriptors = new HashMap<>();
 
-    protected static Map<String, CommandTester> testers = new HashMap<>();
+    protected Map<String, CommandTester> testers = new HashMap<>();
 
-    protected static Map<String, Executor> executors = new HashMap<>();
+    protected Map<String, Executor> executors = new HashMap<>();
 
     private static final Log log = LogFactory.getLog(CommandLineExecutorComponent.class);
 
@@ -207,11 +208,18 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
         return cmds;
     }
 
+    @Override
+    public CommandLineDescriptor getCommandLineDescriptor(String commandName) {
+        return commandDescriptors.get(commandName);
+    }
+
     // ******************************************
     // for testing
 
+    /** @deprecated since 11.4, use instance method {@link #getCommandLineDescriptor} instead */
+    @Deprecated
     public static CommandLineDescriptor getCommandDescriptor(String commandName) {
-        return commandDescriptors.get(commandName);
+        return Framework.getService(CommandLineExecutorService.class).getCommandLineDescriptor(commandName);
     }
 
     @Override

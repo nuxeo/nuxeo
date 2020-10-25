@@ -39,9 +39,9 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
 
     private static final Log log = LogFactory.getLog(WebEngineFormAuthenticator.class);
 
-    protected static String usernameKey = "username";
+    protected String usernameKey = "username";
 
-    protected static String passwordKey = "password";
+    protected String passwordKey = "password";
 
     public static final String LOGIN_KEY = "/@@login";
 

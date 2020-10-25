@@ -48,8 +48,6 @@ public abstract class AbstractUnicityChecker {
 
     protected FileManager fileManager;
 
-    protected static Boolean unicityCheckEnabled;
-
     protected static final String DUPLICATED_FILE = "duplicatedFile";
 
     protected void doUnicityCheck(DocumentModel doc2Check, CoreSession session, Event event) {
@@ -57,7 +55,6 @@ public abstract class AbstractUnicityChecker {
         List<String> xpathFields = Framework.getService(FileManager.class).getFields();
 
         if (xpathFields == null || xpathFields.isEmpty()) {
-            unicityCheckEnabled = false;
             log.info("Unicity check has been automatically disabled");
             return;
         }

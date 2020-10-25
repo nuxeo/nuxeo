@@ -67,11 +67,6 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         return Framework.getService(ConversionService.class);
     }
 
-    @Override
-    protected PreviewAdapterManager getPreviewManager() {
-        return Framework.getService(PreviewAdapterManager.class);
-    }
-
     protected static String getMimeType(Blob blob) {
         if (blob == null) {
             return null;

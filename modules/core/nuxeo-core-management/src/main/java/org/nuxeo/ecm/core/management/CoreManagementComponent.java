@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.management.statuses.GlobalAdministrativeStatusManagerI
 import org.nuxeo.ecm.core.management.storage.DocumentStoreConfigurationDescriptor;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -54,8 +55,6 @@ public class CoreManagementComponent extends DefaultComponent {
     public static final String STORAGE_CONFIG_EP = "storageConfiguration";
 
     public static final String HEALTH_CHECK_EP = "healthCheck";
-
-    protected static CoreManagementComponent defaultComponent;
 
     protected final GlobalAdministrativeStatusManager globalManager = new GlobalAdministrativeStatusManagerImpl();
 
@@ -114,20 +113,20 @@ public class CoreManagementComponent extends DefaultComponent {
         }
     }
 
+    /** @deprecated since 11.4, use {@code Framework.getService(CoreManagementComponent.class)} instead */
+    @Deprecated
     public static CoreManagementComponent getDefault() {
-        return defaultComponent;
+        return Framework.getService(CoreManagementComponent.class);
     }
 
     @Override
     public void activate(ComponentContext context) {
-        defaultComponent = this;
         storageManager.install();
         EventStatsHolder.clearStats();
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-        defaultComponent = null;
         storageManager.uninstall();
         EventStatsHolder.clearStats();
     }

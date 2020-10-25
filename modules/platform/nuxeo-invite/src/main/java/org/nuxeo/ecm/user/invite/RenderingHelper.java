@@ -22,14 +22,13 @@ import java.io.File;
 import java.net.URL;
 
 import freemarker.template.Configuration;
-import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 
 
 public class RenderingHelper {
 
-    protected static RenderingEngine engine;
+    protected volatile FreemarkerEngine engine;
 
     protected class CLResourceLocator implements ResourceLocator {
         @Override
@@ -43,17 +42,21 @@ public class RenderingHelper {
         }
     }
 
-    public RenderingEngine getRenderingEngine() {
+    public FreemarkerEngine getRenderingEngine() {
         if (engine == null) {
-            FreemarkerEngine fme = new FreemarkerEngine();
-            fme.setResourceLocator(new CLResourceLocator());
-            engine = fme;
+            synchronized (this) {
+                if (engine == null) {
+                    FreemarkerEngine fme = new FreemarkerEngine();
+                    fme.setResourceLocator(new CLResourceLocator());
+                    engine = fme;
+                }
+            }
         }
         return engine;
     }
 
     public Configuration getEngineConfiguration() {
-        return ((FreemarkerEngine) engine).getConfiguration();
+        return getRenderingEngine().getConfiguration();
     }
 
 }

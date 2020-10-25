@@ -50,13 +50,8 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
 
     protected DocumentModel adaptedDoc;
 
-    protected static PreviewAdapterManager previewManager;
-
     protected PreviewAdapterManager getPreviewManager() {
-        if (previewManager == null) {
-            previewManager = Framework.getService(PreviewAdapterManager.class);
-        }
-        return previewManager;
+        return Framework.getService(PreviewAdapterManager.class);
     }
 
     @Override

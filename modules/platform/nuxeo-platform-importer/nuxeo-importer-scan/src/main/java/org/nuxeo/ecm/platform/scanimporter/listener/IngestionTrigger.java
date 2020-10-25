@@ -20,6 +20,8 @@
  */
 package org.nuxeo.ecm.platform.scanimporter.listener;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.Event;
@@ -35,7 +37,7 @@ public class IngestionTrigger implements EventListener {
 
     private static final Log log = LogFactory.getLog(IngestionTrigger.class);
 
-    private static volatile boolean ingestionInProgress = false;
+    private static final ReentrantLock LOCK = new ReentrantLock();
 
     public static final String START_EVENT = "ScanIngestionStart";
 
@@ -47,23 +49,20 @@ public class IngestionTrigger implements EventListener {
             return;
         }
 
-        if (ingestionInProgress) {
-            log.info("Ingestion already in progress, waiting for next wake up");
-            return;
-        } else {
-            log.info("Start injection process");
-        }
-
-        ingestionInProgress = true;
-        try {
-            ScannedFileImporter importer = new ScannedFileImporter();
-            if (event.getContext().getProperty("Testing") != null) {
-                event.getContext().setProperty("Tested", true);
-            } else {
-                importer.doImport();
+        if (LOCK.tryLock()) {
+            try {
+                log.info("Start injection process");
+                ScannedFileImporter importer = new ScannedFileImporter();
+                if (event.getContext().getProperty("Testing") != null) {
+                    event.getContext().setProperty("Tested", true);
+                } else {
+                    importer.doImport();
+                }
+            } finally {
+                LOCK.unlock();
             }
-        } finally {
-            ingestionInProgress = false;
+        } else {
+            log.info("Ingestion already in progress, waiting for next wake up");
         }
     }
 

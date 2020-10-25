@@ -60,12 +60,12 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext context) {
         this.context = context;
-        instance = this;
+        instance = this; // NOSONAR OSGi singleton
     }
 
     @Override
     public void stop(BundleContext context) {
-        instance = null;
+        instance = null; // NOSONAR OSGi singleton
         this.context = null;
     }
 

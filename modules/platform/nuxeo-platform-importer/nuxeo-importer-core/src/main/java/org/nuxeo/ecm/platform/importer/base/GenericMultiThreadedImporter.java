@@ -113,12 +113,12 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         return importTP;
     }
 
-    public static synchronized void addCreatedDoc(String taskId, long nbDocs) {
+    public static void addCreatedDoc(String taskId, long nbDocs) {
         String tid = Thread.currentThread().getName();
         nbCreatedDocsByThreads.put(tid + "-" + taskId, nbDocs);
     }
 
-    public static synchronized long getCreatedDocsCounter() {
+    public static long getCreatedDocsCounter() {
         long counter = 0;
         for (String tid : nbCreatedDocsByThreads.keySet()) {
             Long tCounter = nbCreatedDocsByThreads.get(tid);
@@ -286,7 +286,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
         targetContainer = getTargetContainer();
 
-        nbCreatedDocsByThreads = new ConcurrentHashMap<>();
+        nbCreatedDocsByThreads.clear();
 
         importTP = new ThreadPoolExecutor(nbThreads, nbThreads, 500L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(queueSize), new NamedThreadFactory("Nuxeo-Importer-"));
