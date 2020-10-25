@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.platform.types;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -32,9 +30,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("view")
-public class TypeView implements Serializable {
-
-    private static final long serialVersionUID = -575854276842744316L;
+public class TypeView {
 
     @XNode("@id")
     String id;

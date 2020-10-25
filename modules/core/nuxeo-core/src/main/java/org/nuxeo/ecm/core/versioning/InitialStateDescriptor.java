@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -30,9 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.4.2
  */
 @XObject("initialState")
-public class InitialStateDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class InitialStateDescriptor {
 
     @XNode("@minor")
     protected int minor = 0;

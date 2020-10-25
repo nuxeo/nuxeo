@@ -34,9 +34,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("properties")
-public class PropertiesDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class PropertiesDescriptor {
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> properties = new HashMap<>();

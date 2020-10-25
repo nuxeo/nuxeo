@@ -18,13 +18,12 @@
  */
 package org.nuxeo.ecm.web.resources.api;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
  * @since 7.3
  */
-public interface ResourceBundle extends Serializable {
+public interface ResourceBundle {
 
     String getName();
 

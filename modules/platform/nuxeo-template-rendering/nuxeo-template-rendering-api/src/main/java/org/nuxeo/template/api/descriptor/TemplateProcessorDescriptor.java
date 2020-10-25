@@ -18,7 +18,6 @@
  */
 package org.nuxeo.template.api.descriptor;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.template.api.TemplateProcessor;
 
 @XObject("templateProcessor")
-public class TemplateProcessorDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class TemplateProcessorDescriptor {
 
     protected static final Log log = LogFactory.getLog(TemplateProcessorDescriptor.class);
 

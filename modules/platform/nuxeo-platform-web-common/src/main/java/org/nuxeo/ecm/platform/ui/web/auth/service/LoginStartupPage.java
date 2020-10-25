@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -28,9 +26,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 8.4
  */
 @XObject("startupPage")
-public class LoginStartupPage implements Serializable, Comparable<LoginStartupPage> {
-
-    private static final long serialVersionUID = 1L;
+public class LoginStartupPage implements Comparable<LoginStartupPage> {
 
     @XNode("@priority")
     protected int priority;

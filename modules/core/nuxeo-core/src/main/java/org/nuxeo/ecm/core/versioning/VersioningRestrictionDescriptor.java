@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,9 +36,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
  * @since 9.1
  */
 @XObject("restriction")
-public class VersioningRestrictionDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class VersioningRestrictionDescriptor {
 
     @XNode("@type")
     protected String type;

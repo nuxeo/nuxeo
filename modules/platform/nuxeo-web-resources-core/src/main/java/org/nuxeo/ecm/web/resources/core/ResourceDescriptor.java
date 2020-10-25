@@ -34,8 +34,6 @@ import org.nuxeo.ecm.web.resources.api.Resource;
 @XObject("resource")
 public class ResourceDescriptor implements Resource {
 
-    private static final long serialVersionUID = 1L;
-
     @XNode("@name")
     public String name;
 

@@ -22,7 +22,6 @@ import static org.nuxeo.ecm.core.api.VersioningOption.MAJOR;
 import static org.nuxeo.ecm.core.api.VersioningOption.MINOR;
 import static org.nuxeo.ecm.core.api.VersioningOption.NONE;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,9 +39,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
  */
 @Deprecated
 @XObject("options")
-public class SaveOptionsDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class SaveOptionsDescriptor {
 
     @XNode("@lifeCycleState")
     private String lifeCycleState;

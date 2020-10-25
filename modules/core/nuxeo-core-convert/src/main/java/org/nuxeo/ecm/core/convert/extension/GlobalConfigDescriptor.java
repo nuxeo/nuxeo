@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.convert.extension;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 
 import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.Environment;
@@ -34,9 +33,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * XMap Descriptor for the {@link org.nuxeo.ecm.core.convert.api.ConversionService} configuration.
  */
 @XObject("configuration")
-public class GlobalConfigDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class GlobalConfigDescriptor {
 
     public static final boolean DEFAULT_CACHE_ENABLED = true;
 

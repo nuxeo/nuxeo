@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.platform.relations.descriptors;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,9 +32,7 @@ import org.nuxeo.runtime.api.Framework;
  * Graph descriptor.
  */
 @XObject("graph")
-public class GraphDescriptor implements GraphDescription, Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class GraphDescriptor implements GraphDescription {
 
     @XNode("@name")
     public String name;

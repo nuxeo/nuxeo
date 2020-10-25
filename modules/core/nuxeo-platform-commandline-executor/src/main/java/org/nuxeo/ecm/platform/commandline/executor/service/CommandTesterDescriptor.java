@@ -22,8 +22,6 @@
 
 package org.nuxeo.ecm.platform.commandline.executor.service;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTester;
@@ -34,9 +32,7 @@ import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTes
  * @author tiry
  */
 @XObject("commandTester")
-public class CommandTesterDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class CommandTesterDescriptor {
 
     @XNode("@name")
     protected String name;

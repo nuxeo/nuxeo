@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -30,9 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 6.0
  */
 @XObject(value = "header")
-public class NuxeoHeaderDescriptor implements Serializable, Cloneable {
-
-    private static final long serialVersionUID = 1L;
+public class NuxeoHeaderDescriptor implements Cloneable {
 
     @XNode("@name")
     protected String name;

@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.platform.actions;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -32,9 +30,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.6
  */
 @XObject("propertyList")
-public class ActionPropertyListDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ActionPropertyListDescriptor {
 
     @XNodeList(value = "value", type = String[].class, componentType = String.class)
     String[] values = new String[0];

@@ -79,8 +79,6 @@ public class PageProviderHelper {
     private static final Logger log = LogManager.getLogger(PageProviderHelper.class);
 
     static final class QueryAndFetchProviderDescriptor extends GenericPageProviderDescriptor {
-        private static final long serialVersionUID = 1L;
-
         @SuppressWarnings("unchecked")
         public QueryAndFetchProviderDescriptor() {
             super();

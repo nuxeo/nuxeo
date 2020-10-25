@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +28,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("authenticationChain")
-public class AuthenticationChainDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 276543987313289764L;
+public class AuthenticationChainDescriptor {
 
     @XNodeList(value = "plugins/plugin", type = ArrayList.class, componentType = String.class)
     private List<String> pluginsNames;

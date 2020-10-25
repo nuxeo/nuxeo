@@ -18,8 +18,6 @@
  */
 package org.nuxeo.runtime.management;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -27,9 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 @XObject("service")
-public class ServiceDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 6338431911839779273L;
+public class ServiceDescriptor {
 
     protected ServiceDescriptor(String qualifiedName, Class<?> implClass) {
         name = qualifiedName;

@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -28,9 +26,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  */
 @XObject("widgetConverter")
-public class WidgetConverterDescriptor implements Serializable, Comparable<WidgetConverterDescriptor> {
-
-    private static final long serialVersionUID = 1L;
+public class WidgetConverterDescriptor implements Comparable<WidgetConverterDescriptor> {
 
     @XNode("@name")
     String name;

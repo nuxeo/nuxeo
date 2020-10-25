@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.query.core;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,9 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 6.0
  */
 @XObject("properties")
-public class PropertiesDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class PropertiesDescriptor {
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> properties = new HashMap<>();

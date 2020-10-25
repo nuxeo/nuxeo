@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.platform.util;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -30,9 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Thierry Delprat
  */
 @XObject("locationManagerPlugin")
-public class LocationManagerPluginExtension implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class LocationManagerPluginExtension {
 
     @XNode("locationName")
     protected String locationName;

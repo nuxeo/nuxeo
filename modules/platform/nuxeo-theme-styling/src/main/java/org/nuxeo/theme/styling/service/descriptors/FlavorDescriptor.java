@@ -18,7 +18,6 @@
  */
 package org.nuxeo.theme.styling.service.descriptors;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,9 +38,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  */
 @XObject("flavor")
-public class FlavorDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class FlavorDescriptor {
 
     @XNode("@name")
     String name;

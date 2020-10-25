@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
-import java.io.Serializable;
 import java.util.regex.Pattern;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -35,11 +34,9 @@ import org.nuxeo.runtime.api.Framework;
  * @author ldoguin
  */
 @XObject(value = "filterConfig")
-public class FilterConfigDescriptor implements Serializable {
+public class FilterConfigDescriptor {
 
     public static final String DEFAULT_CACHE_DURATION = "3599";
-
-    private static final long serialVersionUID = 1L;
 
     @XNode("@name")
     protected String name;

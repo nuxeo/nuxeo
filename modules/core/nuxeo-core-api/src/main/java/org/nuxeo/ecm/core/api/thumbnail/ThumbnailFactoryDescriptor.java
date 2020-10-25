@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.core.api.thumbnail;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -33,9 +31,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @since 5.7
  */
 @XObject("thumbnailFactory")
-public class ThumbnailFactoryDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ThumbnailFactoryDescriptor {
 
     @XNode("@name")
     protected String name;

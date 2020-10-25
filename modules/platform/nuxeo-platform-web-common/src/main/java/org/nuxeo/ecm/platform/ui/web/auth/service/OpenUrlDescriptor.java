@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,9 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 
 @XObject("openUrl")
-public class OpenUrlDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class OpenUrlDescriptor {
 
     @XNode("@name")
     protected String name;

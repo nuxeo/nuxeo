@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.automation;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -32,9 +31,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
-public class OperationDocumentation implements Comparable<OperationDocumentation>, Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class OperationDocumentation implements Comparable<OperationDocumentation> {
 
     public String id;
 
@@ -116,8 +113,7 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
     }
 
     @XObject("param")
-    public static class Param implements Serializable, Comparable<Param> {
-        private static final long serialVersionUID = 1L;
+    public static class Param implements Comparable<Param> {
 
         @XNode("@name")
         public String name;

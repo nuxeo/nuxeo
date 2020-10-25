@@ -18,7 +18,6 @@
  */
 package org.nuxeo.runtime.model;
 
-import java.io.Serializable;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +38,7 @@ import org.nuxeo.runtime.model.impl.ComponentRegistry;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface RegistrationInfo extends Serializable {
+public interface RegistrationInfo {
 
     int UNREGISTERED = 0;
 

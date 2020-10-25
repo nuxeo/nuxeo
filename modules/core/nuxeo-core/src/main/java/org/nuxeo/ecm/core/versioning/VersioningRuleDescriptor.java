@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,9 +34,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @Deprecated
 @XObject("versioningRule")
-public class VersioningRuleDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class VersioningRuleDescriptor {
 
     @XNode("@enabled")
     protected Boolean enabled;

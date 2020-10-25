@@ -28,11 +28,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("userMetadataGroupComputer")
 public class UserMetadataGroupComputerDescriptor extends GroupComputerDescriptor {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
     @XNode("@xpath")
     public String xpath;
 

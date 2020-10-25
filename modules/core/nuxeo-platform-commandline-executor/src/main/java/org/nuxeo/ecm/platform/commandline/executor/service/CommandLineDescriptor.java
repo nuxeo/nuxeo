@@ -20,8 +20,6 @@
 
 package org.nuxeo.ecm.platform.commandline.executor.service;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.SystemUtils;
@@ -35,9 +33,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author tiry
  */
 @XObject("command")
-public class CommandLineDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class CommandLineDescriptor {
 
     @XNode("@name")
     protected String name;

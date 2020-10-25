@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.query.api;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -27,7 +26,7 @@ import java.util.List;
  *
  * @since 6.0
  */
-public interface PageProviderClassReplacerDefinition extends Serializable {
+public interface PageProviderClassReplacerDefinition {
 
     boolean isEnabled();
 

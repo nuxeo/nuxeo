@@ -21,7 +21,6 @@
  */
 package org.nuxeo.ecm.platform.picture.api;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,9 +33,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author btatar
  */
 @XObject(value = "configuration")
-public class ImagingConfigurationDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ImagingConfigurationDescriptor {
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> parameters = new HashMap<>();

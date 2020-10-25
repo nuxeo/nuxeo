@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
@@ -30,9 +28,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.10
  */
 @XObject("loginVideo")
-public class LoginVideo implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class LoginVideo {
 
     @XNode("@src")
     protected String src;

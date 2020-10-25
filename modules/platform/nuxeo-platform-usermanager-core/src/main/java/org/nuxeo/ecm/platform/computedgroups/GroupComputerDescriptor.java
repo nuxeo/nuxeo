@@ -20,8 +20,6 @@
 
 package org.nuxeo.ecm.platform.computedgroups;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -30,9 +28,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @author Thierry Delprat
  */
 @XObject("groupComputer")
-public class GroupComputerDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class GroupComputerDescriptor {
 
     @XNode("computer")
     protected Class<GroupComputer> computerClass;

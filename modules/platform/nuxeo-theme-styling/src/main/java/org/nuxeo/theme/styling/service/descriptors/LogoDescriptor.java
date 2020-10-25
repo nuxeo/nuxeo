@@ -18,8 +18,6 @@
  */
 package org.nuxeo.theme.styling.service.descriptors;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -27,9 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  */
 @XObject("logo")
-public class LogoDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class LogoDescriptor {
 
     @XNode("path")
     String path;

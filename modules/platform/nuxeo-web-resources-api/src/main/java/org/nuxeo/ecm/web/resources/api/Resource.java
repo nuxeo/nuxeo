@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.web.resources.api;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -27,7 +26,7 @@ import java.util.List;
  *
  * @since 7.3
  */
-public interface Resource extends Serializable {
+public interface Resource {
 
     /**
      * Marker for Nuxeo web resources, used by URI locators.

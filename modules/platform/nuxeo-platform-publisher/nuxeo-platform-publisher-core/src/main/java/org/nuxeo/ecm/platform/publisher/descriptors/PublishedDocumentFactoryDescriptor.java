@@ -23,17 +23,13 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 
-import java.io.Serializable;
-
 /**
  * Descriptor used to register PublishedDocument factories.
  *
  * @author tiry
  */
 @XObject("publishedDocumentFactory")
-public class PublishedDocumentFactoryDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class PublishedDocumentFactoryDescriptor {
 
     @XNode("@name")
     private String name;

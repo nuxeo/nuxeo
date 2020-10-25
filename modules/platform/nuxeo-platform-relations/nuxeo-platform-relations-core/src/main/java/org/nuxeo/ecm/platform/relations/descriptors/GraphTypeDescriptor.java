@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.platform.relations.descriptors;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -32,9 +30,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("graphtype")
-public class GraphTypeDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class GraphTypeDescriptor {
 
     @XNode("@name")
     String name;

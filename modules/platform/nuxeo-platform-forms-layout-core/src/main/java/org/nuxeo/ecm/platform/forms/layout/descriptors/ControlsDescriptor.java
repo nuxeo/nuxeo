@@ -29,9 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.7
  */
 @XObject("controls")
-public class ControlsDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ControlsDescriptor {
 
     @XNodeMap(value = "control", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> controls = new HashMap<>();

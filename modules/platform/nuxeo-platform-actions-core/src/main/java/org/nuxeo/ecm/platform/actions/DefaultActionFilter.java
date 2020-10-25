@@ -43,8 +43,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 @XObject("filter")
 public class DefaultActionFilter implements ActionFilter, Cloneable {
 
-    private static final long serialVersionUID = 8885038533939001747L;
-
     private static final Log log = LogFactory.getLog(DefaultActionFilter.class);
 
     @XNode("@id")

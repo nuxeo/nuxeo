@@ -20,7 +20,6 @@
  */
 package org.nuxeo.ecm.platform.scanimporter.service;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,9 +36,7 @@ import org.nuxeo.ecm.platform.scanimporter.processor.DocumentTypeMapper;
  * @author Thierry Delprat
  */
 @XObject("mapping")
-public class ScanFileMappingDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ScanFileMappingDescriptor {
 
     public static final String DEFAULT_CONTAINER_TYPE = "Folder";
 

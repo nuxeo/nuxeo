@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.platform.oauth.keys;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -29,9 +27,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author tiry
  */
 @XObject("serverKeyPair")
-public class ServerKeyDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ServerKeyDescriptor {
 
     @XNode("privateKey")
     protected String externalPrivateKey;

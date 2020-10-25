@@ -29,8 +29,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 @XObject("schedule")
 public class ScheduleImpl implements Schedule {
 
-    private static final long serialVersionUID = 1L;
-
     @XNode("@id")
     public String id;
 

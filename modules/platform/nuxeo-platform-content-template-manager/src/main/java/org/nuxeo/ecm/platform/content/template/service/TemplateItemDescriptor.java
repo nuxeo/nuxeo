@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.content.template.service;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,9 +30,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Template item descriptor. Immutable.
  */
 @XObject(value = "templateItem")
-public class TemplateItemDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 18765764747899L;
+public class TemplateItemDescriptor {
 
     @XNode("@typeName")
     private String typeName;
@@ -50,7 +47,6 @@ public class TemplateItemDescriptor implements Serializable {
     @XNode("@description")
     private String description;
 
-    // Declared as ArrayList to be serializable.
     @XNodeList(value = "acl/ace", type = ArrayList.class, componentType = ACEDescriptor.class)
     public List<ACEDescriptor> acl;
 

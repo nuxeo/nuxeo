@@ -21,16 +21,12 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionManager;
 
 @XObject("sessionManager")
-public class SessionManagerDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class SessionManagerDescriptor {
 
     @XNode("@name")
     private String name;

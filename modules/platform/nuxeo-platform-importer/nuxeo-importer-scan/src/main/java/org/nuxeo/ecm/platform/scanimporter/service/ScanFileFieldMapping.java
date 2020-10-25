@@ -20,8 +20,6 @@
  */
 package org.nuxeo.ecm.platform.scanimporter.service;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -32,9 +30,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Thierry Delprat
  */
 @XObject("fieldMapping")
-public class ScanFileFieldMapping implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ScanFileFieldMapping {
 
     public static final FastDateFormat DEFAULT_DATE_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.sss'Z'");
 

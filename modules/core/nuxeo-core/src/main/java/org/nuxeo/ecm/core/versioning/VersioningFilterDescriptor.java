@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,9 +32,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 9.1
  */
 @XObject("filter")
-public class VersioningFilterDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class VersioningFilterDescriptor {
 
     private static final Log log = LogFactory.getLog(VersioningFilterDescriptor.class);
 

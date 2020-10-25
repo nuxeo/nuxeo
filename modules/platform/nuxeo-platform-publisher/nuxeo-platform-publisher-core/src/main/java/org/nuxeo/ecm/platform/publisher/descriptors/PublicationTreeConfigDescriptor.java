@@ -23,7 +23,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,9 +32,7 @@ import java.util.Map;
  * @author tiry
  */
 @XObject("publicationTreeConfig")
-public class PublicationTreeConfigDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class PublicationTreeConfigDescriptor {
 
     @XNode("@name")
     private String name;

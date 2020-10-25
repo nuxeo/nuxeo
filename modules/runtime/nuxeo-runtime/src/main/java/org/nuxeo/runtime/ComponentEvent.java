@@ -19,8 +19,6 @@
  */
 package org.nuxeo.runtime;
 
-import java.io.Serializable;
-
 import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
@@ -78,7 +76,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ComponentEvent implements Serializable {
+public class ComponentEvent {
 
     // the event IDs
     public static final int COMPONENT_REGISTERED = 1;
@@ -113,8 +111,6 @@ public class ComponentEvent implements Serializable {
 
     public static final int COMPONENT_EVENT = 100;
 
-    private static final long serialVersionUID = 8936615866437064000L;
-
     /** The event id. */
     public final int id;
 
@@ -122,13 +118,13 @@ public class ComponentEvent implements Serializable {
     public final RegistrationInfo registrationInfo;
 
     /** Optional event data. */
-    public final Serializable data;
+    public final Object data;
 
     public ComponentEvent(int id, RegistrationInfo ri) {
         this(id, ri, null);
     }
 
-    public ComponentEvent(int id, RegistrationInfo ri, Serializable data) {
+    public ComponentEvent(int id, RegistrationInfo ri, Object data) {
         this.id = id;
         registrationInfo = ri;
         this.data = data;

@@ -43,8 +43,6 @@ public class ExtensionImpl implements Extension {
     // used to generate the extension id if none was provided
     private static int cnt = 0;
 
-    private static final long serialVersionUID = 8504100747683248986L;
-
     private static final ExtensionDescriptorReader reader = new ExtensionDescriptorReader();
 
     @XNode("@target")

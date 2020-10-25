@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.audit.service.extension;
 
-import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -32,9 +31,7 @@ import org.nuxeo.ecm.platform.audit.service.DefaultAuditBulker;
  */
 @Deprecated
 @XObject("bulk")
-public class AuditBulkerDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class AuditBulkerDescriptor {
 
     @XNode("@class")
     protected Class<? extends AuditBulker> klass = DefaultAuditBulker.class;

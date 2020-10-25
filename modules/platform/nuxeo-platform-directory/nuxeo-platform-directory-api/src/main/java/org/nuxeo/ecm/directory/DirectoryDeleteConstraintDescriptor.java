@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.directory;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,9 +35,7 @@ import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
  * @author Anahide Tchertchian
  */
 @XObject("deleteConstraint")
-public class DirectoryDeleteConstraintDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class DirectoryDeleteConstraintDescriptor {
 
     @XNode("@class")
     protected Class<? extends DirectoryDeleteConstraint> klass;

@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
-import java.io.Serializable;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -44,9 +43,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * @since 5.7.2
  */
 @XObject(value = "corsConfig")
-public class NuxeoCorsFilterDescriptor implements Serializable, Cloneable {
-
-    private static final long serialVersionUID = 1L;
+public class NuxeoCorsFilterDescriptor implements Cloneable {
 
     private static final String PROPERTIES_PREFIX = "cors.";
 

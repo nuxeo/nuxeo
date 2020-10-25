@@ -19,8 +19,6 @@
  */
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.Descriptor;
@@ -31,9 +29,7 @@ import org.nuxeo.runtime.model.Descriptor;
  */
 @Deprecated
 @XObject("versioning")
-public class VersioningDescriptor implements Descriptor, Serializable {
-
-    private static final long serialVersionUID = 8615121233156981874L;
+public class VersioningDescriptor implements Descriptor {
 
     @XNode("defaultVersioningOption")
     public String defaultVersioningOption;

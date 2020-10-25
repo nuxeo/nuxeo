@@ -58,8 +58,6 @@ import org.nuxeo.runtime.model.RuntimeContext;
 @XObject("component")
 public class RegistrationInfoImpl implements RegistrationInfo {
 
-    private static final long serialVersionUID = -4135715215018199522L;
-
     private static final Logger log = LogManager.getLogger(ComponentManager.class);
 
     // Note: some of these instance variables are accessed directly from other

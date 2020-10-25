@@ -19,17 +19,13 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 
 @XObject(value = "staticFilter")
-public class SQLStaticFilter implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class SQLStaticFilter {
 
     @XNode("column")
     protected String column;

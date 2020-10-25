@@ -30,7 +30,7 @@ import java.util.Map;
  *
  * @author Anahide Tchertchian
  */
-public interface VirtualUser extends Serializable {
+public interface VirtualUser {
 
     String getId();
 
