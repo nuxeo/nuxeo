@@ -1,42 +1,21 @@
 elasticsearch:
-  client:
-    podLabels:
+  labels:
+    branch: $BRANCH_NAME
+    resource: pod
+    team: platform
+    usage: utests
+  service:
+    labels:
       branch: $BRANCH_NAME
-      resource: pod
+      resource: service
       team: platform
       usage: utests
-    tolerations:
-      - key: team
-        operator: Equal
-        value: platform
-        effect: NoSchedule
-    nodeSelector:
-      team: platform
-  master:
-    podLabels:
-      branch: $BRANCH_NAME
-      resource: pod
-      team: platform
-      usage: utests
-    tolerations:
-      - key: team
-        operator: Equal
-        value: platform
-        effect: NoSchedule
-    nodeSelector:
-      team: platform
-  data:
-    podLabels:
-      branch: $BRANCH_NAME
-      resource: pod
-      team: platform
-      usage: utests
-    tolerations:
-      - key: team
-        operator: Equal
-        value: platform
-        effect: NoSchedule
-    nodeSelector:
-      team: platform
+  tolerations:
+    - key: team
+      operator: Equal
+      value: platform
+      effect: NoSchedule
+  nodeSelector:
+    team: platform
 tags:
   elasticsearch: true
