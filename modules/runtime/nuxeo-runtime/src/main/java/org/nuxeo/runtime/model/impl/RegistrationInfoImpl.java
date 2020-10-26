@@ -63,7 +63,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     // Note: some of these instance variables are accessed directly from other
     // classes in this package.
 
-    transient ComponentManagerImpl manager;
+    ComponentManagerImpl manager;
 
     @XNode("@service")
     ServiceDescriptor serviceDescriptor;
@@ -127,10 +127,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
      */
     boolean isPersistent;
 
-    transient RuntimeContext context;
+    RuntimeContext context;
 
     // the managed component
-    transient ComponentInstance component;
+    ComponentInstance component;
 
     public RegistrationInfoImpl() {
     }
