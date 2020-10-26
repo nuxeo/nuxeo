@@ -49,12 +49,12 @@ public class ExtensionPointImpl implements ExtensionPoint {
     public String documentation;
 
     @XNodeList(value = "object@class", type = Class[].class, componentType = Class.class)
-    public transient Class<?>[] contributions;
+    public Class<?>[] contributions;
 
-    public transient XMap xmap;
+    public XMap xmap;
 
     @XParent
-    public transient RegistrationInfo ri;
+    public RegistrationInfo ri;
 
     @Override
     public Class<?>[] getContributions() {

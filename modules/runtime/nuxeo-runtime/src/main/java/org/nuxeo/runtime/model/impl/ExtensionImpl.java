@@ -59,12 +59,12 @@ public class ExtensionImpl implements Extension {
     String documentation;
 
     @XNode("")
-    transient Element element;
+    Element element;
 
-    transient Object[] contributions;
+    Object[] contributions;
 
     // declaring component
-    transient ComponentInstance component;
+    ComponentInstance component;
 
     @Override
     public void dispose() {
