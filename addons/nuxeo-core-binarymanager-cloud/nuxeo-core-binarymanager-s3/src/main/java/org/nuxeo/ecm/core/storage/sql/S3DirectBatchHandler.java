@@ -66,10 +66,12 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.transfer.Copy;
 import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.model.CopyResult;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
@@ -260,11 +262,12 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         ObjectMetadata metadata = amazonS3.getObjectMetadata(bucket, fileKey);
 
         String key;
+        String eTag = metadata.getETag();
 
         if (!useDeDuplication()) {
             key = StringUtils.removeStart(fileKey, bucketPrefix);
         } else {
-            key = metadata.getETag();
+            key = eTag;
             if (isEmpty(key)) {
                 return false;
             }
@@ -285,35 +288,25 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
                 // TODO SSE-C
             }
 
-            Copy copy = getTransferManager().copy(copyObjectRequest);
-            try {
-                copy.waitForCompletion();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new NuxeoException(e);
-            } finally {
-                amazonS3.deleteObject(bucket, fileKey);
-            }
-
-            metadata = amazonS3.getObjectMetadata(bucket, bucketKey);
+            eTag = doMove(copyObjectRequest);
 
             // if we did a multipart upload but can do a non multipart copy we can get back the digest as key
             boolean isMultipartUpload = key.matches(".+-\\d+$");
             boolean canDoNonMultipartCopy = metadata.getContentLength() < getTransferManager().getConfiguration()
                     .getMultipartCopyThreshold();
             if (isMultipartUpload && canDoNonMultipartCopy) {
-                key = metadata.getETag();
+                key = eTag;
                 String previousBucketKey = bucketKey;
                 bucketKey = bucketPrefix + key;
-                CopyObjectRequest renameRequest = new CopyObjectRequest(bucket, previousBucketKey, bucket, bucketKey);
-                Copy rename = getTransferManager().copy(renameRequest);
-                try {
-                    rename.waitForCompletion();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new NuxeoException(e);
-                } finally {
-                    amazonS3.deleteObject(bucket, previousBucketKey);
+                if (amazonS3.doesObjectExist(bucket, bucketKey)) {
+                    // another thread has uploaded the same blob and has done the move
+                    // clean up remaining S3 object if needed
+                    deleteObjectAfterMove(previousBucketKey);
+                } else {
+                    // move S3 object to eTag as key
+                    CopyObjectRequest renameRequest = new CopyObjectRequest(bucket, previousBucketKey, bucket, 
+		            bucketKey);
+                    eTag = doMove(renameRequest);
                 }
             }
         }
@@ -324,7 +317,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         blobInfo.filename = fileInfo.getFilename();
         blobInfo.length = metadata.getContentLength();
         blobInfo.key = key;
-        blobInfo.digest = defaultString(metadata.getContentMD5(), metadata.getETag());
+        blobInfo.digest = defaultString(metadata.getContentMD5(), eTag);
 
         Blob blob;
 
@@ -338,11 +331,39 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         try {
             batch.addFile(fileIndex, blob, blob.getFilename(), blob.getMimeType());
         } catch (NuxeoException e) {
-            amazonS3.deleteObject(bucket, fileKey);
+            try {
+                amazonS3.deleteObject(bucket, fileKey);
+            } catch (AmazonS3Exception s3E) {
+                e.addSuppressed(s3E);
+            }
             throw e;
         }
 
         return true;
+    }
+
+    /**
+     * @return the ETag of copied object
+     */
+    protected String doMove(CopyObjectRequest request) {
+        Copy rename = getTransferManager().copy(request);
+        try {
+            CopyResult copyResult = rename.waitForCopyResult();
+            return copyResult.getETag();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
+        } finally {
+            deleteObjectAfterMove(request.getSourceKey());
+        }
+    }
+
+    protected void deleteObjectAfterMove(String key) {
+        try {
+            amazonS3.deleteObject(bucket, key);
+        } catch (AmazonS3Exception e) {
+            log.debug("Unable to cleanup object, move has already been done", e);
+        }
     }
 
     protected BlobProvider getBlobProvider() {
