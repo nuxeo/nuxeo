@@ -1,6 +1,6 @@
-# Nuxeo platform 10.10-HF34-SNAPSHOT
+# Nuxeo platform 10.10-HF34
 
-Welcome to the Nuxeo Platform 10.10-HF34-SNAPSHOT.
+Welcome to the Nuxeo Platform 10.10-HF34.
 
 You can always download the latest releases of Nuxeo packages (distributions, 
 installers, virtual machine images, ...) from [https://www.nuxeo.com/downloads/][1].
