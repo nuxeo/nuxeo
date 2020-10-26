@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.core.query;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
@@ -31,18 +33,19 @@ public class QueryParseException extends NuxeoException {
     private static final long serialVersionUID = 1L;
 
     public QueryParseException() {
+        super(SC_BAD_REQUEST);
     }
 
     public QueryParseException(String message) {
-        super(message);
+        super(message, SC_BAD_REQUEST);
     }
 
     public QueryParseException(String message, Throwable cause) {
-        super(message, cause);
+        super(message, cause, SC_BAD_REQUEST);
     }
 
     public QueryParseException(Throwable cause) {
-        super(cause);
+        super(cause, SC_BAD_REQUEST);
     }
 
 }

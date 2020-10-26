@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+
 import static org.nuxeo.ecm.core.api.ScrollResultImpl.emptyResult;
 
 import java.io.Serializable;
@@ -428,7 +430,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         try {
             return new ResultSetQueryResult(queryMaker, query, queryFilter, pathResolver, this, params);
         } catch (SQLException e) {
-            throw new NuxeoException("Invalid query: " + queryType + ": " + query, e);
+            throw new NuxeoException("Invalid query: " + queryType + ": " + query, e, SC_BAD_REQUEST);
         }
     }
 
@@ -557,7 +559,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 return new PartialList<>(projections, totalSize);
             }
         } catch (SQLException e) {
-            throw new NuxeoException("Invalid query: " + query, e);
+            throw new NuxeoException("Invalid query: " + query, e, SC_BAD_REQUEST);
         }
     }
 
