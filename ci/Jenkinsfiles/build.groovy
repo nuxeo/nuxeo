@@ -172,9 +172,7 @@ def rolloutStatusPostgreSQL(namespace) {
 }
 
 def rolloutStatusElasticsearch(namespace) {
-  rolloutStatus('statefulset', "${TEST_ELASTICSEARCH_DATA_K8S_OBJECT}", "${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}", namespace)
-  rolloutStatus('statefulset', "${TEST_ELASTICSEARCH_MASTER_K8S_OBJECT}", "${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}", namespace)
-  rolloutStatus('deployment', "${TEST_ELASTICSEARCH_CLIENT_K8S_OBJECT}", "${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}", namespace)
+  rolloutStatus('statefulset', "${TEST_ELASTICSEARCH_K8S_OBJECT}", "${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}", namespace)
 }
 
 def rolloutStatusKafka(namespace) {
@@ -202,6 +200,7 @@ def buildUnitTestStage(env) {
               // initialize Helm without Tiller and add local repository
               sh """
                 helm init --client-only
+                helm repo add elastic https://helm.elastic.co/
                 helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
               """
               // prepare values to disable nuxeo and activate external services in the nuxeo Helm chart
@@ -324,9 +323,7 @@ pipeline {
     TEST_REDIS_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-redis-master"
     TEST_MONGODB_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-mongodb"
     TEST_POSTGRESQL_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-postgresql"
-    TEST_ELASTICSEARCH_DATA_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-elasticsearch-data"
-    TEST_ELASTICSEARCH_MASTER_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-elasticsearch-master"
-    TEST_ELASTICSEARCH_CLIENT_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-elasticsearch-client"
+    TEST_ELASTICSEARCH_K8S_OBJECT = "elasticsearch-master"
     TEST_KAFKA_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-kafka"
     TEST_KAFKA_PORT = '9092'
     TEST_KAFKA_POD_NAME = "${TEST_KAFKA_K8S_OBJECT}-0"
