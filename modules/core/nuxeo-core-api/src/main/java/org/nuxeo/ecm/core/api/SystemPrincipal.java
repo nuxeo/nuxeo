@@ -219,4 +219,14 @@ public class SystemPrincipal implements NuxeoPrincipal {
     public boolean isTransient() {
         return false;
     }
+
+    @Override
+    public void setIsComplete(boolean complete) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isComplete() {
+        return true;
+    }
 }

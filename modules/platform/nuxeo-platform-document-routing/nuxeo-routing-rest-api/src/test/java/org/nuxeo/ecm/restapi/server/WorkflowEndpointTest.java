@@ -1240,11 +1240,18 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             JsonNode initiatorNode = taskNode.get("workflowInitiator");
             assertEquals("user", initiatorNode.get("entity-type").textValue());
             assertEquals("Administrator", initiatorNode.get("id").textValue());
-            assertTrue(initiatorNode.get("isAdministrator").booleanValue());
             JsonNode properties = initiatorNode.get("properties");
             ArrayNode groups = (ArrayNode) properties.get("groups");
-            assertEquals(1, groups.size());
-            assertEquals("administrators", groups.get(0).textValue());
+
+            if(initiatorNode.get("isComplete").booleanValue()==true) {
+                assertTrue(initiatorNode.get("isAdministrator").booleanValue());
+                assertEquals(1, groups.size());
+                assertEquals("administrators", groups.get(0).textValue());
+            }
+            else {
+                assertFalse(initiatorNode.get("isAdministrator").booleanValue());
+                assertTrue(groups.isEmpty());
+            }
         }
     }
 

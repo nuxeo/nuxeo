@@ -1300,7 +1300,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
         DocumentModel userModel = getUserModel(username, context, fetchReferences);
         if (userModel != null) {
-            return makePrincipal(userModel);
+            NuxeoPrincipal principal = makePrincipal(userModel);
+            if(principal!=null) {
+                principal.setIsComplete(fetchReferences);
+            }
+            return principal;
         }
         return null;
     }

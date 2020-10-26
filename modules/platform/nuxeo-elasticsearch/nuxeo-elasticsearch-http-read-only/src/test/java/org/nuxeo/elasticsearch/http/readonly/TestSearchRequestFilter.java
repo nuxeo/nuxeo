@@ -261,6 +261,16 @@ public class TestSearchRequestFilter {
             public String getName() {
                 return "admin";
             }
+
+            @Override
+            public void setIsComplete(boolean complete) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean isComplete() {
+                throw new UnsupportedOperationException();
+            }
         };
     }
 
@@ -411,6 +421,16 @@ public class TestSearchRequestFilter {
             @Override
             public String getName() {
                 return "jdoe";
+            }
+
+            @Override
+            public void setIsComplete(boolean complete) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean isComplete() {
+                throw new UnsupportedOperationException();
             }
         };
     }
