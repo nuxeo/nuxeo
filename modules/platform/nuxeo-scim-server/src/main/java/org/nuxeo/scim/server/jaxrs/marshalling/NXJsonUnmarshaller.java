@@ -68,11 +68,10 @@ public class NXJsonUnmarshaller extends JsonUnmarshaller {
             return null;
         }
 
-        @SuppressWarnings("unchecked")
-        Iterator<Object> keys = jsonObject.keys();
+        Iterator<String> keys = jsonObject.keys();
         Map<String, Object> lowerCaseMap = new HashMap<>(jsonObject.length());
         while (keys.hasNext()) {
-            String key = keys.next().toString();
+            String key = keys.next();
             String lowerCaseKey = toLowerCase(key);
             lowerCaseMap.put(lowerCaseKey, jsonObject.get(key));
         }
