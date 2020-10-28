@@ -212,7 +212,7 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
             launcher.printInstanceXMLOutput(info, os);
             String json = os.toString();
 
-            json = removeSystemPropertiesFromAllkeyvals(json);
+            json = cleanupShowconf(json);
 
             Map<String, String> toReplace = new HashMap<>();
             toReplace.put("NUXEO_HOME", nuxeoHome.getAbsolutePath());
@@ -221,16 +221,18 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         }
     }
 
-    protected String removeSystemPropertiesFromAllkeyvals(String json) throws JSONException {
-        // remove System properties from allkeyvals
+    protected String cleanupShowconf(String json) throws JSONException {
         JSONObject jsonObject = new JSONObject(json);
+        // remove clid - it could be present, see testClidOption
+        jsonObject.remove("clid");
+        // remove System properties from allkeyvals as they are system dependent
         JSONObject allkeyvals = jsonObject.getJSONObject("configuration").getJSONObject("allkeyvals");
         Iterator<Object> it = allkeyvals.getJSONArray("allkeyval").iterator();
         while (it.hasNext()) {
             JSONObject obj = (JSONObject) it.next();
             String key = obj.getString("key");
-            if ((!key.startsWith("nuxeo") || key.startsWith("nuxeo.test"))
-                    && System.getProperties().containsKey(key)) {
+            if ((!key.startsWith("nuxeo") || key.startsWith("nuxeo.test")
+                    || "nuxeo.skip.enforcer".equalsIgnoreCase(key)) && System.getProperties().containsKey(key)) {
                 it.remove();
             }
         }
@@ -247,6 +249,12 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         File file = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext(expectedJSONFile);
         String expected = FileUtils.readFileToString(file, UTF_8);
         expected = StringUtils.expandVars(expected, toReplace);
-        JSONAssert.assertEquals(expected, actualJSON, true);
+        try {
+            JSONAssert.assertEquals(expected, actualJSON, true);
+        } catch (AssertionError e) {
+            log.error("Expected: {}", expected);
+            log.error("Actual: {}", actualJSON);
+            throw e;
+        }
     }
 }
