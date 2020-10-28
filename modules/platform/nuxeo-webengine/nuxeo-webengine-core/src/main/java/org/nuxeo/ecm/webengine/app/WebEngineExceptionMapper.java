@@ -38,6 +38,7 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.ModuleResource;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -79,6 +80,8 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
         int statusCode = getStatusCode(cause);
         if (statusCode >= SC_INTERNAL_SERVER_ERROR) {
             log.error(cause, cause);
+        } else if (Framework.isDevModeSet()) {
+            log.warn(cause, cause);
         } else {
             log.debug(cause, cause);
         }

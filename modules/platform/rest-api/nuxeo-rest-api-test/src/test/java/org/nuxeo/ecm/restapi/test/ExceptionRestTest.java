@@ -40,11 +40,14 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.LogFeature;
+import org.nuxeo.runtime.test.runner.LoggerLevel;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 @RunWith(FeaturesRunner.class)
-@Features({ LogCaptureFeature.class, RestServerFeature.class })
+@Features({ LogFeature.class, LogCaptureFeature.class, RestServerFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test")
 public class ExceptionRestTest extends BaseTest {
@@ -108,7 +111,7 @@ public class ExceptionRestTest extends BaseTest {
 
     @Test
     @LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerClass = WebEngineExceptionMapper.class)
-    public void testEndpointWithException() throws IOException {
+    public void testEndpointWithInternalErrorException() throws IOException {
         try (CloseableClientResponse r = getResponse(RequestType.GET, "/foo/exception")) {
             assertEquals(500, r.getStatus());
             JsonNode node = mapper.readTree(r.getEntityInputStream());
@@ -118,6 +121,33 @@ public class ExceptionRestTest extends BaseTest {
             List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
             assertEquals(1, caughtEvents.size());
             assertEquals("org.nuxeo.ecm.core.api.NuxeoException: foo", caughtEvents.get(0));
+        }
+    }
+
+    @Test
+    @LoggerLevel(klass = WebEngineExceptionMapper.class, level = "DEBUG")
+    @LogCaptureFeature.FilterOn(loggerClass = WebEngineExceptionMapper.class, logLevel = "DEBUG")
+    public void testEndpointWithBadRequestExceptionNoDevMode() throws IOException {
+        testEndpointWithBadRequestException();
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(loggerClass = WebEngineExceptionMapper.class, logLevel = "WARN")
+    @WithFrameworkProperty(name = "org.nuxeo.dev", value = "true")
+    public void testEndpointWithBadRequestExceptionInDevMode() throws IOException {
+        testEndpointWithBadRequestException();
+    }
+
+    protected void testEndpointWithBadRequestException() throws IOException {
+        try (CloseableClientResponse r = getResponse(RequestType.GET, "/foo/bad-request")) {
+            assertEquals(400, r.getStatus());
+            JsonNode node = mapper.readTree(r.getEntityInputStream());
+            assertEquals(400, node.get("status").numberValue());
+            assertEquals("bad request", node.get("message").textValue());
+
+            List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
+            assertEquals(1, caughtEvents.size());
+            assertEquals("org.nuxeo.ecm.core.api.NuxeoException: bad request", caughtEvents.get(0));
         }
     }
 }
