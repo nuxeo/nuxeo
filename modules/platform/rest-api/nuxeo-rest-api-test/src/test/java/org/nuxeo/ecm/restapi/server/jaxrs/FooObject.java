@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,6 +67,12 @@ public class FooObject extends DefaultObject {
     @Path("exception")
     public Object doException() {
         throw new NuxeoException("foo");
+    }
+
+    @GET
+    @Path("bad-request")
+    public Object doBadRequestException() {
+        throw new NuxeoException("bad request", SC_BAD_REQUEST);
     }
 
     /**
