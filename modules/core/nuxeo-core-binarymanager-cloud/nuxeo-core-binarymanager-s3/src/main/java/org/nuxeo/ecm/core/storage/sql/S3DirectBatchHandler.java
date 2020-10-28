@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.amazonaws.services.s3.model.SSEAwsKeyManagementParams;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,6 +65,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.SSEAwsKeyManagementParams;
 import com.amazonaws.services.s3.transfer.Copy;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
@@ -294,7 +294,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
             // if we did a multipart upload but can do a non multipart copy we can get back the digest as key
             boolean isMultipartUpload = key.matches(".+-\\d+$");
             boolean canDoNonMultipartCopy = metadata.getContentLength() < getTransferManager().getConfiguration()
-                    .getMultipartCopyThreshold();
+                                                                                              .getMultipartCopyThreshold();
             if (isMultipartUpload && canDoNonMultipartCopy) {
                 key = metadata.getETag();
                 String previousBucketKey = bucketKey;
@@ -375,7 +375,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         Objects.requireNonNull(batchId, "required batch ID");
 
         Credentials credentials = getAwsCredentials(batchId);
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         result.put(INFO_AWS_SECRET_KEY_ID, credentials.getAccessKeyId());
         result.put(INFO_AWS_SECRET_ACCESS_KEY, credentials.getSecretAccessKey());
         result.put(INFO_AWS_SESSION_TOKEN, credentials.getSessionToken());
