@@ -36,8 +36,8 @@ import org.nuxeo.runtime.test.runner.Features;
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
-public class NuxeoPrincipalJsonWriterTest extends
-        AbstractJsonWriterTest.External<NuxeoPrincipalJsonWriter, NuxeoPrincipal> {
+public class NuxeoPrincipalJsonWriterTest
+        extends AbstractJsonWriterTest.External<NuxeoPrincipalJsonWriter, NuxeoPrincipal> {
 
     public NuxeoPrincipalJsonWriterTest() {
         super(NuxeoPrincipalJsonWriter.class, NuxeoPrincipal.class);
@@ -86,6 +86,32 @@ public class NuxeoPrincipalJsonWriterTest extends
         exGroup.has("name").isEquals("administrators");
         exGroup.has("label").isEquals("Administrators group");
         exGroup.has("url").isEquals("group/administrators");
+    }
+
+    @Test
+    public void testPartialUser() throws Exception {
+        // Get principal without fetching references
+        NuxeoPrincipal partialPrincipal = userManager.getPrincipal("Administrator", false);
+        JsonAssert json = jsonAssert(partialPrincipal);
+        json.properties(7);
+
+        // Check the 'isPartial' flag is added
+        json.has("isPartial").isTrue();
+        json.has("entity-type").isEquals("user");
+        json.has("id").isEquals("Administrator");
+
+        // Check the 'isAdministrator' is false
+        json.has("isAdministrator").isFalse();
+        json.has("isAnonymous").isFalse();
+        JsonAssert model = json.has("properties").properties(7);
+        model.has("lastName").isEmptyStringOrNull();
+        model.has("username").isEquals("Administrator");
+        model.has("email").isEquals("devnull@nuxeo.com");
+        model.has("company").isEmptyStringOrNull();
+        model.has("firstName").isEmptyStringOrNull();
+
+        // Check the groups are empty
+        model.has("groups").length(0);
     }
 
 }
