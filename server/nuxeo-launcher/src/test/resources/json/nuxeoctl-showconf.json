@@ -30,6 +30,14 @@
           "value": "default"
         },
         {
+          "key": "org.nuxeo.distribution.name",
+          "value": "server"
+        },
+        {
+          "key": "org.nuxeo.distribution.version",
+          "value": "10.10"
+        },
+        {
           "key": "server.status.key",
           "value": "********"
         }
@@ -88,6 +96,14 @@
         {
           "value": "http://localhost:8080/nuxeo",
           "key": "nuxeo.url"
+        },
+        {
+          "key": "org.nuxeo.distribution.name",
+          "value": "server"
+        },
+        {
+          "key": "org.nuxeo.distribution.version",
+          "value": "10.10"
         },
         {
           "value": "/nuxeo",
