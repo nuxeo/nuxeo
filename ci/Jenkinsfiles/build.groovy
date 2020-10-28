@@ -437,6 +437,7 @@ pipeline {
           ----------------------------------------"""
           echo "MAVEN_OPTS=$MAVEN_OPTS"
           sh "mvn ${MAVEN_ARGS} -V -T4C -DskipTests install"
+          sh "mvn ${MAVEN_ARGS} -f server/pom.xml -DskipTests install"
         }
       }
       post {
@@ -548,6 +549,30 @@ pipeline {
       }
     }
 
+    stage('Run server unit tests') {
+      steps {
+        setGitHubBuildStatus('utests/server', 'Unit tests - server', 'PENDING')
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Run server unit tests
+          ----------------------------------------"""
+          // run server tests
+          dir('server') {
+            sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} test"
+          }
+        }
+      }
+      post {
+        success {
+          setGitHubBuildStatus('utests/server', 'Unit tests - server', 'SUCCESS')
+        }
+        unsuccessful {
+          setGitHubBuildStatus('utests/server', 'Unit tests - server', 'FAILURE')
+        }
+      }
+    }
+
     stage('Build Nuxeo Packages') {
       steps {
         setGitHubBuildStatus('packages/build', 'Build Nuxeo packages', 'PENDING')
@@ -556,7 +581,6 @@ pipeline {
           ----------------------------------------
           Package
           ----------------------------------------"""
-          sh "mvn ${MAVEN_ARGS} -Dnuxeo.skip.enforcer=false -f server/pom.xml -DskipTests install"
           sh "mvn ${MAVEN_ARGS} -Dnuxeo.skip.enforcer=false -f packages/pom.xml -DskipTests install"
         }
       }
