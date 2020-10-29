@@ -103,7 +103,9 @@ public class SortBlob extends AbstractTransientBlobComputation {
     protected Blob sort(Blob blob, String commandId) {
         try {
             Path temp = createTemp("tmp" + commandId);
-            ExternalSort.sort(blob.getFile(), temp.toFile());
+            try (var cFile = blob.getCloseableFile()) {
+                ExternalSort.sort(cFile.getFile(), temp.toFile());
+            }
             return new FileBlob(temp.toFile());
         } catch (IOException e) {
             log.error("Unable to sort blob", e);
