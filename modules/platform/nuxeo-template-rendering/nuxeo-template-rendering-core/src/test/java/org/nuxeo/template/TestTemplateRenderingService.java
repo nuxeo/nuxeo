@@ -28,8 +28,12 @@ import static org.nuxeo.template.api.InputType.StringValue;
 import static org.nuxeo.template.api.TemplateInput.factory;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -49,6 +53,7 @@ import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
+import org.nuxeo.template.context.extensions.ContextFunctions;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -273,5 +278,27 @@ public class TestTemplateRenderingService {
         session.save();
 
         return templateSource.getAdapter(TemplateSourceDocument.class);
+    }
+
+    @Test
+    public void testFormatDate() {
+        String defaultFormat = "MM/dd/yyyy";
+        String format1 = "yyyy MMM dd HH:mm:ss";
+        String format2 = "EEEE dd MMMMM yyyy";
+        Locale locale = Locale.getDefault();
+
+        GregorianCalendar calendar = new GregorianCalendar(2013, 11, 31);
+        Date dt = calendar.getTime();
+
+        SimpleDateFormat defaultSdf = new SimpleDateFormat(defaultFormat, locale);
+        SimpleDateFormat sdf1 = new SimpleDateFormat(format1, locale);
+        SimpleDateFormat sdf2 = new SimpleDateFormat(format2, locale);
+
+        ContextFunctions cf = new ContextFunctions(null, null);
+
+        assertEquals(defaultSdf.format(dt), cf.formatDate(calendar));
+        assertEquals(sdf1.format(dt), cf.formatDate(calendar, format1));
+        assertEquals(sdf2.format(dt), cf.formatDate(calendar, format2));
+
     }
 }
