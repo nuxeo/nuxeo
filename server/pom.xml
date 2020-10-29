@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>11.4-SNAPSHOT</version>
+    <version>11.4.14</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
