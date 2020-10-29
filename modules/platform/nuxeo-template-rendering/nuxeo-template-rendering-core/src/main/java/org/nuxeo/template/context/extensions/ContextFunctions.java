@@ -161,7 +161,7 @@ public class ContextFunctions {
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 
-        return dateFormat.format(calendar);
+        return dateFormat.format(dt);
     }
 
     public NuxeoPrincipal getNuxeoPrincipal(String username) {
