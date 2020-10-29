@@ -19,6 +19,8 @@
  */
 package org.nuxeo.runtime;
 
+import java.io.Serializable;
+
 import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
@@ -118,13 +120,13 @@ public class ComponentEvent {
     public final RegistrationInfo registrationInfo;
 
     /** Optional event data. */
-    public final Object data;
+    public final Serializable data;
 
     public ComponentEvent(int id, RegistrationInfo ri) {
         this(id, ri, null);
     }
 
-    public ComponentEvent(int id, RegistrationInfo ri, Object data) {
+    public ComponentEvent(int id, RegistrationInfo ri, Serializable data) {
         this.id = id;
         registrationInfo = ri;
         this.data = data;

@@ -41,6 +41,8 @@ import org.w3c.dom.Element;
 @XObject("extension")
 public class ExtensionImpl implements Extension {
 
+    private static final long serialVersionUID = 1L;
+
     // used to generate the extension id if none was provided
     private static AtomicInteger cnt = new AtomicInteger();
 
