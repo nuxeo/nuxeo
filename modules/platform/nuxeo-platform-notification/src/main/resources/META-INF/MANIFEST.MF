@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXNotification Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.notification
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/NotificationService.xml,
+ OSGI-INF/notification-contrib.xml,
+ OSGI-INF/rendering-service.xml,
+ OSGI-INF/notification-listener-contrib.xml,
+ OSGI-INF/notification-operations-contrib.xml,
+ OSGI-INF/adapter-contrib.xml,
+ OSGI-INF/json-enrichers-contrib.xml,
+ OSGI-INF/core-contrib.xml
+Export-Package: org.nuxeo.ecm.platform.ec.notification,
+ org.nuxeo.ecm.platform.ec.notification.ejb,
+ org.nuxeo.ecm.platform.ec.notification.interfaces,
+ org.nuxeo.ecm.platform.ec.notification.service
+Require-Bundle: org.nuxeo.ecm.platform.placeful.core,
+ org.nuxeo.ecm.platform.usermanager,
+ org.nuxeo.ecm.platform.notification.api,
+ org.nuxeo.ecm.platform.url.api,
+ org.nuxeo.ecm.core.event

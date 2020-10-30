@@ -105,7 +105,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Deploy("org.nuxeo.ecm.platform.url")
 @Deploy("org.nuxeo.ecm.platform.types")
-@Deploy("org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml")
+@Deploy("org.nuxeo.ecm.platform.notification:OSGI-INF/NotificationService.xml")
 @Deploy("org.nuxeo.ecm.automation.test")
 @Deploy("org.nuxeo.ecm.automation.test:test-bindings.xml")
 @Deploy("org.nuxeo.ecm.automation.test:test-mvalues.xml")
