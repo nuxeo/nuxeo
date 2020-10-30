@@ -251,11 +251,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-usermanager-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-usermanager-core</artifactId>
+      <artifactId>nuxeo-platform-usermanager</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>

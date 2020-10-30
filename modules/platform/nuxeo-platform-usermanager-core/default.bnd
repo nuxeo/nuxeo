@@ -1,4 +1,0 @@
--nouses: true
-Require-Bundle:	org.nuxeo.ecm.platform.usermanager.api;visibility:=reexport
-Export-Package: org.nuxeo.ecm.platform.usermanager;core=split,*
-Import-Package: javax.transaction.*;version=1.1,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.directory;api=split,org.nuxeo.ecm.core.api.security,*

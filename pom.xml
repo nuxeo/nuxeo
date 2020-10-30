@@ -885,12 +885,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-usermanager-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-usermanager-core</artifactId>
+        <artifactId>nuxeo-platform-usermanager</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>

@@ -52,7 +52,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.features")
-@Deploy("org.nuxeo.ecm.platform.usermanager.api")
 @Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.automation.features:test-user-directories-contrib.xml")
 public class TestCreateOrUpdateUser {

@@ -53,7 +53,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy("org.nuxeo.ecm.platform.usermanager.api")
 @Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.actions")
 @Deploy("org.nuxeo.ecm.automation.core")

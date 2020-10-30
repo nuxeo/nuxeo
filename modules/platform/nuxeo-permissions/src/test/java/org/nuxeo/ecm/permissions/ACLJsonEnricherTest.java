@@ -55,7 +55,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(DirectoryFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.platform.usermanager.api")
 @Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml")
 @Deploy("org.nuxeo.ecm.permissions")
