@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo Quota Core
-Bundle-SymbolicName: org.nuxeo.ecm.quota.core.test;singleton:=true
-Bundle-Vendor: Nuxeo
-Bundle-Version: 1.0.0
-Nuxeo-component: OSGI-INF/quotastats-test-contrib.xml

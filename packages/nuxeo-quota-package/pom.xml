@@ -13,8 +13,7 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-quota-core-dependencies</artifactId>
-      <type>pom</type>
+      <artifactId>nuxeo-quota</artifactId>
     </dependency>
   </dependencies>
 </project>

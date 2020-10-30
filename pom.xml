@@ -1545,18 +1545,7 @@
       <!-- Quota -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-quota-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-quota-core-dependencies</artifactId>
-        <type>pom</type>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-quota-automation</artifactId>
+        <artifactId>nuxeo-quota</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
 
