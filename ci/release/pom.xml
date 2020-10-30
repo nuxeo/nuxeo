@@ -125,11 +125,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.packages</groupId>
-      <artifactId>nuxeo-retention-package</artifactId>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.packages</groupId>
       <artifactId>nuxeo-saml2-login-package</artifactId>
       <type>zip</type>
     </dependency>

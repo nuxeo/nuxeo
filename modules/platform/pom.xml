@@ -97,7 +97,6 @@
     <module>nuxeo-platform-webapp-types</module>
     <module>nuxeo-preview-core</module>
     <module>nuxeo-quota</module>
-    <module>nuxeo-retention-core</module>
     <module>nuxeo-scim-server</module>
     <module>nuxeo-search</module>
     <module>nuxeo-signature</module>
