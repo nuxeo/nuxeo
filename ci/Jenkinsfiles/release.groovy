@@ -46,15 +46,15 @@ void dockerPush(String image) {
   sh "docker push ${image}"
 }
 
-void promoteDockerImage(String imageName, String buildVersion, String releaseVersion, String latestVersion) {
-  String buildImage = "${PUBLIC_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${imageName}:${buildVersion}"
+void promoteDockerImage(String dockerRegistry, String imageName, String buildVersion, String releaseVersion, String latestVersion) {
+  String buildImage = "${dockerRegistry}/${DOCKER_NAMESPACE}/${imageName}:${buildVersion}"
   dockerPull(buildImage)
 
-  String releaseImage = "${PUBLIC_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${imageName}:${releaseVersion}"
+  String releaseImage = "${dockerRegistry}/${DOCKER_NAMESPACE}/${imageName}:${releaseVersion}"
   dockerTag(buildImage, releaseImage)
   dockerPush(releaseImage)
 
-  String latestImage = "${PUBLIC_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${imageName}:${latestVersion}"
+  String latestImage = "${dockerRegistry}/${DOCKER_NAMESPACE}/${imageName}:${latestVersion}"
   dockerTag(buildImage, latestImage)
   dockerPush(latestImage)
 }
@@ -228,7 +228,10 @@ pipeline {
           Tag Docker image with version ${RELEASE_VERSION} and ${LATEST_VERSION}
           -----------------------------------------------
           """
-          promoteDockerImage("${NUXEO_IMAGE_NAME}", "${params.BUILD_VERSION}", "${RELEASE_VERSION}", "${LATEST_VERSION}")
+          promoteDockerImage("${PUBLIC_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}", "${params.BUILD_VERSION}",
+            "${RELEASE_VERSION}", "${LATEST_VERSION}")
+          promoteDockerImage("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}", "${params.BUILD_VERSION}",
+            "${RELEASE_VERSION}", "${LATEST_VERSION}")
         }
       }
     }

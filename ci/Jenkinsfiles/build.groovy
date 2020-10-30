@@ -122,12 +122,12 @@ void dockerPush(String image) {
   sh "docker push ${image}"
 }
 
-void dockerDeploy(String imageName) {
+void dockerDeploy(String dockerRegistry, String imageName) {
   String fullImageName = "${dockerNamespace}/${imageName}"
   String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
   String latestInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
-  String fixedVersionPublicImage = "${PUBLIC_DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
-  String latestPublicImage = "${PUBLIC_DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
+  String fixedVersionPublicImage = "${dockerRegistry}/${fullImageName}:${VERSION}"
+  String latestPublicImage = "${dockerRegistry}/${fullImageName}:${DOCKER_TAG}"
 
   dockerPull(fixedVersionInternalImage)
   echo "Push ${latestInternalImage}"
@@ -801,7 +801,9 @@ pipeline {
           Image tag: ${VERSION}
           """
           echo "Push Docker image to Docker registry ${PUBLIC_DOCKER_REGISTRY}"
-          dockerDeploy("${NUXEO_IMAGE_NAME}")
+          dockerDeploy("${PUBLIC_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
+          echo "Push Docker image to Docker registry ${PRIVATE_DOCKER_REGISTRY}"
+          dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
         }
       }
       post {
