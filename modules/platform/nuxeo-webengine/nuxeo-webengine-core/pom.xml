@@ -99,7 +99,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-usermanager-api</artifactId>
+      <artifactId>nuxeo-platform-usermanager</artifactId>
     </dependency>
 
     <!-- test scope -->

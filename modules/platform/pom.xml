@@ -80,8 +80,7 @@
     <module>nuxeo-platform-types</module>
     <module>nuxeo-platform-uidgen-core</module>
     <module>nuxeo-platform-url</module>
-    <module>nuxeo-platform-usermanager-api</module>
-    <module>nuxeo-platform-usermanager-core</module>
+    <module>nuxeo-platform-usermanager</module>
     <module>nuxeo-platform-userpreferences</module>
     <module>nuxeo-platform-userworkspace</module>
     <module>nuxeo-platform-versioning-api</module>

@@ -44,7 +44,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.usermanager")
-@Deploy("org.nuxeo.ecm.platform.usermanager.api")
 public class CUserServiceTest {
 
     private static final String USER_KEYSTORE_PASSWORD = "abc";

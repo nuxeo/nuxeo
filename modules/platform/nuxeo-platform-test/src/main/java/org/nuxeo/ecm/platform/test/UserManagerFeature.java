@@ -31,7 +31,6 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  */
 @Features(DirectoryFeature.class)
 @Deploy("org.nuxeo.ecm.platform.query.api") // required for userManager/directory page providers
-@Deploy("org.nuxeo.ecm.platform.usermanager.api")
 @Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml")
 public class UserManagerFeature implements RunnerFeature {

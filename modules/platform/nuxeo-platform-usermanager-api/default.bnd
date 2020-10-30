@@ -1,3 +1,0 @@
--nouses: true
-Export-Package: org.nuxeo.ecm.core.usermanager;api=split,*;mandatory=api
-Import-Package: javax.transaction.*;version=1.1,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.directory;api=split,org.nuxeo.ecm.core.api.security,*
