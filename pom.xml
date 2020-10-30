@@ -1213,12 +1213,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-notification-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-notification-core</artifactId>
+        <artifactId>nuxeo-platform-notification</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>

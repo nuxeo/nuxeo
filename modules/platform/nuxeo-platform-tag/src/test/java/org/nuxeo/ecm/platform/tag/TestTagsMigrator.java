@@ -68,8 +68,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.platform.notification.api")
-@Deploy("org.nuxeo.ecm.platform.notification.core")
+@Deploy("org.nuxeo.ecm.platform.notification")
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.tag")
 public class TestTagsMigrator {

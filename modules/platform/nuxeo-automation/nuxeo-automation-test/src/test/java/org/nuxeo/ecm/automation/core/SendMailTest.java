@@ -50,8 +50,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, SmtpMailServerFeature.class, AutomationFeature.class })
-@Deploy("org.nuxeo.ecm.platform.notification.core")
-@Deploy("org.nuxeo.ecm.platform.notification.api")
+@Deploy("org.nuxeo.ecm.platform.notification")
 @Deploy("org.nuxeo.ecm.platform.url")
 public class SendMailTest {
 

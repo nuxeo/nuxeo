@@ -95,7 +95,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-notification-api</artifactId>
+      <artifactId>nuxeo-platform-notification</artifactId>
     </dependency>
 
     <!-- Third parties -->
