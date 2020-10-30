@@ -1996,12 +1996,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.packages</groupId>
-        <artifactId>nuxeo-coldstorage-package</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.packages</groupId>
         <artifactId>nuxeo-csv-package</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>zip</type>
