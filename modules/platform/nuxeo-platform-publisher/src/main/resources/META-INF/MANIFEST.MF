@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Publisher Service
+Bundle-SymbolicName: org.nuxeo.ecm.platform.publisher;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/publisher-framework.xml,
+ OSGI-INF/publisher-contrib.xml,
+ OSGI-INF/publisher-listeners-contrib.xml,
+ OSGI-INF/publisher-type-contrib.xml,
+ OSGI-INF/publisher-pageprovider-contrib.xml,
+ OSGI-INF/publisher-relations-contrib.xml,
+ OSGI-INF/publisher-audit-contrib.xml,
+ OSGI-INF/publisher-permissions-contrib.xml,
+ OSGI-INF/publisher-task-contrib.xml
+
