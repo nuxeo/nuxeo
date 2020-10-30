@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo Quota Automation
-Bundle-SymbolicName: org.nuxeo.ecm.quota.automation;singleton:=true
-Bundle-Vendor: Nuxeo
-Bundle-Version: 1.0.0
-Nuxeo-component: OSGI-INF/operations-contrib.xml
