@@ -32,9 +32,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  * @since 7.2
  */
 @Features(PlatformFeature.class)
-@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.api")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.userworkspace")
 @Deploy("org.nuxeo.ecm.platform.picture.api")
 @Deploy("org.nuxeo.ecm.platform.picture.core")
 @Deploy("org.nuxeo.ecm.user.center.profile")

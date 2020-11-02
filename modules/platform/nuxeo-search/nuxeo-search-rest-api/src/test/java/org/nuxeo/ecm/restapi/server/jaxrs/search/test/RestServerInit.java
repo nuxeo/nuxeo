@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.search.test;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 

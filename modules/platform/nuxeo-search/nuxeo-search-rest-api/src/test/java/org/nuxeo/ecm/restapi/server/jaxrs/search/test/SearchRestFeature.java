@@ -31,8 +31,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  */
 @Features({ RestServerFeature.class, RepositoryElasticSearchFeature.class, PlatformFeature.class })
 @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.userworkspace")
 @Deploy("org.nuxeo.ecm.platform.webapp.types")
 @Deploy("org.nuxeo.ecm.platform.search.core")
 @Deploy("org.nuxeo.ecm.platform.restapi.server.search")
