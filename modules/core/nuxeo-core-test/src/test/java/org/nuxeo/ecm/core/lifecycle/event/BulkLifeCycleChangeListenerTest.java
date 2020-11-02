@@ -33,13 +33,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.CoreSession.CopyOption;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * Simple test Case for {@link BulkLifeCycleChangeListener}.
@@ -49,13 +47,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class BulkLifeCycleChangeListenerTest {
 
     @Inject
-    protected CoreSession session;
+    protected TransactionalFeature txFeature;
 
-    protected void nextTransaction() {
-        TransactionHelper.commitOrRollbackTransaction();
-        Framework.getService(EventService.class).waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
-    }
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testLifeCycleAPI() {
@@ -90,7 +85,7 @@ public class BulkLifeCycleChangeListenerTest {
         assertTrue(session.followTransition(folderDoc.getRef(), "approve"));
         session.save();
 
-        nextTransaction();
+        txFeature.nextTransaction();
 
         // Check that the BulkLifeCycleChangeListener has changed child files to approved
         assertEquals("approved", session.getCurrentLifeCycleState(testFile1.getRef()));
@@ -124,7 +119,7 @@ public class BulkLifeCycleChangeListenerTest {
         session.followTransition(folderDoc.getRef(), "approve");
         session.save();
 
-        nextTransaction();
+        txFeature.nextTransaction();
 
         // All documents in approve life cycle state
         // Checking document copy lifecycle handler
@@ -133,7 +128,7 @@ public class BulkLifeCycleChangeListenerTest {
         folderCopy = session.copy(folderDoc.getRef(), folderCopy.getRef(), "folderCopy", CopyOption.RESET_LIFE_CYCLE);
         session.save();
 
-        nextTransaction();
+        txFeature.nextTransaction();
 
         DocumentModelList childrenCopy = session.getChildren(folderCopy.getRef());
         assertEquals("project", session.getCurrentLifeCycleState(folderCopy.getRef()));
@@ -184,7 +179,7 @@ public class BulkLifeCycleChangeListenerTest {
         assertTrue(session.followTransition(folderDoc1.getRef(), "approve"));
         session.save();
 
-        nextTransaction();
+        txFeature.nextTransaction();
 
         // Check that the BulkLifeCycleChangeListener has changed child folders and files to approved
         assertEquals("approved", session.getCurrentLifeCycleState(folderDoc2.getRef()));
@@ -234,7 +229,7 @@ public class BulkLifeCycleChangeListenerTest {
         assertTrue(session.followTransition(folderDoc.getRef(), DELETE_TRANSITION));
         session.save();
 
-        nextTransaction();
+        txFeature.nextTransaction();
 
         // Check that the BulkLifeCycleChangeListener has changed child folders and files to approved
         assertEquals(DELETED_STATE, session.getCurrentLifeCycleState(testFile1.getRef()));
