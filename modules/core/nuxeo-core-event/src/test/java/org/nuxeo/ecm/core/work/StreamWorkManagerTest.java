@@ -221,4 +221,10 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
     public void transientFilesWorkAreCleaned() throws InterruptedException {
         super.transientFilesWorkAreCleaned();
     }
+
+    @Override
+    @Ignore("NXP-29629")
+    public void itCanFireWorkFailureEvent() throws InterruptedException {
+        super.itCanFireWorkFailureEvent();
+    }
 }
