@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo User Workspace
+Bundle-SymbolicName: org.nuxeo.ecm.platform.userworkspace
+Bundle-Version: 1.0.0
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Export-Package: org.nuxeo.ecm.platform.userworkspace.service
+Bundle-Category: stateless
+Nuxeo-Component: OSGI-INF/userworkspace-framework.xml,
+ OSGI-INF/userworkspace-listeners-contrib.xml,
+ OSGI-INF/userWorkspaceImpl.xml,
+ OSGI-INF/operations-contrib.xml,
+ OSGI-INF/userworkspace-schemas-contrib.xml,
+ OSGI-INF/userworkspace-types-contrib.xml,
+ OSGI-INF/userworkspace-life-cycle-contrib.xml

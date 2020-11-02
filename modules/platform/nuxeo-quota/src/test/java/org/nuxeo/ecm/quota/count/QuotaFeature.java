@@ -36,9 +36,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  * @author dmetzler
  */
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.platform.userworkspace.api")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.userworkspace")
 @Deploy("org.nuxeo.ecm.quota")
 @Deploy("org.nuxeo.ecm.quota.test")
 @Deploy("org.nuxeo.ecm.platform.content.template")

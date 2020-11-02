@@ -37,9 +37,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(AutomationFeature.class)
 @Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.filemanager")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.api")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.userworkspace")
 public class CanCreateInWorkspacesFromBlobTest {
 
     @Inject

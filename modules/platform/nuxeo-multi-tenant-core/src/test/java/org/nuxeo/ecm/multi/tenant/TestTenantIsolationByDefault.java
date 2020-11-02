@@ -53,7 +53,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features({ NuxeoLoginFeature.class, PlatformFeature.class })
 @RepositoryConfig
 @Deploy("org.nuxeo.ecm.multi.tenant")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.default.config")

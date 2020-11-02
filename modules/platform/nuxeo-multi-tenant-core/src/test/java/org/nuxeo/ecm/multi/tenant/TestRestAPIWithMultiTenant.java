@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Features({ RestServerFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = MultiTenantRepositoryInit.class)
 @Deploy("org.nuxeo.ecm.multi.tenant")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.default.config")
 @Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")

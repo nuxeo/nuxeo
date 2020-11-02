@@ -1289,17 +1289,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-userworkspace-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-userworkspace-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-userworkspace-types</artifactId>
+        <artifactId>nuxeo-platform-userworkspace</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>

@@ -86,8 +86,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 @Deploy("org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml")
 @Deploy("org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.collections.core")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.userworkspace")
 public class DocumentBrowsingTest extends BaseTest {
 
     @Test

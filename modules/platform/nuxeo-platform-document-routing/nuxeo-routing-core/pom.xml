@@ -19,7 +19,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-userworkspace-api</artifactId>
+      <artifactId>nuxeo-platform-userworkspace</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -145,16 +145,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-userworkspace-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-userworkspace-types</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
