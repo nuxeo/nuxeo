@@ -24,6 +24,23 @@ Based on CentOS 7, it includes:
 - The environment variables required by the server, typically `NUXEO_HOME` and `NUXEO_CONF`.
 - The exposed port `8080`.
 
+### FFmpeg
+
+As it contains some non-free codecs, FFmpeg isn't part of the Nuxeo image. However, you can build a custom Docker image, based on the Nuxeo one, including the `ffmpeg` package provided by [RPM Fusion](https://rpmfusion.org/), see the `Dockerfile` sample  below. The resulting `ffmpeg` binary embeds all the codecs required for Nuxeo video conversions.
+
+```Dockerfile
+FROM <DOCKER_REGISTRY>/nuxeo:<TAG>
+
+# we need to be root to run yum commands
+USER 0
+# install RPM Fusion free repository
+RUN yum -y localinstall --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+# install ffmpeg package
+RUN yum -y install ffmpeg
+# set back original user
+USER 900
+```
+
 ## Build the Image
 
 It requires to install [Docker](https://docs.docker.com/install/).
@@ -111,7 +128,7 @@ The [dive](https://github.com/wagoodman/dive) tool is also very good for explori
 dive nuxeo/nuxeo:latest
 ```
 
-## Build an Image From the Nuxeo Image
+## Build a Custom Image From Nuxeo
 
 We provide some utility scripts to install Nuxeo packages when building an image from the Nuxeo image:
 
