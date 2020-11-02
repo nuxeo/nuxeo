@@ -15,10 +15,14 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Jackie Aldama <jaldama@nuxeo.com>
  *
  */
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
+
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_LIFECYCLESTATE;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,9 +31,11 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -37,9 +43,9 @@ import java.util.zip.ZipFile;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.IdUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -51,6 +57,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
@@ -65,7 +72,7 @@ public class CSVZipImporter extends AbstractFileImporter {
 
     private static final String MARKER = "meta-data.csv";
 
-    private static final Log log = LogFactory.getLog(CSVZipImporter.class);
+    private static final Logger log = LogManager.getLogger(CSVZipImporter.class);
 
     public static ZipFile getArchiveFileIfValid(File file) throws IOException {
         ZipFile zip;
@@ -111,47 +118,48 @@ public class CSVZipImporter extends AbstractFileImporter {
 
             ZipEntry index = zip.getEntry(MARKER);
             try (Reader reader = new InputStreamReader(zip.getInputStream(index));
-                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader());) {
+                CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader());) {
 
                 Map<String, Integer> header = csvParser.getHeaderMap();
                 for (CSVRecord csvRecord : csvParser) {
                     String type = null;
-                    String id = null;
+                    String name = null;
                     Map<String, String> stringValues = new HashMap<>();
                     for (String headerValue : header.keySet()) {
                         String lineValue = csvRecord.get(headerValue);
                         if ("type".equalsIgnoreCase(headerValue)) {
                             type = lineValue;
-                        } else if ("id".equalsIgnoreCase(headerValue)) {
-                            id = lineValue;
+                        } else if ("name".equalsIgnoreCase(headerValue)) {
+                            name = lineValue;
                         } else {
                             stringValues.put(headerValue, lineValue);
                         }
                     }
 
+                    if (StringUtils.isBlank(name)) {
+                        log.warn("Can not create or update doc without a name, skipping line: {}",
+                                csvRecord::getRecordNumber);
+                        continue;
+                    }
+
                     boolean updateDoc = false;
                     // get doc for update
                     DocumentModel targetDoc = null;
-                    if (id != null) {
-                        // update ?
-                        String targetPath = new Path(parentPath).append(id).toString();
-                        if (session.exists(new PathRef(targetPath))) {
-                            targetDoc = session.getDocument(new PathRef(targetPath));
-                            updateDoc = true;
-                        }
+
+                    String targetPath = new Path(parentPath).append(name).toString();
+                    if (session.exists(new PathRef(targetPath))) {
+                        targetDoc = session.getDocument(new PathRef(targetPath));
+                        updateDoc = true;
                     }
 
                     // create doc if needed
                     if (targetDoc == null) {
                         if (type == null) {
-                            log.error("Can not create doc without a type, skipping line");
+                            log.warn("Can not create doc without a type, skipping line: {}",
+                                    csvRecord::getRecordNumber);
                             continue;
                         }
-
-                        if (id == null) {
-                            id = IdUtils.generateStringId();
-                        }
-                        targetDoc = session.createDocumentModel(parentPath, id, type);
+                        targetDoc = session.createDocumentModel(parentPath, name, type);
                     }
 
                     // update doc properties
@@ -164,7 +172,13 @@ public class CSVZipImporter extends AbstractFileImporter {
                         String schemaName = null;
                         String fieldName = null;
 
-                        if (fname.contains(":")) {
+                        // create doc with lifecycle state rather than it being created with default initial state
+                        if (fname.equals(ECM_LIFECYCLESTATE)) {
+                            targetDoc.putContextData(INITIAL_LIFECYCLE_STATE_OPTION_NAME, stringValue);
+                            // add tags, delimitted with |
+                        } else if (fname.equalsIgnoreCase("nxtag:tags")) {
+                            targetDoc = addTags(session, targetDoc, stringValue);
+                        } else if (fname.contains(":")) {
                             if (targetDocType.hasField(fname)) {
                                 field = targetDocType.getField(fname);
                                 usePrefix = true;
@@ -241,9 +255,15 @@ public class CSVZipImporter extends AbstractFileImporter {
                 log.warn(String.format("Unsupported field type '%s'", type));
                 return null;
             }
-        } else if (type.isComplexType() && TypeConstants.CONTENT.equals(field.getName().getLocalName())) {
+        } else if (type.isComplexType()) {
+            boolean returnEarly = true;
+            if (TypeConstants.CONTENT.equals(field.getName().getLocalName())) {
+                returnEarly = false;
+            }
             ZipEntry blobIndex = zip.getEntry(stringValue);
-            if (blobIndex != null) {
+            returnEarly |= blobIndex == null;
+
+            if (!returnEarly) {
                 Blob blob;
                 try {
                     blob = Blobs.createBlob(zip.getInputStream(blobIndex));
@@ -253,9 +273,29 @@ public class CSVZipImporter extends AbstractFileImporter {
                 blob.setFilename(stringValue);
                 fieldValue = (Serializable) blob;
             }
+            /*
+             * TODO: Account for other complex fields
+             */
+        } else if (type.isListType()) {
+            Type listFieldType = ((ListType) type).getFieldType();
+            if (listFieldType.isSimpleType()) {
+                fieldValue = stringValue.split("\\|");
+            }
+            /*
+             * TODO: Complex list.
+             */
         }
 
         return fieldValue;
     }
 
+    protected DocumentModel addTags(CoreSession session, DocumentModel targetDoc, String tagString) {
+        String[] tagList = tagString.split("\\|");
+        String userName = session.getPrincipal().getName();
+        var tags = Arrays.stream(tagList)
+                         .map(s -> Map.of("label", s, "username", userName))
+                         .collect(Collectors.toList());
+        targetDoc.setPropertyValue("nxtag:tags", (Serializable) tags);
+        return targetDoc;
+    }
 }

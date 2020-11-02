@@ -502,6 +502,7 @@ public class TestFileManagerService {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.filemanager.core.tests:faceted-tag-core-types-contrib.xml")
     public void testExcludeOneToManyFileImporters() throws Exception {
         // .doc input, don't exclude oneToMany importers, expecting a new document holding the file
         File file = getTestFile("test-data/hello.doc");
@@ -531,7 +532,7 @@ public class TestFileManagerService {
         assertEquals("hello.doc", blob.getFilename());
 
         // .zip input, don't exclude oneToMany importers, expecting the target folder
-        file = getTestFile("test-data/testCSVArchive.zip");
+        file = getTestFile("test-data/completeZipTestArchive.zip");
         input = Blobs.createBlob(file, "application/zip");
         context = FileImporterContext.builder(coreSession, input, workspace.getPathAsString())
                                      .overwrite(true)
@@ -554,7 +555,7 @@ public class TestFileManagerService {
         assertEquals(workspace.getRef(), doc.getParentRef());
         assertEquals("File", doc.getType());
         blob = (Blob) doc.getPropertyValue("file:content");
-        assertEquals("testCSVArchive.zip", blob.getFilename());
+        assertEquals("completeZipTestArchive.zip", blob.getFilename());
     }
 
     @Test
