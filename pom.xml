@@ -2940,22 +2940,9 @@
         <version>1.0</version>
       </dependency>
       <dependency>
-        <!-- also a jboss-seam-pdf dependency -->
         <groupId>com.github.librepdf</groupId>
         <artifactId>openpdf</artifactId>
         <version>1.3.22</version>
-      </dependency>
-      <dependency>
-        <!-- also a jboss-seam-pdf dependency -->
-        <groupId>com.github.librepdf</groupId>
-        <artifactId>pdf-rtf</artifactId>
-        <version>1.1.0</version>
-      </dependency>
-      <dependency>
-        <!-- also a jboss-seam-pdf dependency -->
-        <groupId>com.github.librepdf</groupId>
-        <artifactId>pdf-html</artifactId>
-        <version>1.2.16</version>
       </dependency>
       <dependency>
         <groupId>org.freemarker</groupId>
@@ -3597,21 +3584,6 @@
         <version>${restlet.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.restlet.jse</groupId>
-        <artifactId>org.restlet.ext.fileupload</artifactId>
-        <version>${restlet.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.restlet.jse</groupId>
-        <artifactId>org.restlet.ext.httpclient</artifactId>
-        <version>${restlet.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.restlet.jee</groupId>
-        <artifactId>org.restlet.ext.servlet</artifactId>
-        <version>${restlet.version}</version>
-      </dependency>
-      <dependency>
         <groupId>jotm</groupId>
         <artifactId>jotm</artifactId>
         <version>2.0.10</version>
@@ -3916,11 +3888,6 @@
         <groupId>net.oauth.core</groupId>
         <artifactId>oauth</artifactId>
         <version>20090531</version>
-      </dependency>
-      <dependency>
-        <groupId>xmlunit</groupId>
-        <artifactId>xmlunit</artifactId>
-        <version>1.6</version>
       </dependency>
       <!-- OAUth2 libs -->
       <dependency>
