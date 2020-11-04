@@ -11,14 +11,20 @@ kafka:
       effect: NoSchedule
   nodeSelector:
     team: platform
-  configurationOverrides:
-    auto.create.topics.enable: false
-    group.initial.rebalance.delay.ms: 100
-    log.retention.minutes: 20
-    offsets.retention.minutes: 20
-    offsets.topic.num.partitions: 5
-    transaction.state.log.min.isr: 1
-    transaction.state.log.replication.factor: 1
+  autoCreateTopicsEnable: false
+  deleteTopicEnable: true
+  transactionStateLogMinIsr: 1
+  extraEnvVars:
+    - name: KAFKA_CFG_GROUP_INITIAL_REBALANCE_DELAY_MS
+      value: "100"
+    - name: KAFKA_CFG_LOG_RETENTION_MINUTES
+      value: "20"
+    - name: KAFKA_CFG_OFFSETS_RETENTION_MINUTES
+      value: "20"
+    - name: KAFKA_CFG_OFFSETS_TOPIC_NUM_PARTITIONS
+      value: "5"
+    - name: KAFKA_CFG_STATE_LOG_REPLICATION_FACTOR
+      value: "1"
   zookeeper:
     podLabels:
       branch: "$BRANCH_NAME"
