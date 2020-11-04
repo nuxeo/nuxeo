@@ -314,7 +314,7 @@ pipeline {
     HELM_CHART_REPOSITORY_NAME = 'local-jenkins-x'
     HELM_CHART_REPOSITORY_URL = 'http://jenkins-x-chartmuseum:8080'
     HELM_CHART_NUXEO = 'nuxeo'
-    HELM_CHART_NUXEO_VERSION = '1.1.1'
+    HELM_CHART_NUXEO_VERSION = '1.2.0'
     TEST_HELM_CHART_RELEASE = 'test-release'
     TEST_NAMESPACE_PREFIX = "nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
