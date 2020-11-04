@@ -4,8 +4,7 @@
   <description>The EasyShare addon enables filesharing from the repository for a limited period utilizing a simple hyperlink, which allows external users to access Nuxeo content without requiring an account or login.</description>
   <vendor>Nuxeo</vendor>
   <platforms>
-    <platform>server-@VERSION@</platform>
-    <platform>server-@VERSION@-*</platform>
+    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
   </platforms>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
