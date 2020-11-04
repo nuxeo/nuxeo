@@ -99,7 +99,7 @@
     <echo message="tomcat.version=${tomcat.version}" append="true" file="${distribution.dir}/templates/nuxeo.defaults" />
 
     <antcall target="set-distribution-properties">
-      <param name="org.nuxeo.distribution.name" value="server" />
+      <param name="org.nuxeo.distribution.name" value="${nuxeo.distribution.name}" />
     </antcall>
 
     <antcall target="reorganize-libs" />

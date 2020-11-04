@@ -6,8 +6,7 @@
   </description>
   <vendor>Nuxeo</vendor>
   <platforms>
-    <platform>server-@VERSION@</platform>
-    <platform>server-@VERSION@-*</platform>
+    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
   </platforms>
   <conflicts>
     <package>nuxeo-scan-importer</package>

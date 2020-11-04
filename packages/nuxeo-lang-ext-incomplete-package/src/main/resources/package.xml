@@ -4,8 +4,7 @@
   <description>The Nuxeo Platform Additional Languages addon provides a set of additional languages (95% complete) to be included in the default distribution of the Nuxeo Platform. More information about how to translate the Nuxeo Platform is available at https://doc.nuxeo.com/nxdoc/how-to-translate-the-nuxeo-platform/.</description>
   <vendor>Nuxeo</vendor>
   <platforms>
-    <platform>server-@VERSION@</platform>
-    <platform>server-@VERSION@-*</platform>
+    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
   </platforms>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
