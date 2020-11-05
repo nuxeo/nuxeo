@@ -130,12 +130,9 @@ dive nuxeo/nuxeo:latest
 
 ## Build a Custom Image From Nuxeo
 
-We provide some utility scripts to install Nuxeo packages when building an image from the Nuxeo image:
+We provide a utility script to install remote Nuxeo packages from [Nuxeo Connect](https://connect.nuxeo.com/) and local Nuxeo packages when building an image from the Nuxeo image:
 
-- [install-local-packages.sh](./install-local-packages.sh): install a local Nuxeo package embedded in the image as a ZIP file.
-- [install-packages.sh](./install-packages.sh): install a remote Nuxeo package from [Nuxeo Connect](https://connect.nuxeo.com/).
-
-For instance, you can use these scripts in the following `Dockerfile`:
+For instance, you can use this script in the following `Dockerfile`:
 
 ```Dockerfile
 FROM <DOCKER_REGISTRY>/nuxeo:<TAG>
@@ -143,10 +140,13 @@ FROM <DOCKER_REGISTRY>/nuxeo:<TAG>
 ARG CLID
 ARG CONNECT_URL
 
+COPY --chown=900:0 path/to/local-package-nodeps-*.zip $NUXEO_HOME/local-packages/local-package-nodeps.zip
 COPY --chown=900:0 path/to/local-package-*.zip $NUXEO_HOME/local-packages/local-package.zip
 
-RUN /install-local-packages.sh $NUXEO_HOME/local-packages
-RUN /install-packages.sh --clid ${CLID} --connect-url ${CONNECT_URL} nuxeo-web-ui nuxeo-drive
+# Install a local package without its dependencies (`mp-install --nodeps`)
+RUN /install-packages.sh --offline $NUXEO_HOME/local-packages/local-package-nodeps.zip
+# Install remote packages and a local package with its dependencies
+RUN /install-packages.sh --clid ${CLID} --connect-url ${CONNECT_URL} nuxeo-web-ui nuxeo-drive $NUXEO_HOME/local-packages/local-package.zip
 ```
 
 ## Configure the Image at Runtime

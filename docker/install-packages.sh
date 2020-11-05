@@ -4,7 +4,7 @@ set -e
 usage() {
   exec >&2
   echo "Usage:"
-  echo "  install-packages.sh [--clid <clid>] [--connect-url <connecturl>] <packagelist>"
+  echo "  install-packages.sh [--clid <clid>] [--connect-url <connecturl>] [--offline] <packagelist>"
   exit 2
 }
 
@@ -18,10 +18,14 @@ if [[ -f $NUXEO_HOME/configured ]]; then
   exit 2
 fi
 
+# default arguments for mp-install command
+mpInstallArgs="--accept yes --relax no"
+
 while [ $# -ne 0 ]; do
   case $1 in
     --clid) clid=$2; shift 2 ;;
     --connect-url) connect_url=$2; shift 2 ;;
+    --offline) offline=true; shift 1 ;;
     -*) echo "Unknown option: $1" >&2; usage ;;
     *) packages=$@; break ;;
   esac
@@ -42,8 +46,16 @@ if [ -n "$connect_url" ]; then
   printf "org.nuxeo.connect.url=%b\n" "$connect_url" >> $NUXEO_HOME/bin/nuxeo.conf
 fi
 
+if [ -n "$offline" ]; then
+  # Prevent nuxeoctl from reaching Connect
+  noConnectProperty=org.nuxeo.connect.server.reachable=false
+  echo "Setting $noConnectProperty"
+  echo $noConnectProperty >> $NUXEO_HOME/bin/nuxeo.conf
+  mpInstallArgs="$mpInstallArgs --nodeps"
+fi
+
 echo
-NUXEO_CONF=$NUXEO_HOME/bin/nuxeo.conf $NUXEO_HOME/bin/nuxeoctl mp-install --accept yes --relax no $packages
+NUXEO_CONF=$NUXEO_HOME/bin/nuxeo.conf $NUXEO_HOME/bin/nuxeoctl mp-install $mpInstallArgs $packages
 
 echo
 if [ -n "$clid" ]; then
@@ -54,6 +66,11 @@ fi
 if [ -n "$connect_url" ]; then
   echo "Unsetting Connect URL"
   sed -i "/org.nuxeo.connect.url=/d" $NUXEO_HOME/bin/nuxeo.conf
+fi
+
+if [ -n "$offline" ]; then
+  echo "Unsetting $noConnectProperty"
+  sed -i "/$noConnectProperty/d" $NUXEO_HOME/bin/nuxeo.conf
 fi
 
 # Clean up package installation directories

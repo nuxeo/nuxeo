@@ -103,9 +103,8 @@ RUN mkdir -p $NUXEO_HOME \
 
 COPY docker-entrypoint.sh /
 
-# Copy packages installation scripts
+# Copy packages installation script
 COPY install-packages.sh /
-COPY install-local-packages.sh /
 
 # Create directory in which to mount property files appended to nuxeo.conf at runtime
 RUN mkdir /etc/nuxeo/conf.d
@@ -116,8 +115,7 @@ COPY conf.d /etc/nuxeo/conf.d/
 RUN mkdir /docker-entrypoint-initnuxeo.d && chmod g+rwx,o+rx /docker-entrypoint-initnuxeo.d \
   && chmod -R g+rwX,o+rX /etc/nuxeo/conf.d \
   && chmod g+rwx,o+rx /docker-entrypoint.sh \
-  && chmod g+rwx,o+rx /install-packages.sh \
-  && chmod g+rwx,o+rx /install-local-packages.sh
+  && chmod g+rwx,o+rx /install-packages.sh
 
 # Copy Nuxeo distribution
 COPY --from=builder /distrib $NUXEO_HOME
