@@ -107,6 +107,9 @@ COPY docker-entrypoint.sh /
 COPY install-packages.sh /
 COPY install-local-packages.sh /
 
+# Copy script to run Nuxeo in dev environment
+COPY nuxeo-run-dev.sh /
+
 # Create directory in which to mount property files appended to nuxeo.conf at runtime
 RUN mkdir /etc/nuxeo/conf.d
 # Copy base property files.
