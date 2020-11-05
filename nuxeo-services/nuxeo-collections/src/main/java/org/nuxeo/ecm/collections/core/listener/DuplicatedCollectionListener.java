@@ -91,7 +91,7 @@ public class DuplicatedCollectionListener implements EventListener {
             processCopiedMember(doc, ctx.getCoreSession());
         }
 
-        if (doc.isFolder()) {
+        if (doc.isFolder() && DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(eventId)) {
             // We just copied a folder, maybe among the descendants there are collections that have been copied too
             // proceed to the deep collection copy
             int offset = 0;
