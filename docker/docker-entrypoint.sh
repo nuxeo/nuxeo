@@ -23,6 +23,16 @@ launcher.override.java.tmpdir=true
 EOF
 }
 
+function configure_nuxeo_dev () {
+  cat << EOF
+org.nuxeo.dev=true
+org.nuxeo.rest.stack.enable=true
+# for hot reload
+nuxeo.server.sdk=true
+nuxeo.server.sdkInstallReloadTimer=true
+EOF
+}
+
 # Handle nuxeo.conf
 if [ ! -f $NUXEO_HOME/configured ]; then
   if [ ! -f $NUXEO_CONF ]; then
@@ -53,6 +63,13 @@ if [ ! -f $NUXEO_HOME/configured ]; then
       echo -e "\n## ENTRYPOINT: Configure Connect URL with NUXEO_CONNECT_URL environment variable" >> $NUXEO_CONF
       echo "org.nuxeo.connect.url=$NUXEO_CONNECT_URL" | tee -a $NUXEO_CONF
     fi
+
+    # Handle NUXEO_DEV
+    if [ "$NUXEO_DEV" = true ]; then
+      echo "ENTRYPOINT: Append dev mode properties to $NUXEO_CONF:"
+      echo -e "\n## ENTRYPOINT: Append dev mode properties" >> $NUXEO_CONF
+      configure_nuxeo_dev | tee -a $NUXEO_CONF
+    fi
   fi
 
   # Handle instance.clid
@@ -81,4 +98,17 @@ for f in /docker-entrypoint-initnuxeo.d/*; do
   esac
 done
 
-exec "$@"
+if [ "$NUXEO_DEV" = true ]; then
+  echo
+  echo "####################################################################################"
+  echo "# CAUTION: YOU ARE RUNNING IN DEV MODE, WHICH IS INSECURE AND NOT PRODUCTION-READY #"
+  echo "####################################################################################"
+  echo
+fi
+
+# override the command in dev mode only if the default command was not changed
+if [ "$NUXEO_DEV" = true  -a  "$*" = "nuxeoctl console" ]; then
+  exec /nuxeo-run-dev.sh
+else
+  exec "$@"
+fi
