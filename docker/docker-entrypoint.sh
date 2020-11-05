@@ -24,50 +24,52 @@ EOF
 }
 
 # Handle nuxeo.conf
-if [[ ! -f $NUXEO_HOME/configured && ! -f $NUXEO_CONF ]]; then
-  echo "ENTRYPOINT: Initialize server configuration without $NUXEO_CONF"
+if [ ! -f $NUXEO_HOME/configured ]; then
+  if [ ! -f $NUXEO_CONF ]; then
+    echo "ENTRYPOINT: Initialize server configuration without $NUXEO_CONF"
 
-  echo "ENTRYPOINT: Move $NUXEO_HOME/bin/nuxeo.conf to $NUXEO_CONF"
-  mv $NUXEO_HOME/bin/nuxeo.conf $NUXEO_CONF
+    echo "ENTRYPOINT: Move $NUXEO_HOME/bin/nuxeo.conf to $NUXEO_CONF"
+    mv $NUXEO_HOME/bin/nuxeo.conf $NUXEO_CONF
 
-  echo "ENTRYPOINT: Append required properties to $NUXEO_CONF:"
-  echo -e "\n## ENTRYPOINT: Append required properties" >> $NUXEO_CONF
-  configure | tee -a $NUXEO_CONF
+    echo "ENTRYPOINT: Append required properties to $NUXEO_CONF:"
+    echo -e "\n## ENTRYPOINT: Append required properties" >> $NUXEO_CONF
+    configure | tee -a $NUXEO_CONF
 
-  find /etc/nuxeo/conf.d/ -type f | sort | while read i; do
-    echo "ENTRYPOINT: Append properties from $i to $NUXEO_CONF"
-    echo -e "\n## ENTRYPOINT: Append properties from $i" >> $NUXEO_CONF
-    cat $i >> $NUXEO_CONF
-  done
+    find /etc/nuxeo/conf.d/ -type f | sort | while read i; do
+      echo "ENTRYPOINT: Append properties from $i to $NUXEO_CONF:"
+      echo -e "\n## ENTRYPOINT: Append properties from $i" >> $NUXEO_CONF
+      cat $i | tee -a $NUXEO_CONF
+    done
 
-  if [ -n "$JAVA_OPTS" ]; then
-    echo "ENTRYPOINT: Append JAVA_OPTS environment variable to the JVM options set in $NUXEO_CONF:"
-    echo -e "\n## ENTRYPOINT: Append JAVA_OPTS environment variable" >> $NUXEO_CONF
-    echo "JAVA_OPTS=\$JAVA_OPTS $JAVA_OPTS" | tee -a $NUXEO_CONF
+    if [ -n "$JAVA_OPTS" ]; then
+      echo "ENTRYPOINT: Append JAVA_OPTS environment variable to the JVM options set in $NUXEO_CONF:"
+      echo -e "\n## ENTRYPOINT: Append JAVA_OPTS environment variable" >> $NUXEO_CONF
+      echo "JAVA_OPTS=\$JAVA_OPTS $JAVA_OPTS" | tee -a $NUXEO_CONF
+    fi
+
+    # Handle NUXEO_CONNECT_URL
+    if [ -n "$NUXEO_CONNECT_URL" ]; then
+      echo "ENTRYPOINT: Configure Connect URL with NUXEO_CONNECT_URL environment variable:"
+      echo -e "\n## ENTRYPOINT: Configure Connect URL with NUXEO_CONNECT_URL environment variable" >> $NUXEO_CONF
+      echo "org.nuxeo.connect.url=$NUXEO_CONNECT_URL" | tee -a $NUXEO_CONF
+    fi
   fi
 
-  # Handle NUXEO_CONNECT_URL
-  if [ -n "$NUXEO_CONNECT_URL" ]; then
-    echo "ENTRYPOINT: Configure Connect URL with NUXEO_CONNECT_URL environment variable"
-    echo -e "\n## ENTRYPOINT: Configure Connect URL with NUXEO_CONNECT_URL environment variable" >> $NUXEO_CONF
-    echo "org.nuxeo.connect.url=$NUXEO_CONNECT_URL" | tee -a $NUXEO_CONF
+  # Handle instance.clid
+  if [ -n "$NUXEO_CLID" ]; then
+    echo "ENTRYPOINT: Write NUXEO_CLID environment variable to /var/lib/nuxeo/instance.clid"
+    # Replace -- by a carriage return
+    NUXEO_CLID="${NUXEO_CLID//--/\\n}"
+    printf "%b\n" "$NUXEO_CLID" > /var/lib/nuxeo/instance.clid
+  fi
+
+  # Handle NUXEO_PACKAGES
+  if [ -n "$NUXEO_PACKAGES" ]; then
+    echo "ENTRYPOINT: Install Nuxeo packages: $NUXEO_PACKAGES"
+    nuxeoctl mp-install $NUXEO_PACKAGES --accept=true --relax no
   fi
 
   touch $NUXEO_HOME/configured
-fi
-
-# Handle instance.clid
-if [ -n "$NUXEO_CLID" ]; then
-  echo "ENTRYPOINT: Write NUXEO_CLID environment variable to /var/lib/nuxeo/instance.clid"
-  # Replace -- by a carriage return
-  NUXEO_CLID="${NUXEO_CLID//--/\\n}"
-  printf "%b\n" "$NUXEO_CLID" > /var/lib/nuxeo/instance.clid
-fi
-
-# Handle NUXEO_PACKAGES
-if [ -n "$NUXEO_PACKAGES" ]; then
-  echo "ENTRYPOINT: Install Nuxeo packages: $NUXEO_PACKAGES"
-  nuxeoctl mp-install $NUXEO_PACKAGES --accept=true --relax no
 fi
 
 # Handle shell scripts
