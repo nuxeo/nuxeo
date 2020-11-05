@@ -39,7 +39,7 @@ fi
 
 if [ -n "$connect_url" ]; then
   echo "Setting Connect URL: $connect_url"
-  printf "org.nuxeo.connect.url=%b\n" "$connect_url" > $NUXEO_HOME/bin/nuxeo.conf
+  printf "org.nuxeo.connect.url=%b\n" "$connect_url" >> $NUXEO_HOME/bin/nuxeo.conf
 fi
 
 echo
