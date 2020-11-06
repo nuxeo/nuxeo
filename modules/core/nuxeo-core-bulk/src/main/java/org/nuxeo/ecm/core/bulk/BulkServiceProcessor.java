@@ -20,8 +20,10 @@ package org.nuxeo.ecm.core.bulk;
 
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.BULK_SCROLL_KEEP_ALIVE_PROPERTY;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY;
+import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.BULK_SCROLL_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.BULK_SCROLL_SIZE_PROPERTY;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.BULK_SCROLL_TRANSACTION_TIMEOUT_PROPERTY;
+import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.DEFAULT_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.DEFAULT_SCROLL_KEEP_ALIVE;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.DEFAULT_SCROLL_SIZE;
 import static org.nuxeo.ecm.core.bulk.BulkAdminServiceImpl.DEFAULT_SCROLL_TRANSACTION_TIMEOUT;
@@ -70,10 +72,13 @@ public class BulkServiceProcessor implements StreamProcessorTopology {
                 DEFAULT_SCROLL_TRANSACTION_TIMEOUT);
 
         boolean scrollProduceImmediate = confService.isBooleanTrue(BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY);
+        int scrollProduceImmediateThreshold = confService.getInteger(BULK_SCROLL_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY)
+                                                         .orElse(DEFAULT_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY);
         return Topology.builder()
                        .addComputation( //
                                () -> new BulkScrollerComputation(SCROLLER_NAME, actions.size() + 1, scrollBatchSize,
-                                       scrollKeepAlive, transactionTimeout, scrollProduceImmediate), //
+                                       scrollKeepAlive, transactionTimeout, scrollProduceImmediate,
+                                       scrollProduceImmediateThreshold), //
                                mapping)
                        .addComputation(() -> new BulkStatusComputation(STATUS_NAME),
                                Arrays.asList(INPUT_1 + ":" + STATUS_STREAM, //

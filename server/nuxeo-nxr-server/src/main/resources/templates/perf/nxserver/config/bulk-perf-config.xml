@@ -6,7 +6,6 @@
     <property name="nuxeo.core.bulk.scroller.concurrency">2</property>
     <property name="nuxeo.core.bulk.scroller.scroll.size">250</property>
     <property name="nuxeo.core.bulk.scroller.scroll.keepAliveSeconds">60</property>
-    <property name="nuxeo.core.bulk.scroller.produceImmediate">true</property>
     <property name="nuxeo.core.bulk.status.concurrency">1</property>
     <property name="nuxeo.core.bulk.done.concurrency">1</property>
   </extension>
