@@ -45,7 +45,6 @@ import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
-import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.model.Descriptor;
@@ -90,6 +89,13 @@ public class BulkAdminServiceImpl implements BulkAdminService {
     public static final String DEFAULT_STATUS_DELAY_MILLIS = "500";
 
     public static final String DEFAULT_STATUS_MAX_DELAY_MILLIS = "10000";
+
+    // @since 11.4
+    public static final String BULK_SCROLL_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY = "nuxeo.core.bulk.scroller.produceImmediateThreshold";
+
+    // by default switch to produce immediate when there are more than 1m ids
+    // @since 11.4
+    public static final int DEFAULT_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY = 1_000_000;
 
     public static final String DEFAULT_SCROLLER_CONCURRENCY = "1";
 
@@ -166,10 +172,12 @@ public class BulkAdminServiceImpl implements BulkAdminService {
                 confService.getProperty(BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY, DEFAULT_SCROLL_PRODUCE_IMMEDIATE));
         Duration transactionTimeout = confService.getDuration(BULK_SCROLL_TRANSACTION_TIMEOUT_PROPERTY,
                 DEFAULT_SCROLL_TRANSACTION_TIMEOUT);
-        streamProcessor = streamManager.registerAndCreateProcessor("bulk", getTopology(scrollSize, scrollKeepAlive, transactionTimeout, scrollProduceImmediate), settings);
+        int scrollProduceImmediateThreshold = confService.getInteger(BULK_SCROLL_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY)
+                .orElse(DEFAULT_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY);
+        streamProcessor = streamManager.registerAndCreateProcessor("bulk", getTopology(scrollSize, scrollKeepAlive, transactionTimeout, scrollProduceImmediate, scrollProduceImmediateThreshold), settings);
     }
 
-    protected Topology getTopology(int scrollBatchSize, int scrollKeepAlive, Duration transactionTimeout, boolean scrollProduceImmediate) {
+    protected Topology getTopology(int scrollBatchSize, int scrollKeepAlive, Duration transactionTimeout, boolean scrollProduceImmediate, int scrollProduceImmediateThreshold) {
         List<String> mapping = new ArrayList<>();
         mapping.add(INPUT_1 + ":" + COMMAND_STREAM);
         int i = 1;
@@ -181,7 +189,7 @@ public class BulkAdminServiceImpl implements BulkAdminService {
         return Topology.builder()
                        .addComputation( //
                                () -> new BulkScrollerComputation(SCROLLER_NAME, actions.size() + 1, scrollBatchSize,
-                                       scrollKeepAlive, transactionTimeout, scrollProduceImmediate), //
+                                       scrollKeepAlive, transactionTimeout, scrollProduceImmediate, scrollProduceImmediateThreshold), //
                                mapping)
                        .addComputation(() -> new BulkStatusComputation(STATUS_NAME),
                                Arrays.asList(INPUT_1 + ":" + STATUS_STREAM, //
