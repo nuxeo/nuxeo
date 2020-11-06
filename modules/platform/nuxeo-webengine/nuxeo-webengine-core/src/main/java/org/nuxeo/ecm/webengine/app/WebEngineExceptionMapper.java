@@ -30,8 +30,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -49,7 +49,7 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
     @Context
     HttpHeaders headers;
 
-    protected static final Log log = LogFactory.getLog(WebEngineExceptionMapper.class);
+    private static final Logger log = LogManager.getLogger(WebEngineExceptionMapper.class);
 
     @Override
     public Response toResponse(Throwable cause) {
