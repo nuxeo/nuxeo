@@ -87,6 +87,9 @@ public class BulkScrollerComputation extends AbstractComputation {
 
     protected final boolean produceImmediate;
 
+    // @since 11.4
+    protected final long produceImmediateThreshold;
+
     protected final int transactionTimeoutSeconds;
 
     protected int scrollSize;
@@ -111,10 +114,18 @@ public class BulkScrollerComputation extends AbstractComputation {
     // @since 11.2
     public BulkScrollerComputation(String name, int nbOutputStreams, int scrollBatchSize, int scrollKeepAliveSeconds,
             Duration transactionTimeout, boolean produceImmediate) {
+        this(name, nbOutputStreams, scrollBatchSize, scrollKeepAliveSeconds, DEFAULT_SCROLL_TRANSACTION_TIMEOUT,
+                produceImmediate, 0);
+    }
+
+    // @since 11.4
+    public BulkScrollerComputation(String name, int nbOutputStreams, int scrollBatchSize, int scrollKeepAliveSeconds,
+            Duration transactionTimeout, boolean produceImmediate, int produceImmediateThreshold) {
         super(name, 1, nbOutputStreams);
         this.scrollBatchSize = scrollBatchSize;
         this.scrollKeepAliveSeconds = scrollKeepAliveSeconds;
         this.produceImmediate = produceImmediate;
+        this.produceImmediateThreshold = produceImmediateThreshold;
         this.transactionTimeoutSeconds = Math.toIntExact(transactionTimeout.toSeconds());
         documentIds = new ArrayList<>(scrollBatchSize);
     }
@@ -160,7 +171,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                     List<String> docIds = scroll.next();
                     documentIds.addAll(docIds);
                     while (documentIds.size() >= bucketSize) {
-                        produceBucket(context, commandId, bucketSize, bucketNumber++);
+                        produceBucket(context, commandId, bucketSize, bucketNumber++, documentCount);
                     }
                     documentCount += docIds.size();
                 }
@@ -168,7 +179,7 @@ public class BulkScrollerComputation extends AbstractComputation {
             // send remaining document ids
             // there's at most one record because we loop while scrolling
             if (!documentIds.isEmpty()) {
-                produceBucket(context, commandId, bucketSize, bucketNumber++);
+                produceBucket(context, commandId, bucketSize, bucketNumber++, documentCount);
             }
             // update status after scroll when we handle the scroller
             if (!command.useExternalScroller()) {
@@ -272,17 +283,30 @@ public class BulkScrollerComputation extends AbstractComputation {
     /**
      * Produces a bucket as a record to appropriate bulk action stream.
      */
-    protected void produceBucket(ComputationContext context, String commandId, int bucketSize, long bucketNumber) {
+    protected void produceBucket(ComputationContext context, String commandId, int bucketSize, long bucketNumber,
+            long documentCount) {
         List<String> ids = documentIds.subList(0, min(bucketSize, documentIds.size()));
         BulkBucket bucket = new BulkBucket(commandId, ids);
         String key = commandId + ":" + Long.toString(bucketNumber);
         Record record = Record.of(key, BulkCodecs.getBucketCodec().encode(bucket));
-        if (produceImmediate) {
-            ((ComputationContextImpl) context).produceRecordImmediate(actionStream, record);
+        if (produceImmediate || (produceImmediateThreshold > 0 && documentCount > produceImmediateThreshold)) {
+            ComputationContextImpl contextImpl = (ComputationContextImpl) context;
+            if (!contextImpl.getRecords(actionStream).isEmpty()) {
+                flushRecords(contextImpl, commandId);
+            }
+            contextImpl.produceRecordImmediate(actionStream, record);
         } else {
             context.produceRecord(actionStream, record);
         }
         ids.clear(); // this clear the documentIds part that has been sent
+    }
+
+    protected void flushRecords(ComputationContextImpl contextImpl, String commandId) {
+        log.warn("Scroller records threshold reached ({}) for action: {} on command: {}, flushing records downstream",
+                produceImmediateThreshold, actionStream, commandId);
+        contextImpl.getRecords(actionStream)
+                   .forEach(record -> contextImpl.produceRecordImmediate(actionStream, record));
+        contextImpl.getRecords(actionStream).clear();
     }
 
 }

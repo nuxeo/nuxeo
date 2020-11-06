@@ -47,6 +47,13 @@ public class BulkAdminServiceImpl implements BulkAdminService {
 
     public static final String BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY = "nuxeo.core.bulk.scroller.produceImmediate";
 
+    // @since 11.4
+    public static final String BULK_SCROLL_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY = "nuxeo.core.bulk.scroller.produceImmediateThreshold";
+
+    // by default switch to produce immediate when there are more than 1m ids
+    // @since 11.4
+    public static final int DEFAULT_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY = 1_000_000;
+
     public static final int DEFAULT_SCROLL_SIZE = 100;
 
     public static final int DEFAULT_SCROLL_KEEP_ALIVE = 60;
