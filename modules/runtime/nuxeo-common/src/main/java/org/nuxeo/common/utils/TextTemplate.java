@@ -316,7 +316,7 @@ public class TextTemplate {
      */
     @SuppressWarnings("unchecked")
     public void initFreeMarker() {
-        freemarkerConfiguration = new Configuration(Configuration.getVersion());
+        freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_30);
         preprocessVars();
         freemarkerVars = new HashMap<>();
         Map<String, Object> currentMap;
