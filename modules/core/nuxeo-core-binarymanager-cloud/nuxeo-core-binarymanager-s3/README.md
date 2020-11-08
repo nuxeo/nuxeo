@@ -6,7 +6,7 @@ file will have your AWS identifiers (unless you are using instance roles).
 
 # Mandatory parameters
 
-- nuxeo.core.binarymanager=org.nuxeo.ecm.core.storage.sql.S3BinaryManager
+- nuxeo.core.binarymanager=org.nuxeo.ecm.blob.s3.S3BlobProvider
 
 - nuxeo.s3storage.bucket : the name of the S3 bucket (unique across all of
   Amazon, find something original!)

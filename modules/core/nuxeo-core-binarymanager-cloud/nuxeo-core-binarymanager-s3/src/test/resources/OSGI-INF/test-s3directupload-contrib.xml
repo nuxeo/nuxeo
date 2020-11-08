@@ -5,7 +5,7 @@
   <!-- it is the source blobProvider -->
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobprovider name="s3DUBlobProviderSource">
-      <class>org.nuxeo.ecm.core.storage.sql.S3BinaryManager</class>
+      <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
       <property name="awsid">${nuxeo.s3storage.transient.awsid}</property>
       <property name="awssecret">${nuxeo.s3storage.transient.awssecret}</property>
       <property name="awstoken">${nuxeo.s3storage.transient.awstoken}</property>
@@ -27,7 +27,7 @@
   <!-- it is the destination blobProvider -->
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobprovider name="s3DUBlobProviderDestination">
-      <class>org.nuxeo.ecm.core.storage.sql.S3BinaryManager</class>
+      <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
       <property name="awsid">${nuxeo.s3storage.transient.awsid}</property>
       <property name="awssecret">${nuxeo.s3storage.transient.awssecret}</property>
       <property name="awstoken">${nuxeo.s3storage.transient.awstoken}</property>
