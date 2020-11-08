@@ -440,7 +440,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         try {
             result = amazonS3.getObjectLockConfiguration(request);
         } catch (AmazonServiceException e) {
-            log.warn("Failed to get ObjectLockConfiguration for bucket: {}", bucketName, e);
+            log.debug("Failed to get ObjectLockConfiguration for bucket: {}", bucketName, e);
             return null;
         }
         return Optional.ofNullable(result.getObjectLockConfiguration())
