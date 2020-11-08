@@ -31,6 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.usermapper.service.UserMapperService;
 import org.nuxeo.usermapper.test.dummy.DummyUser;
 
@@ -80,6 +81,22 @@ public class TestUserMapperService {
         Assert.assertEquals("Jacky", principal.getFirstName());
         Assert.assertEquals("Chan2", principal.getLastName());
 
+        TransactionHelper.runInTransaction(() -> {
+            UserProfileService ups = Framework.getService(UserProfileService.class);
+            DocumentModel profile = ups.getUserProfileDocument("jchan", session);
+            Assert.assertEquals("555.666.7777", profile.getPropertyValue("userprofile:phonenumber"));
+        });
+    }
+
+    // user mappers are called from the auth stack where the transaction isn't started
+    @Test
+    public void testJavaContribNoTransaction() throws Exception {
+        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            testJavaContrib();
+        } finally {
+            TransactionHelper.startTransaction();
+        }
     }
 
     @Test

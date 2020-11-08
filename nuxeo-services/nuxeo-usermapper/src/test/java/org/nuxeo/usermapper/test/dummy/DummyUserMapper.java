@@ -57,6 +57,7 @@ public class DummyUserMapper extends AbstractUserMapper implements UserMapper {
             if (du.getName().getLastName() != null) {
                 userAttributes.put("lastName", du.getName().getLastName());
             }
+            profileAttributes.put("userprofile:phonenumber", "555.666.7777");
         }
     }
 

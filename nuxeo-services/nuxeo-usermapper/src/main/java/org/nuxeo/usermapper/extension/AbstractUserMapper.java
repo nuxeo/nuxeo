@@ -27,16 +27,17 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.center.profile.UserProfileService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Provide default implementation for interaction with the {@link UserManager}.
@@ -113,13 +114,10 @@ public abstract class AbstractUserMapper implements UserMapper {
                 final String login = (String) userModel.getPropertyValue(userManager.getUserIdField());
 
                 String repoName = Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
-                new UnrestrictedSessionRunner(repoName) {
-                    @Override
-                    public void run() {
-                        DocumentModel profile = UPS.getUserProfileDocument(login, session);
-                        updateProfile(session, profileAttributes, profile);
-                    }
-                }.runUnrestricted();
+                TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repoName, session -> {
+                    DocumentModel profile = UPS.getUserProfileDocument(login, session);
+                    updateProfile(session, profileAttributes, profile);
+                }));
             }
         }
 
