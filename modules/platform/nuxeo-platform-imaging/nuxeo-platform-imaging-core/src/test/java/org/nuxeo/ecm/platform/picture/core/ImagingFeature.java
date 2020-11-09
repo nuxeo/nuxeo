@@ -27,8 +27,6 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  * since 11.3
  */
 @Features(AutomationCoreFeature.class)
-@Deploy("org.nuxeo.ecm.platform.picture.api")
-@Deploy("org.nuxeo.ecm.platform.picture.convert")
 @Deploy("org.nuxeo.ecm.platform.picture.core")
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.actions")

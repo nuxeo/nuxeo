@@ -38,7 +38,11 @@ Nuxeo-Component: OSGI-INF/imaging-service-framework.xml,
  OSGI-INF/operations-contrib.xml,
  OSGI-INF/picture-renditions-contrib.xml,
  OSGI-INF/imaging-base-properties.xml,
- OSGI-INF/preview-adapter-contrib.xml
+ OSGI-INF/preview-adapter-contrib.xml,
+ OSGI-INF/picture-adapter-contrib.xml,
+ OSGI-INF/picture-blobholder-contrib.xml,
+ OSGI-INF/picture-metadata-contrib.xml,
+ OSGI-INF/convert-service-contrib.xml
 Import-Package: com.drew.imaging.jpeg,
  com.drew.metadata,
  com.drew.metadata.iptc,
