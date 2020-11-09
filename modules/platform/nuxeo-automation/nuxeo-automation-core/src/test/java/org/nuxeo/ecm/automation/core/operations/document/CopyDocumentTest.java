@@ -129,4 +129,19 @@ public class CopyDocumentTest {
             assertEquals(initialLifeCycleState, result.getCurrentLifeCycleState());
         }
     }
+
+    @Test
+    public void testVersionNotNullOnCopy() throws OperationException {
+        DocumentModel source = session.createDocumentModel(ROOT, "Source", FILE);
+        source = session.createDocument(source);
+
+        Map<String, Serializable> params = Map.of(TARGET_PROPERTY_KEY, ROOT, NAME_PROPERTY_KEY, COPY_DOC_NAME);
+
+        try (OperationContext context = new OperationContext(session)) {
+            context.setInput(source);
+            DocumentModel result = (DocumentModel) automationService.run(context, CopyDocument.ID, params);
+            assertEquals(0, (long) result.getPropertyValue("uid:major_version"));
+            assertEquals(0, (long) result.getPropertyValue("uid:minor_version"));
+        }
+    }
 }
