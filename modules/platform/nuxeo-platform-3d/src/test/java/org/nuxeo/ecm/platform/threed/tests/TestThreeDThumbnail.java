@@ -64,8 +64,6 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.platform.picture.core")
-@Deploy("org.nuxeo.ecm.platform.picture.api")
-@Deploy("org.nuxeo.ecm.platform.picture.convert")
 @Deploy("org.nuxeo.ecm.platform.rendition.core")
 @Deploy("org.nuxeo.ecm.platform.threed")
 @Deploy("org.nuxeo.ecm.platform.threed.test:OSGI-INF/threed-disable-listeners-contrib.xml")

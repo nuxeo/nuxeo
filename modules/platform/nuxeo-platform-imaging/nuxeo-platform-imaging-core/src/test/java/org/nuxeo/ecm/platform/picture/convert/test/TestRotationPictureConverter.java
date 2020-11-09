@@ -23,10 +23,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
+import org.nuxeo.ecm.platform.picture.core.ImagingFeature;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -35,15 +34,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @author Vincent Vergnolle
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.platform.picture.convert")
-public class TestResizePictureConverter {
+@Features(ImagingFeature.class)
+public class TestRotationPictureConverter {
 
     @Test
-    public void iShouldHaveResizePictureConverterRegistered() {
-        ConverterCheckResult check = Framework.getService(ConversionService.class).isConverterAvailable(
-                ImagingConvertConstants.OPERATION_RESIZE);
+    public void iShouldHaveRotationPictureConverterRegistered() {
+        ConverterCheckResult check = Framework.getService(ConversionService.class)
+                                              .isConverterAvailable(ImagingConvertConstants.OPERATION_ROTATE);
         Assert.assertTrue(check.isAvailable());
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     Vincent Vergnolle
+ *     Miguel Nixo
  */
 package org.nuxeo.ecm.platform.picture.convert.test;
 
@@ -23,26 +23,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
+import org.nuxeo.ecm.platform.picture.core.ImagingFeature;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
- * @since 7.1
- * @author Vincent Vergnolle
+ * @since 8.4
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.platform.picture.convert")
-public class TestCropPictureConverter {
+@Features(ImagingFeature.class)
+public class TestConvertToPDFPictureConverter {
 
     @Test
-    public void iShouldHaveCropPictureConverterRegistered() {
-        ConverterCheckResult check = Framework.getService(ConversionService.class).isConverterAvailable(
-                ImagingConvertConstants.OPERATION_CROP);
+    public void iShouldHaveConvertToPDFPictureConverterRegistered() {
+        ConverterCheckResult check = Framework.getService(ConversionService.class)
+                                              .isConverterAvailable(ImagingConvertConstants.OPERATION_CONVERT_TO_PDF);
 
         Assert.assertTrue(check.isAvailable());
     }
