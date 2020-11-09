@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.liveconnect.google.drive.test2" version="1.0.0">
+  <require>org.nuxeo.ecm.liveconnect.google.drive.core.GoogleDriveComponent</require>
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="googledrive">
+      <property name="preventUserUpdate">true</property>
+    </blobprovider>
+  </extension>
+
+</component>

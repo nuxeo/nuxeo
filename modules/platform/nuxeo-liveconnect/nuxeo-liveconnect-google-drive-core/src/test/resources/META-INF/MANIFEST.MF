@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Bundle-Version: 1.0.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo Live Connect Core for Google Drive Tests
-Bundle-SymbolicName: org.nuxeo.ecm.liveconnect.google.drive.core.test;singleton:=true

@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo Live Connect Core for Box
-Bundle-SymbolicName: org.nuxeo.ecm.liveconnect.box.core;singleton:=true
-Bundle-Version: 1.0.0
-Nuxeo-Component: OSGI-INF/box-config.xml,
- OSGI-INF/cache-config.xml,
- OSGI-INF/box-pageprovider-contrib.xml

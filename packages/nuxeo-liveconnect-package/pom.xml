@@ -13,8 +13,8 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.liveconnect</groupId>
-      <artifactId>nuxeo-liveconnect-core-dependencies</artifactId>
-      <type>pom</type>
+      <artifactId>nuxeo-liveconnect</artifactId>
     </dependency>
   </dependencies>
+
 </project>

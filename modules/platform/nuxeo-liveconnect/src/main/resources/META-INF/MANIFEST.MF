@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Live Connect
+Bundle-SymbolicName: org.nuxeo.ecm.liveconnect;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/liveconnect-core-types-contrib.xml,
+ OSGI-INF/liveconnect-scheduler-contrib.xml,
+ OSGI-INF/liveconnect-workmanager-contrib.xml,
+ OSGI-INF/liveconnect-box-cache-config.xml,
+ OSGI-INF/liveconnect-box-config.xml,
+ OSGI-INF/liveconnect-box-pageprovider-contrib.xml,
+ OSGI-INF/liveconnect-googledrive-cache-config.xml,
+ OSGI-INF/liveconnect-googledrive-config.xml,
+ OSGI-INF/liveconnect-googledrive-convert-service-contrib.xml,
+ OSGI-INF/liveconnect-googledrive-mimetype-contrib.xml,
+ OSGI-INF/liveconnect-googledrive-pageprovider-contrib.xml
