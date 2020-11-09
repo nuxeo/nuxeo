@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.liveconnect.google.drive.core.GoogleDriveComponent" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.blob.BlobManager</require>
+  <require>org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry</require>
+
+  <documentation>
+    Management of Google Drive configuration.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry" point="providers">
+    <provider>
+      <name>googledrive</name>
+      <description>Google Drive</description>
+      <class>org.nuxeo.ecm.liveconnect.google.drive.GoogleOAuth2ServiceProvider</class>
+      <tokenServerURL>https://accounts.google.com/o/oauth2/token</tokenServerURL>
+      <authorizationServerURL>https://accounts.google.com/o/oauth2/auth?access_type=offline&amp;approval_prompt=force</authorizationServerURL>
+      <scope>https://www.googleapis.com/auth/drive</scope>
+      <scope>https://www.googleapis.com/auth/drive.apps.readonly</scope>
+      <scope>email</scope>
+      <clientId>${nuxeo.google.clientId:=}</clientId>
+    </provider>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="googledrive">
+      <class>org.nuxeo.ecm.liveconnect.google.drive.GoogleDriveBlobProvider</class>
+      <property name="serviceAccountId">${nuxeo.google.serviceAccountId:=}</property>
+      <property name="serviceAccountP12Path">${nuxeo.google.serviceAccountP12Path:=}</property>
+      <property name="clientId">${nuxeo.google.clientId:=}</property>
+    </blobprovider>
+  </extension>
+
+</component>

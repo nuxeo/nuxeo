@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.liveconnect.google.drive.core.converters">
+  <require>org.nuxeo.ecm.core.convert.plugins</require>
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+             point="converter">
+
+    <!-- PDF converter for Google Drive native files -->
+    <converter name="googlePDFExport" class="org.nuxeo.ecm.liveconnect.google.drive.converter.GoogleDriveBlobConverter">
+      <sourceMimeType>application/vnd.google-apps</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.document</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.presentation</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.spreadsheet</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.drawing</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.form</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.fusiontable</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.photo</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.script</sourceMimeType>
+      <destinationMimeType>application/pdf</destinationMimeType>
+    </converter>
+
+    <!-- Text converter for files supporting text export -->
+    <converter name="googleTextExport" class="org.nuxeo.ecm.liveconnect.google.drive.converter.GoogleDriveBlobConverter">
+      <destinationMimeType>text/plain</destinationMimeType>
+      <sourceMimeType>application/vnd.google-apps.document</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.presentation</sourceMimeType>
+    </converter>
+
+    <!-- Text converter for files without a plain text export -->
+    <converter name="google2text">
+      <destinationMimeType>text/plain</destinationMimeType>
+      <sourceMimeType>application/vnd.google-apps.spreadsheet</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.drawing</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.form</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.fusiontable</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.photo</sourceMimeType>
+      <sourceMimeType>application/vnd.google-apps.script</sourceMimeType>
+      <conversionSteps>
+        <subconverter>googlePDFExport</subconverter>
+        <subconverter>pdf2text</subconverter>
+      </conversionSteps>
+    </converter>
+
+    <!-- HTML converter for files supporting HTML export -->
+    <converter name="googleHtmlExport" class="org.nuxeo.ecm.liveconnect.google.drive.converter.GoogleDriveBlobConverter">
+      <destinationMimeType>text/html</destinationMimeType>
+      <sourceMimeType>application/vnd.google-apps.document</sourceMimeType>
+    </converter>
+  </extension>
+</component>

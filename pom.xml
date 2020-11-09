@@ -1717,30 +1717,14 @@
       <!-- Live Connect -->
       <dependency>
         <groupId>org.nuxeo.ecm.liveconnect</groupId>
-        <artifactId>nuxeo-liveconnect-core</artifactId>
+        <artifactId>nuxeo-liveconnect</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.liveconnect</groupId>
-        <artifactId>nuxeo-liveconnect-core-dependencies</artifactId>
-        <type>pom</type>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.liveconnect</groupId>
-        <artifactId>nuxeo-liveconnect-google-drive-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.liveconnect</groupId>
-        <artifactId>nuxeo-liveconnect-google-drive-core</artifactId>
+        <artifactId>nuxeo-liveconnect</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>test-jar</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.liveconnect</groupId>
-        <artifactId>nuxeo-liveconnect-box-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
       </dependency>
 
       <!-- PDF Utils -->
