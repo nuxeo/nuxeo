@@ -46,6 +46,8 @@ public abstract class AbstractSearchRequestFilterImpl implements SearchRequestFi
 
     protected String payload;
     protected String rawQuery;
+    /** @deprecated since 11.4, types have been removed since Elasticsearch 7.x */
+    @Deprecated(since = "11.4", forRemoval = true)
     protected String types;
     protected String indices;
     protected NuxeoPrincipal principal;
@@ -57,10 +59,9 @@ public abstract class AbstractSearchRequestFilterImpl implements SearchRequestFi
     }
 
     @Override
-    public void init(CoreSession session, String indices, String types, String rawQuery, String payload) {
+    public void init(CoreSession session, String indices, String rawQuery, String payload) {
         RequestValidator validator = new RequestValidator();
         this.indices = validator.getIndices(indices);
-        this.types = validator.getTypes(this.indices, types);
         this.principal = session.getPrincipal();
         this.rawQuery = rawQuery;
         this.payload = payload;
@@ -95,7 +96,7 @@ public abstract class AbstractSearchRequestFilterImpl implements SearchRequestFi
     @Override
     public @NotNull String getUrl() {
         if (url == null) {
-            url = "/" + indices + "/" + types + "/_search";
+            url = "/" + indices + "/_search";
             if (rawQuery != null) {
                 url += "?" + rawQuery;
             }

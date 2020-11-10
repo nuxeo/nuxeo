@@ -47,23 +47,21 @@ public class TestAuditRequestFilter {
     ElasticSearchAdmin esa;
 
     @Test
-    public void testMatchAllAuditAsAdmin() throws Exception {
+    public void testMatchAllAuditAsAdmin() {
         String payload = "{\"query\": {\"match_all\": {}}}";
         AuditRequestFilter filter = new AuditRequestFilter();
         filter.init(TestSearchRequestFilter.getAdminCoreSession(),
-                esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE), ElasticSearchConstants.ENTRY_TYPE,
-                "pretty", payload);
+                esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE), "pretty", payload);
         Assert.assertEquals(payload, filter.getPayload());
     }
 
     @Test
-    public void testMatchAllAudigtAsNonAdmin() throws Exception {
+    public void testMatchAllAuditAsNonAdmin() {
         String payload = "{\"query\": {\"match_all\": {}}}";
         AuditRequestFilter filter = new AuditRequestFilter();
         try {
             filter.init(TestSearchRequestFilter.getNonAdminCoreSession(),
-                    esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE), ElasticSearchConstants.ENTRY_TYPE,
-                    "pretty", payload);
+                    esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE), "pretty", payload);
         } catch (IllegalArgumentException e) {
             // Expected
             return;
