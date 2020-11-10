@@ -47,14 +47,18 @@ public class TestRequestValidator {
     }
 
     @Test
-    public void testCheckValidDocumentId() throws Exception {
+    public void testCheckValidDocumentId() {
         validator.checkValidDocumentId("123");
         exception.expect(IllegalArgumentException.class);
         validator.checkValidDocumentId(null);
     }
 
+    /**
+     * @deprecated since 11.4
+     */
     @Test
-    public void testGetTypes() throws Exception {
+    @Deprecated(since = "11.4", forRemoval = true)
+    public void testGetTypes() {
         validator.getTypes("nxutest", "doc");
         validator.getTypes("nxutest", "doc,doc");
         String types = validator.getTypes("nxutest", null);
@@ -65,20 +69,28 @@ public class TestRequestValidator {
         Assert.assertEquals("doc", types);
     }
 
+    /**
+     * @deprecated since 11.4
+     */
     @Test
+    @Deprecated(since = "11.4", forRemoval = true)
     public void testGetInvalidTypes1() {
         exception.expect(IllegalArgumentException.class);
         validator.getTypes("nxutest", "unexisting");
     }
 
+    /**
+     * @deprecated since 11.4
+     */
     @Test
+    @Deprecated(since = "11.4", forRemoval = true)
     public void testGetInvalidTypes2() {
         exception.expect(IllegalArgumentException.class);
         validator.getTypes("nxutest", "doc, doc");
     }
 
     @Test
-    public void testGetIndices() throws Exception {
+    public void testGetIndices() {
         validator.getIndices("nxutest");
         validator.getIndices("nxutest,nxutest");
         String indices = validator.getIndices(null);
@@ -109,16 +121,14 @@ public class TestRequestValidator {
 
     @Test
     public void testHasAccessAllowed() throws JSONException {
-        validator.checkAccess(
-                TestSearchRequestFilter.getNonAdminPrincipal(),
+        validator.checkAccess(TestSearchRequestFilter.getNonAdminPrincipal(),
                 "{\"_index\":\"nuxeo\",\"_type\":\"doc\",\"_id\":\"f1714dd9-ba3e-4c1a-845f-0cd2f7defd7c\",\"_version\":1,\"found\":true,\"fields\":{\"ecm:acl\":[\"Administrator\",\"members\"]}}");
     }
 
     @Test
     public void testHasAccessDenied() throws JSONException {
         exception.expect(SecurityException.class);
-        validator.checkAccess(
-                TestSearchRequestFilter.getNonAdminPrincipal(),
+        validator.checkAccess(TestSearchRequestFilter.getNonAdminPrincipal(),
                 "{\"_index\":\"nuxeo\",\"_type\":\"doc\",\"_id\":\"f1714dd9-ba3e-4c1a-845f-0cd2f7defd7c\",\"_version\":1,\"found\":true,\"fields\":{\"ecm:acl\":[\"Administrator\"]}}");
     }
 

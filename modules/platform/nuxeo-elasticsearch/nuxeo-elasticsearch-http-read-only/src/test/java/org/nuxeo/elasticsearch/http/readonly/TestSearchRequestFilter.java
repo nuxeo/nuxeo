@@ -43,56 +43,53 @@ public class TestSearchRequestFilter {
 
     private static final String INDICES = "nxutest";
 
-    private static final String TYPES = "doc";
-
     @Test
-    public void testMatchAll() throws Exception {
+    public void testMatchAll() {
         String payload = "{\"query\": {\"match_all\": {}}}";
         DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
-        filter.init(getNonAdminCoreSession(), INDICES, TYPES, "pretty", payload);
-        Assert.assertEquals("/nxutest/doc/_search?pretty", filter.getUrl());
+        filter.init(getNonAdminCoreSession(), INDICES, "pretty", payload);
+        Assert.assertEquals("/nxutest/_search?pretty", filter.getUrl());
         Assert.assertEquals(
                 "{\"query\":{\"bool\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"must\":{\"match_all\":{}}}}}",
                 filter.getPayload());
     }
 
     @Test
-    public void testMatchAllAsAdmin() throws Exception {
+    public void testMatchAllAsAdmin() {
         String payload = "{\"query\": {\"match_all\": {}}}";
         DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
-        filter.init(getAdminCoreSession(), INDICES, TYPES, "pretty", payload);
-        Assert.assertEquals("/nxutest/doc/_search?pretty", filter.getUrl());
+        filter.init(getAdminCoreSession(), INDICES, "pretty", payload);
+        Assert.assertEquals("/nxutest/_search?pretty", filter.getUrl());
         Assert.assertEquals(payload, filter.getPayload());
     }
 
     @Test
-    public void testUriSearch() throws Exception {
+    public void testUriSearch() {
         DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
-        filter.init(getNonAdminCoreSession(), INDICES, TYPES,
-                "size=2&q=dc%5C%3Atitle:Workspaces", null);
-        Assert.assertEquals(filter.getUrl(), "/nxutest/doc/_search?size=2");
+        filter.init(getNonAdminCoreSession(), INDICES, "size=2&q=dc%5C%3Atitle:Workspaces", null);
+        Assert.assertEquals(filter.getUrl(), "/nxutest/_search?size=2");
         Assert.assertEquals(
                 "{\"query\":{\"bool\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"must\":{\"query_string\":{\"default_operator\":\"OR\",\"query\":\"dc\\:title:Workspaces\",\"default_field\":\"_all\"}}}}}",
                 filter.getPayload());
     }
 
     @Test
-    public void testUriSearchWithDefaultFieldAndOperator() throws Exception {
+    public void testUriSearchWithDefaultFieldAndOperator() {
         DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
-        filter.init(getNonAdminCoreSession(), INDICES, TYPES,
+        filter.init(getNonAdminCoreSession(), INDICES,
                 "q=dc\\:title:Workspaces&pretty&df=dc:title&default_operator=AND", null);
-        Assert.assertEquals(filter.getUrl(), "/nxutest/doc/_search?pretty");
-        Assert.assertEquals("{\"query\":{\"bool\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"must\":{\"query_string\":{\"default_operator\":\"AND\",\"query\":\"dc\\:title:Workspaces\",\"default_field\":\"dc:title\"}}}}}",
+        Assert.assertEquals(filter.getUrl(), "/nxutest/_search?pretty");
+        Assert.assertEquals(
+                "{\"query\":{\"bool\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"must\":{\"query_string\":{\"default_operator\":\"AND\",\"query\":\"dc\\:title:Workspaces\",\"default_field\":\"dc:title\"}}}}}",
                 filter.getPayload());
     }
 
     @Test
-    public void testUriSearchAsAdmin() throws Exception {
+    public void testUriSearchAsAdmin() {
         DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
-        filter.init(getAdminCoreSession(), INDICES, TYPES,
-                "size=2&q=dc\\:title:Workspaces", null);
-        Assert.assertEquals("/nxutest/doc/_search?size=2&q=dc\\:title:Workspaces", filter.getUrl());
-        Assert.assertEquals(null, filter.getPayload());
+        filter.init(getAdminCoreSession(), INDICES, "size=2&q=dc\\:title:Workspaces", null);
+        Assert.assertEquals("/nxutest/_search?size=2&q=dc\\:title:Workspaces", filter.getUrl());
+        Assert.assertNull(filter.getPayload());
     }
 
     /**

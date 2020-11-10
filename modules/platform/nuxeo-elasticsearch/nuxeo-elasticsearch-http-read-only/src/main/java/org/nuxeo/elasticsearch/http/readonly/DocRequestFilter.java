@@ -32,23 +32,33 @@ public class DocRequestFilter {
 
     private final String indices;
 
-    private final String types;
+    /** @deprecated since 11.4, types have been removed since Elasticsearch 7.x */
+    @Deprecated(since = "11.4", forRemoval = true)
+    private final String types = null;
 
     private final String documentId;
 
     private final String rawQuery;
 
-    public DocRequestFilter(NuxeoPrincipal principal, String indices, String types, String documentId,
-            String rawQuery) {
+    public DocRequestFilter(NuxeoPrincipal principal, String indices, String documentId, String rawQuery) {
         this.principal = principal;
         this.indices = indices;
-        this.types = types;
         this.documentId = documentId;
         this.rawQuery = rawQuery;
     }
 
+    /**
+     * @deprecated since 11.4, types have been removed since Elasticsearch 7.x, use
+     *             {@link #DocRequestFilter(NuxeoPrincipal, String, String, String)} instead
+     */
+    @Deprecated(since = "11.4", forRemoval = true)
+    public DocRequestFilter(NuxeoPrincipal principal, String indices, String types, String documentId,
+            String rawQuery) {
+        this(principal, indices, documentId, rawQuery);
+    }
+
     protected @NotNull String getUrl() {
-        String url = "/" + indices + "/" + types + "/" + documentId;
+        String url = "/" + indices + "/" + documentId;
         if (rawQuery != null) {
             url += "?" + rawQuery;
         }
@@ -61,6 +71,6 @@ public class DocRequestFilter {
     }
 
     public String getCheckAccessUrl() {
-        return "/" + indices + "/" + types + "/" + documentId + "?fields=ecm:acl";
+        return "/" + indices + "/" + documentId + "?fields=ecm:acl";
     }
 }

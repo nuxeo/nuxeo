@@ -61,6 +61,11 @@ public class RequestValidator {
         }
     }
 
+
+    /**
+     * @deprecated since 11.4, types have been removed since Elasticsearch 7.x
+     */
+    @Deprecated(since = "11.4", forRemoval = true)
     public @NotNull String getTypes(String indices, String types) {
         Set<String> validTypes = new HashSet<>();
         for (String index : indices.split(",")) {

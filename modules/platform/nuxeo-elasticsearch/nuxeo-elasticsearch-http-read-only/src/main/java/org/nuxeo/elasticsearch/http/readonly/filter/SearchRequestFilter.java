@@ -27,12 +27,28 @@ public interface SearchRequestFilter {
 
     String getPayload() throws JSONException;
 
-    void init(CoreSession session, String indices, String types, String rawQuery, String payload);
+    /**
+     * @deprecated since 11.4, types have been removed since Elasticsearch 7.x, use
+     *             {@link #init(CoreSession, String, String, String)} instead
+     */
+    @Deprecated(since = "11.4", forRemoval = true)
+    default void init(CoreSession session, String indices, String types, String rawQuery, String payload) {
+        init(session, indices, rawQuery, payload);
+    }
+
+    /**
+     * @since 11.4
+     */
+    void init(CoreSession session, String indices, String rawQuery, String payload);
 
     String getUrl();
 
     String getIndices();
 
+    /**
+     * @deprecated since 11.4, types have been removed since Elasticsearch 7.x
+     */
+    @Deprecated(since = "11.4", forRemoval = true)
     String getTypes();
 
 }
