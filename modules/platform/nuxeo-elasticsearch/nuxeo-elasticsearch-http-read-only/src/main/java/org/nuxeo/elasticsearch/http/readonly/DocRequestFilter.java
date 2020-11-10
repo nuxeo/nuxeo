@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,8 @@ public class DocRequestFilter {
 
     private final String rawQuery;
 
-    public DocRequestFilter(NuxeoPrincipal principal, String indices, String types, String documentId, String rawQuery) {
+    public DocRequestFilter(NuxeoPrincipal principal, String indices, String types, String documentId,
+            String rawQuery) {
         this.principal = principal;
         this.indices = indices;
         this.types = types;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 package org.nuxeo.elasticsearch.http.readonly;
 
 import java.io.IOException;
+
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -31,16 +32,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.elasticsearch.http.readonly.filter.DefaultSearchRequestFilter;
 import org.nuxeo.elasticsearch.http.readonly.filter.RequestValidator;
 import org.nuxeo.elasticsearch.http.readonly.filter.SearchRequestFilter;
 import org.nuxeo.elasticsearch.http.readonly.service.RequestFilterService;
-import org.nuxeo.elasticsearch.http.readonly.filter.DefaultSearchRequestFilter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -51,18 +52,19 @@ import org.nuxeo.runtime.api.Framework;
 @Path("/es")
 @WebObject(type = "es")
 public class Main extends ModuleRoot {
-    private static final Log log = LogFactory.getLog(Main.class);
+    private static final Logger log = LogManager.getLogger(Main.class);
+
     private static final String DEFAULT_ES_BASE_URL = "http://localhost:9200/";
+
     private static final java.lang.String ES_BASE_URL_PROPERTY = "elasticsearch.httpReadOnly.baseUrl";
+
     private String esBaseUrl;
 
     public Main() {
         super();
         if (getContext() == null) {
         }
-        if (log.isDebugEnabled()) {
-            log.debug("New instance of ES module");
-        }
+        log.debug("New instance of ES module");
     }
 
     @GET
@@ -133,7 +135,7 @@ public class Main extends ModuleRoot {
             log.debug(req);
             return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
         } catch (ReflectiveOperationException e) {
-            log.error("Error when trying to get Search Request Filter for indice " + indices, e);
+            log.error("Error when trying to get Search Request Filter for indice {}", indices, e);
             return null;
         }
     }
@@ -141,11 +143,10 @@ public class Main extends ModuleRoot {
     @GET
     @Path("{indices}/{types}/_search")
     @Produces(MediaType.APPLICATION_JSON)
-    public String searchWithUri(@PathParam("indices") String indices, @PathParam("types") String types, @Context UriInfo uriInf)
-            throws IOException, JSONException {
+    public String searchWithUri(@PathParam("indices") String indices, @PathParam("types") String types,
+            @Context UriInfo uriInf) throws IOException, JSONException {
         DefaultSearchRequestFilter req = new DefaultSearchRequestFilter();
-        req.init(getContext().getCoreSession(), indices, types,
-                uriInf.getRequestUri().getRawQuery(), null);
+        req.init(getContext().getCoreSession(), indices, types, uriInf.getRequestUri().getRawQuery(), null);
         log.debug(req);
         return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
     }

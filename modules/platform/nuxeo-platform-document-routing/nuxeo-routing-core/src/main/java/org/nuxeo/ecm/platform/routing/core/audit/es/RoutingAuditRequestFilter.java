@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,13 +94,12 @@ public class RoutingAuditRequestFilter extends AuditRequestFilter {
                 }
 
                 JSONObject wfModelFilter = new JSONObject().put("terms",
-                        new JSONObject().put("extended.modelName", modelNames.toArray(new String[modelNames.size()])));
+                        new JSONObject().put("extended.modelName", modelNames.toArray(new String[0])));
 
                 fs.put(wfModelFilter);
             }
 
-            JSONObject newQuery = new JSONObject().put("bool",
-                    new JSONObject().put("must", query).put("filter", fs));
+            JSONObject newQuery = new JSONObject().put("bool", new JSONObject().put("must", query).put("filter", fs));
             payloadJson.put("query", newQuery);
             filteredPayload = payloadJson.toString();
             if (filteredPayload.contains(BACKSLASH_MARKER)) {
