@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -322,8 +322,7 @@ public class MongoDBConnection extends DBSConnectionBase {
         Bson filter = Filters.eq(MONGODB_ID, COUNTER_NAME_UUID);
         Document res = countersColl.find(filter).first();
         if (res == null) {
-            throw new NuxeoException(
-                    "Failed to read " + filter + " in collection " + countersColl.getNamespace());
+            throw new NuxeoException("Failed to read " + filter + " in collection " + countersColl.getNamespace());
         }
         Long lastValue = res.getLong(COUNTER_FIELD);
         // find the next value after this block is done
@@ -331,7 +330,7 @@ public class MongoDBConnection extends DBSConnectionBase {
         // store the next value for whoever needs it next
         Bson updateFilter = Filters.and( //
                 filter, //
-                Filters.eq(COUNTER_FIELD, lastValue)
+                Filters.eq(COUNTER_FIELD, lastValue) //
         );
         Bson update = Updates.set(COUNTER_FIELD, newValue);
         log.trace("MongoDB: FINDANDMODIFY {} UPDATE {}", updateFilter, update);
@@ -446,7 +445,7 @@ public class MongoDBConnection extends DBSConnectionBase {
             // Avoid hiding any others bulk errors
             if (duplicates.size() == mbwe.getWriteErrors().size()) {
                 log.trace("MongoDB:    -> DUPLICATE KEY: {}", duplicates);
-                ConcurrentUpdateException concurrentUpdateException = new ConcurrentUpdateException("Concurrent update");
+                var concurrentUpdateException = new ConcurrentUpdateException("Concurrent update");
                 duplicates.forEach(concurrentUpdateException::addInfo);
                 throw concurrentUpdateException;
             }
@@ -879,7 +878,7 @@ public class MongoDBConnection extends DBSConnectionBase {
     @Override
     public Lock setLock(String id, Lock lock) {
         Bson filter = Filters.and( //
-                converter.filterEq(KEY_ID, id),
+                converter.filterEq(KEY_ID, id), //
                 Filters.exists(KEY_LOCK_OWNER, false) // select doc if no lock is set
         );
         Bson setLock = Updates.combine( //
@@ -936,7 +935,7 @@ public class MongoDBConnection extends DBSConnectionBase {
                 return null;
             } else {
                 // return previous lock
-                Calendar oldCreated = (Calendar) converter.bsonToSerializable(KEY_LOCK_CREATED, old.get(KEY_LOCK_CREATED));
+                var oldCreated = (Calendar) converter.bsonToSerializable(KEY_LOCK_CREATED, old.get(KEY_LOCK_CREATED));
                 return new Lock(oldOwner, oldCreated);
             }
         } else {
