@@ -418,6 +418,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         DocumentModel docModel = readModel(doc);
 
         String comment = srcDoc.getRepositoryName() + ':' + src.toString();
+
+        // initialize the copied document version
+        if (!Boolean.TRUE.equals(docModel.getContextData(VersioningService.SKIP_VERSIONING))) {
+            getVersioningService().doPostCreate(doc, options);
+        }
+
         notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel, options, null, comment, true, false);
         docModel = writeModel(doc, docModel);
 
