@@ -169,7 +169,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
         } else {
             idValuesKeys = Set.of();
         }
-        converter = new MongoDBConverter(useCustomId ? null : KEY_ID, DBSSession.TRUE_OR_NULL_BOOLEAN_KEYS, idValuesKeys);
+        converter = new MongoDBConverter(useCustomId ? null : KEY_ID, DBSSession.TRUE_OR_NULL_BOOLEAN_KEYS,
+                idValuesKeys);
         cursorService = new MongoDBCursorService(converter);
 
         // check session and transaction support

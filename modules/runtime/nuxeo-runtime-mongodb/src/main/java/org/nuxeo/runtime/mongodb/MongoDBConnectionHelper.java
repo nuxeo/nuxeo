@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,10 @@ import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.FluentPropertyBeanIntrospector;
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.RuntimeServiceException;
 
 import com.mongodb.MongoClient;
@@ -61,7 +61,7 @@ import com.mongodb.client.MongoIterable;
  */
 public class MongoDBConnectionHelper {
 
-    private static final Log log = LogFactory.getLog(MongoDBConnectionHelper.class);
+    private static final Logger log = LogManager.getLogger(MongoDBConnectionHelper.class);
 
     private static final String DB_DEFAULT = "nuxeo";
 
@@ -194,9 +194,7 @@ public class MongoDBConnectionHelper {
         } else {
             client = new MongoClient(new ServerAddress(server), optionsBuilder.build());
         }
-        if (log.isDebugEnabled()) {
-            log.debug("MongoClient initialized with options: " + client.getMongoClientOptions().toString());
-        }
+        log.debug("MongoClient initialized with options: {}", client::getMongoClientOptions);
         return client;
     }
 
