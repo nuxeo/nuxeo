@@ -85,8 +85,8 @@ pipeline {
     stage('Notify promotion start on slack') {
       steps {
         script {
-          if (env.DRY_RUN != "true") {
-            slackSend(channel: "${SLACK_CHANNEL}", color: "#0167FF", message: "Starting release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
+          if (env.DRY_RUN != 'true') {
+            slackSend(channel: "${SLACK_CHANNEL}", color: '#0167FF', message: "Starting release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
           }
         }
       }
@@ -97,7 +97,7 @@ pipeline {
         script {
           if (params.BUILD_VERSION == '') {
             currentBuild.result = 'ABORTED';
-            currentBuild.description = "Missing required parameter BUILD_VERSION, aborting build."
+            currentBuild.description = 'Missing required parameter BUILD_VERSION, aborting build.'
             error(currentBuild.description)
           }
           echo """
@@ -146,7 +146,7 @@ pipeline {
               git tag -a v${RELEASE_VERSION} -m "Release ${RELEASE_VERSION}"
             """
 
-            if (env.DRY_RUN != "true") {
+            if (env.DRY_RUN != 'true') {
               sh """
                 jx step git credentials
                 git config credential.helper store
@@ -240,7 +240,7 @@ pipeline {
       steps {
         container('maven') {
           script {
-            sh "git checkout master"
+            sh 'git checkout master'
             // increment minor version
             def nextVersion = sh(returnStdout: true, script: "perl -pe 's/\\b(\\d+)(?=\\D*\$)/\$1+1/e' <<< ${CURRENT_VERSION}").trim()
             echo """
@@ -263,7 +263,7 @@ pipeline {
               git commit -a -m "Release ${RELEASE_VERSION}, update ${CURRENT_VERSION} to ${nextVersion}"
             """
 
-            if (env.DRY_RUN != "true") {
+            if (env.DRY_RUN != 'true') {
               sh """
                 jx step git credentials
                 git config credential.helper store
@@ -280,16 +280,16 @@ pipeline {
   post {
     success {
       script {
-        if (env.DRY_RUN != "true") {
+        if (env.DRY_RUN != 'true') {
           currentBuild.description = "Release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}"
-          slackSend(channel: "${SLACK_CHANNEL}", color: "good", message: "Successfully released ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
+          slackSend(channel: "${SLACK_CHANNEL}", color: 'good', message: "Successfully released ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
         }
       }
     }
     unsuccessful {
       script {
-        if (env.DRY_RUN != "true") {
-          slackSend(channel: "${SLACK_CHANNEL}", color: "danger", message: "Failed to release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
+        if (env.DRY_RUN != 'true') {
+          slackSend(channel: "${SLACK_CHANNEL}", color: 'danger', message: "Failed to release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
         }
       }
     }
