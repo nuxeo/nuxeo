@@ -2084,7 +2084,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             throw new PropertyException("Document is not a record");
         }
         Calendar current = doc.getRetainUntil();
-        if (current!=null && retainUntil!=null && current.compareTo(retainUntil) == 0) {
+        if (current != null && retainUntil != null && current.compareTo(retainUntil) == 0) {
             // unchanged, don't do anything
             return;
         }
@@ -2127,11 +2127,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         DocumentModel docModel = readModel(doc);
         Map<String, Serializable> options = new HashMap<>();
         options.put("comment", StringUtils.defaultString(comment));
-        String beforeLegalHoldEvent = hold ? DocumentEventTypes.BEFORE_SET_LEGAL_HOLD : DocumentEventTypes.BEFORE_REMOVE_LEGAL_HOLD;
+        String beforeLegalHoldEvent = hold ? DocumentEventTypes.BEFORE_SET_LEGAL_HOLD
+                : DocumentEventTypes.BEFORE_REMOVE_LEGAL_HOLD;
         notifyEvent(beforeLegalHoldEvent, docModel, options, null, null, true, false);
         doc.setLegalHold(hold);
         docModel = readModel(doc);
-        String afterLegalHoldEvent = hold ? DocumentEventTypes.AFTER_SET_LEGAL_HOLD : DocumentEventTypes.AFTER_REMOVE_LEGAL_HOLD;
+        String afterLegalHoldEvent = hold ? DocumentEventTypes.AFTER_SET_LEGAL_HOLD
+                : DocumentEventTypes.AFTER_REMOVE_LEGAL_HOLD;
         notifyEvent(afterLegalHoldEvent, docModel, options, null, null, true, false);
     }
 
