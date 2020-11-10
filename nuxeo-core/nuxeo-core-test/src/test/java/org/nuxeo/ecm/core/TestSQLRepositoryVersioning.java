@@ -610,6 +610,16 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
+    public void testVersionNotNullOnCopy() {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        DocumentModel copy = session.copy(doc.getRef(), new PathRef("/"), "copy");
+        assertEquals(0, (long) copy.getPropertyValue("uid:major_version"));
+        assertEquals(0, (long) copy.getPropertyValue("uid:minor_version"));
+    }
+
+    @Test
     public void testPublishing() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
