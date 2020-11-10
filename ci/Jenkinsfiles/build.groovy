@@ -53,7 +53,7 @@ String getMavenArgs() {
 }
 
 String getMavenFailArgs() {
-  return (isPullRequest() && pullRequest.labels.contains('failatend')) ? "--fail-at-end" : " "
+  return (isPullRequest() && pullRequest.labels.contains('failatend')) ? '--fail-at-end' : ' '
 }
 
 def isPullRequest() {
@@ -66,7 +66,7 @@ String getVersion() {
 
 String getReleaseVersion() {
   String nuxeoVersion = readMavenPom().getVersion()
-  String noSnapshot = nuxeoVersion.replace("-SNAPSHOT", "")
+  String noSnapshot = nuxeoVersion.replace('-SNAPSHOT', '')
   String version = noSnapshot + '.0' // first version ever
 
   // find the latest tag if any
@@ -141,16 +141,6 @@ void dockerDeploy(String dockerRegistry, String imageName) {
   dockerPush(latestPublicImage)
 }
 
-/**
- * Replaces environment variables present in the given yaml file and then runs skaffold build on it.
- */
-void skaffoldBuild(String yaml) {
-  sh """
-    envsubst < ${yaml} > ${yaml}~gen
-    skaffold build -f ${yaml}~gen
-  """
-}
-
 def rolloutStatus(kind, name, timeout, namespace) {
   sh """
     kubectl rollout status ${kind} ${name} \
@@ -197,7 +187,7 @@ def buildUnitTestStage(env) {
               ----------------------------------------"""
 
               echo "${env} unit tests: install external services"
-              // initialize Helm without Tiller and add local repository
+              // initialize Helm without Tiller and add chart repositories
               sh """
                 helm init --client-only
                 helm repo add elastic https://helm.elastic.co/
@@ -207,8 +197,8 @@ def buildUnitTestStage(env) {
               def testValues = '--set-file=ci/helm/nuxeo-test-base-values.yaml~gen'
               if (!isDev) {
                 testValues += " --set-file=ci/helm/nuxeo-test-${env}-values.yaml~gen"
-                testValues += " --set-file=ci/helm/nuxeo-test-elasticsearch-values.yaml~gen"
-                testValues += " --set-file=ci/helm/nuxeo-test-kafka-values.yaml~gen"
+                testValues += ' --set-file=ci/helm/nuxeo-test-elasticsearch-values.yaml~gen'
+                testValues += ' --set-file=ci/helm/nuxeo-test-kafka-values.yaml~gen'
               }
               // install the nuxeo Helm chart into a dedicated namespace that will be cleaned up afterwards
               sh """
@@ -323,7 +313,7 @@ pipeline {
     TEST_REDIS_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-redis-master"
     TEST_MONGODB_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-mongodb"
     TEST_POSTGRESQL_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-postgresql"
-    TEST_ELASTICSEARCH_K8S_OBJECT = "elasticsearch-master"
+    TEST_ELASTICSEARCH_K8S_OBJECT = 'elasticsearch-master'
     TEST_KAFKA_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-kafka"
     TEST_KAFKA_PORT = '9092'
     TEST_KAFKA_POD_NAME = "${TEST_KAFKA_K8S_OBJECT}-0"
@@ -462,7 +452,7 @@ pipeline {
               Run runtime unit tests
               ----------------------------------------"""
 
-              echo "runtime unit tests: install external services"
+              echo 'runtime unit tests: install external services'
               // initialize Helm without Tiller and add local repository
               sh """
                 helm init --client-only
@@ -480,7 +470,7 @@ pipeline {
               rolloutStatusRedis(testNamespace)
               rolloutStatusKafka(testNamespace)
 
-              echo "runtime unit tests: run Maven"
+              echo 'runtime unit tests: run Maven'
               // run unit tests
               dir('modules/runtime') {
                 retry(2) {
@@ -500,10 +490,10 @@ pipeline {
               throw err
             } finally {
               try {
-                junit testResults: "**/target/surefire-reports/*.xml"
+                junit testResults: '**/target/surefire-reports/*.xml'
                 archiveKafkaLogs(testNamespace, 'runtime-kafka.log')
               } finally {
-                echo "runtime unit tests: clean up test namespace"
+                echo 'runtime unit tests: clean up test namespace'
                 // uninstall the nuxeo Helm chart
                 sh """
                   jx step helm delete ${TEST_HELM_CHART_RELEASE} \
@@ -533,7 +523,7 @@ pipeline {
             // on other environments than the dev one
             // to remove when all test environments will be mandatory
             def errorMessage = err.message
-            if (isPullRequest() && !errorMessage.startsWith("dev:")) {
+            if (isPullRequest() && !errorMessage.startsWith('dev:')) {
               echo """
                 Unit tests error: ${errorMessage}
                 Waiting for NXP-29512, on a PR, the build continues even if there is a unit test error in other
@@ -602,10 +592,10 @@ pipeline {
           ----------------------------------------"""
           runFunctionalTests('ftests')
         }
-        findText regexp: ".*ERROR.*", fileSet: "ftests/nuxeo-server-cmis-tests/**/log/server.log"
-        findText regexp: ".*ERROR.*", fileSet: "ftests/nuxeo-server-hotreload-tests/**/log/server.log"
-        findText regexp: ".*ERROR.*", fileSet: "ftests/nuxeo-server-tests/**/log/server.log"
-        findText regexp: ".*ERROR.*", fileSet: "ftests/nuxeo-jsf-to-web-ui-ftests/**/log/server.log"
+        findText regexp: '.*ERROR.*', fileSet: 'ftests/nuxeo-server-cmis-tests/**/log/server.log'
+        findText regexp: '.*ERROR.*', fileSet: 'ftests/nuxeo-server-hotreload-tests/**/log/server.log'
+        findText regexp: '.*ERROR.*', fileSet: 'ftests/nuxeo-server-tests/**/log/server.log'
+        findText regexp: '.*ERROR.*', fileSet: 'ftests/nuxeo-jsf-to-web-ui-ftests/**/log/server.log'
       }
       post {
         always {
@@ -631,9 +621,9 @@ pipeline {
           Image tag: ${VERSION}
           """
           echo "Build and push Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-          // Fetch Nuxeo Tomcat Server and Nuxeo Content Platform packages with Maven
+          // Fetch Nuxeo Tomcat Server with Maven
           sh "mvn ${MAVEN_ARGS} -T4C -f docker/pom.xml process-resources"
-          skaffoldBuild('docker/skaffold.yaml')
+          sh 'skaffold build -f docker/skaffold.yaml'
         }
       }
       post {
@@ -888,18 +878,18 @@ pipeline {
     }
     success {
       script {
-        if (!isPullRequest() && env.DRY_RUN != "true") {
+        if (!isPullRequest() && env.DRY_RUN != 'true') {
           currentBuild.description = "Build ${VERSION}"
           if(!hudson.model.Result.SUCCESS.toString().equals(currentBuild.getPreviousBuild()?.getResult())) {
-            slackSend(channel: "${SLACK_CHANNEL}", color: "good", message: "Successfully built nuxeo/nuxeo ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
+            slackSend(channel: "${SLACK_CHANNEL}", color: 'good', message: "Successfully built nuxeo/nuxeo ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
           }
         }
       }
     }
     unsuccessful {
       script {
-        if (!isPullRequest() && env.DRY_RUN != "true") {
-          slackSend(channel: "${SLACK_CHANNEL}", color: "danger", message: "Failed to build nuxeo/nuxeo ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
+        if (!isPullRequest() && env.DRY_RUN != 'true') {
+          slackSend(channel: "${SLACK_CHANNEL}", color: 'danger', message: "Failed to build nuxeo/nuxeo ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
         }
       }
     }
