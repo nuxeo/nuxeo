@@ -76,7 +76,7 @@ public class Expression implements Operand {
                 return operator.toString() + ' ' + lvalue.toString();
             }
         } else {
-            return lvalue.toString() + ' ' + operator.toString() + ' ' + rvalue.toString();
+            return '(' + lvalue.toString() + ' ' + operator.toString() + ' ' + rvalue.toString() + ')';
         }
     }
 

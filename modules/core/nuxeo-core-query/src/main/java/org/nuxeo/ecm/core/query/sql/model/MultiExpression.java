@@ -58,14 +58,26 @@ public class MultiExpression extends Predicate {
 
     @Override
     public String toString() {
+        if (predicates.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            // this is not really valid NXQL but sufficient for debugging
+            sb.append(operator);
+            sb.append("()");
+            return sb.toString();
+        }
+        if (predicates.size() == 1) {
+            // here debugging loses the operator, but this shouldn't be an issue for semantics
+            return predicates.get(0).toString();
+        }
         StringBuilder sb = new StringBuilder();
-        sb.append(operator);
         sb.append('(');
         for (Iterator<Predicate> it = predicates.iterator(); it.hasNext();) {
             Predicate predicate = it.next();
             sb.append(predicate.toString());
             if (it.hasNext()) {
-                sb.append(", ");
+                sb.append(' ');
+                sb.append(operator);
+                sb.append(' ');
             }
         }
         sb.append(')');
