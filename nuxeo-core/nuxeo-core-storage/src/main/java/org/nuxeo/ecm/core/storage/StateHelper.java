@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -346,10 +347,10 @@ public class StateHelper {
         if (equalsLoose(a, b)) {
             return NOP;
         }
-        if (a instanceof Object[] && b instanceof Object[]) {
+        if ((a == null || a instanceof Object[]) && b instanceof Object[]) {
             return diff((Object[]) a, (Object[]) b);
         }
-        if (a instanceof List && b instanceof List) {
+        if ((a == null || a instanceof List) && b instanceof List) {
             @SuppressWarnings("unchecked")
             List<Object> la = (List<Object>) a;
             @SuppressWarnings("unchecked")
@@ -364,7 +365,7 @@ public class StateHelper {
     }
 
     public static Serializable diff(Object[] a, Object[] b) {
-        List<Object> la = Arrays.asList(a);
+        List<Object> la = a == null ? null : Arrays.asList(a);
         List<Object> lb = Arrays.asList(b);
         Serializable diff = diff(la, lb);
         if (diff instanceof List) {
@@ -377,11 +378,12 @@ public class StateHelper {
 
     public static Serializable diff(List<Object> a, List<Object> b) {
         ListDiff listDiff = new ListDiff();
-        listDiff.isArray = false;
+        if (a == null) {
+            a = Collections.emptyList();
+        }
         int aSize = a.size();
         int bSize = b.size();
-        // TODO configure zero-length "a" case
-        boolean doRPush = aSize > 0 && aSize < bSize;
+        boolean doRPush = aSize < bSize;
         // we can use a list diff if lists are the same size,
         // or we have a rpush
         boolean doDiff = aSize == bSize || doRPush;
@@ -478,11 +480,35 @@ public class StateHelper {
             }
             Serializable vb = en.getValue();
             if (!equalsLoose(null, vb)) {
-                // value must be added
-                diff.put(key, vb);
+                // value must be set or rpushed
+                diff.put(key, rpushOrValue(vb));
             }
         }
         return diff;
+    }
+
+    /**
+     * Returns a pure rpush ListDiff for the value if it's an array/list.
+     *
+     * @param value the value
+     * @return a pure rpush ListDiff for the value, if possible
+     * @since 11.4
+     */
+    public static Serializable rpushOrValue(Serializable value) {
+        if (value instanceof Object[]) {
+            ListDiff listDiff = new ListDiff();
+            listDiff.isArray = true;
+            listDiff.rpush = Arrays.asList((Object[]) value);
+            return listDiff;
+        } else if (value instanceof List) {
+            ListDiff listDiff = new ListDiff();
+            @SuppressWarnings("unchecked")
+            List<Object> list = (List<Object>) value;
+            listDiff.rpush = list;
+            return listDiff;
+        } else {
+            return value;
+        }
     }
 
     /**
