@@ -179,11 +179,13 @@ public class TestStateHelper {
 
     private static void assertDiff(Serializable expected, Serializable a, Serializable b) {
         Serializable diff = StateHelper.diff(a, b);
-        assertEqualsStrict(diff.toString(), expected, diff);
+        assertEqualsStrict(String.valueOf(diff), expected, diff);
     }
 
     @Test
     public void testDiffList() {
+        assertDiff(NOP, //
+                null, null);
         assertDiff(NOP, //
                 list(), list());
         // overwrite
@@ -192,16 +194,21 @@ public class TestStateHelper {
         assertDiff(list("B", "C"), //
                 list("A"), list("B", "C"));
         // "RPUSH"
+        assertDiff(rpush("A"), //
+                null, list("A"));
+        assertDiff(rpush("A"), //
+                list(), list("A"));
+        assertDiff(rpush("A", "B"), //
+                null, list("A", "B"));
+        assertDiff(rpush("A", "B"), //
+                list(), list("A", "B"));
         assertDiff(rpush("B"), //
                 list("A"), list("A", "B"));
         assertDiff(rpush("C", "D"), //
                 list("A", "B"), list("A", "B", "C", "D"));
-        // overwrite for zero-length "a"
-        assertDiff(list("A"), //
-                list(), list("A"));
-        assertDiff(list("A", "B"), //
-                list(), list("A", "B"));
         // overwrite for zero-length "b"
+        assertDiff(null, //
+                list("A"), null);
         assertDiff(list(), //
                 list("A"), list());
     }
@@ -211,6 +218,15 @@ public class TestStateHelper {
         assertDiff(NOP, //
                 list(state("A", "B"), state("C", "D")), //
                 list(state("A", "B"), state("C", "D")));
+        assertDiff(rpush(state("A", "B")), //
+                null, //
+                list(state("A", "B")));
+        assertDiff(rpush(state("A", "B")), //
+                null, //
+                list(state("A", "B")));
+        assertDiff(rpush(state("A", "B")), //
+                list(), //
+                list(state("A", "B")));
         assertDiff(rpush(state("C", "D")), //
                 list(state("A", "B")), //
                 list(state("A", "B"), state("C", "D")));
@@ -248,6 +264,8 @@ public class TestStateHelper {
         assertDiff(stateDiff("A", "C"), //
                 state("1", "2", "A", "B"), state("1", "2", "A", "C"));
         // changed values which are diffs
+        assertDiff(stateDiff("A", rpush("B")), //
+                state(), state("A", list("B")));
         assertDiff(stateDiff("A", rpush("C")), //
                 state("A", (Serializable) list("B")), state("A", (Serializable) list("B", "C")));
         assertDiff(stateDiff("A", stateDiff("B", "D")), //
