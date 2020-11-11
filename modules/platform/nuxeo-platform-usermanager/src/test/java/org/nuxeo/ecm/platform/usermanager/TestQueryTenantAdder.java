@@ -38,20 +38,20 @@ public class TestQueryTenantAdder {
     @Test
     public void testQueryTenantAdder() {
         Expression expr = Predicates.eq("foo", "bar");
-        check("foo = 'bar'", expr);
+        check("(foo = 'bar')", expr);
         expr = Predicates.eq(GROUP, "admins");
-        check("group = 'admins-tenantA'", expr);
+        check("(group = 'admins-tenantA')", expr);
         expr = Predicates.and(Predicates.eq("foo", "bar"), Predicates.eq(GROUP, "admins"));
-        check("foo = 'bar' AND group = 'admins-tenantA'", expr);
+        check("((foo = 'bar') AND (group = 'admins-tenantA'))", expr);
         expr = new MultiExpression(Operator.AND,
                 Arrays.asList(Predicates.eq("foo", "bar"), Predicates.eq(GROUP, "admins")));
-        check("AND(foo = 'bar', group = 'admins-tenantA')", expr);
+        check("((foo = 'bar') AND (group = 'admins-tenantA'))", expr);
         expr = Predicates.noteq(GROUP, "admins");
-        check("group <> 'admins-tenantA'", expr);
+        check("(group <> 'admins-tenantA')", expr);
         expr = Predicates.in(GROUP, "admins", "supers");
-        check("group IN 'admins-tenantA', 'supers-tenantA'", expr); // toString is for debug, not for real NXQL
+        check("(group IN ('admins-tenantA', 'supers-tenantA'))", expr);
         expr = Predicates.notin(GROUP, "losers");
-        check("group NOT IN 'losers-tenantA'", expr);
+        check("(group NOT IN ('losers-tenantA'))", expr);
 
         // error cases
 

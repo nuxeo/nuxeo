@@ -143,9 +143,9 @@ public class TestDBSQueryOptimizer {
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE " + clause);
         query = getOptimizer().optimize(query);
         Expression expr = query.getWhereClause().predicate;
-        assertEquals("AND(AND(dc:title = 'foo', ecm:primaryType = 't'), " //
-                + "AND(ecm:acl/*1/name = 'local'," //
-                + " AND(ecm:acl/*1/principal = 'bob', ecm:acl/*1/permission = 'Browse')))", expr.toString());
+        assertEquals("(((dc:title = 'foo') AND (ecm:primaryType = 't'))" //
+                + " AND ((ecm:acl/*1/name = 'local')" //
+                + " AND ((ecm:acl/*1/principal = 'bob') AND (ecm:acl/*1/permission = 'Browse'))))", expr.toString());
 
         PrefixInfo info;
 

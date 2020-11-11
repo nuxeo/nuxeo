@@ -1440,18 +1440,18 @@ public class TestUserManager extends UserManagerTestCase {
 
         // basic query, directory configured for "subinitial" substring match type
         query = getQueryForPattern("foo");
-        assertEquals("OR(firstName ILIKE 'foo%', lastName ILIKE 'foo%', username ILIKE 'foo%')",
+        assertEquals("((firstName ILIKE 'foo%') OR (lastName ILIKE 'foo%') OR (username ILIKE 'foo%'))",
                 query);
 
         // query containing wildcards that should be escaped (except if compat)
         query = getQueryForPattern("a_b%c");
         if (!compat) {
             // note: this is a debug string, escapes are not really equivalent to the generated NXQL
-            assertEquals("OR(firstName ILIKE 'a\\_b\\%c%', lastName ILIKE 'a\\_b\\%c%', username ILIKE 'a\\_b\\%c%')",
+            assertEquals("((firstName ILIKE 'a\\_b\\%c%') OR (lastName ILIKE 'a\\_b\\%c%') OR (username ILIKE 'a\\_b\\%c%'))",
                     query);
         } else {
             // compat: we don't escape special characters
-            assertEquals("OR(firstName ILIKE 'a_b%c%', lastName ILIKE 'a_b%c%', username ILIKE 'a_b%c%')", query);
+            assertEquals("((firstName ILIKE 'a_b%c%') OR (lastName ILIKE 'a_b%c%') OR (username ILIKE 'a_b%c%'))", query);
         }
     }
 
