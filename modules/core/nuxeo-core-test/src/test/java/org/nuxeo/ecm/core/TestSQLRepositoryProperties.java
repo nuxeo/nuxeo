@@ -40,8 +40,16 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
@@ -58,6 +66,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
@@ -300,6 +309,73 @@ public class TestSQLRepositoryProperties {
         session = coreFeature.reopenCoreSession();
         doc = session.getDocument(doc.getRef());
         assertEquals(Arrays.asList(values), doc.getPropertyValue("participants"));
+    }
+
+    @Test
+    public void testArrayConcurrentPushToEmpty() throws InterruptedException {
+        doTestArrayConcurrentPush(Collections.emptyList());
+    }
+
+    @Test
+    public void testArrayConcurrentPushToOneElement() throws InterruptedException {
+        doTestArrayConcurrentPush(Arrays.asList("aaa"));
+    }
+
+    protected void doTestArrayConcurrentPush(List<String> start) throws InterruptedException {
+        assumeTrue("push optimization only available on DBS", coreFeature.getStorageConfiguration().isDBS());
+
+        doc.setPropertyValue("tp:stringArray", (Serializable) start);
+        session.saveDocument(doc);
+        session.save();
+        nextTransaction();
+
+        CyclicBarrier barrier = new CyclicBarrier(2);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        List<Exception> exc = Collections.synchronizedList(new ArrayList<>());
+        executor.execute(() -> addValueToDoc("ddd", barrier, exc));
+        executor.execute(() -> addValueToDoc("eee", barrier, exc));
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+        if (!exc.isEmpty()) {
+            NuxeoException e = new NuxeoException("Exceptions in threads");
+            exc.forEach(e::addSuppressed);
+            throw e;
+        }
+
+        nextTransaction();
+        doc.refresh();
+        Object[] array = (Object[]) doc.getPropertyValue("tp:stringArray");
+        Set<String> expected = new HashSet<>(start);
+        expected.add("ddd");
+        expected.add("eee");
+        assertEquals(expected, new HashSet<>(Arrays.asList(array)));
+    }
+
+    protected void addValueToDoc(String value, CyclicBarrier barrier, List<Exception> exc) {
+        try {
+            TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(session, s -> {
+                // wait for both threads to be at the same point
+                try {
+                    barrier.await(5, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new NuxeoException(e);
+                } catch (BrokenBarrierException | TimeoutException e) {
+                    throw new NuxeoException(e);
+                }
+                // add the value to the existing list
+                DocumentModel d = s.getDocument(new PathRef("/doc"));
+                String[] array = (String[]) doc.getPropertyValue("tp:stringArray");
+                List<String> list = array == null ? new ArrayList<>() : new ArrayList<>(Arrays.asList(array));
+                list.add(value);
+                d.setPropertyValue("tp:stringArray", (Serializable) list);
+                s.saveDocument(d);
+                s.save();
+            }));
+        } catch (Exception e) { // NOSONAR
+            exc.add(e);
+            throw e;
+        }
     }
 
     @Test
@@ -548,6 +624,83 @@ public class TestSQLRepositoryProperties {
         Map<String, Serializable> map = (Map<String, Serializable>) list.get(i);
         assertEquals(string, map.get("string"));
         assertEquals(theint == -1 ? null : Long.valueOf(theint), map.get("int"));
+    }
+
+    @Test
+    public void testComplexListConcurrentPushToEmpty() throws InterruptedException {
+        doTestComplexListConcurrentPush(Collections.emptyList());
+    }
+
+    @Test
+    public void testComplexListConcurrentPushToOneElement() throws InterruptedException {
+        doTestComplexListConcurrentPush(Arrays.asList("aaa"));
+    }
+
+    protected void doTestComplexListConcurrentPush(List<String> startStrings) throws InterruptedException {
+        assumeTrue("push optimization only available on DBS", coreFeature.getStorageConfiguration().isDBS());
+
+        List<Map<String, Serializable>> list = new ArrayList<>();
+        for (String string : startStrings) {
+            list.add(Collections.singletonMap("string", string));
+        }
+        doc.setPropertyValue("tp:complexList", (Serializable) list);
+        session.saveDocument(doc);
+        session.save();
+        nextTransaction();
+
+        CyclicBarrier barrier = new CyclicBarrier(2);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        List<Exception> exc = Collections.synchronizedList(new ArrayList<>());
+        executor.execute(() -> addComplexToDoc("ddd", barrier, exc));
+        executor.execute(() -> addComplexToDoc("eee", barrier, exc));
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+        if (!exc.isEmpty()) {
+            NuxeoException e = new NuxeoException("Exceptions in threads");
+            exc.forEach(e::addSuppressed);
+            throw e;
+        }
+
+        nextTransaction();
+        doc.refresh();
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> newList = (List<Map<String, Serializable>>) doc.getPropertyValue("tp:complexList");
+        Set<String> expected = new HashSet<>(startStrings);
+        expected.add("ddd");
+        expected.add("eee");
+        Set<String> actual = new HashSet<>();
+        for (Map<String, Serializable> map : newList) {
+            actual.add((String) map.get("string"));
+        }
+        assertEquals(expected, actual);
+    }
+
+    protected void addComplexToDoc(String string, CyclicBarrier barrier, List<Exception> exc) {
+        try {
+            TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(session, s -> {
+                // wait for both threads to be at the same point
+                try {
+                    barrier.await(5, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new NuxeoException(e);
+                } catch (BrokenBarrierException | TimeoutException e) {
+                    throw new NuxeoException(e);
+                }
+                // add the value to the existing list
+                DocumentModel d = s.getDocument(new PathRef("/doc"));
+                @SuppressWarnings("unchecked")
+                List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                        "tp:complexList");
+                list.add(Collections.singletonMap("string", string));
+                d.setPropertyValue("tp:complexList", (Serializable) list);
+                s.saveDocument(d);
+                s.save();
+            }));
+        } catch (Exception e) { // NOSONAR
+            exc.add(e);
+            throw e;
+        }
     }
 
     // NXP-912
