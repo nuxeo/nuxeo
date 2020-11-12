@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.mem;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
@@ -126,6 +127,17 @@ public class TestMemRepositoryApplyDiff {
         Serializable list2 = (Serializable) list.get(0);
         assertEqualsStrict("Should be equal", list1, list2);
         assertNotSame(list1, list2);
+    }
+
+    @Test
+    public void testCopiesArrayDiffRpushOnNull() {
+        ArrayList<Object> list = list("L1");
+        ListDiff listDiff = listDiff(null, list);
+        listDiff.isArray = true;
+        Serializable res = MemConnection.applyDiff(null, listDiff); // rpush
+        assertTrue(res.getClass().toString(), res instanceof String[]);
+        String[] array = (String[]) res;
+        assertArrayEquals(list.toArray(), array);
     }
 
 }
