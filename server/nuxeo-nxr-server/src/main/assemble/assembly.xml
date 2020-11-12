@@ -53,7 +53,6 @@
     <copy todir="${nxr}/templates/mongodb/nxserver/lib">
       <artifact:file artifactId="bson" />
       <artifact:file artifactId="mongodb-driver-core" />
-      <artifact:file artifactId="mongodb-driver-legacy" />
       <artifact:file artifactId="mongodb-driver-sync" />
       <artifact:file artifactId="quartz-mongodb" />
     </copy>

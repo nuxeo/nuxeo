@@ -18,11 +18,12 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,8 +35,8 @@ import org.nuxeo.launcher.config.backingservices.BackingChecker;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionConfig;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 
-import com.mongodb.MongoClient;
 import com.mongodb.MongoTimeoutException;
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
 public class MongoDBChecker implements BackingChecker {
@@ -70,8 +71,9 @@ public class MongoDBChecker implements BackingChecker {
         }
         MongoDBConnectionConfig config = getDescriptor(configFile, MongoDBConnectionConfig.class);
         try (MongoClient mongoClient = MongoDBConnectionHelper.newMongoClient(config,
-                builder -> builder.serverSelectionTimeout((int) TimeUnit.SECONDS.toMillis(getCheckTimeoutInSeconds(cg)))
-                                  .applicationName("Nuxeo DB Check"))) {
+                builder -> builder.applicationName("Nuxeo DB Check")
+                                  .applyToClusterSettings(
+                                          s -> s.serverSelectionTimeout(getCheckTimeoutInSeconds(cg), SECONDS)))) {
             MongoDatabase database = mongoClient.getDatabase(config.dbname);
             Document ping = new Document("ping", "1");
             database.runCommand(ping);

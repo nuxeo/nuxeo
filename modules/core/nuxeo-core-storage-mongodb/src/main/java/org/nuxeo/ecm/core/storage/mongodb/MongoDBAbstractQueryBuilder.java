@@ -54,9 +54,8 @@ import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.QueryOptimizer.PrefixInfo;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mongodb.MongoDBOperators;
 import org.nuxeo.runtime.services.config.ConfigurationService;
-
-import com.mongodb.QueryOperators;
 
 /**
  * Abstract query builder for a MongoDB query from an {@link Expression}.
@@ -216,38 +215,38 @@ public abstract class MongoDBAbstractQueryBuilder {
                 return new Document(key, pushDownNot(value));
             } else {
                 // k = v -> k != v
-                return new Document(key, new Document(QueryOperators.NE, value));
+                return new Document(key, new Document(MongoDBOperators.NE, value));
             }
         }
-        if (QueryOperators.NE.equals(key)) {
+        if (MongoDBOperators.NE.equals(key)) {
             // NOT k != v -> k = v
             return value;
         }
-        if (QueryOperators.NOT.equals(key)) {
+        if (MongoDBOperators.NOT.equals(key)) {
             // NOT NOT v -> v
             return value;
         }
-        if (QueryOperators.AND.equals(key) || QueryOperators.OR.equals(key)) {
+        if (MongoDBOperators.AND.equals(key) || MongoDBOperators.OR.equals(key)) {
             // boolean algebra
             // NOT (v1 AND v2) -> NOT v1 OR NOT v2
             // NOT (v1 OR v2) -> NOT v1 AND NOT v2
-            String op = QueryOperators.AND.equals(key) ? QueryOperators.OR : QueryOperators.AND;
+            String op = MongoDBOperators.AND.equals(key) ? MongoDBOperators.OR : MongoDBOperators.AND;
             List<Object> list = (List<Object>) value;
             for (int i = 0; i < list.size(); i++) {
                 list.set(i, pushDownNot(list.get(i)));
             }
             return new Document(op, list);
         }
-        if (QueryOperators.IN.equals(key) || QueryOperators.NIN.equals(key)) {
+        if (MongoDBOperators.IN.equals(key) || MongoDBOperators.NIN.equals(key)) {
             // boolean algebra
             // IN <-> NIN
-            String op = QueryOperators.IN.equals(key) ? QueryOperators.NIN : QueryOperators.IN;
+            String op = MongoDBOperators.IN.equals(key) ? MongoDBOperators.NIN : MongoDBOperators.IN;
             return new Document(op, value);
         }
-        if (QueryOperators.LT.equals(key) || QueryOperators.GT.equals(key) || QueryOperators.LTE.equals(key)
-                || QueryOperators.GTE.equals(key)) {
+        if (MongoDBOperators.LT.equals(key) || MongoDBOperators.GT.equals(key) || MongoDBOperators.LTE.equals(key)
+                || MongoDBOperators.GTE.equals(key)) {
             // TODO use inverse operators?
-            return new Document(QueryOperators.NOT, ob);
+            return new Document(MongoDBOperators.NOT, ob);
         }
         throw new QueryParseException("Unknown operator for NOT: " + key);
     }
@@ -263,7 +262,7 @@ public abstract class MongoDBAbstractQueryBuilder {
 
     public Document walkIsNotNull(Operand value) {
         FieldInfo fieldInfo = walkReference(value);
-        return newDocumentWithField(fieldInfo, new Document(QueryOperators.NE, null));
+        return newDocumentWithField(fieldInfo, new Document(MongoDBOperators.NE, null));
     }
 
     public Document walkAndOrMultiExpression(MultiExpression expr) {
@@ -281,7 +280,7 @@ public abstract class MongoDBAbstractQueryBuilder {
             return (Document) walkOperand(null, values.get(0));
         }
         boolean and = expr.operator == Operator.AND;
-        String op = and ? QueryOperators.AND : QueryOperators.OR;
+        String op = and ? MongoDBOperators.AND : MongoDBOperators.OR;
         // PrefixInfo was computed by the QueryOptimizer for common AND predicates
         PrefixInfo info = (PrefixInfo) expr.getInfo();
         if (info == null || info.count < 2 || !and) {
@@ -302,7 +301,7 @@ public abstract class MongoDBAbstractQueryBuilder {
         List<Object> list = walkOperandList(values);
         elemMatchPrefix = previousElemMatchPrefix;
 
-        return new Document(fieldBase, new Document(QueryOperators.ELEM_MATCH, new Document(op, list)));
+        return new Document(fieldBase, new Document(MongoDBOperators.ELEM_MATCH, new Document(op, list)));
     }
 
     protected String stripElemMatchPrefix(String field) {
@@ -329,31 +328,31 @@ public abstract class MongoDBAbstractQueryBuilder {
 
     public Document walkNotEq(FieldInfo fieldInfo, Operand rvalue) {
         Object right = walkOperand(fieldInfo, rvalue);
-        return newDocumentWithField(fieldInfo, new Document(QueryOperators.NE, right));
+        return newDocumentWithField(fieldInfo, new Document(MongoDBOperators.NE, right));
     }
 
     public Document walkLt(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(fieldInfo, rvalue);
-        return newDocumentWithField(fieldInfo, new Document(QueryOperators.LT, right));
+        return newDocumentWithField(fieldInfo, new Document(MongoDBOperators.LT, right));
     }
 
     public Document walkGt(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(fieldInfo, rvalue);
-        return newDocumentWithField(fieldInfo, new Document(QueryOperators.GT, right));
+        return newDocumentWithField(fieldInfo, new Document(MongoDBOperators.GT, right));
     }
 
     public Document walkLtEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(fieldInfo, rvalue);
-        return newDocumentWithField(fieldInfo, new Document(QueryOperators.LTE, right));
+        return newDocumentWithField(fieldInfo, new Document(MongoDBOperators.LTE, right));
     }
 
     public Document walkGtEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(fieldInfo, rvalue);
-        return newDocumentWithField(fieldInfo, new Document(QueryOperators.GTE, right));
+        return newDocumentWithField(fieldInfo, new Document(MongoDBOperators.GTE, right));
     }
 
     public Document walkBetween(Operand lvalue, Operand rvalue, boolean positive) {
@@ -363,13 +362,13 @@ public abstract class MongoDBAbstractQueryBuilder {
         Object right = walkOperand(fieldInfo, l.get(1));
         if (positive) {
             Document range = new Document();
-            range.put(QueryOperators.GTE, left);
-            range.put(QueryOperators.LTE, right);
+            range.put(MongoDBOperators.GTE, left);
+            range.put(MongoDBOperators.LTE, right);
             return newDocumentWithField(fieldInfo, range);
         } else {
-            Document a = newDocumentWithField(fieldInfo, new Document(QueryOperators.LT, left));
-            Document b = newDocumentWithField(fieldInfo, new Document(QueryOperators.GT, right));
-            return new Document(QueryOperators.OR, Arrays.asList(a, b));
+            Document a = newDocumentWithField(fieldInfo, new Document(MongoDBOperators.LT, left));
+            Document b = newDocumentWithField(fieldInfo, new Document(MongoDBOperators.GT, right));
+            return new Document(MongoDBOperators.OR, Arrays.asList(a, b));
         }
     }
 
@@ -385,7 +384,8 @@ public abstract class MongoDBAbstractQueryBuilder {
         }
         // TODO check list fields
         List<Object> list = (List<Object>) right;
-        return newDocumentWithField(fieldInfo, new Document(positive ? QueryOperators.IN : QueryOperators.NIN, list));
+        return newDocumentWithField(fieldInfo,
+                new Document(positive ? MongoDBOperators.IN : MongoDBOperators.NIN, list));
     }
 
     public Document walkLike(Operand lvalue, Operand rvalue, boolean positive, boolean caseInsensitive) {
@@ -414,7 +414,7 @@ public abstract class MongoDBAbstractQueryBuilder {
         if (positive) {
             value = pattern;
         } else {
-            value = new Document(QueryOperators.NOT, pattern);
+            value = new Document(MongoDBOperators.NOT, pattern);
         }
         return newDocumentWithField(fieldInfo, value);
     }

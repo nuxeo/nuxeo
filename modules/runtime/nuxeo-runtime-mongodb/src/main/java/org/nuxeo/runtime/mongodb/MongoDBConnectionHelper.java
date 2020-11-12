@@ -20,12 +20,15 @@
  */
 package org.nuxeo.runtime.mongodb;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
@@ -43,14 +46,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.RuntimeServiceException;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoClientURI;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadConcernLevel;
 import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 
@@ -65,9 +69,9 @@ public class MongoDBConnectionHelper {
 
     private static final String DB_DEFAULT = "nuxeo";
 
-    private static final int MONGODB_OPTION_CONNECTION_TIMEOUT_MS = 30000;
+    private static final int MONGODB_OPTION_CONNECT_TIMEOUT_MS = 30000;
 
-    private static final int MONGODB_OPTION_SOCKET_TIMEOUT_MS = 60000;
+    private static final int MONGODB_OPTION_READ_TIMEOUT_MS = 60000;
 
     /** @since 11.1 */
     public static class ReadPreferenceConverter implements Converter {
@@ -143,32 +147,56 @@ public class MongoDBConnectionHelper {
      * Initializes a connection to the MongoDB server.
      *
      * @param config the MongoDB connection config
-     * @param optionsConsumer a consumer of the client options builder
+     * @param settingsConsumer a consumer of the client settings builder
      * @return the MongoDB client
      * @since 11.1
      */
     public static MongoClient newMongoClient(MongoDBConnectionConfig config,
-            Consumer<MongoClientOptions.Builder> optionsConsumer) {
+            Consumer<MongoClientSettings.Builder> settingsConsumer) {
         String server = config.server;
         if (StringUtils.isBlank(server)) {
             throw new RuntimeServiceException("Missing <server> in MongoDB descriptor");
         }
-        MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder().applicationName("Nuxeo");
+        MongoClientSettings.Builder settingsBuilder = MongoClientSettings.builder().applicationName("Nuxeo");
         SSLContext sslContext = getSSLContext(config);
         if (sslContext == null) {
             if (config.ssl != null) {
-                optionsBuilder.sslEnabled(config.ssl.booleanValue());
+                settingsBuilder.applyToSslSettings(s -> s.enabled(config.ssl.booleanValue()));
             }
         } else {
-            optionsBuilder.sslEnabled(true);
-            optionsBuilder.sslContext(sslContext);
+            settingsBuilder.applyToSslSettings(s -> s.enabled(true).context(sslContext));
         }
 
         // don't wait forever by default when connecting
-        optionsBuilder.connectTimeout(MONGODB_OPTION_CONNECTION_TIMEOUT_MS);
-        optionsBuilder.socketTimeout(MONGODB_OPTION_SOCKET_TIMEOUT_MS);
+        settingsBuilder.applyToSocketSettings(s -> s.connectTimeout(MONGODB_OPTION_CONNECT_TIMEOUT_MS, MILLISECONDS)
+                                                    .readTimeout(MONGODB_OPTION_READ_TIMEOUT_MS, MILLISECONDS));
 
         // set properties from Nuxeo config descriptor
+        populateProperties(config, settingsBuilder);
+
+        // hook for caller to set additional properties
+        if (settingsConsumer != null) {
+            settingsConsumer.accept(settingsBuilder);
+        }
+
+        if (server.startsWith("mongodb://") || server.startsWith("mongodb+srv://")) {
+            // allow mongodb*:// URI syntax for the server, to pass everything in one string
+            settingsBuilder.applyConnectionString(new ConnectionString(server));
+        } else {
+            settingsBuilder.applyToClusterSettings(b -> b.hosts(List.of(new ServerAddress(server))));
+        }
+        MongoClientSettings settings = settingsBuilder.build();
+        MongoClient client = MongoClients.create(settings);
+        log.debug("MongoClient initialized with settings: {}", settings);
+        return client;
+    }
+
+    /**
+     * Exists to be tested.
+     *
+     * @since 11.4
+     */
+    protected static void populateProperties(MongoDBConnectionConfig config, MongoClientSettings.Builder settingsBuilder) {
         ConvertUtilsBean convertUtils = new ConvertUtilsBean();
         convertUtils.register(ReadPreferenceConverter.INSTANCE, ReadPreference.class);
         convertUtils.register(ReadConcernConverter.INSTANCE, ReadConcern.class);
@@ -177,25 +205,10 @@ public class MongoDBConnectionHelper {
         propertyUtils.addBeanIntrospector(new FluentPropertyBeanIntrospector(""));
         BeanUtilsBean beanUtils = new BeanUtilsBean(convertUtils, propertyUtils);
         try {
-            beanUtils.populate(optionsBuilder, config.properties);
+            beanUtils.populate(settingsBuilder, config.properties);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeServiceException(e);
         }
-
-        // hook for caller to set additional properties
-        if (optionsConsumer != null) {
-            optionsConsumer.accept(optionsBuilder);
-        }
-
-        MongoClient client;
-        if (server.startsWith("mongodb://") || server.startsWith("mongodb+srv://")) {
-            // allow mongodb*:// URI syntax for the server, to pass everything in one string
-            client = new MongoClient(new MongoClientURI(server, optionsBuilder));
-        } else {
-            client = new MongoClient(new ServerAddress(server), optionsBuilder.build());
-        }
-        log.debug("MongoClient initialized with options: {}", client::getMongoClientOptions);
-        return client;
     }
 
     protected static SSLContext getSSLContext(MongoDBConnectionConfig config) {

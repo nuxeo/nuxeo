@@ -2,7 +2,6 @@
 org.postgresql:postgresql
 mysql:mysql-connector-java
 org.mongodb:mongodb-driver-core
-org.mongodb:mongodb-driver-legacy
 org.mongodb:mongodb-driver-sync
 org.mariadb.jdbc:mariadb-java-client
 com.microsoft.sqlserver:mssql-jdbc

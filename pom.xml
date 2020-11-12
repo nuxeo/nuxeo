@@ -4522,13 +4522,6 @@
         <version>${mongo.java.driver.version}</version>
       </dependency>
 
-      <!-- TODO: to remove when NXP-29696 is done -->
-      <dependency>
-        <groupId>org.mongodb</groupId>
-        <artifactId>mongodb-driver-legacy</artifactId>
-        <version>${mongo.java.driver.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>com.duosecurity</groupId>
         <artifactId>com-duosecurity-java-client</artifactId>
