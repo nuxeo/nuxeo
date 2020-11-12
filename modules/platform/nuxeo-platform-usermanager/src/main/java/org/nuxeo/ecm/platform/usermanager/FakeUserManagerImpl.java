@@ -479,6 +479,11 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     @Override
+    public List<String> getDescendantGroups(String groupId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public GroupConfig getGroupConfig() {
         throw new UnsupportedOperationException();
     }
