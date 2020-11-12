@@ -95,7 +95,6 @@ import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoBulkWriteException;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoWriteException;
-import com.mongodb.QueryOperators;
 import com.mongodb.bulk.BulkWriteError;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.FindIterable;
@@ -112,6 +111,7 @@ import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import org.nuxeo.runtime.mongodb.MongoDBOperators;
 
 /**
  * MongoDB implementation of a {@link DBSConnection}.
@@ -577,7 +577,7 @@ public class MongoDBConnection extends DBSConnectionBase {
 
     protected void addIgnoredIds(Document filter, Set<String> ignored) {
         if (!ignored.isEmpty()) {
-            Document notInIds = new Document(QueryOperators.NIN, converter.listToBson(KEY_ID, ignored));
+            Document notInIds = new Document(MongoDBOperators.NIN, converter.listToBson(KEY_ID, ignored));
             filter.put(idKey, notInIds);
         }
     }
@@ -605,10 +605,10 @@ public class MongoDBConnection extends DBSConnectionBase {
         Map<String, Object> comparatorAndValue;
         switch (operator) {
         case IN:
-            comparatorAndValue = Map.of(QueryOperators.IN, value2);
+            comparatorAndValue = Map.of(MongoDBOperators.IN, value2);
             break;
         case NOT_IN:
-            comparatorAndValue = Map.of(QueryOperators.NIN, value2);
+            comparatorAndValue = Map.of(MongoDBOperators.NIN, value2);
             break;
         default:
             throw new IllegalArgumentException(String.format("Unknown operator: %s", operator));
@@ -847,7 +847,7 @@ public class MongoDBConnection extends DBSConnectionBase {
 
     protected void addPrincipals(Document query, Set<String> principals) {
         if (principals != null) {
-            Document inPrincipals = new Document(QueryOperators.IN, new ArrayList<>(principals));
+            Document inPrincipals = new Document(MongoDBOperators.IN, new ArrayList<>(principals));
             query.put(KEY_READ_ACL, inPrincipals);
         }
     }
@@ -920,7 +920,7 @@ public class MongoDBConnection extends DBSConnectionBase {
             // remove if owner matches or null
             // implements LockManager.canLockBeRemoved inside MongoDB
             Object ownerOrNull = Arrays.asList(owner, null);
-            filter.put(KEY_LOCK_OWNER, new Document(QueryOperators.IN, ownerOrNull));
+            filter.put(KEY_LOCK_OWNER, new Document(MongoDBOperators.IN, ownerOrNull));
         }
         // else unconditional remove
         // remove the lock

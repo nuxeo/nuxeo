@@ -40,9 +40,9 @@ import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
-import com.mongodb.MongoClient;
 import com.mongodb.MongoClientException;
 import com.mongodb.client.ClientSession;
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;

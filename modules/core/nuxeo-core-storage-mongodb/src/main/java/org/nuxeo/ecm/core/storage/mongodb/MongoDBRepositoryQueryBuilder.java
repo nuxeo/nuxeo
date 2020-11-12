@@ -82,8 +82,7 @@ import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
-
-import com.mongodb.QueryOperators;
+import org.nuxeo.runtime.mongodb.MongoDBOperators;
 
 /**
  * Query builder for a MongoDB query of the repository from an {@link Expression}.
@@ -253,7 +252,7 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
         if (op == Operator.EQ) {
             return new Document(idKey, bsonId);
         } else {
-            return new Document(idKey, new Document(QueryOperators.NE, bsonId));
+            return new Document(idKey, new Document(MongoDBOperators.NE, bsonId));
         }
     }
 
@@ -269,7 +268,7 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
         if (op == Operator.EQ) {
             return new Document(KEY_ANCESTOR_IDS, bsonAncestorId);
         } else {
-            return new Document(KEY_ANCESTOR_IDS, new Document(QueryOperators.NE, bsonAncestorId));
+            return new Document(KEY_ANCESTOR_IDS, new Document(MongoDBOperators.NE, bsonAncestorId));
         }
     }
 
@@ -293,9 +292,9 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
                 return new Document(MONGODB_ID, "__nosuchid__");
             }
             Document textSearch = new Document();
-            textSearch.put(QueryOperators.SEARCH, ft);
+            textSearch.put(MongoDBOperators.SEARCH, ft);
             // TODO language?
-            return new Document(QueryOperators.TEXT, textSearch);
+            return new Document(MongoDBOperators.TEXT, textSearch);
         } else {
             // secondary index match with explicit field
             // do a regexp on the field
@@ -322,7 +321,7 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
                     new StringLiteral(LifeCycleConstants.DELETED_STATE));
             Document propertyTrashed = walkIsTrashed(new Reference(NXQL.ECM_ISTRASHED), op, rvalue,
                     new BooleanLiteral(true));
-            return new Document(QueryOperators.OR, new ArrayList<>(Arrays.asList(lifeCycleTrashed, propertyTrashed)));
+            return new Document(MongoDBOperators.OR, new ArrayList<>(Arrays.asList(lifeCycleTrashed, propertyTrashed)));
         } else if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
             return walkIsTrashed(new Reference(NXQL.ECM_ISTRASHED), op, rvalue, new BooleanLiteral(true));
         } else {
@@ -484,7 +483,7 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
         String regex = path.replaceAll("([^a-zA-Z0-9 /])", "\\\\$1");
         Pattern pattern = Pattern.compile(regex + "/.*");
         Document like = newDocumentWithField(fieldInfo, pattern);
-        return new Document(QueryOperators.OR, Arrays.asList(eq, like));
+        return new Document(MongoDBOperators.OR, Arrays.asList(eq, like));
     }
 
     // non-canonical index syntax, for replaceAll
@@ -701,13 +700,13 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
          * MongoDB query generation.
          */
         // match on primary type
-        Document p = new Document(KEY_PRIMARY_TYPE, new Document(QueryOperators.IN, matchPrimaryTypes));
+        Document p = new Document(KEY_PRIMARY_TYPE, new Document(MongoDBOperators.IN, matchPrimaryTypes));
         // match on mixin types
         // $in/$nin with an array matches if any/no element of the array matches
-        String innin = include ? QueryOperators.IN : QueryOperators.NIN;
+        String innin = include ? MongoDBOperators.IN : MongoDBOperators.NIN;
         Document m = new Document(KEY_MIXIN_TYPES, new Document(innin, matchMixinTypes));
         // and/or between those
-        String op = include ? QueryOperators.OR : QueryOperators.AND;
+        String op = include ? MongoDBOperators.OR : MongoDBOperators.AND;
         return new Document(op, Arrays.asList(p, m));
     }
 
