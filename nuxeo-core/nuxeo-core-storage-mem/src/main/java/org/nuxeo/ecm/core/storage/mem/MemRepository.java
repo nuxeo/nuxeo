@@ -502,11 +502,19 @@ public class MemRepository extends DBSRepositoryBase {
             // update CopyOnWriteArrayList in one step
             list.addAll(add);
         }
+        if (list.isEmpty()) {
+            return null;
+        }
         // convert back to array if needed
         if (listDiff.isArray) {
-            return list.isEmpty() ? null : list.toArray((Object[]) Array.newInstance(arrayComponentType, list.size()));
+            if (arrayComponentType == null) {
+                // initial value was null (empty) so we couldn't get the type
+                // instead get the type from the first new element (added through rpush)
+                arrayComponentType = list.get(0).getClass();
+            }
+            return list.toArray((Object[]) Array.newInstance(arrayComponentType, list.size()));
         } else {
-            return list.isEmpty() ? null : (Serializable) list;
+            return (Serializable) list;
         }
     }
 
