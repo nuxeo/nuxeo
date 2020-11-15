@@ -76,7 +76,6 @@ com.vaadin.external.flute:flute|[Flute](http://code.google.com/p/google-web-tool
 commons-beanutils:commons-beanutils|[Apache Commons BeanUtils](http://commons.apache.org/beanutils/)
 commons-codec:commons-codec|[Apache Commons Codec](http://commons.apache.org/codec/)
 commons-collections:commons-collections|[Apache Commons Collections](http://commons.apache.org/collections/)
-commons-dbcp:commons-dbcp|[Apache Commons DBCP](http://commons.apache.org/dbcp/)
 commons-digester:commons-digester|[Apache Commons Digester](http://commons.apache.org/digester/)
 commons-fileupload:commons-fileupload|[Apache Commons FileUpload](http://commons.apache.org/fileupload/)
 commons-httpclient:commons-httpclient|[Apache Commons HttpClient](http://hc.apache.org/httpclient-3.x/)
