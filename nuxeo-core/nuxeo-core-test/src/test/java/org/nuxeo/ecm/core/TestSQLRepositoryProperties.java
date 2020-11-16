@@ -369,7 +369,7 @@ public class TestSQLRepositoryProperties {
                 }
                 // add the value to the existing list
                 DocumentModel d = s.getDocument(new PathRef("/doc"));
-                String[] array = (String[]) doc.getPropertyValue("tp:stringArray");
+                String[] array = (String[]) d.getPropertyValue("tp:stringArray");
                 List<String> list = array == null ? new ArrayList<>() : new ArrayList<>(Arrays.asList(array));
                 list.add(value);
                 d.setPropertyValue("tp:stringArray", (Serializable) list);
@@ -694,7 +694,7 @@ public class TestSQLRepositoryProperties {
                 // add the value to the existing list
                 DocumentModel d = s.getDocument(new PathRef("/doc"));
                 @SuppressWarnings("unchecked")
-                List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) d.getPropertyValue(
                         "tp:complexList");
                 list.add(Collections.singletonMap("string", string));
                 d.setPropertyValue("tp:complexList", (Serializable) list);
