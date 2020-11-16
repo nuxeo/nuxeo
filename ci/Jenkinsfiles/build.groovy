@@ -189,7 +189,7 @@ def buildUnitTestStage(env) {
               echo "${env} unit tests: install external services"
               // initialize Helm without Tiller and add chart repositories
               sh """
-                helm init --client-only
+                helm init --client-only --stable-repo-url=https://charts.helm.sh/stable
                 helm repo add elastic https://helm.elastic.co/
                 helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
               """
@@ -455,7 +455,7 @@ pipeline {
               echo 'runtime unit tests: install external services'
               // initialize Helm without Tiller and add local repository
               sh """
-                helm init --client-only
+                helm init --client-only --stable-repo-url=https://charts.helm.sh/stable
                 helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
               """
               // install the nuxeo Helm chart into a dedicated namespace that will be cleaned up afterwards
