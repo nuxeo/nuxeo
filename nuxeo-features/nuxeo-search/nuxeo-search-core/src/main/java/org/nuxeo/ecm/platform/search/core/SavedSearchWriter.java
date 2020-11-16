@@ -26,7 +26,10 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +46,9 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+
+
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 8.3
@@ -87,18 +93,27 @@ public class SavedSearchWriter extends ExtensibleEntityJsonWriter<SavedSearch> {
             jg.writeStringField(param, search.getNamedParams().get(param));
         }
 
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        DocumentModel doc = search.getDocument();
+        Set<String> ownSchemas = new HashSet<>(Arrays.asList(doc.getSchemas()));
+        doc.getFacets()
+           .stream()
+           .map(facet -> schemaManager.getFacet(facet).getSchemas())
+           .flatMap(Collection::stream)
+           .forEach(schema -> ownSchemas.remove(schema.getName()));
+
         Set<String> schemas = ctx.getProperties();
         if (schemas.size() > 0) {
-            DocumentModel doc = search.getDocument();
+            // only prefix properties that are not search params
             if (schemas.contains(WILDCARD_VALUE)) {
                 // full document
                 for (String schema : doc.getSchemas()) {
-                    writeSchemaProperties(jg, doc, schema);
+                    writeSchemaProperties(jg, doc, schema, !ownSchemas.contains(schema));
                 }
             } else {
                 for (String schema : schemas) {
                     if (doc.hasSchema(schema)) {
-                        writeSchemaProperties(jg, doc, schema);
+                        writeSchemaProperties(jg, doc, schema, !ownSchemas.contains(schema));
                     }
                 }
             }
@@ -107,17 +122,20 @@ public class SavedSearchWriter extends ExtensibleEntityJsonWriter<SavedSearch> {
         jg.writeEndObject();
     }
 
-    // taken from DocumentModelJsonWriter
-    private void writeSchemaProperties(JsonGenerator jg, DocumentModel doc, String schemaName) throws IOException {
+    private void writeSchemaProperties(JsonGenerator jg, DocumentModel doc, String schemaName, boolean usePrefix)
+            throws IOException {
         Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, APPLICATION_JSON_TYPE);
         // provides the current document to the property marshaller
         try (Closeable resource = ctx.wrap().with(ENTITY_TYPE, doc).open()) {
             Schema schema = schemaManager.getSchema(schemaName);
-            String prefix = schema.getNamespace().prefix;
-            if (prefix == null || prefix.length() == 0) {
-                prefix = schemaName;
+            String prefix = "";
+            if (usePrefix) {
+                prefix = schema.getNamespace().prefix;
+                if (prefix == null || prefix.length() == 0) {
+                    prefix = schemaName;
+                }
+                prefix = prefix + ":";
             }
-            prefix = prefix + ":";
             for (Field field : schema.getFields()) {
                 String prefixedName = prefix + field.getName().getLocalName();
                 jg.writeFieldName(prefixedName);
