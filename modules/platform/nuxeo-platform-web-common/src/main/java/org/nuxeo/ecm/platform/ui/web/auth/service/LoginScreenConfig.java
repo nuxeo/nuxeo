@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
 @XObject("loginScreenConfig")
 public class LoginScreenConfig {
 
-    public static final String NUXEO_NEWS_URL = "//www.nuxeo.com/login-page-embedded/";
+    public static final String NUXEO_NEWS_URL = "//www.nuxeo.com/login-page-embedded-1/";
 
     /**
      * @since 8.4

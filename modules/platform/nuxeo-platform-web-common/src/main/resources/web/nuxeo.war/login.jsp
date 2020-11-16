@@ -49,16 +49,16 @@ boolean useExternalProviders = providers!=null && providers.size()>0;
 boolean showNews = screenConfig.getDisplayNews();
 String iframeUrl = screenConfig.getNewsIframeUrl();
 
-String backgroundPath = LoginScreenHelper.getValueWithDefault(screenConfig.getBackgroundImage(), context + "/img/login_bg.jpg");
-String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + backgroundPath + "') no-repeat center center fixed #006ead");
+String backgroundPath = LoginScreenHelper.getValueWithDefault(screenConfig.getBackgroundImage(), context + "/img/login-bg.svg");
+String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + backgroundPath + "') center no-repeat #f2f2f2;");
 String loginButtonBackgroundColor = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginButtonBackgroundColor(), "#0066ff");
-String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "#fff repeat scroll 0 0");
+String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "#fff");
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
 boolean disableBackgroundSizeCover = Boolean.TRUE.equals(screenConfig.getDisableBackgroundSizeCover());
 String fieldAutocomplete = screenConfig.getFieldAutocomplete() ? "on" : "off";
 
-String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWidth(), "113");
-String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "20");
+String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWidth(), "116");
+String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "22");
 String logoAlt = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoAlt(), "Nuxeo");
 String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl(), context + "/img/login_logo.png");
 String currentYear = new DateTime().toString("Y");
@@ -70,7 +70,7 @@ String loop = screenConfig.getVideoLoop() ? "loop " : "";
 boolean displayMobileBanner = !"false".equals(request.getParameter("displayMobileBanner"));
 %>
 
-<html>
+<html class="no-js">
 <%
 if (selectedLanguage != null) { %>
 <fmt:setLocale value="<%= selectedLanguage %>"/>
@@ -79,6 +79,7 @@ if (selectedLanguage != null) { %>
 <fmt:setBundle basename="messages" var="messages"/>
 
 <head>
+<meta charset="utf-8">
 <title><%=productName%></title>
 <link rel="icon" type="image/png" href="<%=context%>/icons/favicon.png" />
 <link rel="shortcut icon" type="image/x-icon" href="<%=context%>/icons/favicon.ico" />
@@ -93,320 +94,375 @@ if (selectedLanguage != null) { %>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<style type="text/css">
-<!--
-* {
-  box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-}
-html, body {
-  height: 100%;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-}
-body {
-  font: normal 14px/18pt "Helvetica", Arial;
-  background: <%=bodyBackgroundStyle%>;
-  color: #343434;
-  <% if (!disableBackgroundSizeCover) { %>
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-  <%} %>
-}
-video {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  min-width: 100%;
-  min-height: 100%;
-  width: auto;
-  height: auto;
-  z-index: -100;
-  transform: translateX(-50%) translateY(-50%);
-  -moz-transform: translateX(-50%) translateY(-50%);
-  -webkit-transform: translateX(-50%) translateY(-50%);
-  background: url('<%=backgroundPath%>') no-repeat;
-  background-size: cover;
-  transition: 1s opacity;
-}
-.container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  align-content: stretch;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  width: 100%;
-  height: 100%;
-}
+  <style type="text/css">
+  @font-face {
+    font-display: block;
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 400;
+    src: url("https://rsms.me/inter/font-files/Inter-Regular.woff2?v=3.15") format("woff2"), url("https://rsms.me/inter/font-files/Inter-Regular.woff?v=3.15") format("woff");
+  }
+  @font-face {
+    font-display: block;
+    font-family: "Inter";
+    font-style: italic;
+    font-weight: 400;
+    src: url("https://rsms.me/inter/font-files/Inter-Italic.woff2?v=3.15") format("woff2"), url("https://rsms.me/inter/font-files/Inter-Italic.woff?v=3.15") format("woff");
+  }
+  @font-face {
+    font-display: swap;
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 600;
+    src: url("https://rsms.me/inter/font-files/Inter-SemiBold.woff2?v=3.15") format("woff2"), url("https://rsms.me/inter/font-files/Inter-SemiBold.woff?v=3.15") format("woff");
+  }
+  @font-face {
+    font-display: swap;
+    font-family: "Inter";
+    font-style: italic;
+    font-weight: 600;
+    src: url("https://rsms.me/inter/font-files/Inter-SemiBoldItalic.woff2?v=3.15") format("woff2"), url("https://rsms.me/inter/font-files/Inter-SemiBoldItalic.woff?v=3.15") format("woff");
+  }
+  /* Variable font. */
+  @font-face {
+    font-display: swap;
+    font-family: "Inter var";
+    font-named-instance: "Regular";
+    font-style: normal;
+    font-weight: 100 900;
+    src: url("https://rsms.me/inter/font-files/Inter-roman.var.woff2?v=3.15") format("woff2");
+  }
+  @font-face {
+    font-display: swap;
+    font-family: "Inter var";
+    font-named-instance: "Italic";
+    font-style: italic;
+    font-weight: 100 900;
+    src: url("https://rsms.me/inter/font-files/Inter-italic.var.woff2?v=3.15") format("woff2");
+  }
 
-.header {
-  text-align: center;
-  margin-bottom: 1.5em;
-}
+  * {
+    box-sizing: border-box;
+  }
 
-footer {
-  padding: 1em 1.5em;
-  color: #ffffff;
-  font-size: .65em;
-  text-transform: uppercase;
-  letter-spacing: .03em;
-  text-align: center;
-  <%=footerStyle%>
-}
+  html,
+  form * {
+    font: normal 16px/1.5 "Inter", sans-serif;
+  }
 
-section {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: stretch;
-  align-content: stretch;
-  -webkit-box-flex: 1;
-  display: -webkit-box;
-  -webkit-box-align: center;
-}
-
-.main {
-  flex: 2 1 65%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  -webkit-box-flex: 2;
-  display: -webkit-box;
-  -webkit-box-pack: center;
-}
-.news {
-  flex: 1 1 35%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  -webkit-box-flex: 1;
-  -webkit-box-pack: center;
-  min-width: 400px;
-}
-.welcome {
-  background: none repeat scroll 0 0 #fff;
-  bottom: 3%;
-  margin: 10px;
-  opacity: 0.8;
-  padding: 20px;
-  position: absolute;
-  width: 60%;
-}
-.welcomeText {
-  font: 12px "Lucida Grande", sans-serif;
-  text-align: left;
-  color: #454545;
-  margin: 0 0 .8em;
-}
-form {
-  display: flex;
-  flex-direction: column;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  width: 20em;
-  margin: 0;
-  padding: 1em;
-  background: <%=loginBoxBackgroundStyle%>;
-}
-
-form > * {
-  flex: 1 1 auto;
-  -webkit-box-flex: 1;
-  width: 100%;
-}
-
-.login_input {
-  border: 1px solid #979797;
-  padding: .7em;
-  margin: 0 0 .8em;
-  font-size: 110%;
-}
-
-.login_input:hover,
-.login_input:focus {
-  border-color: #2e9cff;
-  box-shadow: 0 0 0 50px white inset, 0 0 3px #2e9cff;
-  outline: none;
-  color: #00adff;
-}
-
-input:-webkit-autofill {
-  -webkit-box-shadow:0 0 0 50px white inset;
-  -webkit-text-fill-color: #343434;
-}
-
-input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 50px white inset, 0 0 3px #2e9cff;
-  -webkit-text-fill-color: #00adff;
-}
-
-.login_button {
-  border: 0;
-  background-color: <%= loginButtonBackgroundColor %>;
-  color: white;
-  cursor: pointer;
-  font-size: 115%;
-  font-weight: normal;
-  padding: 0.7em 1.2em;
-  text-decoration: none;
-  /* Remove iOS corners and glare on inputs */
-  -webkit-appearance: none;
-  -webkit-border-radius: 0;
-}
-
-.login_button:hover,
-.login_button:focus {
-  box-shadow: 0 -5px 0 rgba(0, 0, 0, 0.3) inset;
-  outline: none;
-}
-
-/* Other ids */
-.loginOptions {
-  border-top: 1px solid #ccc;
-  color: #d6d6d6;
-  font-size: .85em;
-}
-.loginOptions p {
-  margin: 1em .5em .7em;
-  font-size: .95em;
-}
-.idItem {
-  display: inline;
-}
-.idItem a, .idItem a:visited {
-  background: url(<%=context%>/icons/default.png) no-repeat 5px center #eee;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  color: #666;
-  display: inline-block;
-  font-weight: bold;
-  margin: .3em 0;
-  padding: .1em .2em .1em 2em;
-  text-decoration: none;
-}
-.idItem a:hover {
-  background-color: #fff;
-  color: #333;
-}
-.maintenanceModeMessage {
-  color: #f40000;
-  font-size: 12px;
-}
-.warnMessage,.infoMessage {
-  margin: 0 0 10px;
-}
-.infoMessage {
-  color: #b31500;
-}
-.feedbackMessage {
-  background-color: rgba(255,255,255,0.8);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
-  color: #00adff;
-  font-size: 95%;
-  margin-bottom: .4em;
-  padding: .5em;
-  text-align: center;
-}
-.errorMessage {
-  color: #f40000;
-}
-.news-container {
-  border: none;
-  height: 650px;
-  width: 95%;
-  overflow: auto;
-  background-color: rgba(255,255,255,0);
-}
-
-<% if (displayMobileBanner) { %>
-/* =Mobile Banner */
-#mobileBanner {
-  /* set to flex to display the mobile banner */
-  display: none;
-  justify-content: flex-end;
-  position: fixed;
-  z-index: 500;
-  bottom: 0;
-  left:0;
-  right: 0;
-  height: 3em;
-  background-color: rgba(255, 255, 255, .8);
-  padding: .6em;
-}
-
-a.mobileAppLink,
-a.mobileAppLink:hover {
-  display: inline-block;
-  background-color: #00adff;
-  border-radius: 3em;
-  padding: .2em 1.5em .5em;
-  color: #fff;
-  line-height: 1.4em;
-  text-decoration: none;
-}
-<% } %>
-
-/* Mobile devices */
-@media all and (max-width: 850px) {
+  @supports (font-variation-settings: normal) {
+    html,
+  form * {
+      font-family: "Inter var", sans-serif;
+    }
+  }
+  html,
   body {
-    height: auto;
-    background-position: center center;
-  }
-  section {
-    flex-direction: column;
-    display: block;
-  }
-  footer, video, .welcome {
-    display: none;
-  }
-}
-
-@media all and (max-height: 880px) and (max-width: 850px) {
-  .news {
-    display: none;
+    height: 100%;
+    margin: 0;
+    padding: 0;
   }
 
-  form {
-    margin-top: 2em;
+  body {
+    background: <%=bodyBackgroundStyle%>;
+    color: #000;
+    <% if (!disableBackgroundSizeCover) { %>
+    background-size: cover;
+    <%} %>
   }
-}
 
-@media all and (max-width: 500px) {
-  form {
+  video {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
     width: auto;
-    margin-top: 0;
+    height: auto;
+    z-index: -100;
+    transform: translateX(-50%) translateY(-50%);
+    background: url("<%=backgroundPath%>") center no-repeat;
+    background-size: cover;
+    transition: 1s opacity;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
+    width: 100%;
+    height: 100%;
   }
 
   .header {
-    background-color: #fff;
-    margin: -1em -1em 2em;
-    width: calc(100% + 2em);
-    padding: .8em 1em .3em;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  footer {
+    color: #000;
+    font-size: 0.75rem;
+    letter-spacing: 10%;
+    line-height: 2;
+    padding: 2rem;
+    text-align: center;
+    text-transform: uppercase;
+    <%=footerStyle%>
+  }
+
+  section {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    align-content: stretch;
+  }
+  section > div {
+    margin: 0 56px;
+    max-width: 500px;
+    width: 100%;
+  }
+
+  .mobile-apps {
+    display: none;
+  }
+
+  .main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .news {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .welcome {
+    background: rgba(255, 255, 255, 0.8);
+    bottom: 4rem;
+    left: 0;
+    padding: 1.5rem;
+    position: absolute;
+    width: 60%;
+  }
+
+  .welcomeText {
+    color: #000;
+    font-size: 0.75rem;
+    margin: 0 0 1rem;
+    text-align: left;
+  }
+
+  form {
+    align-items: center;
+    background: <%=loginBoxBackgroundStyle%>;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0;
+    min-height: 350px;
+    padding: 1rem;
+    width: 100%;
+  }
+
+  form > * {
+    max-width: 350px;
+    width: 100%;
+  }
+
+  .login_input {
+    background-color: rgba(229, 240, 255, 0.4);
+    border: 1px solid transparent;
+    padding: 0.7em;
+    margin: 0 0 1rem;
+  }
+
+  .login_input:hover,
+  .login_input:focus {
+    border-color: #2e9cff;
+    color: #000;
+    outline: none;
+  }
+
+  input:-webkit-autofill {
+    -webkit-text-fill-color: #000;
+  }
+
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #000;
+  }
+
+  .login_button {
+    background-color: <%= loginButtonBackgroundColor %>;
+    border-radius: 4px;
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    /* Remove iOS corners and glare on inputs */
+    -webkit-appearance: none;
+  }
+
+  .login_button:hover,
+  .login_button:focus {
+    background-color: rgba(0, 102, 255, 0.7);
+  }
+
+  /* Other ids */
+  .loginOptions {
+    border-top: 1px solid #ccc;
+    color: #d6d6d6;
+    font-size: 0.875rem;
+  }
+
+  .loginOptions p {
+    margin: 1em 0.5em 0.7em;
+    font-size: 0.75rem;
+  }
+
+  .idItem {
+    display: inline;
+  }
+
+  .idItem a,
+  .idItem a:visited {
+    background: url(<%=context%>/icons/default.png) no-repeat 5px center #eee;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    color: #666;
+    display: inline-block;
+    font-weight: 600;
+    margin: 0.3em 0;
+    padding: 0.1em 0.2em 0.1em 2em;
+    text-decoration: none;
+  }
+
+  .idItem a:hover {
+    background-color: #fff;
+    color: #333;
+  }
+
+  .maintenanceModeMessage {
+    color: #f40000;
+    font-size: 0.75rem;
+  }
+
+  .warnMessage,
+  .infoMessage {
+    margin: 0 0 10px;
+  }
+
+  .infoMessage {
+    color: #b31500;
+  }
+
+  .feedbackMessage {
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+    color: #00adff;
+    font-size: 0.875rem;
+    margin-bottom: 0.4em;
+    padding: 0.5em;
+    text-align: center;
+  }
+
+  .errorMessage {
+    color: #f40000;
+  }
+
+  .news-container {
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    height: 350px;
+    overflow: auto;
+    width: 100%;
+  }
+
+  <% if (displayMobileBanner) { %>
+  /* =Mobile Banner */
+  #mobileBanner {
+    /* set to block to display the mobile banner */
+    display: none;
+    margin-top: -1rem;
+    padding: 0 0 0.6rem;
+    text-align: center;
+  }
+
+  a.mobileAppLink {
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+    background-color: #fff;
+    border: 1px solid #000;
+    border-radius: 4px;
+    color: #000;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+    line-height: 1.5;
+    padding: 0.375rem 1.25rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+  a.mobileAppLink:hover {
+    background-color: #bcbfbf;
+    border-color: #4a4a4a;
+  }
+  
+  <% } %>
+
+  .show-for-ios,
+  .show-for-android {
     display: none;
   }
-}
 
-@media all and (min-width: 500px) {
-  form {
-    background: <%=loginBoxBackgroundStyle%>;
-    padding: 2.5em;
-    width: 20em;
+  .is-ios .show-for-ios,
+  .is-android .show-for-android {
+    display: inline;
   }
 
-}
--->
-</style>
+  /* Mobile devices */
+  @media all and (max-width: 850px) {
+    body {
+      background: none;
+      min-height: 100vh;
+      overflow: auto;
+    }
 
+    .container {
+      background: none;
+    }
+
+    .mobile-apps {
+      align-items: center;
+      display: flex;
+      flex: 1 1 auto;
+      justify-content: center;
+    }
+
+    .news,
+    video,
+   .welcome {
+      display: none;
+    }
+
+    form {
+      min-height: inherit;
+    }
+  }
+  </style>
 </head>
 
 <body>
@@ -499,12 +555,24 @@ a.mobileAppLink:hover {
     </div>
     <% if (showNews && !isTesting) { %>
     <div class="news">
-      <iframe id="news" class="news-container" style="visibility:hidden"
+      <iframe id="news" class="news-container" style="visibility: hidden"
         onload="javascript:this.style.visibility='visible';"
         data-src="<%=iframeUrl%>"></iframe>
     </div>
     <% } %>
   </section>
+  <div class="mobile-apps">
+    <div>
+      <a href="https://itunes.apple.com/app/nuxeo/id1103802613" target="_blank" rel="noopener" class="show-for-ios">
+        <img class="app-icons" src="https://www.nuxeo.com/assets/imgs/icons/app-store.svg" alt="Apple App Store"
+          height="45" />
+      </a>
+      <a href="https://play.google.com/store/apps/details?id=com.nuxeomobile" target="_blank" rel="noopener" class="show-for-android">
+        <img class="app-icons" src="https://www.nuxeo.com/assets/imgs/icons/google-play-badge.png" alt="Google Play"
+          height="45" />
+      </a>
+    </div>
+  </div>
   <footer>
     <fmt:message bundle="${messages}" key="label.login.copyright">
       <fmt:param value="<%=currentYear %>" />
@@ -569,7 +637,7 @@ a.mobileAppLink:hover {
     iOSAppLink.setAttribute('data-action', iOSAppLink.getAttribute('data-action') + docPart);
   }
 
-  nuxeo.mobile.displayMobileBanner('mobileBanner', 'flex', 'androidAppLink', 'iOSAppLink');
+  nuxeo.mobile.displayMobileBanner('mobileBanner', 'block', 'androidAppLink', 'iOSAppLink');
   <% } %>
 </script>
 <% } %>
@@ -579,11 +647,25 @@ a.mobileAppLink:hover {
 
   <% if (showNews && !isTesting) { %>
   // Don't load iframe on mobile devices
-  if (window.matchMedia("(min-device-width: 800px)").matches) {
+  if (window.matchMedia("(min-device-width: 850px)").matches) {
     newsIframe = document.getElementById('news');
     if (newsIframe) {
       newsIframe.src = newsIframe.getAttribute('data-src');
     }
+  }
+  <% } %>
+
+  <% if (displayMobileBanner) { %>
+  if (window.matchMedia("(max-device-width: 850px)").matches) {
+    // Add classes for app stores
+    var htmlClasses = [];
+    if (/iPhone|iPad|iPod/.test(window.navigator.userAgent)) {
+      htmlClasses.push('is-ios');
+    }
+    if (/Android/.test(window.navigator.userAgent)) {
+      htmlClasses.push('is-android');
+    }
+    document.documentElement.className = htmlClasses.join(' ');
   }
   <% } %>
 </script>
