@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Search Core - Test Jar
+Bundle-SymbolicName: org.nuxeo.ecm.platform.search.core.test;singleton:=true
+Bundle-Version: 1.0.0
