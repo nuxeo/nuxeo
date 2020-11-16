@@ -17,7 +17,7 @@
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 properties([
-  [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/nuxeo/nuxeo'],
+  [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/nuxeo/nuxeo-lts'],
   [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5']],
   disableConcurrentBuilds(),
 ])
@@ -62,7 +62,7 @@ void promoteDockerImage(String dockerRegistry, String imageName, String buildVer
 pipeline {
 
   agent {
-    label 'jenkins-nuxeo-platform-11'
+    label 'jenkins-nuxeo-platform-lts-2021'
   }
 
   parameters {
@@ -73,11 +73,12 @@ pipeline {
     CURRENT_VERSION = getCurrentVersion()
     RELEASE_VERSION = getReleaseVersion(CURRENT_VERSION)
     LATEST_VERSION = getLatestVersion()
-    MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true'
+    MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true -P-nexus,nexus-private'
     CONNECT_PROD_URL = 'https://connect.nuxeo.com/nuxeo'
     DOCKER_NAMESPACE = 'nuxeo'
     NUXEO_IMAGE_NAME = 'nuxeo'
     SLACK_CHANNEL = 'platform-notifs'
+    REFERENCE_BRANCH = "2021"
   }
 
   stages {
@@ -119,9 +120,9 @@ pipeline {
           Set Kubernetes labels
           ----------------------------------------
           """
-          echo "Set label 'branch: master' on pod ${NODE_NAME}"
+          echo "Set label 'branch: ${REFERENCE_BRANCH}' on pod ${NODE_NAME}"
           sh """
-            kubectl label pods ${NODE_NAME} branch=master
+            kubectl label pods ${NODE_NAME} branch=${REFERENCE_BRANCH}
           """
         }
       }
@@ -228,24 +229,22 @@ pipeline {
           Tag Docker image with version ${RELEASE_VERSION} and ${LATEST_VERSION}
           -----------------------------------------------
           """
-          promoteDockerImage("${PUBLIC_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}", "${params.BUILD_VERSION}",
-            "${RELEASE_VERSION}", "${LATEST_VERSION}")
           promoteDockerImage("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}", "${params.BUILD_VERSION}",
             "${RELEASE_VERSION}", "${LATEST_VERSION}")
         }
       }
     }
 
-    stage('Bump master branch') {
+    stage("Bump ${REFERENCE_BRANCH} branch") {
       steps {
         container('maven') {
           script {
-            sh 'git checkout master'
+            sh 'git checkout ${REFERENCE_BRANCH}'
             // increment minor version
             def nextVersion = sh(returnStdout: true, script: "perl -pe 's/\\b(\\d+)(?=\\D*\$)/\$1+1/e' <<< ${CURRENT_VERSION}").trim()
             echo """
             -----------------------------------------------
-            Update master version from ${CURRENT_VERSION} to ${nextVersion}
+            Update ${REFERENCE_BRANCH} version from ${CURRENT_VERSION} to ${nextVersion}
             -----------------------------------------------
             """
             sh """
@@ -268,7 +267,7 @@ pipeline {
                 jx step git credentials
                 git config credential.helper store
 
-                git push origin master
+                git push origin ${REFERENCE_BRANCH}
               """
             }
           }

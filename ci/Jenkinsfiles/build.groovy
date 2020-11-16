@@ -20,7 +20,7 @@
 
 dockerNamespace = 'nuxeo'
 kubernetesNamespace = 'platform'
-repositoryUrl = 'https://github.com/nuxeo/nuxeo'
+repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
 testEnvironments = [
   'dev',
   'mongodb',
@@ -45,7 +45,7 @@ void setGitHubBuildStatus(String context, String message, String state) {
 }
 
 String getMavenArgs() {
-  def args = '-B -nsu -Dnuxeo.skip.enforcer=true'
+  def args = '-B -nsu -Dnuxeo.skip.enforcer=true -P-nexus,nexus-private'
   if (!isPullRequest()) {
     args += ' -Prelease'
   }
@@ -65,19 +65,25 @@ String getVersion() {
 }
 
 String getReleaseVersion() {
-  String nuxeoVersion = readMavenPom().getVersion()
-  String noSnapshot = nuxeoVersion.replace('-SNAPSHOT', '')
-  String version = noSnapshot + '.0' // first version ever
+  container('maven') {
+    String nuxeoVersion = readMavenPom().getVersion()
+    String noSnapshot = nuxeoVersion.replace('-SNAPSHOT', '')
+    String version = noSnapshot + '.1' // first version ever
 
-  // find the latest tag if any
-  sh "git fetch origin 'refs/tags/v${noSnapshot}*:refs/tags/v${noSnapshot}*'"
-  def tag = sh(returnStdout: true, script: "git tag --sort=taggerdate --list 'v${noSnapshot}*' | tail -1 | tr -d '\n'")
-  if (tag) {
-    container('maven') {
+    // find the latest tag if any
+    sh """
+      # create the Git credentials
+      jx step git credentials
+      git config credential.helper store
+
+      git fetch origin 'refs/tags/v${noSnapshot}*:refs/tags/v${noSnapshot}*'
+    """
+    def tag = sh(returnStdout: true, script: "git tag --sort=taggerdate --list 'v${noSnapshot}*' | tail -1 | tr -d '\n'")
+    if (tag) {
       version = sh(returnStdout: true, script: "semver bump patch ${tag} | tr -d '\n'")
     }
+    return version
   }
-  return version
 }
 
 String getPullRequestVersion() {
@@ -203,6 +209,7 @@ def buildUnitTestStage(env) {
               // install the nuxeo Helm chart into a dedicated namespace that will be cleaned up afterwards
               sh """
                 jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO} \
+                  --version=${HELM_CHART_NUXEO_VERSION} \
                   --name=${TEST_HELM_CHART_RELEASE} \
                   --namespace=${testNamespace} \
                   ${testValues}
@@ -296,7 +303,7 @@ void archiveKafkaLogs(namespace, logFile) {
 
 pipeline {
   agent {
-    label 'jenkins-nuxeo-platform-11'
+    label 'jenkins-nuxeo-platform-lts-2021'
   }
   options {
     timeout(time: 12, unit: 'HOURS')
@@ -307,6 +314,7 @@ pipeline {
     HELM_CHART_REPOSITORY_NAME = 'local-jenkins-x'
     HELM_CHART_REPOSITORY_URL = 'http://jenkins-x-chartmuseum:8080'
     HELM_CHART_NUXEO = 'nuxeo'
+    HELM_CHART_NUXEO_VERSION = '1.1.1'
     TEST_HELM_CHART_RELEASE = 'test-release'
     TEST_NAMESPACE_PREFIX = "nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
@@ -461,6 +469,7 @@ pipeline {
               // install the nuxeo Helm chart into a dedicated namespace that will be cleaned up afterwards
               sh """
                 jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO} \
+                  --version=${HELM_CHART_NUXEO_VERSION} \
                   --name=${TEST_HELM_CHART_RELEASE} \
                   --namespace=${testNamespace} \
                   --set-file=ci/helm/nuxeo-test-base-values.yaml~gen \
@@ -790,8 +799,6 @@ pipeline {
           ----------------------------------------
           Image tag: ${VERSION}
           """
-          echo "Push Docker image to Docker registry ${PUBLIC_DOCKER_REGISTRY}"
-          dockerDeploy("${PUBLIC_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
           echo "Push Docker image to Docker registry ${PRIVATE_DOCKER_REGISTRY}"
           dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
         }
@@ -830,6 +837,8 @@ pipeline {
               if (nsExists) {
                 // Previous preview deployment needs to be scaled to 0 to be replaced correctly
                 sh "kubectl -n ${PREVIEW_NAMESPACE} scale deployment nuxeo-preview --replicas=0"
+              } else {
+                sh "kubectl create namespace ${PREVIEW_NAMESPACE}"
               }
               sh "kubectl --namespace platform get secret kubernetes-docker-cfg -ojsonpath='{.data.\\.dockerconfigjson}' | base64 --decode > /tmp/config.json"
               sh """kubectl create secret generic kubernetes-docker-cfg \
@@ -881,7 +890,7 @@ pipeline {
         if (!isPullRequest() && env.DRY_RUN != 'true') {
           currentBuild.description = "Build ${VERSION}"
           if(!hudson.model.Result.SUCCESS.toString().equals(currentBuild.getPreviousBuild()?.getResult())) {
-            slackSend(channel: "${SLACK_CHANNEL}", color: 'good', message: "Successfully built nuxeo/nuxeo ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
+            slackSend(channel: "${SLACK_CHANNEL}", color: 'good', message: "Successfully built nuxeo/nuxeo-lts ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
           }
         }
       }
@@ -889,7 +898,7 @@ pipeline {
     unsuccessful {
       script {
         if (!isPullRequest() && env.DRY_RUN != 'true') {
-          slackSend(channel: "${SLACK_CHANNEL}", color: 'danger', message: "Failed to build nuxeo/nuxeo ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
+          slackSend(channel: "${SLACK_CHANNEL}", color: 'danger', message: "Failed to build nuxeo/nuxeo-lts ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
         }
       }
     }
