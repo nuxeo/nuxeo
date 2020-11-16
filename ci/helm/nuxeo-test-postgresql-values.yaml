@@ -1,12 +1,12 @@
 postgresql:
   master:
     labels:
-      branch: $BRANCH_NAME
+      branch: "$BRANCH_NAME"
       resource: statefulset
       team: platform
       usage: utests
     podLabels:
-      branch: $BRANCH_NAME
+      branch: "$BRANCH_NAME"
       resource: pod
       team: platform
       usage: utests

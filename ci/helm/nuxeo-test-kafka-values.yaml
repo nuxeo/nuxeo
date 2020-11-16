@@ -1,6 +1,6 @@
 kafka:
   podLabels:
-    branch: $BRANCH_NAME
+    branch: "$BRANCH_NAME"
     resource: pod
     team: platform
     usage: utests
@@ -21,7 +21,7 @@ kafka:
     transaction.state.log.replication.factor: 1
   zookeeper:
     podLabels:
-      branch: $BRANCH_NAME
+      branch: "$BRANCH_NAME"
       resource: pod
       team: platform
       usage: utests
