@@ -8,6 +8,7 @@
       <property name="url">${nuxeo.test.vcs.url}</property>
       <property name="username">${nuxeo.test.vcs.user}</property>
       <property name="password">${nuxeo.test.vcs.password}</property>
+      <property name="cacheState">false</property> <!-- NXP-29853 workaround for DBCP-568 -->
     </datasource>
 
     <link name="jdbc/repository_test" global="jdbc/${nuxeo.test.vcs.database}"/>
