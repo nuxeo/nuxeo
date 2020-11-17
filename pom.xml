@@ -6203,9 +6203,25 @@
             <configuration>
               <doclint>all,-missing</doclint>
               <show>protected</show>
-              <!-- <includeDependencySources>true</includeDependencySources> -->
-              <!-- <includeTransitiveDependencySources>true</includeTransitiveDependencySources> -->
               <linksource>true</linksource>
+              <tags>
+                <!-- took from https://bugs.openjdk.java.net/browse/JDK-8068562 -->
+                <tag>
+                  <name>apiNote</name>
+                  <placement>a</placement>
+                  <head>API Note:</head>
+                </tag>
+                <tag>
+                  <name>implSpec</name>
+                  <placement>a</placement>
+                  <head>Implementation Requirements:</head>
+                </tag>
+                <tag>
+                  <name>implNote</name>
+                  <placement>a</placement>
+                  <head>Implementation Note:</head>
+                </tag>
+              </tags>
             </configuration>
             <executions>
               <execution>
