@@ -68,7 +68,7 @@ public class UpdateServiceImpl extends StandaloneUpdateService implements Packag
     }
 
     /**
-     * @deprecated since 9.10 - use {@link org.nuxeo.ecm.admin.NuxeoCtlManager#restart()} instead.
+     * @deprecated since 9.10 - use {@code org.nuxeo.ecm.admin.NuxeoCtlManager#restart()} instead.
      */
     @Override
     @Deprecated

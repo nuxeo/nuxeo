@@ -118,9 +118,6 @@ public class BundleResource {
     /**
      * This method is only for contributed sub-resources. It will be ignored for root resources. Extension resources may
      * override this method to dynamically accept or reject to be installed as a sub-resource of the target resource
-     *
-     * @param target
-     * @return
      */
     public boolean accept(BundleResource target) {
         return true;

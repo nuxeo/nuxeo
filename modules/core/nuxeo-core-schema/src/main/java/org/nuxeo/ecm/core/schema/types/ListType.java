@@ -72,16 +72,11 @@ public interface ListType extends Type {
 
     /**
      * Sets the default value encoded as a string.
-     *
-     * @param value
      */
     void setDefaultValue(String value);
 
     /**
      * Sets list limits.
-     *
-     * @param minOccurs
-     * @param maxOccurs
      */
     void setLimits(int minOccurs, int maxOccurs);
 

@@ -99,7 +99,6 @@ public interface ThreeDService {
     /**
      * Get the batch processing progress
      *
-     * @param repositoryName
      * @param docId of the document being processed
      * @return a {@link ThreeDBatchProgress} with status (queued, running, unknown) and a message of the running state
      */

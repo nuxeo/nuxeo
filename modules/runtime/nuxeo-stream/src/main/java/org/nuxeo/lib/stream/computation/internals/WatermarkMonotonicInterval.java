@@ -37,16 +37,18 @@ public class WatermarkMonotonicInterval {
     protected Watermark high = Watermark.LOWEST;
 
     /**
-     * Take in account the watermark.<br/>
-     * Not thread safe.
+     * Take in account the watermark.
+     *
+     * @implNote Not thread safe.
      */
     public long mark(long watermarkValue) {
         return mark(Watermark.ofValue(watermarkValue));
     }
 
     /**
-     * Take in account the watermark.<br/>
-     * Not thread safe.
+     * Take in account the watermark.
+     *
+     * @implNote Not thread safe.
      */
     public long mark(Watermark watermark) {
         if (Watermark.LOWEST.equals(low)) {
@@ -70,8 +72,9 @@ public class WatermarkMonotonicInterval {
 
     /**
      * Move the low watermark to the highest mark. Returns the low watermark that should be monotonic (the value
-     * returned here never decrease).<br/>
-     * Not thread safe.
+     * returned here never decrease).
+     *
+     * @implNote Not thread safe.
      */
     public long checkpoint() {
         low = Watermark.completedOf(high);
@@ -84,8 +87,9 @@ public class WatermarkMonotonicInterval {
     }
 
     /**
-     * Returns the low mark. The value can decrease but not under the last checkpoint value.<br/>
-     * Thread safe usage.
+     * Returns the low mark. The value can decrease but not under the last checkpoint value.
+     *
+     * @implNote Thread safe usage.
      */
     public Watermark getLow() {
         return low;

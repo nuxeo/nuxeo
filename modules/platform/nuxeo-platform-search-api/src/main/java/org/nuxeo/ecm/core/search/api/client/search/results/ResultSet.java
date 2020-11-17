@@ -68,7 +68,6 @@ public interface ResultSet extends List<ResultItem> {
      * Replays the exact same query.
      *
      * @return a new, updated ResultSet
-     * @throws SearchException
      */
     ResultSet replay() throws SearchException;
 
@@ -78,7 +77,6 @@ public interface ResultSet extends List<ResultItem> {
      * @param offset the new offset
      * @param range the new range
      * @return a new, updated ResultSet
-     * @throws SearchException
      */
     ResultSet replay(int offset, int range) throws SearchException;
 
@@ -86,7 +84,6 @@ public interface ResultSet extends List<ResultItem> {
      * Computes the next page by replaying the exact same request.
      *
      * @return the next computed page or null if there is none.
-     * @throws SearchException
      */
     ResultSet nextPage() throws SearchException;
 
@@ -95,7 +92,6 @@ public interface ResultSet extends List<ResultItem> {
      *
      * @param page the page to go to
      * @return the next computed page or null if there is none.
-     * @throws SearchException
      */
     ResultSet goToPage(int page) throws SearchException;
 

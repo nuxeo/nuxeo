@@ -164,7 +164,7 @@ public interface NuxeoPrincipal extends Principal, Serializable {
     boolean isAdministrator();
 
     /**
-     * Returns the {@code tenantId} of this {@NuxeoPrincipal}, or {@code null} if there is no {@code tenantId}.
+     * Returns the {@code tenantId} of this {@link NuxeoPrincipal}, or {@code null} if there is no {@code tenantId}.
      *
      * @since 5.6
      */

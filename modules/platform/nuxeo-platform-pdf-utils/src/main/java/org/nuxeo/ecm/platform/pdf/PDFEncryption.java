@@ -73,8 +73,8 @@ public class PDFEncryption {
      * Encrypts the PDF with readonly permission.
      * <p>
      * WARNING: If you are familiar with PDFBox {@link AccessPermission}, notice our encryptReadOnly() method is not the
-     * same as {@link AccessPermission#AccessPermission#setReadOnly}. The latter just makes sure the code cannot call
-     * other setter later on.
+     * same as {@link AccessPermission#setReadOnly}. The latter just makes sure the code cannot call other setter later
+     * on.
      * <p>
      * <code>encryptReadOnly</code> sets the following permissions on the document:
      * <ul>
@@ -88,7 +88,7 @@ public class PDFEncryption {
      * <li>Can print degraded: True</li>
      * </ul>
      * <p>
-     * <b>IMPORTANT
+     * <b>IMPORTANT</b>
      * </p>
      * It is required that the following setters are called <i>before</i>:
      * <ul>
@@ -118,7 +118,7 @@ public class PDFEncryption {
     /**
      * Encrypts the PDF with the new permissions (see {@link AccessPermission}).
      * <p>
-     * <b>IMPORTANT
+     * <b>IMPORTANT</b>
      * </p>
      * It is required that the following setters are called <i>before</i>:
      * <ul>
@@ -162,7 +162,7 @@ public class PDFEncryption {
      * Removes all protection from the PDF, returns a copy of it. If the PDF was not encrypted, just returns a copy of
      * it with no changes.
      * <p>
-     * <b>IMPORTANT
+     * <b>IMPORTANT</b>
      * </p>
      * If the PDF is encrypted, it is required for {@link PDFEncryption#setOriginalOwnerPwd} to be called before to
      * <code>removeEncryption</code>.
@@ -202,9 +202,9 @@ public class PDFEncryption {
     /**
      * Set the lentgh of the key to be used for encryption.
      * <p>
-     * Possible values are 40 and 128. Default value is 128 if <code>keyLength</code> is <= 0.
+     * Possible values are 40 and 128. Default value is 128 if <code>keyLength</code> is &lt;= 0.
      *
-     * @param keyLength Lenght of the encryption key.
+     * @param keyLength Length of the encryption key.
      */
     public void setKeyLength(int keyLength) throws NuxeoException {
         if (keyLength < 1) {

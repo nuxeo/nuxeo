@@ -81,8 +81,6 @@ public class RegistryTest {
 
     /**
      * Deploy then reset and redeploy the same component
-     *
-     * @throws Exception
      */
     @Test
     public void testReset() throws Exception {

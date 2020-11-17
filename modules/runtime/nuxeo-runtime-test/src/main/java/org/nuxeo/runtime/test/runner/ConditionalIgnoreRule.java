@@ -81,7 +81,7 @@ public class ConditionalIgnoreRule implements TestRule, MethodRule {
          * Returns whether this condition supports check at class level. Note: A condition supporting the class rule
          * behavior will be called before the {@link BeforeClassStatement}, at this moment Nuxeo Runtime is not fully
          * initialized and injection is not performed yet.
-         * <p/>
+         * <p>
          * By default, conditions don't support it in order to keep backward compatibility.
          *
          * @since 11.1

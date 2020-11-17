@@ -132,7 +132,6 @@ public abstract class CommandsTask extends AbstractTask {
     }
 
     /**
-     * @throws PackageException
      * @since 5.6
      */
     protected abstract void flush() throws PackageException;

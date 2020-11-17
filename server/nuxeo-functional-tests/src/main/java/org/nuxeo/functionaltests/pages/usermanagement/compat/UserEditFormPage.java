@@ -60,14 +60,6 @@ public class UserEditFormPage extends UsersGroupsBasePage {
 
     /**
      * Edit a user, only update non null value.
-     *
-     * @param firstname
-     * @param lastname
-     * @param company
-     * @param email
-     * @param password
-     * @param group
-     * @throws NoSuchElementException
      */
     public UserViewTabSubPage editUser(String firstname, String lastname, String company, String email, String group)
             throws NoSuchElementException {

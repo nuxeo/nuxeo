@@ -39,8 +39,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * <pre>
  * {
- *     "providerId": "PROVIDER_ID", <-- the blob provider id
- *     "key": "BLOB_KEY" <-- the blob key
+ *     "providerId": "PROVIDER_ID", &lt;-- the blob provider id
+ *     "key": "BLOB_KEY" &lt;-- the blob key
  * }
  * </pre>
  *

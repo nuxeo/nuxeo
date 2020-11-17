@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  * Allows to get a virtual {@link FolderItem} for a given user.
  *
  * @author Antoine Taillefer
- * @see XXX
  */
 public interface VirtualFolderItemFactory extends FileSystemItemFactory {
 

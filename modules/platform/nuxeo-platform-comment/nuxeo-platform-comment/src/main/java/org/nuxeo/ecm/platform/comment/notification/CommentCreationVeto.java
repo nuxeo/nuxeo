@@ -25,7 +25,7 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 /**
  * This veto prevents from sending notifications for document creation when the target document is a Comment or a Post.
  *
- * @author Thierry Martins <tmartins@nuxeo.com>
+ * @author Thierry Martins
  * @since 5.7
  * @deprecated since 11.1. Use {@link CommentNotificationVeto} instead.
  */

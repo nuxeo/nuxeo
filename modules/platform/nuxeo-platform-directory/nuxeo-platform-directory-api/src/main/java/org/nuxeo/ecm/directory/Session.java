@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
  * <p>
  * This class is used to create, obtain, modify and delete entries in a directory.
  *
- * @see
  * @see Directory#getSession()
  * @author glefter@nuxeo.com
  */
@@ -252,8 +251,6 @@ public interface Session extends AutoCloseable {
      * Checks that the credentials provided by the UserManager match those registered in the directory. If username is
      * not in the directory, this should return false instead of throrwing an exception.
      *
-     * @param username
-     * @param password
      * @return true is the credentials match those stored in the directory
      */
     boolean authenticate(String username, String password);

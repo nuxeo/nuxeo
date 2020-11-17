@@ -46,7 +46,7 @@ public class LDAPServerDescriptorDNSTestCase {
 
     private static final Log log = LogFactory.getLog(LDAPServerDescriptorDNSTestCase.class);
 
-    private final class MockDNSService implements DNSServiceResolver {
+    private static final class MockDNSService implements DNSServiceResolver {
 
         @Override
         public List<DNSServiceEntry> resolveLDAPDomainServers(String domain, String prefix) {
@@ -68,7 +68,7 @@ public class LDAPServerDescriptorDNSTestCase {
 
     }
 
-    private final class MockLDAPServerDescriptor extends LDAPServerDescriptor {
+    private static final class MockLDAPServerDescriptor extends LDAPServerDescriptor {
         /*
          * Mock DNS Service
          */
@@ -92,11 +92,9 @@ public class LDAPServerDescriptorDNSTestCase {
 
     /**
      * Unit test the set/get LdapUrl methods
-     *
-     * @throws Exception
      */
     @Test
-    public void testLdapServerDnsParsing() throws Exception {
+    public void testLdapServerDnsParsing() {
         List<DNSServiceEntry> actual = dns.resolveLDAPDomainServers("nuxeo.org");
         if (log.isDebugEnabled()) {
             log.debug(actual);

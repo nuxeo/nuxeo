@@ -41,25 +41,20 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * <p>
  * Add permission available for current user on given {@link DocumentModel}'s as json attachment. Limit permission to
  * Read, Write and Everything.
- * </p>
  * <p>
  * Enable if parameter enrichers-document=permissions is present.
- * </p>
  * <p>
  * Format is:
  *
  * <pre>
- * {@code
  * {
  *   "entity-type":"document",
  *   ...
  *   "contextParameters": {
- *     "permissions": [ "Read", "Write", "Everything" ]  <- depending on current user permission on document
+ *     "permissions": [ "Read", "Write", "Everything" ]  &lt;- depending on current user permission on document
  *   }
  * }
  * </pre>
- *
- * </p>
  *
  * @since 7.2
  */

@@ -58,7 +58,6 @@ public class OAuth2Callback extends ModuleRoot {
     private static final Log log = LogFactory.getLog(OAuth2Callback.class);
 
     /**
-     * @param serviceProviderName
      * @return the rendered page.
      */
     @GET

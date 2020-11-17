@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 public class QueryFilter implements org.nuxeo.ecm.core.api.query.QueryFilter<SQLQuery.Transformer> {
 
     public static final QueryFilter EMPTY = new QueryFilter(null, null, new String[0], null,
-            Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
+            Collections.emptyList(), 0, 0);
 
     protected final NuxeoPrincipal principal;
 
@@ -57,8 +57,6 @@ public class QueryFilter implements org.nuxeo.ecm.core.api.query.QueryFilter<SQL
 
     /**
      * Constructs a query filter.
-     * <p>
-     * Note that the principal MUST be {@link Serializable}.
      */
     public QueryFilter(NuxeoPrincipal principal, String[] principals, String[] permissions, FacetFilter facetFilter,
             Collection<SQLQuery.Transformer> queryTransformers, long limit, long offset) {

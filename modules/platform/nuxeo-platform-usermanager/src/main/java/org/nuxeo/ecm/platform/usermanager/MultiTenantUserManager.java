@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 
 /**
- * @author Benjamin Jalon <bjalon@nuxeo.com>
+ * @author Benjamin Jalon
  */
 public interface MultiTenantUserManager extends Serializable {
 
@@ -79,7 +79,6 @@ public interface MultiTenantUserManager extends Serializable {
      * tenant.
      *
      * @since 5.5
-     * @throws UserAlreadyExistsException
      */
     DocumentModel createUser(DocumentModel userModel, DocumentModel context) throws
             UserAlreadyExistsException;
@@ -88,7 +87,6 @@ public interface MultiTenantUserManager extends Serializable {
      * Updates user represented by given model into the given context document. The context document must be contained
      * into the tenant.
      *
-     * @param userModel
      * @since 5.5
      */
     void updateUser(DocumentModel userModel, DocumentModel context);
@@ -143,7 +141,6 @@ public interface MultiTenantUserManager extends Serializable {
      *
      * @param filter filter with field names as keys
      * @param fulltext field names used for fulltext match
-     * @param context
      * @since 5.5
      */
     DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context);
@@ -162,7 +159,6 @@ public interface MultiTenantUserManager extends Serializable {
      *
      * @param filter filter with field names as keys
      * @param fulltext field names used for fulltext match
-     * @param context
      * @since 5.5
      */
     DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context);
@@ -174,7 +170,6 @@ public interface MultiTenantUserManager extends Serializable {
      *
      * @return the created group model
      * @since 5.5
-     * @throws GroupAlreadyExistsException
      */
     DocumentModel createGroup(DocumentModel groupModel, DocumentModel context) throws
             GroupAlreadyExistsException;
@@ -193,7 +188,6 @@ public interface MultiTenantUserManager extends Serializable {
      * configuration, the service will append at the end of the groupname the directory suffix set into the local
      * configuration of the context document.
      *
-     * @param groupModel
      * @since 5.5
      */
     void deleteGroup(DocumentModel groupModel, DocumentModel context);
@@ -203,7 +197,6 @@ public interface MultiTenantUserManager extends Serializable {
      * the service will append at the end of the groupname the directory suffix set into the local configuration of the
      * context document.
      *
-     * @param groupId
      * @since 5.5
      */
     void deleteGroup(String groupId, DocumentModel context);
@@ -223,7 +216,6 @@ public interface MultiTenantUserManager extends Serializable {
      * the local configuration of the context document.
      *
      * @param parentId the name of the parent group.
-     * @return
      * @since 5.5
      */
     List<String> getGroupsInGroup(String parentId, DocumentModel context);
@@ -231,7 +223,6 @@ public interface MultiTenantUserManager extends Serializable {
     /**
      * Returns the list of groups that are not members of other groups with the given context.
      *
-     * @return
      * @since 5.5
      */
     List<String> getTopLevelGroups(DocumentModel context);
@@ -240,7 +231,6 @@ public interface MultiTenantUserManager extends Serializable {
      * Returns the list of users that belong to this group into the given context
      *
      * @param groupId ID of the group
-     * @return
      * @since 5.5
      */
     List<String> getUsersInGroup(String groupId, DocumentModel context);
@@ -249,20 +239,19 @@ public interface MultiTenantUserManager extends Serializable {
      * Get users from a group and its subgroups into the given context
      *
      * @param groupId ID of the group
-     * @return
      * @since 5.5
      */
     List<String> getUsersInGroupAndSubGroups(String groupId, DocumentModel context);
 
     /**
-     * Returns true is users referential is read only (ie : LDAP) -> can not add users -> can not delete users.
+     * Returns true is users referential is read only (ie : LDAP) -&gt; can not add users -&gt; can not delete users.
      *
      * @since 5.5
      */
     Boolean areGroupsReadOnly();
 
     /**
-     * Returns true is groups referential is read only (ie : LDAP) -> can not add groups -> can not delete groups.
+     * Returns true is groups referential is read only (ie : LDAP) -&gt; can not add groups -&gt; can not delete groups.
      */
     Boolean areUsersReadOnly();
 

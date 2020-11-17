@@ -62,6 +62,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  * <ul>
  * <li><code>STARTING_COMPONENT</code>
  * <li><code>COMPONENT_STARTED</code>
+ * </ul>
  * <ul>
  * <li><code>EXTENSION_UNREGISTERED</code> (if an extension was registered)
  * </ul>
@@ -137,7 +138,7 @@ public class ComponentEvent {
      *
      * @since 11.3
      */
-    public static final String getEventName(int id) {
+    public static String getEventName(int id) {
         switch (id) {
         case COMPONENT_REGISTERED:
             return "COMPONENT_REGISTERED";

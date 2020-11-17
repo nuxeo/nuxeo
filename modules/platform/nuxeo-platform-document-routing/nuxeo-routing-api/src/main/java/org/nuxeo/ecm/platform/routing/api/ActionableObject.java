@@ -34,23 +34,16 @@ public interface ActionableObject {
 
     /**
      * The operation chain id if the action is refused.
-     *
-     * @return
      */
     String getRefuseOperationChainId();
 
     /**
      * The operation chain id if the action is validated.
-     *
-     * @return
      */
     String getValidateOperationChainId();
 
     /**
      * The step that represent the action.
-     *
-     * @param session
-     * @return
      */
     DocumentRouteStep getDocumentRouteStep(CoreSession session);
 

@@ -42,7 +42,7 @@ public interface SignatureService {
     /**
      * Information about a blob and its signing status.
      */
-    public class StatusWithBlob {
+    class StatusWithBlob {
 
         /**
          * The signing status for a document that is not signable (no attachment or unsupported attachment type).
@@ -140,8 +140,6 @@ public interface SignatureService {
      * @param disposition the signing disposition
      * @param archiveFilename the archive filename when using an archive
      * @return a blob containing the signed PDF
-     * @throws SignException
-     * @throws ConversionException
      */
     Blob signDocument(DocumentModel doc, DocumentModel user, String userKeyPassword, String reason, boolean pdfa,
             SigningDisposition disposition, String archiveFilename);
@@ -156,7 +154,6 @@ public interface SignatureService {
      * @param userKeyPassword the password for the user's signing certificate
      * @param reason the signing reason
      * @return a blob containing the signed PDF
-     * @throws SignException
      */
     Blob signPDF(Blob pdfBlob, DocumentModel doc, DocumentModel user, String userKeyPassword, String reason) throws SignException;
 

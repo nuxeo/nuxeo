@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 
 /**
  * Descriptor to contribute new restrictions in versioning system.
- * <p />
+ * <p>
  * These contributions will restrict available increment options on UI and raise an exception when saving a
  * {@link DocumentModel} with an excluded {@link VersioningOption}.
  *

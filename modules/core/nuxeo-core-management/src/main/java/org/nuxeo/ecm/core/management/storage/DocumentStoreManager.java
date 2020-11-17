@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Initialize document store by invoking registered handlers
  *
- * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ * @author Stephane Lacoin [aka matic]
  */
 public class DocumentStoreManager extends RepositoryInitializationHandler {
 

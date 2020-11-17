@@ -76,7 +76,7 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
     }
 
     @Override
-    protected void dumpDBContent() throws Exception {
+    protected void dumpDBContent() {
         System.out.println("\nDumping Live docs in repository");
         DocumentModelList docs = session.query("select * from Document where ecm:isVersion = 0 order by ecm:path");
         for (DocumentModel doc : docs) {
@@ -105,7 +105,7 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
     }
 
     @Override
-    protected void dumpVersionsContent() throws Exception {
+    protected void dumpVersionsContent() {
         System.out.println("\nDumping versions in repository");
         DocumentModelList docs = session.query("select * from Document where ecm:isVersion = 1");
         for (DocumentModel doc : docs) {
@@ -129,7 +129,7 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
         System.out.println("\n");
     }
 
-    protected String getContentHash() throws Exception {
+    protected String getContentHash() {
         DocumentModelList alldocs = session.query("select * from Document where ecm:isVersion = 0 order by ecm:path");
         StringBuilder sb = new StringBuilder();
         for (DocumentModel doc : alldocs) {
@@ -222,7 +222,6 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
      * folder's. If (probably) Nuxeo wants to keep the current proxy behaviour, it could be done either as (EasySOA-)
      * custom methods, or custom type / facet (?).
      *
-     * @throws Exception
      * @author mdutoo Open Wide - EasySOA use case
      */
     @Ignore

@@ -90,9 +90,13 @@ public interface GraphRoute extends DocumentRoute {
     void setVariables(Map<String, Serializable> map);
 
     /**
-     * Sets the variables of the workflow based on their JSON representation (especially for scalar lists). Eg.
-     * Map<String, String> map = new HashMap<String, String>();
-     * map.put("contributors","[\"John Doe\", \"John Smith\"]"); map.put("title","Test Title");
+     * Sets the variables of the workflow based on their JSON representation (especially for scalar lists). For example:
+     *
+     * <pre>
+     * Map&lt;String, String&gt; map = new HashMap&lt;String, String&gt;();
+     * map.put("contributors","[\"John Doe\", \"John Smith\"]");
+     * map.put("title","Test Title");
+     * </pre>
      *
      * @param map the map of variables
      * @since 5.9.3, 5.8.0-HF10
@@ -102,7 +106,6 @@ public interface GraphRoute extends DocumentRoute {
     /**
      * Gets the node with the given id.
      *
-     * @param id
      * @return the node
      * @throws IllegalArgumentException if there is no such node
      */
@@ -110,8 +113,6 @@ public interface GraphRoute extends DocumentRoute {
 
     /**
      * Gets a collection of the route nodes
-     *
-     * @return
      */
     Collection<GraphNode> getNodes();
 

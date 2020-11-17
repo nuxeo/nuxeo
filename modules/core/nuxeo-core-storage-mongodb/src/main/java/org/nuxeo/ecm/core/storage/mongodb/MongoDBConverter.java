@@ -449,7 +449,7 @@ public class MongoDBConverter {
         /**
          * return a list of parents key
          * <p>
-         * foo.0.bar -> [foo, foo.0, foo.0.bar]
+         * foo.0.bar -&gt; [foo, foo.0, foo.0.bar]
          */
         protected List<String> getPrefixKeys(String key) {
             List<String> ret = new ArrayList<>(10);

@@ -32,8 +32,6 @@ public interface CounterManager {
 
     /**
      * Increase a counter
-     *
-     * @param counterName
      */
     void increaseCounter(String counterName);
 
@@ -41,16 +39,11 @@ public interface CounterManager {
 
     /**
      * Set the value of a counter
-     *
-     * @param counterName
-     * @param value
      */
     void setCounterValue(String counterName, long value);
 
     /**
      * Decrease a counter
-     *
-     * @param counterName
      */
     void decreaseCounter(String counterName);
 
@@ -58,9 +51,6 @@ public interface CounterManager {
 
     /**
      * Get recorder values of the counter over time
-     *
-     * @param counterName
-     * @return
      */
     CounterHistoryStack getCounterHistory(String counterName);
 

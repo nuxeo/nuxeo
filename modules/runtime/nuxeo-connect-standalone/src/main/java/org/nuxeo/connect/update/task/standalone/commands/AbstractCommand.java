@@ -80,10 +80,7 @@ public abstract class AbstractCommand implements Command {
     /**
      * Override to implement command actions
      *
-     * @param task
-     * @param prefs
      * @return Rollback command
-     * @throws PackageException
      */
     protected abstract Command doRun(Task task, Map<String, String> prefs) throws PackageException;
 
@@ -93,7 +90,6 @@ public abstract class AbstractCommand implements Command {
      * @param task The task being validated
      * @param status Use {@link ValidationStatus#addError(String)} or {@link ValidationStatus#addWarning(String)} to
      *            provide validation error/warning messages
-     * @throws PackageException
      */
     protected abstract void doValidate(Task task, ValidationStatus status) throws PackageException;
 

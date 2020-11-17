@@ -2357,7 +2357,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
      * specification 1.1 where at most one {@code CONTAINS()} function MUST be included in a single query statement
      * (section 2.1.14.2.4.4). {@code JOIN}s are not supported yet.
      *
-     * @see https://jira.nuxeo.com/browse/NXP-19858
+     * @see <a href="https://jira.nuxeo.com/browse/NXP-19858">NXP-19858</a>
      */
     @Test
     @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/test-relax-cmis-spec.xml")

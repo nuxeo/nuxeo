@@ -128,7 +128,6 @@ public class TestPageProviderService {
      * non regression test for NXP-9809
      *
      * @since 5.6
-     * @throws Exception
      */
     @Test
     public void testRegistrationOverrideEnable() throws Exception {
@@ -157,7 +156,7 @@ public class TestPageProviderService {
     }
 
     @Test
-    public void testQuery() throws Exception {
+    public void testQuery() {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
 
@@ -177,7 +176,7 @@ public class TestPageProviderService {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testMergedProperties() throws Exception {
+    public void testMergedProperties() {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
         Map<String, Serializable> props = new HashMap<>();
@@ -189,7 +188,7 @@ public class TestPageProviderService {
     }
 
     @Test
-    public void testRegistrationNames() throws Exception {
+    public void testRegistrationNames() {
         PageProviderService service = Framework.getService(PageProviderService.class);
         assertNotNull(service);
         Set<String> ppNames = service.getPageProviderDefinitionNames();

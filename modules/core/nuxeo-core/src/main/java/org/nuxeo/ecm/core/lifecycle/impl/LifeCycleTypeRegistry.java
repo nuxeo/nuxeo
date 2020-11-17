@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTypesDescriptor;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * Registry for lifecycle <-> types association
+ * Registry for lifecycle &lt;-&gt; types association
  *
  * @since 5.6
  */
@@ -39,11 +39,11 @@ public class LifeCycleTypeRegistry extends ContributionFragmentRegistry<LifeCycl
 
     private static final Log log = LogFactory.getLog(LifeCycleTypeRegistry.class);
 
-    /** Type name -> life cycle name. */
+    /** Type name -&gt; life cycle name. */
     protected Map<String, String> typesMapping = new HashMap<>();
 
     /**
-     * a mapping from doc type -> list of transitions that should not recurse.
+     * a mapping from doc type -&gt; list of transitions that should not recurse.
      */
     protected Map<String, List<String>> docTypeToNonRecursiveTransition = new HashMap<>();
 

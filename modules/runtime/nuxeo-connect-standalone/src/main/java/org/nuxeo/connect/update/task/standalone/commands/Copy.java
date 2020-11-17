@@ -134,7 +134,6 @@ public class Copy extends AbstractCommand {
     }
 
     /**
-     * @param doOverwrite
      * @since 5.5
      */
     protected Command doCopy(Task task, Map<String, String> prefs, File fileToCopy, File dst, boolean doOverwrite)
@@ -267,10 +266,8 @@ public class Copy extends AbstractCommand {
      * Override in subclass to parameterize content.
      *
      * @since 5.5
-     * @param prefs
      * @return Content to put in destination file. See {@link #append} parameter to determine if returned content is
      *         replacing or appending to destination file.
-     * @throws PackageException
      */
     protected String getContentToCopy(File fileToCopy, Map<String, String> prefs) throws PackageException {
         // For compliance
@@ -292,7 +289,6 @@ public class Copy extends AbstractCommand {
     /**
      * @deprecated Since 5.5, use {@link #getContentToCopy(File, Map)}. This method is missing the fileToCopy reference.
      *             Using {@link #file} is leading to errors.
-     * @throws PackageException
      */
     @Deprecated
     protected String getContentToCopy(Map<String, String> prefs) throws PackageException {

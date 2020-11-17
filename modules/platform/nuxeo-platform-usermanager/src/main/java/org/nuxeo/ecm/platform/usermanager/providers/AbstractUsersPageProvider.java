@@ -190,7 +190,7 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
     }
 
     /**
-     * This page provider does not support sort for now => override what may be contributed in the definition
+     * This page provider does not support sort for now =&gt; override what may be contributed in the definition
      */
     @Override
     public boolean isSortable() {

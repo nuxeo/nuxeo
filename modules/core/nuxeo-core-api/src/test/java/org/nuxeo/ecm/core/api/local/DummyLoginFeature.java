@@ -44,7 +44,7 @@ import com.google.inject.Binder;
  * <p>
  * You can then get the logged in principal with help of {@link #getPrincipal()} or by using injection.
  * <p>
- * By default the feature will log in as Administrator, like the {@link org.nuxeo.ecm.core.test.CoreFeature} does.
+ * By default the feature will log in as Administrator, like the {@code org.nuxeo.ecm.core.test.CoreFeature} does.
  *
  * @since 11.1
  */

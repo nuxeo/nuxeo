@@ -31,21 +31,11 @@ public class ScanComponent extends DefaultComponent {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-
-        if (true) {
-            return adapter.cast(getScanService());
-        }
-
-        if (adapter.getName().equals(ScanService.class.getName())) {
-            return adapter.cast(getScanService());
-        }
-        return super.getAdapter(adapter);
+        return adapter.cast(getScanService());
     }
 
     /**
      * build the scanService singleton instance.
-     *
-     * @return
      */
     protected ScanService getScanService() {
         if (scanService == null) {

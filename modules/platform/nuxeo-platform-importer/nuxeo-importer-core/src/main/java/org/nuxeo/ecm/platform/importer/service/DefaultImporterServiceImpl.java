@@ -214,8 +214,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     }
 
     /**
-     *@since 7.1
-     * @param repositoryName
+     * @since 7.1
      */
     @Override
     public void setRepository(String repositoryName) {

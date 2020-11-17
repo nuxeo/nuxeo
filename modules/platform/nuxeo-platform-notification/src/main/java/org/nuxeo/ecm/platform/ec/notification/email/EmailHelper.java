@@ -63,7 +63,6 @@ import freemarker.template.TemplateException;
  * Class EmailHelper.
  * <p>
  * An email helper:
- * <p>
  *
  * <pre>
  * Hashtable mail = new Hashtable();

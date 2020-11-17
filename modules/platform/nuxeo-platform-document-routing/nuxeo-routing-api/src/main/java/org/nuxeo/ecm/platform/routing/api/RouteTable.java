@@ -31,16 +31,10 @@ public class RouteTable {
 
     protected int maxDepth = 0;
 
-    /**
-     * @param routeElementDocument
-     */
     public RouteTable(DocumentRoute route) {
         this.route = route;
     }
 
-    /**
-     * @return
-     */
     public int getMaxDepth() {
         return maxDepth;
     }
@@ -53,9 +47,6 @@ public class RouteTable {
         return totalChildCount;
     }
 
-    /**
-     * @param maxDepth
-     */
     public void setMaxDepth(int maxDepth) {
         this.maxDepth = maxDepth;
     }

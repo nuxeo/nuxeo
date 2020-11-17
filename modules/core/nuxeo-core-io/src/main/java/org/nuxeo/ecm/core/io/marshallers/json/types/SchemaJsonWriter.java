@@ -56,14 +56,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * Format is:
  *
  * <pre>
- * {@code
  * {
  *   "entity-type":"schema",
  *   "name": "SCHEMA_NAME",
- *   "prefix: "SCHEMA_PREFIX",  <- only if there's a prefix
+ *   "prefix: "SCHEMA_PREFIX",  &lt;- only if there's a prefix
  *   "fields", {
- *     "PRIMITIVE_FIELD_LOCAL_NAME": "FIELD_TYPE", <- where field type is {@link Type#getName()} (string, boolean, integer, ...)
- *     "PRIMITIVE_LIST_LOCAL_NAME": "FIELD_TYPE[]" <- where field type is {@link Type#getName()} (string, boolean, integer, ...)
+ *     "PRIMITIVE_FIELD_LOCAL_NAME": "FIELD_TYPE", &lt;- where field type is {@link Type#getName()} (string, boolean, integer, ...)
+ *     "PRIMITIVE_LIST_LOCAL_NAME": "FIELD_TYPE[]" &lt;- where field type is {@link Type#getName()} (string, boolean, integer, ...)
  *     "COMPLEX_FIELD_LOCAL_NAME" : {
  *       "type": "complex",
  *       "fields": {
@@ -80,11 +79,10 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *     "CONTENT_LIST_FIELD": "blob[]",
  *     ...
  *   }
- *             <-- contextParameters if there are enrichers activated
- *             <-- additional property provided by extend() method
+ *             &lt;-- contextParameters if there are enrichers activated
+ *             &lt;-- additional property provided by extend() method
  * }
  * </pre>
- * </p>
  *
  * @since 7.2
  */

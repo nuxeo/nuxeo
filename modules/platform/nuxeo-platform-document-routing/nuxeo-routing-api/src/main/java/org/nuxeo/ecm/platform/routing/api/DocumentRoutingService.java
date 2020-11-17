@@ -110,9 +110,9 @@ public interface DocumentRoutingService {
 
     /**
      * Resumes a route instance on a give node. Any remaining tasks on this node will be cancelled.
-     * <p/>
+     * <p>
      * Called by the UI action corresponding to a task button.
-     * <p/>
+     * <p>
      * If all attached documents of the workflow instance have been deleted then the workflow is cancelled.
      *
      * @param routeId the id of the route instance
@@ -126,7 +126,7 @@ public interface DocumentRoutingService {
 
     /**
      * Completes a task on a give node. If this is the last task the workflow will continue.
-     * <p/>
+     * <p>
      * Called by the UI action corresponding to a task button.
      *
      * @param routeId the id of the route instance
@@ -140,7 +140,7 @@ public interface DocumentRoutingService {
 
     /**
      * Save a route instance as a new model of route.
-     * <p/>
+     * <p>
      * The place in which the new instance is persisted and its name depends on {@link DocumentRoutingPersister}. The
      * route instance should be in either running, done or ready state. The new route model will be in draft state and
      * won't have any attached documents.
@@ -183,8 +183,6 @@ public interface DocumentRoutingService {
      * DocumentRouteStep. Use the <code>chainsToType</code> extension point to contribute new mapping.
      *
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
-     * @param documentType
-     * @return
      */
     @Deprecated
     String getUndoFromRunningOperationChainId(String documentType);
@@ -192,9 +190,6 @@ public interface DocumentRoutingService {
     /**
      * Return the operation chain to undo a step when the step is in done state. The document type should extend the
      * DocumentRouteStep. Use the <code>chainsToType</code> extension point to contribute new mapping.
-     *
-     * @param documentType
-     * @return
      */
     String getUndoFromDoneOperationChainId(String documentType);
 
@@ -210,8 +205,6 @@ public interface DocumentRoutingService {
     /**
      * Unlock the given {@link DocumentRoute} model under unrestricted session.
      *
-     * @param routeModel
-     * @param userSession
      * @return The unlocked route.
      * @since 1.9
      */
@@ -220,9 +213,8 @@ public interface DocumentRoutingService {
     /**
      * Computes the list of elements {@link DocumentRouteTableElement} for this {@link DocumentRoute}.
      *
-     * @param routeDocument {@link DocumentRoute}.
+     * @param route {@link DocumentRoute}.
      * @param session The session used to query the {@link DocumentRoute}.
-     * @param A list of {@link DocumentRouteElement}
      */
     List<DocumentRouteTableElement> getRouteElements(DocumentRoute route, CoreSession session);
 
@@ -237,9 +229,6 @@ public interface DocumentRoutingService {
             List<DocumentRouteElement.ElementLifeCycleState> states);
 
     /**
-     * @param session
-     * @param attachedDocId
-     * @return
      * @see #getDocumentRoutesForAttachedDocument(CoreSession, String, List) for route running or ready.
      */
     List<DocumentRoute> getDocumentRoutesForAttachedDocument(CoreSession session, String attachedDocId);
@@ -254,9 +243,6 @@ public interface DocumentRoutingService {
 
     /**
      * Checks if the principal that created the client session can validate the route
-     *
-     * @param documentRoute
-     * @param coreSession
      */
     boolean canValidateRoute(DocumentModel documentRoute, CoreSession coreSession);
 
@@ -267,7 +253,6 @@ public interface DocumentRoutingService {
      * @param parentDocumentRef The DocumentRef of the parent document.
      * @param idx The position of the document in its container.
      * @param routeElement The document to add.
-     * @param session
      */
     @Deprecated
     void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx, DocumentRouteElement routeElement,
@@ -275,7 +260,7 @@ public interface DocumentRoutingService {
 
     /**
      * Add a route element in another route element.
-     * <p/>
+     * <p>
      * If the parent element is in draft state, the routeElement is kept in draft state. Otherwise, the element is set
      * to 'ready' state.
      *
@@ -283,7 +268,6 @@ public interface DocumentRoutingService {
      * @param parentDocumentRef The DocumentRef of the parent document.
      * @param sourceName the name of the previous document in the container.
      * @param routeElement the document to add.
-     * @param session
      */
     @Deprecated
     void addRouteElementToRoute(DocumentRef parentDocumentRef, String sourceName, DocumentRouteElement routeElement,
@@ -293,8 +277,6 @@ public interface DocumentRoutingService {
      * Remove the given route element
      *
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
-     * @param The route element document.
-     * @param session
      */
     @Deprecated
     void removeRouteElement(DocumentRouteElement routeElement, CoreSession session)
@@ -304,9 +286,6 @@ public interface DocumentRoutingService {
      * Get the children of the given stepFolder ordered by the ecm:pos metadata.
      *
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
-     * @param stepFolderId
-     * @param session
-     * @return
      */
     @Deprecated
     DocumentModelList getOrderedRouteElement(String routeElementId, CoreSession session);
@@ -315,34 +294,25 @@ public interface DocumentRoutingService {
      * Locks this {@link DocumentRoute} if not already locked by the current user. If the document is already locked by
      * another user and {@link DocumentRouteAlredayLockedException} is thrown
      *
-     * @param routeDocument {@link DocumentRoute}.
      * @param session The session used to lock the {@link DocumentRoute}.
-     * @throws {@link DocumentRouteAlredayLockedException}
      */
     void lockDocumentRoute(DocumentRoute routeModel, CoreSession session) throws DocumentRouteAlredayLockedException;
 
     /**
      * Unlocks this {@link DocumentRoute}.If the document is not locked throws a {@link DocumentRouteNotLockedException}
      *
-     * @param routeDocument {@link DocumentRoute}.
      * @param session The session used to lock the {@link DocumentRoute}.
      */
     void unlockDocumentRoute(DocumentRoute routeModel, CoreSession session) throws DocumentRouteNotLockedException;
 
     /**
      * Update the given route element
-     *
-     * @param The route element document.
-     * @param session
      */
     void updateRouteElement(DocumentRouteElement routeModel, CoreSession session)
             throws DocumentRouteNotLockedException;
 
     /**
      * Verify is this {@link DocumentRoute} is already locked by the current user.
-     *
-     * @param routeDocument {@link DocumentRoute}.
-     * @param session
      */
     boolean isLockedByCurrentUser(DocumentRoute routeModel, CoreSession session);
 
@@ -367,9 +337,6 @@ public interface DocumentRoutingService {
      * Creates a route model in the root models folder defined by the current persister. The templateResource is a zip
      * tree xml export of a route document and it is imported using the core-io importer.
      *
-     * @param templateResource
-     * @param overwrite
-     * @param session
      * @since 5.6
      */
     DocumentRoute importRouteModel(URL templateResource, boolean overwrite, CoreSession session);
@@ -416,7 +383,7 @@ public interface DocumentRoutingService {
     /**
      * Marks the tasks as Routing tasks.
      * <p>
-     * This allows the related documents to be adapted to {@link RoutingTask}.
+     * This allows the related documents to be adapted to {@code RoutingTask}.
      *
      * @param session the session
      * @param tasks the tasks
@@ -431,9 +398,6 @@ public interface DocumentRoutingService {
     /**
      * Ends a task. If this is the last task the workflow will continue.
      *
-     * @param session
-     * @param task
-     * @param data
      * @param status name of the button clicked to submit the task form
      * @since 5.6, was on RoutingTaskService before
      */
@@ -463,9 +427,6 @@ public interface DocumentRoutingService {
     /**
      * Gets the documents following the workflow to which the given task belongs
      *
-     * @param session
-     * @param task
-     * @return
      * @since 5.6, was on RoutingTaskService before
      */
     List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task);
@@ -475,11 +436,6 @@ public interface DocumentRoutingService {
      * removed. Doesn't resume the workflow as the <code>completeTask</code> method. Not executed using an unrestricted
      * session.
      *
-     * @param session
-     * @param route
-     * @param task
-     * @param delete
-     * @throws DocumentRouteException
      * @since 5.7
      * @deprecated // will be removed in 5.8, use completeTask instead
      */
@@ -491,10 +447,6 @@ public interface DocumentRoutingService {
      * the document following the worklflow are removed. Doesn't resume the workflow as the <code>completeTask</code>
      * method.
      *
-     * @param session
-     * @param task
-     * @param delete
-     * @throws DocumentRouteException
      * @since 5.7.3
      */
     void cancelTask(CoreSession session, String taskId) throws DocumentRouteException;
@@ -503,10 +455,6 @@ public interface DocumentRoutingService {
      * Reassigns the given task to the list of actors. Removes the permissions granted on the document following the
      * workflow to the current task assignees and grants them to the new actors.
      *
-     * @param session
-     * @param taskId
-     * @param actors
-     * @param comment
      * @since 5.7.3
      */
     void reassignTask(CoreSession session, String taskId, List<String> actors, String comment)
@@ -516,10 +464,6 @@ public interface DocumentRoutingService {
      * Reassigns the given task to the list of actors. Grants to new delegated actors the same permissions as the task
      * assignees on the document following the workflow .
      *
-     * @param session
-     * @param taskId
-     * @param delegatedActors
-     * @param comment
      * @since 5.8
      */
     void delegateTask(CoreSession session, String taskId, List<String> delegatedActors, String comment)
@@ -584,13 +528,9 @@ public interface DocumentRoutingService {
     int doCleanupDoneAndCanceledRouteInstances(String reprositoryName, int limit);
 
     /**
-     * @param userId
-     * @param workflowInstanceId
-     * @param session
-     * @return
      * @since 7.2
      * @deprecated since 11.1 this method does not scale as it does not paginate results. Use
-     *             {@link org.nuxeo.ecm.platform.routing.core.provider.RoutingTaskPageProvider#getCurrentPage()}
+     *             {@code org.nuxeo.ecm.platform.routing.core.provider.RoutingTaskPageProvider#getCurrentPage()}
      *             instead.
      */
     @Deprecated
@@ -598,9 +538,6 @@ public interface DocumentRoutingService {
             String workflowModelName, CoreSession session);
 
     /**
-     * @param document
-     * @param session
-     * @return
      * @since 7.2
      */
     List<DocumentRoute> getDocumentRelatedWorkflows(final DocumentModel document, final CoreSession session);

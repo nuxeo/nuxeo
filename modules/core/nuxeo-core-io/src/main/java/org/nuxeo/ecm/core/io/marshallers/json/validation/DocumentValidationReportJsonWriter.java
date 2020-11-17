@@ -40,20 +40,17 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * <p>
  * This marshaller is enrichable: register class implementing {@link AbstractJsonEnricher} and managing
  * {@link DocumentValidationReport}.
- * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link DocumentValidationReportJsonWriter#extend(Object, JsonGenerator)}.
- * </p>
+ * {@link ExtensibleEntityJsonWriter#extend(Object, JsonGenerator)}.
  * <p>
  * Format is:
  *
  * <pre>
- * {@code
  * {
  *   "entity-type":"validation_report",
  *   "has_error": true|false,
- *   "number": 123, <- number of errors present in this report
+ *   "number": 123, &lt;- number of errors present in this report
  *   "violations": [
  *     {
  *       "message": "TheErrorMessage",
@@ -64,11 +61,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *     },
  *     ...
  *   ]
- *             <-- contextParameters if there are enrichers activated
- *             <-- additional property provided by extend() method
+ *             &lt;-- contextParameters if there are enrichers activated
+ *             &lt;-- additional property provided by extend() method
  * }
  * </pre>
- * </p>
+ *
  * @since 7.2
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)

@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 
 /**
  * Deploy a bundle with only a subset of contributions
- * <p/>
+ * <p>
  * Example:
  *
  * <pre>

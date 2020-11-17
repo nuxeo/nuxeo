@@ -46,7 +46,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Bulk operation to cancel and restart all the workflow instances of the workflow model with the id
- * <param>workflowId</param>. If the <param> nodeId</param> parameter is specified, then only the workflows suspened on
+ * <code>workflowId</code>. If the <code> nodeId</code> parameter is specified, then only the workflows suspended on
  * that node are restarted.
  *
  * @since 5.7
@@ -58,7 +58,7 @@ public class BulkRestartWorkflow {
 
     private static final Log log = LogFactory.getLog(BulkRestartWorkflow.class);
 
-    @Param(name = "workflowId", required = true)
+    @Param(name = "workflowId")
     protected String workflowId;
 
     @Param(name = "nodeId", required = false)

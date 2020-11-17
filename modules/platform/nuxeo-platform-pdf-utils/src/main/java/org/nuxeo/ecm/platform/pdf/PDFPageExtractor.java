@@ -94,7 +94,7 @@ public class PDFPageExtractor {
      * greater than <code>inEndPage</code> or greater than the number of pages in the source document, a blank document
      * will be returned.
      * <p>
-     * If fileName is null or "", if is set to the original name + the page range: mydoc.pdf and pages 10-75 +>
+     * If fileName is null or "", if is set to the original name + the page range: mydoc.pdf and pages 10-75 +@gt;
      * mydoc-10-75.pdf.
      * <p>
      * The mimetype is always set to "application/pdf".

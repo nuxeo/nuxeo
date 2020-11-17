@@ -43,7 +43,6 @@ public interface IODocumentManager extends Serializable {
 
     /**
      * @param customDocReader reader from the input stream
-     * @param customDocWriter
      */
     DocumentTranslationMap importDocuments(DocumentReader customDocReader, DocumentWriter customDocWriter);
 

@@ -41,9 +41,6 @@ public class NoteSummaryTabSubPage extends AbstractPage {
     @FindBy(xpath = "//span[@class=\"versionNumber\"]")
     WebElement versionNumberField;
 
-    /**
-     * @param driver
-     */
     public NoteSummaryTabSubPage(WebDriver driver) {
         super(driver);
     }

@@ -135,14 +135,8 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * <p>
  * Internal flags are used by the implementation to keep some internal state. For these flags you should look into the
  * implementation
- * <p>
- * Apart flags properties can also hold some random user data using {@link Property#setData(Object)} and
- * {@link Property#getData()} methods. This can be used for example to keep a context attached to a property. But be
- * aware when using this you should provide serializable objects as the data you are attaching otherwise if properties
- * are serialized / unserialized this will generate errors. The API is not forcing you to use serializable values since
- * you can also use this feature to store temporary context data that will not be sent over the network.
  *
- * @see <code>TestPropertyModel</code> for usage of property API
+ * @see "<code>TestPropertyModel</code> for usage of property API"
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface Property extends Cloneable, Serializable, Iterable<Property> {

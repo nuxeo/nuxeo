@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * The filtered list is sorted
  *
- * @author Olivier Grisel <ogrisel@nuxeo.com>
+ * @author Olivier Grisel
  */
 public class DefaultCreationContainerListProvider extends AbstractCreationContainerListProvider {
 

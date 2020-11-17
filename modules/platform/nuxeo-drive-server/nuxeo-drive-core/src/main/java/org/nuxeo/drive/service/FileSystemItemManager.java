@@ -107,7 +107,7 @@ public interface FileSystemItemManager {
      * Return true if the {@link FileSystemItem} with the given source id can be moved to the {@link FileSystemItem}
      * with the given destination id for the given principal.
      *
-     * @see FileSystemItem#getCanMove(String)
+     * @see FileSystemItem#canMove(FolderItem)
      */
     boolean canMove(String srcId, String destId, NuxeoPrincipal principal);
 
@@ -193,7 +193,7 @@ public interface FileSystemItemManager {
      * Moves the {@link FileSystemItem} with the given source id to the {@link FileSystemItem} with the given
      * destination id for the given principal.
      *
-     * @see FileSystemItem#move(String)
+     * @see FileSystemItem#move(FolderItem)
      */
     FileSystemItem move(String srcId, String destId, NuxeoPrincipal principal);
 

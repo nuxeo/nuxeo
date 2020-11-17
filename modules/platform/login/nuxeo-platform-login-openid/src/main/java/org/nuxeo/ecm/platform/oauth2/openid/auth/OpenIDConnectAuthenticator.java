@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Authenticator using OpenID to retrieve user identity.
  *
- * @author Nelson Silva <nelson.silva@inevo.pt>
+ * @author Nelson Silva
  */
 public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
 

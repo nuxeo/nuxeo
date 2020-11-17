@@ -23,9 +23,10 @@ import java.util.List;
 import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.AbstractListenerPipeConsumer;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 
 /**
- * In memory implementation that does not handle any marshaling and directly feeds the {@link WorkManager}
+ * In memory implementation that does not handle any marshaling and directly feeds the {@link WorkManager}.
  *
  * @since 8.4
  */

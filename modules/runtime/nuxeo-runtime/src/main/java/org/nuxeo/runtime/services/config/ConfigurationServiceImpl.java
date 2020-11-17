@@ -69,7 +69,7 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     /**
      * XXX remove once we are able to get such a cached map from DefaultComponent.
      * <p>
-     * We'd ideally need a <T extends Descriptor> Map<String, T> getDescriptors(String xp) with cache method.
+     * We'd ideally need a &lt;T extends Descriptor&gt; Map&lt;String, T&gt; getDescriptors(String xp) with cache method.
      *
      * @since 10.3
      */

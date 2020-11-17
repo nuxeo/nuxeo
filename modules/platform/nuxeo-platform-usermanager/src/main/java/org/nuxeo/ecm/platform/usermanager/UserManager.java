@@ -37,8 +37,8 @@ import org.nuxeo.runtime.services.event.EventListener;
 
 /**
  * @author Anahide Tchertchian
- * @author Sun Seng David TAN <stan@nuxeo.com>
- * @author Benjamin Jalon <bjalon@nuxeo.com>
+ * @author Sun Seng David TAN
+ * @author Benjamin Jalon
  */
 public interface UserManager extends Authenticator, EventListener, Serializable {
 
@@ -99,7 +99,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * Creates user from given model.
      *
      * @since 5.2M4
-     * @throws UserAlreadyExistsException
      */
     DocumentModel createUser(DocumentModel userModel) throws UserAlreadyExistsException;
 
@@ -202,7 +201,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      *
      * @return the created group model
      * @since 5.2M4
-     * @throws GroupAlreadyExistsException
      */
     DocumentModel createGroup(DocumentModel groupModel) throws GroupAlreadyExistsException;
 
@@ -275,12 +273,12 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     List<String> getUsersInGroupAndSubGroups(String groupId);
 
     /**
-     * Returns true is users referential is read only (ie : LDAP) -> can not add users -> can not delete users.
+     * Returns true is users referential is read only (ie : LDAP) -&gt; can not add users -&gt; can not delete users.
      */
     Boolean areGroupsReadOnly();
 
     /**
-     * Returns true is groups referential is read only (ie : LDAP) -> can not add groups -> can not delete groups.
+     * Returns true is groups referential is read only (ie : LDAP) -&gt; can not add groups -&gt; can not delete groups.
      */
     Boolean areUsersReadOnly();
 

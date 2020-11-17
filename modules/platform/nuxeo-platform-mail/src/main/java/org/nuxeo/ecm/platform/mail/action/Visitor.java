@@ -43,7 +43,6 @@ public class Visitor {
     /**
      * Visit every message of given folder and every message of its subfolders.
      *
-     * @param folder
      * @param initialContext context variables passed to each execution context
      */
     public void visit(Folder folder, ExecutionContext initialContext) throws MessagingException {
@@ -71,7 +70,6 @@ public class Visitor {
     /**
      * Visit given messages
      *
-     * @param messages
      * @param initialContext context variables passed to each execution context
      */
     public void visit(Message[] messages, ExecutionContext initialContext) throws MessagingException {

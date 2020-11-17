@@ -76,8 +76,6 @@ public interface Type extends Serializable {
 
     /**
      * Gets the schema defining this type.
-     *
-     * @return
      */
     Schema getSchema();
 
@@ -181,8 +179,6 @@ public interface Type extends Serializable {
 
     /**
      * Creates a new instance according to this type and filled with default values.
-     *
-     * @return
      */
     Object newInstance();
 

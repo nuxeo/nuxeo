@@ -33,11 +33,11 @@ import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 
 /**
  * Service to deal with {@link Comment}.
- * <p/>
+ * <p>
  * We call comment the document model representing a comment.
- * <p/>
+ * <p>
  * We call parent/commented document the document model being commented (regular document or comment).
- * <p/>
+ * <p>
  * We call top level document the regular document which owns all comments.
  */
 public interface CommentManager {

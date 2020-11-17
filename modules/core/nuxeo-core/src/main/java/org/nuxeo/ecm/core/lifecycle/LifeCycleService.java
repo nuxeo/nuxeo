@@ -43,7 +43,6 @@ public interface LifeCycleService {
      * Document state will be set to the life cycle initial state.
      *
      * @param doc the document instance
-     * @throws LifeCycleException
      */
     void initialize(Document doc) throws LifeCycleException;
 
@@ -54,7 +53,6 @@ public interface LifeCycleService {
      *
      * @param doc the document instance
      * @param initialStateName the initial state name
-     * @throws LifeCycleException
      */
     void initialize(Document doc, String initialStateName) throws LifeCycleException;
 
@@ -63,7 +61,6 @@ public interface LifeCycleService {
      *
      * @param doc the Document instance
      * @param transitionName the transition name
-     * @throws LifeCycleException
      */
     void followTransition(Document doc, String transitionName) throws LifeCycleException;
 
@@ -127,9 +124,6 @@ public interface LifeCycleService {
 
     /**
      * Sets the current state to the initial state as defined by the associated lifecycle.
-     *
-     * @param doc
-     * @throws LifeCycleException
      */
     void reinitLifeCycle(Document doc) throws LifeCycleException;
 

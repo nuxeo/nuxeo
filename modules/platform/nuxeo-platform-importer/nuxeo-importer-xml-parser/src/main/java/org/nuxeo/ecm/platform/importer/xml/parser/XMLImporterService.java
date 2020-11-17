@@ -38,7 +38,6 @@ public interface XMLImporterService {
      *
      * @param root target container {@link DocumentModel}
      * @param source source file, can be XML or Zip with XML index
-     * @return
      */
     List<DocumentModel> importDocuments(DocumentModel root, File source) throws IOException;
 
@@ -48,7 +47,6 @@ public interface XMLImporterService {
      *
      * @param root target container {@link DocumentModel}
      * @param xmlStream stream source for Xml contnt
-     * @return
      */
     List<DocumentModel> importDocuments(DocumentModel root, InputStream xmlStream) throws IOException;
 
@@ -58,7 +56,6 @@ public interface XMLImporterService {
      * @param root target container {@link DocumentModel}
      * @param source source file, can be XML or Zip with XML index
      * @param mvelContext Context added each time a mvel expression is resolved
-     * @return
      */
     List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext)
             throws IOException;
@@ -70,7 +67,6 @@ public interface XMLImporterService {
      * @param root target container {@link DocumentModel}
      * @param xmlStream stream source for Xml contnt
      * @param mvelContext Context added each time a mvel expression is resolved
-     * @return
      */
     List<DocumentModel> importDocuments(DocumentModel root, InputStream xmlStream,
             Map<String, Object> mvelContext) throws IOException;
@@ -85,7 +81,6 @@ public interface XMLImporterService {
      * @param source source file, can be XML or Zip with XML index
      * @param deferSave if true, do not save docs in docsStack during processing, save them after full parse of xml doc
      * @since 7.4
-     * @return
      */
     List<DocumentModel> importDocuments(DocumentModel root, File source, boolean deferSave) throws IOException;
 

@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.versioning.VersioningPolicyFilter;
 /**
  * Automatic versioning filter to filter out document from CMIS (automatic versioning is currently not supported by
  * CMIS).
- * <p />
+ * <p>
  * This filter has an enabled state which is a {@link ThreadLocal}, it returns {@link Boolean#TRUE} only for thread
  * from CMIS.
  *

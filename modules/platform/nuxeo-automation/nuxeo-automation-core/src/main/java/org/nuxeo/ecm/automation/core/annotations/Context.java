@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * <li>A Core Session if available. See {@link CoreSession}
  * <li>A Principal if available. This is the same as {@link CoreSession#getPrincipal()}
  * <li>Any registered Nuxeo Service.
- * <ul>
+ * </ul>
  * CoreSession or OperationContext into a library instance field.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

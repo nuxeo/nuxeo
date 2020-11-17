@@ -59,10 +59,12 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
     }
 
     /**
-     * Called when:<br>
-     * - the batch capacity is reached<br/>
-     * - the time threshold is reached<br/>
-     * - the inputStreamName has changed<br/>
+     * Called when:
+     * <ul>
+     * <li>the batch capacity is reached</li>
+     * <li>the time threshold is reached</li>
+     * <li>the inputStreamName has changed</li>
+     * </ul>
      * If this method raises an exception the retry policy is applied.
      *
      * @param context used to send records to output streams, note that the checkpoint is managed automatically.

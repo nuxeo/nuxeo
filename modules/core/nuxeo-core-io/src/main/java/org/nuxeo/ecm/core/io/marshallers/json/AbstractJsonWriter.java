@@ -196,7 +196,7 @@ public abstract class AbstractJsonWriter<EntityType> implements Writer<EntityTyp
 
     /**
      * Writes a {@link Serializable}.
-     * <p/>
+     * <p>
      * This method will first try to cast value to {@link Collection}, array, {@link String}, {@link Boolean} and
      * {@link Number}. If none of previous cast could work, try to write it with marshallers
      *
@@ -212,7 +212,7 @@ public abstract class AbstractJsonWriter<EntityType> implements Writer<EntityTyp
 
     /**
      * Writes a {@link Serializable}.
-     * <p/>
+     * <p>
      * This method will first try to cast value to {@link Collection}, array, {@link String}, {@link Boolean} and
      * {@link Number}. If none of previous cast could work, try to write it with marshallers
      *

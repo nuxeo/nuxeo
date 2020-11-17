@@ -221,7 +221,7 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
     }
 
     /**
-     * The behavior of this method was changed -> it is checking if an xpath has a value attached.
+     * The behavior of this method was changed -&gt; it is checking if an xpath has a value attached.
      */
     @Override
     public boolean containsValue(Object value) {

@@ -74,7 +74,7 @@ public interface FolderItem extends FileSystemItem {
     boolean getCanCreateChild();
 
     /**
-     * @deprecated since 9.1, use {@link #createFile(String, boolean)} instead
+     * @deprecated since 9.1, use {@link #createFile(Blob, boolean)} instead
      */
     @Deprecated
     default FileItem createFile(Blob blob) {

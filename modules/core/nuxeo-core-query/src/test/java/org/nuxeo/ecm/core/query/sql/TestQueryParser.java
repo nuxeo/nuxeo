@@ -556,8 +556,8 @@ public class TestQueryParser {
      *
      * <pre>
      *              OR
-     *    p1>0                  AND
-     *              p2<=10.2            =
+     *    p1&gt;0                  AND
+     *              p2&lt;=10.2            =
      *                          p1-p2        5
      * </pre>
      *
@@ -603,7 +603,7 @@ public class TestQueryParser {
      * <pre>
      *              OR
      *    title="test"         AND
-     *              p2>=10.2            &lt;
+     *              p2&gt;=10.2            &lt;
      *                          p1+p2        5
      * </pre>
      */
@@ -636,9 +636,9 @@ public class TestQueryParser {
      *
      * <pre>
      *                          AND
-     *               OR                     <
+     *               OR                     &lt;
      *                                p1+p2      5
-     *    title="test"   p2>=10.2
+     *    title="test"   p2&gt;=10.2
      * </pre>
      */
     @Test

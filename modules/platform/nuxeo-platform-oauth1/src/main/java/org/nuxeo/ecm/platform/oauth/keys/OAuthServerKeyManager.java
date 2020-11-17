@@ -58,12 +58,12 @@ public interface OAuthServerKeyManager {
     String getKeyName();
 
     /**
-     * Returns the consumerKey used in Shindig => Nuxeo sign fetch.
+     * Returns the consumerKey used in Shindig =&gt; Nuxeo sign fetch.
      */
     String getInternalKey();
 
     /**
-     * Returns the consumerSecret (HMAC) used in Shindig => Nuxeo sign fetch.
+     * Returns the consumerSecret (HMAC) used in Shindig =&gt; Nuxeo sign fetch.
      */
     String getInternalSecret();
 

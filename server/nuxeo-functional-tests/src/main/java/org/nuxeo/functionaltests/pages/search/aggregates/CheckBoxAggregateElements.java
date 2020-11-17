@@ -43,10 +43,6 @@ public class CheckBoxAggregateElements implements AggregateElement {
         this.element = element;
     }
 
-    /**
-     * @param driver
-     * @param coverageAggregate
-     */
     public CheckBoxAggregateElements(WebDriver driver, WebElement element) {
         this(element);
         this.driver = driver;

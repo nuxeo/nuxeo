@@ -31,7 +31,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.io.IOUtils;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Document;
@@ -55,10 +54,6 @@ public class RegistrySerializer extends XmlWriter {
 
     /**
      * Serializes the given registry into the given file.
-     *
-     * @param registry
-     * @param file
-     * @throws IOException
      */
     public static void store(Map<String, Entry> registry, File file) throws IOException {
         RegistrySerializer serializer = new RegistrySerializer();
@@ -69,7 +64,6 @@ public class RegistrySerializer extends XmlWriter {
     /**
      * De-serializes the given file into a Nuxeo packages registry
      *
-     * @param file
      * @return The Nuxeo packages registry described by the given file
      */
     public static Map<String, Entry> load(File file) throws PackageException, IOException {
@@ -78,8 +72,7 @@ public class RegistrySerializer extends XmlWriter {
     }
 
     protected Map<String, Entry> read(File file) throws PackageException, IOException {
-        FileInputStream in = new FileInputStream(file);
-        try {
+        try (FileInputStream in = new FileInputStream(file)) {
             HashMap<String, Entry> registry = new HashMap<>();
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -88,8 +81,6 @@ public class RegistrySerializer extends XmlWriter {
             return registry;
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(in);
         }
     }
 
@@ -154,7 +145,7 @@ public class RegistrySerializer extends XmlWriter {
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE && "package".equals(node.getNodeName())) {
                 UpdateOptions opt = new UpdateOptions();
-                opt.pkgId = ((Element) node).getTextContent().trim();
+                opt.pkgId = node.getTextContent().trim();
                 opt.upgradeOnly = Boolean.parseBoolean(((Element) node).getAttribute("upgradeOnly"));
                 v.addPackage(opt);
             }
@@ -215,15 +206,11 @@ public class RegistrySerializer extends XmlWriter {
 
     /**
      * @param file Output file
-     * @throws IOException
      * @since 5.7
      */
     protected void write(File file) throws IOException {
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file));
-        try {
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file))) {
             writer.write(sb.toString());
-        } finally {
-            IOUtils.closeQuietly(writer);
         }
     }
 

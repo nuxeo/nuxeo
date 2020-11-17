@@ -37,6 +37,7 @@ import org.nuxeo.ecm.platform.signature.api.exception.CertException;
  * <li>user identifier (commonName field)
  * <li>user X500Principal: commonName CN, organizationalUnitName OU, organizationName O, countryName C
  * <li>user email (emailAddress)
+ * </ul>
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
@@ -49,9 +50,6 @@ public class UserInfo {
     /**
      * The fields provided as a parameter to the constructor. Must be a full set of all the fields as present in the
      * CNField enum.
-     *
-     * @param userDNFields
-     * @throws CertException
      */
     public UserInfo(Map<CNField, String> userDNFields) throws CertException {
         verify(userDNFields);
@@ -65,9 +63,6 @@ public class UserInfo {
 
     /**
      * Verifies that all required X500 Principal field values have been set on this object
-     *
-     * @param userFields
-     * @throws CertException
      */
     public void verify(Map<CNField, String> userFields) throws CertException {
         for (CNField key : CNField.values()) {
@@ -79,9 +74,6 @@ public class UserInfo {
 
     /**
      * Returns a formatted DN string
-     *
-     * @param userFields
-     * @return
      */
     public String getDN(Map<CNField, String> userFields) {
         String dN = "C=" + userFields.get(CNField.C) + ", O=" + userFields.get(CNField.O) + ", OU="

@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * {
  *   "entity-type": "GIVEN_ENTITY_TYPE",
  *   "entries": [
- *     {...}, <-- A {@link Reader} must be able to manage this format.
+ *     {...}, &lt;-- A {@link Reader} must be able to manage this format.
  *     {...},
  *     ...
  *     {...}
@@ -51,11 +51,9 @@ import com.fasterxml.jackson.databind.JsonNode;
  * }
  * </pre>
  *
- * </p>
  * <p>
  * This reader delegates the unmarshalling of entries to the {@link MarshallerRegistry}. A Json {@link Reader}
  * compatible with the required type and the json format must be registered.
- * </p>
  *
  * @param <EntityType> The type of the element of this list.
  * @since 7.2

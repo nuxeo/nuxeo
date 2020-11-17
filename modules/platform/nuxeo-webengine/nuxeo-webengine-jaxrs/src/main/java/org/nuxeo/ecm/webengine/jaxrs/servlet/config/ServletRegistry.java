@@ -128,8 +128,6 @@ public class ServletRegistry {
 
     /**
      * Called by the service tracker when HttpService is up to configure it with current contributed servlets
-     *
-     * @param service
      */
     public synchronized void initHttpService(HttpService service) throws ServletException, NamespaceException {
         if (this.service == null) {

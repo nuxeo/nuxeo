@@ -6,13 +6,13 @@
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *  
+ *
  *  Contributors:
  *      Kevin Leturc <kleturc@nuxeo.com>
  */
@@ -48,9 +48,9 @@ import com.google.inject.name.Names;
  * This feature allows to put the {@link org.nuxeo.ecm.platform.comment.impl.BridgeCommentManager} service into the
  * services container. It configures what {@link org.nuxeo.runtime.migration.MigrationService} needs to get a running
  * status, and configures the running step by getting the one having fromState == currentState.
- * <p/>
+ * <p>
  * This feature doesn't trigger the migration!
- * <p/>
+ * <p>
  * Due to its design, this feature can't be used as it because there should not be a migration step having the supported
  * implementation. It should be used with {@link RelationCommentFeature} or {@link PropertyCommentFeature}.
  *

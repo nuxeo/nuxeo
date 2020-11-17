@@ -41,14 +41,11 @@ import org.nuxeo.ecm.core.io.registry.reflect.Instantiations;
  * }
  * </pre>
  *
- * </p>
  * <p>
  * You can also register/deregister your marshaller programmatically by calling {@link #register(Class)} and
  * {@link #deregister(Class)}.
- * </p>
  * <p>
  * All marshallers are provided with injected properties.
- * </p>
  * <p>
  * You can get a {@link Writer} using:
  * <ul>
@@ -60,7 +57,6 @@ import org.nuxeo.ecm.core.io.registry.reflect.Instantiations;
  * and mimetype, plus the checks the given generic type.</li>
  * <li>{@link #getInstance(RenderingContext, Class)} An instance of the given {@link Writer} class.</li>
  * </ul>
- * </p>
  * <p>
  * You can get a {@link Reader} using:
  * <ul>
@@ -72,7 +68,6 @@ import org.nuxeo.ecm.core.io.registry.reflect.Instantiations;
  * and mimetype, plus the checks the given generic type.</li>
  * <li>{@link #getInstance(RenderingContext, Class)} An instance of the given {@link Reader} class.</li>
  * </ul>
- * </p>
  * <p>
  * If several marshaller matches a demand of the single instance, the registry use the following rules to choose one:
  * <ul>

@@ -57,14 +57,12 @@ public class PatternConstraint extends AbstractConstraint {
     }
 
     /**
-     * <p>
      * Here, value is : <br>
      * name = {@value #NAME} <br>
      * parameters =
      * <ul>
      * <li>{@value #PNAME_PATTERN} : [0-9]+</li>
      * </ul>
-     * </p>
      */
     @Override
     public Description getDescription() {

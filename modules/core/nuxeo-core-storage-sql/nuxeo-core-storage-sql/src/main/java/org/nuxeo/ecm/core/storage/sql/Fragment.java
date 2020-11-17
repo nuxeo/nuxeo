@@ -112,7 +112,8 @@ public abstract class Fragment implements Serializable {
     protected Row row;
 
     /**
-     * The row old values, from the time of construction / refetch. The size of the the array is following {@link #row.values.length}.
+     * The row old values, from the time of construction / refetch. The size of the the array is following
+     * {@code #row.values.length}.
      */
     protected Serializable[] oldvalues;
 

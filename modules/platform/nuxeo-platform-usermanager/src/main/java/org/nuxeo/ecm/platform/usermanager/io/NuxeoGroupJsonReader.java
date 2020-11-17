@@ -60,8 +60,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  * <pre>
  * {
  *   "entity-type":"group",
- *   "groupname": "GROUP_NAME", <- deprecated, for backward compatibility
- *   "grouplabel": "GROUP_DISPLAY_NAME", <- deprecated, for backward compatibility
+ *   "groupname": "GROUP_NAME", &lt;- deprecated, for backward compatibility
+ *   "grouplabel": "GROUP_DISPLAY_NAME", &lt;- deprecated, for backward compatibility
  *   "id": "GROUP_NAME",
  *   "memberUsers": [
  *     "USERNAME1",
@@ -75,7 +75,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  *   ]
  * }
  * </pre>
- * </p>
  *
  * @since 7.2
  */

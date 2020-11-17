@@ -136,7 +136,6 @@ public class DateIntervalConstraint extends AbstractConstraint {
      * <li>{@value #PNAME_MAXIMUM} : 2014-11-25 // only if bounded</li>
      * <li>{@value #PNAME_MAX_INC} : false // only if bounded</li>
      * </ul>
-     * </p>
      */
     @Override
     public Description getDescription() {

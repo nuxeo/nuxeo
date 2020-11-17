@@ -24,7 +24,7 @@ import java.security.KeyStore;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 
 /**
- * Allows interaction with CA root-related PKI objects: certificates, keys, keystore & certificate files
+ * Allows interaction with CA root-related PKI objects: certificates, keys, keystore &amp; certificate files
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */

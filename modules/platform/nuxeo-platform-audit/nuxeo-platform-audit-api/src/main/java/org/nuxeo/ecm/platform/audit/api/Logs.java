@@ -23,9 +23,8 @@ package org.nuxeo.ecm.platform.audit.api;
 
 /**
  * Logs interface.
- * <p>
- * {@see http://jira.nuxeo.org/browse/NXP-514}
  *
+ * @see <a href="http://jira.nuxeo.org/browse/NXP-514">NXP-514</a>
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public interface Logs extends AuditReader, AuditLogger, AuditAdmin {

@@ -30,7 +30,7 @@ import org.osgi.framework.BundleException;
 
 /**
  * Service tracking reload related events or commands when installing a package.
- * <p />
+ * <p>
  * WARNING: This interface is used by reflection in org.nuxeo.runtime.tomcat.dev.ReloadServiceInvoker.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -53,7 +53,7 @@ public interface ReloadService extends TimestampedService {
 
     /**
      * This property allows to use the former way to hot reload Nuxeo server.
-     * <p/>
+     * <p>
      * The property and the former mechanism will be removed in the next LTS version.
      *
      * @since 9.3

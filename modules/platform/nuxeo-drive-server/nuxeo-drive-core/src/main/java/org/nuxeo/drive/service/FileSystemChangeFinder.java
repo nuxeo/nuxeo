@@ -51,7 +51,7 @@ public interface FileSystemChangeFinder {
      * @param collectionSyncRootMemberIds the collection sync root member ids
      * @param lowerBound the lower integer bound of the range clause in the change query
      * @param upperBound the upper integer bound of the range clause in the change query. This id is typically obtained
-     *            by calling {@link #getUpperBound())}
+     *            by calling {@link #getUpperBound()}
      * @param limit the maximum number of changes to fetch
      * @return the list of document changes
      * @throws TooManyChangesException if the number of changes found has exceeded the limit

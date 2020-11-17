@@ -30,9 +30,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 
 /**
- * {@link ProcessManager} implementation for *nix systems. Uses the <tt>ps</tt> and <tt>kill</tt> commands.
+ * {@link ProcessManager} implementation for *nix systems. Uses the {@code ps} and {@code kill} commands.
  * <p>
- * Works for Linux. Works for Solaris too, except that the command line string returned by <tt>ps</tt> there is limited
+ * Works for Linux. Works for Solaris too, except that the command line string returned by {@code ps} there is limited
  * to 80 characters and this affects {@link #findPid()}.
  */
 public class UnixProcessManager extends ProcessManager {

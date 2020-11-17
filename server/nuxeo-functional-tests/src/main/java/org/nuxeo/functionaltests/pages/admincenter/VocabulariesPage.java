@@ -59,7 +59,6 @@ public class VocabulariesPage extends AdminCenterBasePage {
     }
 
     /**
-     * @return
      * @since 5.9.3
      */
     public VocabulariesPage addEntry(final String entryId, final String parentId, final String entryEnglishLabel,
@@ -142,8 +141,6 @@ public class VocabulariesPage extends AdminCenterBasePage {
 
     /**
      * Select one of the directory in the select box
-     *
-     * @param directoryName
      */
     public VocabulariesPage select(String directoryName) {
         Select directoriesListSelect = new Select(directoriesListSelectElement);

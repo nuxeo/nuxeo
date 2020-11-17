@@ -134,7 +134,6 @@ public class MultiTenantHelper {
     /**
      * Return the Tenant containing the provided DocumentModel if any
      *
-     * @param doc
      * @return DocumentModel corresponding to the Tenant container, null otherwise
      */
     public static String getOwningTenantId(final DocumentModel doc) {

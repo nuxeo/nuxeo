@@ -337,7 +337,7 @@ public class OAuth2ObjectTest extends BaseTest {
                 if (child.get("entity-type").textValue().equals(OAUTH2_PROVIDER_TYPE)
                         && child.get("serviceName").textValue().equals(serviceName)
                         && child.get("clientId").textValue().equals(TEST_OAUTH2_CLIENTID)
-                        && (checkToken ? child.get("userId").textValue().equals(TEST_OAUTH2_SERVICE_USERID) : true)
+                        && (!checkToken || child.get("userId").textValue().equals(TEST_OAUTH2_SERVICE_USERID))
                         && child.get("authorizationURL")
                                 .textValue()
                                 .equals(AUTHORIZATION_SERVER_URL + "?client_id=" + TEST_OAUTH2_CLIENTID
@@ -986,7 +986,7 @@ public class OAuth2ObjectTest extends BaseTest {
                         && child.get("serviceName").textValue().equals(serviceName)
                         && child.get("nuxeoLogin").textValue().equals(nxuser)
                         && child.get("creationDate").textValue().equals(creationDate)
-                        && (clientId != null ? child.get("clientId").textValue().equals(clientId) : true)) {
+                        && (clientId == null || child.get("clientId").textValue().equals(clientId))) {
                     return;
                 }
             }
@@ -1451,7 +1451,6 @@ public class OAuth2ObjectTest extends BaseTest {
      * @param queryParams the query params
      * @param expectedStatus the expected status
      * @param expectedBody the expected response, can be null (case of delete) or if we want to check the status only
-     * @throws NuxeoException
      * @since 11.1
      */
     protected void makeOperationAndVerify(String user, String path, RequestType method, String dataAsJson,

@@ -196,7 +196,6 @@ public class JsonAssert {
     /**
      * Checks if the current element has an element at in the given json path. see {@link #get(String)}
      *
-     * @param index The index to check.
      * @return A json assertion for the element at the given json path.
      * @since 7.2
      */
@@ -209,7 +208,6 @@ public class JsonAssert {
     /**
      * Checks if the current element has an element at in the given json path. see {@link #get(String)}
      *
-     * @param index The index to check.
      * @return The current json assertion for chaining.
      * @since 7.2
      */
@@ -268,7 +266,6 @@ public class JsonAssert {
     }
 
     /**
-     * @return The current text has the expected value.
      * @param expected The expected value
      * @return The current json assertion for chaining.
      * @since 7.2
@@ -626,7 +623,7 @@ public class JsonAssert {
     /**
      * Checks the current array has the given number of element.
      *
-     * @param count the expected number of element.
+     * @param length the expected number of element.
      * @return The current json assertion for chaining.
      * @since 7.2
      */
@@ -694,8 +691,6 @@ public class JsonAssert {
      * json.containsAll("element.name", "name1", "name2"); // fail, even if there's just name1 and name2, it checks the length too.
      * json.containsAll("element.name", "name1", "name2", "name2"); // fail, name1 was found just one time, name2 was found 2 times
      * </pre>
-     *
-     * </p>
      *
      * @param path The targeted path.
      * @param values All the expected values.

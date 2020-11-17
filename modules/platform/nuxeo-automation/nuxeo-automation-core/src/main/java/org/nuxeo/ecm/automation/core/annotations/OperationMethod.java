@@ -66,19 +66,15 @@ public @interface OperationMethod {
     /**
      * If defined the method is iterable.
      * <p>
-     * It means that when such a method is called with an input type of <code>Iterable<INPUT></code> (where INPUT is the
-     * declared method input type) the method will be iteratively called to generate all the outputs and collect them
-     * using the given OutputCollector.
-     *
-     * @return
+     * It means that when such a method is called with an input type of <code>Iterable&lt;INPUT&gt;</code> (where INPUT
+     * is the declared method input type) the method will be iteratively called to generate all the outputs and collect
+     * them using the given OutputCollector.
      */
-    @SuppressWarnings("rawtypes")
     Class<? extends OutputCollector> collector() default OutputCollector.class;
 
     int priority() default 0;
 
     boolean async() default false;
 
-    @SuppressWarnings("rawtypes")
     Class<? extends AsyncService> asyncService() default AsyncService.class;
 }

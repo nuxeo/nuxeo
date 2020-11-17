@@ -31,7 +31,7 @@ import org.nuxeo.ecm.platform.pdf.PDFPageExtractor;
 
 /**
  * Extract pages from <code>startPage</code> to <code>endPage</code> (inclusive) from the input object. If a Blob is
- * used as input, the <code>xpath</xpath> parameter is not used. <code>title</code>, <code>subject</code> and
+ * used as input, the <code>xpath</code> parameter is not used. <code>title</code>, <code>subject</code> and
  * <code>author</code> are optional.
  * <p>
  * If the PDF is encrypted, a password is required.

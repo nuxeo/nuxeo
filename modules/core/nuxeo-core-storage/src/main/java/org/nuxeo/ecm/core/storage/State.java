@@ -40,7 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * Abstraction for a Map<String, Serializable> that is Serializable.
+ * Abstraction for a Map&lt;String, Serializable&gt; that is Serializable.
  * <p>
  * Internal storage is optimized to avoid a full {@link HashMap} when there is a small number of keys.
  *

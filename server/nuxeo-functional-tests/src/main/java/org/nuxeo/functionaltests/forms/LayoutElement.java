@@ -49,10 +49,6 @@ public class LayoutElement implements LayoutFragment {
         this.id = id;
     }
 
-    /**
-     * @param driver
-     * @param id
-     */
     public LayoutElement(WebDriver driver, String id) {
         this.driver = driver;
         this.id = id;

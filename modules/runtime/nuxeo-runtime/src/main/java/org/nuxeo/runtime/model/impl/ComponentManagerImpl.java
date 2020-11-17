@@ -987,7 +987,7 @@ public class ComponentManagerImpl implements ComponentManager {
     /**
      * Tests whether new registrations should be stashed at registration time. If the component manager was started then
      * new components should be stashed otherwise they can be registered.
-     * <p />
+     * <p>
      * TODO: current implementation is stashing after the start completion. Should we also stashing while start is in
      * progress?
      */

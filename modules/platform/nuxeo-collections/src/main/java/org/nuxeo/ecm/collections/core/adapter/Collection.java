@@ -73,8 +73,6 @@ public class Collection {
     /**
      * Move member1Id right after the member2Id of at first position if member2Id is null.
      *
-     * @param member1Id
-     * @param member2Id
      * @return true if successful
      * @since 8.4
      */

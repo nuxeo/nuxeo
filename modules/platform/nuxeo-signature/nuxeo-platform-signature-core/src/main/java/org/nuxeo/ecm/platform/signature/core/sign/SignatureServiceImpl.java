@@ -81,9 +81,6 @@ import com.lowagie.text.pdf.PdfStamper;
  * <p>
  * Once signed, it can replace the main document or be stored as the first attachment. If replacing the main document,
  * an archive of the original can be kept.
- * <p>
- * <ul>
- * <li>
  */
 public class SignatureServiceImpl extends DefaultComponent implements SignatureService {
 
@@ -506,7 +503,6 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
     protected List<X509Certificate> getCertificates(PdfReader pdfReader) throws SignException {
         List<X509Certificate> pdfCertificates = new ArrayList<>();
         AcroFields acroFields = pdfReader.getAcroFields();
-        @SuppressWarnings("unchecked")
         List<String> signatureNames = acroFields.getSignatureNames();
         for (String signatureName : signatureNames) {
             PdfPKCS7 pdfPKCS7 = acroFields.verifySignature(signatureName);

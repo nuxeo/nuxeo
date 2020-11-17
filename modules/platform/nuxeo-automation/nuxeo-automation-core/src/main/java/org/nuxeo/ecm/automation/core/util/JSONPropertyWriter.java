@@ -165,10 +165,9 @@ public class JSONPropertyWriter {
 
     /**
      * Converts the value of the given core property to JSON.
-     * <p />
-     * CAUTION: this method will write the field name to {@link JsonGenerator} with its prefix without writing the start
-     * and the end of object.
      *
+     * @implNote CAUTION: this method will write the field name to {@link JsonGenerator} with its prefix without writing
+     *           the start and the end of object.
      * @since 9.1
      */
     public void writeProperty(JsonGenerator jg, Property prop) throws PropertyException, IOException {

@@ -130,8 +130,6 @@ public class Crypto {
      * @param keystorePass Keystore password. It is also used to generate the digest for {@link #verifyKey(byte[])}
      * @param keyAlias Key alias prefix. It is suffixed with the algorithm.
      * @param keyPass Key password
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
     public Crypto(String keystorePath, char[] keystorePass, String keyAlias, char[] keyPass)
             throws GeneralSecurityException, IOException {
@@ -147,7 +145,7 @@ public class Crypto {
         }
 
         @Override
-        public String encrypt(String algorithm, byte[] bytesToEncrypt) throws GeneralSecurityException {
+        public String encrypt(String algorithm, byte[] bytesToEncrypt) {
             return null;
         }
 
@@ -214,7 +212,6 @@ public class Crypto {
      *            Cryptography Architecture Standard Algorithm Name Documentation</a>.
      * @throws NoSuchPaddingException if {@code algorithm} contains a padding scheme that is not available.
      * @throws NoSuchAlgorithmException if {@code algorithm} is in an invalid or not supported format.
-     * @throws GeneralSecurityException
      */
     public String encrypt(String algorithm, byte[] bytesToEncrypt) throws GeneralSecurityException {
         final String encryptedAlgo;
@@ -346,8 +343,6 @@ public class Crypto {
      * @param keystorePass Keystore password
      * @param keyAlias Key alias prefix. It is suffixed with the algorithm.
      * @param keyPass Key password
-     * @throws GeneralSecurityException
-     * @throws IOException
      * @see #IMPLEMENTED_ALGOS
      */
     public static Map<String, SecretKey> getKeysFromKeyStore(String keystorePath, char[] keystorePass, String keyAlias,
@@ -378,8 +373,6 @@ public class Crypto {
      * @param keyAlias Key alias prefix. It must be suffixed with the algorithm ({@link SecretKey#getAlgorithm()} is
      *            fine).
      * @param keyPass Key password
-     * @throws GeneralSecurityException
-     * @throws IOException
      * @see #IMPLEMENTED_ALGOS
      */
     public static void setKeyInKeyStore(String keystorePath, char[] keystorePass, String keyAlias, char[] keyPass,

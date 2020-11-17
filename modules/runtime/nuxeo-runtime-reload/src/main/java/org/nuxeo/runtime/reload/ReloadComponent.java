@@ -519,7 +519,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     /**
      * Gets the un-deployed bundle from given {@link ReloadResult result} and try to remove them from
-     * {@link sun.net.www.protocol.jar.JarFileFactory} otherwise we'll have resource conflict when opening
+     * sun.net.www.protocol.jar.JarFileFactory otherwise we'll have resource conflict when opening
      * {@link InputStream stream} from {@link URL url}.
      */
     @SuppressWarnings({ "unchecked" })

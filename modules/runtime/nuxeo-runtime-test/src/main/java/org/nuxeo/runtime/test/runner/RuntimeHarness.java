@@ -160,14 +160,12 @@ public interface RuntimeHarness {
 
     /**
      * @since 5.5
-     * @throws Exception
      * @deprecated since 10.2, unused and useless
      */
     @Deprecated
     void restart() throws Exception;
 
     /**
-     * @throws URISyntaxException
      * @since 5.7
      * @deprecated since 10.2, unused and useless
      */

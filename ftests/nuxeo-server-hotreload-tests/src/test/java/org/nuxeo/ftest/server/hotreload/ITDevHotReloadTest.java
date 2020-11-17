@@ -214,7 +214,7 @@ public class ITDevHotReloadTest {
 
     /**
      * Goal of this is test is to check that resources present in jar are correctly get after a hot reload.
-     * <p/>
+     * <p>
      * There are several caches around JarFile which leads to issues when hot reloading Nuxeo, for instance: when
      * replacing a jar and doing a hot reload, it's possible to get previous resource instead of new one present in jar.
      *

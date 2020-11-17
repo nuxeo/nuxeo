@@ -50,7 +50,7 @@ public interface LogAppender<M extends Externalizable> {
     LogOffset append(int partition, M message);
 
     /**
-     * Same as {@link #append(int, Externalizable)}, the queue is chosen using a hash of {@param key}.
+     * Same as {@link #append(int, Externalizable)}, the queue is chosen using a hash of parameters "key".
      */
     default LogOffset append(String key, M message) {
         Objects.requireNonNull(key);
