@@ -251,7 +251,6 @@ public class Locator {
      * Finds the first {@link WebElement} using the given method, with a timeout.
      *
      * @param by the locating mechanism
-     * @param timeout the timeout in milliseconds
      * @param parentElement find from the element
      * @return the first matching element on the current page, if found
      * @throws NoSuchElementException when not found
@@ -487,7 +486,6 @@ public class Locator {
     /**
      * Fluent wait on a the given function, checking every 100 ms.
      *
-     * @param function
      * @since 5.9.2
      */
     public static void waitUntilGivenFunction(Function<WebDriver, Boolean> function) {
@@ -497,7 +495,6 @@ public class Locator {
     /**
      * Fluent wait on a the given function, checking every 100 ms.
      *
-     * @param function
      * @param ignoredExceptions the types of exceptions to ignore.
      * @since 5.9.2
      */
@@ -519,7 +516,6 @@ public class Locator {
     /**
      * Fluent wait on a the given function, checking every 100 ms.
      *
-     * @param function
      * @param ignoredException the type of exception to ignore.
      * @since 5.9.2
      */
@@ -622,11 +618,10 @@ public class Locator {
     /**
      * Scrolls to the element in the view: allows to safely click on it afterwards.
      *
-     * @param executor the javascript executor, usually {@link WebDriver}
      * @param element the element to scroll to
      * @since 8.3
      */
-    public static final void scrollToElement(WebElement element) {
+    public static void scrollToElement(WebElement element) {
         ((JavascriptExecutor) AbstractTest.driver).executeScript("arguments[0].scrollIntoView(false);", element);
     }
 
@@ -634,12 +629,11 @@ public class Locator {
      * Forces a click on an element, to workaround non-effective clicks in miscellaneous situations, after having
      * scrolled to it.
      *
-     * @param executor the javascript executor, usually {@link WebDriver}
      * @param element the element to scroll to
      * @return true if element is clickable
      * @since 8.3
      */
-    public static final boolean scrollAndForceClick(WebElement element) {
+    public static boolean scrollAndForceClick(WebElement element) {
         JavascriptExecutor executor = AbstractTest.driver;
         scrollToElement(element);
         try {

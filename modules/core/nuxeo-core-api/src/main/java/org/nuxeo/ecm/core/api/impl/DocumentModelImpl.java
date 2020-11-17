@@ -1546,8 +1546,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     /**
      * Replace the content by it's the reference if the document is live and not dirty.
      *
-     * @see org.nuxeo.ecm.core.event.EventContext
      * @since 7.10
+     * @implNote See org.nuxeo.ecm.core.event.EventContext
      */
     // exact method signature needed for the Serializable mechanism to find it
     private Object writeReplace() throws ObjectStreamException {
@@ -1580,8 +1580,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     /**
      * Legacy code: Explicitly detach the document to send the document as an event context parameter.
      *
-     * @see org.nuxeo.ecm.core.event.EventContext
      * @since 7.10
+     * @implNote See org.nuxeo.ecm.core.event.EventContext
      */
     private void writeObject(ObjectOutputStream stream) throws IOException {
         detach(ref != null && isAttached() && getSession().exists(ref));

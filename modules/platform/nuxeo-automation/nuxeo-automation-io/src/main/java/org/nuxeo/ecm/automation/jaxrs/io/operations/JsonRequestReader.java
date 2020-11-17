@@ -130,8 +130,6 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
             throws WebApplicationException {
         try {
             return readRequest0(content, headers, session);
-        } catch (WebApplicationException e) {
-            throw e;
         } catch (IOException e) {
             throw new WebApplicationException(e);
         }
@@ -146,13 +144,6 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         }
     }
 
-    /**
-     * @param jp
-     * @param headers
-     * @param session
-     * @return
-     * @since TODO
-     */
     public static ExecutionRequest readRequest(JsonParser jp, MultivaluedMap<String, String> headers,
             CoreSession session) throws IOException {
         ExecutionRequest req = new ExecutionRequest();

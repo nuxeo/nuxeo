@@ -1026,7 +1026,7 @@ public class SQLSession extends BaseSession {
 
     /**
      * Create a {@link PreparedStatement} returning the id key if it is auto-incremented and dialect has identity
-     * generated key ({@see Dialect#hasIdentityGeneratedKey}.
+     * generated key ({@link Dialect#hasIdentityGeneratedKey}).
      *
      * @since 10.1
      */

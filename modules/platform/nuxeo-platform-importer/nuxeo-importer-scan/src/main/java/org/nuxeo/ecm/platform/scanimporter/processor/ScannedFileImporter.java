@@ -176,7 +176,6 @@ public class ScannedFileImporter {
     }
 
     /**
-     * @throws Exception
      * @since 5.7.3
      */
     private SourceNode initSourceNode(File file) {

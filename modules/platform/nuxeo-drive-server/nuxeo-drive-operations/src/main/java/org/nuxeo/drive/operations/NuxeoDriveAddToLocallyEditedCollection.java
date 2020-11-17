@@ -28,7 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Adds the input {@link DocumentModel} to the {@link NuxeoDriveManager#LOCALLY_EDITED_COLLECTION_NAME} collection.
+ * Adds the input {@link DocumentModel} to the
+ * {@link org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl#LOCALLY_EDITED_COLLECTION_NAME} collection.
  *
  * @author Antoine Taillefer
  * @since 6.0

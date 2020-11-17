@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.management.api;
 /**
  * Raised if something goes wrong with the storage
  *
- * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ * @author Stephane Lacoin [aka matic]
  */
 public class StorageError extends Error {
 

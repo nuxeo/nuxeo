@@ -79,7 +79,7 @@ import org.openqa.selenium.support.FindBy;
 /**
  * The nuxeo main document base page
  *
- * @author Sun Seng David TAN <stan@nuxeo.com>
+ * @author Sun Seng David TAN
  */
 public class DocumentBasePage extends AbstractPage {
 
@@ -189,7 +189,6 @@ public class DocumentBasePage extends AbstractPage {
      * Check if the user is connected by looking for an element with the {@code username} as a class.
      *
      * @param username the username
-     * @throws UserNotConnectedException
      */
     public void checkUserConnected(String username) throws UserNotConnectedException {
         try {
@@ -658,7 +657,6 @@ public class DocumentBasePage extends AbstractPage {
      * @param defineNote true if the content of the note needs to be defined
      * @param noteContent the content of the note
      * @return the created note page.
-     * @throws IOException
      * @since 8.3
      */
     public NoteDocumentBasePage createNote(String noteTitle, String noteDescription, boolean defineNote,

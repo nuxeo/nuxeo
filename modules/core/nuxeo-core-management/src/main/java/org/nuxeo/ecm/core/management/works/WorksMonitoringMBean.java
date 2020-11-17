@@ -36,7 +36,6 @@ public interface WorksMonitoringMBean {
 
     /**
      * Toggles processing on all queues
-     * @return
      *
      * @since 8.3
      */

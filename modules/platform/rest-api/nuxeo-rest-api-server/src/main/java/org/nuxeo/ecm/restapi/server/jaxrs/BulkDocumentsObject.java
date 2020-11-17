@@ -88,8 +88,6 @@ public class BulkDocumentsObject extends DefaultObject {
     /**
      * Copy the dirty fields of srcDoc to dstDoc.
      *
-     * @param srcDoc
-     * @param dstDoc
      * @since 5.7.3
      */
     private void updateDirtyFields(DocumentModel srcDoc, DocumentModel dstDoc) {

@@ -35,8 +35,6 @@ public class Utils {
      *
      * @param classRefs the string containing the list of class references
      * @return an array of the loaded classes
-     * @throws ClassNotFoundException
-     * @throws BundleNotFoundException
      */
     public static Class<?>[] loadClasses(String classRefs) throws ClassNotFoundException, BundleNotFoundException {
         return loadClasses(classRefs, ',');
@@ -48,16 +46,13 @@ public class Utils {
      * @param classRefs the string containing the list of class references
      * @param sep the separator character used to separate class references in the string.
      * @return an array of the loaded classes
-     * @throws ClassNotFoundException
-     * @throws BundleNotFoundException
      */
     public static Class<?>[] loadClasses(String classRefs, char sep) throws ClassNotFoundException,
             BundleNotFoundException {
         StringBuilder buf = null;
         ArrayList<Class<?>> classes = new ArrayList<>();
         char[] chars = classRefs.toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            char c = chars[i];
+        for (char c : chars) {
             if (c <= ' ') {
                 continue;
             } else if (c == sep) {
@@ -77,17 +72,14 @@ public class Utils {
             classes.add(loadClass(buf.toString()));
         }
 
-        return classes.toArray(new Class<?>[classes.size()]);
+        return classes.toArray(new Class<?>[0]);
     }
 
     /**
      * Get class instances for the given class references string
      *
-     * @param <T>
      * @param componentType the type of the expected array component
-     * @param classRefs
-     * @return
-     * @see {@link #loadClasses(String)}
+     * @see #loadClasses(String)
      */
     public static <T> T[] newInstances(Class<T> componentType, String classRefs) throws ReflectiveOperationException,
             BundleNotFoundException {
@@ -97,12 +89,7 @@ public class Utils {
     /**
      * Get class instances for the given class references string
      *
-     * @param <T>
-     * @param componentType
-     * @param classRefs
-     * @param sep
-     * @return
-     * @see {@link #loadClasses(String, char)}
+     * @see #loadClasses(String, char)
      */
     @SuppressWarnings("unchecked")
     public static <T> T[] newInstances(Class<T> componentType, String classRefs, char sep)
@@ -121,9 +108,6 @@ public class Utils {
      * class will be loaded using the class loader of the {@link Utils} class.
      * <p>
      * The bundle will be resolved to the last version of the bundle (in case when different bundle versions are found)
-     *
-     * @param classRef
-     * @return
      */
     public static Class<?> loadClass(String classRef) throws ClassNotFoundException, BundleNotFoundException {
         int i = classRef.indexOf(':');
@@ -137,9 +121,6 @@ public class Utils {
 
     /**
      * Get a class proxy reference for the given class reference
-     *
-     * @param classRef
-     * @return
      */
     public static ClassRef getClassRef(String classRef) throws ClassNotFoundException, BundleNotFoundException {
         return getClassRef(classRef, null);
@@ -170,12 +151,6 @@ public class Utils {
      * Load a class given the owner bundle and the class name.
      * <p>
      * The bundle will be resolved to the last version of the bundle (in case when different bundle versions are found)
-     *
-     * @param bundleId
-     * @param className
-     * @return
-     * @throws ClassNotFoundException
-     * @throws BundleNotFoundException
      */
     public static Class<?> loadClass(String bundleId, String className) throws ClassNotFoundException,
             BundleNotFoundException {
@@ -192,10 +167,7 @@ public class Utils {
      * <p>
      * The bundle will be resolved to the last version of the bundle (in case when different bundle versions are found)
      *
-     * @param bundleId
-     * @param className
-     * @return
-     * @see {@link #loadClass(String, String)}
+     * @see #loadClass(String, String)
      */
     public static Object newInstance(String bundleId, String className) throws ReflectiveOperationException,
             BundleNotFoundException {
@@ -207,9 +179,7 @@ public class Utils {
      * <p>
      * The bundle will be resolved to the last version of the bundle (in case when different bundle versions are found)
      *
-     * @param classRef
-     * @return
-     * @see {@link #loadClass(String, String)}
+     * @see #loadClass(String, String)
      */
     public static Object newInstance(String classRef) throws ReflectiveOperationException, BundleNotFoundException {
         return loadClass(classRef).getDeclaredConstructor().newInstance();

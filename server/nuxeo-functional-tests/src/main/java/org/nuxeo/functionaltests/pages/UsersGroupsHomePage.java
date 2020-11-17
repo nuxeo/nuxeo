@@ -28,7 +28,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * Users & Groups page visible in "Home" main tab.
+ * Users &amp; Groups page visible in "Home" main tab.
  *
  * @since 8.3
  */

@@ -61,8 +61,6 @@ public class ServletHelper {
      * Generate a Content-Disposition string based on the servlet request for a given filename. The value follows
      * RFC2231
      *
-     * @param request
-     * @param filename
      * @return a full string to set as value of a {@code Content-Disposition} header
      * @since 5.7.2
      */

@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertyJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -52,7 +53,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link NuxeoPrincipalJsonWriter#extend(Object, JsonGenerator)}.
+ * {@link ExtensibleEntityJsonWriter#extend(Object, JsonGenerator)}.
  * </p>
  * <p>
  * Format is:
@@ -88,8 +89,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *             <-- contextParameters if there are enrichers activated
  *             <-- additional property provided by extend() method
  * }
+ * }
  * </pre>
- * </p>
+ *
  * @since 7.2
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)

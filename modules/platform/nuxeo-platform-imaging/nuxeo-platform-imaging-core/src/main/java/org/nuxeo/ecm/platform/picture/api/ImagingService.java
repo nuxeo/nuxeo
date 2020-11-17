@@ -79,9 +79,9 @@ public interface ImagingService {
     /**
      * Retrieves metadata from an image contained in a {@link Blob}.
      *
-     * @return the image metadata as a map String -> Object
+     * @return the image metadata as a map String -&gt; Object
      * @deprecated since 7.2. Please use instead
-     * {@link org.nuxeo.binary.metadata.api.BinaryMetadataService#readMetadata(Blob, boolean)}
+     * {@code org.nuxeo.binary.metadata.api.BinaryMetadataService#readMetadata(Blob, boolean)}
      */
     @Deprecated
     Map<String, Object> getImageMetadata(Blob blob);

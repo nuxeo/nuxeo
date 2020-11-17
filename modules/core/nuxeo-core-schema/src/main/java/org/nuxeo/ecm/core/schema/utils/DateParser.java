@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
  */
 package org.nuxeo.ecm.core.schema.utils;
 
@@ -26,8 +26,6 @@ import java.util.TimeZone;
 
 /**
  * Parse / format ISO 8601 dates.
- *
- * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
  */
 public class DateParser {
 
@@ -94,9 +92,6 @@ public class DateParser {
 
     /**
      * 2011-10-23T12:00:00.000Z
-     *
-     * @param date
-     * @return
      */
     public static String formatW3CDateTime(Date date) {
         if (date == null) {
@@ -109,9 +104,6 @@ public class DateParser {
 
     /**
      * 2011-10-23T12:00:00.000Z
-     *
-     * @param calendar
-     * @return
      *
      * @since 7.3
      */
@@ -126,7 +118,7 @@ public class DateParser {
                 calendar.get(Calendar.MILLISECOND));
     }
 
-    private final static int readYear(Calendar cal, String str, int off) throws ParseException {
+    private static int readYear(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 4) {
             cal.set(Calendar.YEAR, Integer.parseInt(str.substring(off, off + 4)));
             return off + 4;
@@ -134,7 +126,7 @@ public class DateParser {
         throw new ParseException("Invalid year in date '" + str + "'", off);
     }
 
-    private final static int readMonth(Calendar cal, String str, int off) throws ParseException {
+    private static int readMonth(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
             cal.set(Calendar.MONTH, Integer.parseInt(str.substring(off, off + 2)) - 1);
             return off + 2;
@@ -142,7 +134,7 @@ public class DateParser {
         throw new ParseException("Invalid month in date '" + str + "'", off);
     }
 
-    private final static int readDay(Calendar cal, String str, int off) throws ParseException {
+    private static int readDay(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
             cal.set(Calendar.DATE, Integer.parseInt(str.substring(off, off + 2)));
             return off + 2;
@@ -150,7 +142,7 @@ public class DateParser {
         throw new ParseException("Invalid day in date '" + str + "'", off);
     }
 
-    private final static int readHours(Calendar cal, String str, int off) throws ParseException {
+    private static int readHours(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
             cal.set(Calendar.HOUR, Integer.parseInt(str.substring(off, off + 2)));
             return off + 2;
@@ -158,7 +150,7 @@ public class DateParser {
         throw new ParseException("Invalid hours in date '" + str + "'", off);
     }
 
-    private final static int readMinutes(Calendar cal, String str, int off) throws ParseException {
+    private static int readMinutes(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
             cal.set(Calendar.MINUTE, Integer.parseInt(str.substring(off, off + 2)));
             return off + 2;
@@ -166,7 +158,7 @@ public class DateParser {
         throw new ParseException("Invalid minutes in date '" + str + "'", off);
     }
 
-    private final static int readSeconds(Calendar cal, String str, int off) throws ParseException {
+    private static int readSeconds(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
             cal.set(Calendar.SECOND, Integer.parseInt(str.substring(off, off + 2)));
             return off + 2;
@@ -176,14 +168,8 @@ public class DateParser {
 
     /**
      * Return -1 if no more content to read or the offset of the expected TZ
-     *
-     * @param cal
-     * @param str
-     * @param off
-     * @return
-     * @throws ParseException
      */
-    private final static int readMilliseconds(Calendar cal, String str, int off) throws ParseException {
+    private static int readMilliseconds(Calendar cal, String str, int off) throws ParseException {
         int e = str.indexOf('Z', off);
         if (e == -1) {
             e = str.indexOf('+', off);
@@ -217,11 +203,11 @@ public class DateParser {
         return e;
     }
 
-    private static final boolean isChar(char c, String str, int off) {
+    private static boolean isChar(char c, String str, int off) {
         return str.length() > off && str.charAt(off) == c;
     }
 
-    private static final int readCharOpt(char c, Calendar cal, String str, int off) {
+    private static int readCharOpt(char c, Calendar cal, String str, int off) {
         if (str.length() > off) {
             if (str.charAt(off) == c) {
                 return off + 1;
@@ -230,7 +216,7 @@ public class DateParser {
         return -1;
     }
 
-    private final static boolean readTimeZone(Calendar cal, String str, int off) throws ParseException {
+    private static boolean readTimeZone(Calendar cal, String str, int off) throws ParseException {
         int len = str.length();
         if (len == off) {
             return false;

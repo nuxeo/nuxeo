@@ -42,7 +42,7 @@ public interface ActionFilter {
      * @param action the optional action to check against, should be able to be null if filters evaluation only depends
      *            on given context.
      * @param context mandatory context holding variables to check against.
-     * @returns true if filters configuration for given action and context. Returns false if an error occurs during one
+     * @return true if filters configuration for given action and context. Returns false if an error occurs during one
      *          of the conditions evaluation.
      */
     boolean accept(Action action, ActionContext context);

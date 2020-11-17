@@ -45,8 +45,6 @@ public class RepositoryObject extends DefaultObject {
     /**
      * The regex of getDocsByPath doesn't catch the case of the root document.
      *
-     * @param adapterName
-     * @return
      * @since 5.8
      */
     @Path("path/@{adapterName}")

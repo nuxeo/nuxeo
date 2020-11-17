@@ -256,8 +256,8 @@ public class TestRollback extends SharedFilesTest {
      * <li>install a corrupted hotfix package copying a bundle without setting a base version
      * <li>install a second hotfix packages upgrading the same bundle and repairing the registry by adding the missing
      * base version
-     * <li>uninstall the second hotfix -> the bundle introduced by the first hotfix is restored
-     * <li>uninstall the corrupted hotfix -> the bundle is removed
+     * <li>uninstall the second hotfix -&gt; the bundle introduced by the first hotfix is restored
+     * <li>uninstall the corrupted hotfix -&gt; the bundle is removed
      * </ul>
      */
     @Test
@@ -347,9 +347,9 @@ public class TestRollback extends SharedFilesTest {
      * <li>install a corrupted hotfix package copying another version of the bundle without setting a base version
      * <li>install a third hotfix package upgrading the same bundle and repairing the registry by adding the missing
      * base version
-     * <li>uninstall the third hotfix -> the bundle introduced by the second hotfix is restored
-     * <li>uninstall the corrupted second hotfix -> the bundle is removed
-     * <li>uninstall the first hotfix -> the bundle stays removed
+     * <li>uninstall the third hotfix -&gt; the bundle introduced by the second hotfix is restored
+     * <li>uninstall the corrupted second hotfix -&gt; the bundle is removed
+     * <li>uninstall the first hotfix -&gt; the bundle stays removed
      * </ul>
      */
     @Test
@@ -468,7 +468,8 @@ public class TestRollback extends SharedFilesTest {
      * <li>Install HF, install addon, uninstall HF, uninstall addon
      * <li>Install HF, install addon, uninstall addon
      * </ol>
-     * The JAR hoftix version must be installed disregarding the install order between HF and addon.<br/>
+     * The JAR hoftix version must be installed disregarding the install order between HF and addon.
+     * <p>
      * No JAR version must be installed when addon is not installed.
      */
     @Test
@@ -523,7 +524,8 @@ public class TestRollback extends SharedFilesTest {
      * <li>Install HF, install addon, uninstall HF, uninstall addon
      * <li>Install HF, install addon, uninstall addon
      * </ol>
-     * The JAR hoftix version must be installed disregarding the install order between HF and addon.<br/>
+     * The JAR hoftix version must be installed disregarding the install order between HF and addon.
+     * <p>
      * No JAR version must be installed when addon is not installed.
      */
     @Test
@@ -574,7 +576,8 @@ public class TestRollback extends SharedFilesTest {
      * <li>Install HF, install addon, uninstall HF, uninstall addon
      * <li>Install HF, install addon, uninstall addon
      * </ol>
-     * The JAR hoftix version must be installed disregarding the install order between HF and addon.<br/>
+     * The JAR hoftix version must be installed disregarding the install order between HF and addon.
+     * <p>
      * No JAR version must be installed when addon is not installed.
      */
     @Test
@@ -629,7 +632,8 @@ public class TestRollback extends SharedFilesTest {
      * <li>Install HF, install addon, uninstall HF, uninstall addon
      * <li>Install HF, install addon, uninstall addon
      * </ol>
-     * The JAR hoftix version must be installed disregarding the install order between HF and addon.<br/>
+     * The JAR hoftix version must be installed disregarding the install order between HF and addon.
+     * <p>
      * No JAR version must be installed when addon is not installed.
      */
     @Test
@@ -678,7 +682,8 @@ public class TestRollback extends SharedFilesTest {
      * <ol>
      * <li>Install addon, install HF1, install HF2, uninstall HF2, uninstall addon
      * </ol>
-     * The JAR hoftix version must be installed disregarding the install order between HF and addon.<br/>
+     * The JAR hoftix version must be installed disregarding the install order between HF and addon.
+     * <p>
      * No JAR version must be installed when addon is not installed.
      */
     @Test

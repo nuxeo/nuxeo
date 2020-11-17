@@ -135,7 +135,7 @@ public class NuxeoRepository {
      * {@code CONTAINS()} function MUST be included in a single query statement. Currently, such mode only works for
      * CMIS query having no {@code JOIN} predicate.
      *
-     * @see https://jira.nuxeo.com/browse/NXP-19858
+     * @see <a href="https://jira.nuxeo.com/browse/NXP-19858">NXP-19858</a>
      */
     public static final String RELAX_CMIS_SPEC = "org.nuxeo.cmis.relaxSpec";
 

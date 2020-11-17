@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
+import org.nuxeo.ecm.platform.thumbnail.action.RecomputeThumbnailsAction;
 
 /**
  * Work to recompute the thumbnail of the documents resulting from the provided NXQL query.

@@ -319,7 +319,7 @@ public class ConfigurationGenerator {
     public static final String JVMCHECK_NOFAIL = "nofail";
 
     /**
-     * Java options configured in <tt>bin/nuxeo.conf</tt> and <tt>bin/nuxeoctl</tt>.
+     * Java options configured in {@code bin/nuxeo.conf} and {@code bin/nuxeoctl}.
      *
      * @since 9.3
      */
@@ -927,7 +927,8 @@ public class ConfigurationGenerator {
      * Save changed parameters in {@code nuxeo.conf} calculating templates if changedParameters contains a value for
      * {@link #PARAM_TEMPLATE_DBNAME}. If a parameter value is empty ("" or null), then the property is unset.
      * {@link #PARAM_TEMPLATES_NAME} and {@link #PARAM_FORCE_GENERATION} cannot be unset, but their value can be
-     * changed.<br/>
+     * changed.
+     * <p>
      * This method does not check values in map: use {@link #saveFilteredConfiguration(Map)} for parameters filtering.
      *
      * @param changedParameters Map of modified parameters
@@ -1864,7 +1865,7 @@ public class ConfigurationGenerator {
 
     /**
      * Loads the {@code nuxeo.defaults} and {@code nuxeo.NUXEO_ENVIRONMENT} files.
-     * <p/>
+     * <p>
      * This method assumes {@code nuxeo.defaults} exists and is readable.
      */
     protected Properties loadNuxeoDefaults(File directory) throws IOException {
@@ -2029,8 +2030,8 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Gets the Java options defined in Nuxeo configuration files, e.g. <tt>bin/nuxeo.conf</tt> and
-     * <tt>bin/nuxeoctl</tt>.
+     * Gets the Java options defined in Nuxeo configuration files, e.g. {@code bin/nuxeo.conf} and
+     * {@code bin/nuxeoctl}.
      *
      * @return the Java options.
      * @since 9.3

@@ -36,15 +36,12 @@ public interface Schema extends ComplexType {
     /**
      * Gets a schema local type given its name.
      *
-     * @param typeName
      * @return the type or null if no such type
      */
     Type getType(String typeName);
 
     /**
      * Registers a new type in that schema context.
-     *
-     * @param type
      */
     void registerType(Type type);
 

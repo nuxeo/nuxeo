@@ -80,9 +80,6 @@ public class RelationTabSubPage extends DocumentBasePage {
     @FindBy(xpath = "//*[@id='document_relations']/table/tbody/tr")
     List<WebElement> existingRelations;
 
-    /**
-     * @param driver
-     */
     public RelationTabSubPage(WebDriver driver) {
         super(driver);
     }

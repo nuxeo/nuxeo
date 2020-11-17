@@ -62,16 +62,16 @@ public class RelationService extends DefaultComponent implements RelationManager
 
     private static final Log log = LogFactory.getLog(RelationService.class);
 
-    /** Graph type -> class. */
+    /** Graph type -&gt; class. */
     protected final Map<String, Class<?>> graphTypes;
 
-    /** Graph name -> description */
+    /** Graph name -&gt; description */
     protected final Map<String, GraphDescription> graphDescriptions;
 
-    /** Graph name -> factory. */
+    /** Graph name -&gt; factory. */
     public final Map<String, GraphFactory> graphFactories;
 
-    /** Graph name -> graph instance. */
+    /** Graph name -&gt; graph instance. */
     public final Map<String, Graph> graphRegistry;
 
     protected final Map<String, String> resourceAdapterRegistry;

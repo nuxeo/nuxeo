@@ -38,11 +38,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * Convert {@link ACP} to Json.
  * <p>
  * This marshaller is enrichable: register class implementing {@link AbstractJsonEnricher} and managing {@link ACP}.
- * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link ACPJsonWriter#extend(Object, JsonGenerator)}.
- * </p>
+ * {@link ExtensibleEntityJsonWriter#extend(Object, JsonGenerator)}.
  * <p>
  * Format is:
  *
@@ -67,8 +65,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *             <-- contextParameters if there are enrichers activated
  *             <-- additional property provided by extend() method
  * }
+ * }
  * </pre>
- * </p>
+ *
  * @since 7.2
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)

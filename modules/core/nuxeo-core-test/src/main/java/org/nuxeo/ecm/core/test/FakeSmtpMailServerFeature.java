@@ -37,7 +37,7 @@ import com.dumbster.smtp.SimpleSmtpServer;
 
 /**
  * @since 5.7
- * @deprecated since 11.1, use {@link org.nunxeo.mail.SmtpMailServerFeature} instead
+ * @deprecated since 11.1, use {@code org.nuxeo.mail.SmtpMailServerFeature} instead
  */
 @Deprecated(since = "11.1")
 public class FakeSmtpMailServerFeature implements RunnerFeature {

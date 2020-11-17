@@ -25,9 +25,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * An abstract {@link Computation} that manages the metadata init.<br/>
- * By convention the inputs streams are named internally: i1, i2 ...<br/>
- * and the output streams are named: o1, o2 ... <br/>
+ * An abstract {@link Computation} that manages the metadata init.
+ * <p>
+ * By convention the inputs streams are named internally: i1, i2 ...
+ * <p>
+ * and the output streams are named: o1, o2 ...
  *
  * @since 9.3
  */
@@ -54,7 +56,7 @@ public abstract class AbstractComputation implements Computation {
     public static final String INPUT_NULL = "input/null";
 
     /**
-     * Creates a computation with the requested number of input and output streams.<br/>
+     * Creates a computation with the requested number of input and output streams.
      *
      * @since 10.3
      */

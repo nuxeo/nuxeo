@@ -26,8 +26,7 @@ import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.FETCH_PROPERTIES;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
@@ -89,7 +88,7 @@ public class UserGroupTest extends BaseUserTest {
     }
 
     @Test
-    public void itReturnsA404OnNonExistentUser() throws Exception {
+    public void itReturnsA404OnNonExistentUser() {
         // Given a non existent user
 
         // When I call the Rest endpoint
@@ -125,7 +124,7 @@ public class UserGroupTest extends BaseUserTest {
     }
 
     @Test
-    public void itCanDeleteAUser() throws Exception {
+    public void itCanDeleteAUser() {
         // Given a modified user
         NuxeoPrincipal user = um.getPrincipal("user1");
 
@@ -189,9 +188,9 @@ public class UserGroupTest extends BaseUserTest {
     public void itCanGetAGroupWithFetchProperties() throws Exception {
         NuxeoGroup group = new NuxeoGroupImpl("newGroup");
         group.setLabel("a new group");
-        group.setMemberUsers(Arrays.asList("user1", "user2"));
-        group.setMemberGroups(Collections.singletonList("group2"));
-        group.setParentGroups(Collections.singletonList("supergroup"));
+        group.setMemberUsers(List.of("user1", "user2"));
+        group.setMemberGroups(List.of("group2"));
+        group.setParentGroups(List.of("supergroup"));
         um.createGroup(group.getModel());
         nextTransaction();
 
@@ -224,8 +223,8 @@ public class UserGroupTest extends BaseUserTest {
         // Given a modified group
         NuxeoGroup group = um.getGroup("group1");
         group.setLabel("modifiedGroup");
-        group.setMemberUsers(Arrays.asList(new String[] { "user1", "user2" }));
-        group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
+        group.setMemberUsers(List.of(new String[] { "user1", "user2" }));
+        group.setMemberGroups(List.of(new String[] { "group2" }));
         GroupConfig groupConfig = um.getGroupConfig();
         group.getModel().setProperty(groupConfig.schemaName, "description", "updated description");
 
@@ -248,14 +247,14 @@ public class UserGroupTest extends BaseUserTest {
      * @since 9.3
      */
     @Test
-    public void itCanChangeAGroupWithMissingProperties() throws Exception {
+    public void itCanChangeAGroupWithMissingProperties() {
         // Given a group with properties, members, subgroups and parent groups
         DocumentModel groupModel = um.getGroupModel("group1");
         GroupConfig groupConfig = um.getGroupConfig();
         groupModel.setProperty(groupConfig.schemaName, "description", "Initial description");
-        groupModel.setProperty(groupConfig.schemaName, "members", Arrays.asList(new String[] { "user1", "user2" }));
-        groupModel.setProperty(groupConfig.schemaName, "subGroups", Arrays.asList(new String[] { "group2" }));
-        groupModel.setProperty(groupConfig.schemaName, "parentGroups", Arrays.asList(new String[] { "group3" }));
+        groupModel.setProperty(groupConfig.schemaName, "members", List.of(new String[] { "user1", "user2" }));
+        groupModel.setProperty(groupConfig.schemaName, "subGroups", List.of(new String[] { "group2" }));
+        groupModel.setProperty(groupConfig.schemaName, "parentGroups", List.of(new String[] { "group3" }));
         um.updateGroup(groupModel);
         nextTransaction();
 
@@ -368,7 +367,7 @@ public class UserGroupTest extends BaseUserTest {
     }
 
     @Test
-    public void itCanDeleteGroup() throws Exception {
+    public void itCanDeleteGroup() {
 
         // When i DELETE on a group resources
         try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/group/group1")) {
@@ -384,8 +383,8 @@ public class UserGroupTest extends BaseUserTest {
         // Given a modified group
         NuxeoGroup group = new NuxeoGroupImpl("newGroup");
         group.setLabel("a new group");
-        group.setMemberUsers(Arrays.asList(new String[] { "user1", "user2" }));
-        group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
+        group.setMemberUsers(List.of(new String[] { "user1", "user2" }));
+        group.setMemberGroups(List.of(new String[] { "group2" }));
         GroupConfig groupConfig = um.getGroupConfig();
         group.getModel().setProperty(groupConfig.schemaName, "description", "new description");
 
@@ -518,11 +517,11 @@ public class UserGroupTest extends BaseUserTest {
     }
 
     @Test
-    public void itCanRemoveAUserToAGroup() throws Exception {
+    public void itCanRemoveAUserToAGroup() {
         // Given a user in a group
         NuxeoPrincipal principal = um.getPrincipal("user1");
         NuxeoGroup group = um.getGroup("group1");
-        principal.setGroups(Arrays.asList(new String[] { group.getName() }));
+        principal.setGroups(List.of(group.getName()));
         um.updateUser(principal.getModel());
         principal = um.getPrincipal("user1");
         assertTrue(principal.isMemberOf(group.getName()));
@@ -653,7 +652,7 @@ public class UserGroupTest extends BaseUserTest {
         principal.setLastName("user");
         principal.setCompany("nuxeo");
         principal.setEmail("test@nuxeo.com");
-        principal.setGroups(Collections.singletonList("unknownGroup"));
+        principal.setGroups(List.of("unknownGroup"));
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/user", getPrincipalAsJson(principal))) {
             assertEquals(SC_FORBIDDEN, response.getStatus());
@@ -671,7 +670,7 @@ public class UserGroupTest extends BaseUserTest {
         NuxeoPrincipal user = um.getPrincipal("user1");
         user.setFirstName("Paul");
         user.setLastName("McCartney");
-        user.setGroups(Collections.singletonList("unknownGroup"));
+        user.setGroups(List.of("unknownGroup"));
         String userJson = getPrincipalAsJson(user);
 
         // When I call a PUT on the Rest endpoint
@@ -684,7 +683,7 @@ public class UserGroupTest extends BaseUserTest {
 
     /**
      * @param node node to test
-     * @param strings an array of expected user names
+     * @param users an array of expected user names
      * @since 5.8
      */
     private void assertUserEntries(JsonNode node, String... users) {
@@ -701,7 +700,6 @@ public class UserGroupTest extends BaseUserTest {
      * @param numberOfPage expected number of page
      * @param resultsCount expected resultsCount
      * @param currentPageSize expected currentPageSize
-     * @param jsonNodeToText
      * @since 5.8
      */
     private void assertPaging(int currentPageIndex, int pageSize, int numberOfPage, int resultsCount,
@@ -715,8 +713,6 @@ public class UserGroupTest extends BaseUserTest {
     }
 
     /**
-     * @param pageIndex
-     * @return
      * @since 5.8
      */
     private MultivaluedMap<String, String> getQueryParamsForPage(int pageIndex) {
@@ -729,7 +725,7 @@ public class UserGroupTest extends BaseUserTest {
 
     /**
      * @param node node to test
-     * @param strings an array of expected group names
+     * @param groups an array of expected group names
      * @since 5.8
      */
     private void assertGroupEntries(JsonNode node, String... groups) {

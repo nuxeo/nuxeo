@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * <p>
  * If you want to create an initialization chain you can implement to delegate to the parent handle the default
  * initialization and then to do your specific initialization stuff
- * <p>
  *
  * <pre>
  * <code>

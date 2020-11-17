@@ -37,7 +37,6 @@ public interface Form {
      *
      * @param data the form data source
      * @param proxy the proxy to the user form
-     * @throws ValidationException
      */
     void load(FormDataProvider data, Form proxy) throws ValidationException;
 

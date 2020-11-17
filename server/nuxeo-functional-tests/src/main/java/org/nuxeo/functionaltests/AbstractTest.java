@@ -497,7 +497,6 @@ public abstract class AbstractTest {
      * Navigate to a specified url
      *
      * @param urlString url
-     * @throws MalformedURLException
      */
     public void navToUrl(String urlString) throws MalformedURLException {
         URL url = new URL(urlString);
@@ -508,7 +507,6 @@ public abstract class AbstractTest {
      * Login as Administrator
      *
      * @return the Document base page (by default returned by CAP)
-     * @throws UserNotConnectedException
      */
     public DocumentBasePage login() throws UserNotConnectedException {
         return login(ADMINISTRATOR, ADMINISTRATOR);
@@ -686,7 +684,6 @@ public abstract class AbstractTest {
      * @param defineNote true if the content of the note needs to be defined
      * @param noteContent the content of the note
      * @return the created note page.
-     * @throws IOException
      * @since 5.9.4
      * @deprecated since 8.3: use {@link DocumentBasePage#createNote(String, String, boolean, String)} instead.
      */

@@ -35,7 +35,7 @@ import org.openqa.selenium.support.pagefactory.ByChained;
 import org.openqa.selenium.support.ui.Select;
 
 /**
- * @author Sun Seng David TAN <stan@nuxeo.com>
+ * @author Sun Seng David TAN
  * @deprecated since 7.10. Use {@link PermissionsSubPage} instead.
  */
 @Deprecated

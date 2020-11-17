@@ -25,7 +25,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * @author Sun Seng David TAN <stan@nuxeo.com>
+ * @author Sun Seng David TAN
  */
 public class FileSummaryTabSubPage extends AbstractPage {
 
@@ -33,9 +33,6 @@ public class FileSummaryTabSubPage extends AbstractPage {
     @FindBy(xpath = "//div[@class=\"content_block\"]//td[@class=\"fieldColumn\"]")
     WebElement mainContentViewField;
 
-    /**
-     * @param driver
-     */
     public FileSummaryTabSubPage(WebDriver driver) {
         super(driver);
     }

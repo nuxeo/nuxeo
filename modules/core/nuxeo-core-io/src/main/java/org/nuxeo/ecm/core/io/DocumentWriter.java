@@ -38,7 +38,6 @@ public interface DocumentWriter {
      *
      * @param doc the document to write
      * @return the translation map.
-     * @throws IOException
      */
     DocumentTranslationMap write(ExportedDocument doc) throws IOException;
 
@@ -47,7 +46,6 @@ public interface DocumentWriter {
      *
      * @param docs the array to write
      * @return the translation map.
-     * @throws IOException
      */
     DocumentTranslationMap write(ExportedDocument[] docs) throws IOException;
 
@@ -56,7 +54,6 @@ public interface DocumentWriter {
      *
      * @param docs the documents to write
      * @return the translation map.
-     * @throws IOException
      */
     DocumentTranslationMap write(Collection<ExportedDocument> docs) throws IOException;
 

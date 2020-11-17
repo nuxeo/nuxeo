@@ -26,7 +26,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * @author Sun Seng David TAN <stan@nuxeo.com>
+ * @author Sun Seng David TAN
  */
 public class NavigationSubPage extends AbstractPage {
 
@@ -34,9 +34,6 @@ public class NavigationSubPage extends AbstractPage {
     @FindBy(xpath = "//dd[@class=\"menuForm\"]")
     WebElement navigationTree;
 
-    /**
-     * @param driver
-     */
     public NavigationSubPage(WebDriver driver) {
         super(driver);
     }

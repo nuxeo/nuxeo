@@ -65,7 +65,7 @@ public interface TypeInfo {
      * <p>
      * If parameter "defaultMode" is null, returns only layout defined for given mode.
      *
-     * @Since 5.3.1
+     * @since 5.3.1
      */
     String[] getLayouts(String mode, String defaultMode);
 

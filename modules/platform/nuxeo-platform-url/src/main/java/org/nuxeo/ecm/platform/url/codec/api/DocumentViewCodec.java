@@ -58,9 +58,6 @@ public interface DocumentViewCodec {
      * Builds an url from the given document view.
      * <p>
      * The url should be partial: it should not hold the context path information (server:port/nuxeo).
-     *
-     * @param docView
-     * @return
      */
     String getUrlFromDocumentView(DocumentView docView);
 

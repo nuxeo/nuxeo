@@ -60,14 +60,13 @@ import com.fasterxml.jackson.databind.JsonNode;
  * <pre>
  * {
  *   "entity-type": "directoryEntry",
- *   "directoryName": "DIRECTORY_NAME", <- use it to update an existing document
+ *   "directoryName": "DIRECTORY_NAME", &lt;- use it to update an existing document
  *   "properties": {
- *     <- entry properties depending on the directory schema (password fields are hidden)
- *     <- format is managed by {@link DocumentPropertiesJsonReader}
+ *     &lt;- entry properties depending on the directory schema (password fields are hidden)
+ *     &lt;- format is managed by {@link DocumentPropertiesJsonReader}
  *   }
  * }
  * </pre>
- * </p>
  *
  * @since 7.2
  */

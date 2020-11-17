@@ -24,7 +24,7 @@ package org.nuxeo.ecm.directory;
  * Specific exception thrown when a directory entry is not found
  *
  * @since 5.7
- * @author Thierry Martins <tm@nuxeo.com>
+ * @author Thierry Martins
  */
 public class DirectoryEntryNotFoundException extends DirectoryException {
 

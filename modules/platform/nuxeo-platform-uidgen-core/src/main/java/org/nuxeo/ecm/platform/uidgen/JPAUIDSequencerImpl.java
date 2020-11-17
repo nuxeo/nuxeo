@@ -37,7 +37,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * This implementation uses a static persistence provider to be able to instantiate this class without passing by
- * Framework.getService -> this is to avoid potential problems do to sequencer factories. Anyway sequencer factories
+ * Framework.getService -&gt; this is to avoid potential problems do to sequencer factories. Anyway sequencer factories
  * should be removed (I don't think they are really needed).
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

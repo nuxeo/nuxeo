@@ -169,9 +169,9 @@ public class MimeTypeTranslationHelper {
      * <p>
      * Some input/output samples:
      * <ul>
-     * <li>"image/jpeg" => "image/jpeg"</li>
-     * <li>"image/*" => "image/*"</li>
-     * <li>"image/png; param1=foo; param2=bar" => "image/png"</li>
+     * <li>"image/jpeg" =&gt; "image/jpeg"</li>
+     * <li>"image/*" =&gt; "image/*"</li>
+     * <li>"image/png; param1=foo; param2=bar" =&gt; "image/png"</li>
      * </ul>
      *
      * @since 10.3
@@ -189,9 +189,9 @@ public class MimeTypeTranslationHelper {
      * <p>
      * Some input/output samples:
      * <ul>
-     * <li>"image/jpeg" => "image/*"</li>
-     * <li>"video/*" => "video/*"</li>
-     * <li>"application/pdf" => "application/*"</li>
+     * <li>"image/jpeg" =&gt; "image/*"</li>
+     * <li>"video/*" =&gt; "video/*"</li>
+     * <li>"application/pdf" =&gt; "application/*"</li>
      * </ul>
      *
      * @since 10.3

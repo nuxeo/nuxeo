@@ -33,26 +33,17 @@ public interface CUserService {
 
     /**
      * Generates user certificate and user keys, saves them to a user store, and persists the store in the directory.
-     *
-     * @param user
-     * @param userKeyPassword
-     * @throws CertException
      */
     DocumentModel createCertificate(DocumentModel user, String userKeyPassword) throws CertException;
 
     /**
      * Retrieves a UserInfo object containing information needed for certificate generation.
-     *
-     * @param userModel
-     * @return UserInfo
-     * @throws CertException
      */
     UserInfo getUserInfo(DocumentModel userModel) throws CertException;
 
     /**
      * Returns simplified textual representation of a certificate's contents.
      *
-     * @param certificate
      * @return Simple certificate string.
      */
     String getUserCertInfo(DocumentModel user, String userKeyPassword) throws CertException;
@@ -60,17 +51,13 @@ public interface CUserService {
     /**
      * Retrieves user keystore from the directory.
      *
-     * @param user
-     * @param userKeyPassword
      * @return User KeyStore object
-     * @throws CertException
      */
     KeyStore getUserKeystore(String userID, String userKeyPassword) throws CertException;
 
     /**
      * Retrieves a user certificate from the directory.
      *
-     * @param user
      * @return certificate document model
      */
     DocumentModel getCertificate(String userID);
@@ -78,17 +65,12 @@ public interface CUserService {
     /**
      * Retrieves the public root certificate.
      *
-     * @param user
      * @return certificate document model
      */
     byte[] getRootCertificateData();
 
     /**
      * Checks if the user is present in the certificate directory.
-     *
-     * @param userID
-     * @return
-     * @throws CertException
      */
     boolean hasCertificate(String userID) throws CertException;
 
@@ -101,9 +83,6 @@ public interface CUserService {
      * <li>a keystore (which was saved as a field in the directory entry)
      * <li>a private key and a public certificate (which were contained in the keystore)
      * </ul>
-     *
-     * @param user
-     * @throws CertException
      */
     void deleteCertificate(String userID) throws CertException;
 

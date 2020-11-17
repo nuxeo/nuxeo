@@ -52,13 +52,13 @@ import com.fasterxml.jackson.databind.JsonNode;
  * {
  *   "entity-type":"user",
  *   "id":"USERNAME",
- *   "properties":{   <- depending on the user schema / format is managed by {@link DocumentPropertiesJsonReader}
+ *   "properties":{   &lt;- depending on the user schema / format is managed by {@link DocumentPropertiesJsonReader}
  *     "firstName":"FIRSTNAME",
  *     "lastName":"LASTNAME",
  *     "username":"USERNAME",
  *     "email":"user@mail.com",
  *     "company":"COMPANY",
- *     "password":"", <- ALWAYS EMPTY
+ *     "password":"", &lt;- ALWAYS EMPTY
  *     "groups":[
  *       "GROUP1 NAME OF THE USER",
  *       "GROUP2 NAME OF THE USER",
@@ -67,8 +67,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  *   }
  * }
  * </pre>
- *
- * </p>
  *
  * @since 7.2
  */

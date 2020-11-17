@@ -125,6 +125,13 @@
       <artifactId>jsonassert</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- for StatusServletClient javadoc -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-management</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>

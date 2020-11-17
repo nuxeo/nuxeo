@@ -47,9 +47,6 @@ public class QName implements Serializable {
 
     /**
      * Creates a QName having the given local name and prefix.
-     *
-     * @param localName
-     * @param prefix
      */
     public QName(String localName, String prefix) {
         this.localName = localName.intern();
@@ -112,10 +109,6 @@ public class QName implements Serializable {
      * Parses the given name and create the corresponding QName.
      * <p>
      * If the given name is not prefixed then the given prefix will be used.
-     *
-     * @param name
-     * @param prefix
-     * @return
      */
     public static QName valueOf(String name, String prefix) {
         int p = name.indexOf(':');

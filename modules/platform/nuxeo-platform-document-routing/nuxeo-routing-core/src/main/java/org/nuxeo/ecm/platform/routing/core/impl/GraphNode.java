@@ -982,9 +982,13 @@ public interface GraphNode {
     void setVariables(Map<String, Serializable> map);
 
     /**
-     * Sets the variables of the workflow based on their JSON representation (especially for scalar lists). Eg.
-     * Map<String, String> map = new HashMap<String, String>();
-     * map.put("contributors","[\"John Doe\", \"John Smith\"]"); map.put("title","Test Title");
+     * Sets the variables of the workflow based on their JSON representation (especially for scalar lists). For example:
+     *
+     * <pre>
+     * Map&lt;String, String&gt; map = new HashMap&lt;&gt;();
+     * map.put("contributors", "[\"John Doe\", \"John Smith\"]");
+     * map.put("title", "Test Title");
+     * </pre>
      *
      * @param map the map of variables
      * @since 5.9.3, 5.8.0-HF11

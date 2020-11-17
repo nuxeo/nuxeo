@@ -90,6 +90,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase.IdType;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
+import org.nuxeo.runtime.mongodb.MongoDBOperators;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoBulkWriteException;
@@ -111,7 +112,6 @@ import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import org.nuxeo.runtime.mongodb.MongoDBOperators;
 
 /**
  * MongoDB implementation of a {@link DBSConnection}.
@@ -384,7 +384,8 @@ public class MongoDBConnection extends DBSConnectionBase {
     /**
      * xorshift algorithm from George Marsaglia, with period 2^64 - 1.
      *
-     * @see https://www.jstatsoft.org/article/view/v008i14/xorshift.pdf
+     * @see <a href="https://www.jstatsoft.org/article/view/v008i14/xorshift.pdf">xorshift algorithm from George
+     *      Marsaglia</a>
      */
     protected long xorshift(long n) {
         n ^= (n << 13);
@@ -686,9 +687,9 @@ public class MongoDBConnection extends DBSConnectionBase {
 
     /**
      * Logs, runs request and constructs a closeable {@link Stream} on top of {@link MongoCursor}.
-     * <p />
+     * <p>
      * We should rely on this method, because it correctly handles cursor closed state.
-     * <p />
+     * <p>
      * Note: Looping on {@link FindIterable} or {@link MongoIterable} could lead to cursor leaks. This is also the case
      * on some call to {@link MongoIterable#first()}.
      *

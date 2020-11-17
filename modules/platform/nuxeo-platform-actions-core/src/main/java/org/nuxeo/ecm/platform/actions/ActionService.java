@@ -167,8 +167,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 applyFilters(context, actions);
                 return actions;
             } else {
-                List<Action> allActions = new ArrayList<>();
-                allActions.addAll(actions);
+                List<Action> allActions = new ArrayList<>(actions);
                 applyFilters(context, actions);
 
                 for (Action a : allActions) {
@@ -363,7 +362,6 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     /**
      * @deprecated seems not used in Nuxeo - should be removed - and anyway the merge is not done
-     * @param ff
      */
     @Deprecated
     protected void registerFilterFactory(FilterFactory ff) {
@@ -382,7 +380,6 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     /**
      * @deprecated seems not used in Nuxeo - should be removed - and anyway the merge is not done
-     * @param ff
      */
     @Deprecated
     public void unregisterFilterFactory(FilterFactory ff) {

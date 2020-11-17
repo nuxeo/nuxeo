@@ -60,12 +60,12 @@ public class RedisWorkQueuing implements WorkQueuing {
     private static final Log log = LogFactory.getLog(RedisWorkQueuing.class);
 
     /**
-     * Global hash of Work instance id -> serialoized Work instance.
+     * Global hash of Work instance id -&gt; serialized Work instance.
      */
     protected static final String KEY_DATA = "data";
 
     /**
-     * Global hash of Work instance id -> Work state. The completed state is followed by a completion time in
+     * Global hash of Work instance id -&gt; Work state. The completed state is followed by a completion time in
      * milliseconds.
      */
     protected static final String KEY_STATE = "state";
@@ -529,7 +529,6 @@ public class RedisWorkQueuing implements WorkQueuing {
      *
      * @param queueId the queue id
      * @param work the work instance
-     * @throws IOException
      */
     public void workSetScheduled(final String queueId, Work work) throws IOException {
         listener.queueChanged(work, metrics(queueId, evalSha(schedulingWorkSha, keys(queueId), args(work, true))));
@@ -710,8 +709,6 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     /**
      * Removes a given work from queue, move the work from scheduled to completed set.
-     *
-     * @throws IOException
      */
     protected void removeScheduledWork(final String queueId, final String workId) throws IOException {
         evalSha(cancelledScheduledWorkSha, keys(queueId), args(workId));

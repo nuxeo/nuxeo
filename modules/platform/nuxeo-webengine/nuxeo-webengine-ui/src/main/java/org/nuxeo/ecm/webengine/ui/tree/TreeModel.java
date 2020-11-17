@@ -82,14 +82,14 @@ public interface TreeModel extends Serializable {
     TreeItem findAndReveal(String path);
 
     /**
-     * Like {@link #find(Path)} but the path is expressed as a {@link Path} object.
+     * Like {@link #find(String)} but the path is expressed as a {@link Path} object.
      *
      * @see #find(String)
      */
     TreeItem find(Path path);
 
     /**
-     * Like {@link #findAndReveal(Path)} but the path is expressed as a {@link Path} object.
+     * Like {@link #findAndReveal(String)} but the path is expressed as a {@link Path} object.
      *
      * @see #findAndReveal(String)
      */

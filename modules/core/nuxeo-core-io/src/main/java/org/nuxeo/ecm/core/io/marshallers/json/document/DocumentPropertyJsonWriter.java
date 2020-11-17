@@ -71,20 +71,19 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * Format is:
  *
  * <pre>
- * "stringPropertyValue"  <-- for string property, each property may be fetched if a resolver is associated with that property and if a parameter fetch.document=propXPath is present, in this case, an object will be marshalled as value
+ * "stringPropertyValue"  &lt;-- for string property, each property may be fetched if a resolver is associated with that property and if a parameter fetch.document=propXPath is present, in this case, an object will be marshalled as value
  * or
- * true|false  <- for boolean property
+ * true|false  &lt;- for boolean property
  * or
- * 123  <- for int property
+ * 123  &lt;- for int property
  * ...
- * {  <- for complex property
+ * {  &lt;- for complex property
  *   "subProperty": ...,
  *    ...
  * },
- * [ ... ] <- for list property
+ * [ ... ] &lt;- for list property
  * }
  * </pre>
- * </p>
  *
  * @since 7.2
  */

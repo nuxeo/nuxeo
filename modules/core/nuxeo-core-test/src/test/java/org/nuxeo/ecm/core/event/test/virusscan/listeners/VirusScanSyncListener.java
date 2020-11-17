@@ -38,10 +38,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Synchronous listener that intercept Document create/update events.
- * <p/>
+ * <p>
  * This listener detects if Blobs have been modified inside the doc, and if yes, it will raise the virusScanNeeded so
  * that the async listener can do the real job in async mode.
- * <p/>
+ * <p>
  * The work done in sync includes extracting dirty Blobs xpath that are then tranmisted to the Async listener using a
  * custom extended {@link VirusScanEventContext}
  *

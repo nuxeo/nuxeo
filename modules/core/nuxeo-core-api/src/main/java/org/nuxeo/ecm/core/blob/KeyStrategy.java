@@ -23,7 +23,7 @@ import java.io.OutputStream;
 /**
  * Decides how a key is computed from a blob.
  * <p>
- * Implementations of this class must have a proper {@link #equals} method.
+ * Implementations of this class must have a proper {@link Object#equals} method.
  *
  * @since 11.1
  */

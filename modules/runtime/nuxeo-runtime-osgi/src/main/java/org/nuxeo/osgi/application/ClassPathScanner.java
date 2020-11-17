@@ -59,14 +59,6 @@ public class ClassPathScanner {
         scanForNestedJARs = scanForNestedJars;
     }
 
-    /**
-     * FIXME: this javadoc is not correct.
-     * <p>
-     * Scans the given class path and put found OSGi bundles in bundles, regular JARs in jars and append any nested jar
-     * or bundle into the given class loader.
-     *
-     * @param classPath
-     */
     public void scan(List<File> classPath) {
         for (File file : classPath) {
             scan(file);

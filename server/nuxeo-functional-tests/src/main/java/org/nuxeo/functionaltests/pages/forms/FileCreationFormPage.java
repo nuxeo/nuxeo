@@ -28,7 +28,7 @@ import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.openqa.selenium.WebDriver;
 
 /**
- * @author Sun Seng David TAN <stan@nuxeo.com>
+ * @author Sun Seng David TAN
  */
 public class FileCreationFormPage extends DublinCoreCreationDocumentFormPage {
 

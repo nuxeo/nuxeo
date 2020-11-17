@@ -37,10 +37,8 @@ import org.nuxeo.runtime.api.Framework;
  * This {@link ObjectResolver} allows to manage integrity for fields containing references to directory's entry.
  * <p>
  * References contains the directory entry id.
- * </p>
  * <p>
  * To use it, put the following code in your schema XSD (don't forget the directory name):
- * </p>
  *
  * <pre>
  * {@code
@@ -49,11 +47,11 @@ import org.nuxeo.runtime.api.Framework;
  *     <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="carBrandsDirectory" />
  *   </xs:simpleType>
  * </xs:element>
+ * }
  * </pre>
  * <p>
  * For hierarchical directories, which entries reference other entries. You can manage a specific reference containing
  * the full entry path. You have to specify the parent field and the separator used to encode the reference.
- * </p>
  *
  * <pre>
  * {@code
@@ -62,11 +60,11 @@ import org.nuxeo.runtime.api.Framework;
  *     <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="l10ncoverage" ref:parentField="parent" ref:separator="/" />
  *   </xs:simpleType>
  * </xs:element>
+ * }
  * </pre>
  * <p>
  * It's not necessary to define parentField and separator for directory using schema ending by xvocabulary. The feature
  * is automatically enable.
- * </p>
  *
  * @since 7.1
  */

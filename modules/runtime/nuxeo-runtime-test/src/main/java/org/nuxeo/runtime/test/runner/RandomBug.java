@@ -54,7 +54,6 @@ import org.junit.runners.model.Statement;
  * covers,</li>
  * <li>and, after all, there's a random bug which should be fixed!</li>
  * </ul>
- * </p>
  * <p>
  * Compared to the @{@link Ignore} JUnit annotation, the advantage is to provide different behaviors for different use
  * cases. The wanted behavior depending on whereas:
@@ -63,7 +62,7 @@ import org.junit.runners.model.Statement;
  * <li>we are working on the covered code and want to be warned in case of regression,</li>
  * <li>we are working on the random bug and want to reproduce it.</li>
  * </ul>
- * </p>
+ * <p>
  * That means that a random bug cannot be ignored. But must attempt to reproduce or hide its random aspect, depending on
  * its execution context. For instance: <blockquote>
  *
@@ -79,7 +78,7 @@ import org.junit.runners.model.Statement;
  *     {@literal @}Test
  *     {@literal @}RandomBug.Repeat(issue = NXP99999, onFailure=5, onSuccess=50)
  *     public void testWhichFailsSometimes() throws Exception {
- *         assertTrue(java.lang.Math.random() > 0.2);
+ *         assertTrue(java.lang.Math.random() &gt; 0.2);
  *     }
  * }</code>
  * </pre>

@@ -40,9 +40,10 @@ import org.nuxeo.connect.update.xml.XmlWriter;
  * <li>pkg1 is installing 2 files: shared and lib1.jar in bundles dir.
  * <li>pkg2 is installing 2 files: shared and lib2.jar in bundles dir.
  * </ul>
- * First we install pkg1, then pkg2 => expect pkg2 is not really copying the shared but it updates the shared.files
+ * First we install pkg1, then pkg2 =&gt; expect pkg2 is not really copying the shared but it updates the shared.files
  * registry adding a new reference to that JAR (we will use different content for these files to be able to track the
- * file that was really copied). Also, we expect that lib1.jar and lib2.jar were copied.<br/>
+ * file that was really copied). Also, we expect that lib1.jar and lib2.jar were copied.
+ * <p>
  * Then we uninstall pkg1 and we expect that shared is not removed (and the JAR is the one installed by pkg1). But
  * lib2.jar must be removed. Then we uninstall pkg2 and we expect all the 3 files were removed.
  *
@@ -118,8 +119,6 @@ public abstract class SharedFilesTest extends PackageTestCase {
 
     /**
      * Here a downgrade is made - by default downgrade is not allowed see {@link #ensurePkg21WithDowngrade()}
-     *
-     * @throws Exception
      */
     public void ensurePkg21() throws Exception {
         UpdateManager mgr = getManager();
@@ -147,7 +146,7 @@ public abstract class SharedFilesTest extends PackageTestCase {
 
     public class Pkg1 extends PackageDef {
 
-        public Pkg1() throws Exception {
+        public Pkg1() {
             super("pkg1", "5.5", service);
         }
 
@@ -158,7 +157,7 @@ public abstract class SharedFilesTest extends PackageTestCase {
         }
 
         @Override
-        protected void writeInstallCommands(XmlWriter writer) throws Exception {
+        protected void writeInstallCommands(XmlWriter writer) {
             writer.start("update");
             writer.attr("file", "${package.root}/bundles");
             writer.attr("todir", "${env.bundles}");
@@ -170,7 +169,7 @@ public abstract class SharedFilesTest extends PackageTestCase {
     }
 
     public class Pkg2 extends PackageDef {
-        public Pkg2() throws Exception {
+        public Pkg2() {
             super("pkg2", "5.5", service);
         }
 
@@ -181,7 +180,7 @@ public abstract class SharedFilesTest extends PackageTestCase {
         }
 
         @Override
-        protected void writeInstallCommands(XmlWriter writer) throws Exception {
+        protected void writeInstallCommands(XmlWriter writer) {
             writer.start("update");
             writer.attr("file", "${package.root}/b1-1.2.jar");
             writer.attr("todir", "${env.bundles}");

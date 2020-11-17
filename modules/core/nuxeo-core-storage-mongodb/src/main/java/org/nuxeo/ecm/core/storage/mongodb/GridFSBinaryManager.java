@@ -74,7 +74,7 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
     /**
      * Prefix used to retrieve a MongoDB connection from {@link MongoDBConnectionService}.
-     * <p />
+     * <p>
      * The connection id will be {@code blobProvider/[BLOB_PROVIDER_ID]}.
      */
     public static final String BLOB_PROVIDER_CONNECTION_PREFIX = "blobProvider/";

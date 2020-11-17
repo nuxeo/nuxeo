@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -58,6 +57,7 @@ import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
+import org.nuxeo.ecm.core.storage.dbs.DBSConnection;
 import org.nuxeo.ecm.core.storage.dbs.DBSConnectionBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession.OrderByComparator;
@@ -335,7 +335,7 @@ public class MemConnection extends DBSConnectionBase {
         // ORDER BY
         // orderByClause may be null and different from evaluator.getOrderByClause() in case we want to post-filter
         if (orderByClause != null) {
-            Collections.sort(projections, new OrderByComparator(orderByClause));
+            projections.sort(new OrderByComparator(orderByClause));
         }
         // LIMIT / OFFSET
         int totalSize = projections.size();

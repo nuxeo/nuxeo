@@ -50,9 +50,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * <pre>
  * {
  *   "entity-type": "GIVEN_ENTITY_TYPE",
- *                                  <-- pagination info if available are here.
+ *                                  &lt;-- pagination info if available are here.
  *   "entries": [
- *     {...}, <-- A {@link Writer} must be able to manage this format.
+ *     {...}, &lt;-- A {@link Writer} must be able to manage this format.
  *     {...},
  *     ...
  *     {...}
@@ -61,11 +61,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * </pre>
  * <p>
  * This list generates pagination information if the list is a {@link Paginable}.
- * </p>
  * <p>
  * This reader delegates the marshalling of entries to the {@link MarshallerRegistry}. A Json {@link Writer} compatible
  * with the required type must be registered.
- * </p>
  *
  * @param <EntityType> The type of the element of this list.
  * @since 7.2

@@ -18,8 +18,6 @@ package org.nuxeo.ecm.automation.core.impl;
 
 import java.util.concurrent.ExecutionException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.CompiledChain;
 import org.nuxeo.ecm.automation.ExitException;
@@ -36,8 +34,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 public class OperationChainCompiler {
-
-    private static final Log log = LogFactory.getLog(OperationChainCompiler.class);
 
     protected final AutomationService service;
 
@@ -163,8 +159,6 @@ public class OperationChainCompiler {
         /**
          * Compute the best matching path to perform the chain of operations. The path is computed using a backtracking
          * algorithm.
-         *
-         * @throws InvalidChainException
          */
         void solve(Class<?> in) throws InvalidChainException {
             InvokableMethod[] methods = typeof.getMethodsMatchingInput(in);

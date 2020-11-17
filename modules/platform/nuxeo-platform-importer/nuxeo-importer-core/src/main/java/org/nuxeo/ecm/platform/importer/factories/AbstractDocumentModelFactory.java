@@ -118,8 +118,6 @@ public abstract class AbstractDocumentModelFactory implements ImporterDocumentMo
 
     /**
      * Returns a valid Nuxeo name from the given {@code fileName}.
-     *
-     * @throws PropertyException
      */
     protected String getValidNameFromFileName(String fileName) {
         return filenameNormalizer.normalize(fileName);

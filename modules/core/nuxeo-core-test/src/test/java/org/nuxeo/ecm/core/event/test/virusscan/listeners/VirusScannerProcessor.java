@@ -37,9 +37,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Async listener that will manage the real work for scanning.
- * <p/>
+ * <p>
  * To avoid long transactions, this listeners is split in 3 parts :
- * <p/>
  * <ul>
  * <li>fetch Blobs using the xpath information stored in the EventContext (transactional)</li>
  * <li>call the {@link ScanService} (outside of any transaction)</li>

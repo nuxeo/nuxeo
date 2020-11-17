@@ -35,21 +35,11 @@ public final class JsonHelper {
 
     /**
      * Helper method to centralize the JsonEncoding to use
-     *
-     * @param jsonFactory
-     * @param out
-     * @return
-     * @throws IOException
      */
     public static JsonGenerator createJsonGenerator(JsonFactory jsonFactory, OutputStream out) throws IOException {
         return jsonFactory.createGenerator(out, JsonEncoding.UTF8);
     }
 
-    /**
-     * @param out
-     * @return
-     * @throws IOException
-     */
     public static JsonGenerator createJsonGenerator(OutputStream out) throws IOException {
         JsonFactory jsonFactory = Framework.getService(JsonFactoryManager.class).getJsonFactory();
         return createJsonGenerator(jsonFactory, out);

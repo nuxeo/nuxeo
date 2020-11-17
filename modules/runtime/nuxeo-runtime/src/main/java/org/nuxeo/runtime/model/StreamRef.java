@@ -36,15 +36,11 @@ public interface StreamRef {
 
     /**
      * Get the stream content.
-     *
-     * @return
      */
     InputStream getStream() throws IOException;
 
     /**
      * Get an URL to that stream. May return null if no URL is available.
-     *
-     * @return
      */
     URL asURL();
 }

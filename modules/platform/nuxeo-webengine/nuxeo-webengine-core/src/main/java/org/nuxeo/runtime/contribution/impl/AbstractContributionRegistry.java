@@ -74,7 +74,7 @@ public abstract class AbstractContributionRegistry<K, T> implements Contribution
         Collections.reverse(parents);
         for (AbstractContributionRegistry<K, T> p : parents) {
             p.listeners.add(this);
-            for (Contribution<K, T> contrib : p.registry.values().toArray(new Contribution[p.registry.size()])) {
+            for (Contribution<K, T> contrib : p.registry.values().toArray(new Contribution[0])) {
                 importContribution(contrib);
             }
             p = p.parent;
@@ -190,9 +190,6 @@ public abstract class AbstractContributionRegistry<K, T> implements Contribution
 
     /**
      * Applies fragment over the given object.
-     *
-     * @param object
-     * @param fragment
      */
     protected void applyFragment(T object, T fragment) {
         // do nothing

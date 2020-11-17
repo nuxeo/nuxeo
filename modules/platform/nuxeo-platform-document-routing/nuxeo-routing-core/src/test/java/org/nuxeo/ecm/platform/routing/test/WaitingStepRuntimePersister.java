@@ -84,9 +84,6 @@ public class WaitingStepRuntimePersister {
         doneSteps.add(id);
     }
 
-    /**
-     * @param stepId
-     */
     public static void removeStepId(String stepId) {
         runningSteps.remove(stepId);
         doneSteps.remove(stepId);

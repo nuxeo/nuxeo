@@ -165,11 +165,7 @@ public class UpdateManager {
      * other available JARs.
      *
      * @since 5.7
-     * @param key
-     * @param opt
-     * @param currentJar
      * @return null if no update required, else the right UpdateOptions
-     * @throws PackageException
      */
     protected UpdateOptions shouldUpdate(String key, UpdateOptions opt, Match<File> currentJar)
             throws PackageException {
@@ -259,9 +255,6 @@ public class UpdateManager {
      * <p>
      * TODO the deleteOnExit is inherited from the current rollback command ... may be it should be read from the
      * version that is rollbacked. (deleteOnExit should be an attribute of the entry not of the version)
-     *
-     * @param opt
-     * @throws PackageException
      */
     public void rollback(RollbackOptions opt) throws PackageException {
         Entry entry = registry.get(opt.getKey());
@@ -378,9 +371,6 @@ public class UpdateManager {
 
     /**
      * Create a new entry in the registry given the entry key. A base version will be automatically created if needed.
-     *
-     * @param key
-     * @throws PackageException
      */
     public Entry createEntry(String key) throws PackageException {
         Entry entry = new Entry(key);
@@ -392,9 +382,7 @@ public class UpdateManager {
     /**
      * Create a base version for the given entry if needed.
      *
-     * @param entry
      * @return true if a base version was actually created, false otherwise
-     * @throws PackageException
      * @since 1.4.26
      */
     public boolean createBaseVersion(Entry entry) throws PackageException {
@@ -415,9 +403,6 @@ public class UpdateManager {
      * like a uniformed storage of all libraries potentially installed by packages (whereas each package can have its
      * own directory structure). So SNAPSHOT will always be overwritten. Backup of original SNAPSHOT can be found in the
      * backup directory of the stored package.
-     *
-     * @param fileToBackup
-     * @param path
      */
     protected void backupFile(File fileToBackup, String path) throws PackageException {
         try {
@@ -434,8 +419,6 @@ public class UpdateManager {
 
     /**
      * Remove the backup given its path. This is also removing the md5.
-     *
-     * @param path
      */
     protected void removeBackup(String path) {
         File dst = new File(backupRoot, path);
@@ -494,8 +477,6 @@ public class UpdateManager {
 
     /**
      * Update oldFile with file pointed by opt
-     *
-     * @throws PackageException
      */
     public void doUpdate(File oldFile, UpdateOptions opt) throws PackageException {
         deleteOldFile(opt.targetFile, oldFile, opt.deleteOnExit);

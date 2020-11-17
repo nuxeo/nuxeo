@@ -64,11 +64,9 @@ import org.nuxeo.runtime.api.Framework;
  * <li>You can finally call {@link #getInstance(RenderingContext)} to get a valid marshaller instance with
  * {@link RenderingContext} and required services injected.</li>
  * </ul>
- * </p>
  * <p>
  * This class implements {@link Comparable} and then handle marshaller priorities rules: look at
  * {@link MarshallerRegistry} javadoc to read the rules.
- * </p>
  *
  * @since 7.2
  */

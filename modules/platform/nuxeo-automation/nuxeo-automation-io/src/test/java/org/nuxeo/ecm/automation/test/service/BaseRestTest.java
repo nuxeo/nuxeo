@@ -58,10 +58,6 @@ public class BaseRestTest {
 
     /**
      * Parses a JSON string into a JsonNode
-     *
-     * @param json
-     * @return
-     * @throws java.io.IOException
      */
     protected JsonNode parseJson(String json) throws JsonProcessingException, IOException {
         ObjectMapper m = new ObjectMapper();

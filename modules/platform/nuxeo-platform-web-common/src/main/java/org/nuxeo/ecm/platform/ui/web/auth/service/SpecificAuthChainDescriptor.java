@@ -103,7 +103,6 @@ public class SpecificAuthChainDescriptor {
     /**
      * Return if the auth filter has to handle prompt or return 401
      *
-     * @return
      * @since 8.2
      */
     public boolean doHandlePrompt() {

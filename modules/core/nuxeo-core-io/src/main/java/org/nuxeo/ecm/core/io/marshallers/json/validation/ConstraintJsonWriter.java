@@ -39,16 +39,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * <p>
  * This marshaller is enrichable: register class implementing {@link AbstractJsonEnricher} and managing
  * {@link Constraint}.
- * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link ConstraintJsonWriter#extend(Object, JsonGenerator)}.
- * </p>
+ * {@link ExtensibleEntityJsonWriter#extend(Object, JsonGenerator)}.
  * <p>
  * Format is:
  *
  * <pre>
- * {@code
  * {
  *   "entity-type":"validation_constraint",
  *   "name": "CONSTRAINT_NAME",
@@ -57,12 +54,10 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *     "PARAMETER2_NAME": "PARAMETER2_VALUE",
  *     ...
  *   }
- *             <-- contextParameters if there are enrichers activated
- *             <-- additional property provided by extend() method
+ *             &lt;-- contextParameters if there are enrichers activated
+ *             &lt;-- additional property provided by extend() method
  * }
  * </pre>
- *
- * </p>
  *
  * @since 7.2
  */

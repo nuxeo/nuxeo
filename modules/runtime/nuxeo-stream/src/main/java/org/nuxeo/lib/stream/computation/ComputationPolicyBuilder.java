@@ -72,7 +72,7 @@ public class ComputationPolicyBuilder {
     /**
      * The fallback when processing a batch has failed after applying the retry policy has failed.
      *
-     * @param value When {@code true} Skips the records affected by the batch in failure and continue.<br/>
+     * @param value When {@code true} Skips the records affected by the batch in failure and continue.<p>
      *            When {@code false} aborts the computation, this is the default behavior.
      */
     public ComputationPolicyBuilder continueOnFailure(boolean value) {

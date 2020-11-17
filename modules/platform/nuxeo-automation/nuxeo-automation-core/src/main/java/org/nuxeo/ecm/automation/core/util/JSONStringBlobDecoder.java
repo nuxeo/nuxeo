@@ -33,11 +33,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * <pre>
  * {
  *     "filename": "mydoc.txt",
- *     "name": "mydoc.txt", <-- if filename is null, read name
- *     "encoding": "UTF-8", <-- defaults to UTF-8
- *     "mime-type": "text/plain", <- defaults to text/plain
+ *     "name": "mydoc.txt",       &lt;-- if filename is null, read name
+ *     "encoding": "UTF-8",       &lt;-- defaults to UTF-8
+ *     "mime-type": "text/plain", &lt;--- defaults to text/plain
  *     "data": "my data",
- *     "content": "my data" <-- if data is not present, read content
+ *     "content": "my data"       &lt;-- if data is not present, read content
  * }
  * </pre>
  *

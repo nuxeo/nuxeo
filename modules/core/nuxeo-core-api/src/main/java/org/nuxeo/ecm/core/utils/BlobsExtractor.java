@@ -85,7 +85,7 @@ public class BlobsExtractor {
     /**
      * Removes the "/data" suffix used by FulltextConfiguration.
      * <p>
-     * Adds missing schema name as prefix if no prefix ("content" -> "file:content").
+     * Adds missing schema name as prefix if no prefix ("content" -&gt; "file:content").
      */
     protected Set<String> normalizePaths(Set<String> paths) {
         if (paths == null) {

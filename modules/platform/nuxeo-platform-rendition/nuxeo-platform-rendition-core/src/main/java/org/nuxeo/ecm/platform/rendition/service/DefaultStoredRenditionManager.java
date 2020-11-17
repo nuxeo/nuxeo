@@ -54,7 +54,7 @@ public class DefaultStoredRenditionManager implements StoredRenditionManager {
      *
      * @param storedDoc the stored document
      * @param def the rendition definition
-     * @param sessionId the session id
+     * @param coreSession the session
      * @return the stored rendition
      */
     protected StoredRendition toStoredRendition(DocumentModel storedDoc, RenditionDefinition def, CoreSession coreSession) {

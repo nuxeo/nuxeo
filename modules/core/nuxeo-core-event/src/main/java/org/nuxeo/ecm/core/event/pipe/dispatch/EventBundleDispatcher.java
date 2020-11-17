@@ -41,24 +41,16 @@ public interface EventBundleDispatcher {
 
     /**
      * Forward an {@link EventBundle} to the underlying {@link EventBundlePipe}s
-     *
-     * @param events
      */
     void sendEventBundle(EventBundle events);
 
     /**
      * Wait until the end of processing
-     *
-     * @param timeoutMillis
-     * @return
-     * @throws InterruptedException
      */
     boolean waitForCompletion(long timeoutMillis) throws InterruptedException;
 
     /**
      * Shutdown callback
-     *
-     * @throws InterruptedException
      */
     void shutdown() throws InterruptedException;
 

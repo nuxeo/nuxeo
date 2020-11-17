@@ -35,17 +35,12 @@ public interface TemplateProcessor {
 
     /**
      * Perform rendering of the named template against the {@link TemplateBasedDocument}
-     *
-     * @param templateDocument
-     * @param templateName
-     * @return
      */
     Blob renderTemplate(TemplateBasedDocument templateDocument, String templateName) throws IOException;
 
     /**
      * Extract parameters from the Template file.
      *
-     * @param blob
      * @return List of parameters for this template
      */
     List<TemplateInput> getInitialParametersDefinition(Blob blob) throws IOException;

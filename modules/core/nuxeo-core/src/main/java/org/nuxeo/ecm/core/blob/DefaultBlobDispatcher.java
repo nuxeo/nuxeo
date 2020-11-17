@@ -62,10 +62,10 @@ import org.nuxeo.runtime.api.Framework;
  * Comma-separated clauses are ANDed together. The special name {@code default} defines the default provider, and must
  * be present.
  * <p>
- * Available operators between property and value are =, !=, &lt;, &lt;= ,>, >=, ~ and ^.
+ * Available operators between property and value are =, !=, &lt;, &lt;= ,&gt;, &gt;=, ~ and ^.
  * <p>
- * The operators =, !=, &lt;, &lt;=, > and >= work as numeric operators if the property is numeric, otherwise as string
- * comparisons operators.
+ * The operators =, !=, &lt;, &lt;=, &gt; and &gt;= work as numeric operators if the property is numeric, otherwise as
+ * string comparisons operators.
  * <p>
  * The operator ~ does glob matching using {@code ?} to match a single arbitrary character, and {@code *} to match any
  * number of characters (including none). The operator ^ does full regexp matching.
@@ -76,19 +76,23 @@ import org.nuxeo.runtime.api.Framework;
  * "images" folder, and the document is in the default repository, and otherwise to the "other" provider:
  *
  * <pre>
- * &lt;property name="dc:format=video">first&lt;/property>
- * &lt;property name="blob:mime-type=video/mp4">second&lt;/property>
- * &lt;property name="blob:xpath~files/*&#47;file">third&lt;/property>
- * &lt;property name="ecm:repositoryName=default,ecm:lifeCycleState=approved">fourth&lt;/property>
- * &lt;property name="ecm:path^.*&#47images&#47.*">fifth&lt;/property>
- * &lt;property name="default">other&lt;/property>
+ * {@code
+ * <property name="dc:format=video">first</property>
+ * <property name="blob:mime-type=video/mp4">second</property>
+ * <property name="blob:xpath~files/*&#47;file">third</property>
+ * <property name="ecm:repositoryName=default,ecm:lifeCycleState=approved">fourth</property>
+ * <property name="ecm:path^.*&#47images&#47.*">fifth</property>
+ * <property name="default">other</property>
+ * }
  * </pre>
  * <p>
  * You can make use of a record blob provider by using:
  *
  * <pre>
- * &lt;property name="records">records&lt;/property>
- * &lt;property name="default">other&lt;/property>
+ * {@code
+ * <property name="records">records</property>
+ * <property name="default">other</property>
+ * }
  * </pre>
  *
  * @since 7.3

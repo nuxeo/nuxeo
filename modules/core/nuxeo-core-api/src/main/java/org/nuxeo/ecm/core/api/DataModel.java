@@ -65,7 +65,6 @@ public interface DataModel extends Serializable {
      *
      * @param key the field name
      * @param value the value to set. Accept null values.
-     * @throws PropertyException
      */
     void setData(String key, Object value) throws PropertyException;
 
@@ -74,7 +73,6 @@ public interface DataModel extends Serializable {
      *
      * @param key the field key
      * @return the value or null if no such field exists
-     * @throws PropertyException
      */
     Object getData(String key) throws PropertyException;
 
@@ -87,7 +85,6 @@ public interface DataModel extends Serializable {
      * The returned map is null if the data model was not yet loaded.
      *
      * @return a read only map containing actual data in this object
-     * @throws PropertyException
      */
     Map<String, Object> getMap() throws PropertyException;
 
@@ -95,7 +92,6 @@ public interface DataModel extends Serializable {
      * Sets several field at once.
      *
      * @param data the fields to set as a map
-     * @throws PropertyException
      */
     void setMap(Map<String, Object> data) throws PropertyException;
 
@@ -111,7 +107,6 @@ public interface DataModel extends Serializable {
      *
      * @param name the field name to tests
      * @return true if the field is dirty, false otherwise
-     * @throws PropertyNotFoundException
      */
     boolean isDirty(String name) throws PropertyNotFoundException;
 
@@ -119,7 +114,6 @@ public interface DataModel extends Serializable {
      * Marks the specified field from this data model as dirty.
      *
      * @param name the field name to be dirty
-     * @throws PropertyNotFoundException
      */
     void setDirty(String name) throws PropertyNotFoundException;
 
@@ -136,18 +130,11 @@ public interface DataModel extends Serializable {
      * The path is a subset of XPath: / and [] are supported.
      *
      * @param path the property path
-     * @return
-     * @throws PropertyException
      */
     Object getValue(String path) throws PropertyException;
 
     /**
      * Sets a value to a property given its path.
-     *
-     * @param path
-     * @param value
-     * @return
-     * @throws PropertyException
      */
     Object setValue(String path, Object value) throws PropertyException;
 

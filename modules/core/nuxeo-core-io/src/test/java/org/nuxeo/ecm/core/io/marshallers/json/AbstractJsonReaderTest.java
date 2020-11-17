@@ -51,7 +51,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  *     ...
  * }
  * </pre>
- * </p>
  *
  * @param <ReaderClass> The marshaller type to test.
  * @param <MarshalledType> The marshalled type to test.

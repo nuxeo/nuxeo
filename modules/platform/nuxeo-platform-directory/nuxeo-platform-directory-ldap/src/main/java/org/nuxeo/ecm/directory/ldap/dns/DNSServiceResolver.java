@@ -41,7 +41,8 @@ public interface DNSServiceResolver {
     /**
      * Prefix to locate LDAP service on DNS Server.
      * <p>
-     * <b>service</b>: _ldap<br/>
+     * <b>service</b>: _ldap
+     * <p>
      * <b>protocol</b>: _tcp
      */
     String LDAP_SERVICE_PREFIX = "_ldap._tcp";
@@ -49,9 +50,7 @@ public interface DNSServiceResolver {
     /**
      * Returns a list of LDAP servers for the specified domain by performing an SRV DNS lookup on _ldap._tcp.${domain}.
      *
-     * @param domain
      * @return the list of SRV dns entries
-     * @throws NamingException
      */
     List<DNSServiceEntry> resolveLDAPDomainServers(final String domain) throws NamingException;
 
@@ -59,10 +58,8 @@ public interface DNSServiceResolver {
      * Returns a list of LDAP servers for the specified domain by performing an SRV DNS lookup using a custom DNS
      * service prefix.
      *
-     * @param domain
      * @param prefix custom SRV prefix such as "_gc._tcp"
      * @return the list of SRV dns entries
-     * @throws NamingException
      */
     List<DNSServiceEntry> resolveLDAPDomainServers(final String domain, final String prefix) throws NamingException;
 

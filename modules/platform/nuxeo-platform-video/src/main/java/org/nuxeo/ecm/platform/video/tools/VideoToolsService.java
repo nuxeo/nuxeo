@@ -42,7 +42,6 @@ public interface VideoToolsService {
     /**
      * Concat the input video blobs into a single video blob.
      *
-     * @param videos
      * @return video blob with the videos concatenated
      */
     Blob concat(List<Blob> videos);

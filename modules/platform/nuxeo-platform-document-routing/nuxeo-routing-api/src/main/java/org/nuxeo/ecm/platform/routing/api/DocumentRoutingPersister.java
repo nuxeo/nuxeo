@@ -51,11 +51,6 @@ public interface DocumentRoutingPersister {
      */
     DocumentModel createDocumentRouteInstanceFromDocumentRouteModel(DocumentModel model, CoreSession session);
 
-    /**
-     * @param routeInstance
-     * @param parentFolder
-     * @return
-     */
     DocumentModel saveDocumentRouteInstanceAsNewModel(DocumentModel routeInstance, DocumentModel parentFolder,
             String newName, CoreSession session);
 
@@ -79,7 +74,7 @@ public interface DocumentRoutingPersister {
     /**
      * Return the new name of a model when it is created from an instance.
      *
-     * @see DocumentRoutingService#saveRouteAsNewModel(DocumentRoute, String, CoreSession)
+     * @see DocumentRoutingService#saveRouteAsNewModel(DocumentRoute, CoreSession)
      * @return the new name
      */
     String getNewModelName(DocumentModel instance);

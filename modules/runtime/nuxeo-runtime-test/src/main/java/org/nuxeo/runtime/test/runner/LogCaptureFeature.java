@@ -43,12 +43,15 @@ import org.apache.logging.log4j.message.Message;
 import org.junit.runners.model.FrameworkMethod;
 
 /**
- * Test feature to capture from a log4j appender to check that some log4j calls have been correctly called.</br>
+ * Test feature to capture from a log4j appender to check that some log4j calls have been correctly called.
+ * <p>
  * On a test class or a test method using this feature, a default filter can be configured with the annotation
  * {@link LogCaptureFeature.FilterOn} or a custom one implementing {@link LogCaptureFeature.Filter} class can be
- * provided with the annotation {@link LogCaptureFeature.FilterWith} to select the log events to capture.</br>
+ * provided with the annotation {@link LogCaptureFeature.FilterWith} to select the log events to capture.
+ * <p>
  * A {@link LogCaptureFeature.Result} instance is to be injected with {@link javax.inject.Inject} as an attribute of the
- * test.</br>
+ * test.
+ * <p>
  * The method {@link LogCaptureFeature.Result#assertHasEvent()} can then be called from test methods to check that
  * matching log calls (events) have been captured.
  *

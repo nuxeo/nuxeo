@@ -180,7 +180,6 @@ public class SecurityService extends DefaultComponent {
      * <p>
      * It is exposed remotely through {@link CoreSession#getPermissionsToCheck}.
      *
-     * @param permission
      * @return the list, as an array of strings.
      */
     public String[] getPermissionsToCheck(String permission) {

@@ -49,8 +49,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * (updated). When the blob is about is on file:content, it also updates the common:icon field setting the right icon
  * according to the mime type
  *
- * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * @author Benjamin Jalon <bjalon@nuxeo.com>
+ * @author Sun Seng David TAN (a.k.a. sunix)
+ * @author Benjamin Jalon
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)

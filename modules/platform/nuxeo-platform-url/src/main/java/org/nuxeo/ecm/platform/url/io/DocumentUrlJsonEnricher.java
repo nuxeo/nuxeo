@@ -52,7 +52,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * Format is:
  *
  * <pre>
- * {@code
  * {
  *   "entity-type":"document",
  *   ...
@@ -61,7 +60,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *   }
  * }
  * </pre>
- * </p>
  *
  * @since 7.2
  */

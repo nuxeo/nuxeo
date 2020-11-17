@@ -262,7 +262,6 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
      * @param key the key used to rendition
      * @param doc the target {@link DocumentModel}
      * @param def the {@link RenditionDefinition}
-     * @return
      */
     protected abstract Work getRenditionWork(final String key, final DocumentModel doc, final RenditionDefinition def);
 

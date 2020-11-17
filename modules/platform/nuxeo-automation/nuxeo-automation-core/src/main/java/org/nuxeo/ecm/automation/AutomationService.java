@@ -55,7 +55,6 @@ public interface AutomationService {
 
     /**
      * Registers an operation given it's type.
-     * @throws OperationException
      *
      * @since 5.9.2
      */
@@ -117,7 +116,7 @@ public interface AutomationService {
      * passing the chain ID. If a chain having the same ID exists an exception is thrown
      *
      * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use
-     *             {@link #putOperation(OperationType, boolean) method instead.
+     *             {@link #putOperation(OperationType, boolean)} method instead.
      * @since 5.7.2
      */
     @Deprecated
@@ -129,7 +128,7 @@ public interface AutomationService {
      * be replaced otherwise an exception is thrown.
      *
      * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use
-     *             {@link #putOperation(OperationType, boolean) method instead.
+     *             {@link #putOperation(OperationType, boolean)} method instead.
      * @since 5.7.2
      */
     @Deprecated

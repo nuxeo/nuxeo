@@ -282,7 +282,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
     }
 
     /**
-     * Returns the maximum number of results or <code>0<code> if there is no limit.
+     * Returns the maximum number of results or <code>0</code> if there is no limit.
      *
      * @since 5.6
      */

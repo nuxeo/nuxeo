@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -85,7 +84,7 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
 
             log.info("New user created:" + user.getName());
         } else {
-            if (!email.equals(((NuxeoPrincipalImpl) user).getEmail())) {
+            if (!email.equals(user.getEmail())) {
                 throw new UserRegistrationException("This login is not available");
             }
         }
@@ -95,9 +94,6 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
     /**
      * Check that the user that initiated the registration is in the same tenant than the user it creates.
      *
-     * @param registrationDoc
-     * @param configuration
-     * @return
      * @since 10.2
      */
     private boolean isSameTenant(DocumentModel registrationDoc, UserRegistrationConfiguration configuration) {
@@ -119,8 +115,6 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
      * Filter group by computing the intersection of the group in the registration doc and the groups of the user that
      * created the request. Administrators accept all groups.
      *
-     * @param registrationDoc
-     * @param configuration
      * @since 10.2
      */
     @SuppressWarnings("unchecked")
@@ -142,8 +136,6 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
     /**
      * Returns the principal that created that registration document
      *
-     * @param registrationDoc
-     * @return
      * @since 10.2
      */
     private NuxeoPrincipal getOriginatingPrincipal(DocumentModel registrationDoc) {
@@ -154,9 +146,6 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
     }
 
     /**
-     * @param originatingPrincipal
-     * @param groupName
-     * @return
      * @since 10.2
      */
     protected boolean acceptGroup(NuxeoPrincipal originatingPrincipal, String groupName) {

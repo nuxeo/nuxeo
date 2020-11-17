@@ -30,7 +30,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * Users Tab Page of the users & groups management (New one in the admin center)
+ * Users Tab Page of the users &amp; groups management (New one in the admin center)
  *
  * @since 5.4.2
  */

@@ -152,11 +152,6 @@ public abstract class AbstractImporterExecutor {
     /***
      * since 5.5 this method is invoked when using the <code>DefaultImporterService</code> and passing the executor to
      * the importDocuments method
-     *
-     * @param runner
-     * @param interactive
-     * @return
-     * @throws Exception
      */
     public String run(ImporterRunner runner, Boolean interactive) {
         return doRun(runner, interactive);

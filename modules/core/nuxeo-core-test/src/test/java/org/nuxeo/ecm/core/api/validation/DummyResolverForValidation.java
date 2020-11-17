@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.schema.types.resolver.AbstractObjectResolver;
 
 /**
  * Dummy resolver which just wrap the input value with {@link Dummy}.
- * <p/>
+ * <p>
  * Resolver also has {@link #PARAM_FETCH_IT} parameter in order to not return null instead of dummy wrapper. This also
  * makes the property always invalid.
  */

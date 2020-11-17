@@ -524,7 +524,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
      * @param sourceBlobProvider the source blob provider
      * @param blobKey the source blob key
      * @return the copied blob key, or {@code null} if the copy was not possible
-     * @throws IOException
      * @since 10.1
      */
     protected String copyBlob(S3BinaryManager sourceBlobProvider, String blobKey) throws IOException {

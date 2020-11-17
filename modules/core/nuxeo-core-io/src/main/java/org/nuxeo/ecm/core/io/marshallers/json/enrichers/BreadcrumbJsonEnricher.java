@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelListJsonWriter;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 
@@ -36,15 +37,12 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * Enrich {@link DocumentModel} Json.
  * <p>
  * Add document breadcrumb (list of all parents document) as json attachment.
- * </p>
  * <p>
  * Enable if parameter enrichers-document=breadcrumb is present.
- * </p>
  * <p>
  * Format is:
  *
  * <pre>
- * {@code
  * {
  *   "entity-type":"document",
  *   ...
@@ -53,8 +51,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *   }
  * }
  * </pre>
- *
- * </p>
  *
  * @since 7.2
  */

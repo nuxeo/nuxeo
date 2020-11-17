@@ -36,11 +36,9 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl.RenderingCont
  * A context used to deliver parameter to marshallers during a marshalling request.
  * <p>
  * Use {@link CtxBuilder} to create your context.
- * </p>
  * <p>
  * When a {@link RenderingContext} is automatically provided from an HttpServletRequest, it contains request parameters,
  * headers and request attribute.
- * </p>
  * <p>
  * To get/set parameter values, use:
  * <ul>
@@ -53,7 +51,6 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl.RenderingCont
  * <li>{@link RenderingContext#setParameterValues(String, Object...)}</li>
  * <li>{@link RenderingContext#setParameterListValues(String, List)}</li>
  * </ul>
- * </p>
  * <p>
  * To manage document properties, entity enrichers or properties fetching, use:
  * <ul>
@@ -61,11 +58,10 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl.RenderingCont
  * <li>{@link RenderingContext#getEnrichers(String)}</li>
  * <li>{@link RenderingContext#getFetched(String)}</li>
  * </ul>
- * </p>
  * <p>
  * To manage infinite loop when calling a marshaller from another marshaller, use:
  * <ul>
- * <li>{@link RenderingContext#wrap()} -> {@link WrappedContext#controlDepth()}</li>
+ * <li>{@link RenderingContext#wrap()} -&gt; {@link WrappedContext#controlDepth()}</li>
  * </ul>
  * Example:
  *
@@ -77,7 +73,6 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl.RenderingCont
  *     // do not call the other marshaller
  * }
  * </pre>
- * </p>
  *
  * @since 7.2.
  */

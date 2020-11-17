@@ -38,7 +38,7 @@ public interface RoutingTaskService {
     /**
      * Marks the tasks as Routing tasks.
      * <p>
-     * This allows the related documents to be adapted to {@link RoutingTask}.
+     * This allows the related documents to be adapted to {@code RoutingTask}.
      *
      * @param session the session
      * @param tasks the tasks
@@ -50,11 +50,7 @@ public interface RoutingTaskService {
     /**
      * Ends a task
      *
-     * @param session
-     * @param task
-     * @param data
      * @param status name of the button clicked to submit the task form
-     * @throws DocumentRouteException
      * @deprecated since 5.6, use DocumentRoutingService instead
      */
     @Deprecated
@@ -63,10 +59,6 @@ public interface RoutingTaskService {
     /**
      * Gets the documents following the workflow to which the given task belongs
      *
-     * @param session
-     * @param task
-     * @return
-     * @throws DocumentRouteException
      * @deprecated since 5.6, use DocumentRoutingService instead
      */
     @Deprecated

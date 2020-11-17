@@ -44,8 +44,6 @@ public class OperationException extends Exception {
     /**
      * Whether this exception should rollback the current transaction. The default is true if not explicitly set by
      * calling {@link #setNoRollback()}.
-     *
-     * @return
      */
     public boolean isRollback() {
         return rollback;

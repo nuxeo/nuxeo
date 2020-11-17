@@ -183,11 +183,6 @@ public abstract class LDAPDirectoryTestCase {
      * Method to create a X509 certificate used to test the creation and the update of an entry in the ldap.
      *
      * @return A X509 certificate
-     * @throws CertificateException
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeyException
-     * @throws SignatureException
-     * @throws IllegalStateException
      * @since 5.9.3
      */
     public static X509Certificate createCertificate(String dnNameStr) throws NoSuchAlgorithmException,

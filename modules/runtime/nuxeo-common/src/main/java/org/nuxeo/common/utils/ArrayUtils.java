@@ -42,7 +42,7 @@ public final class ArrayUtils {
     /**
      * Merges any number of Array.
      * <p>
-     * Comes from : http://forum.java.sun.com/thread.jspa?threadID=202127&messageID=676603
+     * Comes from : http://forum.java.sun.com/thread.jspa?threadID=202127&amp;messageID=676603
      *
      * @param arrays several arrays
      * @return a merged array

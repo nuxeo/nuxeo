@@ -199,7 +199,7 @@ public interface RuntimeService {
 
     /**
      * Gets the runtime message handler. You can add new messages or just retrieve them.
-     * <p />
+     * <p>
      * Warning messages don't block server startup, but error messages do in strict mode.
      *
      * @return the message handler for runtime.

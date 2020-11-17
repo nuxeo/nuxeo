@@ -72,11 +72,11 @@ public class PDFPageNumbering {
      * <li>The PDF is not rotated.</li>
      * <li>Default values apply:
      * <ul>
-     * <li><code>inStartAtPage</code> and <code>inStartAtNumber</code> are set to 1 if they are passed as < 1.</li>
-     * <li><code>inStartAtPage</code> is set to 1 if it is > number of pages.</li>
+     * <li><code>inStartAtPage</code> and <code>inStartAtNumber</code> are set to 1 if they are passed as &lt; 1.</li>
+     * <li><code>inStartAtPage</code> is set to 1 if it is &gt; number of pages.</li>
      * <li><code>inFontName</code> is set to "Helvetica" if "" or null.</li>
-     * <li><code>inFontSize</code> is set to 16 if it is <= 0.</li>
-     * <li><code>inHex255Color</code> is set to black if "", null or if its length is < 6. Expected format is
+     * <li><code>inFontSize</code> is set to 16 if it is &lt;= 0.</li>
+     * <li><code>inHex255Color</code> is set to black if "", null or if its length is &lt; 6. Expected format is
      * <code>0xrrggbb</code>, <code>#rrggbb</code> or just <code>rrggbb</code>.</li>
      * <li><code>inPosition</code> is set to <code>BOTTOM_RIGHT</code> if null.</li>
      * </ul>

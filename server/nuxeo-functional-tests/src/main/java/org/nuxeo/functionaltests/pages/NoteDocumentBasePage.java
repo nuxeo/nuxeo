@@ -28,9 +28,6 @@ import org.openqa.selenium.WebDriver;
  */
 public class NoteDocumentBasePage extends DocumentBasePage {
 
-    /**
-     * @param driver
-     */
     public NoteDocumentBasePage(WebDriver driver) {
         super(driver);
     }

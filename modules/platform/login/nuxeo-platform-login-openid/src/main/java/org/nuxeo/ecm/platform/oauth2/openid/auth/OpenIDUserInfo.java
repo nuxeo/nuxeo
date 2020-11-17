@@ -24,7 +24,7 @@ import java.util.Date;
 /**
  * UserInfo Claims. OpenID Connect Basic Client Profile 1.0 - draft 24
  *
- * @see http://openid.net/specs/openid-connect-basic-1_0.html
+ * @see <a href="http://openid.net/specs/openid-connect-basic-1_0.html">OpenID Connect Basic</a>
  */
 public interface OpenIDUserInfo {
 

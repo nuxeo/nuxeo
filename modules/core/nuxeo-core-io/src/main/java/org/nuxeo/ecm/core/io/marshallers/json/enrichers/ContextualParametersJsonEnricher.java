@@ -34,25 +34,20 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * Enrich {@link DocumentModel} Json.
  * <p>
  * Add custom key/value information as json attachment.
- * </p>
  * <p>
  * Enable if parameter enrichers-document=contextualParameters.
- * </p>
  * <p>
  * Format is:
  *
  * <pre>
- * {@code
  * {
  *   "entity-type":"document",
  *   ...
  *   "contextParameters": {
- *     "KEY": "VALUE" <- key/value pairs come from context parameter "contextualParameters" - a Map<String, String> is expected.
+ *     "KEY": "VALUE" &lt;- key/value pairs come from context parameter "contextualParameters" - a Map&lt;String, String&gt; is expected.
  *   }
  * }
  * </pre>
- *
- * </p>
  *
  * @since 7.2
  */

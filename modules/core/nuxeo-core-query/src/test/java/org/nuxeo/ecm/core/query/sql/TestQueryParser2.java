@@ -234,7 +234,7 @@ public class TestQueryParser2 {
 
     /**
      * For non-equality, one must make sure that no two queries are equivalent in the GOOD_QUERIES list (ex: "p != 1"
-     * and "p <> 1").
+     * and "p &lt;&gt; 1").
      */
     @Test
     public void testNotEquals() {

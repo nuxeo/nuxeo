@@ -102,8 +102,6 @@ public abstract class BaseUMObject extends DefaultObject {
     /**
      * Check that the current artifact is editable by a power user. Basically this means not an admin user or not an
      * admin group.
-     *
-     * @return
      */
     protected boolean isAPowerUserEditableArtifact() {
         return false;

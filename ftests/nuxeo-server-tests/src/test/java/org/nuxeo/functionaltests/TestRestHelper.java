@@ -29,7 +29,7 @@ import org.junit.Test;
 
 /**
  * Tests the {@link RestHelper}.
- * <p />
+ * <p>
  * We need to have this test here in {@code nuxeo-server-tests} because {@link RestHelper} statically try to connect to
  * a remote Nuxeo server since upgrade of {@code nuxeo-java-client} to 3.0.0.
  *

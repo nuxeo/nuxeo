@@ -38,9 +38,6 @@ public class PaginableWithDelegate<T> extends ArrayList<T> implements Paginable<
 
     private Paginable<T> delegate;
 
-    /**
-     * @param delegate
-     */
     public PaginableWithDelegate(Paginable<T> delegate) {
         this.delegate = delegate;
     }

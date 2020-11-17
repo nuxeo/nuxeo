@@ -36,7 +36,7 @@ public interface UserInvitationService {
 
     String REGISTRATION_DATA_USER = "registeredUser";
 
-    public enum ValidationMethod {
+    enum ValidationMethod {
         EMAIL, NONE
     }
 
@@ -51,39 +51,29 @@ public interface UserInvitationService {
 
     /**
      * Stores a registration request and return a unique ID for it
-     *
-     * @return
      */
     String submitRegistrationRequest(DocumentModel userRegistrationModel, Map<String, Serializable> additionnalInfo,
             ValidationMethod validationMethod, boolean autoAccept) throws UserRegistrationException;
 
     /**
      * accept the registration request
-     *
-     * @param requestId
      */
     void acceptRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo) throws
             UserRegistrationException;
 
     /**
      * reject the registration request
-     *
-     * @param requestId
      */
     void rejectRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo) throws
             UserRegistrationException;
 
     /**
      * Validate a registration request and generate the target User
-     *
-     * @param requestId
      */
     Map<String, Serializable> validateRegistration(String requestId, Map<String, Serializable> additionnalInfo);
 
     /**
      * Validate a registration request and generate the target User
-     *
-     * @param requestId
      */
     Map<String, Serializable> validateRegistrationAndSendEmail(String requestId,
             Map<String, Serializable> additionnalInfo) throws UserRegistrationException;
@@ -130,9 +120,6 @@ public interface UserInvitationService {
 
     /**
      * Get documentmodel that stores request configuration using RegistrationConfiguration facet.
-     *
-     * @param session
-     * @return
      */
     DocumentModel getRegistrationRulesDocument(CoreSession session, String configurationName);
 

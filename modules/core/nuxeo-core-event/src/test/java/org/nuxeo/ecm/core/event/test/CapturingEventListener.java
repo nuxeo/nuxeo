@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * {@link EventListener} to use in tests in order to programmatically add this listener to event bus and catch desired
  * events.
- * <p/>
+ * <p>
  * Usage leverages try-with-resources java feature:
  *
  * <pre>

@@ -98,7 +98,6 @@ public enum PropertyType {
      *
      * @param value the value to normalize
      * @return the normalized value
-     * @throws IllegalArgumentException
      */
     public Serializable normalize(Object value) {
         if (value == null) {
@@ -160,7 +159,6 @@ public enum PropertyType {
      *
      * @param value the array to normalize
      * @return the normalized array
-     * @throws IllegalArgumentException
      */
     public Serializable[] normalize(Object[] value) {
         if (value == null) {
@@ -184,7 +182,6 @@ public enum PropertyType {
      *
      * @param fieldType the field type to convert
      * @param array {@code true} if an array type is required
-     * @return
      */
     public static PropertyType fromFieldType(Type fieldType, boolean array) {
         if (fieldType instanceof StringType) {

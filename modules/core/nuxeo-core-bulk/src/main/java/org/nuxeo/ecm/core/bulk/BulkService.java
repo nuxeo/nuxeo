@@ -83,7 +83,7 @@ public interface BulkService extends AsyncService<String, BulkStatus, Map<String
 
     /**
      * Sends a {@link BulkBucket} to the right bulk action.
-     * <p/>
+     * <p>
      * This method is useful to produce bucket externally when using an external scroller.
      *
      * @param bucket the bucket to send to a bulk action

@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 /**
  * Handle document store initialization
  *
- * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ * @author Stephane Lacoin [aka matic]
  */
 public interface DocumentStoreHandler {
 

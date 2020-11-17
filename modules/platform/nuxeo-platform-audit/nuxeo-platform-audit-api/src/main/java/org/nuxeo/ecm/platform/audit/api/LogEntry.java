@@ -160,8 +160,6 @@ public interface LogEntry extends Serializable {
     /**
      * Return the comment preprocessed to be ready for display. (extract info about linked documents) Only available
      * when accessed via the entry is fetched via the {@link AuditPageProvider}
-     *
-     * @return
      */
     UIAuditComment getPreprocessedComment();
 

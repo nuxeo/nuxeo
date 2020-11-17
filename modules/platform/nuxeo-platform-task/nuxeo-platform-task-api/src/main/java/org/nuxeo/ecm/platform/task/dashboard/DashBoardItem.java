@@ -113,22 +113,16 @@ public interface DashBoardItem extends Serializable {
 
     /**
      * Defines the {@link Locale} that will be used to generate translations
-     *
-     * @param locale
      */
     void setLocale(Locale locale);
 
     /**
      * Get the Translated TaskName (Locale must be set)
-     *
-     * @return
      */
     String getI18nTaskName();
 
     /**
      * Get the Translated Task Directive (Locale must be set)
-     *
-     * @return
      */
     String getI18nDirective();
 
@@ -139,9 +133,6 @@ public interface DashBoardItem extends Serializable {
 
     /**
      * Return the link url to the target Document
-     *
-     * @param includeWorkflowTab
-     * @return
      */
     String getDocumentLink(boolean includeWorkflowTab);
 

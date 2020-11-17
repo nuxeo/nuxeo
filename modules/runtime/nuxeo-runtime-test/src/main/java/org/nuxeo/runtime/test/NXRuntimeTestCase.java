@@ -57,6 +57,7 @@ import org.nuxeo.runtime.test.runner.RandomBug;
  * <li>not declare they own @Before and @After.
  * <li>override doSetUp and doTearDown (and postSetUp if needed) instead of setUp and tearDown.
  * <li>never call deployXXX methods outside the doSetUp method.
+ * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @deprecated since 10.2 this class <b>must</b> not be subclassed anymore, for RuntimeHarness implementation use
@@ -154,8 +155,6 @@ public class NXRuntimeTestCase extends RuntimeHarnessImpl {
     /**
      * Implementors should override this method to implement any specific test tear down and not the
      * {@link #stopRuntime()} method
-     *
-     * @throws Exception
      */
     protected void tearDown() throws Exception { // NOSONAR
         deploymentStack = new ArrayList<>();
@@ -284,10 +283,10 @@ public class NXRuntimeTestCase extends RuntimeHarnessImpl {
     /**
      * Should be called by subclasses after one or more inline deployments are made inside a test method. Without
      * calling this the inline deployment(s) will not have any effects.
-     * <p />
+     * <p>
      * <b>Be Warned</b> that if you reference runtime services or components you should lookup them again after calling
      * this method!
-     * <p />
+     * <p>
      * This method also calls {@link #postSetUp()} for convenience.
      */
     protected void applyInlineDeployments() throws Exception {
@@ -298,10 +297,10 @@ public class NXRuntimeTestCase extends RuntimeHarnessImpl {
 
     /**
      * Should be called by subclasses to remove any inline deployments made in the current test method.
-     * <p />
+     * <p>
      * <b>Be Warned</b> that if you reference runtime services or components you should lookup them again after calling
      * this method!
-     * <p />
+     * <p>
      * This method also calls {@link #postSetUp()} for convenience.
      */
     protected void removeInlineDeployments() throws Exception {

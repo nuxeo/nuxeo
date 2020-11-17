@@ -18,16 +18,13 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
@@ -150,7 +147,7 @@ public class CoreOperationsTest {
 
             service.run(ctx, chain);
             String title = src.getProperty("dc:title").getValue(String.class);
-            assertThat(title, is("modified from mvel"));
+            assertEquals("modified from mvel", title);
         }
     }
 
@@ -165,7 +162,7 @@ public class CoreOperationsTest {
                          "if (This.id != null &amp;&amp; This.id != '') {This.setPropertyValue(\"dc:title\",\"modified from mvel\");}");
             service.run(ctx, chain);
             String title = src.getProperty("dc:title").getValue(String.class);
-            assertThat(title, is("modified from mvel"));
+            assertEquals("modified from mvel", title);
         }
     }
 
@@ -173,8 +170,6 @@ public class CoreOperationsTest {
      * Create | Copy | Set Property.
      * <p>
      * This is also testing {@link StringToProperties} adapter
-     *
-     * @throws Exception
      */
     @Test
     public void testChain1() throws Exception {
@@ -202,8 +197,6 @@ public class CoreOperationsTest {
      * Same as before but tests relative paths Create | Copy | Set Property.
      * <p>
      * This is also testing {@link StringToProperties} adapter
-     *
-     * @throws Exception
      */
     @Test
     public void testChain1WithRelativePath() throws Exception {
@@ -223,8 +216,6 @@ public class CoreOperationsTest {
 
     /**
      * Same as before Create | Copy | Set Property But also test properties specified using a mvel Expression
-     *
-     * @throws Exception
      */
     @Test
     public void testMvelExpressionProperties() throws Exception {
@@ -255,8 +246,6 @@ public class CoreOperationsTest {
 
     /**
      * Same as before but use DocumentWrapper to access properties
-     *
-     * @throws Exception
      */
     @Test
     public void testMvelExpressionProperties2() throws Exception {
@@ -434,8 +423,6 @@ public class CoreOperationsTest {
 
     /**
      * Alternate version - use xml properties instead of java properties when defining a properties value
-     *
-     * @throws Exception
      */
     @Test
     public void testSubChainAlt() throws Exception {
@@ -518,7 +505,7 @@ public class CoreOperationsTest {
      * @since 10.1
      */
     @Test
-    public void testTrashUntrash() throws IOException, OperationException {
+    public void testTrashUntrash() throws OperationException {
         DocumentModel parent = session.getDocument(src.getParentRef());
         assertEquals(0, getTrashedDocuments(parent).size());
 
@@ -545,7 +532,7 @@ public class CoreOperationsTest {
      * @since 10.1
      */
     @Test
-    public void testEmptyTrash() throws IOException, OperationException {
+    public void testEmptyTrash() throws OperationException {
         DocumentModel parent = session.getDocument(src.getParentRef());
         assertEquals(0, getTrashedDocuments(parent).size());
 
@@ -715,6 +702,7 @@ public class CoreOperationsTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testRunInNewTxOperation() throws Exception {
         try (OperationContext ctx = new OperationContext(session)) {
 
@@ -773,9 +761,9 @@ public class CoreOperationsTest {
 
             // check values after
             assertEquals("Source", out.getPropertyValue("dc:title"));
-            assertEquals(null, out.getPropertyValue("dc:description"));
+            assertNull(out.getPropertyValue("dc:description"));
             assertEquals("", out.getPropertyValue("dc:format"));
-            assertEquals(null, out.getPropertyValue("dc:language"));
+            assertNull(out.getPropertyValue("dc:language"));
         }
     }
 

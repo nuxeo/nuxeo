@@ -58,7 +58,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     /**
      * Prefix used to retrieve a MongoDB connection from {@link MongoDBConnectionService}.
-     * <p />
+     * <p>
      * The connection id will be {@code repository/[REPOSITORY_NAME]}.
      */
     public static final String REPOSITORY_CONNECTION_PREFIX = "repository/";

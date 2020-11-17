@@ -24,9 +24,10 @@ import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerHook;
 
 /**
- * @description Sets the top level document being commented as the source document of the event as some implementations
- *              fail on retrieving it and this avoids useless recursive calls. The top level document is the one holding
- *              the notification subscriptions, not the comments hierarchy below it.
+ * Sets the top level document being commented as the source document of the event as some implementations fail on
+ * retrieving it and this avoids useless recursive calls. The top level document is the one holding the notification
+ * subscriptions, not the comments hierarchy below it.
+ *
  * @since 5.5
  * @author vpasquier
  */

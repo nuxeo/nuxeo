@@ -94,7 +94,6 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * Constructor.
      *
      * @param driver the driver
-     * @param by the by locator of the widget
      */
     public Select2WidgetElement(WebDriver driver, WebElement element) {
         super(driver, element);
@@ -104,7 +103,6 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * Constructor.
      *
      * @param driver the driver
-     * @param by the by locator of the widget
      * @param multiple whether the widget can have multiple values
      */
     public Select2WidgetElement(final WebDriver driver, WebElement element, final boolean multiple) {
@@ -346,7 +344,6 @@ public class Select2WidgetElement extends WebFragmentImpl {
     /**
      * Do a wait on the select2 field.
      *
-     * @throws TimeoutException
      * @since 6.0
      */
     private void waitSelect2() throws TimeoutException {

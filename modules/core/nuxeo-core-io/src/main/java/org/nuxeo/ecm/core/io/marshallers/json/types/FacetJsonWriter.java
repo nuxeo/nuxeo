@@ -41,26 +41,21 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * <p>
  * This marshaller is enrichable: register class implementing {@link AbstractJsonEnricher} and managing
  * {@link CompositeType}.
- * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link FacetJsonWriter#extend(Object, JsonGenerator)}.
- * </p>
+ * {@link ExtensibleEntityJsonWriter#extend(Object, JsonGenerator)}.
  * <p>
  * Format is:
  *
  * <pre>
- * {@code
  * {
  *   "entity-type":"facet",
  *   "name": "FACET_NAME",
  *   "schemas": [ { see {@link SchemaJsonWriter} for format }, { ... }, ... ],
- *             <-- contextParameters if there are enrichers activated
- *             <-- additional property provided by extend() method
+ *             &lt;-- contextParameters if there are enrichers activated
+ *             &lt;-- additional property provided by extend() method
  * }
  * </pre>
- *
- * </p>
  *
  * @since 7.2
  */
