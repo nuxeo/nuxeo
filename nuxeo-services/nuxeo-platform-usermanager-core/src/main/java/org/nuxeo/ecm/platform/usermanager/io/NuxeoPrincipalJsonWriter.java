@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.usermanager.io;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.platform.usermanager.UserManagerImpl.USER_HAS_PARTIAL_CONTENT;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -35,7 +36,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
-import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertyJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -90,9 +90,7 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  *             <-- additional property provided by extend() method
  * }
  * </pre>
- *
  * </p>
- *
  * @since 7.2
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
@@ -115,6 +113,10 @@ public class NuxeoPrincipalJsonWriter extends ExtensibleEntityJsonWriter<NuxeoPr
         jg.writeStringField("id", principal.getName());
         writeProperties(jg, principal);
         writeExtendedGroups(jg, principal);
+        DocumentModel model = principal.getModel();
+        if (model != null && Boolean.TRUE.equals(model.getContextData(USER_HAS_PARTIAL_CONTENT))) {
+            jg.writeBooleanField("isPartial", true);
+        }
         jg.writeBooleanField("isAdministrator", principal.isAdministrator());
         jg.writeBooleanField("isAnonymous", principal.isAnonymous());
     }

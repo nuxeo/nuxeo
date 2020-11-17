@@ -1191,6 +1191,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
      * @since 10.1
      */
     @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.server.routing:test-fetchReferences-false.xml")
     public void testTaskWorkflowInfo() throws IOException {
         final String createdWorkflowInstanceId;
         // Create a workflow
@@ -1239,11 +1240,18 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             JsonNode initiatorNode = taskNode.get("workflowInitiator");
             assertEquals("user", initiatorNode.get("entity-type").textValue());
             assertEquals("Administrator", initiatorNode.get("id").textValue());
-            assertTrue(initiatorNode.get("isAdministrator").booleanValue());
             JsonNode properties = initiatorNode.get("properties");
             ArrayNode groups = (ArrayNode) properties.get("groups");
-            assertEquals(1, groups.size());
-            assertEquals("administrators", groups.get(0).textValue());
+            JsonNode isPartial = initiatorNode.get("isPartial");
+            if (isPartial != null && isPartial.booleanValue()) {
+                assertFalse(initiatorNode.get("isAdministrator").booleanValue());
+                assertEquals(groups.size(), 0);
+            } else {
+                assertTrue(initiatorNode.get("isAdministrator").booleanValue());
+                assertEquals(1, groups.size());
+                assertEquals("administrators", groups.get(0).textValue());
+
+            }
         }
     }
 
