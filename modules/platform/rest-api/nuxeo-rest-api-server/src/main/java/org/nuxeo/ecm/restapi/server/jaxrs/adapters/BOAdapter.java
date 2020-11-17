@@ -78,9 +78,6 @@ public class BOAdapter extends DefaultAdapter {
     }
 
     /**
-     * @param list
-     * @param adapterName
-     * @return
      * @since 5.8
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })

@@ -45,7 +45,7 @@ public interface TreeItem extends Serializable {
      * item will have the same path as the child minus the last segment. The root item path will always be "/". (The
      * root item should not be displayed in the tree - it has no label or other properties.)
      * <p>
-     * Paths are useful to locate items in the tree using <code>find</find> methods.
+     * Paths are useful to locate items in the tree using {@code find} methods.
      *
      * @return the item path
      * @see #find(Path)

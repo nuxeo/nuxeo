@@ -288,7 +288,7 @@ public interface Session extends AutoCloseable {
      *
      * @param node the node to remove
      * @param beforeRecordRemove a consumer called on nodes of records before they are removed
-     * @see {@link #removePropertyNode}
+     * @see #removePropertyNode
      * @since 11.1
      */
     void removeNode(Node node, Consumer<Node> beforeRecordRemove);

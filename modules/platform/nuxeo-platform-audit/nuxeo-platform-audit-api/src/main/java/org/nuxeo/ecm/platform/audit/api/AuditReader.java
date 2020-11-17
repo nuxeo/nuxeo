@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.audit.api;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -122,7 +121,7 @@ public interface AuditReader {
      * @param dateRange a preset date range.
      * @param category add filter on events category
      * @param path add filter on document path
-     * @param pageNb page number (ignore if <=1)
+     * @param pageNb page number (ignore if &lt;=1)
      * @param pageSize number of results per page
      * @return a list of log entries.
      */
@@ -156,7 +155,7 @@ public interface AuditReader {
      * @param limit filter events by date from limit to now
      * @param category add filter on events category
      * @param path add filter on document path
-     * @param pageNb page number (ignore if <=1)
+     * @param pageNb page number (ignore if &lt;=1)
      * @param pageSize number of results per page
      * @return a list of log entries.
      */
@@ -170,7 +169,7 @@ public interface AuditReader {
 
     /**
      * Returns a batched list of log entries. WhereClause is a native where clause for the backend: here EJBQL 3.0 must
-     * be used if implementation of audit backend is JPA (< 7.3 or audit.elasticsearch.enabled=false) and JSON if
+     * be used if implementation of audit backend is JPA (&lt; 7.3 or audit.elasticsearch.enabled=false) and JSON if
      * implementation is Elasticsearch.
      */
     default List<LogEntry> nativeQueryLogs(String whereClause, int pageNb, int pageSize) {
@@ -182,17 +181,17 @@ public interface AuditReader {
 
     /**
      * Returns a batched list of entries. query string is a native query clause for the backend : here EJBQL 3.0 must be
-     * used if implementation of audit backend is JPA (< 7.3 or audit.elasticsearch.enabled=false) and JSON if
+     * used if implementation of audit backend is JPA (&lt; 7.3 or audit.elasticsearch.enabled=false) and JSON if
      * implementation is Elasticsearch.
      */
     default List<?> nativeQuery(String query, int pageNb, int pageSize) {
-        return nativeQuery(query, Collections.<String, Object> emptyMap(), pageNb, pageSize);
+        return nativeQuery(query, Map.of(), pageNb, pageSize);
     }
 
     /**
      * Returns a batched list of entries.
      *
-     * @param query a JPA query language query if implementation of audit backend is JPA (< 7.3 or
+     * @param query a JPA query language query if implementation of audit backend is JPA (&lt; 7.3 or
      *            audit.elasticsearch.enabled=false) and JSON if implementation is Elasticsearch
      * @param params parameters for the query
      * @param pageNb the page number (starts at 1)

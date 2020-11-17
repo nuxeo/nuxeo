@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.query.sql.model;
 
 /**
  * Helper to instantiate {@link OrderByExpr}s compatible with the search service inside Audit.
- * <p/>
+ * <p>
  * This class is meant to be moved and to grow up in order to handle every cases.
  *
  * @since 9.3

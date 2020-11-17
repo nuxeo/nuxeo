@@ -40,7 +40,7 @@ public interface Widget extends Serializable {
      * Returns the unique identifier of this widget to be used in tag configuration.
      *
      * @since 5.4.2
-     * @see {@link Layout#getTagConfigId()}.
+     * @see Layout#getTagConfigId()
      */
     String getTagConfigId();
 

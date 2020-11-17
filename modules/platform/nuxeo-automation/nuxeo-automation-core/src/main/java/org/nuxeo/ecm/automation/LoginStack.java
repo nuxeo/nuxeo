@@ -51,8 +51,6 @@ public class LoginStack {
 
     /**
      * Get the current session
-     *
-     * @return
      */
     public CoreSession getSession() {
         return currentSession;

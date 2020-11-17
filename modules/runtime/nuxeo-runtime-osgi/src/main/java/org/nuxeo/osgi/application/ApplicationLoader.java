@@ -108,9 +108,6 @@ public abstract class ApplicationLoader {
 
     /**
      * Installs all given bundle deployments.
-     *
-     * @param bundleFiles
-     * @throws BundleException
      */
     public void installAll(Collection<BundleFile> bundleFiles) throws BundleException {
         for (BundleFile bundleFile : bundleFiles) {

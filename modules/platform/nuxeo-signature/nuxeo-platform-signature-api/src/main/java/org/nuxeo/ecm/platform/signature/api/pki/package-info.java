@@ -20,7 +20,7 @@
   Public Key Infrastructure services.
   <p>
   These services are related to the following PKI operations:
-  private & public key generation and retrieval; certificate generation; and CA (certificate authority)
+  private &amp; public key generation and retrieval; certificate generation; and CA (certificate authority)
   related actions like: certificate signing, certificate revocation.
 
   @author Wojciech Sulejman

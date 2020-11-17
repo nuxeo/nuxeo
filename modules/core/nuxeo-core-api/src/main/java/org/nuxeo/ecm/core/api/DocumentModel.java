@@ -456,7 +456,7 @@ public interface DocumentModel extends Serializable {
      *
      * @return the retention date, or {@value org.nuxeo.ecm.core.api.security.SecurityConstants#SET_RETENTION} for a
      *         retention in the indeterminate future, or {@code null} if there is no retention date
-     * @see #RETAIN_UNTIL_INDETERMINATE
+     * @see CoreSession#RETAIN_UNTIL_INDETERMINATE
      * @see #isUnderRetentionOrLegalHold
      * @since 11.1
      */
@@ -661,16 +661,16 @@ public interface DocumentModel extends Serializable {
     /**
      * Returns the life cycle of the document.
      *
-     * @see org.nuxeo.ecm.core.lifecycle
      * @return the life cycle as a string
+     * @implNote See org.nuxeo.ecm.core.lifecycle package
      */
     String getCurrentLifeCycleState();
 
     /**
      * Returns the life cycle policy of the document.
      *
-     * @see org.nuxeo.ecm.core.lifecycle
      * @return the life cycle policy
+     * @implNote See org.nuxeo.ecm.core.lifecycle package
      */
     String getLifeCyclePolicy();
 

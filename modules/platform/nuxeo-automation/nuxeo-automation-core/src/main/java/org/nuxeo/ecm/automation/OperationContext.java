@@ -426,7 +426,6 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
     /**
      * Evaluate the expression against this context if needed
      *
-     * @param obj
      * @return the resolved value
      * @since 9.1
      */

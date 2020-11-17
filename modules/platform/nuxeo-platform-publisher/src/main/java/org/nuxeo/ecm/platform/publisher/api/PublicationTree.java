@@ -75,7 +75,6 @@ public interface PublicationTree extends PublicationNode {
      * A validator (the current user) approves the publication.
      *
      * @param publishedDocument the current published document that will be approved
-     * @param comment
      */
     void validatorPublishDocument(PublishedDocument publishedDocument, String comment);
 
@@ -83,7 +82,6 @@ public interface PublicationTree extends PublicationNode {
      * A validator (the current user) rejects the publication.
      *
      * @param publishedDocument the currently published document that will be rejected
-     * @param comment
      */
     void validatorRejectPublication(PublishedDocument publishedDocument, String comment);
 

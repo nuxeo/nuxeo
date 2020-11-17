@@ -31,10 +31,6 @@ import org.openqa.selenium.WebElement;
  */
 public class RichEditorElement extends WidgetElement {
 
-    /**
-     * @param driver
-     * @param id
-     */
     public RichEditorElement(WebDriver driver, String id) {
         super(driver, id);
     }

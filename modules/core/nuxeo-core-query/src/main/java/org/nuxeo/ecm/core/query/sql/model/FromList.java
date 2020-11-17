@@ -35,7 +35,7 @@ public class FromList extends LinkedHashMap<String, String> implements Serializa
     /**
      * Don't use this method anymore. Now we can easily iterate over {@link FromList} with {@link #keySet()},
      * {@link #values()} or {@link #entrySet()}.
-     * <p />
+     * <p>
      * We kept this method because removing it could lead to regressions as ({@link #get(Object)} is a candidate.
      *
      * @deprecated since 9.1

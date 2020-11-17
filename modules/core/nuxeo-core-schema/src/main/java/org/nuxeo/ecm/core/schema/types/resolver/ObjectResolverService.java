@@ -31,7 +31,6 @@ public interface ObjectResolverService {
     /**
      * @param type the xsd type, a resolver could manage.
      * @param parameters the parameters for this resolver.
-     * @return
      * @since 7.1
      */
     ObjectResolver getResolver(String type, Map<String, String> parameters);

@@ -32,20 +32,12 @@ public interface PropertiesMappingService {
 
     /**
      * Gets a map of xpaths defining properties on the target and source documents
-     *
-     * @param mappingName
-     * @return
      */
     Map<String, String> getMapping(String mappingName);
 
     /**
      * Copies the properties defined by the given xpaths in the mapping from the target to the source document. Assumes
      * that the xpaths are valid.
-     *
-     * @param session
-     * @param sourceDoc
-     * @param targetDoc
-     * @param mappingName
      */
     void mapProperties(CoreSession session, DocumentModel sourceDoc, DocumentModel targetDoc, String mappingName);
 

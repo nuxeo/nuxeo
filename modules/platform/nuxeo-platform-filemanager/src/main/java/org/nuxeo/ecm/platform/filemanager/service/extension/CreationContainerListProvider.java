@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  * The provider should tell for a given (handled) document type the list of candidate container the user can create new
  * document in.
  *
- * @author Olivier Grisel <ogrisel@nuxeo.com>
+ * @author Olivier Grisel
  */
 public interface CreationContainerListProvider {
 

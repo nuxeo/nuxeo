@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -38,9 +39,9 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * The class will parse the info embedded in a PDF, and return them either globally (<code>toHashMap()</code> or
@@ -139,8 +140,7 @@ public class PDFInfo {
     /**
      * Constructor for DocumentModel + encrypted PDF
      * <p>
-     * If <inXPath</code> is <code>null</code> or "", it is set to the default
-     * <code>file:content</code> value.
+     * If {@code inXPath} is {@code null} or {@code ""}, it is set to the default {@code file:content} value.
      *
      * @param inDoc Input DocumentModel.
      * @param inXPath Input XPath.
@@ -179,8 +179,6 @@ public class PDFInfo {
      * <p>
      * After extraction, the info is available through getters: Either all of them (<code>toHashMap()</code> or
      * <code>toString()</code>) or individual info (see all getters).
-     *
-     * @throws NuxeoException
      */
     public void run() throws NuxeoException {
         // In case the caller calls several time the run() method
@@ -270,6 +268,7 @@ public class PDFInfo {
      * <li>PDF producer</li>
      * <li>Content creator</li>
      * <li>Creation date</li>
+     * </ul>
      */
     public HashMap<String, String> toHashMap() {
         // Parse if needed
@@ -327,12 +326,12 @@ public class PDFInfo {
      * The <code>inMapping</code> map is an HashMap where the key is the xpath of the destination field, and the value
      * is the exact label of a PDF info as returned by <code>toHashMap()</code>. For example:
      * <p>
-     * <code><pre>
+     * <pre><code>
      * pdfinfo:title=Title
      * pdfinfo:producer=PDF Producer
      * pdfinfo:mediabox_width=Media box width
      * ...
-     * </pre></code>
+     * </code></pre>
      * <p>
      * If <code>inSave</code> is false, inSession can be null.
      *

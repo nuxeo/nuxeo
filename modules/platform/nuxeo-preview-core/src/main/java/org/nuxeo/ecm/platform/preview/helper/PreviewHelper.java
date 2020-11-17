@@ -82,8 +82,6 @@ public class PreviewHelper {
     }
 
     /**
-     * @param document
-     * @throws PreviewException
      * @since 5.7.3
      */
     public static boolean docHasBlobToPreview(DocumentModel document) throws PreviewException {

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.liveconnect.core;
 
+import java.io.IOException;
+
 /**
  * An empty {@link LiveConnectFile} returned when there is an underlying {@link IOException}.
  *

@@ -23,7 +23,7 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 
 /**
  * @since 5.6
- * @author Thierry Martins <tm@nuxeo.com>
+ * @author Thierry Martins
  */
 @XObject("veto")
 public class NotificationListenerVetoDescriptor {

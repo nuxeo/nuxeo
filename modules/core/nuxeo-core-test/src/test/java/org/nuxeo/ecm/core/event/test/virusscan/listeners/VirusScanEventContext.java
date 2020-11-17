@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.event.test.virusscan.VirusScanConsts;
 
 /**
  * Custom EventContext used to propagate info between the synchronous listener and the Asynchrous listener
- * <p/>
+ * <p>
  * The Blob xpaths are propagated using a List of String inside the {@link EventContext}.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>

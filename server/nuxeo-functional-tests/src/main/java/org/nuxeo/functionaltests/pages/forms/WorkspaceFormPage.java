@@ -22,7 +22,7 @@ package org.nuxeo.functionaltests.pages.forms;
 import org.openqa.selenium.WebDriver;
 
 /**
- * @author Sun Seng David TAN <stan@nuxeo.com>
+ * @author Sun Seng David TAN
  * @deprecated since 8.3, use {@link WorkspaceCreationFormPage} instead.
  */
 @Deprecated

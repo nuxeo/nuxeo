@@ -41,9 +41,6 @@ public interface ResourceLocator {
 
     /**
      * Get a file resource given a key
-     *
-     * @param key
-     * @return
      */
     File getResourceFile(String key);
 

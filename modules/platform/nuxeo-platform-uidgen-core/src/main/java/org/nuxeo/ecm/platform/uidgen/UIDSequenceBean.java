@@ -59,8 +59,6 @@ public class UIDSequenceBean {
 
     /**
      * Constructor taking as argument the key for which this sequence is created. The index is defaulted to 1.
-     *
-     * @param key
      */
     public UIDSequenceBean(String key) {
         this.key = key;

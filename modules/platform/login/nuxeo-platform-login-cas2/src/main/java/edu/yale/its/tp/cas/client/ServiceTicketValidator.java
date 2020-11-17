@@ -134,7 +134,7 @@ public class ServiceTicketValidator {
     }
 
     /**
-     * Returns <tt>true</tt> if the most recent authentication attempted succeeded, <tt>false</tt> otherwise.
+     * Returns {@code true} if the most recent authentication attempted succeeded, {@code false} otherwise.
      */
     public boolean isAuthenticationSuccesful() {
         return this.successfulAuthentication;

@@ -181,7 +181,7 @@ public interface LogManager extends AutoCloseable {
      * safe.
      *
      * @since 10.2
-     * @deprecated since 11.1 use {@link #createTailer(Name, Collection<LogPartition>)} (Name)} instead
+     * @deprecated since 11.1 use {@link #createTailer(Name, Collection) (Name)} instead
      */
     @Deprecated(since = "11.1")
     default <M extends Externalizable> LogTailer<M> createTailer(String group, Collection<LogPartition> partitions) {
@@ -203,7 +203,7 @@ public interface LogManager extends AutoCloseable {
      * legacy decoder. A tailer is NOT thread safe.
      *
      * @since 10.2
-     * @deprecated since 11.1 use {@link #createTailer(Name, Collection<LogPartition>)} (Name)} instead
+     * @deprecated since 11.1 use {@link #createTailer(Name, Collection) (Name)} instead
      */
     @Deprecated(since = "11.1")
     default <M extends Externalizable> LogTailer<M> createTailer(String group, LogPartition partition) {
@@ -294,12 +294,10 @@ public interface LogManager extends AutoCloseable {
      * Creates a tailer for a consumer {@code group} and subscribe to multiple Logs. The partitions assignment is done
      * dynamically depending on the number of subscribers. The partitions can change during tailers life, this is called
      * a rebalancing. A listener can be used to be notified on assignment changes. Uses {@code codec} to decode records.
-     * <p/>
-     * A tailer is NOT thread safe.
-     * <p/>
-     * You should not mix {@link #createTailer} and {@code subscribe} usage using the same {@code group}.
      *
      * @since 11.1
+     * @implSpec You should not mix {@link #createTailer} and {@code subscribe} usage using the same {@code group}.
+     * @implNote A tailer is NOT thread safe.
      */
     <M extends Externalizable> LogTailer<M> subscribe(Name group, Collection<Name> names,
             RebalanceListener listener, Codec<M> codec);
@@ -308,13 +306,11 @@ public interface LogManager extends AutoCloseable {
      * Creates a tailer for a consumer {@code group} and subscribe to multiple Logs. The partitions assignment is done
      * dynamically depending on the number of subscribers. The partitions can change during tailers life, this is called
      * a rebalancing. A listener can be used to be notified on assignment changes. Uses {@code codec} to decode records.
-     * <p/>
-     * A tailer is NOT thread safe.
-     * <p/>
-     * You should not mix {@link #createTailer} and {@code subscribe} usage using the same {@code group}.
      *
      * @since 10.2
      * @deprecated since 11.1 use {@link #subscribe(Name, Collection, RebalanceListener, Codec)} instead
+     * @implSpec You should not mix {@link #createTailer} and {@code subscribe} usage using the same {@code group}.
+     * @implNote A tailer is NOT thread safe.
      */
     @Deprecated(since = "11.1")
     default <M extends Externalizable> LogTailer<M> subscribe(String group, Collection<String> names,
@@ -381,7 +377,8 @@ public interface LogManager extends AutoCloseable {
 
     /**
      * Returns the lag with latency. Timestamps used to compute the latencies are extracted from the records. This
-     * requires to read one record per partition so it costs more than {@link #getLagPerPartition(Name, Name)}. <br/>
+     * requires to read one record per partition so it costs more than {@link #getLagPerPartition(Name, Name)}.
+     * <p>
      * Two functions need to be provided to extract the timestamp and a key from a record.
      *
      * @since 11.1
@@ -391,7 +388,8 @@ public interface LogManager extends AutoCloseable {
 
     /**
      * Returns the lag with latency. Timestamps used to compute the latencies are extracted from the records. This
-     * requires to read one record per partition so it costs more than {@link #getLagPerPartition(Name, Name)}. <br/>
+     * requires to read one record per partition so it costs more than {@link #getLagPerPartition(Name, Name)}.
+     * <p>
      * Two functions need to be provided to extract the timestamp and a key from a record.
      *
      * @since 10.2
@@ -443,19 +441,19 @@ public interface LogManager extends AutoCloseable {
     List<Name> listAllNames();
 
     /**
-     * List the consumer groups for a Log.<br/>
-     * Note that for Kafka it returns only consumers that use the subscribe API.
+     * List the consumer groups for a Log.
      *
      * @since 11.1
+     * @implNote Note that for Kafka it returns only consumers that use the subscribe API.
      */
     List<Name> listConsumerGroups(Name name);
 
     /**
-     * List the consumer groups for a Log.<br/>
-     * Note that for Kafka it returns only consumers that use the subscribe API.
+     * List the consumer groups for a Log.
      *
      * @since 10.2
      * @deprecated since 11.1 use {@link #listConsumerGroups(Name)} instead
+     * @implNote Note that for Kafka it returns only consumers that use the subscribe API.
      */
     @Deprecated(since = "11.1")
     default List<String> listConsumerGroups(String name) {

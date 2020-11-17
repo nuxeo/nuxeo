@@ -87,7 +87,7 @@ public interface LogTailer<M extends Externalizable> extends AutoCloseable {
     /**
      * Look up the offset for the given partition by timestamp. The position is the earliest offset whose timestamp is
      * greater than or equal to the given timestamp.
-     * <p/>
+     * <p>
      * The timestamp used depends on the implementation, for Kafka this is the LogAppendTime. Returns null if no record
      * offset is found with an appropriate timestamp.
      *

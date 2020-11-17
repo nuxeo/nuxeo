@@ -169,7 +169,6 @@ public class PackagePersistence {
     /**
      * Add unzipped packaged to local cache. It replaces SNAPSHOT packages if not installed
      *
-     * @throws PackageException
      * @throws AlreadyExistsPackageException If not replacing a SNAPSHOT or if the existing package is installed
      */
     protected LocalPackage addPackageFromDir(File file) throws PackageException {

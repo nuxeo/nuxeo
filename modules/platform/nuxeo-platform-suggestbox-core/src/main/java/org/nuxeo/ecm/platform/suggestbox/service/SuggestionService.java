@@ -55,7 +55,7 @@ public interface SuggestionService {
      * @param suggester the registration name of the suggester to use
      * @return generated suggestion for the given input and context
      */
-    List<Suggestion> suggest(String searchKeywords, SuggestionContext suggestionContext, String suggester)
+    List<Suggestion> suggest(String userInput, SuggestionContext suggestionContext, String suggester)
             throws SuggestionException;
 
 }

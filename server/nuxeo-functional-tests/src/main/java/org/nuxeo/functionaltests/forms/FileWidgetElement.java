@@ -76,7 +76,6 @@ public class FileWidgetElement extends AbstractWidgetElement {
     /**
      * Uploads file with given path.
      *
-     * @throws IOException
      * @since 9.1
      */
     public void uploadFile(String filePath) throws IOException {

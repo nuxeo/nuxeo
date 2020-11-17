@@ -52,7 +52,7 @@ public interface MigrationService {
          * Runs a migration step.
          * <p>
          * This method should periodically check for {@link MigrationContext#isShutdownRequested} and
-         * {@link Thread#isInterrupted} and return if {@code true}.
+         * {@link Thread#isInterrupted()} and return if {@code true}.
          *
          * @param step the migration step to run
          * @param migrationContext the migration context.
@@ -111,7 +111,7 @@ public interface MigrationService {
      *
      * @since 9.3
      */
-    public class MigrationStatus {
+    class MigrationStatus {
 
         protected final String state;
 

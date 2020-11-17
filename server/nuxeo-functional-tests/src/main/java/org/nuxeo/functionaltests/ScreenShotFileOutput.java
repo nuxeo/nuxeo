@@ -35,7 +35,7 @@ import org.openqa.selenium.WebDriverException;
  * <p>
  * This temp file won't be deleted on exist.
  *
- * @author Sun Seng David TAN <stan@nuxeo.com>
+ * @author Sun Seng David TAN
  */
 public class ScreenShotFileOutput implements OutputType<File> {
 

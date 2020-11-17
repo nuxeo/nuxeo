@@ -59,7 +59,6 @@ public class DocumentModelFactory {
      * Creates a document model for an existing document.
      *
      * @param doc the document
-     * @param sid the session id for this document
      * @return the new document model
      */
     public static DocumentModelImpl createDocumentModel(Document doc, CoreSession coreSession) {
@@ -190,7 +189,6 @@ public class DocumentModelFactory {
     /**
      * Writes a document model to a document. Returns the re-read document model.
      */
-    @SuppressWarnings("deprecation")
     public static DocumentModel writeDocumentModel(DocumentModel docModel, Document doc) {
         return writeDocumentModel(docModel, doc, false);
     }

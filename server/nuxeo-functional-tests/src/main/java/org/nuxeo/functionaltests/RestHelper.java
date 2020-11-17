@@ -435,7 +435,7 @@ public class RestHelper {
 
     /**
      * Fetches a {@link Document} instance according the input parameter which can be a document id or path.
-     * <p />
+     * <p>
      * CAUTION: Keep this method protected, we want to keep nuxeo-java-client objects here.
      *
      * @since 9.3

@@ -41,7 +41,6 @@ public class Flush extends FlushPlaceholder {
      * Calls the {@link ReloadService#flush()} method
      *
      * @since 5.6
-     * @throws PackageException
      */
     public static void flush() throws PackageException {
         try {

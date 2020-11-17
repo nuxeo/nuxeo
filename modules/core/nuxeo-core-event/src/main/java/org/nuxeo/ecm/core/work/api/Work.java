@@ -52,12 +52,12 @@ public interface Work extends Serializable {
      * <p>
      * The following transitions between states are possible:
      * <ul>
-     * <li>UNKNOWN -> SCHEDULED</li> (unknown from the manager point of view)
-     * <li>SCHEDULED -> CANCELED (is never scheduled or run)
-     * <li>SCHEDULED -> RUNNING
-     * <li>RUNNING -> COMPLETED
-     * <li>RUNNING -> FAILED
-     * <li>RUNNING -> SCHEDULED (is suspended and persisted)
+     * <li>UNKNOWN -&gt; SCHEDULED (unknown from the manager point of view)
+     * <li>SCHEDULED -&gt; CANCELED (is never scheduled or run)
+     * <li>SCHEDULED -&gt; RUNNING
+     * <li>RUNNING -&gt; COMPLETED
+     * <li>RUNNING -&gt; FAILED
+     * <li>RUNNING -&gt; SCHEDULED (is suspended and persisted)
      * </ul>
      */
     enum State {
@@ -116,7 +116,7 @@ public interface Work extends Serializable {
          * @param percent the percentage, a float between 0 and 100, or {@link #PERCENT_INDETERMINATE}
          */
         public Progress(float percent) {
-            this.percent = percent > 100F ? 100F : percent;
+            this.percent = Math.min(percent, 100F);
             current = CURRENT_INDETERMINATE;
             total = 0;
         }
@@ -166,9 +166,9 @@ public interface Work extends Serializable {
 
     /**
      * Runs the work instance and does all the transaction management and retry.
-     * <p>
-     * Usually only implemented by {@link AbstractWork}, which should be subclassed instead of implementing {@link #run}
-     * .
+     *
+     * @implNote Usually only implemented by {@link AbstractWork}, which should be subclassed instead of implementing
+     *           this method.
      */
     void run();
 

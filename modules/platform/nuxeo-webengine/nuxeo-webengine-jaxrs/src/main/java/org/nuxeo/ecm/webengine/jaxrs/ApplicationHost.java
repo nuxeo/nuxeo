@@ -166,8 +166,6 @@ public class ApplicationHost extends Application {
      * after the application was created and before it was destroyed. <br>
      * When a bundle is refreshing this method may throw exceptions but it is not usual to refresh bundles at runtime
      * and making requests in same time.
-     *
-     * @param clazz
      */
     public Bundle getBundle(Class<?> clazz) {
         return class2Bundles.get(clazz);

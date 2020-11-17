@@ -18,8 +18,8 @@
  *   0.1 - 29/Jan/2011 - Initial version created
  *   0.x - 25/Oct/2011 - Refactoring and cleanups, adding length (Nuxeo)
  *
- * @author Jaimon Mathew <http://www.jaimon.co.uk>
- * @author Florent Guillaume <http://nuxeo.com/>
+ * @author Jaimon Mathew
+ * @author Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.opencmis.impl.util;

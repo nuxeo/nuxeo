@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
+ * @author Stephane Lacoin [aka matic]
  */
 public class PersistenceProvider {
 

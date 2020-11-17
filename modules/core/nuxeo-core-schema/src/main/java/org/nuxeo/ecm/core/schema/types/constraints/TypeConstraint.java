@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core.schema.types.constraints;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
@@ -49,18 +48,13 @@ public class TypeConstraint extends AbstractConstraint {
     }
 
     /**
-     * <p>
      * Here, value is : <br>
-     * name = {@value #NAME} <br>
+     * name = {@link PrimitiveType#getName} <br>
      * parameters =
-     * <ul>
-     * <li>{@value #PNAME_TYPE} : org.nuxeo.ecm.core.schema.types.primitives.IntegerType</li>
-     * </ul>
-     * </p>
      */
     @Override
     public Description getDescription() {
-        return new Description(type.getName(), new HashMap<String, Serializable>());
+        return new Description(type.getName(), new HashMap<>());
     }
 
     /**

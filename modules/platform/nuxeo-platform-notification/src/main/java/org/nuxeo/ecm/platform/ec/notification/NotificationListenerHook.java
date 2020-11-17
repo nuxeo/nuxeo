@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.ec.notification;
 import org.nuxeo.ecm.core.event.Event;
 
 /**
- * @description NotificationListenerHook interface
  * @since 5.5
  */
 public interface NotificationListenerHook {

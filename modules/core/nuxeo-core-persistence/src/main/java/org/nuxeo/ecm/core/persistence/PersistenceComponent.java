@@ -36,7 +36,7 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
+ * @author Stephane Lacoin [aka matic]
  */
 public class PersistenceComponent extends DefaultComponent
         implements HibernateConfigurator, PersistenceProviderFactory {

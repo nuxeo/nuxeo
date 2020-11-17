@@ -51,8 +51,6 @@ public class ResourceComposite extends ResourceBundle {
 
     /**
      * Set the locale to be used.
-     *
-     * @param locale
      */
     public void setLocale(Locale locale) {
         current = map.get(locale);
@@ -84,10 +82,6 @@ public class ResourceComposite extends ResourceBundle {
 
     /**
      * Delegates getString using the resource bundle corresponding to the local (create one if it doesn't exist).
-     *
-     * @param key
-     * @param locale
-     * @return
      */
     public String getString(String key, Locale locale) {
         ResourceBundle bundle = map.get(locale);

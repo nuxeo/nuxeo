@@ -206,7 +206,7 @@ public class LogTestWatchman extends TestWatchman {
 
     /**
      * We need this class in order to make simple HTTP GET calls to know if we can log or not.
-     * <p />
+     * <p>
      * For some tests, REST API is not available, so basic client didn't succeed to connect.
      *
      * @since 9.3

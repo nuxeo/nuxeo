@@ -110,7 +110,6 @@ public class IOLogEntryBase {
     /**
      * Will translate from a jdoc to a list of LogEntry objects.
      */
-    @SuppressWarnings({ "unchecked" })
     protected static List<LogEntry> readDocument(Document doc) {
         List<LogEntry> logEntries = new ArrayList<>();
 
@@ -130,8 +129,6 @@ public class IOLogEntryBase {
 
     /**
      * Could be overridden to get other (additional) data.
-     *
-     * @param logEntryElement
      */
     protected static LogEntry readLogEntry(AuditLogger audit, Element logEntryElement) {
         LogEntry logEntry = audit.newLogEntry();

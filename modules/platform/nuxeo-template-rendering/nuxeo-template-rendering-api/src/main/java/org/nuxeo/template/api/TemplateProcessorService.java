@@ -42,7 +42,6 @@ public interface TemplateProcessorService {
     /**
      * Finds the template processor name for a given {@link Blob}. The template processor is found based on mime-types.
      *
-     * @param templateBlob
      * @return the {@link TemplateProcessor} name
      */
     String findProcessorName(Blob templateBlob);
@@ -51,7 +50,6 @@ public interface TemplateProcessorService {
      * Finds the {@link TemplateProcessor} for a given {@link Blob}. The template processor is found based on
      * mime-types.
      *
-     * @param templateBlob
      * @return the {@link TemplateProcessor}
      */
     TemplateProcessor findProcessor(Blob templateBlob);
@@ -59,7 +57,6 @@ public interface TemplateProcessorService {
     /**
      * Get a {@link TemplateProcessor} by it's name. Name is defined in the associated descriptor.
      *
-     * @param name
      * @return the {@link TemplateProcessor}
      */
     TemplateProcessor getProcessor(String name);
@@ -74,7 +71,6 @@ public interface TemplateProcessorService {
     /**
      * Find {@link TemplateSourceDocument}s that can be bound to a given doc type.
      *
-     * @param session
      * @param targetType the target Document Type
      * @return List of applicable DocumentModel
      */
@@ -83,7 +79,6 @@ public interface TemplateProcessorService {
     /**
      * Find {@link TemplateSourceDocument}s that can be bound to a given doc type.
      *
-     * @param session
      * @param targetType the target Document Type
      * @return List of applicable {@link TemplateSourceDocument}
      */
@@ -92,9 +87,7 @@ public interface TemplateProcessorService {
     /**
      * Returns a template with a given templateName.
      *
-     * @param session
      * @param name the name of the template
-     * @return
      *
      * @since 9.1
      */
@@ -103,10 +96,6 @@ public interface TemplateProcessorService {
     /**
      * Retrieve the {@link TemplateSourceDocument} that can be used as an Office template (i.e that support to store the
      * template file as main blob of target DocumentModel)
-     *
-     * @param session
-     * @param targetType
-     * @return
      */
     List<TemplateSourceDocument> getAvailableOfficeTemplates(CoreSession session, String targetType);
 
@@ -114,7 +103,6 @@ public interface TemplateProcessorService {
      * Retrieve the DocumentModels using a given {@link TemplateSourceDocument}
      *
      * @param source the {@link TemplateSourceDocument}
-     * @return
      */
     List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source);
 
@@ -128,8 +116,6 @@ public interface TemplateProcessorService {
 
     /**
      * Update Type2Template Mapping from the data contained in the source DocumentModel.
-     *
-     * @param doc
      */
     void registerTypeMapping(DocumentModel doc);
 
@@ -169,7 +155,6 @@ public interface TemplateProcessorService {
      * The returned {@link OutputFormatDescriptor} contains either an operation chain or a mime-type use to convert the
      * output of a rendered document.
      *
-     * @param outputFormatId
      * @return {@link OutputFormatDescriptor}
      */
     OutputFormatDescriptor getOutputFormatDescriptor(String outputFormatId);

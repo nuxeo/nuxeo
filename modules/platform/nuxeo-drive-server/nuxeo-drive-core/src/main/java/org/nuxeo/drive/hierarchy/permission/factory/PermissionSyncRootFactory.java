@@ -94,7 +94,7 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
      * <li>AND it is not in the trash, unless {@code includeDeleted} is true</li>
      * <li>AND it is a synchronization root registered for the current user, unless {@code relaxSyncRootConstraint} is
      * true</li>
-     * <li>AND the current user has the {@link #getRequiredPermission()} permission on the document</li>
+     * <li>AND the current user has the {@link #requiredPermission} permission on the document</li>
      * </ul>
      */
     @Override

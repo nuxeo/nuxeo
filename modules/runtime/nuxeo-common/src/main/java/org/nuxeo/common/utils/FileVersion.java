@@ -26,8 +26,8 @@ import java.util.regex.Pattern;
 
 /**
  * Compare versions of files as they are usually set. Maven classifiers are not managed: a classifier will be considered
- * as being part of the version. Maven "SNAPSHOT" keyword is taken in account. Rule is: x-SNAPSHOT < x <
- * x-AnythingButSNAPSHOT < x.y-SNAPSHOT < x.y
+ * as being part of the version. Maven "SNAPSHOT" keyword is taken in account. Rule is: x-SNAPSHOT &lt; x &lt;
+ * x-AnythingButSNAPSHOT &lt; x.y-SNAPSHOT &lt; x.y
  *
  * @since 5.5
  */

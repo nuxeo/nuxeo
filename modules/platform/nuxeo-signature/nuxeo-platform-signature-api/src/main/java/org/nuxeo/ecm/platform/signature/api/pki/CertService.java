@@ -44,43 +44,28 @@ public interface CertService {
 
     /**
      * Retrieves the root certificate.
-     *
-     * @return
-     * @throws CertException
      */
     X509Certificate getRootCertificate() throws CertException;
 
     /**
      * Sets up a root service to be used for CA-related services like certificate request signing and certificate
      * revocation.
-     *
-     * @param keystore
-     * @throws CertException
      */
     void setRootService(RootService rootService) throws CertException;
 
     /**
      * Retrieves a KeyStore object from a supplied InputStream. Requires a keystore password.
-     *
-     * @param userId
-     * @return
      */
     KeyStore getKeyStore(InputStream keystoreIS, String password) throws CertException;
 
     /**
      * Retrieves existing private and public key from a KeyStore.
-     *
-     * @param userId
-     * @return
      */
     KeyPair getKeyPair(KeyStore ks, String keyAlias, String certificateAlias, String keyPassword)
             throws CertException;
 
     /**
      * Retrieves an existing certificate from a keystore using keystore's certificate alias.
-     *
-     * @param userId
-     * @return
      */
     X509Certificate getCertificate(KeyStore keystore, String certificateAlias) throws CertException;
 
@@ -89,7 +74,6 @@ public interface CertService {
      * UserInfo parameter. Stores those artifacts in a password protected keystore. This is the principal method for
      * activating a new certificate and signing it with a root certificate.
      *
-     * @param userId
      * @return KeyStore based on the provided userInfo
      */
 
@@ -97,20 +81,11 @@ public interface CertService {
 
     /**
      * Wraps a certificate object into an OutputStream object secured by a keystore password
-     *
-     * @param keystore
-     * @param os
-     * @param keystorePassword
-     * @throws CertException
      */
     void storeCertificate(KeyStore keystore, OutputStream os, String keystorePassword) throws CertException;
 
     /**
      * Extracts the email address from a certificate
-     *
-     * @param certificate
-     * @return
-     * @throws CertException
      */
     String getCertificateEmail(X509Certificate certificate) throws CertException;
 

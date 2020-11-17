@@ -86,7 +86,7 @@ public class SmtpMailServerFeature implements RunnerFeature {
 
     /**
      * Pattern to parse and retrieve the text date in {@link DateTimeFormatter#RFC_1123_DATE_TIME} format.
-     * <p/>
+     * <p>
      * The date filled in the smtp message should be in {@link DateTimeFormatter#RFC_1123_DATE_TIME} format, for example
      * {@code Wed, 4 Dec 2019 14:27:30 +0100}, but in some cases we can encountered
      * {@code Wed, 4 Dec 2019 14:27:30 +0100 (CET)} which cannot be parsed.

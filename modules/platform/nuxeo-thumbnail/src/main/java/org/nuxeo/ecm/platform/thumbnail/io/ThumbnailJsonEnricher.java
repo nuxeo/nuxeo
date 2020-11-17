@@ -37,10 +37,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * Enrich {@link DocumentModel} Json.
  * <p>
  * Add {@link DocumentModel}'s thumbnail url as json attachment.
- * </p>
  * <p>
  * Enable if parameter enrichers-document=thumbnail is present.
- * </p>
  * <p>
  * Format is:
  *
@@ -55,8 +53,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *     },
  *   }
  * }
+ * }
  * </pre>
- * </p>
  *
  * @since 7.2
  */

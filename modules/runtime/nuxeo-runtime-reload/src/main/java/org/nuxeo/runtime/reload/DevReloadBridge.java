@@ -32,10 +32,9 @@ import org.osgi.framework.BundleException;
 /**
  * This class is used from DevFrameworkBootstrap class by reflection. It is instantiated by reflection too, so keep the
  * default constructor.
- * <p />
- * We need to keep common type for arguments and returned value.
  *
  * @since 9.3
+ * @apiNote We need to keep common type for arguments and returned value.
  */
 public class DevReloadBridge {
 
@@ -47,7 +46,7 @@ public class DevReloadBridge {
     }
 
     /**
-     * @return the deployed bundles as a map associating the sbundle symbolic name to its location.
+     * @return the deployed bundles as a map associating the bundle symbolic name to its location.
      */
     public Map<String, String> reloadBundles(List<String> bundleNamesToUndeploy, List<File> bundlesToDeploy) {
         ReloadService reloadService = Framework.getService(ReloadService.class);

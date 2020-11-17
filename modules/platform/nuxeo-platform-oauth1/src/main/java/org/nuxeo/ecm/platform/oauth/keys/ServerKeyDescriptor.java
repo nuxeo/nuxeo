@@ -22,7 +22,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Xmap object used to represent the contribution to {@link OAuthServerKeyManager}. => contribute a simple RSA Key Pair.
+ * Xmap object used to represent the contribution to {@link OAuthServerKeyManager}. =&gt; contribute a simple RSA Key
+ * Pair.
  *
  * @author tiry
  */

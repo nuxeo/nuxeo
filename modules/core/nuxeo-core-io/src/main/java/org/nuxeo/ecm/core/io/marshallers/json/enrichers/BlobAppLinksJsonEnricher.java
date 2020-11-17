@@ -48,7 +48,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * Blob format is:
  *
  * <pre>
- * {@code
  * {
  *  "name": "...",
  *  "mime-type": "...",
@@ -61,7 +60,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *    },
  *    ...
  *  ]
- * }
  * }
  * </pre>
  *

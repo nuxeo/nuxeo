@@ -636,8 +636,8 @@ public class NuxeoLauncher {
     }
 
     /**
-     * Gets the Java options defined in Nuxeo configuration files, e.g. <tt>bin/nuxeo.conf</tt> and
-     * <tt>bin/nuxeoctl</tt>.
+     * Gets the Java options defined in Nuxeo configuration files, e.g. {@code bin/nuxeo.conf} and
+     * {@code bin/nuxeoctl}.
      *
      * @return the Java options.
      */

@@ -52,6 +52,7 @@ import org.nuxeo.runtime.api.Framework;
  * A sample contribution using this converter:
  *
  * <pre>
+ * {@code
  *     <converter name="pdf2image" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
  *       <sourceMimeType>application/pdf</sourceMimeType>
  *       <destinationMimeType>image/jpeg</destinationMimeType>
@@ -61,6 +62,7 @@ import org.nuxeo.runtime.api.Framework;
  *         <parameter name="CommandLineName">pdftoimage</parameter>
  *       </parameters>
  *     </converter>
+ * }
  * </pre>
  *
  * @since 7.1

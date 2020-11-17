@@ -28,15 +28,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DirectoryStack {
-
-    private static final Log log = LogFactory.getLog(DirectoryStack.class);
 
     protected final List<File> dirs;
 
@@ -68,7 +63,6 @@ public class DirectoryStack {
      *
      * @param name the file name to lookup
      * @return the file in the canonical form
-     * @throws IOException
      */
     public File getFile(String name) throws IOException {
         for (File entry : dirs) {
@@ -86,7 +80,7 @@ public class DirectoryStack {
             File[] files = entry.listFiles();
             result.addAll(Arrays.asList(files));
         }
-        return result.toArray(new File[result.size()]);
+        return result.toArray(new File[0]);
     }
 
     public File[] listFiles(FileFilter filter) {
@@ -95,7 +89,7 @@ public class DirectoryStack {
             File[] files = entry.listFiles(filter);
             result.addAll(Arrays.asList(files));
         }
-        return result.toArray(new File[result.size()]);
+        return result.toArray(new File[0]);
     }
 
 }

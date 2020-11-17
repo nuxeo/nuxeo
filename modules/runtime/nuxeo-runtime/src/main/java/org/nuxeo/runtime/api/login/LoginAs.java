@@ -26,7 +26,7 @@ import org.nuxeo.runtime.api.Framework;
  * This service is performing a login under another identity without checking the password.
  * <p>
  * You must never use this service explicitly in your code since it may be removed in future. Instead you should use
- * {@link Framework#loginAsUser(String)}
+ * {@link Framework#loginUser(String)}.
  * <p>
  * Implementors must implement this interface and expose the implementation as a Nuxeo service.
  *
@@ -37,10 +37,6 @@ public interface LoginAs {
 
     /**
      * Perform the Login As.
-     *
-     * @param username
-     * @return
-     * @throws LoginException
      */
     NuxeoLoginContext loginAs(String username) throws LoginException;
 

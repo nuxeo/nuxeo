@@ -576,10 +576,6 @@ public class ObjectCodecService {
          * When the object codec is called the stream is positioned on the first value. For inlined objects this is the
          * first value after the "entity-type" property. For non inlined objects this will be the object itself (i.e.
          * '{' or '[')
-         *
-         * @param jp
-         * @return
-         * @throws IOException
          */
         @Override
         public BusinessAdapter read(JsonParser jp, CoreSession session) throws IOException {

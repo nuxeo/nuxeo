@@ -42,7 +42,6 @@ public interface IterableQueryResult extends Iterable<Map<String, Serializable>>
     /**
      * Indicates if the query result has not been closed
      *
-     * @return
      * @deprecated since 8.1 (misspelled), use {@link #mustBeClosed} instead
      */
     @Deprecated

@@ -55,7 +55,6 @@ public interface NuxeoDriveManager {
      *
      * @param session active CoreSession instance to the repository hosting the roots.
      * @return the ordered set of non deleted synchronization root references for that user
-     * @see #getSynchronizationRootPaths(String, CoreSession)
      */
     Set<IdRef> getSynchronizationRootReferences(CoreSession session);
 
@@ -99,7 +98,6 @@ public interface NuxeoDriveManager {
      * <li>A status code</li>
      * </ul>
      *
-     * @param principal
      * @param lastSyncRootRefs the map keyed by repository names of document refs for the synchronization roots that
      *            were active during last synchronization
      * @param lowerBound the lower bound sent by the user's device. Typically set to the value returned by
@@ -139,7 +137,7 @@ public interface NuxeoDriveManager {
     void invalidateCollectionSyncRootMemberCache();
 
     /**
-     * Adds the given {@link DocumentModel} to the {@link #LOCALLY_EDITED_COLLECTION_NAME} collection.
+     * Adds the given {@link DocumentModel} to the {@code LOCALLY_EDITED_COLLECTION_NAME} collection.
      *
      * @since 6.0
      */

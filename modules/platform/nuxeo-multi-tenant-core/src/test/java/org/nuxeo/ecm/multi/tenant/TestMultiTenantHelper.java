@@ -43,21 +43,17 @@ public class TestMultiTenantHelper {
 
     /**
      * just to test it does not throw an exception.
-     *
-     * @throws Exception
      */
     @Test
-    public void testGetCurrentTenantId() throws Exception {
+    public void testGetCurrentTenantId() {
         MultiTenantHelper.getCurrentTenantId(new SystemPrincipal("nobody"));
     }
 
     /**
      * just to test it does not throw an exception.
-     *
-     * @throws Exception
      */
     @Test
-    public void testGetTenantId() throws Exception {
+    public void testGetTenantId() {
         MultiTenantHelper.getTenantId("nobody");
     }
 

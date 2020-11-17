@@ -18,13 +18,15 @@
  */
 package org.nuxeo.functionaltests;
 
+import org.openqa.selenium.WebElement;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to mark a {@link WebElement} field on a {@link Page} object to indicate that lookup should expect the field to
+ * Used to mark a {@link WebElement} field on a {@code Page} object to indicate that lookup should expect the field to
  * not load instantly.
  */
 @Retention(RetentionPolicy.RUNTIME)

@@ -38,7 +38,8 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
  * <p>
  * You could customize constraint violation message using the following rules :
  * <ul>
- * <li>Use {@value #MESSAGES_KEY} key in {@value #MESSAGES_BUNDLE} bundle to customize default message</li>
+ * <li>Use {@value Constraint#MESSAGES_KEY} key in {@value Constraint#MESSAGES_BUNDLE} bundle to customize default
+ * message</li>
  * <li>Append the constraint name to the previous key to customize the generic message to some constraint</li>
  * <li>Append the schema and the field name to the previous key to customize the message for a specific constraint
  * applied to some specific schema field.</li>
@@ -54,7 +55,6 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
  * <li>The second constraint parameter (if exists) : {5}</li>
  * <li>...</li>
  * </ul>
- * </p>
  * <p>
  * Examples :
  * <ul>
@@ -64,7 +64,6 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
  * <li>label.schema.constraint.violation.PatternConstraint.myuserschema.firstname ='The firstname should not be empty'
  * </li>
  * </ul>
- * </p>
  *
  * @since 7.1
  */

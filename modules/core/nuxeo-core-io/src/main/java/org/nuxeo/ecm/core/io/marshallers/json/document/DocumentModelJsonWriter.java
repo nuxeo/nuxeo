@@ -57,11 +57,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * <p>
  * This marshaller is enrichable: register class implementing {@link AbstractJsonEnricher} and managing
  * {@link DocumentModel}.
- * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link DocumentModelJsonWriter#extend(Object, JsonGenerator)}.
- * </p>
+ * {@link ExtensibleEntityJsonWriter#extend(Object, JsonGenerator)}.
  * <p>
  * Format is:
  *
@@ -78,18 +76,18 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *   "parentRef": "PARENT_DOCUMENT_UID",
  *   "isCheckedOut": true|false,
  *   "isRecord": true|false,
- *   "retainUntil": "RETAIN_UNTIL_DATE", <-- or null
+ *   "retainUntil": "RETAIN_UNTIL_DATE", &lt;-- or null
  *   "hasLegalHold": true|false,
  *   "isUnderRetentionOrLegalHold": true|false,
  *   "changeToken": null|"CHANGE_TOKEN",
  *   "isCheckedOut": true|false,
  *   "title": "DOCUMENT_TITLE",
- *   "lastModified": "DATE_UPDATE",  <-- if dublincore is present and if dc:modified is not null
- *   "versionLabel": "DOCUMENT_VERSION",  <-- only activated with parameter fetch.document=versionLabel or system property nuxeo.document.json.fetch.heavy=true
- *   "lockOwner": "LOCK_OWNER",  <-- only activated if locked and with parameter fetch.document=lock or system property nuxeo.document.json.fetch.heavy=true
- *   "lockCreated": "LOCK_DATE",  <-- only activated if locked and with parameter fetch.document=lock or system property nuxeo.document.json.fetch.heavy=true
- *   "properties": {   <-- only present with parameter properties=schema1,schema2,... see {@link DocumentPropertyJsonWriter} for format
- *     "schemaPrefix:stringProperty": "stringPropertyValue",  <-- each property may be fetched if a resolver is associated with that property and if a parameter fetch.document=propXPath is present, in this case, an object will be marshalled as value
+ *   "lastModified": "DATE_UPDATE",  &lt;-- if dublincore is present and if dc:modified is not null
+ *   "versionLabel": "DOCUMENT_VERSION",  &lt;-- only activated with parameter fetch.document=versionLabel or system property nuxeo.document.json.fetch.heavy=true
+ *   "lockOwner": "LOCK_OWNER",  &lt;-- only activated if locked and with parameter fetch.document=lock or system property nuxeo.document.json.fetch.heavy=true
+ *   "lockCreated": "LOCK_DATE",  &lt;-- only activated if locked and with parameter fetch.document=lock or system property nuxeo.document.json.fetch.heavy=true
+ *   "properties": {   &lt;-- only present with parameter properties=schema1,schema2,... see {@link DocumentPropertyJsonWriter} for format
+ *     "schemaPrefix:stringProperty": "stringPropertyValue",  &lt;-- each property may be fetched if a resolver is associated with that property and if a parameter fetch.document=propXPath is present, in this case, an object will be marshalled as value
  *     "schemaPrefix:booleanProperty": true|false,
  *     "schemaPrefix:integerProperty": 123,
  *     ...
@@ -101,11 +99,10 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *        ...
  *     ]
  *   }
- *             <-- contextParameters if there are enrichers activated
- *             <-- additional property provided by extend() method
+ *             &lt;-- contextParameters if there are enrichers activated
+ *             &lt;-- additional property provided by extend() method
  * }
  * </pre>
- * </p>
  *
  * @since 7.2
  */

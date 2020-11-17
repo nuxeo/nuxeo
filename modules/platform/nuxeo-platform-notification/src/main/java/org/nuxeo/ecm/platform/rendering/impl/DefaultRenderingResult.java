@@ -37,8 +37,6 @@ public abstract class DefaultRenderingResult implements RenderingResult {
 
     /**
      * Constructor taking a rendering result name as argument.
-     *
-     * @param formatName
      */
     protected DefaultRenderingResult(String formatName) {
         this.formatName = formatName;

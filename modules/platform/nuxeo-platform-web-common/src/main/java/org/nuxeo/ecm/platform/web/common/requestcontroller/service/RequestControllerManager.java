@@ -50,7 +50,7 @@ public interface RequestControllerManager {
      *
      * @return filter config to init CorsFilter if there is a matching request, null otherwise.
      * @since 5.7.2
-     * @deprecated since 10.1, unused, use {@link getCorsFilterForRequest} instead
+     * @deprecated since 10.1, unused, use {@link #getCorsFilterForRequest(HttpServletRequest)} instead
      */
     @Deprecated
     FilterConfig getCorsConfigForRequest(HttpServletRequest request);

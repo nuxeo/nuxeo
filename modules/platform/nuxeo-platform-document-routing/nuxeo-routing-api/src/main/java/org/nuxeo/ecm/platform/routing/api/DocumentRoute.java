@@ -32,15 +32,11 @@ public interface DocumentRoute extends DocumentRouteStepsContainer {
 
     /**
      * Set the list of id of documents attached to this instance of RouteModel replacing the previous list if any.
-     *
-     * @param documents
      */
     void setAttachedDocuments(List<String> documentIds);
 
     /**
      * The list of documents processed by this route.
-     *
-     * @return
      */
     List<String> getAttachedDocuments();
 

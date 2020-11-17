@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -82,7 +82,7 @@ public class OperationChainTest {
     }
 
     @After
-    public void clearRepo() throws Exception {
+    public void clearRepo() {
         ctx.close();
         Framework.getService(EventService.class).waitForAsyncCompletion();
         session.removeChildren(session.getRootDocument().getRef());
@@ -128,8 +128,6 @@ public class OperationChainTest {
 
     /**
      * Same as before but use a managed chain
-     *
-     * @throws Exception
      */
     @Test
     public void testManagedChain1() throws Exception {
@@ -142,8 +140,6 @@ public class OperationChainTest {
 
     /**
      * Test compiled chain
-     *
-     * @throws Exception
      */
     @Test
     public void testManagedChain2() throws Exception {
@@ -212,8 +208,6 @@ public class OperationChainTest {
 
     /**
      * Same as before but with a ctrl operation between o3 and o3
-     *
-     * @throws Exception
      */
     @Test
     public void testChain3WithCtrl() throws Exception {
@@ -234,8 +228,6 @@ public class OperationChainTest {
     /**
      * This is testing the parameter expressions. If you set an operation parameter that point to 'var:principal' it
      * will return
-     *
-     * @throws Exception
      */
     @Test
     public void testExpressionParams() throws Exception {
@@ -252,8 +244,6 @@ public class OperationChainTest {
 
     /**
      * Same as previous but test params specified as Mvel templates
-     *
-     * @throws Exception
      */
     @Test
     public void testTemplateParams() throws Exception {
@@ -271,11 +261,9 @@ public class OperationChainTest {
     /**
      * This is testing an invalid chain. The last operation in the chain accepts as input only Principal which is never
      * produced by the previous operations in the chain.
-     *
-     * @throws Exception
      */
     @Test
-    public void testInvalidChain() throws Exception {
+    public void testInvalidChain() {
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
@@ -297,7 +285,7 @@ public class OperationChainTest {
      * When using a null context input an exception must be thrown if the first operation doesn't accept void input.
      */
     @Test
-    public void testInvalidInput() throws Exception {
+    public void testInvalidInput() {
 
         OperationChain chain = new OperationChain("testChain");
         chain.add("o1").set("message", "Hello 1!");
@@ -323,8 +311,6 @@ public class OperationChainTest {
      * </pre>
      *
      * Test void input.
-     *
-     * @throws Exception
      */
     @Test
     public void testVoidInput() throws Exception {
@@ -352,8 +338,6 @@ public class OperationChainTest {
      * </pre>
      *
      * Test docref to doc adapter. Test precedence of adapters over void.
-     *
-     * @throws Exception
      */
     @Test
     public void testTypeAdapters() throws Exception {
@@ -380,8 +364,6 @@ public class OperationChainTest {
      * </pre>
      *
      * Test doc to docref adapter.
-     *
-     * @throws Exception
      */
     @Test
     public void testTypeAdapters2() throws Exception {
@@ -398,8 +380,6 @@ public class OperationChainTest {
     /**
      * This is testing optional parameters. Operation2 has an optional 'message' parameter. If this is not specified in
      * the operation parameter map the default value will be used which is 'default message'.
-     *
-     * @throws Exception
      */
     @Test
     public void testOptionalParam() throws Exception {
@@ -416,11 +396,9 @@ public class OperationChainTest {
     /**
      * This is testing required parameters. Operation1 has a required 'message' parameter. If this is not specified in
      * the operation parameter map an exception must be thrown.
-     *
-     * @throws Exception
      */
     @Test
-    public void testRequiredParam() throws Exception {
+    public void testRequiredParam() {
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
@@ -437,8 +415,6 @@ public class OperationChainTest {
     /**
      * This is testing adapters when injecting parameters. Operation 4 is taking a DocumentModel parameter. We will
      * inject a DocumentRef to test DocRef to DocModel adapter.
-     *
-     * @throws Exception
      */
     @Test
     public void testAdaptableParam() throws Exception {
@@ -456,8 +432,6 @@ public class OperationChainTest {
     /**
      * Set a context variable from the title of the input document and use it in the next operation (by returning it)
      * This is also testing boolean injection.
-     *
-     * @throws Exception
      */
     @Test
     public void testSetVar() throws Exception {

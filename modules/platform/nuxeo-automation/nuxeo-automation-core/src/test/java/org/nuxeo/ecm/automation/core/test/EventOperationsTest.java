@@ -88,11 +88,9 @@ public class EventOperationsTest {
 
     /**
      * Create | Copy | Set Property This is also testing {@link StringToProperties} adapter
-     *
-     * @throws Exception
      */
     @Test
-    public void testCreateNoteWhenFolderCreated() throws Exception {
+    public void testCreateNoteWhenFolderCreated() {
         // now create a new folder inside src
         DocumentModel folder = session.createDocumentModel("/src", "myfolder", "Folder");
         folder.setPropertyValue("dc:title", "MyFolder");
@@ -107,11 +105,9 @@ public class EventOperationsTest {
 
     /**
      * Create | Copy | Set Property in a post commit listener This is also testing {@link StringToProperties} adapter
-     *
-     * @throws Exception
      */
     @Test
-    public void testCreateNoteWhenFolderCreatedInPostCommit() throws Exception {
+    public void testCreateNoteWhenFolderCreatedInPostCommit() {
         // now create a new folder inside src
         DocumentModel folder = session.createDocumentModel("/src", "myfolder", "Folder");
         folder.setPropertyValue("dc:title", "MyFolder");
@@ -130,7 +126,7 @@ public class EventOperationsTest {
     }
 
     @Test
-    public void testCreateNoteWhenExpressionNOK() throws Exception {
+    public void testCreateNoteWhenExpressionNOK() {
         DocumentModel file = session.createDocumentModel("/src", "myfile", "File");
         file.setPropertyValue("dc:title", "MyFile");
         assertEquals("MyFile", file.getPropertyValue("dc:title"));
@@ -139,7 +135,7 @@ public class EventOperationsTest {
     }
 
     @Test
-    public void testCreateNoteWhenConditionOK() throws Exception {
+    public void testCreateNoteWhenConditionOK() {
         DocumentModel folder = session.createDocumentModel("/src", "myws", "Workspace");
         folder.setPropertyValue("dc:title", "My workspace");
         assertEquals("My workspace", folder.getPropertyValue("dc:title"));

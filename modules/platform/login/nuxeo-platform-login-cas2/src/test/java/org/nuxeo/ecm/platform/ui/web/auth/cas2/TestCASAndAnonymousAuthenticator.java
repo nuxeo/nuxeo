@@ -31,7 +31,6 @@ import static org.mockito.Mockito.when;
 import java.security.Principal;
 
 import javax.security.auth.login.LoginContext;
-import javax.servlet.ServletException;
 
 import org.junit.Test;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -75,12 +74,7 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
         assertEquals("Anonymous", ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
     }
 
-    /**
-     * TODO : create a random number for the ticket, add to the MockServiceValidators and associate it to the username
-     *
-     * @throws ServletException
-     */
-    protected void doAuthenticationToCasServer(String username) throws ServletException {
+    protected void doAuthenticationToCasServer(String username) {
         String casTicket = username;
         when(request.getParameter(eq(TICKET_KEY))).thenReturn(casTicket);
     }

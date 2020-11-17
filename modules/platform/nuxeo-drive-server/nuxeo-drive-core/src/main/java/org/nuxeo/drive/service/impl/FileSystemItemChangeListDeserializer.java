@@ -29,13 +29,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
 /**
- * {@link JsonDeserializer} for a {@link List<FileSystemItemChange>}.
+ * {@link JsonDeserializer} for a {@link List}&lt;{@link FileSystemItemChange}&gt;.
  *
  * @author Antoine Taillefer
  */
 public class FileSystemItemChangeListDeserializer extends JsonDeserializer<List<FileSystemItemChange>> {
 
-    static final TypeReference<List<FileSystemItemChangeImpl>> LIST_TYPE = new TypeReference<List<FileSystemItemChangeImpl>>() {
+    static final TypeReference<List<FileSystemItemChangeImpl>> LIST_TYPE = new TypeReference<>() {
     };
 
     @Override

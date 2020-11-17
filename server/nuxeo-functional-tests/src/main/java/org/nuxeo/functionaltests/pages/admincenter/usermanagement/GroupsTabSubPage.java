@@ -28,7 +28,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * Groups Tab Page of the users & groups management
+ * Groups Tab Page of the users &amp; groups management
  *
  * @since 7.2
  */

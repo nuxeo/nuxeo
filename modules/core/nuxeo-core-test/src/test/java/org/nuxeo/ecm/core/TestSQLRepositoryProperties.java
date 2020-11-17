@@ -1621,7 +1621,7 @@ public class TestSQLRepositoryProperties {
     /**
      * <pre>
      * write {"foo": "foo1"}
-     * => {"foo": "foo1", "bar": null}
+     * =&gt; {"foo": "foo1", "bar": null}
      * </pre>
      */
     @Test
@@ -1642,7 +1642,7 @@ public class TestSQLRepositoryProperties {
      * <pre>
      * from {"foo": "foo1", "bar": "bar1"}
      * write {"foo": "foo2"}
-     * => {"foo": "foo2", "bar": null}
+     * =&gt; {"foo": "foo2", "bar": null}
      * COMPAT {"foo": "foo2", "bar": "bar1"}
      * </pre>
      */
@@ -1683,7 +1683,7 @@ public class TestSQLRepositoryProperties {
      * <pre>
      * from {"foo": "foo1", "bar": "bar1"}
      * write {"foo": null}
-     * => {"foo": null, "bar": null}
+     * =&gt; {"foo": null, "bar": null}
      * COMPAT: {"foo": null, "bar": "bar1"}
      * </pre>
      */
@@ -1715,7 +1715,7 @@ public class TestSQLRepositoryProperties {
      * <pre>
      * from [{"foo": "foo1", "bar": "bar1"}]
      * write [{"foo": "foo2"}]
-     * => [{"foo": "foo2", "bar": null}]
+     * =&gt; [{"foo": "foo2", "bar": null}]
      * COMPAT: [{"foo": "foo2", "bar": "bar1"}]
      * </pre>
      */

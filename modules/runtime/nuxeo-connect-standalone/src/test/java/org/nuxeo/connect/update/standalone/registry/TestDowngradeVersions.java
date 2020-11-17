@@ -27,8 +27,6 @@ public class TestDowngradeVersions extends SharedFilesTest {
 
     /**
      * Test with downgrade on
-     *
-     * @throws Exception
      */
     @Test
     public void testDowngrade() throws Exception {

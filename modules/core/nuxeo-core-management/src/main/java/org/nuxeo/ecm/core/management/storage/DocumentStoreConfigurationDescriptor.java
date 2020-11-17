@@ -24,7 +24,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * Configure the repository to be used
  *
- * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ * @author Stephane Lacoin [aka matic]
  */
 @XObject("configuration")
 public class DocumentStoreConfigurationDescriptor {

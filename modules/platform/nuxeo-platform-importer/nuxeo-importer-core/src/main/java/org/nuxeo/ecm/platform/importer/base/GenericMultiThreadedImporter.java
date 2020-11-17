@@ -387,8 +387,6 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     /**
      * Creates the target container where the import will // TODO Auto-generated constructor stub }be done. Can be
      * overridden in subclasses.
-     *
-     * @return
      */
     protected DocumentModel createTargetContainer() {
         try {

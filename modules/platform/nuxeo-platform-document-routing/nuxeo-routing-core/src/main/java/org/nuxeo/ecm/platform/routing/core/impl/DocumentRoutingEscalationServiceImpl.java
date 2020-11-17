@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEscalationService {
 
-    private static Log log = LogFactory.getLog(DocumentRoutingEscalationServiceImpl.class);
+    private static final Log log = LogFactory.getLog(DocumentRoutingEscalationServiceImpl.class);
 
     public static final String queryForSuspendedNodesWithEscalation = "Select DISTINCT ecm:uuid from RouteNode WHERE ecm:currentLifeCycleState = 'suspended' "
             + "AND ( rnode:escalationRules/*1/executed = 0 OR rnode:escalationRules/*1/multipleExecution = 1 )";
@@ -157,8 +157,6 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
 
         /**
          * Used to check the executed status when the escalationRule is run by a worker in a work queue
-         *
-         * @param session
          */
         public boolean getExecutionStatus(EscalationRule rule, CoreSession session) {
             DocumentModel nodeDoc = session.getDocument(new IdRef(rule.getNode().getDocument().getId()));

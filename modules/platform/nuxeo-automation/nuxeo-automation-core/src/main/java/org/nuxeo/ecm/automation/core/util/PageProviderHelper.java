@@ -229,7 +229,7 @@ public class PageProviderHelper {
     /**
      * Returns a {@link DocumentModel searchDocumentModel} if the given {@code providerName} is not null and has a valid
      * {@link PageProviderDefinition definition}, or if the given {@code namedParameters} is not empty.
-     * <p/>
+     * <p>
      * {@link PageProviderDefinition Definition} is valid if either it has a type or if it declares where clause.
      *
      * @since 11.1

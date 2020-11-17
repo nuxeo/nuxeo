@@ -54,9 +54,6 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
      * Create a schema from a ComplexType
      *
      * @since 5.7
-     * @param complexType
-     * @param name
-     * @param ns
      */
     public SchemaImpl(ComplexType complexType, String name, Namespace ns, boolean isVersionWritabe) {
         super(null, SchemaNames.SCHEMAS, name, ns);
@@ -81,7 +78,7 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
 
     @Override
     public Type[] getTypes() {
-        return types.values().toArray(new Type[types.size()]);
+        return types.values().toArray(new Type[0]);
     }
 
     @Override

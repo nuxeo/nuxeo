@@ -38,7 +38,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
  * So when writing a collector you <b>must</b> ensure that the collected type is compatible with the one returned by the
  * operation method where the collector is used.
  * <p>
- * <b>IMPORTANT<> An implementation of this class must explicitly implements this interface (and not through its super
+ * <b>IMPORTANT</b> An implementation of this class must explicitly implements this interface (and not through its super
  * classes). This is to ease generic type detections. If not doing so your collector class will be rejected and the
  * operation using it invalid.
  *

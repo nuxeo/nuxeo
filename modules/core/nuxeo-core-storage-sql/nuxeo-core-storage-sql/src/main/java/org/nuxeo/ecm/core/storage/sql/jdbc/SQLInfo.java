@@ -285,7 +285,7 @@ public class SQLInfo {
     }
 
     /**
-     * Returns the list of columns to use for an {@INSERT} statement {@link #getInsertSql}.
+     * Returns the list of columns to use for an {@code INSERT} statement {@link #getInsertSql}.
      *
      * @param tableName the table name
      * @return the list of columns

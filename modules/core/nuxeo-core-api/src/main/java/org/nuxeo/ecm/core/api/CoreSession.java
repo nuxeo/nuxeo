@@ -1325,18 +1325,18 @@ public interface CoreSession {
     /**
      * Returns the life cycle of the document.
      *
-     * @see org.nuxeo.ecm.core.lifecycle
      * @param docRef the document reference
      * @return the life cycle as a string
+     * @implNote See org.nuxeo.ecm.core.lifecycle package
      */
     String getCurrentLifeCycleState(DocumentRef docRef);
 
     /**
      * Returns the life cycle policy of the document.
      *
-     * @see org.nuxeo.ecm.core.lifecycle
      * @param docRef the document reference
      * @return the life cycle policy
+     * @implNote See org.nuxeo.ecm.core.lifecycle package
      */
     String getLifeCyclePolicy(DocumentRef docRef);
 
@@ -1550,8 +1550,8 @@ public interface CoreSession {
 
     /**
      * Provides the full list of all permissions or groups of permissions that contain the given one (inclusive). It
-     * makes the method {@link org.nuxeo.ecm.core.security.SecurityService#getPermissionsToCheck(String)} available
-     * remote.
+     * makes the method {@code org.nuxeo.ecm.core.security.SecurityService#getPermissionsToCheck(String)} available
+     * remotely.
      *
      * @return the list, as an array of strings.
      */

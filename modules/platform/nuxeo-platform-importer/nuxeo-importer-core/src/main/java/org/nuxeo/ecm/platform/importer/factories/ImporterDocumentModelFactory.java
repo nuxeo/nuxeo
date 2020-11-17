@@ -46,7 +46,7 @@ public interface ImporterDocumentModelFactory {
      * Defines the process to execute when a folderish node creation error occurs.
      * <p>
      * This method is called by
-     * {@link GenericThreadedImportTask#doCreateFolderishNode(DocumentModel parent, SourceNode node)} if an exception is
+     * {@code GenericThreadedImportTask#doCreateFolderishNode(DocumentModel parent, SourceNode node)} if an exception is
      * thrown by {@link #createFolderishNode(CoreSession, DocumentModel, SourceNode)}.
      * </p>
      *
@@ -58,7 +58,7 @@ public interface ImporterDocumentModelFactory {
     /**
      * Defines the process to execute when a leaf node creation error occurs.
      * <p>
-     * This method is called by {@link GenericThreadedImportTask#doCreateLeafNode(DocumentModel parent, SourceNode node)}
+     * This method is called by {@code GenericThreadedImportTask#doCreateLeafNode(DocumentModel parent, SourceNode node)}
      * if an exception is thrown by {@link #createLeafNode(CoreSession, DocumentModel, SourceNode)}.
      * </p>
      *

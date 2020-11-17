@@ -39,17 +39,17 @@ import org.osgi.framework.Bundle;
  */
 public class ResourceContext {
 
-    private static ThreadLocal<ResourceContext> perThreadContext = new ThreadLocal<>();
+    private static final ThreadLocal<ResourceContext> perThreadContext = new ThreadLocal<>();
 
-    public final static void setContext(ResourceContext context) {
+    public static void setContext(ResourceContext context) {
         perThreadContext.set(context);
     }
 
-    public final static ResourceContext getContext() {
+    public static ResourceContext getContext() {
         return perThreadContext.get();
     }
 
-    public final static void destroyContext() {
+    public static void destroyContext() {
         perThreadContext.remove();
     }
 
@@ -145,8 +145,6 @@ public class ResourceContext {
 
     /**
      * The prefix used to reference templates in template source locators
-     *
-     * @return
      */
     public String getViewRoot() {
         return bundleStack.isEmpty() ? "" : "view:" + bundleStack.get(bundleStack.size() - 1).getBundleId() + ":/";

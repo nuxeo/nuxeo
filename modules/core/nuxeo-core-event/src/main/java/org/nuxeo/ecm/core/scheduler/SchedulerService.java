@@ -35,9 +35,6 @@ public interface SchedulerService {
 
     /**
      * Registers a schedule. Add all parameters to eventContext.
-     *
-     * @param schedule
-     * @param parameters
      */
     void registerSchedule(Schedule schedule, Map<String, Serializable> parameters);
 

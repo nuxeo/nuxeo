@@ -38,7 +38,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class NuxeoAdobeConnectorServiceImpl extends DefaultComponent implements NuxeoAdobeConnectorService {
 
-    private static Log log = LogFactory.getLog(NuxeoAdobeConnectorService.class);
+    private static final Log log = LogFactory.getLog(NuxeoAdobeConnectorService.class);
 
     /**
      * Component activated notification. Called when the component is activated. All component dependencies are resolved
@@ -67,12 +67,10 @@ public class NuxeoAdobeConnectorServiceImpl extends DefaultComponent implements 
      * requires a working application (all resolved bundles and components are active at that moment)
      *
      * @param context the component context. Use it to get the current bundle context
-     * @throws Exception
      */
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         registerAdobeCCClient();
-
     }
 
     protected void registerAdobeCCClient() {

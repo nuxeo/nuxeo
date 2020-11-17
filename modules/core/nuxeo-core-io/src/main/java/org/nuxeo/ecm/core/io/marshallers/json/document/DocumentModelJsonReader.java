@@ -63,14 +63,13 @@ import com.fasterxml.jackson.databind.JsonNode;
  * <pre>
  * {
  *   "entity-type": "document",
- *   "uid": "EXISTING_DOCUMENT_UID", <- use it to update an existing document
- *   "name": "DOCUMENT_NAME", <- use it to create an new document
- *   "type": "DOCUMENT_TYPE", <- use it to create an new document
- *   "changeToken": "CHANGE_TOKEN", <- pass the previous change token for optimistic locking
- *   "properties": ...  <-- see {@link DocumentPropertiesJsonReader}
+ *   "uid": "EXISTING_DOCUMENT_UID", &lt;- use it to update an existing document
+ *   "name": "DOCUMENT_NAME", &lt;- use it to create an new document
+ *   "type": "DOCUMENT_TYPE", &lt;- use it to create an new document
+ *   "changeToken": "CHANGE_TOKEN", &lt;- pass the previous change token for optimistic locking
+ *   "properties": ...  &lt;-- see {@link DocumentPropertiesJsonReader}
  * }
  * </pre>
- * </p>
  *
  * @since 7.2
  */

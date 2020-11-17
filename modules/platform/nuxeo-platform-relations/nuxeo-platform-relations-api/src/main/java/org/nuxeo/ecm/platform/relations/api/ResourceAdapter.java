@@ -53,7 +53,6 @@ public interface ResourceAdapter {
     /**
      * Resolves the resource to an applicative representation, for instance a {@link DocumentModel}.
      *
-     * @param resource
      * @param context a context map (holding for instance a {@link CoreSession} instance.
      * @return the representation
      */

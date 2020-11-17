@@ -80,7 +80,6 @@ public interface AutomationServer {
     /**
      * Returns all the registered writers
      *
-     * @return
      * @since 5.8
      */
     List<Class<? extends MessageBodyWriter<?>>> getWriters();

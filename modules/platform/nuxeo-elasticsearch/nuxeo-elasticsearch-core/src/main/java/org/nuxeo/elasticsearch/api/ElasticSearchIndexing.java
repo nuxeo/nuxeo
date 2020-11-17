@@ -90,7 +90,7 @@ public interface ElasticSearchIndexing {
     /**
      * Same as {@link ElasticSearchIndexing#indexNonRecursive(org.nuxeo.elasticsearch.commands.IndexingCommand)} but
      * process the list command using a bulk request.
-     * </p>
+     * <p>
      *
      * @since 7.1
      */

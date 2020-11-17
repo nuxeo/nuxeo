@@ -204,16 +204,12 @@ public abstract class DatabaseHelper {
         setOwner();
         setDatabaseName(DEFAULT_DATABASE_NAME);
         setBinaryManager(defaultBinaryManager, "");
-        Framework.addListener(new RuntimeServiceListener() {
-
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (RuntimeServiceEvent.RUNTIME_STOPPED == event.id) {
-                    try {
-                        tearDown();
-                    } catch (SQLException cause) {
-                        throw new AssertionError("Cannot teardown database", cause);
-                    }
+        Framework.addListener(event -> {
+            if (RuntimeServiceEvent.RUNTIME_STOPPED == event.id) {
+                try {
+                    tearDown();
+                } catch (SQLException cause) {
+                    throw new AssertionError("Cannot teardown database", cause);
                 }
             }
         });
@@ -228,9 +224,6 @@ public abstract class DatabaseHelper {
         owner = new Error("Database not released");
     }
 
-    /**
-     * @throws SQLException
-     */
     public void tearDown() throws SQLException {
         owner = null;
     }

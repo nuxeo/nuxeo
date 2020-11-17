@@ -83,8 +83,6 @@ public class BackingServiceConfigurator {
 
     /**
      * Calls all BackingChecker if they accept the current configuration.
-     *
-     * @throws ConfigurationException
      */
     public void verifyInstallation() throws ConfigurationException {
 

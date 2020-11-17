@@ -42,7 +42,6 @@ public interface UserMapperService {
      * @param mappingName the name of the contributed mapping to use
      * @param userObject the native userObject
      * @return the matching {@link NuxeoPrincipal}
-     * @throws NuxeoException
      */
     NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(String mappingName, Object userObject) throws NuxeoException;
 
@@ -54,7 +53,6 @@ public interface UserMapperService {
      * @param createIfNeeded flag to allow creation (default is true)
      * @param update flag to run update (default is true)
      * @return the matching {@link NuxeoPrincipal}
-     * @throws NuxeoException
      */
     NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(String mappingName, Object userObject, boolean createIfNeeded,
             boolean update, Map<String, Serializable> params) throws NuxeoException;
@@ -65,7 +63,6 @@ public interface UserMapperService {
      * @param mappingName the name of the contributed mapping to use
      * @param principal the {@link NuxeoPrincipal} to wrap
      * @param nativePrincipal the principal Object in the target system (can be null)
-     * @throws NuxeoException
      */
     Object wrapNuxeoPrincipal(String mappingName, NuxeoPrincipal principal, Object nativePrincipal,
             Map<String, Serializable> params) throws NuxeoException;
@@ -77,8 +74,6 @@ public interface UserMapperService {
 
     /**
      * returns the named mapper is any
-     *
-     * @param mappingName
      */
     UserMapper getMapper(String mappingName) throws NuxeoException;
 }

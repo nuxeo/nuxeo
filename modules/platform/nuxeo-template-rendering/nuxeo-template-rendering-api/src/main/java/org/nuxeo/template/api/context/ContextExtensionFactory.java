@@ -35,15 +35,8 @@ public interface ContextExtensionFactory {
      * <p>
      * If the method returns an object, it will be automatically pushed inside the context using the name defined in the
      * contribution.
-     * </p>
      * <p>
      * you can also directly push in the provided ctx map
-     * </p>
-     *
-     * @param currentDocument
-     * @param wrapper
-     * @param ctx
-     * @return
      */
     Object getExtension(DocumentModel currentDocument, DocumentWrapper wrapper, Map<String, Object> ctx);
 }

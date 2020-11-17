@@ -201,8 +201,8 @@ public class PlatformFunctions extends CoreFunctions {
      * object will produced myList.add(a) and the same for each object contained into the anotherList list.
      *
      * @param list List of values of type A
-     * @param values Value can be instance of java.util.Collection<Object> or an array of Objects or simply a scalar
-     *            Object. If Null, the parameter is ignored
+     * @param values Value can be instance of {@code Collection<Object>} or an array of {@code Objects} or simply a
+     *            scalar {@code Object}. If Null, the parameter is ignored
      * @return the list that contains the list contain and value (see value description)
      * @throws ClassCastException if in values there is at least one object type not compatible with the collection list
      */

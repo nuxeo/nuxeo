@@ -303,7 +303,7 @@ public final class Framework {
     protected static <T, E extends Throwable> T loginAndDo(ThrowableSupplier<NuxeoLoginContext, LoginException> authSupplier,
             ThrowableSupplier<T, E> supplier) throws E {
         try {
-            try (NuxeoLoginContext loginContext = authSupplier.get()) {
+            try (@SuppressWarnings("unused") NuxeoLoginContext loginContext = authSupplier.get()) {
                 return supplier.get();
             }
         } catch (LoginException e) {
@@ -312,7 +312,7 @@ public final class Framework {
     }
 
     /**
-     * Login as the system user. The returned {@NuxeoLoginContext} MUST be closed when done.
+     * Login as the system user. The returned {@link NuxeoLoginContext} MUST be closed when done.
      *
      * @return the login context, to be closed when done
      * @since 11.1
@@ -324,8 +324,8 @@ public final class Framework {
     }
 
     /**
-     * Login as the system user, remembering the originating user. The returned {@NuxeoLoginContext} MUST be closed when
-     * done.
+     * Login as the system user, remembering the originating user. The returned {@link NuxeoLoginContext} MUST be closed
+     * when done.
      *
      * @param originatingUser the originating user
      * @return the login context, to be closed when done
@@ -338,7 +338,7 @@ public final class Framework {
     }
 
     /**
-     * Login as the given user. The returned {@NuxeoLoginContext} MUST be closed when done.
+     * Login as the given user. The returned {@link NuxeoLoginContext} MUST be closed when done.
      *
      * @param username the username
      * @return the login context, to be closed when done
@@ -347,7 +347,7 @@ public final class Framework {
      */
     public static NuxeoLoginContext loginUser(String username) throws LoginException {
         checkRuntimeInitialized();
-        return (NuxeoLoginContext) getService(LoginAs.class).loginAs(username);
+        return getService(LoginAs.class).loginAs(username);
     }
 
     /**

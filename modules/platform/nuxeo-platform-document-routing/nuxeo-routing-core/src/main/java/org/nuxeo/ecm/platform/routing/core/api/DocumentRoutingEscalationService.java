@@ -33,7 +33,6 @@ public interface DocumentRoutingEscalationService {
      * Query all running workflows and returns a list of nodes that are suspended and have escalation rules that can be
      * inspected. Uses an unrestricted session.
      *
-     * @return
      * @since 5.7.2
      */
     List<String> queryForSuspendedNodesWithEscalation(CoreSession session);
@@ -41,7 +40,6 @@ public interface DocumentRoutingEscalationService {
     /**
      * Computes the list of escalation rules to be executed after their conditions are evaluated for the given node.
      *
-     * @return
      * @since 5.7.2
      */
     List<EscalationRule> computeEscalationRulesToExecute(GraphNode node);
@@ -49,7 +47,6 @@ public interface DocumentRoutingEscalationService {
     /**
      * Schedules for execution an escalation rule. Uses an unrestricted session.
      *
-     * @param rule
      * @since 5.7.2
      */
     void scheduleExecution(EscalationRule rule, CoreSession session);

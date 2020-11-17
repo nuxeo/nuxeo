@@ -303,7 +303,7 @@ public abstract class AbstractDirectory implements Directory {
      * Helper method to order entries.
      *
      * @param entries the list of entries.
-     * @param orderBy an ordered map of field name -> "asc" or "desc".
+     * @param orderBy an ordered map of field name -@gt; "asc" or "desc".
      */
     public void orderEntries(List<DocumentModel> entries, Map<String, String> orderBy) {
         entries.sort(new DocumentModelComparator(getSchema(), orderBy));

@@ -163,7 +163,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
      * Simple synchronizer to wake up when an in-JVM work is completed. Does not wake up on work completion from another
      * node in cluster mode.
      */
-    protected class WorkCompletionSynchronizer {
+    protected static class WorkCompletionSynchronizer {
         protected final ReentrantLock lock = new ReentrantLock();
 
         protected final Condition condition = lock.newCondition();
@@ -749,8 +749,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
         /**
          * Initiates a shutdown of this executor and asks for work instances to suspend themselves.
-         *
-         * @throws InterruptedException
          */
         public void shutdownAndSuspend() throws InterruptedException {
             try {

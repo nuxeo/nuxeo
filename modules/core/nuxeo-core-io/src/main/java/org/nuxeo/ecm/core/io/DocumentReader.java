@@ -34,7 +34,6 @@ public interface DocumentReader {
      * Reads a single document.
      *
      * @return the document read or null if there are no more documents to read
-     * @throws IOException
      */
     ExportedDocument read() throws IOException;
 
@@ -43,7 +42,6 @@ public interface DocumentReader {
      *
      * @param count the number of documents to read
      * @return the array of read documents or null if there are no more documents to read
-     * @throws IOException
      */
     ExportedDocument[] read(int count) throws IOException;
 

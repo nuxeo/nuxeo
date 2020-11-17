@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  * contributed, <code>DefaultDocumentModelFactory</code> is used;
  * <p>
  * Also allows configuration of the SourceNode implementation; if none is provided the
- * <code>FileSourceNode<code>> it's used by default
+ * {@link org.nuxeo.ecm.platform.importer.source.FileSourceNode} it's used by default
  */
 public interface DefaultImporterService {
 
@@ -39,12 +39,6 @@ public interface DefaultImporterService {
      * implementations; If no documentModelFactory implementation was contributed to the service,
      * <code>DefaultDocumentModelFactory</code> it's used If no SourceNode implementation was contributed to the
      * service, <code>FileSourceNode</code> it's used
-     *
-     * @param destionationPath
-     * @param sourcePath
-     * @param skipRootContainerCreation
-     * @param batchSize
-     * @param noImportingThreads
      */
     void importDocuments(String destionationPath, String sourcePath, boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads);
@@ -54,14 +48,6 @@ public interface DefaultImporterService {
      * implementations; If no documentModelFactory implementation was contributed to the service,
      * <code>DefaultDocumentModelFactory</code> it's used If no SourceNode implementation was contributed to the
      * service, <code>FileSourceNode</code> it's used
-     *
-     * @param executor
-     * @param destinationPath
-     * @param sourcePath
-     * @param skipRootContainerCreation
-     * @param batchSize
-     * @param noImportingThreads
-     * @param interactive
      */
     String importDocuments(AbstractImporterExecutor executor, String destinationPath, String sourcePath,
             boolean skipRootContainerCreation, int batchSize, int noImportingThreads, boolean interactive);
@@ -72,14 +58,6 @@ public interface DefaultImporterService {
      * importing; if one of them is not specified then the contributed one is used If no documentModelFactory
      * implementation was contributed to the service, <code>DefaultDocumentModelFactory</code> it's used If no
      * SourceNode implementation was contributed to the service, <code>FileSourceNode</code> it's used
-     *
-     * @param executor
-     * @param destinationPath
-     * @param sourcePath
-     * @param skipRootContainerCreation
-     * @param batchSize
-     * @param noImportingThreads
-     * @param interactive
      */
     String importDocuments(AbstractImporterExecutor executor, String leafType, String folderishType,
             String destinationPath, String sourcePath, boolean skipRootContainerCreation, int batchSize,
@@ -102,7 +80,6 @@ public interface DefaultImporterService {
 
     /**
      * @since 7.1
-     * @param repositoryName
      */
     void setRepository(String repositoryName);
 
@@ -133,7 +110,6 @@ public interface DefaultImporterService {
     /**
      * Sets whether or not the GenericMultiThreadedImporter should log performance metrics
      *
-     * @param enablePerfLogging
      * @since 9.3
      */
     void setEnablePerfLogging(boolean enablePerfLogging);

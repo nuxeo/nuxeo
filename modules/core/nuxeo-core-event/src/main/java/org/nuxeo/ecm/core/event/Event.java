@@ -187,7 +187,6 @@ public interface Event extends Serializable {
     /**
      * Set the commit flag.
      *
-     * @param isCommit
      * @see #isCommitEvent()
      */
     void setIsCommitEvent(boolean isCommit);

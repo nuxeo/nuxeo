@@ -57,7 +57,6 @@ public interface BinaryManager {
      *
      * @param blob the blob
      * @return the corresponding binary
-     * @throws IOException
      * @since 7.2
      */
     Binary getBinary(Blob blob) throws IOException;

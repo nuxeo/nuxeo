@@ -27,23 +27,23 @@ import com.google.inject.Binder;
  *
  * <pre>
  * CREATE FRAMEWORK
- * new feature()        --> constructor
+ * new feature()        --&gt; constructor
  * COLLECT DEFINED DEPLOYMENTS
- * feature.initialize() --> can be used to configure nuxeo home or register JNDI objects
+ * feature.initialize() --&gt; can be used to configure nuxeo home or register JNDI objects
  * START FRAMEWORK
  * feature.start()
  * feature.beforeRun()
- * feature.configure() --> can be used to add guice bindings and to dynamically deploy components using the harness
+ * feature.configure() --&gt; can be used to add guice bindings and to dynamically deploy components using the harness
  * for each test method:
  *   feature.testCreated()
  *   feature.beforeSetup
- *   feature.beforeMethodRun()  --> test method interceptor
+ *   feature.beforeMethodRun()  --&gt; test method interceptor
  *   testMethod()
- *   feature.afterMethodRun()   --> test method interceptor
+ *   feature.afterMethodRun()   --&gt; test method interceptor
  *   feature.afterTeardown()
- * feature.afterRun() --> cleanup that require framework to be started
+ * feature.afterRun() --&gt; cleanup that require framework to be started
  * STOP FRAMEWORK
- * feature.stop()  --> destructor
+ * feature.stop()  --&gt; destructor
  * </pre>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

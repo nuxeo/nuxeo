@@ -31,15 +31,15 @@ import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 public interface OrphanVersionRemovalFilter {
 
     /**
-     * This method will be called by the {@link OrphanVersionRemoverListener}. The method should return the List<String>
-     * versionUUIDs that can be deleted.
+     * This method will be called by the {@link OrphanVersionRemoverListener}. The method should return the
+     * List&lt;String&gt; versionUUIDs that can be deleted.
      * <p>
      * A "dummy" implementation will return the same list as the one received as parameter.
      *
      * @param session the CoreSession
      * @param deletedLiveDoc the Shallow DocumentModel that was deleted
      * @param versionUUIDs the UUIDs of the versions associated to the deleted document
-     * @return the "filtred" list of versions that can be removed
+     * @return the "filtered" list of versions that can be removed
      */
     List<String> getRemovableVersionIds(CoreSession session, ShallowDocumentModel deletedLiveDoc,
             List<String> versionUUIDs);

@@ -89,10 +89,6 @@ public class UninstallHandler extends DefaultObject {
         }
     }
 
-    /**
-     * @param filterOnPlatform
-     * @return
-     */
     private PlatformId getTargetPlatform(Boolean filterOnPlatform) {
         if (filterOnPlatform != Boolean.TRUE) {
             return null;

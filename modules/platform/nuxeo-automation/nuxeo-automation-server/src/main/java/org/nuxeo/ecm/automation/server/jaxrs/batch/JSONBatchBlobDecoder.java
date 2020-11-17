@@ -34,8 +34,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * <pre>
  * {
- *     "upload-batch": "BATCH_ID", <-- the batch id
- *     "upload-fileId": "FILE_ID" <-- the file id
+ *     "upload-batch": "BATCH_ID", &lt;-- the batch id
+ *     "upload-fileId": "FILE_ID"  &lt;-- the file id
  * }
  * </pre>
  *

@@ -39,7 +39,6 @@ public interface VersioningFileSystemItemFactory extends FileSystemItemFactory {
      * Returns true if the given {@link DocumentModel} needs to be versioned. An example of policy could be to version
      * the document if the last modification was done more than {@link #getVersioningDelay()} seconds ago.
      *
-     * @see DocumentBackedFileItem#versionIfNeeded(DocumentModel doc, CoreSession session)
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
      *             drive level, this method is not used anymore
      */
@@ -68,7 +67,6 @@ public interface VersioningFileSystemItemFactory extends FileSystemItemFactory {
     /**
      * Gets the increment option used when versioning a document.
      *
-     * @see DocumentBackedFileItem#versionIfNeeded(DocumentModel doc, CoreSession session)
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
      *             drive level, this method is not used anymore
      */

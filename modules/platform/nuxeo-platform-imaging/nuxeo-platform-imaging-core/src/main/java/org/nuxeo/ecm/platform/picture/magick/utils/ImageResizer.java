@@ -81,7 +81,7 @@ public class ImageResizer extends MagickExecutor {
      * Adapts width and height to a max conserving ratio.
      *
      * @since 10.3
-     * @return new Point to scale or the original one if none is > max.
+     * @return new Point to scale or the original one if none is &gt; max.
      */
     public static Point scaleToMax(int width, int height, int max) {
         if (max > 0 && (width > max || height > max)) {

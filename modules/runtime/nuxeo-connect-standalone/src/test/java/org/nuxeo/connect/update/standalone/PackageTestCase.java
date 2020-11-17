@@ -125,9 +125,6 @@ public abstract class PackageTestCase {
 
     /**
      * Default implementation sets a {@link StandaloneUpdateService}
-     *
-     * @throws IOException
-     * @throws PackageException
      */
     protected void setupService() throws IOException, PackageException {
         File tmpHome = Framework.createTempFile("tmphome", null);

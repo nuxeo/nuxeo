@@ -184,7 +184,7 @@ public class NuxeoContainer {
      * Exposes the {@link #rootContext}.
      *
      * @since 5.7
-     * @link https://jira.nuxeo.com/browse/NXP-10331
+     * @see <a href="https://jira.nuxeo.com/browse/NXP-10331">NXP-10331</a>
      */
     public static Context getRootContext() {
         return rootContext;

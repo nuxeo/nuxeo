@@ -34,7 +34,7 @@ public class PropertyDeprecationHandler {
     /**
      * Deprecated/removed properties map, its mapping is:
      * <p>
-     * schemaName -> propertyXPath -> fallbackXPath
+     * schemaName -&gt; propertyXPath -&gt; fallbackXPath
      * </p>
      */
     protected final Map<String, Map<String, String>> properties;

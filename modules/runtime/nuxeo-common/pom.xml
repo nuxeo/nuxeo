@@ -37,6 +37,13 @@
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
     </dependency>
+
+    <!-- for the javadoc of SequenceTracer -->
+    <dependency>
+      <groupId>io.opencensus</groupId>
+      <artifactId>opencensus-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
 </project>

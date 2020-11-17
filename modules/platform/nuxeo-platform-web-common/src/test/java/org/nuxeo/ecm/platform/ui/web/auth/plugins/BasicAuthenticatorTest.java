@@ -97,11 +97,8 @@ public class BasicAuthenticatorTest {
     /**
      * Mocks a request with a mocked header or cookie
      *
-     * @param name
-     * @param value
      * @param header adds a header if true
      * @param cookie adds a cookie if true
-     * @return
      */
     private HttpServletRequest getMockRequest(String name, String value, boolean header, boolean cookie) {
         HttpServletRequest req = mock(HttpServletRequest.class);

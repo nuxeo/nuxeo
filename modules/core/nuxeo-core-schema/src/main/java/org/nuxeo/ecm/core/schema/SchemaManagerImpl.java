@@ -171,7 +171,7 @@ public class SchemaManagerImpl implements SchemaManager {
     protected Map<String, Map<String, String>> removedProperties = new HashMap<>();
 
     /**
-     * Map holding property characteristics with: schema -> path -> characteristic.
+     * Map holding property characteristics with: schema -&gt; path -&gt; characteristic.
      *
      * @since 11.1
      */

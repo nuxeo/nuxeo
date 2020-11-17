@@ -62,9 +62,6 @@ public interface UserMapper {
 
     /**
      * Init callback to receive the parameters set inside the descriptor
-     *
-     * @param params
-     * @throws Exception
      */
     void init(Map<String, String> params) throws Exception;
 

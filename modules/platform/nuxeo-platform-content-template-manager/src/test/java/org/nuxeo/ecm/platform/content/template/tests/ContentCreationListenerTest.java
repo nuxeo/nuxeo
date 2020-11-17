@@ -37,7 +37,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 /**
  * Simple test class for ContentCreationListener
  *
- * @author JULIEN THIMONIER < jt@nuxeo.com >
+ * @author JULIEN THIMONIER
  **/
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)

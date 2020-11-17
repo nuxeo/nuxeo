@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Olivier Grisel
  *
  */
 
@@ -79,7 +79,7 @@ import org.nuxeo.ecm.directory.PasswordHelper;
 /**
  * This class represents a session against an LDAPDirectory.
  *
- * @author Olivier Grisel <ogrisel@nuxeo.com>
+ * @author Olivier Grisel
  */
 public class LDAPSession extends BaseSession {
 

@@ -144,7 +144,7 @@ public final class ExceptionUtils {
 
     /**
      * DON'T USE THIS METHOD - INTERNAL API.
-     * <p />
+     * <p>
      * This helper method is used to detect if an exception is caused by an {@link InterruptedException} or something
      * equivalent (for example {@link ClosedByInterruptException}. This is a temporary method, we should rely on the
      * {@link Thread#isInterrupted()} status in the future.

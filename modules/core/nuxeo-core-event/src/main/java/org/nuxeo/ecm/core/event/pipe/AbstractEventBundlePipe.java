@@ -78,16 +78,11 @@ public abstract class AbstractEventBundlePipe<T> implements EventBundlePipe {
 
     /**
      * de-hydrate the EventBundle to make it suitable for transmission on a Bus
-     *
-     * @param events
-     * @return
      */
     protected abstract T marshall(EventBundle events);
 
     /**
      * Do the actual push on the Bus
-     *
-     * @param message
      */
     protected abstract void send(T message);
 

@@ -33,8 +33,6 @@ public class AliasWrapper {
      * constitutes the first part of the AliasWrapper's identity. The second part of the identity is based on an
      * AliasType provided as a parameter. E.g., for a user identified by string "jdoe" and using a type "cert", the
      * produced alias string would be "jdoecert".
-     *
-     * @param userName
      */
     public AliasWrapper(String userName) {
         this.userName = userName;
@@ -43,8 +41,6 @@ public class AliasWrapper {
     /**
      * Provides the user name associated with the alias for generic checking of alias groups (an alias group would share
      * the name, not the id).
-     *
-     * @return
      */
     public String getUserName() {
         return userName;
