@@ -53,6 +53,8 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolverService;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
@@ -65,6 +67,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskComment;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.UserManagerResolver;
 import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -248,21 +251,9 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
     }
 
     protected Object fetchActor(String actorId) {
-        String unprefixedActorId = getUnprefixedActorId(actorId);
-        Object actor = userManager.getPrincipal(unprefixedActorId);
-        if (actor == null) {
-            actor = userManager.getGroup(unprefixedActorId);
-        }
-        return actor;
-    }
-
-    protected String getUnprefixedActorId(String actorId) {
-        if (actorId.contains(USER_PREFIX)) {
-            actorId = actorId.substring(USER_PREFIX.length() + SEPARATOR.length());
-        } else if (actorId.contains(GROUP_PREFIX)) {
-            actorId = actorId.substring(GROUP_PREFIX.length() + SEPARATOR.length());
-        }
-        return actorId;
+        ObjectResolver resolver = Framework.getService(ObjectResolverService.class)
+                                           .getResolver(UserManagerResolver.NAME, new HashMap<>());
+        return resolver.fetch(actorId);
     }
 
     protected void writeWorkflowInitiator(JsonGenerator jg, String workflowInitiator) throws IOException {

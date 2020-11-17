@@ -152,6 +152,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
      */
     public static final String ANCESTOR_GROUPS_PROPERTY_KEY = "ancestorGroups";
 
+    /**
+     * @since 11.4
+     */
+    public static final String USER_HAS_PARTIAL_CONTENT = "userHasPartialContent";
+
     protected final DirectoryService dirService;
 
     protected final CacheService cacheService;
@@ -1265,7 +1270,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
 
         try (Session userDir = dirService.open(userDirectoryName, context)) {
-            return userDir.getEntry(userName, fetchReferences);
+            DocumentModel userModel = userDir.getEntry(userName, fetchReferences);
+            if (userModel != null && !fetchReferences) {
+                userModel.putContextData(USER_HAS_PARTIAL_CONTENT, true);
+            }
+            return userModel;
         }
     }
 

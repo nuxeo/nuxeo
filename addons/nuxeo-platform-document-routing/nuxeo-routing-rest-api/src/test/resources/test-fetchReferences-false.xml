@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+ <component name="org.nuxeo.ecm.platform.restapi.server.routing.test">
+
+ <require>org.nuxeo.ecm.platform.usermanager.properties</require>
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.usermanager.resolver.fetchReferences">false</property>
+  </extension>
+
+</component>
