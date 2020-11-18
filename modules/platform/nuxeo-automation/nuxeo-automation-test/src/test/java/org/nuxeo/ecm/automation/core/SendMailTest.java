@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.mail.SmtpMailServerFeature;
+import org.nuxeo.mail.SmtpMailServerFeature.MailMessage;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -95,10 +96,25 @@ public class SendMailTest {
         OperationChain chain = new OperationChain("sendEMail");
         chain.add(FetchContextDocument.ID);
         chain.add(SetDocumentBlob.ID).set("file", blob);
-        chain.add(SendMail.ID).set("from", "test@nuxeo.org").set("to", "bs@nuxeo.com").set("subject", "test mail").set(
-                "asHTML", true).set("files", "file:content").set(
-                "message",
-                "<h3>Current doc: ${Document.path}</h3> title: ${Document['dc:title']}<p>Doc link: <a href=\"${docUrl}\">${Document.title}</a>");
+        String message = "<h3>Current doc: ${Document.path}</h3>" //
+                + "title= ${Document['dc:title']} " //
+                + "subject= ${subject} " //
+                + "from= ${from} " //
+                + "to= <#list to as toitem>${toitem} </#list>" //
+                + "cc= <#list cc as ccitem>${ccitem} </#list>" //
+                + "bcc= <#list bcc as bccitem>${bccitem} </#list>" //
+                + "replyto= <#list replyto as replytoitem>${replytoitem} </#list>" //
+                + "<p>Doc link: <a href=\"${docUrl}\">${Document.title}</a>";
+        chain.add(SendMail.ID)
+             .set("from", "test@nuxeo.org")
+             .set("to", "bs@nuxeo.com")
+             .set("cc", "user1@example.com, user2@example.com")
+             .set("bcc", "user3@example.com, user4@example.com")
+             .set("replyto", "other@example.com")
+             .set("subject", "test mail")
+             .set("asHTML", true)
+             .set("files", "file:content")
+             .set("message", message);
         service.run(ctx, chain);
         assertEquals(1, emailsResult.getSize());
 
@@ -106,6 +122,19 @@ public class SendMailTest {
         emailsResult.assertSender("test@nuxeo.org", 1);
         emailsResult.assertRecipient("bs@nuxeo.com", 1);
         assertTrue(emailsResult.hasSubject("test mail"));
-        assertNotNull(emailsResult.getMails().get(0).getDate());
+        MailMessage msg = emailsResult.getMails().get(0);
+        assertNotNull(msg.getDate());
+        // Check variable replacement in body
+        String expectedContent = "<h3>Current doc: /src</h3>" //
+                + "title= Source " //
+                + "subject= test mail " //
+                + "from= test@nuxeo.org " //
+                + "to= bs@nuxeo.com " //
+                + "cc= user1@example.com user2@example.com " //
+                + "bcc= user3@example.com user4@example.com " //
+                + "replyto= other@example.com " //
+                + "<p>Doc link: <a href=\"\">Source</a>";
+        String content = msg.getContent();
+        assertTrue(content, content.contains(expectedContent));
     }
 }
