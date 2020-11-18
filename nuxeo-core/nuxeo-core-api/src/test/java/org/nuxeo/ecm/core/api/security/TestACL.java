@@ -21,14 +21,28 @@
 
 package org.nuxeo.ecm.core.api.security;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import java.util.List;
 
+import javax.inject.Inject;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+
+@RunWith(FeaturesRunner.class)
+@Features(LogCaptureFeature.class)
 public class TestACL {
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
+
     private ACL acl;
 
     @Before
@@ -44,6 +58,17 @@ public class TestACL {
     @Test
     public void testGetName() {
         assertEquals("test acl", acl.getName());
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "DEBUG", loggerClass = ACLImpl.class)
+    public void testSetNullName() {
+        acl = new ACLImpl(null, false);
+        assertEquals(ACL.LOCAL_ACL, acl.getName());
+
+        // Check the message has been logged
+        List<String> eventsCaught = logCaptureResult.getCaughtEventMessages();
+        assertEquals("ACL name is null", eventsCaught.get(0));
     }
 
     @Test

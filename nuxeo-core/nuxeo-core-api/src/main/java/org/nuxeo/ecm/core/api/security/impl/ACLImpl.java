@@ -32,6 +32,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
@@ -56,6 +57,13 @@ public class ACLImpl extends ArrayList<ACE> implements ACL {
     private final boolean isReadOnly;
 
     public ACLImpl(String name, boolean isReadOnly) {
+        if (name == null) {
+            log.debug("ACL name is null");
+            if (log.isTraceEnabled()) {
+                log.trace("ACL name is null", new NuxeoException("trace"));
+            }
+            name = LOCAL_ACL;
+        }
         this.name = name;
         this.isReadOnly = isReadOnly;
     }
