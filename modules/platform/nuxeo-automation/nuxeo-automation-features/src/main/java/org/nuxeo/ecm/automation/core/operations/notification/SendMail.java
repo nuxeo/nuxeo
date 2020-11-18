@@ -175,12 +175,12 @@ public class SendMail {
             map.put("toResolved", MailBox.fetchPersonsFromList(to, isStrict));
             map.put("from", from);
             map.put("fromResolved", MailBox.fetchPersonsFromString(from, isStrict));
-            map.put("from", cc);
-            map.put("fromResolved", MailBox.fetchPersonsFromList(cc, isStrict));
-            map.put("from", bcc);
-            map.put("fromResolved", MailBox.fetchPersonsFromList(bcc, isStrict));
-            map.put("from", replyto);
-            map.put("fromResolved", MailBox.fetchPersonsFromList(replyto, isStrict));
+            map.put("cc", cc);
+            map.put("ccResolved", MailBox.fetchPersonsFromList(cc, isStrict));
+            map.put("bcc", bcc);
+            map.put("bccResolved", MailBox.fetchPersonsFromList(bcc, isStrict));
+            map.put("replyto", replyto);
+            map.put("replytoResolved", MailBox.fetchPersonsFromList(replyto, isStrict));
             map.put("viewId", viewId);
             map.put("baseUrl", NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
             map.put("Runtime", Framework.getRuntime());
@@ -188,7 +188,7 @@ public class SendMail {
             msg.setSubject(subject, "UTF-8");
             msg.setSentDate(new Date());
 
-            addMailBoxInfo(msg);
+            addMailBoxInfo(msg, map);
 
             msg.send();
         } catch (NuxeoException | TemplateException | RenderingException | OperationException | MessagingException
@@ -212,30 +212,21 @@ public class SendMail {
     /**
      * @since 5.9.1
      */
-    private void addMailBoxInfo(Mailer.Message msg) throws MessagingException {
-        List<MailBox> persons = MailBox.fetchPersonsFromString(from, isStrict);
-        addMailBoxInfoInMessageHeader(msg, AS.FROM, persons);
-
-        persons = MailBox.fetchPersonsFromList(to, isStrict);
-        addMailBoxInfoInMessageHeader(msg, AS.TO, persons);
-
-        persons = MailBox.fetchPersonsFromList(cc, isStrict);
-        addMailBoxInfoInMessageHeader(msg, AS.CC, persons);
-
-        persons = MailBox.fetchPersonsFromList(bcc, isStrict);
-        addMailBoxInfoInMessageHeader(msg, AS.BCC, persons);
-
+    protected void addMailBoxInfo(Mailer.Message msg, Map<String, Object> map) throws MessagingException {
+        addMailBoxInfoInMessageHeader(msg, AS.FROM, (List<MailBox>) map.get("fromResolved"));
+        addMailBoxInfoInMessageHeader(msg, AS.TO, (List<MailBox>) map.get("toResolved"));
+        addMailBoxInfoInMessageHeader(msg, AS.CC, (List<MailBox>) map.get("ccResolved"));
+        addMailBoxInfoInMessageHeader(msg, AS.BCC, (List<MailBox>) map.get("bccResolved"));
         if (replyto != null && !replyto.isEmpty()) {
             msg.setReplyTo(null);
-            persons = MailBox.fetchPersonsFromList(replyto, isStrict);
-            addMailBoxInfoInMessageHeader(msg, AS.REPLYTO, persons);
+            addMailBoxInfoInMessageHeader(msg, AS.REPLYTO, (List<MailBox>) map.get("replytoResolved"));
         }
     }
 
     /**
      * @since 5.9.1
      */
-    private void addMailBoxInfoInMessageHeader(Message msg, AS as, List<MailBox> persons) throws MessagingException {
+    protected void addMailBoxInfoInMessageHeader(Message msg, AS as, List<MailBox> persons) throws MessagingException {
         for (MailBox person : persons) {
             msg.addInfoInMessageHeader(person.toString(), as);
         }
@@ -286,7 +277,7 @@ public class SendMail {
      * @param blobs: the Blob list where the blobs are put during property introspection
      */
     @SuppressWarnings("unchecked")
-    private void getBlob(Object o, List<Blob> blobs) {
+    protected void getBlob(Object o, List<Blob> blobs) {
         if (o instanceof List) {
             for (Object item : (List<Object>) o) {
                 getBlob(item, blobs);
