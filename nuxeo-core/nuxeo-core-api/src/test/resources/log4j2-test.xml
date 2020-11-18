@@ -12,9 +12,14 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
+
+    <!-- Required for test class TestACL -->
+    <Logger name="org.nuxeo.ecm.core.api.security.impl.ACLImpl" level="debug" />
+
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />
     </Root>
   </Loggers>
+
 </Configuration>
