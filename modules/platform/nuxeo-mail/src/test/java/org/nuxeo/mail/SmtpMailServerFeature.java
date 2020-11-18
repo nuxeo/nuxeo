@@ -36,7 +36,6 @@ import static org.nuxeo.mail.MailConstants.NUXEO_CONFIGURATION_MAIL_TRANSPORT_PO
 import static org.nuxeo.mail.MailConstants.NUXEO_CONFIGURATION_MAIL_TRANSPORT_PROTOCOL;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -81,8 +80,6 @@ public class SmtpMailServerFeature implements RunnerFeature {
 
     private static final Logger log = LogManager.getLogger(SmtpMailServerFeature.class);
 
-    protected static final int RETRIES = 1000;
-
     protected static final String SERVER_HOST = "127.0.0.1";
 
     protected static final String DEFAULT_MAIL_SENDER = "noreply@nuxeo.com";
@@ -121,16 +118,14 @@ public class SmtpMailServerFeature implements RunnerFeature {
      * Starts a dummy SMTP server {@link SimpleSmtpServer}.
      */
     protected void start() {
-        // Try to find an available server port number
-        int serverPort = getFreePort();
-
         // Create the server and start it
         try {
-            server = SimpleSmtpServer.start(serverPort);
+            server = SimpleSmtpServer.start(SimpleSmtpServer.AUTO_SMTP_PORT);
             result.skip = 0;
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
+        int serverPort = server.getPort();
         log.debug("Fake smtp server started on port: {}", serverPort);
 
         // backup previous Framework properties
@@ -206,27 +201,6 @@ public class SmtpMailServerFeature implements RunnerFeature {
         frameworkProperties.remove(NUXEO_CONFIGURATION_MAIL_TRANSPORT_PORT);
         // restore backup properties
         frameworkProperties.putAll(backupProperties);
-    }
-
-    /**
-     * Try to find a free port on which a socket will listening.
-     *
-     * @return a free port number if any
-     * @throws NuxeoException if we cannot find a free port
-     * @since 11.1
-     */
-    protected int getFreePort() {
-        int retryCount = 0;
-        while (retryCount < RETRIES) {
-            try (ServerSocket socket = new ServerSocket(0)) {
-                socket.setReuseAddress(true);
-                return socket.getLocalPort();
-            } catch (IOException e) {
-                retryCount++;
-                log.trace("Failed to allocate port on retry {}", retryCount, e);
-            }
-        }
-        throw new NuxeoException(String.format("Unable to find free port after %d retries", retryCount));
     }
 
     /**
