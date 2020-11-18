@@ -31,7 +31,7 @@ void getReleaseVersion(version) {
 }
 
 void getLatestVersion() {
-  return 'latest'
+  return "${REFERENCE_BRANCH}"
 }
 
 void dockerPull(String image) {
