@@ -45,7 +45,7 @@ import com.google.common.collect.Lists;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ACLImpl extends ArrayList<ACE>implements ACL {
+public class ACLImpl extends ArrayList<ACE> implements ACL {
 
     private static final long serialVersionUID = 5332101749929771434L;
 
@@ -86,7 +86,7 @@ public class ACLImpl extends ArrayList<ACE>implements ACL {
     }
 
     private void warnForDuplicateACEs(ACE[] aces) {
-        if (! log.isWarnEnabled() || ACL.INHERITED_ACL.equals(name)) {
+        if (!log.isWarnEnabled() || ACL.INHERITED_ACL.equals(name)) {
             return;
         }
         Set<ACE> aceSet = new HashSet<>(aces.length);
@@ -96,8 +96,8 @@ public class ACLImpl extends ArrayList<ACE>implements ACL {
                 if (log.isTraceEnabled()) {
                     throwable = new Throwable();
                 }
-                log.warn("Setting an ACL with at least one duplicate entry: " + ace + ", ACL entries: " + Arrays.toString(aces),
-                        throwable);
+                log.warn("Setting an ACL with at least one duplicate entry: " + ace + ", ACL entries: "
+                        + Arrays.toString(aces), throwable);
                 break;
             }
         }
