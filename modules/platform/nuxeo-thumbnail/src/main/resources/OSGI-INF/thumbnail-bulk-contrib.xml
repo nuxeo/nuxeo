@@ -11,7 +11,7 @@
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="recomputeThumbnails"
       class="org.nuxeo.ecm.platform.thumbnail.action.RecomputeThumbnailsAction" defaultConcurrency="2"
-      defaultPartitions="2">
+      defaultPartitions="6">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
     </streamProcessor>
   </extension>
