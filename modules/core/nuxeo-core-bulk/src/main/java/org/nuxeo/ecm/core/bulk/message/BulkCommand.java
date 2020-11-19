@@ -49,6 +49,10 @@ public class BulkCommand implements Serializable {
 
     protected String query;
 
+    // @scince 11.4
+    @Nullable
+    protected Long queryLimit;
+
     protected String username;
 
     @Nullable
@@ -82,6 +86,7 @@ public class BulkCommand implements Serializable {
         this.username = builder.username;
         this.repository = builder.repository;
         this.query = builder.query;
+        this.queryLimit = builder.queryLimit;
         this.action = builder.action;
         this.bucketSize = builder.bucketSize;
         this.batchSize = builder.batchSize;
@@ -150,6 +155,15 @@ public class BulkCommand implements Serializable {
         return batchSize;
     }
 
+    /**
+     * When greater than 0, the limit applied to the query results
+     *
+     * @since 11.4
+     */
+    public Long getQueryLimit() {
+        return queryLimit;
+    }
+
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
@@ -163,6 +177,10 @@ public class BulkCommand implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    public void setQueryLimit(Long limit) {
+        this.queryLimit = limit;
     }
 
     public void setBatchSize(int batchSize) {
@@ -185,6 +203,8 @@ public class BulkCommand implements Serializable {
         protected final String action;
 
         protected final String query;
+
+        protected Long queryLimit;
 
         protected String repository;
 
@@ -251,6 +271,29 @@ public class BulkCommand implements Serializable {
          */
         public Builder repository(String name) {
             this.repository = name;
+            return this;
+        }
+
+        /**
+         * Limits the query result.
+         *
+         * @since 11.4
+         */
+        public Builder queryLimit(long limit) {
+            if (limit <= 0) {
+                throw new IllegalArgumentException(String.format("Invalid limit: %d, must be > 0", limit));
+            }
+            this.queryLimit = limit;
+            return this;
+        }
+
+        /**
+         * Unlimited query results, this will override the action defaultQueryLimit.
+         *
+         * @since 11.4
+         */
+        public Builder queryUnlimited() {
+            this.queryLimit = 0L;
             return this;
         }
 

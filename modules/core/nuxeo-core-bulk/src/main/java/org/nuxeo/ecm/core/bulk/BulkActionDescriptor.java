@@ -66,6 +66,10 @@ public class BulkActionDescriptor implements Descriptor {
     @XNode("@defaultScroller")
     public String defaultScroller;
 
+    // @since 11.4 the maximum number of items that the scroller can return
+    @XNode("@defaultQueryLimit")
+    public Long defaultQueryLimit;
+
     @Override
     public String getId() {
         return name;
@@ -77,6 +81,11 @@ public class BulkActionDescriptor implements Descriptor {
 
     public Integer getBatchSize() {
         return batchSize;
+    }
+
+    // @since 11.4
+    public Long getDefaultQueryLimit() {
+        return defaultQueryLimit;
     }
 
     /**
