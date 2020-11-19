@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.work.service" point="queues">
     <queue id="renditionBuilder">
-      <maxThreads>1</maxThreads>
+      <maxThreads>2</maxThreads>
       <category>renditionBuilder</category>
     </queue>
   </extension>
