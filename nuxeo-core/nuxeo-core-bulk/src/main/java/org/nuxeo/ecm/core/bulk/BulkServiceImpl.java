@@ -113,6 +113,9 @@ public class BulkServiceImpl implements BulkService {
                 command.setBatchSize(adminService.getBatchSize(command.getAction()));
             }
         }
+        if (command.getQueryLimit() == null) {
+            command.setQueryLimit(adminService.getQueryLimit(command.getAction()));
+        }
         if (command.getScroller() == null) {
             String actionScroller = adminService.getDefaultScroller(command.getAction());
             if (!isBlank(actionScroller)) {

@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.avro.reflect.AvroDefault;
 import org.apache.avro.reflect.AvroEncode;
 import org.apache.avro.reflect.Nullable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -110,6 +111,9 @@ public class BulkStatus implements AsyncStatus<String> {
 
     @Nullable
     protected Long processingDurationMillis;
+
+    @AvroDefault("false")
+    protected boolean queryLimitReached;
 
     @Nullable
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
@@ -208,6 +212,9 @@ public class BulkStatus implements AsyncStatus<String> {
         if (update.errorMessage != null && errorMessage == null) {
             errorMessage = update.errorMessage;
         }
+        if (update.queryLimitReached) {
+            queryLimitReached = true;
+        }
         checkForCompletedState();
     }
 
@@ -304,6 +311,22 @@ public class BulkStatus implements AsyncStatus<String> {
 
     public void setCompletedTime(@NotNull Instant completedTime) {
         this.completedTime = completedTime.toEpochMilli();
+    }
+
+    /**
+     * Returns true if the query used by the scroller has been limited.
+     *
+     * @since 11.4
+     */
+    public boolean isQueryLimitReached() {
+        return queryLimitReached;
+    }
+
+    /**
+     * @since 11.4
+     */
+    public void setQueryLimitReached(boolean queryLimitReached) {
+        this.queryLimitReached = queryLimitReached;
     }
 
     @Override

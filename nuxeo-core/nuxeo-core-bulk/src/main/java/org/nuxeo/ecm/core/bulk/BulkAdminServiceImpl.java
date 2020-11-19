@@ -165,7 +165,7 @@ public class BulkAdminServiceImpl implements BulkAdminService {
                                                                        .retryPolicy(retryPolicy)
                                                                        .build();
         settings.setPolicy(SCROLLER_NAME, statusPolicy);
-        int scrollSize = Integer.parseInt(confService.getProperty(BULK_SCROLL_SIZE_PROPERTY, DEFAULT_SCROLL_SIZE));
+        int scrollBatchSize = Integer.parseInt(confService.getProperty(BULK_SCROLL_SIZE_PROPERTY, DEFAULT_SCROLL_SIZE));
         int scrollKeepAlive = Integer.parseInt(
                 confService.getProperty(BULK_SCROLL_KEEP_ALIVE_PROPERTY, DEFAULT_SCROLL_KEEP_ALIVE));
         boolean scrollProduceImmediate = Boolean.parseBoolean(
@@ -174,7 +174,7 @@ public class BulkAdminServiceImpl implements BulkAdminService {
                 DEFAULT_SCROLL_TRANSACTION_TIMEOUT);
         int scrollProduceImmediateThreshold = confService.getInteger(BULK_SCROLL_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY)
                 .orElse(DEFAULT_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY);
-        streamProcessor = streamManager.registerAndCreateProcessor("bulk", getTopology(scrollSize, scrollKeepAlive, transactionTimeout, scrollProduceImmediate, scrollProduceImmediateThreshold), settings);
+        streamProcessor = streamManager.registerAndCreateProcessor("bulk", getTopology(scrollBatchSize, scrollKeepAlive, transactionTimeout, scrollProduceImmediate, scrollProduceImmediateThreshold), settings);
     }
 
     protected Topology getTopology(int scrollBatchSize, int scrollKeepAlive, Duration transactionTimeout, boolean scrollProduceImmediate, int scrollProduceImmediateThreshold) {
@@ -187,10 +187,13 @@ public class BulkAdminServiceImpl implements BulkAdminService {
         }
         mapping.add(String.format("o%s:%s", i, STATUS_STREAM));
         return Topology.builder()
-                       .addComputation( //
-                               () -> new BulkScrollerComputation(SCROLLER_NAME, actions.size() + 1, scrollBatchSize,
-                                       scrollKeepAlive, transactionTimeout, scrollProduceImmediate, scrollProduceImmediateThreshold), //
-                               mapping)
+                       .addComputation(() -> BulkScrollerComputation.builder(SCROLLER_NAME, actions.size() + 1)
+                               .setScrollBatchSize(scrollBatchSize)
+                               .setScrollKeepAliveSeconds(scrollKeepAlive)
+                               .setTransactionTimeout(transactionTimeout)
+                               .setProduceImmediate(scrollProduceImmediate)
+                               .setProduceImmediateThreshold(
+                                       scrollProduceImmediateThreshold).build(), mapping)
                        .addComputation(() -> new BulkStatusComputation(STATUS_NAME),
                                Arrays.asList(INPUT_1 + ":" + STATUS_STREAM, //
                                        OUTPUT_1 + ":" + DONE_STREAM))
@@ -210,6 +213,11 @@ public class BulkAdminServiceImpl implements BulkAdminService {
     @Override
     public int getBatchSize(String action) {
         return descriptors.get(action).getBatchSize();
+    }
+
+    @Override
+    public Long getQueryLimit(String action) {
+        return descriptors.get(action).getDefaultQueryLimit();
     }
 
     @Override

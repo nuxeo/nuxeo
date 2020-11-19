@@ -40,6 +40,13 @@ public interface BulkAdminService {
     int getBatchSize(String action);
 
     /**
+     * Returns the default query limit for the bulk action.
+     *
+     * @since 11.4
+     */
+    Long getQueryLimit(String action);
+
+    /**
      * @since 11.1
      */
     String getDefaultScroller(String action);
