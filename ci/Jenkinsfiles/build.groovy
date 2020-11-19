@@ -67,7 +67,7 @@ String getVersion() {
 String getReleaseVersion() {
   String nuxeoVersion = readMavenPom().getVersion()
   String noSnapshot = nuxeoVersion.replace('-SNAPSHOT', '')
-  String version = noSnapshot + '.0' // first version ever
+  String version = noSnapshot + '.1' // first version ever
 
   // find the latest tag if any
   sh "git fetch origin 'refs/tags/v${noSnapshot}*:refs/tags/v${noSnapshot}*'"
@@ -830,6 +830,8 @@ pipeline {
               if (nsExists) {
                 // Previous preview deployment needs to be scaled to 0 to be replaced correctly
                 sh "kubectl -n ${PREVIEW_NAMESPACE} scale deployment nuxeo-preview --replicas=0"
+              } else {
+                sh "kubectl create namespace ${PREVIEW_NAMESPACE}"
               }
               sh "kubectl --namespace platform get secret kubernetes-docker-cfg -ojsonpath='{.data.\\.dockerconfigjson}' | base64 --decode > /tmp/config.json"
               sh """kubectl create secret generic kubernetes-docker-cfg \
