@@ -27,11 +27,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
@@ -56,7 +56,7 @@ public class ACLImpl extends ArrayList<ACE> implements ACL {
     private final boolean isReadOnly;
 
     public ACLImpl(String name, boolean isReadOnly) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "ACL name can't be null");
         this.isReadOnly = isReadOnly;
     }
 
