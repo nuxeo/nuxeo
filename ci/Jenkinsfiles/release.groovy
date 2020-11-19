@@ -176,17 +176,6 @@ pipeline {
       }
     }
 
-    // TODO: promote Maven artifacts form staging to production
-    // stage('Promote Maven artifacts') {
-    //   when {
-    //     not {
-    //       environment name: 'DRY_RUN', value: 'true'
-    //     }
-    //   }
-    //   steps {
-    //   }
-    // }
-
     stage('Upload Nuxeo Packages') {
       when {
         not {
