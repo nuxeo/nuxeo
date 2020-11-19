@@ -221,6 +221,7 @@ nuxeo.core.bulk.scroller.concurrencyMax=2
 nuxeo.core.bulk.status.concurrencyMax=2
 nuxeo.core.bulk.done.concurrencyMax=1
 nuxeo.core.bulk.csvExport.scroller=elastic
+nuxeo.core.bulk.csvExport.queryLimit=100000
 
 # Stream Health Check probe activation
 nuxeo.stream.health.check.enabled=true
