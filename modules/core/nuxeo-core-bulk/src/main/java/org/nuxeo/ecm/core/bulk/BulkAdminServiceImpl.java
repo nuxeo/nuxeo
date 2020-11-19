@@ -100,6 +100,11 @@ public class BulkAdminServiceImpl implements BulkAdminService {
     }
 
     @Override
+    public Long getQueryLimit(String action) {
+        return descriptors.get(action).getDefaultQueryLimit();
+    }
+
+    @Override
     public String getDefaultScroller(String action) {
         return descriptors.get(action).getDefaultScroller();
     }
