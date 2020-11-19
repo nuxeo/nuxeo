@@ -18,10 +18,6 @@
  */
 package org.nuxeo.ecm.core.bulk.action;
 
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
-import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
-import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,6 +36,10 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
+
 public class WordCountAction implements StreamProcessorTopology {
 
     protected static final String ACTION_NAME = "testWordCount";
@@ -50,11 +50,12 @@ public class WordCountAction implements StreamProcessorTopology {
 
     @Override
     public Topology getTopology(Map<String, String> options) {
+        String suffix = options.getOrDefault("suffix", "");
         return Topology.builder()
-                       .addComputation(WordCountComputation::new, Arrays.asList(INPUT_1 + ":" + ACTION_STREAM, //
-                               OUTPUT_1 + ":" + AGGREGATOR_STREAM))
-                       .addComputation(CountAggregatorComputation::new, Arrays.asList(INPUT_1 + ":" + AGGREGATOR_STREAM, //
-                               OUTPUT_1 + ":" + STATUS_STREAM))
+                .addComputation(WordCountComputation::new, Arrays.asList(INPUT_1 + ":" + ACTION_STREAM + suffix, //
+                        OUTPUT_1 + ":" + AGGREGATOR_STREAM + suffix))
+                .addComputation(CountAggregatorComputation::new, Arrays.asList(INPUT_1 + ":" + AGGREGATOR_STREAM + suffix, //
+                        OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
 
