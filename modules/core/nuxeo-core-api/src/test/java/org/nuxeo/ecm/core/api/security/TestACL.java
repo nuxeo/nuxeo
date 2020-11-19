@@ -21,11 +21,12 @@
 
 package org.nuxeo.ecm.core.api.security;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 
 public class TestACL {
@@ -44,6 +45,16 @@ public class TestACL {
     @Test
     public void testGetName() {
         assertEquals("test acl", acl.getName());
+    }
+
+    @Test
+    public void testExceptionOnNullName() {
+        try {
+            acl = new ACLImpl(null, false);
+            fail("ACL is not supposed to be created.");
+        } catch (Exception e) {
+            assertEquals("ACL name can't be null", e.getMessage());
+        }
     }
 
     @Test
