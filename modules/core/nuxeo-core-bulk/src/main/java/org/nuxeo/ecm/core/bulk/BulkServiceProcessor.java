@@ -75,10 +75,15 @@ public class BulkServiceProcessor implements StreamProcessorTopology {
         int scrollProduceImmediateThreshold = confService.getInteger(BULK_SCROLL_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY)
                                                          .orElse(DEFAULT_PRODUCE_IMMEDIATE_THRESHOLD_PROPERTY);
         return Topology.builder()
-                       .addComputation( //
-                               () -> new BulkScrollerComputation(SCROLLER_NAME, actions.size() + 1, scrollBatchSize,
-                                       scrollKeepAlive, transactionTimeout, scrollProduceImmediate,
-                                       scrollProduceImmediateThreshold), //
+                       .addComputation(
+                               () -> BulkScrollerComputation.builder(SCROLLER_NAME, actions.size() + 1)
+                                                            .setScrollBatchSize(scrollBatchSize)
+                                                            .setScrollKeepAliveSeconds(scrollKeepAlive)
+                                                            .setTransactionTimeout(transactionTimeout)
+                                                            .setProduceImmediate(scrollProduceImmediate)
+                                                            .setProduceImmediateThreshold(
+                                                                    scrollProduceImmediateThreshold)
+                                                            .build(),
                                mapping)
                        .addComputation(() -> new BulkStatusComputation(STATUS_NAME),
                                Arrays.asList(INPUT_1 + ":" + STATUS_STREAM, //
