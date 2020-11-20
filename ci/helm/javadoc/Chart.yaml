@@ -1,0 +1,5 @@
+apiVersion: v1
+description: A Helm chart for Nuxeo Javadoc
+icon: https://doc.nuxeo.com/assets/icons/favicon-32x32.png
+name: javadoc
+version: 0.1.0
