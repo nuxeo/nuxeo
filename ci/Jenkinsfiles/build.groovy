@@ -880,7 +880,7 @@ pipeline {
       script {
         if (!isPullRequest() && env.DRY_RUN != 'true') {
           currentBuild.description = "Build ${VERSION}"
-          if(!hudson.model.Result.SUCCESS.toString().equals(currentBuild.getPreviousBuild()?.getResult())) {
+          if (!hudson.model.Result.SUCCESS.toString().equals(currentBuild.getPreviousBuild()?.getResult())) {
             slackSend(channel: "${SLACK_CHANNEL}", color: 'good', message: "Successfully built nuxeo/nuxeo ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
           }
         }
