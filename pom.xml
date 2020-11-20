@@ -5145,6 +5145,30 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.2.0</version>
+          <configuration>
+            <additionalJOption>--no-module-directories</additionalJOption>
+            <doclint>all,-missing</doclint>
+            <show>protected</show>
+            <linksource>true</linksource>
+            <tags>
+              <!-- took from https://bugs.openjdk.java.net/browse/JDK-8068562 -->
+              <tag>
+                <name>apiNote</name>
+                <placement>a</placement>
+                <head>API Note:</head>
+              </tag>
+              <tag>
+                <name>implSpec</name>
+                <placement>a</placement>
+                <head>Implementation Requirements:</head>
+              </tag>
+              <tag>
+                <name>implNote</name>
+                <placement>a</placement>
+                <head>Implementation Note:</head>
+              </tag>
+            </tags>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -6088,45 +6112,14 @@
       <build>
         <plugins>
           <plugin>
-            <inherited>true</inherited>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <configuration>
-              <doclint>all,-missing</doclint>
-              <show>protected</show>
-              <linksource>true</linksource>
-              <tags>
-                <!-- took from https://bugs.openjdk.java.net/browse/JDK-8068562 -->
-                <tag>
-                  <name>apiNote</name>
-                  <placement>a</placement>
-                  <head>API Note:</head>
-                </tag>
-                <tag>
-                  <name>implSpec</name>
-                  <placement>a</placement>
-                  <head>Implementation Requirements:</head>
-                </tag>
-                <tag>
-                  <name>implNote</name>
-                  <placement>a</placement>
-                  <head>Implementation Note:</head>
-                </tag>
-              </tags>
-            </configuration>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
                 <goals>
                   <goal>jar</goal>
                 </goals>
-              </execution>
-              <execution>
-                <id>aggregate</id>
-                <goals>
-                  <goal>aggregate</goal>
-                </goals>
-                <phase>site</phase>
               </execution>
             </executions>
           </plugin>
@@ -6137,26 +6130,30 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
+            <reportSets>
+              <!-- run aggregator on top level pom -->
+              <reportSet>
+                <id>aggregate-no-fork</id>
+                <inherited>false</inherited>
+                <reports>
+                  <report>aggregate-no-fork</report>
+                </reports>
+              </reportSet>
+              <!-- run nothing on children -->
+              <reportSet>
+                <configuration>
+                  <skip>true</skip>
+                </configuration>
+              </reportSet>
+            </reportSets>
             <configuration>
-              <maxmemory>768m</maxmemory>
-              <windowtitle>${project.name} ${project.version} API Documentation</windowtitle>
-              <doctitle>${project.name} ${project.version} API Documentation</doctitle>
-              <header>${project.name} ${project.version}</header>
-              <links>
-                <link>https://docs.oracle.com/en/java/javase/11/docs/api/</link>
-                <link>https://docs.oracle.com/en/java/javase/11/</link>
-                <link>http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/</link>
-                <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
-                <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
-                <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
-                <link>http://jakarta.apache.org/commons/io/apidocs/</link>
-                <link>http://junit.sourceforge.net/javadoc/</link>
-                <link>http://logging.apache.org/log4j/docs/api/</link>
-                <link>http://www.restlet.org/documentation/2.0/jse/api/</link>
-                <link>http://docs.jboss.org/hibernate/core/3.3/api/</link>
-                <link>http://docs.jboss.com/seam/1.1.5.GA/api/</link>
-                <link>http://labs.jboss.com/jbossremoting/docs/api/</link>
-              </links>
+              <!-- skip modules having issues to be built due to test-jars -->
+              <skippedModules>nuxeo-core-test,nuxeo-automation-test,nuxeo-platform-test</skippedModules>
+              <windowtitle>Nuxeo ${project.version} API Documentation</windowtitle>
+              <doctitle>Nuxeo ${project.version} API Documentation</doctitle>
+              <header>Nuxeo ${project.version}</header>
+              <detectLinks>true</detectLinks>
+              <detectJavaApiLink>true</detectJavaApiLink>
               <groups>
                 <group>
                   <title>Nuxeo Common Packages</title>
