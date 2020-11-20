@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: javadoc
+  labels:
+    app: javadoc
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: javadoc
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: javadoc
+        release: {{ .Release.Name }}
+{{- with .Values.javadoc.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.javadoc.podAnnotations }}
+      annotations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+    spec:
+{{- if .Values.javadoc.image.pullSecrets }}
+      imagePullSecrets:
+      - name: {{ .Values.javadoc.image.pullSecrets }}
+{{- end }}
+      containers:
+      - name: javadoc
+        image: "{{ .Values.javadoc.image.repository }}:{{ .Values.javadoc.image.tag }}"
+        imagePullPolicy: {{ .Values.javadoc.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.javadoc.service.internalPort }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.javadoc.probePath }}
+            port: {{ .Values.javadoc.service.internalPort }}
+          initialDelaySeconds: {{ .Values.javadoc.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.javadoc.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.javadoc.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.javadoc.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.javadoc.readinessProbe.failureThreshold }}
+{{- if .Values.javadoc.livenessProbe }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.javadoc.probePath }}
+            port: {{ .Values.javadoc.service.internalPort }}
+          initialDelaySeconds: {{ .Values.javadoc.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.javadoc.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.javadoc.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.javadoc.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.javadoc.livenessProbe.failureThreshold }}
+{{- end }}

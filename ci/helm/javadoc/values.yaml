@@ -1,0 +1,55 @@
+expose:
+  Annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: hook-succeeded
+  config:
+    # add tls configuration
+    domain: platform.dev.nuxeo.com
+    exposer: Ingress
+    http: true
+    tlsacme: true
+    tlsSecretName: platform-cluster-tls
+    urltemplate: '{{.Namespace}}-{{.Service}}.{{.Domain}}' # ie: nuxeo-preview-master-javadoc
+
+cleanup:
+  Args:
+    - --cleanup
+  Annotations:
+    helm.sh/hook: pre-delete
+    helm.sh/hook-delete-policy: hook-succeeded
+
+javadoc:
+  podLabels:
+    branch: "$BRANCH_NAME"
+    team: platform
+    resource: pod
+    usage: preview
+  service:
+    labels:
+      team: platform
+      resource: service
+      usage: preview
+    type: ClusterIP
+    externalPort: 80
+    internalPort: 80
+    annotations:
+      fabric8.io/expose: "true"
+      fabric8.io/ingress.annotations: |-
+        kubernetes.io/ingress.class: nginx
+  image:
+    repository: $DOCKER_REGISTRY/nuxeo/nuxeo-javadoc
+    tag: $VERSION
+    pullPolicy: Always
+    pullSecrets: kubernetes-docker-cfg
+  livenessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 10
+    successThreshold: 1
+    failureThreshold: 5
+  readinessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 10
+    successThreshold: 1
+    failureThreshold: 10
