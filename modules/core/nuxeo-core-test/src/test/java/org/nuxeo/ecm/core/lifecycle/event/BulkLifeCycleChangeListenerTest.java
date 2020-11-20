@@ -27,6 +27,7 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -150,6 +151,7 @@ public class BulkLifeCycleChangeListenerTest {
      */
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:test-bulk-life-cycle-change-listener-paginate-contrib.xml")
+    @Ignore("NXP-26315")
     public void testLifeCycleAPITwoLevelsPaginate() {
         testBulkLifeCycleChangeTwoLevels();
     }
@@ -202,6 +204,7 @@ public class BulkLifeCycleChangeListenerTest {
     @Deprecated
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-lifecycle-override.xml")
     @Deploy("org.nuxeo.ecm.core.test.tests:test-bulk-life-cycle-change-listener-paginate-contrib.xml")
+    @Ignore("NXP-26315")
     public void testLifeCycleAPIDeletePaginate() {
         testBulkLifeCycleChangeDelete();
     }
