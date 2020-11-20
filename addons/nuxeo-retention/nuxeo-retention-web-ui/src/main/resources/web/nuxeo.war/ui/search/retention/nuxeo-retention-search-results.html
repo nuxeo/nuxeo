@@ -32,13 +32,15 @@ limitations under the License.
       }
     </style>
 
-    <nuxeo-results name="default"
+    <nuxeo-results id="results"
+                   name="default"
                    nx-provider="[[nxProvider]]"
                    selected-items="{{selectedItems}}"
                    display-mode="table"
                    sort-options="[[sortOptions]]"
                    display-sort display-quick-filters
-                   on-quick-filters-changed="_updateActions">
+                   on-quick-filters-changed="_updateActions"
+                   on-refresh="_refreshResults">
 
       <div slot="actions">
         <template is="dom-if" if="[[_isWithoutRule]]">
@@ -113,6 +115,10 @@ limitations under the License.
 
       _navigate: function(e) {
         this.fire('navigate', {doc: (e.model || e.detail).item, index: (e.model || e.detail).index});
+      },
+
+      _refreshResults: function() {
+        this.$.results.fetch();
       },
 
       _updateActions: function() {
