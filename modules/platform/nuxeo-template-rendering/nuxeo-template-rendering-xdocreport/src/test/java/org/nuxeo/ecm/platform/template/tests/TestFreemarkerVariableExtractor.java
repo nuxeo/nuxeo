@@ -25,21 +25,23 @@ import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.processors.xdocreport.XDocReportProcessor;
 import org.nuxeo.template.serializer.service.TemplateSerializerService;
 
-public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
-
-    @Override
-    protected void setUp() throws Exception {
-        deployBundle("org.nuxeo.template.manager.api");
-        deployBundle("org.nuxeo.template.manager");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.template.manager.api")
+@Deploy("org.nuxeo.template.manager")
+public class TestFreemarkerVariableExtractor {
 
     @Test
     public void testDocXParamExtraction() throws Exception {
@@ -126,9 +128,8 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.template.manager.xdocreport.test:context-extension-contrib.xml")
     public void testDocXBrokenParamExtraction() throws Exception {
-
-        pushInlineDeployments("org.nuxeo.template.manager.xdocreport.test:context-extension-contrib.xml");
 
         XDocReportProcessor processor = new XDocReportProcessor();
         File file = FileUtils.getResourceFileFromContext("data/brokenVariables.docx");

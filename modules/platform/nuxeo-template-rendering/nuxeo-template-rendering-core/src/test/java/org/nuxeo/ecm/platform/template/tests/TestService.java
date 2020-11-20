@@ -28,11 +28,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor;
@@ -42,13 +49,14 @@ import org.nuxeo.template.processors.fm.FreeMarkerProcessor;
 import org.nuxeo.template.processors.xslt.XSLTProcessor;
 import org.nuxeo.template.service.TemplateProcessorComponent;
 
-public class TestService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.template.manager.api")
+@Deploy("org.nuxeo.template.manager")
+public class TestService {
 
-    @Override
-    protected void setUp() throws Exception {
-        deployBundle("org.nuxeo.template.manager.api");
-        deployBundle("org.nuxeo.template.manager");
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testServiceLookup() {
@@ -57,12 +65,11 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.template.manager:OSGI-INF/templateprocessor-contrib1.xml")
     public void testRegisterMergeUnRegisterContrib() throws Exception {
-
-        // test simple registration
-        pushInlineDeployments("org.nuxeo.template.manager:OSGI-INF/templateprocessor-contrib1.xml");
-
         TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
+
+        // test initial registration
 
         assertNotNull(tps.getProcessor("TestProcessor"));
 
@@ -94,7 +101,7 @@ public class TestService extends NXRuntimeTestCase {
         assertNull(tps.findProcessor(fakeBlob));
 
         // test merge registration
-        pushInlineDeployments("org.nuxeo.template.manager.test:OSGI-INF/templateprocessor-contrib2.xml");
+        hotDeployer.deploy("org.nuxeo.template.manager.test:OSGI-INF/templateprocessor-contrib2.xml");
         tps = Framework.getService(TemplateProcessorService.class);
 
         assertNotNull(tps.getProcessor("TestProcessor"));
@@ -115,7 +122,7 @@ public class TestService extends NXRuntimeTestCase {
         assertNotNull(tps.findProcessor(fakeBlob));
 
         // check undeploy
-        popInlineDeployments();
+        hotDeployer.undeploy("org.nuxeo.template.manager.test:OSGI-INF/templateprocessor-contrib2.xml");
         tps = Framework.getService(TemplateProcessorService.class);
 
         fakeBlob.setFilename("bidon.bidon");

@@ -26,18 +26,27 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public abstract class BaseConverterTest extends NXRuntimeTestCase {
-
-    private static final Log log = LogFactory.getLog(BaseConverterTest.class);
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.ecm.core.convert.api")
+@Deploy("org.nuxeo.ecm.core.mimetype")
+@Deploy("org.nuxeo.ecm.core.convert")
+@Deploy("org.nuxeo.ecm.platform.convert")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.template.manager:OSGI-INF/convert-service-contrib.xml")
+public abstract class BaseConverterTest {
 
     protected static BlobHolder getBlobFromPath(String path, String srcMT) throws IOException {
         File file = FileUtils.getResourceFileFromContext(path);
@@ -53,17 +62,6 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
     protected static BlobHolder getBlobFromPath(String path) throws IOException {
         return getBlobFromPath(path, null);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.mimetype");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.platform.convert");
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployContrib("org.nuxeo.template.manager", "OSGI-INF/convert-service-contrib.xml");
     }
 
 }

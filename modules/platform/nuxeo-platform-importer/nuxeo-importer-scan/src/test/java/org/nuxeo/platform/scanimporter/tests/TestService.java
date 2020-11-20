@@ -22,20 +22,28 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.scanimporter.service.ImporterConfig;
 import org.nuxeo.ecm.platform.scanimporter.service.ScanFileMappingDescriptor;
 import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent;
 import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.scanimporter:OSGI-INF/importerservice-framework.xml")
+public class TestService {
 
-    @Override
-    protected void setUp() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.scanimporter", "OSGI-INF/importerservice-framework.xml");
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testServiceLookup() {
@@ -50,7 +58,7 @@ public class TestService extends NXRuntimeTestCase {
         ScanFileMappingDescriptor desc = ((ScannedFileMapperComponent) sfms).getMappingDesc();
 
         assertNull(desc);
-        pushInlineDeployments("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib0.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib0.xml");
 
         sfms = Framework.getService(ScannedFileMapperService.class);
         desc = ((ScannedFileMapperComponent) sfms).getMappingDesc();
@@ -72,8 +80,8 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-config0.xml")
     public void testServiceConfig() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-config0.xml");
 
         ScannedFileMapperService sfms = Framework.getService(ScannedFileMapperService.class);
         ImporterConfig config = sfms.getImporterConfig();

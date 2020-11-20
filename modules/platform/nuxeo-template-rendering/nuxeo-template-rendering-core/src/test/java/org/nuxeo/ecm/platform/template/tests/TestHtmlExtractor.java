@@ -18,13 +18,12 @@
  */
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.template.processors.HtmlBodyExtractor;
 
-import static org.junit.Assert.*;
-
-public class TestHtmlExtractor extends NXRuntimeTestCase {
+public class TestHtmlExtractor {
 
     @Test
     public void testHtmlBoduExtractor() throws Exception {
