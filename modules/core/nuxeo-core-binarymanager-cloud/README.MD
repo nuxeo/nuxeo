@@ -6,7 +6,6 @@ For efficiency, a local disk cache (with limited size) is also used.
 - nuxeo-core-binarymanager-common: Common classes used in those implementations
 - nuxeo-core-binarymanager-s3: Amazon S3 implementation
 - nuxeo-core-binarymanager-azure: Microsoft Azure implementation
-- nuxeo-core-binarymanager-jclouds: Jclouds base Binary Manager implementation (OLD)
 
 # Building all modules
 
