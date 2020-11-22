@@ -15,7 +15,6 @@
     <module>nuxeo-core-binarymanager-common</module>
     <module>nuxeo-core-binarymanager-s3</module>
     <module>nuxeo-core-binarymanager-azure</module>
-    <module>nuxeo-core-binarymanager-jclouds</module>
     <module>nuxeo-core-binarymanager-gcp</module>
   </modules>
 

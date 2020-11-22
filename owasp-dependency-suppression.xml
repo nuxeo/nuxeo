@@ -192,22 +192,6 @@
 
 <suppress>
    <notes><![CDATA[
-   file name: openstack-keystone-2.1.1.jar (OpenStack Keystone not included in Nuxeo)
-   ]]></notes>
-   <gav regex="true">^org\.apache\.jclouds\.api:openstack-keystone:.*$</gav>
-   <cpe>cpe:/a:openstack:openstack</cpe>
-   <cpe>cpe:/a:openstack:keystone</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: openstack-swift-2.1.1.jar (OpenStack Swift not included in Nuxeo)
-   ]]></notes>
-   <gav regex="true">^org\.apache\.jclouds\.api:openstack-swift:.*$</gav>
-   <cpe>cpe:/a:openstack:openstack</cpe>
-   <cpe>cpe:/a:openstack:swift</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
    file name: postgresql-42.2.5.jar (PostgreSQL not included in Nuxeo)
    ]]></notes>
    <gav regex="true">^org\.postgresql:postgresql:.*$</gav>
