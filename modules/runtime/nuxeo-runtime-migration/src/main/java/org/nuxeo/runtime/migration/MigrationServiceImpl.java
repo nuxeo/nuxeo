@@ -48,7 +48,6 @@ import org.nuxeo.runtime.migration.MigrationDescriptor.MigrationStepDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Descriptor;
 import org.nuxeo.runtime.pubsub.AbstractPubSubBroker;
 import org.nuxeo.runtime.pubsub.SerializableMessage;
 
@@ -194,7 +193,11 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
     }
 
     public Collection<MigrationDescriptor> getMigrationDescriptors() {
-        return getDescriptors(XP_CONFIG);
+        return getRegistryContributions(XP_CONFIG);
+    }
+
+    protected MigrationDescriptor getMigrationDescriptor(String id) {
+        return (MigrationDescriptor) getRegistryContribution(XP_CONFIG, id).orElse(null);
     }
 
     @Override
@@ -367,7 +370,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
     @Override
     public MigrationStatus getStatus(String id) {
-        MigrationDescriptor descr = getDescriptor(XP_CONFIG, id);
+        MigrationDescriptor descr = getMigrationDescriptor(id);
         if (descr == null) {
             return null; // migration unknown
         }
@@ -425,7 +428,10 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
     @Override
     public void runStep(String id, String step) {
         Migrator migrator = getMigrator(id);
-        MigrationDescriptor descr = getDescriptor(XP_CONFIG, id);
+        MigrationDescriptor descr = getMigrationDescriptor(id);
+        if (descr == null) {
+            throw new IllegalArgumentException("Unknown migration: " + id);
+        }
         MigrationStepDescriptor stepDescr = descr.steps.get(step);
         if (stepDescr == null) {
             throw new IllegalArgumentException("Unknown step: " + step + " for migration: " + id);
@@ -483,7 +489,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
     }
 
     protected Migrator getMigrator(String id) {
-        MigrationDescriptor descr = getDescriptor(XP_CONFIG, id);
+        MigrationDescriptor descr = getMigrationDescriptor(id);
         if (descr == null) {
             throw new IllegalArgumentException("Unknown migration: " + id);
         }
@@ -532,7 +538,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
     @Override
     public Migration getMigration(String id) {
-        MigrationDescriptor descriptor = getDescriptor(XP_CONFIG, id);
+        MigrationDescriptor descriptor = getMigrationDescriptor(id);
         MigrationStatus status = getStatus(id);
         if (descriptor == null || status == null) {
             return null;
@@ -542,7 +548,10 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
     @Override
     public List<Migration> getMigrations() {
-        return getDescriptors(XP_CONFIG).stream().map(Descriptor::getId).map(this::getMigration).collect(toList());
+        return getMigrationDescriptors().stream()
+                                        .map(MigrationDescriptor::getId)
+                                        .map(this::getMigration)
+                                        .collect(toList());
     }
 
     /**
@@ -552,7 +561,11 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
     public void probeAndRun(String id) {
         probeAndSetState(id);
         MigrationStatus status = getStatus(id);
-        var steps = Migration.from(getDescriptor(XP_CONFIG, id), status).getSteps();
+        MigrationDescriptor desc = getMigrationDescriptor(id);
+        if (desc == null) {
+            throw new IllegalArgumentException("Unknown migration: " + id);
+        }
+        var steps = Migration.from(desc, status).getSteps();
         if (steps.size() != 1) {
             throw new IllegalArgumentException(String.format(
                     "Migration: %s must have only one runnable step from state: %s", id, status.getState())); // NOSONAR

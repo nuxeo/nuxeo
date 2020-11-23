@@ -1,24 +1,31 @@
 <?xml version="1.0"?>
-<migration id="my_migration">
-  <description label="my_migration">My Migration</description>
-  <class>java.lang.String</class>
+<component name="org.nuxeo.runtime.migration.test.descriptor" version="1.0">
 
-  <defaultState>v2</defaultState>
+  <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
+    <migration id="my_migration">
+      <description label="my_migration">My Migration</description>
+      <class>java.lang.String</class>
 
-  <state id="v1">
-    <description label="my_migration.state.v1">Initial state</description>
-  </state>
-  <state id="v2">
-    <description label="my_migration.state.v2">Second version</description>
-  </state>
-  <state id="v3">
-    <description label="my_migration.state.v3">Third version</description>
-  </state>
+      <defaultState>v2</defaultState>
 
-  <step id="first" fromState="v1" toState="v2">
-    <description label="my_migration.step.first">First step of the migration, from v1 to v2</description>
-  </step>
-  <step id="second" fromState="v2" toState="v3">
-    <description label="my_migration.step.second">Second step of the migration, from v2 to v3</description>
-  </step>
-</migration>
+      <state id="v1">
+        <description label="my_migration.state.v1">Initial state</description>
+      </state>
+      <state id="v2">
+        <description label="my_migration.state.v2">Second version</description>
+      </state>
+      <state id="v3">
+        <description label="my_migration.state.v3">Third version</description>
+      </state>
+
+      <step id="first" fromState="v1" toState="v2">
+        <description label="my_migration.step.first">First step of the migration, from v1 to v2</description>
+      </step>
+      <step id="second" fromState="v2" toState="v3">
+        <description label="my_migration.step.second">Second step of the migration, from v2 to v3</description>
+      </step>
+    </migration>
+  </extension>
+
+</component>
+

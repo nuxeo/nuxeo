@@ -20,34 +20,49 @@ package org.nuxeo.runtime.migration;
 
 import static org.junit.Assert.assertEquals;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
-import org.nuxeo.common.xmap.XMap;
+import org.junit.runner.RunWith;
+import org.nuxeo.common.xmap.registry.MapRegistry;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationDescriptor.MigrationStateDescriptor;
 import org.nuxeo.runtime.migration.MigrationDescriptor.MigrationStepDescriptor;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.kv")
+@Deploy("org.nuxeo.runtime.cluster")
+@Deploy("org.nuxeo.runtime.migration")
 public class TestMigrationDescriptor {
 
-    protected static URL getResource(String resource) {
-        return Thread.currentThread().getContextClassLoader().getResource(resource);
-    }
+    @Inject
+    protected MigrationService migrationService;
 
-    protected XMap xmap;
-
-    @Before
-    public void setUp() throws Exception {
-        xmap = new XMap();
-        xmap.register(MigrationDescriptor.class);
+    protected MigrationDescriptor getDescriptor(String id) {
+        return Framework.getRuntime()
+                        .getComponentManager()
+                        .getExtensionPointRegistry("org.nuxeo.runtime.migration.MigrationService",
+                                MigrationServiceImpl.XP_CONFIG)
+                        .map(MapRegistry.class::cast)
+                        .get()
+                        .getContribution(id)
+                        .map(MigrationDescriptor.class::cast)
+                        .orElse(null);
     }
 
     @Test
+    @Deploy("org.nuxeo.runtime.migration.tests:OSGI-INF/test-migration-descriptor.xml")
     public void testRead() throws Exception {
-        MigrationDescriptor desc = (MigrationDescriptor) xmap.load(
-                getResource("OSGI-INF/test-migration-descriptor.xml"));
+        MigrationDescriptor desc = getDescriptor("my_migration");
+
         assertEquals("my_migration", desc.id);
         assertEquals("my_migration", desc.descriptionLabel);
         assertEquals("My Migration", desc.description);
@@ -86,14 +101,10 @@ public class TestMigrationDescriptor {
     }
 
     @Test
+    @Deploy("org.nuxeo.runtime.migration.tests:OSGI-INF/test-migration-descriptor.xml")
+    @Deploy("org.nuxeo.runtime.migration.tests:OSGI-INF/test-migration-descriptor2.xml")
     public void testMerge() throws Exception {
-        MigrationDescriptor desc = (MigrationDescriptor) xmap.load(
-                getResource("OSGI-INF/test-migration-descriptor.xml"));
-        MigrationDescriptor desc2 = (MigrationDescriptor) xmap.load(
-                getResource("OSGI-INF/test-migration-descriptor2.xml"));
-
-        assertEquals(desc.id, desc2.id);
-        desc = (MigrationDescriptor) desc.merge(desc2);
+        MigrationDescriptor desc = getDescriptor("my_migration");
 
         assertEquals("my_migration", desc.id);
         assertEquals("newLabel", desc.descriptionLabel);
