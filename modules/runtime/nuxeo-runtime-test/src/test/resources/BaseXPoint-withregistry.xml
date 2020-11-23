@@ -3,16 +3,17 @@
 
   <documentation>
     This component is declaring one extension point that will be
-    overridden by another extension point from OverrindingXPoint.xml
+    overridden by another extension point from
+    OverrindingXPoint-withregistry.xml
   </documentation>
 
-  <implementation class="org.nuxeo.runtime.ComponentWithXPoint"/>
+  <implementation class="org.nuxeo.runtime.ComponentWithXPoint" />
   <service>
     <provide interface="org.nuxeo.runtime.ComponentWithXPoint" />
   </service>
 
   <extension-point name="xp">
-    <object class="org.nuxeo.runtime.DummyContribution"/>
+    <object class="org.nuxeo.runtime.DummyContributionWithRegistry" />
   </extension-point>
 
 </component>

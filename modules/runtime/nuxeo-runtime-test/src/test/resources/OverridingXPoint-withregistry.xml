@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="OverridingXPoint" version="1.0.0">
+
+  <documentation>
+    This component is contributing 2 extensions to 2 extension points.
+    The second target extension point is
+    extending another extension point from BaseXPoint-withregistry.xml
+  </documentation>
+
+  <!-- define new existion point with registry that will target the original one -->
+  <extension-point name="xp">
+    <object class="org.nuxeo.runtime.DummyContributionOverridenWithRegistry" />
+    <registry class="org.nuxeo.runtime.DummyRegistry" />
+  </extension-point>
+
+  <extension target="BaseXPoint" point="xp">
+    <printer>
+      <message>XP contrib</message>
+    </printer>
+  </extension>
+
+  <extension target="OverridingXPoint" point="xp">
+    <printer>
+      <message>OverXP contrib</message>
+      <name>My duty is to override</name>
+    </printer>
+  </extension>
+
+</component>
