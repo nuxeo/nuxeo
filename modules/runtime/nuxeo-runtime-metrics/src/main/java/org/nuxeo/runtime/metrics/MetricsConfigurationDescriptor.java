@@ -28,7 +28,8 @@ import java.util.stream.Collectors;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 import io.dropwizard.metrics5.Metric;
 import io.dropwizard.metrics5.MetricAttribute;
@@ -36,20 +37,17 @@ import io.dropwizard.metrics5.MetricFilter;
 import io.dropwizard.metrics5.MetricName;
 
 @XObject("configuration")
-public class MetricsConfigurationDescriptor implements Descriptor, MetricFilter {
+@XRegistry
+public class MetricsConfigurationDescriptor implements MetricFilter {
 
     protected static final String ALL_METRICS = "ALL";
 
-    @Override
-    public String getId() {
-        return UNIQUE_DESCRIPTOR_ID;
-    }
-
-    @XNode("@enabled")
+    @XEnable
+    @XNode(value = "@enabled", fallback = XEnable.ENABLE)
     protected boolean isEnabled = true;
 
     @XObject(value = "instrument")
-    public static class InstrumentDescriptor implements Descriptor {
+    public static class InstrumentDescriptor {
 
         @XNode("@name")
         protected String name;
@@ -57,7 +55,6 @@ public class MetricsConfigurationDescriptor implements Descriptor, MetricFilter 
         @XNode("@enabled")
         protected boolean isEnabled = true;
 
-        @Override
         public String getId() {
             return name;
         }
