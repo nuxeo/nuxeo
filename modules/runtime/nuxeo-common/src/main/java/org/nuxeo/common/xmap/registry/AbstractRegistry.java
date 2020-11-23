@@ -19,7 +19,9 @@
 package org.nuxeo.common.xmap.registry;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XAnnotatedObject;
@@ -33,6 +35,8 @@ import org.w3c.dom.Element;
 public abstract class AbstractRegistry implements Registry {
 
     protected boolean initialized;
+
+    protected Set<String> tags = new HashSet<>();
 
     protected List<RegistryContribution> registrations = new ArrayList<>();
 
@@ -66,16 +70,28 @@ public abstract class AbstractRegistry implements Registry {
     }
 
     @Override
+    public void tag(String id) {
+        tags.add(id);
+    }
+
+    @Override
+    public boolean isTagged(String id) {
+        return tags.contains(id);
+    }
+
+    @Override
     public void register(Context ctx, XAnnotatedObject xObject, Element element, String tag) {
+        tag(tag);
         registrations.add(new RegistryContribution(ctx, xObject, element, tag));
         setInitialized(false);
     }
 
     @Override
     public void unregister(String tag) {
-        if (tag == null) {
+        if (tag == null || !isTagged(tag)) {
             return;
         }
+        tags.remove(tag);
         registrations.removeIf(reg -> tag.equals(reg.getTag()));
         setInitialized(false);
     }

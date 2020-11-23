@@ -490,14 +490,16 @@ public class ComponentManagerImpl implements ComponentManager {
                     if (contributions != null) {
                         Context xctx = new XMapContext(xt.getContext());
                         Registry registry = getOrCreateRegistry(ri.getName().getName(), xp);
+                        String tag = xt.getId();
                         if (registry.isNull()) {
                             // backward compatibility
                             if (xt.getContributions() == null) {
                                 xt.setContributions(xp.getXMap().loadAll(xctx, xt.getElement()));
                             }
-                        } else {
+                        } else if (!registry.isTagged(tag)) {
+                            registry.tag(tag);
                             // fill registry
-                            xp.getXMap().register(registry, xctx, xt.getElement(), xt.getId());
+                            xp.getXMap().register(registry, xctx, xt.getElement(), tag);
                         }
                     }
                 } catch (XMapException e) {
@@ -808,10 +810,8 @@ public class ComponentManagerImpl implements ComponentManager {
      * @since 9.3
      */
     protected void deactivateComponent(RegistrationInfo ri, boolean isShutdown) {
-        if (!isShutdown) {
-            // reset registries
-            resetRegistries(ri);
-        }
+        // reset registries (even when shutting down, to comply with HotDeployer logic in tests)
+        resetRegistries(ri);
 
         if (ri.useFormerLifecycleManagement()) {
             // don't unregister extension if server is shutdown
