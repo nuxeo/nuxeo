@@ -93,6 +93,8 @@
     <durationAll>1d2h3m4s5ms</durationAll>
     <durationJdk>PT1S</durationJdk>
 
+    <stringFallback>fallbackValue</stringFallback>
+
     <notInherited>dummyContent</notInherited>
 
   </inheritedAuthor>

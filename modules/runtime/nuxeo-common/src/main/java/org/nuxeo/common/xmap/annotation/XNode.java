@@ -41,6 +41,14 @@ public @interface XNode {
      */
     String value() default "";
 
+    public static final String NO_FALLBACK_VALUE_MARKER = "__NO_FALLBACK_VALUE_MARKER__";
+
+    String fallbackValue() default NO_DEFAULT_VALUE_MARKER;
+
+    public static final String NO_DEFAULT_VALUE_MARKER = "__NO_DEFAULT_VALUE_MARKER__";
+
+    String defaultValue() default NO_DEFAULT_VALUE_MARKER;
+
     /**
      * Whether to trim text content for element nodes.
      * <p>

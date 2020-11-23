@@ -220,4 +220,16 @@ public class Author {
     @XNode("durationJdk")
     Duration durationJdk;
 
+    @XNode(value = "stringWithDefault", defaultValue = "myDefaultValue")
+    String stringWithDefault;
+
+    @XNode(value = "stringWithFallback", fallbackValue = "stringFallback")
+    String stringWithFallback;
+
+    @XNode(value = "intWithDefault", defaultValue = "5")
+    Integer intWithDefault;
+
+    @XNode(value = "boolWithDefault", defaultValue = "true")
+    Boolean boolWithDefault;
+
 }

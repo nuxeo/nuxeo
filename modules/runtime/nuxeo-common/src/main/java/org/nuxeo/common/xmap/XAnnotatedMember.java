@@ -32,7 +32,11 @@ public class XAnnotatedMember {
 
     protected Path path;
 
-    protected boolean trim;
+    protected Path fallbackPath;
+
+    protected String defaultValue;
+
+    protected boolean trim = true;
 
     /** The Java type of the described element. */
     protected Class<?> type;
@@ -50,11 +54,14 @@ public class XAnnotatedMember {
         this.accessor = accessor;
     }
 
-    public XAnnotatedMember(XMap xmap, XAccessor setter, XNode anno) {
-        accessor = setter;
-        path = new Path(anno.value());
-        trim = anno.trim();
-        type = setter.getType();
+    protected XAnnotatedMember(XMap xmap, XAccessor accessor, String path, String fallbackPath, String defaultValue,
+            boolean trim) {
+        this(xmap, accessor);
+        this.path = new Path(path);
+        if (fallbackPath != null && !XNode.NO_FALLBACK_VALUE_MARKER.equals(fallbackPath)) {
+            this.fallbackPath = new Path(fallbackPath);
+        }
+        type = accessor.getType();
         valueFactory = xmap.getValueFactory(type);
         if (valueFactory == null && type.isEnum()) {
             valueFactory = new XValueFactory() {
@@ -74,6 +81,14 @@ public class XAnnotatedMember {
             xmap.setValueFactory(type, valueFactory);
         }
         xao = xmap.register(type);
+        if (!XNode.NO_DEFAULT_VALUE_MARKER.equals(defaultValue)) {
+            this.defaultValue = defaultValue;
+        }
+        this.trim = trim;
+    }
+
+    public XAnnotatedMember(XMap xmap, XAccessor setter, XNode anno) {
+        this(xmap, setter, anno.value(), anno.fallbackValue(), anno.defaultValue(), anno.trim());
     }
 
     protected void setValue(Object instance, Object value) {
@@ -92,7 +107,6 @@ public class XAnnotatedMember {
             if (v != null && valueFactory != null) {
                 String value = valueFactory.serialize(null, v);
                 if (value != null) {
-
                     XMLBuilder.fillField(e, value, path.attribute);
                 }
             }
@@ -123,6 +137,9 @@ public class XAnnotatedMember {
             return base;
         }
         String val = DOMHelper.getNodeValue(base, path);
+        if (val == null && fallbackPath != null) {
+            val = DOMHelper.getNodeValue(base, fallbackPath);
+        }
         if (val != null) {
             if (trim) {
                 val = val.trim();
@@ -132,7 +149,14 @@ public class XAnnotatedMember {
             }
             return valueFactory.deserialize(ctx, val);
         }
-        return null;
+        return getDefaultValue(ctx);
+    }
+
+    protected Object getDefaultValue(Context ctx) {
+        if (defaultValue != null && valueFactory != null) {
+            return valueFactory.deserialize(ctx, defaultValue);
+        }
+        return defaultValue;
     }
 
 }
