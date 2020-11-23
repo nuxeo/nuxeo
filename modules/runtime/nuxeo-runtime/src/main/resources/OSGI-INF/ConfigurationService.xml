@@ -35,6 +35,7 @@
       </code>
     </documentation>
     <object class="org.nuxeo.runtime.services.config.ConfigurationPropertyDescriptor" />
+    <registry class="org.nuxeo.runtime.services.config.ConfigurationServiceRegistry" />
   </extension-point>
 
 </component>

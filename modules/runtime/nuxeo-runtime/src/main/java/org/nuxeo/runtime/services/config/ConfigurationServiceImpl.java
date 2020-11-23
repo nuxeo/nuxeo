@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -37,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.DurationUtils;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -59,32 +59,8 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
 
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    /**
-     * XXX remove once we are able to get such a cached map from DefaultComponent
-     *
-     * @since 10.3
-     */
-    protected volatile Map<String, ConfigurationPropertyDescriptor> descriptors;
-
-    /**
-     * XXX remove once we are able to get such a cached map from DefaultComponent.
-     * <p>
-     * We'd ideally need a <T extends Descriptor> Map<String, T> getDescriptors(String xp) with cache method.
-     *
-     * @since 10.3
-     */
-    protected Map<String, ConfigurationPropertyDescriptor> getDescriptors() {
-        Map<String, ConfigurationPropertyDescriptor> d = descriptors;
-        if (d == null) {
-            synchronized (this) {
-                d = descriptors;
-                if (d == null) {
-                    List<ConfigurationPropertyDescriptor> descs = getDescriptors(CONFIGURATION_EP);
-                    descriptors = d = descs.stream().collect(Collectors.toMap(desc -> desc.getId(), desc -> desc));
-                }
-            }
-        }
-        return d;
+    protected MapRegistry getMapRegistry() {
+        return getRegistry(CONFIGURATION_EP, MapRegistry.class);
     }
 
     @Override
@@ -115,10 +91,8 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        super.registerContribution(contribution, extensionPoint, contributor);
         if (CONFIGURATION_EP.equals(extensionPoint)) {
-            synchronized (this) {
-                descriptors = null;
-            }
             ConfigurationPropertyDescriptor configurationPropertyDescriptor = (ConfigurationPropertyDescriptor) contribution;
             String key = configurationPropertyDescriptor.getName();
             if (Framework.getProperties().containsKey(key)) {
@@ -126,17 +100,6 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
                         + "point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'";
                 DeprecationLogger.log(message, "7.4");
             }
-            super.registerContribution(contribution, extensionPoint, contributor);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIGURATION_EP.equals(extensionPoint)) {
-            synchronized (this) {
-                descriptors = null;
-            }
-            super.unregisterContribution(contribution, extensionPoint, contributor);
         }
     }
 
@@ -148,9 +111,9 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
         if (namespace.charAt(namespace.length() - 1) == '.') {
             throw new IllegalArgumentException("namespace cannot end with a dot");
         }
-        return getDescriptors().values()
+        return getMapRegistry().getContributionValues(ConfigurationPropertyDescriptor.class)
                                .stream()
-                               .filter(desc -> startsWithNamespace(desc.getName(), namespace))
+                               .filter(desc -> startsWithNamespace(desc.getId(), namespace))
                                .collect(Collectors.toMap(desc -> desc.getId().substring(namespace.length() + 1),
                                        desc -> desc.getValue() != null && desc.list
                                                ? desc.getValue().split(LIST_SEPARATOR)
@@ -191,7 +154,7 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
      */
     @Override
     public Optional<String> getString(String key) {
-        return Optional.ofNullable(getDescriptors().get(key))
+        return Optional.ofNullable(getMapRegistry().getContribution(key, ConfigurationPropertyDescriptor.class))
                        .map(ConfigurationPropertyDescriptor::getValue)
                        .filter(StringUtils::isNotBlank);
     }
