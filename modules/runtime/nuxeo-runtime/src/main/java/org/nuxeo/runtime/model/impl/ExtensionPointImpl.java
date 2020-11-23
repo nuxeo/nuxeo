@@ -123,7 +123,12 @@ public class ExtensionPointImpl implements ExtensionPoint {
                     extension.setContributions(getXmap().loadAll(xctx, extension.getElement()));
                 }
                 // fill up registry
-                getXmap().register(getRegistry(), xctx, extension.getElement(), extension.getId());
+                Registry registry = getRegistry();
+                String flag = extension.getId();
+                if (registry != null && !registry.isFlagged(flag)) {
+                    registry.flag(flag);
+                    getXmap().register(registry, xctx, extension.getElement(), flag);
+                }
             } catch (XMapException e) {
                 throw new RuntimeException(
                         e.getMessage() + " while processing component: " + extension.getComponent().getName().getName(),

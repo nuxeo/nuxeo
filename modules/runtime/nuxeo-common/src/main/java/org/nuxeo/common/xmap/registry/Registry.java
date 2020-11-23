@@ -29,6 +29,10 @@ public interface Registry {
 
     boolean isNull();
 
+    void flag(String id);
+
+    boolean isFlagged(String id);
+
     void register(Context ctx, XAnnotatedObject xObject, Element element, String flag);
 
     void unregister(String flag);
