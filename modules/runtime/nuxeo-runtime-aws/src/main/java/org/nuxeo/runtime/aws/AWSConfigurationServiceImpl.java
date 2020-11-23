@@ -43,12 +43,16 @@ public class AWSConfigurationServiceImpl extends DefaultComponent implements AWS
 
     public static final String XP_CONFIGURATION = "configuration";
 
+    protected AWSConfigurationDescriptor getDescriptor(String id) {
+        return (AWSConfigurationDescriptor) getRegistryContribution(XP_CONFIGURATION, id).orElse(null);
+    }
+
     @Override
     public AWSCredentials getAWSCredentials(String id) {
         if (id == null) {
             id = DEFAULT_CONFIG_ID;
         }
-        AWSConfigurationDescriptor descriptor = getDescriptor(XP_CONFIGURATION, id);
+        AWSConfigurationDescriptor descriptor = getDescriptor(id);
         if (descriptor != null) {
             String accessKeyId = descriptor.getAccessKeyId();
             String secretKey = descriptor.getSecretKey();
@@ -69,7 +73,7 @@ public class AWSConfigurationServiceImpl extends DefaultComponent implements AWS
         if (id == null) {
             id = DEFAULT_CONFIG_ID;
         }
-        AWSConfigurationDescriptor descriptor = getDescriptor(XP_CONFIGURATION, id);
+        AWSConfigurationDescriptor descriptor = getDescriptor(id);
         if (descriptor != null) {
             String region = descriptor.getRegion();
             if (isNotBlank(region)) {
