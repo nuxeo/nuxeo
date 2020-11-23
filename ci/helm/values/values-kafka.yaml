@@ -1,0 +1,58 @@
+image:
+  tag: "2.6.0"
+replicaCount: 1
+persistence:
+  enabled: $PERSISTENCE
+serviceAccount:
+  create: false
+resources:
+  requests:
+    cpu: "500m"
+    memory: "1024Mi"
+  limits:
+    cpu: "1"
+    memory: "1536Mi"
+autoCreateTopicsEnable: false
+deleteTopicEnable: true
+transactionStateLogMinIsr: 1
+extraEnvVars:
+  - name: KAFKA_CFG_GROUP_INITIAL_REBALANCE_DELAY_MS
+    value: "100"
+  - name: KAFKA_CFG_LOG_RETENTION_MINUTES
+    value: "20"
+  - name: KAFKA_CFG_OFFSETS_RETENTION_MINUTES
+    value: "20"
+  - name: KAFKA_CFG_OFFSETS_TOPIC_NUM_PARTITIONS
+    value: "5"
+  - name: KAFKA_CFG_STATE_LOG_REPLICATION_FACTOR
+    value: "1"
+podLabels:
+  branch: "$BRANCH_NAME"
+  resource: pod
+  team: platform
+  usage: "$USAGE"
+tolerations:
+  - key: team
+    operator: Equal
+    value: platform
+    effect: NoSchedule
+nodeSelector:
+  team: platform
+zookeeper:
+  image:
+    tag: "3.6.2"
+  replicaCount: 1
+  persistence:
+    enabled: $PERSISTENCE
+  podLabels:
+    branch: "$BRANCH_NAME"
+    resource: pod
+    team: platform
+    usage: "$USAGE"
+  tolerations:
+    - key: team
+      operator: Equal
+      value: platform
+      effect: NoSchedule
+  nodeSelector:
+    team: platform

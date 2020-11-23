@@ -1,0 +1,32 @@
+image: "docker.elastic.co/elasticsearch/elasticsearch-oss"
+clusterName: elasticsearch
+replicas: 1
+minimumMasterNodes: 1
+persistence:
+  enabled: $PERSISTENCE
+resources:
+  requests:
+    cpu: "250m"
+    memory: "1024Mi"
+  limits:
+    cpu: "500m"
+    memory: "1024Mi"
+esJavaOpts: "-Xmx380m -Xms380m"
+labels:
+  branch: "$BRANCH_NAME"
+  resource: pod
+  team: platform
+  usage: "$USAGE"
+service:
+  labels:
+    branch: "$BRANCH_NAME"
+    resource: service
+    team: platform
+    usage: "$USAGE"
+tolerations:
+  - key: team
+    operator: Equal
+    value: platform
+    effect: NoSchedule
+nodeSelector:
+  team: platform
