@@ -24,7 +24,8 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor of a Migration, consisting of States and Steps.
@@ -32,10 +33,11 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 9.3
  */
 @XObject("migration")
-public class MigrationDescriptor implements Descriptor {
+@XRegistry
+public class MigrationDescriptor {
 
     @XObject("state")
-    public static class MigrationStateDescriptor implements Descriptor {
+    public static class MigrationStateDescriptor {
 
         @XNode("@id")
         public String id;
@@ -46,7 +48,6 @@ public class MigrationDescriptor implements Descriptor {
         @XNode("description")
         public String description;
 
-        @Override
         public String getId() {
             return id;
         }
@@ -61,7 +62,7 @@ public class MigrationDescriptor implements Descriptor {
     }
 
     @XObject("step")
-    public static class MigrationStepDescriptor implements Descriptor {
+    public static class MigrationStepDescriptor {
 
         @XNode("@id")
         public String id;
@@ -78,7 +79,6 @@ public class MigrationDescriptor implements Descriptor {
         @XNode("description")
         public String description;
 
-        @Override
         public String getId() {
             return id;
         }
@@ -101,6 +101,7 @@ public class MigrationDescriptor implements Descriptor {
     }
 
     @XNode("@id")
+    @XRegistryId
     public String id;
 
     @XNode("description@label")
@@ -121,7 +122,6 @@ public class MigrationDescriptor implements Descriptor {
     @XNodeMap(value = "step", key = "@id", type = LinkedHashMap.class, componentType = MigrationStepDescriptor.class)
     public Map<String, MigrationStepDescriptor> steps = new LinkedHashMap<>();
 
-    @Override
     public String getId() {
         return id;
     }
@@ -148,22 +148,6 @@ public class MigrationDescriptor implements Descriptor {
 
     public Map<String, MigrationStepDescriptor> getSteps() {
         return steps;
-    }
-
-    @Override
-    public Descriptor merge(Descriptor o) {
-        MigrationDescriptor other = (MigrationDescriptor) o;
-        MigrationDescriptor merged = new MigrationDescriptor();
-        merged.id = id;
-        merged.klass = other.klass != null ? other.klass : klass;
-        merged.description = other.description != null ? other.description : description;
-        merged.defaultState = other.defaultState != null ? other.defaultState : defaultState;
-        merged.descriptionLabel = other.descriptionLabel != null ? other.descriptionLabel : descriptionLabel;
-        merged.steps.putAll(steps);
-        merged.steps.putAll(other.steps);
-        merged.states.putAll(states);
-        merged.states.putAll(other.states);
-        return merged;
     }
 
 }
