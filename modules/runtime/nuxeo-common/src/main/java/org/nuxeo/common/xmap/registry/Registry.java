@@ -43,6 +43,23 @@ public interface Registry {
     void initialize();
 
     /**
+     * Tags the registry with given identifier.
+     * <p>
+     * Several registrations can still be done with the same tag.
+     */
+    void tag(String id);
+
+    /**
+     * Returns true if registry has been tagged with given id.
+     * <p>
+     * After {@link #tag(String)} or {@link #register(Context, XAnnotatedObject, Element, String)} are called with given
+     * tag, this method should return true.
+     * <p>
+     * After {@link #unregister(String)} is called with given tag, this method should return false.
+     */
+    boolean isTagged(String id);
+
+    /**
      * Registers given element with given tag identifier.
      * <p>
      * Several registrations can be done with the same tag.
