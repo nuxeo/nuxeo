@@ -19,19 +19,20 @@
  */
 package org.nuxeo.runtime.aws;
 
-import static org.apache.commons.lang3.StringUtils.defaultString;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("configuration")
-public class AWSConfigurationDescriptor implements Descriptor {
+@XRegistry
+public class AWSConfigurationDescriptor {
 
     public static final String DEFAULT_CONFIG_ID = "default";
 
-    @XNode("@id")
-    protected String id = DEFAULT_CONFIG_ID;
+    @XNode(value = "@id", defaultValue = DEFAULT_CONFIG_ID)
+    @XRegistryId
+    protected String id;
 
     @XNode("accessKeyId")
     protected String accessKeyId;
@@ -45,7 +46,6 @@ public class AWSConfigurationDescriptor implements Descriptor {
     @XNode("region")
     protected String region;
 
-    @Override
     public String getId() {
         return id;
     }
@@ -64,17 +64,6 @@ public class AWSConfigurationDescriptor implements Descriptor {
 
     public String getRegion() {
         return region;
-    }
-
-    @Override
-    public AWSConfigurationDescriptor merge(Descriptor o) {
-        AWSConfigurationDescriptor other = (AWSConfigurationDescriptor) o;
-        AWSConfigurationDescriptor merged = new AWSConfigurationDescriptor();
-        merged.accessKeyId = defaultString(other.accessKeyId, accessKeyId);
-        merged.secretKey = defaultString(other.secretKey, secretKey);
-        merged.sessionToken = defaultString(other.sessionToken, sessionToken);
-        merged.region = defaultString(other.region, region);
-        return merged;
     }
 
 }
