@@ -48,6 +48,7 @@ import org.nuxeo.common.xmap.annotation.XMemberAnnotation;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
+import org.nuxeo.common.xmap.annotation.XNodes;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.common.xmap.annotation.XParent;
 import org.nuxeo.common.xmap.registry.MapRegistry;
@@ -272,8 +273,14 @@ public class XMap {
         xob.setHasRegistry(xreg != null);
         XRegistryId xregistryId = klass.getAnnotation(XRegistryId.class);
         if (xregistryId != null) {
-            xob.setRegistryId(
-                    new XAnnotatedReference(this, String.class, xregistryId.value(), xregistryId.fallback(), null));
+            String[] idValue = xregistryId.value();
+            if (idValue.length == 1) {
+                xob.setRegistryId(new XAnnotatedReference(this, String.class, idValue[0], xregistryId.fallback(),
+                        xregistryId.defaultAssignment()));
+            } else {
+                xob.setRegistryId(new XAnnotatedMembers(this, null, idValue, xregistryId.separator(),
+                        xregistryId.defaultAssignment()));
+            }
         }
         if (xreg != null) {
             if (xreg.merge()) {
@@ -613,6 +620,8 @@ public class XMap {
         int type = annotation.annotationType().getAnnotation(XMemberAnnotation.class).value();
         if (type == XMemberAnnotation.NODE) {
             member = new XAnnotatedMember(this, setter, (XNode) annotation);
+        } else if (type == XMemberAnnotation.NODES) {
+            member = new XAnnotatedMembers(this, setter, (XNodes) annotation);
         } else if (type == XMemberAnnotation.NODE_LIST) {
             member = new XAnnotatedList(this, setter, (XNodeList) annotation);
         } else if (type == XMemberAnnotation.NODE_MAP) {

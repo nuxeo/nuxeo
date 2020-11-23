@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<document>
+
+  <descriptor name="sample1" type="type1">
+    <value>Sample 1, Type 1</value>
+  </descriptor>
+
+  <descriptor name="sample2" type="type1">
+    <value>Sample 2, Type 1</value>
+  </descriptor>
+
+  <descriptor name="sample1" type="type2">
+    <value>Sample 1, Type 2</value>
+  </descriptor>
+
+</document>

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Anahide Tchertchian
  */
-
 package org.nuxeo.common.xmap.annotation;
 
 import java.lang.annotation.ElementType;
@@ -27,34 +24,32 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation to identify XMap annotations.
+ * Handles multiple nodes aggregation using a separator.
  * <p>
- * This annotation has a single parameter "value" of type <code>int</code> that specifies the type of the annotation.
+ * Resutling value should be a {@link String}.
  *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @since 11.5
  */
+@XMemberAnnotation(XMemberAnnotation.NODES)
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.ANNOTATION_TYPE)
-public @interface XMemberAnnotation {
-
-    int NODE = 1;
-
-    int NODE_LIST = 2;
-
-    int NODE_MAP = 3;
-
-    int PARENT = 4;
-
-    int CONTENT = 5;
-
-    int CONTEXT = 6;
-
-    /** @since 11.5 */
-    int NODES = 7;
+public @interface XNodes {
 
     /**
-     * The type of the annotation.
+     * An array of xpathy expressions specifying the XML nodes to bind to.
      */
-    int value();
+    String[] values() default "";
+
+    /**
+     * String representation of the default assignment for the retrieved value for these nodes.
+     *
+     * @see XNode#defaultAssignment()
+     */
+    String defaultAssignment() default XNode.NO_DEFAULT_ASSIGNMENT_MARKER;
+
+    /**
+     * String separator to be used to aggregate the retrieved values.
+     */
+    String separator() default ":";
 
 }
