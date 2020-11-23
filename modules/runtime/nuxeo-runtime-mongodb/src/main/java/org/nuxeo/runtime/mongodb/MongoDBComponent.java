@@ -18,7 +18,7 @@
  */
 package org.nuxeo.runtime.mongodb;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -55,7 +55,7 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        Collection<MongoDBConnectionConfig> confs = getDescriptors(XP_CONNECTION);
+        List<MongoDBConnectionConfig> confs = getContributions(XP_CONNECTION, MongoDBConnectionConfig.class);
         confs.forEach(c -> {
             log.debug("Initializing MongoClient with id={}", c::getId);
             clients.put(c.getId(), MongoDBConnectionHelper.newMongoClient(c));
@@ -92,9 +92,9 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
 
     @Override
     public MongoDBConnectionConfig getConfig(String id) {
-        MongoDBConnectionConfig config = getDescriptor(XP_CONNECTION, id);
+        MongoDBConnectionConfig config = getContribution(XP_CONNECTION, id, MongoDBConnectionConfig.class);
         if (config == null) {
-            config = getDescriptor(XP_CONNECTION, DEFAULT_CONNECTION_ID);
+            config = getContribution(XP_CONNECTION, DEFAULT_CONNECTION_ID, MongoDBConnectionConfig.class);
         }
         return config;
     }
@@ -115,7 +115,7 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
     @Override
     public Iterable<MongoDatabase> getDatabases() {
         return () -> clients.entrySet().stream().map(e -> {
-            MongoDBConnectionConfig c = getDescriptor(XP_CONNECTION, e.getKey());
+            MongoDBConnectionConfig c = getContribution(XP_CONNECTION, e.getKey(), MongoDBConnectionConfig.class);
             return MongoDBConnectionHelper.getDatabase(e.getValue(), c.dbname);
         }).iterator();
     }
