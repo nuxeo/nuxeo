@@ -20,7 +20,6 @@ package org.nuxeo.runtime.cluster;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -67,7 +66,7 @@ public class ClusterServiceImpl extends DefaultComponent implements ClusterServi
 
     @Override
     public void start(ComponentContext context) {
-        ClusterNodeDescriptor descr = getDescriptor(XP_CONFIG, UNIQUE_DESCRIPTOR_ID);
+        ClusterNodeDescriptor descr = getSingleContribution(XP_CONFIG, ClusterNodeDescriptor.class);
 
         // enabled
         Boolean enabledProp = descr == null ? null : descr.getEnabled();
