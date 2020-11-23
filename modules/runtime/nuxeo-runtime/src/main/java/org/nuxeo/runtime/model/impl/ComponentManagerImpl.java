@@ -494,6 +494,8 @@ public class ComponentManagerImpl implements ComponentManager {
                         if (registry.isNull()) {
                             // backward compatibility
                             if (xt.getContributions() == null) {
+                                // overload use case: loaded contributions should use the old descriptor so should not
+                                // be recomputed
                                 xt.setContributions(xp.getXMap().loadAll(xctx, xt.getElement()));
                             }
                         } else if (!registry.isTagged(tag)) {

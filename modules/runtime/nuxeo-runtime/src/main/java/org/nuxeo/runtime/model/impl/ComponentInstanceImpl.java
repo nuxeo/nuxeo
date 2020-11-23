@@ -193,9 +193,8 @@ public class ComponentInstanceImpl implements ComponentInstance {
     // TODO: cache info about implementation to avoid computing it each time
     @Override
     public void registerExtension(Extension extension) {
-        // if this the target extension point is extending another extension
-        // point from another component
-        // then delegate the registration to the that component component
+        // if this the target extension point is extending another extension point from another component, then delegate
+        // the registration to the original "super" component, and issue a warn for that feature
         Optional<ExtensionPoint> optXp = ri.getExtensionPoint(extension.getExtensionPoint());
         if (optXp.isPresent()) {
             String superCo = optXp.get().getSuperComponent();
