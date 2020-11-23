@@ -57,10 +57,10 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
     public synchronized KeyValueStore getKeyValueStore(String name) {
         KeyValueStoreProvider provider = providers.get(name);
         if (provider == null) {
-            KeyValueStoreDescriptor descriptor = getDescriptor(XP_CONFIG, name);
+            KeyValueStoreDescriptor descriptor = getContribution(XP_CONFIG, name, KeyValueStoreDescriptor.class);
             if (descriptor == null) {
                 // instantiate a copy of the default descriptor
-                descriptor = getDescriptor(XP_CONFIG, DEFAULT_STORE_ID);
+                descriptor = getContribution(XP_CONFIG, DEFAULT_STORE_ID, KeyValueStoreDescriptor.class);
                 if (descriptor == null) {
                     throw new RuntimeException("Missing configuration for default key/value store");
                 }

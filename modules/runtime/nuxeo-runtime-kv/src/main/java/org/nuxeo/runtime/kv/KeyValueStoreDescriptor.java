@@ -24,7 +24,8 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor of Key/Value store contribution.
@@ -32,9 +33,11 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 9.1
  */
 @XObject("store")
-public class KeyValueStoreDescriptor implements Descriptor {
+@XRegistry(merge = false)
+public class KeyValueStoreDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@remove")
@@ -54,7 +57,6 @@ public class KeyValueStoreDescriptor implements Descriptor {
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties = new HashMap<>();
 
-    @Override
     public String getId() {
         return name;
     }
