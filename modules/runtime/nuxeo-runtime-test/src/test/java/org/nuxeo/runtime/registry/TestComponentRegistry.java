@@ -34,7 +34,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-public class RegistryTest {
+public class TestComponentRegistry {
 
     @Inject
     protected HotDeployer hotDeployer;
