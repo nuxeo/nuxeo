@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodes;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
@@ -45,9 +46,11 @@ public @interface XRegistryId {
     /**
      * The xpathy expression to retrieve the identifier.
      * <p>
+     * Multiple values can be used for aggregation.
+     * <p>
      * Only processed when placed on a type annotated by {@link XObject}.
      */
-    String value() default ID;
+    String[] value() default ID;
 
     /**
      * The xpathy fallback expression to retrieve the identifier.
@@ -57,5 +60,24 @@ public @interface XRegistryId {
      * @see XNode#fallback()
      */
     String fallback() default NAME;
+
+    /**
+     * The default value for this identifier.
+     * <p>
+     * Only processed when placed on a type annotated by {@link XObject}.
+     *
+     * @see XNodes#defaultAssignment()
+     */
+    String defaultAssignment() default XNode.NO_DEFAULT_ASSIGNMENT_MARKER;
+
+    /**
+     * The default value for this identifier.
+     * <p>
+     * Only processed when placed on a type annotated by {@link XObject} and when multiple values are defined for
+     * aggregation.
+     *
+     * @see XNodes#separator()
+     */
+    String separator() default ":";
 
 }

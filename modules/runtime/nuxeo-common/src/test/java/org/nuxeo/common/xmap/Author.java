@@ -32,6 +32,7 @@ import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
+import org.nuxeo.common.xmap.annotation.XNodes;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.w3c.dom.DocumentFragment;
 
@@ -230,5 +231,11 @@ public class Author {
 
     @XNode(value = "boolWithDefault", defaultAssignment = "true")
     Boolean boolWithDefault;
+
+    @XNodes(values = { "@id", "metadata/age" })
+    String combinedString;
+
+    @XNodes(values = { "@foo", "bar" }, defaultAssignment = "defaultCombined")
+    String combinedStringWithDefault;
 
 }
