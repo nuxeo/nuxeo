@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 package org.nuxeo.common.xmap;
 
@@ -22,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URL;
@@ -30,9 +33,6 @@ import java.time.Duration;
 import org.junit.Test;
 import org.nuxeo.common.xmap.Author.Gender;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- */
 public class XMapTest {
 
     @Test
@@ -118,6 +118,11 @@ public class XMapTest {
         assertEquals(Duration.ofMillis(1), author.durationMillis);
         assertEquals(Duration.ofDays(1).plusHours(2).plusMinutes(3).plusSeconds(4).plusMillis(5), author.durationAll);
         assertEquals(Duration.ofSeconds(1), author.durationJdk);
+
+        assertEquals("myDefaultValue", author.stringWithDefault);
+        assertEquals("fallbackValue", author.stringWithFallback);
+        assertEquals((Integer) 5, author.intWithDefault);
+        assertTrue(author.boolWithDefault);
     }
 
     @Test
