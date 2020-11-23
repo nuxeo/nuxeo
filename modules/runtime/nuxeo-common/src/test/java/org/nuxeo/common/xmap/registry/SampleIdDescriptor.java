@@ -18,30 +18,31 @@
  */
 package org.nuxeo.common.xmap.registry;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
+ * Descriptor with id combined from several nodes/attributes.
+ *
  * @since TODO
  */
-@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
-@Retention(RetentionPolicy.RUNTIME)
-public @interface XRegistryId {
+@XObject("descriptor")
+@XRegistry
+@XRegistryId(value = { "@name", "@type" }, separator = "/")
+public class SampleIdDescriptor {
 
-    public final String ID = "@id";
+    @XNode("@name")
+    String name;
 
-    public final String NAME = "@name";
+    @XNode("@type")
+    String type;
 
-    String[] value() default ID;
+    @XNode(value = "value", defaultValue = "Sample")
+    String value;
 
-    String fallbackValue() default NAME;
-
-    String defaultValue() default XNode.NO_DEFAULT_VALUE_MARKER;
-
-    String separator() default ":";
+    public String getId() {
+        // compat way of getting the combined value
+        return name + "/" + type;
+    }
 
 }

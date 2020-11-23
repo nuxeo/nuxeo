@@ -54,7 +54,7 @@ public class XAnnotatedMember {
         this.accessor = accessor;
     }
 
-    protected XAnnotatedMember(XMap xmap, XAccessor accessor, String path, String fallbackPath, String defaultValue,
+    public XAnnotatedMember(XMap xmap, XAccessor accessor, String path, String fallbackPath, String defaultValue,
             boolean trim) {
         this(xmap, accessor);
         this.path = new Path(path);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Anahide Tchertchian
  */
-
 package org.nuxeo.common.xmap.annotation;
 
 import java.lang.annotation.ElementType;
@@ -27,36 +24,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation to identify XMap annotations.
- * <p>
- * This annotation has a single parameter "value" of type <code>int</code> that specifies the type of the annotation.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @since TODO
  */
+@XMemberAnnotation(XMemberAnnotation.NODES)
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.ANNOTATION_TYPE)
-public @interface XMemberAnnotation {
+public @interface XNodes {
 
-    int NODE = 1;
+    String[] values() default "";
 
-    int NODE_LIST = 2;
+    String defaultValue() default XNode.NO_DEFAULT_VALUE_MARKER;
 
-    int NODE_MAP = 3;
-
-    int PARENT = 4;
-
-    int CONTENT = 5;
-
-    int CONTEXT = 6;
-
-    /**
-     * @since TODO
-     */
-    int NODES = 7;
-
-    /**
-     * The type of the annotation.
-     */
-    int value();
+    String separator() default ":";
 
 }
