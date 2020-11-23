@@ -379,7 +379,7 @@ public class XMap {
             while (p != null) {
                 if (p.getNodeType() == Node.ELEMENT_NODE) {
                     // Recurse in the first child Element
-                    return load((Element) p);
+                    return load(ctx, (Element) p);
                 }
                 p = p.getNextSibling();
             }
