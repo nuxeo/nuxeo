@@ -1,0 +1,49 @@
+image:
+  repository: "$DOCKER_REGISTRY/nuxeo/nuxeo"
+  tag: "$VERSION"
+  pullSecrets:
+  - name: kubernetes-docker-cfg
+podLabels:
+  branch: "$BRANCH_NAME"
+  team: platform
+  resource: pod
+  usage: "$USAGE"
+  scm-ref: "$GIT_COMMIT"
+service:
+  labels:
+    branch: "$BRANCH_NAME"
+    team: platform
+    resource: service
+    usage: "$USAGE"
+mongodb:
+  enabled: $PERSISTENCE
+  host: "mongodb.$PREVIEW_NAMESPACE.svc.cluster.local"
+elasticsearch:
+  enabled: $PERSISTENCE
+  host: "elasticsearch-master.$PREVIEW_NAMESPACE.svc.cluster.local"
+persistentVolumeStorage:
+  enabled: $PERSISTENCE
+  size: "100Mi"
+logs:
+  persistence:
+    enabled: $PERSISTENCE
+    size: "100Mi"
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/server-snippet: ignore_invalid_headers off;
+  hostname: "$PREVIEW_NAMESPACE.platform.dev.nuxeo.com"
+  tls:
+  - hosts:
+    - "$PREVIEW_NAMESPACE.platform.dev.nuxeo.com"
+    secretName: platform-cluster-tls
+nodeSelector:
+  team: platform
+tolerations:
+- effect: NoSchedule
+  key: team
+  operator: Equal
+  value: platform
