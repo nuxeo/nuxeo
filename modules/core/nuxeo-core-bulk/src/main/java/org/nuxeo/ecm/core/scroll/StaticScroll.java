@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.scroll;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;

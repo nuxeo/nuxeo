@@ -23,35 +23,40 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @since 10.2
  */
 @XObject("action")
-public class BulkActionDescriptor implements Descriptor {
+@XRegistry(enable = false)
+public class BulkActionDescriptor {
 
-    public static final Integer DEFAULT_BUCKET_SIZE = 100;
+    protected static final String DEFAULT_BUCKET_SIZE = "100";
 
-    public static final Integer DEFAULT_BATCH_SIZE = 25;
+    protected static final String DEFAULT_BATCH_SIZE = "25";
 
     // @since 11.1
-    @XNode("@enabled")
+    @XNode(value = "@enabled", fallback = XEnable.ENABLE)
+    @XEnable
     protected boolean isEnabled = true;
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     // @since 11.1
     @XNode("@inputStream")
     public String inputStream;
 
-    @XNode("@bucketSize")
-    public Integer bucketSize = DEFAULT_BUCKET_SIZE;
+    @XNode(value = "@bucketSize", defaultAssignment = DEFAULT_BUCKET_SIZE)
+    public Integer bucketSize;
 
-    @XNode("@batchSize")
-    public Integer batchSize = DEFAULT_BATCH_SIZE;
+    @XNode(value = "@batchSize", defaultAssignment = DEFAULT_BATCH_SIZE)
+    public Integer batchSize;
 
     @XNode("@httpEnabled")
     public Boolean httpEnabled = Boolean.FALSE;
@@ -70,7 +75,6 @@ public class BulkActionDescriptor implements Descriptor {
     @XNode("@defaultQueryLimit")
     public Long defaultQueryLimit;
 
-    @Override
     public String getId() {
         return name;
     }

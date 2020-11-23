@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.Descriptor;
 import org.nuxeo.runtime.stream.StreamService;
 
 /**
@@ -75,7 +74,7 @@ public class BulkAdminServiceImpl implements BulkAdminService {
     protected Map<String, BulkActionValidation> actionValidations;
 
     public BulkAdminServiceImpl(List<BulkActionDescriptor> descriptorsList) {
-        this.actions = descriptorsList.stream().map(Descriptor::getId).collect(Collectors.toList());
+        this.actions = descriptorsList.stream().map(BulkActionDescriptor::getId).collect(Collectors.toList());
         this.descriptors = new HashMap<>(descriptorsList.size());
         descriptorsList.forEach(descriptor -> descriptors.put(descriptor.name, descriptor));
         actionValidations = descriptorsList.stream()
