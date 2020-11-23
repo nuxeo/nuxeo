@@ -18,10 +18,11 @@
  */
 package org.nuxeo.runtime.api.login;
 
+import java.util.Optional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * LoginAs component.
@@ -46,12 +47,12 @@ public class LoginAsComponent extends DefaultComponent {
     }
 
     protected LoginAs getLoginAs() {
-        LoginAsDescriptor descriptor = getDescriptor(XP_IMPL, Descriptor.UNIQUE_DESCRIPTOR_ID);
-        if (descriptor == null) {
+        Optional<LoginAsDescriptor> descriptor = getRegistryContribution(XP_IMPL);
+        if (descriptor.isEmpty()) {
             return null;
         }
         try {
-            return descriptor.klass.getDeclaredConstructor().newInstance();
+            return descriptor.get().klass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             log.error("Unable to instantiate LoginAs implementation", e);
             return null;
