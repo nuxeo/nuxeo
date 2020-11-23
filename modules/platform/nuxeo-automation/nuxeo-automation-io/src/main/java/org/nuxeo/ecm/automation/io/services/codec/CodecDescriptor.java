@@ -20,18 +20,20 @@ package org.nuxeo.ecm.automation.io.services.codec;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("codec")
-public class CodecDescriptor implements Descriptor {
+@XRegistry
+public class CodecDescriptor {
 
     @XNode("@class")
+    @XRegistryId
     public String klass;
 
-    @Override
     public String getId() {
         return klass;
     }

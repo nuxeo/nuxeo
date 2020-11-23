@@ -63,7 +63,7 @@ public class IOComponent extends DefaultComponent {
         super.start(context);
         jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
         codecs = new ObjectCodecService(jsonFactoryManager.getJsonFactory());
-        List<CodecDescriptor> descriptors = getDescriptors(XP_CODECS);
+        List<CodecDescriptor> descriptors = getContributions(XP_CODECS, CodecDescriptor.class);
         for (CodecDescriptor d : descriptors) {
             try {
                 Class<?> clazz = Class.forName(d.klass);
