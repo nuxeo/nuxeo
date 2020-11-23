@@ -320,4 +320,28 @@ public class TestXMapRegistry {
         checkSampleSingle(sreg, "sample1", "Sample 1 Overridden");
     }
 
+    protected void checkSampleId(MapRegistry mreg, String id, String name, String type, String value) {
+        Optional<SampleIdDescriptor> desc = mreg.getContribution(id);
+        assertTrue(desc.isPresent());
+        assertEquals(id, desc.get().getId());
+        assertEquals(name, desc.get().name);
+        assertEquals(type, desc.get().type);
+        assertEquals(value, desc.get().value);
+    }
+
+    @Test
+    public void testSampleIdDescriptor() throws Exception {
+        XMap xmap = new XMap();
+        XAnnotatedObject xob = xmap.register(SampleIdDescriptor.class);
+        Registry registry = xmap.getRegistry(xob);
+        assertNotNull(registry);
+        xmap.register(registry, ctx, load("sample-id.xml"), "sample-id");
+        assertTrue(registry instanceof MapRegistry);
+        MapRegistry mreg = (MapRegistry) registry;
+        assertEquals(3, mreg.getContributions().size());
+        checkSampleId(mreg, "sample1/type1", "sample1", "type1", "Sample 1, Type 1");
+        checkSampleId(mreg, "sample2/type1", "sample2", "type1", "Sample 2, Type 1");
+        checkSampleId(mreg, "sample1/type2", "sample1", "type2", "Sample 1, Type 2");
+    }
+
 }

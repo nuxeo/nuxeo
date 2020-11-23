@@ -123,6 +123,9 @@ public class XMapTest {
         assertEquals("fallbackValue", author.stringWithFallback);
         assertEquals((Integer) 5, author.intWithDefault);
         assertTrue(author.boolWithDefault);
+
+        assertEquals("test1:32", author.combinedString);
+        assertEquals("defaultCombined", author.combinedStringWithDefault);
     }
 
     @Test
