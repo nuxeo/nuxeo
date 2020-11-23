@@ -6,13 +6,13 @@
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *  
+ *
  *  Contributors:
  *      Kevin Leturc <kleturc@nuxeo.com>
  */
@@ -27,6 +27,7 @@ import javax.inject.Named;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.impl.BridgeCommentManager;
 import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
@@ -36,7 +37,8 @@ import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.migration.MigrationDescriptor;
 import org.nuxeo.runtime.migration.MigrationServiceImpl;
-import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
+import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
@@ -69,12 +71,22 @@ public class BridgeCommentFeature implements RunnerFeature {
               .toProvider(() -> ((BridgeCommentManager) Framework.getService(CommentManager.class)).getSecond());
     }
 
+    protected MigrationDescriptor getDescriptor(String id) {
+        return Framework.getRuntime()
+                        .getComponentManager()
+                        .getRegistrationInfo(new ComponentName("org.nuxeo.runtime.migration.MigrationService"))
+                        .getExtensionPoint(MigrationServiceImpl.XP_CONFIG)
+                        .map(ExtensionPoint::getRegistry)
+                        .map(MapRegistry.class::cast)
+                        .map(reg -> {
+                            return reg.getContribution(id, MigrationDescriptor.class);
+                        })
+                        .orElse(null);
+    }
+
     @Override
     public void beforeRun(FeaturesRunner runner) {
-        var componentManager = (ComponentManagerImpl) Framework.getRuntime().getComponentManager();
-        MigrationDescriptor descriptor = componentManager.getDescriptors()
-                                                         .getDescriptor("org.nuxeo.runtime.migration.MigrationService",
-                                                                 MigrationServiceImpl.XP_CONFIG, MIGRATION_ID);
+        MigrationDescriptor descriptor = getDescriptor(MIGRATION_ID);
         String defaultState = descriptor.getDefaultState();
         String migrationStep = descriptor.getSteps()
                                          .values()
