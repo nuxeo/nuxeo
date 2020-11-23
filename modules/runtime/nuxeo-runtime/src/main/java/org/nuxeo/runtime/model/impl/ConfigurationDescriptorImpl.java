@@ -32,6 +32,8 @@ import org.w3c.dom.ranges.DocumentRange;
 import org.w3c.dom.ranges.Range;
 
 /**
+ * TODO: deprecate.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("config")

@@ -43,7 +43,7 @@ public class XAnnotatedObject {
 
     final Class<?> klass;
 
-    final Constructor<?> ctor;
+    final Constructor<?> constructor;
 
     final Path path;
 
@@ -51,12 +51,22 @@ public class XAnnotatedObject {
 
     Sorter sorter;
 
+    protected boolean hasRegistry;
+
+    protected XAnnotatedMember registryId;
+
+    protected XAnnotatedMember merge;
+
+    protected XAnnotatedMember remove;
+
+    protected XAnnotatedMember enable;
+
     public XAnnotatedObject(XMap xmap, Class<?> klass, XObject xob) {
         try {
             this.xmap = xmap;
             this.klass = klass;
-            this.ctor = this.klass.getDeclaredConstructor();
-            ctor.setAccessible(true);
+            this.constructor = this.klass.getDeclaredConstructor();
+            constructor.setAccessible(true);
             path = new Path(xob.value());
             members = new ArrayList<>();
             String[] order = xob.order();
@@ -78,21 +88,33 @@ public class XAnnotatedObject {
         return path;
     }
 
+    public Class<?> getKlass() {
+        return klass;
+    }
+
     public Object newInstance(Context ctx, Element element) {
-        Object ob;
-        try {
-            ob = ctor.newInstance();
-        } catch (InstantiationException e) {
-            throw new IllegalArgumentException(e);
-        } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException(e);
-        } catch (InvocationTargetException e) {
-            if (e.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) e.getCause();
+        return newInstance(ctx, element, null);
+    }
+
+    public Object newInstance(Context ctx, Element element, Object existing) {
+        if (existing == null) {
+            Object ob;
+            try {
+                ob = constructor.newInstance();
+            } catch (InstantiationException e) {
+                throw new IllegalArgumentException(e);
+            } catch (IllegalAccessException e) {
+                throw new IllegalArgumentException(e);
+            } catch (InvocationTargetException e) {
+                if (e.getCause() instanceof RuntimeException) {
+                    throw (RuntimeException) e.getCause();
+                }
+                throw new IllegalArgumentException(e);
             }
-            throw new IllegalArgumentException(e);
+            ctx.push(ob);
+        } else {
+            ctx.push(existing);
         }
-        ctx.push(ob);
 
         if (sorter != null) {
             Collections.sort(members, sorter);
@@ -101,11 +123,82 @@ public class XAnnotatedObject {
 
         // set annotated members
         for (XAnnotatedMember member : members) {
-            member.process(ctx, element);
+            member.process(ctx, element, existing);
         }
 
         return ctx.pop();
     }
+
+    /**
+     * @since TODO
+     */
+    public boolean hasRegistry() {
+        return hasRegistry;
+    }
+
+    /**
+     * @since TODO
+     */
+    public void setHasRegistry(boolean hasRegistry) {
+        this.hasRegistry = hasRegistry;
+    }
+
+    /**
+     * @since TODO
+     */
+    public XAnnotatedMember getRegistryId() {
+        return registryId;
+    }
+
+    /**
+     * @since TODO
+     */
+    public void setRegistryId(XAnnotatedMember registryId) {
+        this.registryId = registryId;
+    }
+
+    /**
+     * @since TODO
+     */
+    public XAnnotatedMember getMerge() {
+        return merge;
+    }
+
+    /**
+     * @since TODO
+     */
+    public void setMerge(XAnnotatedMember merge) {
+        this.merge = merge;
+    }
+
+    /**
+     * @since TODO
+     */
+    public XAnnotatedMember getRemove() {
+        return remove;
+    }
+
+    /**
+     * @since TODO
+     */
+    public void setRemove(XAnnotatedMember remove) {
+        this.remove = remove;
+    }
+
+    /**
+     * @since TODO
+     */
+    public XAnnotatedMember getEnable() {
+        return enable;
+    }
+
+    /**
+     * @since TODO
+     */
+    public void setEnable(XAnnotatedMember enable) {
+        this.enable = enable;
+    }
+
 }
 
 class Sorter implements Comparator<XAnnotatedMember>, Serializable {

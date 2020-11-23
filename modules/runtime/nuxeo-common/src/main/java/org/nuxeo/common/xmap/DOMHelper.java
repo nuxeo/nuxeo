@@ -69,6 +69,21 @@ public final class DOMHelper {
     }
 
     /**
+     * @since TODO
+     */
+    public static boolean hasNode(Element base, Path path) {
+        Node node = getElementNode(base, path);
+        if (node != null) {
+            if (path.attribute != null) {
+                Node at = node.getAttributes().getNamedItem(path.attribute);
+                return at != null;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Visits the nodes selected by the given path using the given visitor.
      */
     public static void visitNodes(Context ctx, XAnnotatedList xam, Element base, Path path, NodeVisitor visitor,

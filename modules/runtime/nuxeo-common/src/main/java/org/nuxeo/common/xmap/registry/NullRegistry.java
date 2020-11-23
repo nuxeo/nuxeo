@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,32 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Anahide Tchertchian
  */
+package org.nuxeo.common.xmap.registry;
 
-package org.nuxeo.common.xmap;
-
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.w3c.dom.Element;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Null registry for backward compatibility management.
+ *
+ * @since TODO
  */
-public class XAnnotatedParent extends XAnnotatedMember {
+public class NullRegistry extends AbstractRegistry implements Registry {
 
-    protected XAnnotatedParent(XMap xmap, XAccessor accessor) {
-        super(xmap, accessor);
+    public NullRegistry() {
     }
 
     @Override
-    public Object getValue(Context ctx, Element base) {
-        return ctx.getParent();
+    public boolean isNull() {
+        return true;
+    }
+
+    @Override
+    protected void register(Context ctx, XAnnotatedObject xObject, Element element) {
+        // NOOP
     }
 
 }

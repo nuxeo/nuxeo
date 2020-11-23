@@ -1,0 +1,49 @@
+<component name="org.nuxeo.runtime.test.Registry.override">
+
+  <extension target="org.nuxeo.runtime.test.Registry.framework" point="single">
+
+    <descriptor name="sample1">
+      <value>Sample 1 Overridden</value>
+    </descriptor>
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.test.Registry.framework" point="map">
+
+    <descriptor name="sample1">
+      <value>Sample 1 Additions</value>
+    </descriptor>
+
+    <descriptor name="sample2">
+      <!-- check emptying is possible and does not result in using default value -->
+      <value></value>
+    </descriptor>
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.test.Registry.framework" point="custom">
+
+    <descriptor name="sample1">
+      <value>Sample 1 Additions</value>
+    </descriptor>
+
+    <descriptor name="sample2">
+      <!-- check emptying is possible and does not result in using default value -->
+      <value></value>
+    </descriptor>
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.test.Registry.framework" point="legacy">
+
+    <descriptor name="sample1">
+      <value>Sample 1 Additions</value>
+    </descriptor>
+
+    <descriptor name="sample2">
+      <value></value>
+    </descriptor>
+
+  </extension>
+
+</component>

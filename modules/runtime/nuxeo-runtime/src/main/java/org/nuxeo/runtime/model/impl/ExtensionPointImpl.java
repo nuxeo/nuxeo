@@ -21,6 +21,13 @@
 
 package org.nuxeo.runtime.model.impl;
 
+import java.lang.reflect.Constructor;
+import java.util.Arrays;
+import java.util.Objects;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.XMapException;
 import org.nuxeo.common.xmap.annotation.XContent;
@@ -28,16 +35,19 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.common.xmap.annotation.XParent;
+import org.nuxeo.common.xmap.registry.NullRegistry;
+import org.nuxeo.common.xmap.registry.Registry;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
-import org.w3c.dom.Element;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject
 public class ExtensionPointImpl implements ExtensionPoint {
+
+    private static final Logger log = LogManager.getLogger(ExtensionPointImpl.class);
 
     @XNode("@name")
     public String name;
@@ -55,6 +65,15 @@ public class ExtensionPointImpl implements ExtensionPoint {
 
     @XParent
     public RegistrationInfo ri;
+
+    // potential registry class declaration
+    @XNode(value = "registry@class")
+    protected String registryKlass;
+
+    // final operating registry class
+    protected Registry registry;
+
+    protected static final Registry NULL_REGISTRY = new NullRegistry();
 
     @Override
     public Class<?>[] getContributions() {
@@ -76,39 +95,107 @@ public class ExtensionPointImpl implements ExtensionPoint {
         return superComponent;
     }
 
-    public Extension createExtension(Element element) {
-        return null;
-    }
-
-    public Object[] loadContributions(RegistrationInfo owner, Extension extension) {
-        Object[] contribs = extension.getContributions();
-        if (contribs != null) {
-            // contributions already computed - this should e an overloaded (extended) extension point
-            return contribs;
-        }
-        // should compute now the contributions
-        if (contributions != null) {
-            if (xmap == null) {
-                xmap = new XMap();
-                for (Class<?> contrib : contributions) {
-                    if (contrib != null) {
-                        xmap.register(contrib);
-                    } else {
-                        throw new RuntimeException("Unknown implementation class when contributing to "
-                                + owner.getComponent().getName());
-                    }
+    protected XMap getXmap() {
+        if (xmap == null) {
+            xmap = new XMap();
+            for (int i = 0; i < contributions.length; i++) {
+                Class<?> contrib = contributions[i];
+                if (contrib != null) {
+                    xmap.register(contrib);
+                } else {
+                    throw new RuntimeException(
+                            "Unknown implementation class when contributing to " + ri.getComponent().getName());
                 }
             }
+        }
+        return xmap;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void register(Extension extension) {
+        // should compute now the contributions
+        if (contributions != null) {
             try {
-                contribs = xmap.loadAll(new XMapContext(extension.getContext()), extension.getElement());
+                Context xctx = new XMapContext(extension.getContext());
+                // backward compatibility
+                if (extension.getContributions() == null) {
+                    extension.setContributions(getXmap().loadAll(xctx, extension.getElement()));
+                }
+                // fill up registry
+                getXmap().register(getRegistry(), xctx, extension.getElement(), extension.getId());
             } catch (XMapException e) {
                 throw new RuntimeException(
                         e.getMessage() + " while processing component: " + extension.getComponent().getName().getName(),
                         e);
             }
-            extension.setContributions(contribs);
+        } else {
+            throw new RuntimeException(String.format(
+                    "Cannot contribute contributions from component '%s': extension point '%s:%s' is missing contribution classes",
+                    extension.getComponent().getName(), superComponent, name));
         }
-        return contribs;
+    }
+
+    @Override
+    public void unregister(Extension extension) {
+        try {
+            getXmap().unregister(getRegistry(), extension.getId());
+        } catch (XMapException e) {
+            log.error(e.getMessage() + " while unprocessing component: " + extension.getComponent().getName().getName(),
+                    e);
+        }
+    }
+
+    @Override
+    public Registry getRegistry() {
+        if (registry == null) {
+            registry = computeFinalRegistry();
+            if (registry == null) {
+                registry = NULL_REGISTRY;
+            }
+        }
+        if (registry.isNull()) {
+            return null;
+        }
+        return registry;
+    }
+
+    protected Registry computeFinalRegistry() {
+        if (registryKlass != null) {
+            try {
+                Class<?> clazz = Class.forName(registryKlass);
+                Constructor<?> constructor = clazz.getConstructor();
+                return (Registry) constructor.newInstance();
+            } catch (ReflectiveOperationException e) {
+                String msg = String.format(
+                        "Failed to create registry on component '%s', extension point '%s': error initializing class '%s' (%s).",
+                        superComponent, name, registryKlass, e.toString());
+                throw new RuntimeException(msg, e);
+            }
+        }
+        if (contributions != null) {
+            // compute registry from annotations
+            if (contributions.length == 0) {
+                // backward compatibility: no annotation found
+                return null;
+            } else {
+                // take first registry
+                XMap xmap = getXmap();
+                return Arrays.stream(contributions)
+                             .map(xmap::getObject)
+                             .filter(Objects::nonNull)
+                             .map(xmap::getRegistry)
+                             .filter(Objects::nonNull)
+                             .findFirst()
+                             .orElse(null);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void resetRegistry() {
+        registry = null;
     }
 
 }

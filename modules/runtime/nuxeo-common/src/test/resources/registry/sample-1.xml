@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<document>
+
+  <descriptor name="sample1">
+    <value>Sample 1 Value</value>
+    <bool>false</bool>
+  </descriptor>
+
+  <descriptor name="sample2">
+    <value>Sample 2 Value</value>
+    <stringList>
+      <item>sample2 - item1</item>
+      <item>sample2 - item2</item>
+    </stringList>
+    <stringListAnnotated>
+      <item>sample2 - annotated item1</item>
+      <item>sample2 - annotated item2</item>
+    </stringListAnnotated>
+    <stringMap>
+      <item id="item1">sample2 - item1</item>
+      <item id="item2">sample2 - item2</item>
+    </stringMap>
+    <stringMapAnnotated>
+      <item id="item1">sample2 - annotated item1</item>
+      <item id="item2">sample2 - annotated item2</item>
+    </stringMapAnnotated>
+  </descriptor>
+
+  <descriptor name="sample3">
+    <value>Sample 3 Value</value>
+    <stringList>
+      <item>sample3 - item1</item>
+      <item>sample3 - item2</item>
+    </stringList>
+    <stringListAnnotated>
+      <item>sample3 - annotated item1</item>
+      <item>sample3 - annotated item2</item>
+    </stringListAnnotated>
+    <stringMap>
+      <item id="item1">sample3 - item1</item>
+      <item id="item2">sample3 - item2</item>
+    </stringMap>
+    <stringMapAnnotated>
+      <item id="item1">sample3 - annotated item1</item>
+      <item id="item2">sample3 - annotated item2</item>
+    </stringMapAnnotated>
+  </descriptor>
+
+  <descriptor name="sample4">
+    <value>Sample 4 Value</value>
+    <stringList>
+      <item>sample4 - item1</item>
+      <item>sample4 - item2</item>
+    </stringList>
+    <stringListAnnotated>
+      <item>sample4 - annotated item1</item>
+      <item>sample4 - annotated item2</item>
+    </stringListAnnotated>
+    <stringMap>
+      <item id="item1">sample4 - item1</item>
+      <item id="item2">sample4 - item2</item>
+    </stringMap>
+    <stringMapAnnotated>
+      <item id="item1">sample4 - annotated item1</item>
+      <item id="item2">sample4 - annotated item2</item>
+    </stringMapAnnotated>
+  </descriptor>
+
+  <descriptor name="sample5">
+    <stringList>
+      <item>sample5 - item1</item>
+      <item>sample5 - item2</item>
+    </stringList>
+    <stringListAnnotated>
+      <item>sample5 - annotated item1</item>
+      <item>sample5 - annotated item2</item>
+    </stringListAnnotated>
+    <stringMap>
+      <item id="item1">sample5 - item1</item>
+      <item id="item2">sample5 - item2</item>
+    </stringMap>
+    <stringMapAnnotated>
+      <item id="item1">sample5 - annotated item1</item>
+      <item id="item2">sample5 - annotated item2</item>
+    </stringMapAnnotated>
+  </descriptor>
+
+</document>

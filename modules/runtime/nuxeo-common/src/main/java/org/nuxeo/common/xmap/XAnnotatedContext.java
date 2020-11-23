@@ -35,7 +35,7 @@ public class XAnnotatedContext extends XAnnotatedMember {
     }
 
     @Override
-    protected Object getValue(Context ctx, Element base) {
+    public Object getValue(Context ctx, Element base) {
         return ctx.getProperty(path.path);
     }
 

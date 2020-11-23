@@ -61,13 +61,14 @@ public class TestExtensionPointWithError {
         // check runtime errors
         List<String> errors = Framework.getRuntime().getMessageHandler().getMessages(RuntimeMessage.Level.ERROR);
         assertEquals(1, errors.size());
-        assertEquals("Failed to load contributions for component service:OverridingXPoint-witherror", errors.get(0));
+        assertEquals("Failed to register contributions for component service:OverridingXPoint-witherror",
+                errors.get(0));
 
         // check logs
         assertEquals(1, logResult.getCaughtEvents().size());
         LogEvent event = logResult.getCaughtEvents().get(0);
         assertEquals(Level.ERROR, event.getLevel());
-        assertEquals("Failed to load contributions for component service:OverridingXPoint-witherror",
+        assertEquals("Failed to register contributions for component service:OverridingXPoint-witherror",
                 event.getMessage().getFormattedMessage());
         Throwable t = event.getThrown();
         assertEquals(RuntimeException.class, t.getClass());

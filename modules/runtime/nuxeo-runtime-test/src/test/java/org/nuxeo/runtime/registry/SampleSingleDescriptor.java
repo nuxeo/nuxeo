@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,27 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Anahide Tchertchian
  */
+package org.nuxeo.runtime.registry;
 
-package org.nuxeo.common.xmap;
-
-import org.w3c.dom.Element;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @since TODO
  */
-public class XAnnotatedParent extends XAnnotatedMember {
+@XObject("descriptor")
+@XRegistry
+public class SampleSingleDescriptor {
 
-    protected XAnnotatedParent(XMap xmap, XAccessor accessor) {
-        super(xmap, accessor);
-    }
+    @XNode("@name")
+    String name;
 
-    @Override
-    public Object getValue(Context ctx, Element base) {
-        return ctx.getParent();
-    }
+    @XNode("value")
+    String value;
 
+    @XNode(value = "bool")
+    Boolean bool;
 }

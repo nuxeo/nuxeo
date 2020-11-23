@@ -21,12 +21,14 @@ package org.nuxeo.runtime.model.impl;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -492,8 +494,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 continue;
             }
             for (Extension xt : pendingExt) {
-                ComponentManagerImpl.loadContributions(this, xt);
                 try {
+                    ComponentManagerImpl.register(this, xt);
                     component.registerExtension(xt);
                     manager.sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
                             ((ComponentInstanceImpl) xt.getComponent()).ri, xt));
@@ -529,6 +531,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
         state = DEACTIVATING;
         manager.sendEvent(new ComponentEvent(ComponentEvent.DEACTIVATING_COMPONENT, this));
+
+        Arrays.stream(getExtensionPoints()).forEach(ExtensionPoint::resetRegistry);
 
         if (mustUnregisterExtensions) {
             // unregister contributed extensions if any

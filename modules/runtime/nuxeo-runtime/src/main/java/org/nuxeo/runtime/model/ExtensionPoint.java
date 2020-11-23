@@ -20,6 +20,8 @@
 
 package org.nuxeo.runtime.model;
 
+import org.nuxeo.common.xmap.registry.Registry;
+
 /**
  * A component extension point.
  * <p>
@@ -64,5 +66,25 @@ public interface ExtensionPoint {
      * @return the base extension point if this extension point is extending another extension point, or null if none
      */
     String getSuperComponent();
+
+    /**
+     * @since TODO
+     */
+    void register(Extension extension);
+
+    /**
+     * @since TODO
+     */
+    void unregister(Extension extension);
+
+    /**
+     * @since TODO
+     */
+    Registry getRegistry();
+
+    /**
+     * @since TODO
+     */
+    void resetRegistry();
 
 }

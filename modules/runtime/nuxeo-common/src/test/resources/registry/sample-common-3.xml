@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<document>
+
+  <descriptor name="sample1" activated="true" />
+
+  <descriptor name="sample2" enable="true">
+    <value>Sample 2 Overridden</value>
+  </descriptor>
+
+  <descriptor name="sample3" override="true">
+    <value>Sample 3 Overridden</value>
+  </descriptor>
+
+</document>

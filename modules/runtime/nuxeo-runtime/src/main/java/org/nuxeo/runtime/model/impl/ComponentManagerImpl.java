@@ -416,7 +416,7 @@ public class ComponentManagerImpl implements ComponentManager {
         if (ri != null && ri.getComponent() != null
                 && Set.of(RegistrationInfo.ACTIVATED, RegistrationInfo.STARTED).contains(ri.getState())) {
             log.debug("Register contributed extension: {}", extension);
-            loadContributions(ri, extension);
+            register(ri, extension);
             ri.getComponent().registerExtension(extension);
             sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
                     ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
@@ -436,6 +436,7 @@ public class ComponentManagerImpl implements ComponentManager {
         ComponentName name = extension.getTargetComponent();
         RegistrationInfo ri = registry.getComponent(name);
         if (ri != null) {
+            unregister(ri, extension);
             ComponentInstance co = ri.getComponent();
             if (co != null) {
                 co.unregisterExtension(extension);
@@ -454,22 +455,41 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     public static void loadContributions(RegistrationInfo ri, Extension xt) {
+        register(ri, xt);
+    }
+
+    /**
+     * @since TODO
+     */
+    public static void register(RegistrationInfo ri, Extension xt) {
         // in new java based system contributions don't need to be loaded, this is a XML specificity reflected by
         // ExtensionPointImpl coming from XML deserialization
         if (ri.useFormerLifecycleManagement()) {
             // Extension point needing to load contribution are ExtensionPointImpl
-            ri.getExtensionPoint(xt.getExtensionPoint())
-              .filter(xp -> xp.getContributions() != null)
-              .map(ExtensionPointImpl.class::cast)
-              .ifPresent(xp -> {
-                  try {
-                      Object[] contribs = xp.loadContributions(ri, xt);
-                      xt.setContributions(contribs);
-                  } catch (RuntimeException e) {
-                      ComponentName compName = xt.getComponent().getName();
-                      handleError("Failed to load contributions for component " + compName, compName.getName(), e);
-                  }
-              });
+            ri.getExtensionPoint(xt.getExtensionPoint()).filter(xp -> xp.getContributions() != null).ifPresent(xp -> {
+                try {
+                    xp.register(xt);
+                } catch (RuntimeException e) {
+                    ComponentName compName = xt.getComponent().getName();
+                    handleError("Failed to register contributions for component " + compName, compName.getName(), e);
+                }
+            });
+        }
+    }
+
+    /**
+     * @since TODO
+     */
+    public static void unregister(RegistrationInfo ri, Extension xt) {
+        if (ri.useFormerLifecycleManagement()) {
+            ri.getExtensionPoint(xt.getExtensionPoint()).filter(xp -> xp.getContributions() != null).ifPresent(xp -> {
+                try {
+                    xp.unregister(xt);
+                } catch (RuntimeException e) {
+                    ComponentName compName = xt.getComponent().getName();
+                    handleError("Failed to unregister contributions for component " + compName, compName.getName(), e);
+                }
+            });
         }
     }
 

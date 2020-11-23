@@ -21,8 +21,13 @@ package org.nuxeo.runtime.model;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.nuxeo.common.xmap.registry.MapRegistry;
+import org.nuxeo.common.xmap.registry.SingleRegistry;
 import org.nuxeo.runtime.RuntimeMessage;
 import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeMessage.Source;
@@ -180,6 +185,23 @@ public class DefaultComponent implements Component, Adaptable {
      */
     protected <T extends Descriptor> List<T> getDescriptors(String xp) {
         return getRegistry().getDescriptors(name, xp);
+    }
+
+    /**
+     * @since TODO
+     */
+    protected <T> T getRegistry(String point, Class<T> registryClass) {
+        return getExtensionPoint(point).map(ExtensionPoint::getRegistry).map(registryClass::cast).orElse(null);
+    }
+
+    /**
+     * @since TODO
+     */
+    protected Optional<ExtensionPoint> getExtensionPoint(String point) {
+        return Framework.getRuntime()
+                        .getComponentManager()
+                        .getRegistrationInfo(new ComponentName(name))
+                        .getExtensionPoint(point);
     }
 
 }

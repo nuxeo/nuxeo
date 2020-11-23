@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<document>
+
+  <descriptor name="sample1" activated="false">
+    <value>Sample 1 Additions</value>
+    <bool>true</bool>
+  </descriptor>
+
+  <descriptor name="sample2" enable="false">
+    <value>Sample 2 Additions</value>
+    <bool>true</bool>
+  </descriptor>
+
+  <descriptor name="sample3" override="false">
+    <value>Sample 3 Additions</value>
+    <bool>true</bool>
+  </descriptor>
+
+  <descriptor name="sample4" remove="true" />
+
+</document>
