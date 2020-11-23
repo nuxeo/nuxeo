@@ -19,6 +19,7 @@
 package org.nuxeo.runtime.kv;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.runtime.model.ComponentContext;
@@ -57,20 +58,23 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
     public synchronized KeyValueStore getKeyValueStore(String name) {
         KeyValueStoreProvider provider = providers.get(name);
         if (provider == null) {
-            KeyValueStoreDescriptor descriptor = getDescriptor(XP_CONFIG, name);
-            if (descriptor == null) {
+            KeyValueStoreDescriptor desc;
+            Optional<KeyValueStoreDescriptor> optDesc = getRegistryContribution(XP_CONFIG, name);
+            if (optDesc.isEmpty()) {
                 // instantiate a copy of the default descriptor
-                descriptor = getDescriptor(XP_CONFIG, DEFAULT_STORE_ID);
-                if (descriptor == null) {
+                optDesc = getRegistryContribution(XP_CONFIG, DEFAULT_STORE_ID);
+                if (optDesc.isEmpty()) {
                     throw new RuntimeException("Missing configuration for default key/value store");
                 }
-                descriptor = new KeyValueStoreDescriptor(descriptor); // copy
-                descriptor.name = name;
-                descriptor.namespace = name; // set new namespace in copy
+                desc = new KeyValueStoreDescriptor(optDesc.get()); // copy
+                desc.name = name;
+                desc.namespace = name; // set new namespace in copy
+            } else {
+                desc = optDesc.get();
             }
             try {
-                provider = descriptor.klass.getDeclaredConstructor().newInstance();
-                provider.initialize(descriptor);
+                provider = desc.klass.getDeclaredConstructor().newInstance();
+                provider.initialize(desc);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
