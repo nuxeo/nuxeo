@@ -20,7 +20,6 @@ package org.nuxeo.runtime.metrics;
 
 import static org.apache.logging.log4j.Level.INFO;
 import static org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME;
-import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
 
 import java.lang.management.ManagementFactory;
 import java.util.List;
@@ -33,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -62,8 +62,6 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
 
     protected MetricsConfigurationDescriptor config;
 
-    protected List<MetricsReporterDescriptor> reporterConfigs;
-
     protected List<MetricsReporter> reporters;
 
     protected InstrumentedAppender appender;
@@ -87,7 +85,7 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
         super.start(context);
         log.debug("Starting component");
         instanceUp.inc();
-        config = getDescriptor(CONFIGURATION_EP, UNIQUE_DESCRIPTOR_ID);
+        config = getSingleContribution(CONFIGURATION_EP, MetricsConfigurationDescriptor.class);
         startReporters();
     }
 
@@ -109,12 +107,11 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
             return;
         }
         log.info("Starting reporters");
-        reporterConfigs = getDescriptors(REPORTER_EP);
         updateInstrumentation(config.getInstruments(), true);
-        reporters = reporterConfigs.stream()
-                                   .filter(MetricsReporterDescriptor::isEnabled)
-                                   .map(MetricsReporterDescriptor::newInstance)
-                                   .collect(Collectors.toList());
+        reporters = getRegistry(REPORTER_EP, MapRegistry.class).getContributionValues(MetricsReporterDescriptor.class)
+                                                               .stream()
+                                                               .map(MetricsReporterDescriptor::newInstance)
+                                                               .collect(Collectors.toList());
         reporters.forEach(reporter -> reporter.start(registry, config, config.getDeniedExpansions()));
     }
 
@@ -129,10 +126,10 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
         updateInstrumentation(config.getInstruments(), false);
         reporters.clear();
         reporters = null;
-        reporterConfigs = null;
     }
 
-    protected void updateInstrumentation(List<MetricsConfigurationDescriptor.InstrumentDescriptor> instruments, boolean activate) {
+    protected void updateInstrumentation(List<MetricsConfigurationDescriptor.InstrumentDescriptor> instruments,
+            boolean activate) {
         for (String instrument : instruments.stream()
                                             .filter(MetricsConfigurationDescriptor.InstrumentDescriptor::isEnabled)
                                             .map(MetricsConfigurationDescriptor.InstrumentDescriptor::getId)
