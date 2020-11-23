@@ -528,6 +528,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-video</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-video-rest</artifactId>
+    </dependency>
 
     <!-- CMIS -->
     <dependency>
