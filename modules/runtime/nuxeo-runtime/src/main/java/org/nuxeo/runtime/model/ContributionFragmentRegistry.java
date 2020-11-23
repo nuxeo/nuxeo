@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.nuxeo.common.xmap.registry.Registry;
+
 /**
  * This is a contribution registry that is managing contribution fragments and merge them as needed. The implementation
  * will be notified through {@link #contributionUpdated(String, Object, Object)} each time you need to store or remove a
@@ -74,6 +76,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @see SimpleContributionRegistry
  * @deprecated since 10.3 use DefaultComponent descriptors management methods instead
+ * @deprecated since TODO: use {@link Registry} associated annotations instead.
  */
 @Deprecated(since = "10.3")
 public abstract class ContributionFragmentRegistry<T> {

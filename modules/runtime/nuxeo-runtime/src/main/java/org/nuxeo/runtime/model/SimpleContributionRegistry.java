@@ -21,11 +21,14 @@ package org.nuxeo.runtime.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.common.xmap.registry.Registry;
+
 /**
  * Simple contribution registry, keeping up to date contributions in a map, and not handling merge.
  *
  * @since 5.6
  * @deprecated since 10.3 use DefaultComponent descriptors management methods instead
+ * @deprecated since TODO: use {@link Registry} associated annotations instead.
  */
 @Deprecated
 public abstract class SimpleContributionRegistry<T> extends ContributionFragmentRegistry<T> {

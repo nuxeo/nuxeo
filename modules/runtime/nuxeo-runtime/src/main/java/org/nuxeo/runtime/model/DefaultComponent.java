@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.nuxeo.common.xmap.registry.MapRegistry;
+import org.nuxeo.common.xmap.registry.Registry;
 import org.nuxeo.common.xmap.registry.SingleRegistry;
 import org.nuxeo.runtime.RuntimeMessage;
 import org.nuxeo.runtime.RuntimeMessage.Level;
@@ -154,37 +155,71 @@ public class DefaultComponent implements Component, Adaptable {
 
     /**
      * @since 10.3
+     * @deprecated since TODO: use {@link Registry} associated annotations instead.
+     * @see #getRegistry(String, Class)
      */
+    @Deprecated
     protected DescriptorRegistry getRegistry() {
         return registry;
     }
 
     /**
      * @since 10.3
+     * @deprecated since TODO: use {@link Registry} associated annotations instead.
      */
+    @Deprecated
     protected boolean register(String xp, Descriptor descriptor) {
         return getRegistry().register(name, xp, descriptor);
     }
 
     /**
      * @since 10.3
+     * @deprecated since TODO: use {@link Registry} associated annotations instead.
      */
+    @Deprecated
     protected boolean unregister(String xp, Descriptor descriptor) {
         return getRegistry().unregister(name, xp, descriptor);
     }
 
     /**
      * @since 10.3
+     * @deprecated since TODO: use {@link Registry} associated annotations instead.
+     * @see #getContribution(String, String, Class)
      */
+    @Deprecated
     protected <T extends Descriptor> T getDescriptor(String xp, String id) {
         return getRegistry().getDescriptor(name, xp, id);
     }
 
     /**
      * @since 10.3
+     * @deprecated since TODO: use {@link Registry} associated annotations instead.
+     * @see #getContributions(String, Class)
      */
+    @Deprecated
     protected <T extends Descriptor> List<T> getDescriptors(String xp) {
         return getRegistry().getDescriptors(name, xp);
+    }
+
+    /**
+     * @since TODO
+     */
+    protected <T> T getSingleContribution(String point, Class<T> contributionClass) {
+        return getRegistry(point, SingleRegistry.class).getContribution(contributionClass);
+    }
+
+    /**
+     * @since TODO
+     */
+    protected <T> T getContribution(String point, String id, Class<T> contributionClass) {
+        return getRegistry(point, MapRegistry.class).getContribution(id, contributionClass);
+    }
+
+    /**
+     * @since TODO
+     */
+    protected <T> List<T> getContributions(String point, Class<T> contributionClass) {
+        return getRegistry(point, MapRegistry.class).getContributionValues(contributionClass);
     }
 
     /**

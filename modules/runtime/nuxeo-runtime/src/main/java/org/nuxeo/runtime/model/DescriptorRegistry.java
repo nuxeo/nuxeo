@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.registry.Registry;
 
 /**
  * Default generic descriptor registry.
@@ -40,7 +41,9 @@ import org.apache.logging.log4j.Logger;
  * <p>
  *
  * @since 10.3
+ * @deprecated since TODO: use {@link Registry} associated annotations instead.
  */
+@Deprecated
 @SuppressWarnings("unchecked")
 public class DescriptorRegistry {
 
