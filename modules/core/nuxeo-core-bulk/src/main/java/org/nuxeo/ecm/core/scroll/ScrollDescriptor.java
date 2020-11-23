@@ -26,17 +26,22 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.scroll.Scroll;
-import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @since 11.1
  */
 @XObject("scroll")
-public class ScrollDescriptor implements Descriptor {
+@XRegistry(enable = false)
+@XRegistryId(value = { "@type", "@name" })
+public class ScrollDescriptor {
 
-    @XNode("@enabled")
+    @XNode(value = "@enabled", fallback = XEnable.ENABLE)
+    @XEnable
     protected boolean isEnabled = true;
 
     @XNode("@type")
@@ -56,7 +61,6 @@ public class ScrollDescriptor implements Descriptor {
 
     protected Map<String, String> optionsReadOnly;
 
-    @Override
     public String getId() {
         return getType() + ":" + getName();
     }
