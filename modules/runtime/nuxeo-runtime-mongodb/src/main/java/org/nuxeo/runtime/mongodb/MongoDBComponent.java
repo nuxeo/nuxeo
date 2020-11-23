@@ -18,8 +18,9 @@
  */
 package org.nuxeo.runtime.mongodb;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -55,7 +56,7 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        Collection<MongoDBConnectionConfig> confs = getDescriptors(XP_CONNECTION);
+        List<MongoDBConnectionConfig> confs = getRegistryContributions(XP_CONNECTION);
         confs.forEach(c -> {
             log.debug("Initializing MongoClient with id={}", c::getId);
             clients.put(c.getId(), MongoDBConnectionHelper.newMongoClient(c));
@@ -92,11 +93,11 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
 
     @Override
     public MongoDBConnectionConfig getConfig(String id) {
-        MongoDBConnectionConfig config = getDescriptor(XP_CONNECTION, id);
-        if (config == null) {
-            config = getDescriptor(XP_CONNECTION, DEFAULT_CONNECTION_ID);
+        Optional<MongoDBConnectionConfig> config = getRegistryContribution(XP_CONNECTION, id);
+        if (config.isEmpty()) {
+            config = getRegistryContribution(XP_CONNECTION, DEFAULT_CONNECTION_ID);
         }
-        return config;
+        return config.orElse(null);
     }
 
     @Override
@@ -115,8 +116,8 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
     @Override
     public Iterable<MongoDatabase> getDatabases() {
         return () -> clients.entrySet().stream().map(e -> {
-            MongoDBConnectionConfig c = getDescriptor(XP_CONNECTION, e.getKey());
-            return MongoDBConnectionHelper.getDatabase(e.getValue(), c.dbname);
+            Optional<MongoDBConnectionConfig> c = getRegistryContribution(XP_CONNECTION, e.getKey());
+            return MongoDBConnectionHelper.getDatabase(e.getValue(), c.get().dbname);
         }).iterator();
     }
 
