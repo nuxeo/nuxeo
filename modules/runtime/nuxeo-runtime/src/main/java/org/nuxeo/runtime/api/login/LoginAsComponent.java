@@ -21,7 +21,6 @@ package org.nuxeo.runtime.api.login;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * LoginAs component.
@@ -46,7 +45,7 @@ public class LoginAsComponent extends DefaultComponent {
     }
 
     protected LoginAs getLoginAs() {
-        LoginAsDescriptor descriptor = getDescriptor(XP_IMPL, Descriptor.UNIQUE_DESCRIPTOR_ID);
+        LoginAsDescriptor descriptor = getSingleContribution(XP_IMPL, LoginAsDescriptor.class);
         if (descriptor == null) {
             return null;
         }

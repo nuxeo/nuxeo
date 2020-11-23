@@ -20,20 +20,16 @@ package org.nuxeo.runtime.api.login;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * @since 10.3
  */
 @XObject("implementation")
-public class LoginAsDescriptor implements Descriptor {
+@XRegistry
+public class LoginAsDescriptor {
 
     @XNode("@class")
     public Class<? extends LoginAs> klass;
-
-    @Override
-    public String getId() {
-        return UNIQUE_DESCRIPTOR_ID;
-    }
 
 }
