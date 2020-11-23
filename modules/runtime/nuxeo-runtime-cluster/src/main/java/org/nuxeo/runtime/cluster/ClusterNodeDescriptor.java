@@ -18,11 +18,10 @@
  */
 package org.nuxeo.runtime.cluster;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Descriptor of a cluster node.
@@ -30,19 +29,15 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 11.1
  */
 @XObject("clusterNode")
-public class ClusterNodeDescriptor implements Descriptor {
+@XRegistry
+public class ClusterNodeDescriptor {
 
     @XNode("@id")
-    // we don't call this field 'id' to avoid confusion with the getId() method
     public String name;
 
-    @XNode("@enabled")
-    public String enabled;
-
-    @Override
-    public String getId() {
-        return UNIQUE_DESCRIPTOR_ID;
-    }
+    @XNode(value = "@enabled", fallback = XEnable.ENABLE)
+    @XEnable
+    public Boolean enabled;
 
     /**
      * Gets the name (id) of the cluster node.
@@ -52,25 +47,10 @@ public class ClusterNodeDescriptor implements Descriptor {
     }
 
     /**
-     * Checks if cluster is enabled for this node. May return {@code null} if there is no configuration.
+     * Checks if cluster is enabled for this node.
      */
     public Boolean getEnabled() {
-        return isBlank(enabled) ? null : Boolean.valueOf(enabled);
-    }
-
-    /**
-     * Empty constructor.
-     */
-    public ClusterNodeDescriptor() {
-    }
-
-    @Override
-    public ClusterNodeDescriptor merge(Descriptor o) {
-        ClusterNodeDescriptor other = (ClusterNodeDescriptor) o;
-        ClusterNodeDescriptor merged = new ClusterNodeDescriptor();
-        merged.name = other.name == null ? name : other.name;
-        merged.enabled = isBlank(other.enabled) ? enabled : other.enabled;
-        return merged;
+        return enabled;
     }
 
 }
