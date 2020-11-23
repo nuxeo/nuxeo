@@ -56,7 +56,7 @@ public class TestExtensionPointWithError {
         // add contribution with error
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:OverridingXPoint-witherror.xml");
 
-        ComponentWithXPoint co = (ComponentWithXPoint) Framework.getRuntime().getComponent(ComponentWithXPoint.NAME);
+        ComponentWithXPoint co = Framework.getService(ComponentWithXPoint.class);
         DummyContribution[] contribs = co.getContributions();
         assertEquals(0, contribs.length); // contrib with errors not loaded
 
