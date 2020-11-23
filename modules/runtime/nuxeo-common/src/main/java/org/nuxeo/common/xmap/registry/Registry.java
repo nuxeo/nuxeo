@@ -33,6 +33,21 @@ public interface Registry {
     boolean isNull();
 
     /**
+     * Marks the registry with given identifier.
+     */
+    void mark(String id);
+
+    /**
+     * Returns true if registry has been marked with given id.
+     * <p>
+     * After {@link #mark(String)} or {@link #register(Context, XAnnotatedObject, Element, String)} are called with
+     * given marker, this method should return true.
+     * <p>
+     * After {@link #unregister(String)} is called with given marker, this method should return false.
+     */
+    boolean isMarked(String id);
+
+    /**
      * Registers given element with given marker identifier.
      */
     void register(Context ctx, XAnnotatedObject xObject, Element element, String marker);
