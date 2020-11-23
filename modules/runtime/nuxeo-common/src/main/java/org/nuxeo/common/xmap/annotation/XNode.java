@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.common.xmap.annotation;
@@ -27,7 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Annotation to map XML nodes.
  */
 @XMemberAnnotation(XMemberAnnotation.NODE)
 @Target({ ElementType.FIELD, ElementType.METHOD })
@@ -40,6 +40,39 @@ public @interface XNode {
      * @return the node xpath
      */
     String value() default "";
+
+    /**
+     * Marker for fallback to be ignored.
+     *
+     * @since 11.5
+     */
+    public static final String NO_FALLBACK_MARKER = "__NO_FALLBACK_MARKER__";
+
+    /**
+     * An xpathy expression specifying the fallback XML node to bind to.
+     * <p>
+     * Useful for XML format evolutions: provides compatibility on previous format.
+     *
+     * @since 11.5
+     */
+    String fallback() default NO_DEFAULT_ASSIGNMENT_MARKER;
+
+    /**
+     * Marker for default assignment to be ignored.
+     *
+     * @since 11.5
+     */
+    public static final String NO_DEFAULT_ASSIGNMENT_MARKER = "__NO_DEFAULT_ASSIGNMENT_MARKER__";
+
+    /**
+     * String representation of the default assignment for the retrieved value for this node.
+     * <p>
+     * The corresponding value will be converted, and will be used as a default value in case the node path and its
+     * fallback are not present on the XML representation.
+     *
+     * @since 11.5
+     */
+    String defaultAssignment() default NO_DEFAULT_ASSIGNMENT_MARKER;
 
     /**
      * Whether to trim text content for element nodes.
