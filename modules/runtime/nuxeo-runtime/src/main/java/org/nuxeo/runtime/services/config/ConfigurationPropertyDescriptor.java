@@ -24,19 +24,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
- * Descriptor for JSF configuration contributions.
+ * Descriptor for configuration contributions.
  *
  * @since 7.4
  */
 @XObject("property")
-public class ConfigurationPropertyDescriptor implements Descriptor {
+@XRegistry(merge = false, enable = false)
+public class ConfigurationPropertyDescriptor {
 
     protected static final Log log = LogFactory.getLog(ConfigurationPropertyDescriptor.class);
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@list")
@@ -61,7 +64,6 @@ public class ConfigurationPropertyDescriptor implements Descriptor {
     /**
      * @since 10.3
      */
-    @Override
     public String getId() {
         return getName();
     }
@@ -91,9 +93,7 @@ public class ConfigurationPropertyDescriptor implements Descriptor {
     /**
      * @since 10.3
      */
-    @Override
-    public Descriptor merge(Descriptor o) {
-        ConfigurationPropertyDescriptor other = (ConfigurationPropertyDescriptor) o;
+    public ConfigurationPropertyDescriptor merge(ConfigurationPropertyDescriptor other) {
         if (this.list) {
             ConfigurationPropertyDescriptor merged = new ConfigurationPropertyDescriptor();
             merged.list = this.list;
