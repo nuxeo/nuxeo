@@ -23,14 +23,18 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @since 10.2
  */
 @XObject("action")
-public class BulkActionDescriptor implements Descriptor {
+@XRegistry(merge = false)
+@XEnable(value = "@enabled", fallbackValue = XEnable.ENABLE)
+public class BulkActionDescriptor {
 
     public static final Integer DEFAULT_BUCKET_SIZE = 100;
 
@@ -41,6 +45,7 @@ public class BulkActionDescriptor implements Descriptor {
     protected boolean isEnabled = true;
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     // @since 11.1
@@ -70,7 +75,6 @@ public class BulkActionDescriptor implements Descriptor {
     @XNode("@defaultQueryLimit")
     public Long defaultQueryLimit;
 
-    @Override
     public String getId() {
         return name;
     }

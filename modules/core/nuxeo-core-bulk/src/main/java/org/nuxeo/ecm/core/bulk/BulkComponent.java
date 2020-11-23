@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.bulk;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kafka.KafkaConfigServiceImpl;
@@ -69,8 +68,7 @@ public class BulkComponent extends DefaultComponent {
     }
 
     protected List<BulkActionDescriptor> getEnabledDescriptors() {
-        List<BulkActionDescriptor> descriptors = getDescriptors(XP_ACTIONS);
-        return descriptors.stream().filter(BulkActionDescriptor::isEnabled).collect(Collectors.toList());
+        return getContributions(XP_ACTIONS, BulkActionDescriptor.class);
     }
 
     protected class ComponentListener implements ComponentManager.Listener {
