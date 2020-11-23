@@ -66,11 +66,8 @@ public class TestPathComparator {
         orderedPaths[15] = "foo";
 
         Arrays.sort(paths, new PathComparator());
-        System.out.println(Arrays.toString(paths));
-        System.out.println(Arrays.toString(orderedPaths));
 
         assertArrayEquals(orderedPaths, paths);
-
     }
 
     public class PathComparator implements Comparator<String> {
