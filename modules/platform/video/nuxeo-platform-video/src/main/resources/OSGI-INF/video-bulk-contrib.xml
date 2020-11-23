@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.bulk" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="recomputeVideoConversion" inputStream="bulk/recomputeVideoConversion" bucketSize="2" batchSize="1"
+      validationClass="org.nuxeo.ecm.platform.video.action.RecomputeVideoConversionsActionValidation" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="recomputeVideoConversions" class="org.nuxeo.ecm.platform.video.action.RecomputeVideoConversionsAction"
+      defaultConcurrency="2" defaultPartitions="6">
+      <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
+    </streamProcessor>
+  </extension>
+
+</component>

@@ -85,7 +85,7 @@
     <module>nuxeo-platform-userworkspace</module>
     <module>nuxeo-platform-versioning-api</module>
     <module>nuxeo-platform-versioning-core</module>
-    <module>nuxeo-platform-video</module>
+    <module>video</module>
     <module>nuxeo-platform-virtualnavigation-core-contrib</module>
     <module>nuxeo-platform-web-common</module>
     <module>nuxeo-platform-webapp-types</module>

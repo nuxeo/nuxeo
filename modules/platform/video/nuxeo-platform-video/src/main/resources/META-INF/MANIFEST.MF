@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.video
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/adapters-contrib.xml,
  OSGI-INF/commandline-contrib.xml,
+ OSGI-INF/video-bulk-contrib.xml,
  OSGI-INF/convert-service-contrib.xml,
  OSGI-INF/core-types-contrib.xml,
  OSGI-INF/filemanager-importer-contrib.xml,
