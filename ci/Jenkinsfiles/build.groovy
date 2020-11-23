@@ -342,19 +342,22 @@ def buildUnitTestStage(env) {
                 }
               } finally {
                 echo "${env} unit tests: clean up test namespace"
-                // uninstall external service charts
-                if (!isDev) {
-                  helmUninstallKafka(testNamespace)
-                  helmUninstallElasticsearch(testNamespace)
-                  if (env == 'mongodb') {
-                    helmUninstallMongoDB(testNamespace)
-                  } else {
-                    helmUninstallPostgreSQL(testNamespace)
+                try {
+                  // uninstall external service charts
+                  if (!isDev) {
+                    helmUninstallKafka(testNamespace)
+                    helmUninstallElasticsearch(testNamespace)
+                    if (env == 'mongodb') {
+                      helmUninstallMongoDB(testNamespace)
+                    } else {
+                      helmUninstallPostgreSQL(testNamespace)
+                    }
                   }
+                  helmUninstallRedis(testNamespace)
+                } finally {
+                  // clean up test namespace
+                  sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
                 }
-                helmUninstallRedis(testNamespace)
-                // clean up test namespace
-                sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
               }
             }
           } catch(err) {
@@ -556,7 +559,6 @@ pipeline {
               rolloutStatusKafka(testNamespace)
 
               echo 'runtime unit tests: run Maven'
-              // run unit tests
               dir('modules/runtime') {
                 retry(2) {
                   sh """
@@ -579,11 +581,14 @@ pipeline {
                 archiveKafkaLogs(testNamespace, 'runtime-kafka.log')
               } finally {
                 echo 'runtime unit tests: clean up test namespace'
-                // uninstall external service charts
-                helmUninstallKafka(testNamespace)
-                helmUninstallRedis(testNamespace)
-                // clean up test namespace
-                sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
+                try {
+                  // uninstall external service charts
+                  helmUninstallKafka(testNamespace)
+                  helmUninstallRedis(testNamespace)
+                } finally {
+                  // clean up test namespace
+                  sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
+                }
               }
             }
           }
@@ -703,7 +708,7 @@ pipeline {
           Image tag: ${VERSION}
           """
           echo "Build and push Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-          // Fetch Nuxeo Tomcat Server with Maven
+          // fetch Nuxeo Tomcat Server with Maven
           sh "mvn ${MAVEN_ARGS} -T4C -f docker/pom.xml process-resources"
           sh 'skaffold build -f docker/skaffold.yaml'
         }
