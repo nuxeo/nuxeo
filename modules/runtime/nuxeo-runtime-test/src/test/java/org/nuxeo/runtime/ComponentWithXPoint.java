@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.xmap.registry.Registry;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -34,6 +35,8 @@ import org.nuxeo.runtime.model.Extension;
 public class ComponentWithXPoint extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName("BaseXPoint");
+
+    public static final String XP = "xp";
 
     private static final Log log = LogFactory.getLog(ComponentWithXPoint.class);
 
@@ -59,12 +62,16 @@ public class ComponentWithXPoint extends DefaultComponent {
         }
         for (Object contrib : contribs) {
             log.debug("Un-Registering: " + ((DummyContribution) contrib).message);
-            this.contribs.add((DummyContribution) contrib);
+            this.contribs.remove(contrib);
         }
     }
 
     public DummyContribution[] getContributions() {
         return contribs.toArray(new DummyContribution[contribs.size()]);
+    }
+
+    public Registry getComputedRegistry() {
+        return getRegistry(XP, Registry.class);
     }
 
 }

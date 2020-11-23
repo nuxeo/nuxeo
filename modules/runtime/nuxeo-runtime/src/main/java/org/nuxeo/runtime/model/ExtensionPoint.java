@@ -59,9 +59,9 @@ public interface ExtensionPoint {
     /**
      * Get the component owning the base extension which this one extends.
      * <p>
-     * If this method returns null, it means the current extension point is extending another extension point and should
-     * forward any contribution to the base extension. The base extension has the same name as this one but it is
-     * declared in another component.
+     * If this method does not return null, it means the current extension point is extending another extension point
+     * and should forward any contribution to the base extension. The base extension has the same name as this one but
+     * it is declared in another component.
      *
      * @return the base extension point if this extension point is extending another extension point, or null if none
      */

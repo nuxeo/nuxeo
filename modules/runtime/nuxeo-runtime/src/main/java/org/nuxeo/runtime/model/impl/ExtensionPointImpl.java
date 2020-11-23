@@ -120,6 +120,8 @@ public class ExtensionPointImpl implements ExtensionPoint {
                 Context xctx = new XMapContext(extension.getContext());
                 // backward compatibility
                 if (extension.getContributions() == null) {
+                    // overload use case: loaded contributions should use the old descriptor so should not be
+                    // recomputed
                     extension.setContributions(getXmap().loadAll(xctx, extension.getElement()));
                 }
                 // fill up registry
