@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 package org.nuxeo.common.xmap;
 
@@ -33,9 +35,6 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.w3c.dom.DocumentFragment;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- */
 @XObject(value = "author", order = { "item1", "item2" })
 public class Author {
 
@@ -219,5 +218,17 @@ public class Author {
 
     @XNode("durationJdk")
     Duration durationJdk;
+
+    @XNode(value = "stringWithDefault", defaultAssignment = "myDefaultValue")
+    String stringWithDefault;
+
+    @XNode(value = "stringWithFallback", fallback = "stringFallback")
+    String stringWithFallback;
+
+    @XNode(value = "intWithDefault", defaultAssignment = "5")
+    Integer intWithDefault;
+
+    @XNode(value = "boolWithDefault", defaultAssignment = "true")
+    Boolean boolWithDefault;
 
 }
