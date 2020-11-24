@@ -81,7 +81,7 @@ public class TestGoogleBinaryManager extends AbstractTestCloudBinaryManager<Goog
         AbstractCloudBinaryManager bm = new GoogleStorageBinaryManager();
         PARAMETERS.forEach(s -> properties.put(s, Framework.getProperty(bm.getSystemPropertyName(s))));
         // Ensure mandatory parameters are set
-        PARAMETERS.forEach(s -> assumeFalse(isBlank(properties.get(s))));
+        PARAMETERS.forEach(s -> assumeFalse("Property: " + s + " is blank", isBlank(properties.get(s))));
     }
 
     @AfterClass
