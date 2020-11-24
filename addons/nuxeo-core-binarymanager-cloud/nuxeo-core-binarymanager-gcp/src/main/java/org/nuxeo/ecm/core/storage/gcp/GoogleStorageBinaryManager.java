@@ -22,10 +22,13 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -33,6 +36,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
@@ -44,8 +48,10 @@ import org.nuxeo.ecm.core.blob.binary.FileStorage;
 
 import com.google.api.gax.paging.Page;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.WriteChannel;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
@@ -76,6 +82,16 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
 
     public static final String BUCKET_PREFIX_PROPERTY = "storage.bucket_prefix";
 
+    /** @since 11.4 */
+    public static final String UPLOAD_CHUNK_SIZE_PROPERTY = "storage.upload.chunk.size";
+
+    /**
+     * Default is taken from {@link com.google.cloud.BaseWriteChannel}.
+     *
+     * @since 11.4
+     */
+    public static final int DEFAULT_UPLOAD_CHUNK_SIZE = 2048 * 1024; // 2 MB
+
     public static final String PROJECT_ID_PROPERTY = "project";
 
     public static final String GOOGLE_APPLICATION_CREDENTIALS = "credentials";
@@ -100,6 +116,9 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
 
     protected Storage storage;
 
+    /** @since 11.4 */
+    protected int chunkSize;
+
     @Override
     protected void setupCloudClient() {
         try {
@@ -123,6 +142,7 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
             bucketName = getProperty(BUCKET_NAME_PROPERTY);
             bucketPrefix = getProperty(BUCKET_PREFIX_PROPERTY, EMPTY);
             bucket = getOrCreateBucket(bucketName);
+            chunkSize = getIntProperty(UPLOAD_CHUNK_SIZE_PROPERTY, DEFAULT_UPLOAD_CHUNK_SIZE);
 
             if (!isBlank(bucketPrefix) && !bucketPrefix.endsWith(DELIMITER)) {
                 log.warn(String.format("%s %s Google bucket prefix should end with '/': added automatically.",
@@ -188,8 +208,14 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
             String key = bucketPrefix + digest;
             // try to get the blob's metadata to check if it exists
             if (bucket.get(key) == null) {
-                try (FileInputStream fis = new FileInputStream(file)) {
-                    bucket.create(key, fis);
+                try (InputStream is = new BufferedInputStream(new FileInputStream(file));
+                     WriteChannel writer = storage.writer(BlobInfo.newBuilder(bucketName, key).build())) {
+                    int bufferLength;
+                    byte[] buffer = new byte[chunkSize];
+                    writer.setChunkSize(chunkSize);
+                    while ((bufferLength = IOUtils.read(is, buffer)) > 0) {
+                        writer.write(ByteBuffer.wrap(buffer, 0, bufferLength));
+                    }
                 } catch (IOException e) {
                     throw new NuxeoException(e);
                 }
