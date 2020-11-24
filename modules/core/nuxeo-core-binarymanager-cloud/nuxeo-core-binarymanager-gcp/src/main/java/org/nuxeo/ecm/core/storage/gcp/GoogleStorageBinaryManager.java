@@ -23,13 +23,12 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -122,13 +121,11 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
         try {
             String projectId = getProperty(PROJECT_ID_PROPERTY);
 
-            File googleCredentials = new File(getProperty(GOOGLE_APPLICATION_CREDENTIALS));
-            String credentialsPath = googleCredentials.isFile() ? googleCredentials.getAbsolutePath()
-                    : new File(Environment.getDefault().getConfig(),
-                            getProperty(GOOGLE_APPLICATION_CREDENTIALS, GCP_JSON_FILE)).getAbsolutePath();
-
-            GoogleCredentials credentials = GoogleCredentials.fromStream(
-                    new ByteArrayInputStream(Files.readAllBytes(Paths.get(credentialsPath))))
+            Path credentialsPath = Path.of(getProperty(GOOGLE_APPLICATION_CREDENTIALS, GCP_JSON_FILE));
+            if (!credentialsPath.isAbsolute()) {
+                credentialsPath = Environment.getDefault().getConfig().toPath().resolve(credentialsPath);
+            }
+            GoogleCredentials credentials = GoogleCredentials.fromStream(Files.newInputStream(credentialsPath))
                                                              .createScoped(GOOGLE_PLATFORM_SCOPE, GOOGLE_STORAGE_SCOPE);
             credentials.refreshIfExpired();
 
