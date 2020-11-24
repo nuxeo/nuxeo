@@ -87,7 +87,7 @@ public class TestElasticsearchObject extends ManagementBaseTest {
         createDocuments();
 
         // Wait for an eventual indexing
-        waitForIndexing();
+        txFeature.nextTransaction();
 
         // Nothing indexed because of disable indexing flag
         assertEquals(0, ess.query(new NxQueryBuilder(coreSession).nxql(GET_ALL_DOCUMENTS_QUERY)).totalSize());
@@ -170,8 +170,8 @@ public class TestElasticsearchObject extends ManagementBaseTest {
         assertEquals(SC_OK, response.getStatus());
         assertFalse(Arrays.asList("UNKNOWN", "ABORTED").contains(jsonNode.get("state").asText()));
 
-        // Wait until the end of the ES indexing and then our expected indexed documents
-        waitForIndexing();
+        // Wait until the end of the ES indexing and then assert our expected indexed documents
+        txFeature.nextTransaction();
         assertEquals(expectedIndexedDocuments,
                 ess.query(new NxQueryBuilder(coreSession).nxql(GET_ALL_DOCUMENTS_QUERY)).totalSize());
 
@@ -186,7 +186,7 @@ public class TestElasticsearchObject extends ManagementBaseTest {
         folder.putContextData(ElasticSearchConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
         folder = coreSession.createDocument(folder);
 
-        final String folderPath = folder.getPathAsString();
+        String folderPath = folder.getPathAsString();
         Stream.of("my-file-1", "my-file-2").forEach(fileName -> {
             DocumentModel doc = coreSession.createDocumentModel(folderPath, fileName, "File");
             doc.setPropertyValue("dc:title", String.format("Title of %s", fileName));
@@ -194,10 +194,8 @@ public class TestElasticsearchObject extends ManagementBaseTest {
             coreSession.createDocument(doc);
         });
         coreSession.save();
-    }
 
-    protected void waitForIndexing() {
+        // Commit the transaction
         txFeature.nextTransaction();
-        esa.refresh();
     }
 }
