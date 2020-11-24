@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.blob;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
 
@@ -205,9 +204,18 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
      * Gets an integer property, or -1 if undefined.
      */
     protected int getIntProperty(String key) {
+        return getIntProperty(key, -1);
+    }
+
+    /**
+     * Gets an integer property, or {@code defaultValue} if undefined.
+     *
+     * @since 11.4
+     */
+    protected int getIntProperty(String key, int defaultValue) {
         String s = getProperty(key);
-        int value = -1;
-        if (!isBlank(s)) {
+        int value = defaultValue;
+        if (isNotBlank(s)) {
             try {
                 value = Integer.parseInt(s.trim());
             } catch (NumberFormatException e) {
