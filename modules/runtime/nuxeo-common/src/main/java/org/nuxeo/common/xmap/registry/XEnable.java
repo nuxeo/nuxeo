@@ -23,19 +23,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-
 /**
  * @since TODO
  */
-@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XEnable {
 
     public final String ENABLE = "@enable";
-
-    String value() default ENABLE;
-
-    String fallbackValue() default XNode.NO_FALLBACK_VALUE_MARKER;
 
 }

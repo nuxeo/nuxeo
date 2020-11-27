@@ -264,23 +264,16 @@ public class XMap {
                         xregistryId.defaultValue()));
             }
         }
-        XMerge xmerge = klass.getAnnotation(XMerge.class);
-        if (xmerge != null) {
-            xob.setMerge(new XAnnotatedReference(this, xmerge.value(), xmerge.fallbackValue(), xmerge.defaultValue()));
-        } else if (xreg != null && xreg.merge()) {
-            xob.setMerge(new XAnnotatedReference(this, XMerge.MERGE, null, true));
-        }
-        XEnable xenable = klass.getAnnotation(XEnable.class);
-        if (xenable != null) {
-            xob.setEnable(new XAnnotatedReference(this, xenable.value(), xenable.fallbackValue(), true));
-        } else if (xreg != null && xreg.enable()) {
-            xob.setEnable(new XAnnotatedReference(this, XEnable.ENABLE, null, true));
-        }
-        XRemove xremove = klass.getAnnotation(XRemove.class);
-        if (xremove != null) {
-            xob.setRemove(new XAnnotatedReference(this, xremove.value(), xremove.fallbackValue(), false));
-        } else if (xreg != null && xreg.remove()) {
-            xob.setRemove(new XAnnotatedReference(this, XRemove.REMOVE, null, false));
+        if (xreg != null) {
+            if (xreg.merge()) {
+                xob.setMerge(new XAnnotatedReference(this, XMerge.MERGE, null, true));
+            }
+            if (xreg.enable()) {
+                xob.setEnable(new XAnnotatedReference(this, XEnable.ENABLE, null, true));
+            }
+            if (xreg.remove()) {
+                xob.setRemove(new XAnnotatedReference(this, XRemove.REMOVE, null, false));
+            }
         }
     }
 

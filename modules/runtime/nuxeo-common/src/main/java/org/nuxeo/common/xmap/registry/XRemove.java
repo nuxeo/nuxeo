@@ -28,7 +28,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 /**
  * @since TODO
  */
-@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XRemove {
 

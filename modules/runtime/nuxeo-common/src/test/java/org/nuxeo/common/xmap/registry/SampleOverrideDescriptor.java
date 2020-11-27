@@ -27,13 +27,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since TODO
  */
 @XObject("descriptor")
-@XRegistry(enable = false, remove = false)
-@XMerge(value = "@override", defaultValue = false)
+@XRegistry(merge = false, enable = false, remove = false)
 public class SampleOverrideDescriptor {
 
     @XRegistryId
     @XNode("@name")
     String name;
+
+    @XMerge(defaultValue = false)
+    @XNode(value = "@override")
+    Boolean override;
 
     @XNode("value")
     String value;

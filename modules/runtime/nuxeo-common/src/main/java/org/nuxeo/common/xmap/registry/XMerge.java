@@ -28,9 +28,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 /**
  * Annotation representing the merge behavior for corresponding object or field.
  * <p>
- * If annotation goes along the {@link @XObject} annotation, this will be considered as the merge behavior for this
- * object.
- * <p>
  * If annotation is placed on a field annotated by {@link @XNode}, this will be considered as the merge behavior for
  * containing {@link @XObject}. Value will be ignore and taken on the corresponding XNode instead.
  * <p>
@@ -39,7 +36,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
  *
  * @since TODO
  */
-@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XMerge {
 
