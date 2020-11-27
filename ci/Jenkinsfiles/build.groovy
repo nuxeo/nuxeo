@@ -56,6 +56,10 @@ String getMavenFailArgs() {
   return (isPullRequest() && pullRequest.labels.contains('failatend')) ? '--fail-at-end' : ' '
 }
 
+String getMavenJavadocArgs() {
+  return isPullRequest() ? ' ' : '-Pjavadoc'
+}
+
 def isPullRequest() {
   return BRANCH_NAME =~ /PR-.*/
 }
@@ -332,6 +336,7 @@ pipeline {
     MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     MAVEN_ARGS = getMavenArgs()
     MAVEN_FAIL_ARGS = getMavenFailArgs()
+    MAVEN_JAVADOC_ARGS = getMavenJavadocArgs()
     VERSION = getVersion()
     DOCKER_TAG = getDockerTagFrom("${VERSION}")
     CHANGE_BRANCH = "${env.CHANGE_BRANCH != null ? env.CHANGE_BRANCH : BRANCH_NAME}"
@@ -432,8 +437,8 @@ pipeline {
           Compile
           ----------------------------------------"""
           echo "MAVEN_OPTS=$MAVEN_OPTS"
-          sh "mvn ${MAVEN_ARGS} -V -T4C -DskipTests install"
-          sh "mvn ${MAVEN_ARGS} -f server/pom.xml -DskipTests install"
+          sh "mvn ${MAVEN_ARGS} ${MAVEN_JAVADOC_ARGS} -V -T4C -DskipTests install"
+          sh "mvn ${MAVEN_ARGS} ${MAVEN_JAVADOC_ARGS} -f server/pom.xml -DskipTests install"
         }
       }
       post {
