@@ -25,6 +25,7 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
 import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.common.xmap.registry.XRegistryId;
 
@@ -32,10 +33,11 @@ import org.nuxeo.common.xmap.registry.XRegistryId;
  * @since 11.1
  */
 @XObject("reporter")
-@XRegistry(merge = false)
+@XRegistry(enable = false)
 public class MetricsReporterDescriptor {
 
-    @XNode("@enabled")
+    @XEnable
+    @XNode(value = "@enabled", fallbackValue = XEnable.ENABLE)
     protected boolean isEnabled = true;
 
     @XNode("@name")
