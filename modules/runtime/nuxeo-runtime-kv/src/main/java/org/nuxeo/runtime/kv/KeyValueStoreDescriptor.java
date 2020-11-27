@@ -33,7 +33,7 @@ import org.nuxeo.common.xmap.registry.XRegistryId;
  * @since 9.1
  */
 @XObject("store")
-@XRegistry(merge = false)
+@XRegistry
 public class KeyValueStoreDescriptor {
 
     @XNode("@name")
