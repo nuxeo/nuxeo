@@ -18,10 +18,9 @@
  */
 package org.nuxeo.runtime.cluster;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
 import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
@@ -30,14 +29,15 @@ import org.nuxeo.common.xmap.registry.XRegistry;
  * @since 11.1
  */
 @XObject("clusterNode")
-@XRegistry(merge = true, enable = false, remove = false)
+@XRegistry
 public class ClusterNodeDescriptor {
 
     @XNode("@id")
     public String name;
 
-    @XNode("@enabled")
-    public String enabled;
+    @XNode(value = "@enabled", fallbackValue = XEnable.ENABLE)
+    @XEnable
+    public Boolean enabled;
 
     /**
      * Gets the name (id) of the cluster node.
@@ -47,10 +47,10 @@ public class ClusterNodeDescriptor {
     }
 
     /**
-     * Checks if cluster is enabled for this node. May return {@code null} if there is no configuration.
+     * Checks if cluster is enabled for this node.
      */
     public Boolean getEnabled() {
-        return isBlank(enabled) ? null : Boolean.valueOf(enabled);
+        return enabled;
     }
 
 }
