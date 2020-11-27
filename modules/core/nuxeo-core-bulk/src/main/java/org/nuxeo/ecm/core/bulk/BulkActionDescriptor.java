@@ -35,9 +35,9 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 @XRegistry(enable = false)
 public class BulkActionDescriptor {
 
-    public static final Integer DEFAULT_BUCKET_SIZE = 100;
+    protected static final String DEFAULT_BUCKET_SIZE = "100";
 
-    public static final Integer DEFAULT_BATCH_SIZE = 25;
+    protected static final String DEFAULT_BATCH_SIZE = "25";
 
     // @since 11.1
     @XNode(value = "@enabled", fallbackValue = XEnable.ENABLE)
@@ -52,11 +52,11 @@ public class BulkActionDescriptor {
     @XNode("@inputStream")
     public String inputStream;
 
-    @XNode("@bucketSize")
-    public Integer bucketSize = DEFAULT_BUCKET_SIZE;
+    @XNode(value = "@bucketSize", defaultValue = DEFAULT_BUCKET_SIZE)
+    public Integer bucketSize;
 
-    @XNode("@batchSize")
-    public Integer batchSize = DEFAULT_BATCH_SIZE;
+    @XNode(value = "@batchSize", defaultValue = DEFAULT_BATCH_SIZE)
+    public Integer batchSize;
 
     @XNode("@httpEnabled")
     public Boolean httpEnabled = Boolean.FALSE;
