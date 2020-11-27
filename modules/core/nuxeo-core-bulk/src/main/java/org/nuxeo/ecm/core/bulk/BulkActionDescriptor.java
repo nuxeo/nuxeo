@@ -32,8 +32,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @since 10.2
  */
 @XObject("action")
-@XRegistry(merge = false)
-@XEnable(value = "@enabled", fallbackValue = XEnable.ENABLE)
+@XRegistry(merge = false, enable = false)
 public class BulkActionDescriptor {
 
     public static final Integer DEFAULT_BUCKET_SIZE = 100;
@@ -41,7 +40,8 @@ public class BulkActionDescriptor {
     public static final Integer DEFAULT_BATCH_SIZE = 25;
 
     // @since 11.1
-    @XNode("@enabled")
+    @XNode(value = "@enabled", fallbackValue = XEnable.ENABLE)
+    @XEnable
     protected boolean isEnabled = true;
 
     @XNode("@name")

@@ -36,12 +36,12 @@ import org.nuxeo.ecm.core.api.scroll.Scroll;
  * @since 11.1
  */
 @XObject("scroll")
-@XRegistry(merge = false)
-@XEnable(value = "@enabled", fallbackValue = XEnable.ENABLE)
+@XRegistry(merge = false, enable = false)
 @XRegistryId(value = { "@type", "@name" })
 public class ScrollDescriptor {
 
-    @XNode("@enabled")
+    @XNode(value = "@enabled", fallbackValue = XEnable.ENABLE)
+    @XEnable
     protected boolean isEnabled = true;
 
     @XNode("@type")
