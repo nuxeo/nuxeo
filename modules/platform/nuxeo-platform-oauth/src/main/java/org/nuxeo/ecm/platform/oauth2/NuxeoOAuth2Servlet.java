@@ -367,8 +367,8 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
         } else {
             handleJsonError(OAuth2Error.unsupportedGrantType(
-                    String.format("Unknown %s: got \"%s\", expecting \"%s\" or \"%s\".", GRANT_TYPE_PARAM, grantType,
-                            AUTHORIZATION_CODE_GRANT_TYPE, REFRESH_TOKEN_GRANT_TYPE)),
+                    String.format("Unknown %s: got \"%s\", expecting \"%s\", \"%s\" or \"%s\".", GRANT_TYPE_PARAM,
+                            grantType, AUTHORIZATION_CODE_GRANT_TYPE, REFRESH_TOKEN_GRANT_TYPE, JWT_BEARER_GRANT_TYPE)),
                     response);
         }
     }

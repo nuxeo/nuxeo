@@ -415,8 +415,8 @@ public class OAuth2ChallengeFixture {
             Map<?, ?> error = obj.readValue(json, Map.class);
             assertEquals(UNSUPPORTED_GRANT_TYPE, error.get(ERROR_PARAM));
             assertEquals(
-                    String.format("Unknown %s: got \"unknown\", expecting \"%s\" or \"%s\".", GRANT_TYPE_PARAM,
-                            AUTHORIZATION_CODE_GRANT_TYPE, REFRESH_TOKEN_GRANT_TYPE),
+                    String.format("Unknown %s: got \"unknown\", expecting \"%s\", \"%s\" or \"%s\".", GRANT_TYPE_PARAM,
+                            AUTHORIZATION_CODE_GRANT_TYPE, REFRESH_TOKEN_GRANT_TYPE, JWT_BEARER_GRANT_TYPE),
                     error.get(ERROR_DESCRIPTION_PARAM));
             assertStoreIsEmpty();
         }
