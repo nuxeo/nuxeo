@@ -274,8 +274,12 @@ public class ComponentManagerImpl implements ComponentManager {
     public synchronized void register(RegistrationInfo ri) {
         ComponentName name = ri.getName();
         String stringName = name.getName();
-        if (blacklist.contains(stringName)) {
+        if (getBlacklist().contains(stringName)) {
             log.debug("Component {} was blacklisted. Ignoring.", stringName);
+            return;
+        }
+        if (ri.isDisabled() || !ri.isEnabled()) {
+            log.debug("Component {} was disabled. Ignoring.", stringName);
             return;
         }
 

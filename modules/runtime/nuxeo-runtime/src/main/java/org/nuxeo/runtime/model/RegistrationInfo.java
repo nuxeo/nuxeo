@@ -161,9 +161,23 @@ public interface RegistrationInfo {
     ComponentName getName();
 
     /**
-     * Whether this component is disabled. For now this is used only for persistent components.
+     * Returns true if the component is not enabled.
+     * <p>
+     * To be deployed, a component should be enabled and should not be disabled.
+     *
+     * @see #isEnabled()
      */
     boolean isDisabled();
+
+    /**
+     * Returns true if the component is enabled.
+     * <p>
+     * To be deployed, a component should be enabled and should not be disabled.
+     *
+     * @see #isDisabled()
+     * @since 11.5
+     */
+    boolean isEnabled();
 
     /**
      * Gets the component instance or null if the component was not yet activated.

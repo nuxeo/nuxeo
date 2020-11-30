@@ -1,0 +1,7 @@
+<component name="org.nuxeo.runtime.enable.test" disable="${nuxeo.property.test.enablement:=true}">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.test.dummyBooleanProperty">true</property>
+  </extension>
+
+</component>

@@ -72,8 +72,12 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     @XNode("@name")
     ComponentName name;
 
-    @XNode("@disabled")
-    boolean disabled;
+    @XNode("@disable")
+    protected boolean disable;
+
+    // @since 11.5
+    @XNode("@enable")
+    protected boolean enable = true;
 
     @XNode("configuration")
     ConfigurationDescriptor config;
@@ -160,7 +164,12 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     @Override
     public boolean isDisabled() {
-        return disabled;
+        return disable;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enable;
     }
 
     @Override
