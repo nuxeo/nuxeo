@@ -41,32 +41,36 @@ if [ ! -f $NUXEO_HOME/configured ]; then
     echo "ENTRYPOINT: Move $NUXEO_HOME/bin/nuxeo.conf to $NUXEO_CONF"
     mv $NUXEO_HOME/bin/nuxeo.conf $NUXEO_CONF
 
-    echo "ENTRYPOINT: Append required properties to $NUXEO_CONF:"
+    echo "ENTRYPOINT: Append required properties to $NUXEO_CONF"
     echo -e "\n## ENTRYPOINT: Append required properties" >> $NUXEO_CONF
     configure | tee -a $NUXEO_CONF
 
     find /etc/nuxeo/conf.d/ -type f | sort | while read i; do
-      echo "ENTRYPOINT: Append properties from $i to $NUXEO_CONF:"
+      echo "ENTRYPOINT: Append properties from $i to $NUXEO_CONF"
       echo -e "\n## ENTRYPOINT: Append properties from $i" >> $NUXEO_CONF
-      cat $i | tee -a $NUXEO_CONF
+      if [ "$NUXEO_DEV" = true ]; then
+        cat $i | tee -a $NUXEO_CONF
+      else
+        cat $i >> $NUXEO_CONF
+      fi
     done
 
     if [ -n "$JAVA_OPTS" ]; then
-      echo "ENTRYPOINT: Append JAVA_OPTS environment variable to the JVM options set in $NUXEO_CONF:"
+      echo "ENTRYPOINT: Append JAVA_OPTS environment variable to the JVM options set in $NUXEO_CONF"
       echo -e "\n## ENTRYPOINT: Append JAVA_OPTS environment variable" >> $NUXEO_CONF
       echo "JAVA_OPTS=\$JAVA_OPTS $JAVA_OPTS" | tee -a $NUXEO_CONF
     fi
 
     # Handle NUXEO_CONNECT_URL
     if [ -n "$NUXEO_CONNECT_URL" ]; then
-      echo "ENTRYPOINT: Configure Connect URL with NUXEO_CONNECT_URL environment variable:"
+      echo "ENTRYPOINT: Configure Connect URL with NUXEO_CONNECT_URL environment variable"
       echo -e "\n## ENTRYPOINT: Configure Connect URL with NUXEO_CONNECT_URL environment variable" >> $NUXEO_CONF
       echo "org.nuxeo.connect.url=$NUXEO_CONNECT_URL" | tee -a $NUXEO_CONF
     fi
 
     # Handle NUXEO_DEV
     if [ "$NUXEO_DEV" = true ]; then
-      echo "ENTRYPOINT: Append dev mode properties to $NUXEO_CONF:"
+      echo "ENTRYPOINT: Append dev mode properties to $NUXEO_CONF"
       echo -e "\n## ENTRYPOINT: Append dev mode properties" >> $NUXEO_CONF
       configure_nuxeo_dev | tee -a $NUXEO_CONF
     fi
