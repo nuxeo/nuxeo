@@ -172,6 +172,11 @@ public class Environment {
     public static final String DISTRIBUTION_PACKAGE = "org.nuxeo.distribution.package";
 
     /**
+     * @since 11.5
+     */
+    public static final String DISTRIBUTION_HOTFIX = "org.nuxeo.distribution.hotfix";
+
+    /**
      * @since 7.10
      */
     public static final String PRODUCT_NAME = "org.nuxeo.ecm.product.name";
