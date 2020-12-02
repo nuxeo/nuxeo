@@ -623,7 +623,9 @@ pipeline {
           echo "Build and push Docker image to internal Docker registry ${DOCKER_REGISTRY}"
           // Fetch Nuxeo Tomcat Server with Maven
           sh "mvn ${MAVEN_ARGS} -T4C -f docker/pom.xml process-resources"
-          sh 'skaffold build -f docker/skaffold.yaml'
+          retry(2) {
+            sh 'skaffold build -f docker/skaffold.yaml'
+          }
         }
       }
       post {
