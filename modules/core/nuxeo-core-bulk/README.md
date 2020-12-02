@@ -3,7 +3,7 @@ nuxeo-core-bulk
 
 ## About
 
-This module provides the ability to execute actions asynchronously on a -possibly large- set of documents. This is done by leveraging [Nuxeo Streams](https://github.com/nuxeo/nuxeo/tree/master/nuxeo-runtime/nuxeo-runtime-stream#nuxeo-runtime-stream) that bring scalability and fault tolerance.
+This module provides the ability to execute actions asynchronously on a -possibly large- set of documents. This is done by leveraging [Nuxeo Streams](https://github.com/nuxeo/nuxeo/tree/master/modules/runtime/nuxeo-runtime-stream#nuxeo-runtime-stream) that bring scalability and fault tolerance.
 
 ## Definitions
 
