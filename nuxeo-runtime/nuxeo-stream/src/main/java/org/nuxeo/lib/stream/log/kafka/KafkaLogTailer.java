@@ -185,7 +185,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     protected int poll(Duration timeout) throws InterruptedException {
         records.clear();
         try {
-            for (ConsumerRecord<String, Bytes> record : consumer.poll(timeout)) {
+            for (ConsumerRecord<String, Bytes> record : consumer.poll(timeout.toMillis())) { // NOSONAR (See NXP-29044)
                 if (log.isDebugEnabled() && records.isEmpty()) {
                     log.debug("Poll first record: " + ns.getLogName(record.topic()) + ":" + record.partition() + ":+"
                             + record.offset());
