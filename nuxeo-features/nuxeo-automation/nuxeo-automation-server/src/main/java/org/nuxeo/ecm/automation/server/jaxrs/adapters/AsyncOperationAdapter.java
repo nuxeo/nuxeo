@@ -139,6 +139,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
         opCtx.setCallback(new OperationCallback() {
 
+            private Object output;
+
             @Override
             public void onChainEnter(OperationType chain) {
                 //
@@ -146,6 +148,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
             @Override
             public void onChainExit() {
+                setOutput(executionId, (Serializable) output);
                 setCompleted(executionId);
             }
 
@@ -157,7 +160,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
             @Override
             public void onOperationExit(Object output) {
-                setOutput(executionId, (Serializable) output);
+                this.output = output;
             }
 
             @Override
