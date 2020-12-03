@@ -19,9 +19,12 @@
 package org.nuxeo.ecm.automation.core.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -405,6 +408,30 @@ public class TestJSONPropertyWriter {
         testWritePropertyValue(type, null, "null");
     }
 
+    // NXP-29840
+    @Test
+    public void testLongValueWithDoubleType() throws IOException {
+        testWriteMockPropertyValue(DoubleType.INSTANCE, 123L, "123.0");
+    }
+
+    // NXP-29840
+    @Test
+    public void testIntegerValueWithDoubleType() throws IOException {
+        testWriteMockPropertyValue(DoubleType.INSTANCE, 123, "123.0");
+    }
+
+    // NXP-29840
+    @Test
+    public void testDoubleValueWithLongType() throws IOException {
+        testWriteMockPropertyValue(LongType.INSTANCE, 123.123, "123");
+    }
+
+    // NXP-29840
+    @Test
+    public void testDoubleValueWithIntegerType() throws IOException {
+        testWriteMockPropertyValue(IntegerType.INSTANCE, 123.123, "123");
+    }
+
     protected void testWriteProperty(JSONPropertyWriter propertyWriter, Type type, Object value, String expectedValue)
             throws IOException {
         // Init generator
@@ -440,12 +467,16 @@ public class TestJSONPropertyWriter {
 
     protected void testWritePropertyValue(Type type, Object value, String expectedValue, DateTimeFormat dateTimeFormat,
             String filesBaseUrl) throws IOException {
+        testWritePropertyValue(createProperty(type, value), expectedValue, dateTimeFormat, filesBaseUrl);
+    }
+
+    protected void testWritePropertyValue(Property property, String expectedValue, DateTimeFormat dateTimeFormat,
+            String filesBaseUrl) throws IOException {
         // Init generator
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = getFactory().createGenerator(out);
 
         // Write value
-        Property property = createProperty(type, value);
         JSONPropertyWriter.writePropertyValue(jg, property, dateTimeFormat, filesBaseUrl);
         jg.flush();
         jg.close();
@@ -453,6 +484,10 @@ public class TestJSONPropertyWriter {
 
         // Assert result
         assertEquals(expectedValue, result);
+    }
+
+    protected void testWriteMockPropertyValue(Type type, Object value, String expectedValue) throws IOException {
+        testWritePropertyValue(mockProperty(type, value), expectedValue, null, null);
     }
 
     private JsonFactory getFactory() {
@@ -464,6 +499,17 @@ public class TestJSONPropertyWriter {
         Property property = PropertyFactory.createProperty(new DocumentPartImpl(SCHEMA),
                 new FieldImpl(new QName("property"), type, type), 0);
         property.setValue(value);
+        return property;
+    }
+
+    // used when we want a property value to no be converted by the property type
+    // ie. keep a int value while the property type is DoubleType
+    protected Property mockProperty(Type type, Object value) {
+        Property property = mock(Property.class);
+        when(property.isScalar()).thenReturn(true);
+        when(property.getType()).thenReturn(type);
+        when(property.getXPath()).thenReturn(null);
+        when(property.getValue()).thenReturn((Serializable) value);
         return property;
     }
 
