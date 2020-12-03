@@ -87,7 +87,7 @@ pipeline {
       steps {
         script {
           if (env.DRY_RUN != 'true') {
-            slackSend(channel: "${SLACK_CHANNEL}", color: '#0167FF', message: "Starting release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
+            slackSend(channel: "${SLACK_CHANNEL}", color: '#0167FF', message: "Starting to release nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
           }
         }
       }
@@ -270,14 +270,14 @@ pipeline {
       script {
         if (env.DRY_RUN != 'true') {
           currentBuild.description = "Release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}"
-          slackSend(channel: "${SLACK_CHANNEL}", color: 'good', message: "Successfully released ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
+          slackSend(channel: "${SLACK_CHANNEL}", color: 'good', message: "Successfully released nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
         }
       }
     }
     unsuccessful {
       script {
         if (env.DRY_RUN != 'true') {
-          slackSend(channel: "${SLACK_CHANNEL}", color: 'danger', message: "Failed to release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
+          slackSend(channel: "${SLACK_CHANNEL}", color: 'danger', message: "Failed to release nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
         }
       }
     }
