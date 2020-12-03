@@ -147,6 +147,34 @@ public class AsyncOperationAdapterTest {
         Document doc = (Document) async.newRequest("testchain").setInput(folder).execute();
         assertEquals("/chainTest/chain.doc", doc.getPath());
         assertEquals("Note", doc.getType());
+
+        // Non regression test for NXP-29924
+
+        // create a File
+        Document file = (Document) session.newRequest(CreateDocument.ID)
+                                          .setInput(folder)
+                                          .set("type", "File")
+                                          .set("name", "file")
+                                          .execute();
+
+        File tmp = Framework.createTempFile("async-operation-test-", ".txt");
+        FileUtils.writeStringToFile(tmp, "Foo", UTF_8);
+
+        FileBlob fb = new FileBlob(tmp);
+        fb.setMimeType("text/plain");
+
+        session.newRequest(AttachBlob.ID)
+               .setHeader(Constants.HEADER_NX_VOIDOP, "true")
+               .setInput(fb)
+               .set("document", file.getPath())
+               .execute();
+
+        Blob res = (Blob) async.newRequest("testFetchDocumentChain").setInput(file).execute();
+
+        assertNotNull(res);
+
+        // Document.GetBlob creates a dummy <filename>.null blob when null
+        assertEquals(fb.getFileName(), res.getFileName());
     }
 
     @Test
@@ -217,6 +245,7 @@ public class AsyncOperationAdapterTest {
                      .startsWith("Unknown operation id null in command: org.nuxeo.ecm.core.bulk.message.BulkCommand"));
         }
     }
+
     /**
      * @since 11.1
      */

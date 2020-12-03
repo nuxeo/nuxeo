@@ -30,6 +30,11 @@
       </operation>
 
     </chain>
+
+    <chain id="testFetchDocumentChain">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.GetBlob" />
+    </chain>
   </extension>
 
   <extension
