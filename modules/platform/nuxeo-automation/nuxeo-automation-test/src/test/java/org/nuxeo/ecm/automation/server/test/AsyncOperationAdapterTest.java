@@ -170,6 +170,29 @@ public class AsyncOperationAdapterTest {
                             .executeReturningDocument();
         assertEquals("/chainTest/chain.doc", getPath(doc));
         assertEquals("Note", doc.get("type").asText());
+
+        // Non regression test for NXP-29924
+
+        // create a File
+        JsonNode file = session.newRequest(CreateDocument.ID)
+                               .setInput(folder)
+                               .set("type", "File")
+                               .set("name", "file")
+                               .executeReturningDocument();
+
+        Blob fb = Blobs.createBlob("Foo", "text/plain", null, "file.txt");
+        session.newRequest(AttachBlob.ID)
+               .setHeader(VOID_OPERATION, "true")
+               .setInput(fb)
+               .set("document", getPath(file))
+               .execute();
+
+        Blob res = async.newRequest("testFetchDocumentChain").setInput(file).executeReturningBlob();
+
+        assertNotNull(res);
+
+        // Document.GetBlob creates a dummy <filename>.null blob when null
+        assertEquals(fb.getFilename(), res.getFilename());
     }
 
     @Test
@@ -241,9 +264,9 @@ public class AsyncOperationAdapterTest {
     @Test
     public void testAsyncExposeBlob() throws Exception {
         JsonNode r = async.newRequest(BulkRunAction.ID)
-                .set("action", DummyExposeBlobAction.ACTION_NAME)
-                .set("query", "SELECT * FROM Folder")
-                .execute();
+                          .set("action", DummyExposeBlobAction.ACTION_NAME)
+                          .set("query", "SELECT * FROM Folder")
+                          .execute();
         assertNotNull(r);
         assertNotNull(r.get("url"));
         assertTrue(new URI(r.get("url").asText()).isAbsolute());
