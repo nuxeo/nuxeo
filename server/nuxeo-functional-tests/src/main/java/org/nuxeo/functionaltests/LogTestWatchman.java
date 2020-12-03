@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.AssumptionViolatedException;
 import org.junit.internal.runners.statements.RunAfters;
 import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
@@ -121,6 +122,9 @@ public class LogTestWatchman extends TestWatchman {
 
     @Override
     public void failed(Throwable e, FrameworkMethod method) {
+        if (e instanceof AssumptionViolatedException) {
+            return;
+        }
         String className = getTestClassName(method);
         String methodName = method.getName();
         log.error(String.format("Test '%s#%s' failed", className, methodName), e);
