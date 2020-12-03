@@ -225,11 +225,11 @@ public class JSONPropertyWriter {
             if (type instanceof BooleanType) {
                 jg.writeBoolean((Boolean) v);
             } else if (type instanceof LongType) {
-                jg.writeNumber((Long) v);
+                jg.writeNumber(((Number) v).longValue());
             } else if (type instanceof DoubleType) {
-                jg.writeNumber((Double) v);
+                jg.writeNumber(((Number) v).doubleValue());
             } else if (type instanceof IntegerType) {
-                jg.writeNumber((Integer) v);
+                jg.writeNumber(((Number) v).intValue());
             } else if (type instanceof BinaryType) {
                 jg.writeBinary((byte[]) v);
             } else if (type instanceof DateType && dateTimeFormat == DateTimeFormat.TIME_IN_MILLIS) {
