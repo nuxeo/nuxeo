@@ -44,7 +44,9 @@ import org.nuxeo.runtime.api.Framework;
  * Cachable implementation of a zip file.
  *
  * @author Laurent Doguin
+ * @deprecated since 11.5, unused
  */
+@Deprecated
 public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
 
     private static final Log log = LogFactory.getLog(ZipCachableBlobHolder.class);
