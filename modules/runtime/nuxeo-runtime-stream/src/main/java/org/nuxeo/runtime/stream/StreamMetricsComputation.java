@@ -46,6 +46,8 @@ import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 
 /**
+ * A computation that exposes Nuxeo Stream metrics as Dropwizard metrics.
+ *
  * @since 11.1
  */
 public class StreamMetricsComputation extends AbstractComputation {

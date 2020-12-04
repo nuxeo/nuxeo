@@ -244,6 +244,10 @@ metrics.tomcat.enabled=true
 ## JMX reporter
 metrics.jmx.enabled=true
 
+## Stream Metrics reporter
+metrics.stream.enabled=true
+metrics.stream.pollInterval=60
+
 ## Graphite reporter
 metrics.graphite.enabled=false
 metrics.graphite.host=graphite
