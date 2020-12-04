@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.blob;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
@@ -276,6 +277,24 @@ public abstract class TestAbstractBlobStore {
         // this write should use an optimized copy path
         String key2 = bs.writeBlob(new BlobContext(blob, ID2, XPATH));
         assertKey(ID2, key2);
+    }
+
+    @Test
+    public void testBlobGetFile() throws IOException {
+        assumeFalse("InMemoryBlobStore has no File", bs.unwrap() instanceof InMemoryBlobStore);
+        assumeFalse("AESBlobStore has no File", bs instanceof AESBlobStore);
+
+        // store blob
+        String key1 = bs.writeBlob(blobContext(ID1, FOO));
+        assertKey(ID1, key1);
+
+        // construct an actual Blob for it
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = "test:" + key1;
+        Blob blob = new SimpleManagedBlob(blobInfo);
+
+        // check that we have an underlying file
+        assertNotNull(blob.getFile());
     }
 
     @Test
