@@ -19,6 +19,7 @@
 package org.nuxeo.lib.stream.computation;
 
 import java.time.Duration;
+import java.util.Map;
 
 import org.nuxeo.lib.stream.log.Latency;
 
@@ -97,4 +98,12 @@ public interface StreamProcessor {
      * @since 10.1
      */
     boolean isTerminated();
+
+    /**
+     * Returns a JSON representation of the processor, this includes the list of streams and computations with their
+     * settings along with the topology.
+     *
+     * @since 11.5
+     */
+    String toJson(Map<String, String> meta);
 }
