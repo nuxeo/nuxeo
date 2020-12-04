@@ -80,6 +80,10 @@
       <artifactId>javax.inject</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-cluster</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
