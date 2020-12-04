@@ -35,6 +35,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.Record;
@@ -47,6 +50,11 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @since 9.3
@@ -65,6 +73,8 @@ public class LogStreamProcessor implements StreamProcessor {
     protected LogStreamManager streamManager;
 
     protected final boolean needRegister;
+
+    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Deprecated
     public LogStreamProcessor(LogManager manager) {
@@ -113,6 +123,61 @@ public class LogStreamProcessor implements StreamProcessor {
     @Override
     public boolean isTerminated() {
         return pools.stream().allMatch(ComputationPool::isTerminated);
+    }
+
+    @Override
+    public String toJson(Map<String, String> meta) {
+        try {
+            ObjectNode ret = OBJECT_MAPPER.createObjectNode();
+            ObjectNode metaNode = OBJECT_MAPPER.createObjectNode();
+            meta.forEach((key, value) -> metaNode.put(key, value));
+            ret.set("metadata", metaNode);
+            // list streams with settings
+            ArrayNode streamsNode = OBJECT_MAPPER.createArrayNode();
+            topology.streamsSet().forEach(stream -> {
+                ObjectNode item = OBJECT_MAPPER.createObjectNode();
+                item.put("name", stream);
+                item.put("partitions", settings.getPartitions(stream));
+                item.put("codec", settings.getCodec(stream).getName());
+                streamsNode.add(item);
+            });
+            ret.set("streams", streamsNode);
+            // list computations with settings
+            ArrayNode computationsNode = OBJECT_MAPPER.createArrayNode();
+            topology.metadataList().forEach(comp -> {
+                ObjectNode item = OBJECT_MAPPER.createObjectNode();
+                item.put("name", comp.name());
+                item.put("threads", settings.getConcurrency(comp.name()));
+                item.put("continueOnFailure", settings.getPolicy(comp.name()).continueOnFailure());
+                item.put("batchCapacity", settings.getPolicy(comp.name()).getBatchCapacity());
+                item.put("batchThresholdMs", settings.getPolicy(comp.name()).getBatchThreshold().toMillis());
+                item.put("maxRetries", settings.getPolicy(comp.name()).getRetryPolicy().getMaxRetries());
+                item.put("retryDelayMs", settings.getPolicy(comp.name()).getRetryPolicy().getDelay().toMillis());
+                computationsNode.add(item);
+            });
+            ret.set("computations", computationsNode);
+            // list DAG edges
+            ArrayNode topologyNode = OBJECT_MAPPER.createArrayNode();
+            DirectedAcyclicGraph<Topology.Vertex, DefaultEdge> dag = topology.getDag();
+            for (DefaultEdge edge : dag.edgeSet()) {
+                ArrayNode edgeNode = OBJECT_MAPPER.createArrayNode();
+                edgeNode.add(getEdgeName(dag.getEdgeSource(edge)));
+                edgeNode.add(getEdgeName(dag.getEdgeTarget(edge)));
+                topologyNode.add(edgeNode);
+            }
+            ret.set("topology", topologyNode);
+            String json = OBJECT_MAPPER.writer().writeValueAsString(ret);
+            if (log.isDebugEnabled()) {
+                log.debug("Starting processor: " + json);
+            }
+            return json;
+        } catch (JsonProcessingException e) {
+            throw new StreamRuntimeException("Fail to dump processor as JSON", e);
+        }
+    }
+
+    protected String getEdgeName(Topology.Vertex edge) {
+        return (edge.getType().equals(Topology.VertexType.COMPUTATION) ? "computation:" : "stream:") + edge.getName();
     }
 
     @Override
