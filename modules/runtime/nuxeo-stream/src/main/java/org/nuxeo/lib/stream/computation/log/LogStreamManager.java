@@ -62,6 +62,8 @@ public class LogStreamManager implements StreamManager {
     // @since 11.5
     public static final String PROCESSORS_STREAM = "internal/processors";
 
+    public static final String METRICS_STREAM = "internal/metrics";
+
     public static final Codec<Record> INTERNAL_CODEC = new AvroMessageCodec<>(Record.class);
 
     protected final LogManager logManager;
@@ -74,10 +76,14 @@ public class LogStreamManager implements StreamManager {
     }
 
     protected void initInternalStreams() {
-        Name processorsStreamName = Name.ofUrn(PROCESSORS_STREAM);
-        logManager.createIfNotExists(processorsStreamName, 1);
-        logManager.getAppender(processorsStreamName, INTERNAL_CODEC);
-        filters.put(processorsStreamName, RecordFilterChainImpl.NONE);
+        initInternalStream(Name.ofUrn(PROCESSORS_STREAM));
+        initInternalStream(Name.ofUrn(METRICS_STREAM));
+    }
+
+    protected void initInternalStream(Name stream) {
+        logManager.createIfNotExists(stream, 1);
+        logManager.getAppender(stream, INTERNAL_CODEC);
+        filters.put(stream, RecordFilterChainImpl.NONE);
     }
 
     protected final Map<String, Topology> topologies = new HashMap<>();

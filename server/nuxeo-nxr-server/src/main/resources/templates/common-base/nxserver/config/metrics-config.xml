@@ -110,6 +110,10 @@
       <option name="samplerProbability">${tracing.sampler.probability}</option>
     </reporter>
 
+    <reporter enabled="${metrics.stream.enabled}" name="stream" pollInterval="${metrics.stream.pollInterval}"
+      class="org.nuxeo.runtime.stream.StreamMetricsNuxeoReporter">
+    </reporter>
+
   </extension>
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">

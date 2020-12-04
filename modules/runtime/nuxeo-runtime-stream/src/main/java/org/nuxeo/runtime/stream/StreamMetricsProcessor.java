@@ -33,6 +33,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
+ * A processor fetching stream metrics populating Dropwizard metrics.
+ *
  * @since 11.1
  */
 public class StreamMetricsProcessor implements StreamProcessorTopology {
