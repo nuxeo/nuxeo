@@ -276,7 +276,7 @@ public class Topology {
         return dag;
     }
 
-    protected enum VertexType {
+    public enum VertexType {
         COMPUTATION, STREAM
     }
 

@@ -681,6 +681,28 @@ public abstract class TestStreamProcessor {
         }
     }
 
+    @Test
+    public void testJsonRepresentation() throws Exception {
+        Topology topology = Topology.builder()
+                                    .addComputation(() -> new ComputationForward("C1", 1, 1),
+                                            Arrays.asList("i1:s1", "o1:s2"))
+                                    .addComputation(() -> new ComputationForward("C2", 1, 1),
+                                            Arrays.asList("i1:s2", "o1:s3"))
+                                    .build();
+        Settings settings = new Settings(2, 2, codec);
+        try (LogManager manager = getLogManager()) {
+            StreamManager streamManager = new LogStreamManager(manager);
+            StreamProcessor processor = streamManager.registerAndCreateProcessor("processor", topology, settings);
+            try {
+                String json = processor.toJson(Collections.emptyMap());
+                assertTrue(json, json.contains("{\"name\":\"s1\",\"partitions\":2,\"codec\":\"avro\"}"));
+                assertTrue(json, json.contains("{\"name\":\"C1\",\"threads\":2,\"continueOnFailure\":false"));
+            } finally {
+                processor.shutdown();
+            }
+        }
+    }
+
     // ---------------------------------
     // helpers
     protected int readOutputCounter(LogManager manager) throws InterruptedException {

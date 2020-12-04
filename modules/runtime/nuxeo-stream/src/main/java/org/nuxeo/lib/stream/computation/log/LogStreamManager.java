@@ -18,6 +18,10 @@
  */
 package org.nuxeo.lib.stream.computation.log;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +32,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.codec.AvroMessageCodec;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.RecordFilter;
@@ -36,6 +41,7 @@ import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
+import org.nuxeo.lib.stream.computation.internals.RecordFilterChainImpl;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
@@ -52,10 +58,26 @@ import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 public class LogStreamManager implements StreamManager {
     private static final Log log = LogFactory.getLog(LogStreamManager.class);
 
+    // Internal stream to describe started processors
+    // @since 11.5
+    public static final String PROCESSORS_STREAM = "internal/processors";
+
+    public static final Codec<Record> INTERNAL_CODEC = new AvroMessageCodec<>(Record.class);
+
     protected final LogManager logManager;
+
+    protected Map<String, String> systemMetadata;
 
     public LogStreamManager(LogManager logManager) {
         this.logManager = logManager;
+        initInternalStreams();
+    }
+
+    protected void initInternalStreams() {
+        Name processorsStreamName = Name.ofUrn(PROCESSORS_STREAM);
+        logManager.createIfNotExists(processorsStreamName, 1);
+        logManager.getAppender(processorsStreamName, INTERNAL_CODEC);
+        filters.put(processorsStreamName, RecordFilterChainImpl.NONE);
     }
 
     protected final Map<String, Topology> topologies = new HashMap<>();
@@ -90,7 +112,28 @@ public class LogStreamManager implements StreamManager {
         }
         LogStreamProcessor processor = new LogStreamProcessor(this);
         processor.init(topologies.get(processorName), settings.get(processorName));
+        Map<String, String> meta = new HashMap<>();
+        meta.put("processorName",  processorName);
+        meta.putAll(getSystemMetadata());
+        append(PROCESSORS_STREAM, Record.of(meta.get("ip"), processor.toJson(meta).getBytes(UTF_8)));
         return processor;
+    }
+
+    protected Map<String, String> getSystemMetadata() {
+        if (systemMetadata == null) {
+            systemMetadata = new HashMap<>();
+            try {
+                InetAddress host = InetAddress.getLocalHost();
+                systemMetadata.put("ip",  host.getHostAddress());
+                systemMetadata.put("hostname",  host.getHostName());
+            } catch (UnknownHostException e) {
+                systemMetadata.put("ip",  "unknonwn");
+                systemMetadata.put("hostname",  "unknonwn");
+            }
+            systemMetadata.put("cpuCores", String.valueOf(Runtime.getRuntime().availableProcessors()));
+            systemMetadata.put("jvmHeapSize", String.valueOf(Runtime.getRuntime().maxMemory()));
+        }
+        return systemMetadata;
     }
 
     public LogManager getLogManager() {
