@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.blob;
 
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 
+import java.io.File;
+
 /**
  * Simple managed blob implementation holding just a key and delegating to its provider for implementation.
  *
@@ -66,6 +68,11 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
             throw new IllegalArgumentException("Invalid managed blob key: " + key);
         }
         return key.substring(0, colon);
+    }
+
+    @Override
+    public File getFile() {
+        return ManagedBlob.super.getFile();
     }
 
     @Override
