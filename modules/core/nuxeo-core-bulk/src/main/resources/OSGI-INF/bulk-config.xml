@@ -40,6 +40,11 @@
       <computation name="bulk/scroller" concurrency="${nuxeo.core.bulk.scroller.concurrency:=2}" />
       <computation name="bulk/status" concurrency="${nuxeo.core.bulk.status.concurrency:=1}" />
     </streamProcessor>
+
+    <streamProcessor name="streamIntrospection"
+      class="org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionProcessor" defaultCodec="avro"
+      defaultConcurrency="1" defaultPartitions="1" />
+
   </extension>
 
   <!-- ======================================================================================= -->
