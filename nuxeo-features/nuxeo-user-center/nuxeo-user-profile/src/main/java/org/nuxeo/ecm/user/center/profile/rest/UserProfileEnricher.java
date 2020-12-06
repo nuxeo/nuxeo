@@ -25,8 +25,8 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_AVATAR_FIELD;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_BIRTHDATE_FIELD;
+import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_FACET;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_PHONENUMBER_FIELD;
-import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_SCHEMA;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -123,14 +123,15 @@ public class UserProfileEnricher extends AbstractJsonEnricher<NuxeoPrincipal> {
 
     protected void writeUserProfile(JsonGenerator jg, DocumentModel up) throws IOException {
         Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, APPLICATION_JSON_TYPE);
-        Schema schema = schemaManager.getSchema(USER_PROFILE_SCHEMA);
         // provides the user profile document to the property marshaller
         try (Closeable resource = ctx.wrap().with(ENTITY_TYPE, up).open()) {
-            for (Field field : schema.getFields()) {
-                jg.writeFieldName(field.getName().getLocalName());
-                Property property = up.getProperty(field.getName().getPrefixedName());
-                OutputStream out = new OutputStreamWithJsonWriter(jg);
-                propertyWriter.write(property, Property.class, Property.class, APPLICATION_JSON_TYPE, out);
+            for (Schema schema : schemaManager.getFacet(USER_PROFILE_FACET).getSchemas()) {
+                for (Field field : schema.getFields()) {
+                    jg.writeFieldName(field.getName().getLocalName());
+                    Property property = up.getProperty(field.getName().getPrefixedName());
+                    OutputStream out = new OutputStreamWithJsonWriter(jg);
+                    propertyWriter.write(property, Property.class, Property.class, APPLICATION_JSON_TYPE, out);
+                }
             }
         }
     }
