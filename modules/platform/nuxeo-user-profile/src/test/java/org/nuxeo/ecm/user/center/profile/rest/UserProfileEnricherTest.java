@@ -61,6 +61,7 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(PlatformFeature.class)
 @Deploy("org.nuxeo.ecm.platform.userworkspace")
 @Deploy("org.nuxeo.ecm.user.center.profile")
+@Deploy("org.nuxeo.ecm.user.center.profile:OSGI-INF/test-core-types-contrib.xml")
 public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<NuxeoPrincipalJsonWriter, NuxeoPrincipal> {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -93,6 +94,9 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
         Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("data/SmallAvatar.jpg"));
         up.setPropertyValue(USER_PROFILE_AVATAR_FIELD, (Serializable) blob);
 
+        // custom schema added to UserProfile facet
+        up.setPropertyValue("myuserprofile:schoolworkinfo", "foobar");
+
         session.saveDocument(up);
         session.save();
 
@@ -105,7 +109,7 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
         RenderingContext ctx = CtxBuilder.session(session).enrich("user", NAME).get();
         JsonAssert jsonAssert = jsonAssert(session.getPrincipal(), ctx);
         jsonAssert = jsonAssert.get(String.format("contextParameters.%s", NAME));
-        jsonAssert.properties(5);
+        jsonAssert.properties(10);
         JsonAssert avatar = jsonAssert.has("avatar").isObject();
         avatar.has("name").isEquals("SmallAvatar.jpg");
         avatar.has("data").isEquals(avatarURL);
@@ -113,6 +117,8 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
         jsonAssert.has("gender").isFalse();
         jsonAssert.has("locale").isNull();
         jsonAssert.has("phonenumber").isEquals("mynumber");
+        // custom schema added to UserProfile facet
+        jsonAssert.has("schoolworkinfo").isEquals("foobar");
     }
 
     /**
