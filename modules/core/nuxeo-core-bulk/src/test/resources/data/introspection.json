@@ -1,0 +1,4096 @@
+{
+  "streams": [
+    {
+      "name": "bulk/recomputeThumbnails",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "work/collections",
+      "partitions": 12,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/zipBlob",
+      "partitions": 2,
+      "codec": "avro"
+    },
+    {
+      "name": "audit/audit",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/csvExport",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/done",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "work/pictureViewsGeneration",
+      "partitions": 12,
+      "codec": "avro"
+    },
+    {
+      "name": "work/escalation",
+      "partitions": 12,
+      "codec": "avro"
+    },
+    {
+      "name": "work/videoConversion",
+      "partitions": 12,
+      "codec": "avro"
+    },
+    {
+      "name": "retention/retentionExpired",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/trash",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "work/renditionBuilder",
+      "partitions": 12,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/command",
+      "partitions": 2,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/automation",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "work/permissionsPurge",
+      "partitions": 12,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/deletion",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/index",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/setProperties",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/recomputeViews",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "work/elasticSearchIndexing",
+      "partitions": 12,
+      "codec": "avro"
+    },
+    {
+      "name": "internal/metrics",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "work/updateACEStatus",
+      "partitions": 12,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/status",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "work/blobs",
+      "partitions": 12,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/sortBlob",
+      "partitions": 2,
+      "codec": "avro"
+    },
+    {
+      "name": "internal/processors",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "input/null",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/exposeBlob",
+      "partitions": 2,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/removeProxy",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/makeBlob",
+      "partitions": 2,
+      "codec": "avro"
+    },
+    {
+      "name": "work/default",
+      "partitions": 12,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/bulkIndex",
+      "partitions": 4,
+      "codec": "avro"
+    },
+    {
+      "name": "bulk/setSystemProperties",
+      "partitions": 1,
+      "codec": "avro"
+    },
+    {
+      "name": "work/fulltextUpdater",
+      "partitions": 12,
+      "codec": "avro"
+    }
+  ],
+  "processors": [
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "setProperties",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/setProperties",
+          "threads": 2,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 500
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/setProperties",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/setProperties",
+          "computation:bulk/setProperties"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "deletion",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/deletion",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/deletion",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/deletion",
+          "computation:bulk/deletion"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "recomputeThumbnails",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/recomputeThumbnails",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/recomputeThumbnails",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/recomputeThumbnails",
+          "computation:bulk/recomputeThumbnails"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "streamIntrospection",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "stream/introspection",
+          "threads": 1,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        }
+      ],
+      "topology": [
+        [
+          "stream:internal/processors",
+          "computation:stream/introspection"
+        ],
+        [
+          "stream:internal/metrics",
+          "computation:stream/introspection"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "recomputeViews",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/recomputeViews",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/recomputeViews",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/recomputeViews",
+          "computation:bulk/recomputeViews"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "setSystemProperties",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/setSystemProperties",
+          "threads": 2,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 500
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/setSystemProperties",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/setSystemProperties",
+          "computation:bulk/setSystemProperties"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "bulkServiceProcessor",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/scroller",
+          "threads": 2,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/status",
+          "threads": 1,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 20,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/removeProxy"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/recomputeThumbnails"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:retention/retentionExpired"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/trash"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/status"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/csvExport"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/automation"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/deletion"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/index"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/setProperties"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/recomputeViews"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/setSystemProperties"
+        ],
+        [
+          "stream:bulk/command",
+          "computation:bulk/scroller"
+        ],
+        [
+          "computation:bulk/status",
+          "stream:bulk/done"
+        ],
+        [
+          "stream:bulk/status",
+          "computation:bulk/status"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "StreamWorkManager",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "work/videoConversion",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/permissionsPurge",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/blobs",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/default",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/elasticSearchIndexing",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/collections",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/escalation",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/renditionBuilder",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/fulltextUpdater",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/updateACEStatus",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/pictureViewsGeneration",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        }
+      ],
+      "topology": [
+        [
+          "stream:work/videoConversion",
+          "computation:work/videoConversion"
+        ],
+        [
+          "stream:work/permissionsPurge",
+          "computation:work/permissionsPurge"
+        ],
+        [
+          "stream:work/blobs",
+          "computation:work/blobs"
+        ],
+        [
+          "stream:work/default",
+          "computation:work/default"
+        ],
+        [
+          "stream:work/elasticSearchIndexing",
+          "computation:work/elasticSearchIndexing"
+        ],
+        [
+          "stream:work/collections",
+          "computation:work/collections"
+        ],
+        [
+          "stream:work/escalation",
+          "computation:work/escalation"
+        ],
+        [
+          "stream:work/renditionBuilder",
+          "computation:work/renditionBuilder"
+        ],
+        [
+          "stream:work/fulltextUpdater",
+          "computation:work/fulltextUpdater"
+        ],
+        [
+          "stream:work/updateACEStatus",
+          "computation:work/updateACEStatus"
+        ],
+        [
+          "stream:work/pictureViewsGeneration",
+          "computation:work/pictureViewsGeneration"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "metrics",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "stream/metrics",
+          "threads": 1,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 5,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "stream:input/null",
+          "computation:stream/metrics"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "metrics",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "stream/metrics",
+          "threads": 1,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 5,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "stream:input/null",
+          "computation:stream/metrics"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "csvExport",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/csvExport",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/makeBlob",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/sortBlob",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/zipBlob",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/exposeBlob",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/zipBlob",
+          "stream:bulk/exposeBlob"
+        ],
+        [
+          "stream:bulk/zipBlob",
+          "computation:bulk/zipBlob"
+        ],
+        [
+          "computation:bulk/makeBlob",
+          "stream:bulk/zipBlob"
+        ],
+        [
+          "computation:bulk/makeBlob",
+          "stream:bulk/sortBlob"
+        ],
+        [
+          "computation:bulk/makeBlob",
+          "stream:bulk/exposeBlob"
+        ],
+        [
+          "stream:bulk/makeBlob",
+          "computation:bulk/makeBlob"
+        ],
+        [
+          "computation:bulk/csvExport",
+          "stream:bulk/makeBlob"
+        ],
+        [
+          "stream:bulk/csvExport",
+          "computation:bulk/csvExport"
+        ],
+        [
+          "computation:bulk/sortBlob",
+          "stream:bulk/zipBlob"
+        ],
+        [
+          "computation:bulk/sortBlob",
+          "stream:bulk/exposeBlob"
+        ],
+        [
+          "stream:bulk/sortBlob",
+          "computation:bulk/sortBlob"
+        ],
+        [
+          "computation:bulk/exposeBlob",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/exposeBlob",
+          "computation:bulk/exposeBlob"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "trash",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/trash",
+          "threads": 1,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 500
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/trash",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/trash",
+          "computation:bulk/trash"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "removeProxy",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/removeProxy",
+          "threads": 2,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 500
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/removeProxy",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/removeProxy",
+          "computation:bulk/removeProxy"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "setProperties",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/setProperties",
+          "threads": 2,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 500
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/setProperties",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/setProperties",
+          "computation:bulk/setProperties"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "indexAction",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/indexCompletion",
+          "threads": 1,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 20,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/index",
+          "threads": 2,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 20,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/bulkIndex",
+          "threads": 2,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 20,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "stream:bulk/done",
+          "computation:bulk/indexCompletion"
+        ],
+        [
+          "computation:bulk/index",
+          "stream:bulk/bulkIndex"
+        ],
+        [
+          "stream:bulk/index",
+          "computation:bulk/index"
+        ],
+        [
+          "computation:bulk/bulkIndex",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/bulkIndex",
+          "computation:bulk/bulkIndex"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "deletion",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/deletion",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/deletion",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/deletion",
+          "computation:bulk/deletion"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "recomputeThumbnails",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/recomputeThumbnails",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/recomputeThumbnails",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/recomputeThumbnails",
+          "computation:bulk/recomputeThumbnails"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "auditWriter",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "audit/writer",
+          "threads": 1,
+          "continueOnFailure": false,
+          "batchCapacity": 25,
+          "batchThresholdMs": 500,
+          "maxRetries": 20,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "stream:audit/audit",
+          "computation:audit/writer"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "auditWriter",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "audit/writer",
+          "threads": 1,
+          "continueOnFailure": false,
+          "batchCapacity": 25,
+          "batchThresholdMs": 500,
+          "maxRetries": 20,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "stream:audit/audit",
+          "computation:audit/writer"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "removeProxy",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/removeProxy",
+          "threads": 2,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 500
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/removeProxy",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/removeProxy",
+          "computation:bulk/removeProxy"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "retentionExpired",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "retention/retentionExpired",
+          "threads": 1,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 20,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:retention/retentionExpired",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:retention/retentionExpired",
+          "computation:retention/retentionExpired"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "StreamWorkManager",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "work/videoConversion",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/permissionsPurge",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/blobs",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/default",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/elasticSearchIndexing",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/collections",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/escalation",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/renditionBuilder",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/fulltextUpdater",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/updateACEStatus",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        },
+        {
+          "name": "work/pictureViewsGeneration",
+          "threads": 4,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        }
+      ],
+      "topology": [
+        [
+          "stream:work/videoConversion",
+          "computation:work/videoConversion"
+        ],
+        [
+          "stream:work/permissionsPurge",
+          "computation:work/permissionsPurge"
+        ],
+        [
+          "stream:work/blobs",
+          "computation:work/blobs"
+        ],
+        [
+          "stream:work/default",
+          "computation:work/default"
+        ],
+        [
+          "stream:work/elasticSearchIndexing",
+          "computation:work/elasticSearchIndexing"
+        ],
+        [
+          "stream:work/collections",
+          "computation:work/collections"
+        ],
+        [
+          "stream:work/escalation",
+          "computation:work/escalation"
+        ],
+        [
+          "stream:work/renditionBuilder",
+          "computation:work/renditionBuilder"
+        ],
+        [
+          "stream:work/fulltextUpdater",
+          "computation:work/fulltextUpdater"
+        ],
+        [
+          "stream:work/updateACEStatus",
+          "computation:work/updateACEStatus"
+        ],
+        [
+          "stream:work/pictureViewsGeneration",
+          "computation:work/pictureViewsGeneration"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "retentionExpired",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "retention/retentionExpired",
+          "threads": 1,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 20,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:retention/retentionExpired",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:retention/retentionExpired",
+          "computation:retention/retentionExpired"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "automation",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/automation",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/automation",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/automation",
+          "computation:bulk/automation"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "trash",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/trash",
+          "threads": 1,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 500
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/trash",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/trash",
+          "computation:bulk/trash"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "recomputeViews",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/recomputeViews",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/recomputeViews",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/recomputeViews",
+          "computation:bulk/recomputeViews"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "indexAction",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/indexCompletion",
+          "threads": 1,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 20,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/index",
+          "threads": 2,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 20,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/bulkIndex",
+          "threads": 2,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 20,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "stream:bulk/done",
+          "computation:bulk/indexCompletion"
+        ],
+        [
+          "computation:bulk/index",
+          "stream:bulk/bulkIndex"
+        ],
+        [
+          "stream:bulk/index",
+          "computation:bulk/index"
+        ],
+        [
+          "computation:bulk/bulkIndex",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/bulkIndex",
+          "computation:bulk/bulkIndex"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "csvExport",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/csvExport",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/makeBlob",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/sortBlob",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/zipBlob",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/exposeBlob",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/zipBlob",
+          "stream:bulk/exposeBlob"
+        ],
+        [
+          "stream:bulk/zipBlob",
+          "computation:bulk/zipBlob"
+        ],
+        [
+          "computation:bulk/makeBlob",
+          "stream:bulk/zipBlob"
+        ],
+        [
+          "computation:bulk/makeBlob",
+          "stream:bulk/sortBlob"
+        ],
+        [
+          "computation:bulk/makeBlob",
+          "stream:bulk/exposeBlob"
+        ],
+        [
+          "stream:bulk/makeBlob",
+          "computation:bulk/makeBlob"
+        ],
+        [
+          "computation:bulk/csvExport",
+          "stream:bulk/makeBlob"
+        ],
+        [
+          "stream:bulk/csvExport",
+          "computation:bulk/csvExport"
+        ],
+        [
+          "computation:bulk/sortBlob",
+          "stream:bulk/zipBlob"
+        ],
+        [
+          "computation:bulk/sortBlob",
+          "stream:bulk/exposeBlob"
+        ],
+        [
+          "stream:bulk/sortBlob",
+          "computation:bulk/sortBlob"
+        ],
+        [
+          "computation:bulk/exposeBlob",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/exposeBlob",
+          "computation:bulk/exposeBlob"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.112.8",
+        "processorName": "setSystemProperties",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/setSystemProperties",
+          "threads": 2,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 500
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/setSystemProperties",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/setSystemProperties",
+          "computation:bulk/setSystemProperties"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "bulkServiceProcessor",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/scroller",
+          "threads": 2,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 1000
+        },
+        {
+          "name": "bulk/status",
+          "threads": 1,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 20,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/removeProxy"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/recomputeThumbnails"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:retention/retentionExpired"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/trash"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/status"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/csvExport"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/automation"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/deletion"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/index"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/setProperties"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/recomputeViews"
+        ],
+        [
+          "computation:bulk/scroller",
+          "stream:bulk/setSystemProperties"
+        ],
+        [
+          "stream:bulk/command",
+          "computation:bulk/scroller"
+        ],
+        [
+          "computation:bulk/status",
+          "stream:bulk/done"
+        ],
+        [
+          "stream:bulk/status",
+          "computation:bulk/status"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "streamIntrospection",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "stream/introspection",
+          "threads": 1,
+          "continueOnFailure": false,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 0,
+          "retryDelayMs": 0
+        }
+      ],
+      "topology": [
+        [
+          "stream:internal/processors",
+          "computation:stream/introspection"
+        ],
+        [
+          "stream:internal/metrics",
+          "computation:stream/introspection"
+        ]
+      ]
+    },
+    {
+      "metadata": {
+        "hostname": "nuxeo",
+        "cpuCores": "8",
+        "ip": "192.168.128.8",
+        "processorName": "automation",
+        "jvmHeapSize": "1610612736"
+      },
+      "computations": [
+        {
+          "name": "bulk/automation",
+          "threads": 2,
+          "continueOnFailure": true,
+          "batchCapacity": 1,
+          "batchThresholdMs": 1000,
+          "maxRetries": 3,
+          "retryDelayMs": 1000
+        }
+      ],
+      "topology": [
+        [
+          "computation:bulk/automation",
+          "stream:bulk/status"
+        ],
+        [
+          "stream:bulk/automation",
+          "computation:bulk/automation"
+        ]
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "timestamp": 1607261808,
+      "hostname": "nuxeo",
+      "ip": "192.168.112.8",
+      "nodeId": null,
+      "metrics": [
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "audit-writer",
+          "stream": "audit-audit",
+          "v": 39
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "bulk-deletion",
+          "stream": "bulk-deletion",
+          "v": 2
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "bulk-indexCompletion",
+          "stream": "bulk-done",
+          "v": 2
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "bulk-scroller",
+          "stream": "bulk-command",
+          "v": 2
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "bulk-status",
+          "stream": "bulk-status",
+          "v": 6
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "stream-introspection",
+          "stream": "internal-metrics",
+          "v": 12
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "stream-introspection",
+          "stream": "internal-processors",
+          "v": 32
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "work-default",
+          "stream": "work-default",
+          "v": 51
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "work-elasticSearchIndexing",
+          "stream": "work-elasticSearchIndexing",
+          "v": 3
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "audit-writer",
+          "stream": "audit-audit",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "bulk-deletion",
+          "stream": "bulk-deletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "bulk-indexCompletion",
+          "stream": "bulk-done",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "bulk-scroller",
+          "stream": "bulk-command",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "bulk-status",
+          "stream": "bulk-status",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "stream-introspection",
+          "stream": "internal-metrics",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "stream-introspection",
+          "stream": "internal-processors",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "work-default",
+          "stream": "work-default",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "work-elasticSearchIndexing",
+          "stream": "work-elasticSearchIndexing",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "audit-writer",
+          "stream": "audit-audit",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "bulk-deletion",
+          "stream": "bulk-deletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "bulk-indexCompletion",
+          "stream": "bulk-done",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "bulk-scroller",
+          "stream": "bulk-command",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "bulk-status",
+          "stream": "bulk-status",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "stream-introspection",
+          "stream": "internal-metrics",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "stream-introspection",
+          "stream": "internal-processors",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "work-default",
+          "stream": "work-default",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "work-elasticSearchIndexing",
+          "stream": "work-elasticSearchIndexing",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "audit-writer",
+          "stream": "audit-audit",
+          "v": 39
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "bulk-deletion",
+          "stream": "bulk-deletion",
+          "v": 2
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "bulk-indexCompletion",
+          "stream": "bulk-done",
+          "v": 2
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "bulk-scroller",
+          "stream": "bulk-command",
+          "v": 2
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "bulk-status",
+          "stream": "bulk-status",
+          "v": 6
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "stream-introspection",
+          "stream": "internal-metrics",
+          "v": 12
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "stream-introspection",
+          "stream": "internal-processors",
+          "v": 32
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "work-default",
+          "stream": "work-default",
+          "v": 51
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "work-elasticSearchIndexing",
+          "stream": "work-elasticSearchIndexing",
+          "v": 3
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "audit-writer",
+          "count": 18,
+          "rate1m": 6.976642561247438E-5,
+          "rate5m": 0.30069919482457397,
+          "sum": 577742,
+          "max": 1.56295E-4,
+          "mean": 3.324475651297405E-5,
+          "min": 1.335E-5,
+          "stddev": 4.030024124831954E-5,
+          "p50": 1.7301E-5,
+          "p95": 1.56295E-4,
+          "p99": 1.56295E-4
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-automation",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-bulkIndex",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-csvExport",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-deletion",
+          "count": 2,
+          "rate1m": 7.892291256449289E-6,
+          "rate5m": 0.045823537597075116,
+          "sum": 49909129,
+          "max": 0.031413149,
+          "mean": 0.0249545645,
+          "min": 0.01849598,
+          "stddev": 0.0064585845,
+          "p50": 0.031413149,
+          "p95": 0.031413149,
+          "p99": 0.031413149
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-exposeBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-index",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-indexCompletion",
+          "count": 2,
+          "rate1m": 7.892291256449289E-6,
+          "rate5m": 0.045823537597075116,
+          "sum": 2431126,
+          "max": 0.001817278,
+          "mean": 0.001215563,
+          "min": 6.13848E-4,
+          "stddev": 6.01715E-4,
+          "p50": 0.001817278,
+          "p95": 0.001817278,
+          "p99": 0.001817278
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-makeBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-recomputeThumbnails",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-recomputeViews",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-removeProxy",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-scroller",
+          "count": 2,
+          "rate1m": 7.892291256449289E-6,
+          "rate5m": 0.045823537597075116,
+          "sum": 48126862,
+          "max": 0.038875471,
+          "mean": 0.024063431,
+          "min": 0.009251391,
+          "stddev": 0.01481204,
+          "p50": 0.038875471,
+          "p95": 0.038875471,
+          "p99": 0.038875471
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-setProperties",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-setSystemProperties",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-sortBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-status",
+          "count": 6,
+          "rate1m": 2.3676873769347872E-5,
+          "rate5m": 0.1374706127912253,
+          "sum": 38460595,
+          "max": 0.017872609,
+          "mean": 0.006410099166666667,
+          "min": 0.002775857,
+          "stddev": 0.005268263086326061,
+          "p50": 0.00417095,
+          "p95": 0.017872609,
+          "p99": 0.017872609
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-trash",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-zipBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "retention-retentionExpired",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "stream-introspection",
+          "count": 26,
+          "rate1m": 0.010177905610273206,
+          "rate5m": 0.3797153647969649,
+          "sum": 238862453,
+          "max": 0.07880022,
+          "mean": 0.004243658909458594,
+          "min": 0.002452803,
+          "stddev": 0.005201069868939124,
+          "p50": 0.002452803,
+          "p95": 0.012728429,
+          "p99": 0.036933652
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "stream-metrics",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-blobs",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-collections",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-default",
+          "count": 25,
+          "rate1m": 0.014823650133300722,
+          "rate5m": 0.5310931285282527,
+          "sum": 618140140,
+          "max": 0.1108355,
+          "mean": 0.0026931675783602098,
+          "min": 0.002397193,
+          "stddev": 0.00532254185120954,
+          "p50": 0.002397193,
+          "p95": 0.002397193,
+          "p99": 0.002397193
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-elasticSearchIndexing",
+          "count": 1,
+          "rate1m": 3.946145628224644E-6,
+          "rate5m": 0.022911768798537558,
+          "sum": 363888108,
+          "max": 0.363888108,
+          "mean": 0.363888108,
+          "min": 0.363888108,
+          "stddev": 0.0,
+          "p50": 0.363888108,
+          "p95": 0.363888108,
+          "p99": 0.363888108
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-escalation",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-fulltextUpdater",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-permissionsPurge",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-pictureViewsGeneration",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-renditionBuilder",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-updateACEStatus",
+          "count": 1,
+          "rate1m": 0.014712537947741825,
+          "rate5m": 0.0032510706679223173,
+          "sum": 21824587,
+          "max": 0.021824587,
+          "mean": 0.021824587,
+          "min": 0.021824587,
+          "stddev": 0.0,
+          "p50": 0.021824587,
+          "p95": 0.021824587,
+          "p99": 0.021824587
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-videoConversion",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "audit-writer",
+          "count": 1250,
+          "rate1m": 1.9040958915270074,
+          "rate5m": 1.842477379629702,
+          "sum": 522354607,
+          "max": 0.048305858,
+          "mean": 1.9934971749782596E-5,
+          "min": 5.948E-6,
+          "stddev": 1.3757665228216034E-4,
+          "p50": 2.0414E-5,
+          "p95": 3.001E-5,
+          "p99": 3.8737E-5
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-automation",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-bulkIndex",
+          "count": 260,
+          "rate1m": 0.3895999820594332,
+          "rate5m": 0.34889695421359185,
+          "sum": 9603929,
+          "max": 3.18486E-4,
+          "mean": 2.6405083082406273E-5,
+          "min": 5.749E-6,
+          "stddev": 9.192544384291375E-6,
+          "p50": 2.8584E-5,
+          "p95": 3.789E-5,
+          "p99": 5.8776E-5
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-csvExport",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-deletion",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-exposeBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-index",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-indexCompletion",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-makeBlob",
+          "count": 1282,
+          "rate1m": 1.9439320793210553,
+          "rate5m": 1.9052821341264243,
+          "sum": 51960981,
+          "max": 1.78987E-4,
+          "mean": 2.5457615895153827E-5,
+          "min": 9.453E-6,
+          "stddev": 1.0752889506188397E-5,
+          "p50": 2.766E-5,
+          "p95": 4.2208E-5,
+          "p99": 6.4776E-5
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-recomputeThumbnails",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-recomputeViews",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-removeProxy",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-scroller",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-setProperties",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-setSystemProperties",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-sortBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-status",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-trash",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-zipBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "retention-retentionExpired",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "stream-introspection",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "stream-metrics",
+          "count": 10,
+          "rate1m": 0.010993781516837699,
+          "rate5m": 0.01334768179529153,
+          "sum": 1831138871,
+          "max": 0.687628281,
+          "mean": 0.07506313748827158,
+          "min": 0.053062998,
+          "stddev": 0.05662775324526772,
+          "p50": 0.072922982,
+          "p95": 0.09112989,
+          "p99": 0.506325041
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-blobs",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-collections",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-default",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-elasticSearchIndexing",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-escalation",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-fulltextUpdater",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-permissionsPurge",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-pictureViewsGeneration",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-renditionBuilder",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-updateACEStatus",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-videoConversion",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "audit-writer",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-automation",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-bulkIndex",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-csvExport",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-deletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-exposeBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-index",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-indexCompletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-makeBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-recomputeThumbnails",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-recomputeViews",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-removeProxy",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-scroller",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-setProperties",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-setSystemProperties",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-sortBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-status",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-trash",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-zipBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "retention-retentionExpired",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "stream-introspection",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "stream-metrics",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-blobs",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-collections",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-default",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-elasticSearchIndexing",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-escalation",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-fulltextUpdater",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-permissionsPurge",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-pictureViewsGeneration",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-renditionBuilder",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-updateACEStatus",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-videoConversion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "audit-writer",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-automation",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-bulkIndex",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-csvExport",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-deletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-exposeBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-index",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-indexCompletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-makeBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-recomputeThumbnails",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-recomputeViews",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-removeProxy",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-scroller",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-setProperties",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-setSystemProperties",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-sortBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-status",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-trash",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-zipBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "retention-retentionExpired",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "stream-introspection",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "stream-metrics",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-blobs",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-collections",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-default",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-elasticSearchIndexing",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-escalation",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-fulltextUpdater",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-permissionsPurge",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-pictureViewsGeneration",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-renditionBuilder",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-updateACEStatus",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-videoConversion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "audit-writer",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-automation",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-bulkIndex",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-csvExport",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-deletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-exposeBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-index",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-indexCompletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-makeBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-recomputeThumbnails",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-recomputeViews",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-removeProxy",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-scroller",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-setProperties",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-setSystemProperties",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-sortBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-status",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-trash",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-zipBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "retention-retentionExpired",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "stream-introspection",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "stream-metrics",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-blobs",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-collections",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-default",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-elasticSearchIndexing",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-escalation",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-fulltextUpdater",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-permissionsPurge",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-pictureViewsGeneration",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-renditionBuilder",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-updateACEStatus",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-videoConversion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.failure",
+          "v": 0
+        }
+      ]
+    },
+    {
+      "timestamp": 1607262260,
+      "hostname": "nuxeo",
+      "ip": "192.168.128.8",
+      "nodeId": null,
+      "metrics": [
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "audit-writer",
+          "stream": "audit-audit",
+          "v": 64
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "bulk-deletion",
+          "stream": "bulk-deletion",
+          "v": 4
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "bulk-indexCompletion",
+          "stream": "bulk-done",
+          "v": 4
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "bulk-scroller",
+          "stream": "bulk-command",
+          "v": 4
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "bulk-status",
+          "stream": "bulk-status",
+          "v": 12
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "stream-introspection",
+          "stream": "internal-metrics",
+          "v": 16
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "stream-introspection",
+          "stream": "internal-processors",
+          "v": 48
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "work-default",
+          "stream": "work-default",
+          "v": 87
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "work-elasticSearchIndexing",
+          "stream": "work-elasticSearchIndexing",
+          "v": 8
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.end",
+          "group": "work-updateACEStatus",
+          "stream": "work-updateACEStatus",
+          "v": 1
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "audit-writer",
+          "stream": "audit-audit",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "bulk-deletion",
+          "stream": "bulk-deletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "bulk-indexCompletion",
+          "stream": "bulk-done",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "bulk-scroller",
+          "stream": "bulk-command",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "bulk-status",
+          "stream": "bulk-status",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "stream-introspection",
+          "stream": "internal-metrics",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "stream-introspection",
+          "stream": "internal-processors",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "work-default",
+          "stream": "work-default",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "work-elasticSearchIndexing",
+          "stream": "work-elasticSearchIndexing",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "work-updateACEStatus",
+          "stream": "work-updateACEStatus",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "audit-writer",
+          "stream": "audit-audit",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "bulk-deletion",
+          "stream": "bulk-deletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "bulk-indexCompletion",
+          "stream": "bulk-done",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "bulk-scroller",
+          "stream": "bulk-command",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "bulk-status",
+          "stream": "bulk-status",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "stream-introspection",
+          "stream": "internal-metrics",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "stream-introspection",
+          "stream": "internal-processors",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "work-default",
+          "stream": "work-default",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "work-elasticSearchIndexing",
+          "stream": "work-elasticSearchIndexing",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.latency",
+          "group": "work-updateACEStatus",
+          "stream": "work-updateACEStatus",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "audit-writer",
+          "stream": "audit-audit",
+          "v": 64
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "bulk-deletion",
+          "stream": "bulk-deletion",
+          "v": 4
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "bulk-indexCompletion",
+          "stream": "bulk-done",
+          "v": 4
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "bulk-scroller",
+          "stream": "bulk-command",
+          "v": 4
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "bulk-status",
+          "stream": "bulk-status",
+          "v": 12
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "stream-introspection",
+          "stream": "internal-metrics",
+          "v": 16
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "stream-introspection",
+          "stream": "internal-processors",
+          "v": 48
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "work-default",
+          "stream": "work-default",
+          "v": 87
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "work-elasticSearchIndexing",
+          "stream": "work-elasticSearchIndexing",
+          "v": 8
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.pos",
+          "group": "work-updateACEStatus",
+          "stream": "work-updateACEStatus",
+          "v": 1
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "audit-writer",
+          "count": 25,
+          "rate1m": 0.06236467860031364,
+          "rate5m": 1.2277480794003954,
+          "sum": 1699013,
+          "max": 5.75353E-4,
+          "mean": 6.426098768200352E-5,
+          "min": 3.1886E-5,
+          "stddev": 9.574617898270566E-5,
+          "p50": 4.3616E-5,
+          "p95": 8.0658E-5,
+          "p99": 5.75353E-4
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-automation",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-bulkIndex",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-csvExport",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-deletion",
+          "count": 2,
+          "rate1m": 0.008654948287797257,
+          "rate5m": 0.1858236081443646,
+          "sum": 63649850,
+          "max": 0.036673056,
+          "mean": 0.031824925,
+          "min": 0.026976794,
+          "stddev": 0.004848131,
+          "p50": 0.036673056,
+          "p95": 0.036673056,
+          "p99": 0.036673056
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-exposeBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-index",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-indexCompletion",
+          "count": 2,
+          "rate1m": 0.008654948287797257,
+          "rate5m": 0.1858236081443646,
+          "sum": 991328,
+          "max": 5.30831E-4,
+          "mean": 4.954002524452481E-4,
+          "min": 4.60497E-4,
+          "stddev": 3.516601095130584E-5,
+          "p50": 4.60497E-4,
+          "p95": 5.30831E-4,
+          "p99": 5.30831E-4
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-makeBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-recomputeThumbnails",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-recomputeViews",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-removeProxy",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-scroller",
+          "count": 2,
+          "rate1m": 0.008654948287797257,
+          "rate5m": 0.1858236081443646,
+          "sum": 50152695,
+          "max": 0.038819188,
+          "mean": 0.0250763475,
+          "min": 0.011333507,
+          "stddev": 0.0137428405,
+          "p50": 0.038819188,
+          "p95": 0.038819188,
+          "p99": 0.038819188
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-setProperties",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-setSystemProperties",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-sortBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-status",
+          "count": 6,
+          "rate1m": 0.025964844863391782,
+          "rate5m": 0.5574708244330939,
+          "sum": 24661144,
+          "max": 0.007550471,
+          "mean": 0.004110190666666667,
+          "min": 0.002582002,
+          "stddev": 0.0016775224272035497,
+          "p50": 0.003671073,
+          "p95": 0.007550471,
+          "p99": 0.007550471
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-trash",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "bulk-zipBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "retention-retentionExpired",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "stream-introspection",
+          "count": 19,
+          "rate1m": 0.07885120533932342,
+          "rate5m": 1.4934386630284875,
+          "sum": 186992241,
+          "max": 0.057114384,
+          "mean": 0.011084245589644085,
+          "min": 0.002424405,
+          "stddev": 0.008676813995761373,
+          "p50": 0.010973723,
+          "p95": 0.017500859,
+          "p99": 0.057114384
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "stream-metrics",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-blobs",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-collections",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-default",
+          "count": 35,
+          "rate1m": 0.10583016508009571,
+          "rate5m": 2.1570013576933453,
+          "sum": 371819521,
+          "max": 0.058558189,
+          "mean": 0.010084348929093765,
+          "min": 0.002008081,
+          "stddev": 0.01258200581190313,
+          "p50": 0.00507117,
+          "p95": 0.054055221,
+          "p99": 0.058558189
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-elasticSearchIndexing",
+          "count": 5,
+          "rate1m": 0.006426894067374392,
+          "rate5m": 0.09958842541656643,
+          "sum": 1208185483,
+          "max": 0.735940065,
+          "mean": 0.209203540377571,
+          "min": 0.015803997,
+          "stddev": 0.23747887889447616,
+          "p50": 0.186777353,
+          "p95": 0.735940065,
+          "p99": 0.735940065
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-escalation",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-fulltextUpdater",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-permissionsPurge",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-pictureViewsGeneration",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-renditionBuilder",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-updateACEStatus",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processRecord",
+          "computation": "work-videoConversion",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "audit-writer",
+          "count": 452,
+          "rate1m": 1.8959081144715246,
+          "rate5m": 1.7575415207900915,
+          "sum": 782593828,
+          "max": 0.361011184,
+          "mean": 2.4395132230637287E-4,
+          "min": 8.351E-6,
+          "stddev": 0.006802609930142837,
+          "p50": 2.2144E-5,
+          "p95": 7.1334E-5,
+          "p99": 1.01901E-4
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-automation",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-bulkIndex",
+          "count": 94,
+          "rate1m": 0.3913450517122028,
+          "rate5m": 0.2141763918556354,
+          "sum": 4232410,
+          "max": 2.25124E-4,
+          "mean": 3.285123280625528E-5,
+          "min": 1.1191E-5,
+          "stddev": 2.1839132634777106E-5,
+          "p50": 2.9969E-5,
+          "p95": 7.6742E-5,
+          "p99": 1.1261E-4
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-csvExport",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-deletion",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-exposeBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-index",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-indexCompletion",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-makeBlob",
+          "count": 460,
+          "rate1m": 1.923697824572856,
+          "rate5m": 1.321928500823503,
+          "sum": 26704827,
+          "max": 7.93135E-4,
+          "mean": 3.708407268282929E-5,
+          "min": 5.912E-6,
+          "stddev": 3.554214342309246E-5,
+          "p50": 2.99E-5,
+          "p95": 8.8858E-5,
+          "p99": 1.92863E-4
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-recomputeThumbnails",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-recomputeViews",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-removeProxy",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-scroller",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-setProperties",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-setSystemProperties",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-sortBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-status",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-trash",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "bulk-zipBlob",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "retention-retentionExpired",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "stream-introspection",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "stream-metrics",
+          "count": 3,
+          "rate1m": 0.01044690765371125,
+          "rate5m": 0.006964917839712338,
+          "sum": 962356401,
+          "max": 0.769559959,
+          "mean": 0.16658967734496438,
+          "min": 0.094812282,
+          "stddev": 0.20670912744061998,
+          "p50": 0.094812282,
+          "p95": 0.769559959,
+          "p99": 0.769559959
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-blobs",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-collections",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-default",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-elasticSearchIndexing",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-escalation",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-fulltextUpdater",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-permissionsPurge",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-pictureViewsGeneration",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-renditionBuilder",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-updateACEStatus",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.processTimer",
+          "computation": "work-videoConversion",
+          "count": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "audit-writer",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-automation",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-bulkIndex",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-csvExport",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-deletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-exposeBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-index",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-indexCompletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-makeBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-recomputeThumbnails",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-recomputeViews",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-removeProxy",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-scroller",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-setProperties",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-setSystemProperties",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-sortBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-status",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-trash",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "bulk-zipBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "retention-retentionExpired",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "stream-introspection",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "stream-metrics",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-blobs",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-collections",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-default",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-elasticSearchIndexing",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-escalation",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-fulltextUpdater",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-permissionsPurge",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-pictureViewsGeneration",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-renditionBuilder",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-updateACEStatus",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.failure",
+          "computation": "work-videoConversion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "audit-writer",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-automation",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-bulkIndex",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-csvExport",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-deletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-exposeBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-index",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-indexCompletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-makeBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-recomputeThumbnails",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-recomputeViews",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-removeProxy",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-scroller",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-setProperties",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-setSystemProperties",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-sortBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-status",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-trash",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "bulk-zipBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "retention-retentionExpired",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "stream-introspection",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "stream-metrics",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-blobs",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-collections",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-default",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-elasticSearchIndexing",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-escalation",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-fulltextUpdater",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-permissionsPurge",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-pictureViewsGeneration",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-renditionBuilder",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-updateACEStatus",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.running",
+          "computation": "work-videoConversion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "audit-writer",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-automation",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-bulkIndex",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-csvExport",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-deletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-exposeBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-index",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-indexCompletion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-makeBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-recomputeThumbnails",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-recomputeViews",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-removeProxy",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-scroller",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-setProperties",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-setSystemProperties",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-sortBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-status",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-trash",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "bulk-zipBlob",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "retention-retentionExpired",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "stream-introspection",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "stream-metrics",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-blobs",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-collections",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-default",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-elasticSearchIndexing",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-escalation",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-fulltextUpdater",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-permissionsPurge",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-pictureViewsGeneration",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-renditionBuilder",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-updateACEStatus",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.computation.skippedRecord",
+          "computation": "work-videoConversion",
+          "v": 0
+        },
+        {
+          "k": "nuxeo.streams.failure",
+          "v": 0
+        }
+      ]
+    }
+  ]
+}
