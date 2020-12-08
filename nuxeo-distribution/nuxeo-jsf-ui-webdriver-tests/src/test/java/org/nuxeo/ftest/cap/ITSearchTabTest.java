@@ -309,7 +309,7 @@ public class ITSearchTabTest extends AbstractTest {
     }
 
     /**
-     * Non-regression test for NXP-21937 and NXP-22976 use cases.
+     * Non-regression test for NXP-21937, NXP-22976 and NXP-23110 use cases.
      */
     @Test
     public void testSavedSearchSelection() throws UserNotConnectedException, IOException {
@@ -343,6 +343,7 @@ public class ITSearchTabTest extends AbstractTest {
         searchPage = loginAsTestUser().goToSearchPage();
         // first saved search
         DefaultSearchSubPage saved1 = searchPage.getSearch(ssTitle1, DefaultSearchSubPage.class);
+        assertEquals(ssTitle1, asPage(SearchPage.class).getSelectedSearch());
         assertEquals("ITSearchTabTest", saved1.getFullTextElement().getInputValue());
         SearchResultsSubPage resultSubPage1 = searchPage.getSearchResultsSubPage();
         assertEquals(ssTitle1, resultSubPage1.getSearchViewTitle());
@@ -350,6 +351,7 @@ public class ITSearchTabTest extends AbstractTest {
         checkURL("default_search");
         // second saved search
         DefaultSearchSubPage saved2 = searchPage.getSearch(ssTitle2, DefaultSearchSubPage.class);
+        assertEquals(ssTitle2, asPage(SearchPage.class).getSelectedSearch());
         assertEquals("foo", saved2.getFullTextElement().getInputValue());
         SearchResultsSubPage resultSubPage2 = searchPage.getSearchResultsSubPage();
         assertEquals(ssTitle2, resultSubPage2.getSearchViewTitle());
@@ -357,6 +359,15 @@ public class ITSearchTabTest extends AbstractTest {
         checkURL("default_search");
         // switch again
         saved1 = searchPage.getSearch(ssTitle1, DefaultSearchSubPage.class);
+        assertEquals(ssTitle1, asPage(SearchPage.class).getSelectedSearch());
+        assertEquals("ITSearchTabTest", saved1.getFullTextElement().getInputValue());
+        resultSubPage1 = searchPage.getSearchResultsSubPage();
+        assertEquals(ssTitle1, resultSubPage1.getSearchViewTitle());
+        assertEquals(4, resultSubPage1.getNumberOfDocumentInCurrentPage());
+        checkURL("default_search");
+        // NXP-23110: check clicking on main tab still displays same search
+        asPage(SearchPage.class).goToSearchPage();
+        assertEquals(ssTitle1, asPage(SearchPage.class).getSelectedSearch());
         assertEquals("ITSearchTabTest", saved1.getFullTextElement().getInputValue());
         resultSubPage1 = searchPage.getSearchResultsSubPage();
         assertEquals(ssTitle1, resultSubPage1.getSearchViewTitle());

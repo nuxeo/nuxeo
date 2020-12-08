@@ -7,7 +7,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="http://richfaces.org/a4j">
 
-  <a4j:outputPanel id="#{widget.id}">
+  <a4j:outputPanel id="#{widget.id}" ajaxRendered="true">
     <nxd:restDocumentLink document="#{currentDocument == null ? userWorkspaceManagerActions.currentUserPersonalWorkspace : currentDocument}"
       pattern="search"
       view="search" addTabInfo="false">
