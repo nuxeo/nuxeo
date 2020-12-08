@@ -316,7 +316,7 @@ pipeline {
     HELM_CHART_NUXEO = 'nuxeo'
     HELM_CHART_NUXEO_VERSION = '1.2.0'
     TEST_HELM_CHART_RELEASE = 'test-release'
-    TEST_NAMESPACE_PREFIX = "nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
+    TEST_NAMESPACE_PREFIX = "nuxeo-unit-tests-lts-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
     TEST_REDIS_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-redis-master"
     TEST_MONGODB_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-mongodb"
