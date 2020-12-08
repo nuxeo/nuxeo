@@ -39,7 +39,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
-import org.nuxeo.ecm.core.io.APIVersion;
 import org.nuxeo.jaxrs.test.HttpClientTestRule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -68,8 +67,7 @@ public abstract class ManagementBaseTest {
     protected HttpClientTestRule httpClientRule;
 
     protected HttpClientTestRule getRule() {
-        String url = String.format("http://localhost:%d/api/v%d", servletContainerFeature.getPort(),
-                APIVersion.latest().toInt());
+        String url = String.format("http://localhost:%d/api/v1", servletContainerFeature.getPort());
         return new HttpClientTestRule.Builder().url(url)
                                                .accept(WILDCARD)
                                                .credentials("Administrator", "Administrator")

@@ -38,7 +38,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.io.APIVersion;
 import org.nuxeo.ecm.restapi.jaxrs.io.capabilities.ServerInfoJsonWriter;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -68,8 +67,7 @@ public class TestServerInfoObject {
     protected ObjectMapper mapper = new ObjectMapper();
 
     protected HttpClientTestRule getRule() {
-        String url = String.format("http://localhost:%d/api/v%d", servletContainerFeature.getPort(),
-                APIVersion.latest().toInt());
+        String url = String.format("http://localhost:%d/api/v1", servletContainerFeature.getPort());
         return new HttpClientTestRule.Builder().url(url).adminCredentials().accept(WILDCARD).build();
     }
 
