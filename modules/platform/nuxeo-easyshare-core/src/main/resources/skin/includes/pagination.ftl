@@ -8,14 +8,18 @@
 
 <@pageLink condition="${nextPageAvailable}" page="${currentPageIndex + 1}" image="next" />
 
-<@pageLink condition="${nextPageAvailable}" page="${numberOfPages}" image="last"/>
+<@pageLink condition="${nextPageAvailable}" page="${numberOfPages - 1}" image="last"/>
 
 </div>
 
 <#macro pageLink condition page image>
 
   <#if condition == "true">
-  <a href="?p=${page}">
+    <#if accessSecured>
+    <a href="?p=${page}&a=${encryptedAccessCode}&s=${encryptedSalt}&j=${encryptedJSessionId}">
+    <#else>
+    <a href="?p=${page}">
+    </#if>
   <#else>
   <a disabled="disabled">
   </#if>
