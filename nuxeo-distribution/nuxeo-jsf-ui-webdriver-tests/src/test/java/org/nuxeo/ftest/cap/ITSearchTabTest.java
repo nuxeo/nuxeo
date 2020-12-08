@@ -20,8 +20,6 @@ package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
 import static org.nuxeo.functionaltests.Constants.COLLECTION_TYPE;
 import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
 import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
@@ -281,8 +279,8 @@ public class ITSearchTabTest extends AbstractTest {
         WebElement listShuttle = fancybox.findElement(By.className("listShuttleTable"));
         listShuttle.findElement(
                 By.xpath(".//td[@class=\"listShuttleSelectElements\"]//option[@value=\"contributors\"]")).click();
-        listShuttle.findElement(By
-                                  .xpath(".//td[@class=\"listShuttleSelectionActions\"]/a[contains(@id, 'nxw_template_addToSelection')]"))
+        listShuttle.findElement(By.xpath(
+                ".//td[@class=\"listShuttleSelectionActions\"]/a[contains(@id, 'nxw_template_addToSelection')]"))
                    .click();
         arm.begin();
         Locator.findElementWaitUntilEnabledAndClick(fancybox, By.xpath(".//input[@value='Save']"));
@@ -376,7 +374,6 @@ public class ITSearchTabTest extends AbstractTest {
     public void testSearchWithUpdatedPermissionsOnRootDocument() throws UserNotConnectedException {
 
         String testuser = "testuser";
-        String testpassword = "testpassword";
         String testgroup = "testgroup";
 
         RestHelper.createUser(testuser, testuser);
