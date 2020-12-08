@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.io.registry.context;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.io.APIVersion.API_VERSION_ATTRIBUTE_NAME;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.HEADER_PREFIX;
 
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.nuxeo.ecm.core.io.APIVersion;
 
 public class TestRenderingContext {
 
@@ -140,15 +138,6 @@ public class TestRenderingContext {
         assertTrue(embeds.contains(VALUE1));
         assertTrue(embeds.contains(VALUE2));
         assertTrue(embeds.contains(VALUE3));
-    }
-
-    @Test
-    public void testAPIVersion() {
-        RenderingContext ctx = RenderingContext.CtxBuilder.get();
-        assertTrue(ctx.getAPIVersion().eq(APIVersion.LATEST_VERSION));
-
-        ctx = RenderingContext.CtxBuilder.param(API_VERSION_ATTRIBUTE_NAME, APIVersion.V1).get();
-        assertTrue(ctx.getAPIVersion().eq(APIVersion.V1));
     }
 
 }

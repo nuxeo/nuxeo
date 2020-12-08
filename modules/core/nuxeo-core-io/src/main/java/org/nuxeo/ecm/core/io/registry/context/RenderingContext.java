@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.io.APIVersion;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl.RenderingContextBuilder;
 
@@ -238,13 +237,6 @@ public interface RenderingContext {
      * @since 7.2
      */
     void addParameterListValues(String name, List<?> values);
-
-    /**
-     * Returns the REST API version.
-     *
-     * @since 11.1
-     */
-    APIVersion getAPIVersion();
 
     /**
      * {@link RenderingContext} builder.

@@ -34,7 +34,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.io.APIVersion;
 import org.nuxeo.ecm.jwt.JWTService;
 import org.nuxeo.ecm.restapi.test.ManagementBaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
@@ -78,8 +77,7 @@ public class TestJWTAuthentication extends ManagementBaseTest {
         String authorizedUserToken = jwtService.newBuilder().withClaim(CLAIM_SUBJECT, "transient/foo").build();
         String unauthorizedUserToken = jwtService.newBuilder().withClaim(CLAIM_SUBJECT, "transient/bar").build();
 
-        String url = String.format("http://localhost:%d/api/v%d", servletContainerFeature.getPort(),
-                APIVersion.latest().toInt());
+        String url = String.format("http://localhost:%d/api/v1", servletContainerFeature.getPort());
         authorizedHttpClientRule = new HttpClientTestRule.Builder().url(url)
                                                                    .accept(APPLICATION_JSON)
                                                                    .header(HttpHeaders.AUTHORIZATION,

@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.io.registry.context;
 
-import static org.nuxeo.ecm.core.io.APIVersion.API_VERSION_ATTRIBUTE_NAME;
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter.ENTITY_TYPE;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_ENRICHERS;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_PROPERTIES;
@@ -35,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,7 +45,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.io.APIVersion;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 
@@ -332,12 +329,6 @@ public class RenderingContextImpl implements RenderingContext {
             return;
         }
         parameters.computeIfAbsent(realName, key -> new CopyOnWriteArrayList<>()).addAll(values);
-    }
-
-    @Override
-    public APIVersion getAPIVersion() {
-        APIVersion apiVersion = getParameter(API_VERSION_ATTRIBUTE_NAME);
-        return Objects.requireNonNullElseGet(apiVersion, APIVersion::latest);
     }
 
     static RenderingContextBuilder builder() {

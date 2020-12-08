@@ -20,20 +20,12 @@
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.io.APIVersion;
-import org.nuxeo.ecm.restapi.test.versioning.DummyObject;
-import org.nuxeo.ecm.restapi.test.versioning.DummyObjectV2;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -43,12 +35,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @WebObject(type = "foo")
 public class FooObject extends DefaultObject {
-
-    @Context
-    protected APIVersion apiVersion;
-
-    @Context
-    protected HttpServletRequest request;
 
     @GET
     @Path("unauthenticated")
@@ -73,64 +59,6 @@ public class FooObject extends DefaultObject {
     @Path("bad-request")
     public Object doBadRequestException() {
         throw new NuxeoException("bad request", SC_BAD_REQUEST);
-    }
-
-    /**
-     * Endpoint behaving differently in v1 and v2+.
-     */
-    @GET
-    @Path("path1")
-    public Object doPath1() {
-        if (apiVersion.eq(APIVersion.V1)) {
-            return Response.ok("foo").build();
-        }
-
-        // other than REST API v1
-        return Response.ok("bar").build();
-    }
-
-    /**
-     * Endpoint only available in v2+.
-     */
-    @GET
-    @Path("path2")
-    public Object doPath2() {
-        if (apiVersion.lt(APIVersion.V11)) {
-            return Response.status(SC_NOT_FOUND).build();
-        }
-
-        // API version >= 2
-        return Response.ok("bar").build();
-    }
-
-    /**
-     * Endpoint returning a {@link DummyObject}.
-     */
-    @GET
-    @Path("dummy")
-    public Object doGetDummy() {
-        return new DummyObject();
-    }
-
-    /**
-     * Endpoint returning a {@link DummyObjectV2}.
-     */
-    @GET
-    @Path("dummy2")
-    public Object doGetDummy2() {
-        return new DummyObjectV2();
-    }
-
-    /**
-     * Endpoint reading a {@link DummyObject}.
-     * <p>
-     * Returns all fields read by the {@link org.nuxeo.ecm.restapi.test.versioning.DummyReader}.
-     */
-    @POST
-    @Path("dummy")
-    public Object doPostDummy2(DummyObject dummyObject) {
-        String r = String.format("%s - %s", dummyObject.fieldV1, dummyObject.fieldV2);
-        return Response.ok(r).build();
     }
 
 }
