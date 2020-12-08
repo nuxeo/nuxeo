@@ -149,12 +149,17 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
 
     protected URI getURICloudFront(String bucketKey, ManagedBlob blob, Date expiration)
             throws URISyntaxException {
+        String[] parts = bucketKey.split(String.valueOf(VER_SEP));
+        bucketKey = parts[0];
         CloudFrontConfiguration cloudFront = config.cloudFront;
         Protocol protocol = cloudFront.protocol;
         String baseURI = protocol == Protocol.http || protocol == Protocol.https
                 ? protocol + "://" + cloudFront.distributionDomain + "/" + bucketKey
                 : bucketKey;
         URIBuilder uriBuilder = new URIBuilder(baseURI);
+        if (parts.length > 1) {
+            uriBuilder.addParameter("versionId", parts[1]);
+        }
         uriBuilder.addParameter("response-content-type", getContentTypeHeader(blob));
         uriBuilder.addParameter("response-content-disposition", getContentDispositionHeader(blob));
         if (cloudFront.fixEncoding) {
