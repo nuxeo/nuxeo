@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.bulk.introspection;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +86,7 @@ public class StreamIntrospectionComputation extends AbstractComputation {
         streams.clear();
         processors.clear();
         metrics.clear();
-        if (modelJson == null || modelJson.isBlank()) {
+        if (isBlank(modelJson)) {
             model = null;
             return;
         }
