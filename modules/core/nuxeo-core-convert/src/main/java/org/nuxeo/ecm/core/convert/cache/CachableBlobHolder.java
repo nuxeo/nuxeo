@@ -43,8 +43,6 @@ public interface CachableBlobHolder extends BlobHolder {
 
     /**
      * Reloads the {@link BlobHolder} from a file.
-     *
-     * @param path
      */
     void load(String path) throws IOException;
 

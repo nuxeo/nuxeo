@@ -36,7 +36,7 @@ import org.nuxeo.ecm.platform.pdf.PDFMerge;
 
 /**
  * The input document(s) always is(are) the first PDF(s), and each pdf is read in the <code>xpath</code> field. If
- * <code>xpath</xpath> is not set, it is set to the default value <code>file:content</code>.
+ * <code>xpath</code> is not set, it is set to the default value <code>file:content</code>.
  * <p>
  * The operation appends:
  * <ul>

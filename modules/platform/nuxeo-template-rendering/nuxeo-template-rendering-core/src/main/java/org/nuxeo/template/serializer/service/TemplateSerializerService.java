@@ -29,10 +29,11 @@ import org.nuxeo.template.serializer.executors.TemplateSerializer;
  * Service Exposing serializer and deserializer used to manipulate template rendering data to be injected in the
  * rendition context. Here are the current service usage :
  * <ul>
- * <li>API request => Inline context preparation : see in
+ * <li>API request =&gt; Inline context preparation : see in
  * {@link org.nuxeo.template.automation.RenderWithTemplateOperation}</li>
- * <li>Inline context preparation => store into the {@link org.nuxeo.template.api.adapters.TemplateBasedDocument}</li>
- * <li>Context defined on Template creation => store into the
+ * <li>Inline context preparation =&gt; store into the
+ * {@link org.nuxeo.template.api.adapters.TemplateBasedDocument}</li>
+ * <li>Context defined on Template creation =&gt; store into the
  * {@link org.nuxeo.template.api.adapters.TemplateSourceDocument}</li>
  * <li>And finally before rendition to collect data from TemplateSource and TemplateBased to generate the global
  * context</li>

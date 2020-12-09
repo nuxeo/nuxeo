@@ -39,10 +39,10 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  *
  * <pre>
  * <code>
- * &lt;blobprovider name="myfsblobprovider">
- *   &lt;class>org.nuxeo.ecm.core.blob.FilesystemBlobProvider&lt;/class>
- *   &lt;property name="root">/base/directory/for/files&lt;/property>
- * &lt;/blobprovider>
+ * &lt;blobprovider name="myfsblobprovider"&gt;
+ *   &lt;class&gt;org.nuxeo.ecm.core.blob.FilesystemBlobProvider&lt;/class&gt;
+ *   &lt;property name="root"&gt;/base/directory/for/files&lt;/property&gt;
+ * &lt;/blobprovider&gt;
  * </code>
  * </pre>
  * <p>

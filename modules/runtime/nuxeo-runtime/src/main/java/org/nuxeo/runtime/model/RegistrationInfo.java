@@ -194,7 +194,7 @@ public interface RegistrationInfo {
     boolean isActivated();
 
     /**
-     * Checks whether this component is resolved (i&dot;e&dot; all its dependencies are satisfied).
+     * Checks whether this component is resolved (i.e. all its dependencies are satisfied).
      *
      * @return true if the component is resolved, false otherwise
      */
@@ -265,7 +265,7 @@ public interface RegistrationInfo {
 
     /**
      * DON'T USE THIS METHOD - INTERNAL API.
-     * <p />
+     * <p>
      * This flag is used to introduce a new component lifecycle mechanism in order to introduce java pojo contribution.
      * This allow us to rework how component manager handles the component, without changing how it handles component
      * created by XML contributions (current behavior).

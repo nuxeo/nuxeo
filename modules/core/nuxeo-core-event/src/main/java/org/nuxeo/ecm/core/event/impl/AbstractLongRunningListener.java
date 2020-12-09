@@ -32,10 +32,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Abstract class that helps building an Asynchronous listeners that will handle a long running process.
- * <p/>
+ * <p>
  * By default, {@link org.nuxeo.ecm.core.event.PostCommitEventListener} are executed in a
  * {@link org.nuxeo.ecm.core.work.api.Work} that will take care of starting/comitting the transaction.
- * <p/>
+ * <p>
  * If the listener requires a long processing this will create long transactions that are not good. To avoid this
  * behavior, this base class split the processing in 3 steps :
  * <ul>
@@ -43,7 +43,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * <li>long running : long running processing that should not require transactional resources</li>
  * <li>post processing : transactional final step
  * </ul>
- * <p/>
+ * <p>
  * To manage sharing between the 3 steps, a simple Map is provided.
  *
  * @since 5.7.2
@@ -113,9 +113,9 @@ public abstract class AbstractLongRunningListener implements PostCommitFiltering
 
     /**
      * Will be executed in a non transactional context
-     * <p/>
-     * Any acess to a CoreSession will generate WARN in the the logs.
-     * <p/>
+     * <p>
+     * Any access to a CoreSession will generate WARN in the the logs.
+     * <p>
      * Documents passed with data should not be connected.
      *
      * @param eventNames list of event names

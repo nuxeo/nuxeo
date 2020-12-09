@@ -79,17 +79,13 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
 
     /**
      * Get current Directory Service
-     *
-     * @return
      */
     private DirectoryService getDS() {
         return Framework.getService(DirectoryService.class);
     }
 
     /**
-     * List all Shibbolet Group in a DocumentModelList
-     *
-     * @return
+     * List all Shibboleth Group in a DocumentModelList
      */
     private DocumentModelList getAllGroups() {
         try (Session shibGroupDirectory = getDS().open(getDirectoryName())) {

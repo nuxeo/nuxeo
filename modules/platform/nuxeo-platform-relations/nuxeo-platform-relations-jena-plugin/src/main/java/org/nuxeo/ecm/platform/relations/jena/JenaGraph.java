@@ -298,7 +298,6 @@ public class JenaGraph implements Graph {
     /**
      * Gets NXRelations node instance given Jena node.
      *
-     * @param jenaNodeInst
      * @return NXRelations node instance
      */
     private Node getNXRelationsNode(com.hp.hpl.jena.graph.Node jenaNodeInst) {

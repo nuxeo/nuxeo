@@ -79,7 +79,7 @@ import org.nuxeo.ecm.directory.ldap.filter.FilterExpressionCorrector.FilterJobs;
  * Some design considerations behind the implementation of such reference can be found at:
  * http://jira.nuxeo.org/browse/NXP-1506
  *
- * @author Olivier Grisel <ogrisel@nuxeo.com>
+ * @author Olivier Grisel
  */
 @XObject(value = "ldapReference")
 public class LDAPReference extends AbstractReference implements Cloneable {

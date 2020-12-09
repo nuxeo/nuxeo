@@ -221,8 +221,8 @@ public final class DocumentEventTypes {
     /**
      * Event triggered (some time) after the retention of a document has expired.
      * <p>
-     * The event's options map contains {@link CoreEventConstants#RETAIN_UNTIL} (a {@link Calendar} object), which
-     * was the previous retention date.
+     * The event's options map contains {@link CoreEventConstants#RETAIN_UNTIL} (a {@link java.util.Calendar} object),
+     * which was the previous retention date.
      *
      * @since 11.1
      */

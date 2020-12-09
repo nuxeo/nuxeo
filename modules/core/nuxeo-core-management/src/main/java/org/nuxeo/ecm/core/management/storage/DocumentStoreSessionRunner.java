@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Runner dedicated to mgmt doc operations
  *
- * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ * @author Stephane Lacoin [aka matic]
  */
 public abstract class DocumentStoreSessionRunner extends UnrestrictedSessionRunner {
 

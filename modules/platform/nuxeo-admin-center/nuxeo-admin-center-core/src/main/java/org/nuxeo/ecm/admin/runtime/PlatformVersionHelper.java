@@ -21,11 +21,11 @@ package org.nuxeo.ecm.admin.runtime;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.connector.fake.FakeDownloadablePackage;
 import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.connect.platform.PlatformId;
+import org.nuxeo.connect.update.Package;
 import org.nuxeo.runtime.api.Framework;
 
 public class PlatformVersionHelper {
@@ -64,7 +64,7 @@ public class PlatformVersionHelper {
     }
 
     /**
-     * @deprecated Since 6.0. Use {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(String[], String)}
+     * @deprecated Since 6.0. Use {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(Package, PlatformId)}
      * @see TargetPlatformFilterHelper
      */
     @Deprecated
@@ -77,7 +77,7 @@ public class PlatformVersionHelper {
     }
 
     /**
-     * @deprecated Since 6.0. Use {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(String[], String)}
+     * @deprecated Since 6.0. Use {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(Package, PlatformId)}
      * @see #getPlatformId()
      * @see TargetPlatformFilterHelper
      */

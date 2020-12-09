@@ -89,14 +89,13 @@ public class FileEventTracker extends DefaultComponent {
     /**
      * Registers a protected path under which files should not be deleted
      *
-     * @param path
      * @since 7.2
      */
     public static void registerProtectedPath(String path) {
         deleteStrategy.registerProtectedPath(path);
     }
 
-    protected class GCDelegate implements FileEventHandler {
+    protected static class GCDelegate implements FileEventHandler {
         protected FileCleaningTracker delegate = new FileCleaningTracker();
 
         @Override
@@ -153,13 +152,8 @@ public class FileEventTracker extends DefaultComponent {
 
     });
 
-    protected final FileEventListener filesListener = new FileEventListener(new FileEventHandler() {
-
-        @Override
-        public void onFile(File file, Object marker) {
-            onContext().onFile(file, marker);
-        }
-    });
+    protected final FileEventListener filesListener = new FileEventListener(
+            (file, marker) -> onContext().onFile(file, marker));
 
     @Override
     public void activate(ComponentContext context) {

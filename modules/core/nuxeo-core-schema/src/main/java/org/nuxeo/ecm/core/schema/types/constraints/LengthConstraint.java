@@ -31,7 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * This constraints checks whether an object's String representation size is in some interval.
  * <p>
- * This constraint's bounds are not strict (i.e. >= and <=).
+ * This constraint's bounds are not strict (i.e. &gt;= and &lt;=).
  * </p>
  *
  * @since 7.1
@@ -87,7 +87,6 @@ public class LengthConstraint extends AbstractConstraint {
      * <li>{@value #PNAME_MIN_LENGTH} : 5 // only is bounded</li>
      * <li>{@value #PNAME_MAX_LENGTH} : 10 // only if bounded</li>
      * </ul>
-     * </p>
      */
     @Override
     public Description getDescription() {

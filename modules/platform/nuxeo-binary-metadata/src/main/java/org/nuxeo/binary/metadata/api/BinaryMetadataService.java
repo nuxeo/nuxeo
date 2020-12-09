@@ -136,28 +136,30 @@ public interface BinaryMetadataService {
     void writeMetadata(DocumentModel doc, String mappingDescriptorId);
 
     /**
-     * Handle document and blob updates according to following rules in an event context:<br/>
-     * - Define if rule should be executed in async or sync mode.<br/>
-     * - If Blob dirty and document metadata dirty, write metadata from doc to Blob.<br/>
-     * - If Blob dirty and document metadata not dirty, write metadata from Blob to doc.<br/>
-     * - If Blob not dirty and document metadata dirty, write metadata from doc to Blob.
-     * <p>
+     * Handle document and blob updates according to following rules in an event context:
+     * <ul>
+     * <li>Define if rule should be executed in async or sync mode.</li>
+     * <li>If Blob dirty and document metadata dirty, write metadata from doc to Blob.</li>
+     * <li>If Blob dirty and document metadata not dirty, write metadata from Blob to doc.</li>
+     * <li>If Blob not dirty and document metadata dirty, write metadata from doc to Blob.</li>
+     * </ul>
      * In all cases, the metadata is never written from doc to Blob if
-     * {@code MetadataMappingDescriptor#isReadOnly()} returns true
+     * {@code MetadataMappingDescriptor#isReadOnly()} returns true.
      * <p>
      * The document is not saved in the session, it's up to the caller to deal with this.
      */
     void handleUpdate(List<MetadataMappingDescriptor> syncMappingDescriptors, DocumentModel doc);
 
     /**
-     * Handle document and blob updates according to following rules in an event context:<br/>
-     * - Define if rule should be executed in async or sync mode.<br/>
-     * - If Blob dirty and document metadata dirty, write metadata from doc to Blob.<br/>
-     * - If Blob dirty and document metadata not dirty, write metadata from Blob to doc.<br/>
-     * - If Blob not dirty and document metadata dirty, write metadata from doc to Blob.
-     * <p>
+     * Handle document and blob updates according to following rules in an event context:
+     * <ul>
+     * <li>Define if rule should be executed in async or sync mode.</li>
+     * <li>If Blob dirty and document metadata dirty, write metadata from doc to Blob.</li>
+     * <li>If Blob dirty and document metadata not dirty, write metadata from Blob to doc.</li>
+     * <li>If Blob not dirty and document metadata dirty, write metadata from doc to Blob.</li>
+     * </ul>
      * In all cases, the metadata is never written from doc to Blob if
-     * {@code MetadataMappingDescriptor#isReadOnly()} returns true
+     * {@code MetadataMappingDescriptor#isReadOnly()} returns true.
      * <p>
      * The document is not saved in the session, it's up to the caller to deal with this.
      */

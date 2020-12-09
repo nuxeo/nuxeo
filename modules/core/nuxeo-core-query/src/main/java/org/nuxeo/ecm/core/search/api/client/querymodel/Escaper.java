@@ -35,7 +35,6 @@ public interface Escaper {
     /**
      * Escapes the provided string
      *
-     * @param s
      * @return the escaped string
      */
     String escape(String s);

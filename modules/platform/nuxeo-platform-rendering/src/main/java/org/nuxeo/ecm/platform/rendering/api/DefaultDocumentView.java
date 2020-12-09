@@ -40,7 +40,7 @@ import org.nuxeo.ecm.platform.rendering.fm.adapters.SchemaTemplate;
 /**
  * Base class to build views for Document oriented contexts (contexts that are bound to a document).
  * <p>
- * Note that this class cannot be used with contexts for which the {@link RenderingContext#getDocument()} method is
+ * Note that this class cannot be used with contexts for which the {@code RenderingContext#getDocument()} method is
  * returning null.
  * <p>
  * This implementation ensure that the context argument is never used so it can be used outside the scope of a rendering

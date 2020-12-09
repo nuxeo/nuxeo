@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
  * queue by the {@link ThreadPoolExecutor} and not yet executed (not yet running).</li>
  * <li>the set of running work,</li>
  * <li>the set of completed work.</li>
+ * </ul>
  *
  * @since 5.8
  */

@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 
 /**
  * Base class for CSV {@link Writer}.
- * </p>
+ * <p>
  * It provides you a {@link CSVPrinter} to manage the marshalling.
  *
  * @param <T> The Java type to marshall as CSV.

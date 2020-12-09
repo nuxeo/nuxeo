@@ -171,8 +171,6 @@ public abstract class AbstractTask implements Task {
 
     /**
      * Get a file given its key in the environment map. If no key exists then null is returned.
-     *
-     * @param key
      */
     public File getFile(String key) {
         String val = env.get(key);

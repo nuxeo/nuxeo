@@ -117,7 +117,7 @@ public class NxQueryBuilder {
      * No more than that many documents will be returned. Default to {DEFAULT_LIMIT}. Since Nuxeo 8.4 and ES 2.x, we can
      * not give -1 to this method as the default configuration on ES allows to have a search window of 10000 documents
      * at maximum. This settings could be changed on ES by changing {index.max_result_window}, but it is preferable to
-     * use the scan & scroll API.
+     * use the scan &amp; scroll API.
      */
     public NxQueryBuilder limit(int limit) {
         // For compatibility only, deprecated since 8.4
@@ -273,7 +273,7 @@ public class NxQueryBuilder {
                 if (nxqlHasSelectClause(nxql)) {
                     selectFieldsAndTypes = NxqlQueryConverter.getSelectClauseFields(nxql);
                     Set<String> keySet = selectFieldsAndTypes.keySet();
-                    selectFields = keySet.toArray(new String[keySet.size()]);
+                    selectFields = keySet.toArray(new String[0]);
                     returnsDocuments = false;
                 }
                 esQueryBuilder = addSecurityFilter(esQueryBuilder);
@@ -448,7 +448,7 @@ public class NxQueryBuilder {
      */
     public List<String> getSearchRepositories() {
         if (searchOnAllRepo) {
-            return Collections.<String> emptyList();
+            return Collections.emptyList();
         }
         return repositories;
     }

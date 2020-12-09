@@ -52,7 +52,6 @@ public class HeapDumper {
      * Dumps heap in a temporary file and returns the file
      *
      * @since 5.5
-     * @throws IOException
      */
     public File dumpHeap() throws IOException {
         File file = Framework.createTempFile("heapdump", ".hprof");

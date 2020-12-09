@@ -57,7 +57,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 /**
  * Class that holds info about an OpenID provider, this includes an OAuth Provider as well as urls and icons
  *
- * @author Nelson Silva <nelson.silva@inevo.pt>
+ * @author Nelson Silva
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class OpenIDConnectProvider implements LoginProviderLinkComputer {

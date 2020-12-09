@@ -61,8 +61,6 @@ public abstract class ObjectCodec<T> {
 
     /**
      * Get this codec type. Implementors can override to return a short name. The default name is the object type name.
-     *
-     * @return
      */
     public String getType() {
         return type.getName();
@@ -70,8 +68,6 @@ public abstract class ObjectCodec<T> {
 
     /**
      * Whether this codec is a builtin codec
-     *
-     * @return
      */
     public boolean isBuiltin() {
         return false;
@@ -92,10 +88,6 @@ public abstract class ObjectCodec<T> {
      * When the object codec is called the stream is positioned on the first value. For inlined objects this is the
      * first value after the "entity-type" property. For non inlined objects this will be the object itself (i.e. '{' or
      * '[')
-     *
-     * @param jp
-     * @return
-     * @throws IOException
      */
     public T read(JsonParser jp, CoreSession session) throws IOException {
         if (jp.getCodec() == null) {

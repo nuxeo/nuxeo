@@ -51,11 +51,6 @@ public class MultiTenantRepositoryInit implements RepositoryInit {
 
     }
 
-    /**
-     * @param session
-     * @param string
-     * @param name
-     */
     protected NuxeoPrincipal createUser(String username, String tenant, CoreSession session) {
         UserManager userManager = Framework.getService(UserManager.class);
         DocumentModel user = userManager.getBareUserModel();

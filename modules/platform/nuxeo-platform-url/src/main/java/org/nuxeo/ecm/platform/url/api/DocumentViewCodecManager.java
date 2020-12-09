@@ -86,7 +86,7 @@ public interface DocumentViewCodecManager extends Serializable {
     String getUrlFromDocumentView(DocumentView docView, boolean needBaseUrl, String baseUrl);
 
     /**
-     * Returns an URL calling {@link DocumentViewCodec#getUrlFromDocumentView(DocumentView) on codec with given name.
+     * Returns an URL calling {@link DocumentViewCodec#getUrlFromDocumentView(DocumentView)} on codec with given name.
      *
      * @param codecName the codec name to use
      * @param docView the original document view from request

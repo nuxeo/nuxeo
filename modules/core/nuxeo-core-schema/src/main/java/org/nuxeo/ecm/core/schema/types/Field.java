@@ -91,15 +91,11 @@ public interface Field extends Serializable {
 
     /**
      * Sets the nillable flag.
-     *
-     * @param isNillable
      */
     void setNillable(boolean isNillable);
 
     /**
      * Sets the constant flag.
-     *
-     * @param isConstant
      */
     void setConstant(boolean isConstant);
 

@@ -57,7 +57,6 @@ public class Entry implements Iterable<Version> {
     }
 
     /**
-     * @param includeUpgradeOnly
      * @return Last version not deployed in upgradeOnly mode
      * @since 5.7
      */
@@ -67,7 +66,7 @@ public class Entry implements Iterable<Version> {
         }
         for (int i = versions.size() - 1; i >= 0; i--) {
             for (UpdateOptions opt : versions.get(i).packages.values()) {
-                if (opt.upgradeOnly == false) {
+                if (!opt.upgradeOnly) {
                     return versions.get(i);
                 }
             }
@@ -135,9 +134,6 @@ public class Entry implements Iterable<Version> {
         return result;
     }
 
-    /**
-     * @param version
-     */
     public Version getOrCreateVersion(String version) {
         Version v = getVersion(version);
         if (v == null) {

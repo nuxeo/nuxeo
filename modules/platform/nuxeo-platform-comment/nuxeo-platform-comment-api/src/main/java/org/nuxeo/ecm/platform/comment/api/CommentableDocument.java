@@ -48,15 +48,11 @@ public interface CommentableDocument extends Serializable {
 
     /**
      * Removes a comment from the document comment list.
-     *
-     * @param comment
      */
     void removeComment(DocumentModel comment);
 
     /**
      * Creates a new comment.
-     *
-     * @param comment
      */
     DocumentModel addComment(DocumentModel comment);
 

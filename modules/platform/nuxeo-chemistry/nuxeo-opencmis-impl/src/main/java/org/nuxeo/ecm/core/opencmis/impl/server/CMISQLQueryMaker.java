@@ -169,7 +169,7 @@ public class CMISQLQueryMaker implements QueryMaker {
     /** Qualifier to canonical qualifier (correlation name). */
     protected Map<String, String> canonicalQualifier = new HashMap<>();
 
-    /** Map of qualifier -> fragment -> table */
+    /** Map of qualifier -&gt; fragment -&gt; table */
     protected Map<String, Map<String, Table>> allTables = new HashMap<>();
 
     /** All qualifiers used (includes virtual columns) */

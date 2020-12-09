@@ -99,7 +99,6 @@ public class Binary implements Serializable {
      * Gets an input stream for the binary.
      *
      * @return the input stream
-     * @throws IOException
      */
     public InputStream getStream() throws IOException {
         return new FileInputStream(file);

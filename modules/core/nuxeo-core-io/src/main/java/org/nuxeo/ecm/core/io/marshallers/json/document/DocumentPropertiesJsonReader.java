@@ -62,13 +62,13 @@ import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * Convert Json as {@link List<Property>}.
+ * Convert Json as {@link List}&lt;{@link Property}&gt;.
  * <p>
  * Format is:
  *
  * <pre>
  * {
- *   "schema1Prefix:stringProperty": "stringPropertyValue", <-- each property may be marshall as object if a resolver is associated with that property and if a marshaller exists for the object, in this case, the resulting property will have the corresponding reference value.
+ *   "schema1Prefix:stringProperty": "stringPropertyValue", &lt;-- each property may be marshall as object if a resolver is associated with that property and if a marshaller exists for the object, in this case, the resulting property will have the corresponding reference value.
  *   "schema1Prefix:booleanProperty": true|false,
  *   "schema2Prefix:integerProperty": 123,
  *   ...
@@ -81,7 +81,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  *   ]
  * }
  * </pre>
- * </p>
  *
  * @since 7.2
  */

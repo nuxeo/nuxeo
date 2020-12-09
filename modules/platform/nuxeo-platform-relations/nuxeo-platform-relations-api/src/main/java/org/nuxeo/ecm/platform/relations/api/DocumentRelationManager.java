@@ -36,7 +36,7 @@ public interface DocumentRelationManager {
      * @param to the document to link to
      * @param predicate is the type of link
      * @param inverse if to is related to from ( the event will still be generated with from document )
-     * @throws RelationAlreadyExistsException
+     * @throws RelationAlreadyExistsException if given relation already exists
      */
     void addRelation(CoreSession session, DocumentModel from, DocumentModel to, String predicate, boolean inverse);
 
@@ -47,7 +47,7 @@ public interface DocumentRelationManager {
      * @param to the node to link to
      * @param predicate is the type of link
      * @param inverse if to is related to from ( the event will still be generated with from document )
-     * @throws RelationAlreadyExistsException
+     * @throws RelationAlreadyExistsException if given relation already exists
      */
     void addRelation(CoreSession session, DocumentModel from, Node to, String predicate, boolean inverse);
 
@@ -57,7 +57,7 @@ public interface DocumentRelationManager {
      * @param from the document to link from
      * @param to the node to link to
      * @param predicate is the type of link
-     * @throws RelationAlreadyExistsException
+     * @throws RelationAlreadyExistsException if given relation already exists
      */
     void addRelation(CoreSession session, DocumentModel from, Node to, String predicate);
 
@@ -70,7 +70,7 @@ public interface DocumentRelationManager {
      * @param inverse if to is related to from ( the event will still be generated with from document )
      * @param includeStatementsInEvents will add the statement to the events RelationEvents.BEFORE_RELATION_CREATION and
      *            RelationEvents.AFTER_RELATION_CREATION
-     * @throws RelationAlreadyExistsException
+     * @throws RelationAlreadyExistsException if given relation already exists
      */
     void addRelation(CoreSession session, DocumentModel from, Node to, String predicate, boolean inverse,
             boolean includeStatementsInEvents);
@@ -85,7 +85,7 @@ public interface DocumentRelationManager {
      * @param includeStatementsInEvents will add the statement to the events RelationEvents.BEFORE_RELATION_CREATION and
      *            RelationEvents.AFTER_RELATION_CREATION
      * @param comment of the relation
-     * @throws RelationAlreadyExistsException
+     * @throws RelationAlreadyExistsException if given relation already exists
      */
     void addRelation(CoreSession session, DocumentModel from, Node to, String predicate, boolean inverse,
             boolean includeStatementsInEvents, String comment);

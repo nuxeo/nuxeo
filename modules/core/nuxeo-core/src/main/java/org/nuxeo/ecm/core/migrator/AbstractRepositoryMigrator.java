@@ -44,6 +44,7 @@ public abstract class AbstractRepositoryMigrator implements Migrator {
      *             <li>{@link #migrateSession(String, MigrationContext, CoreSession)}</li>
      *             <li>{@link #checkShutdownRequested(MigrationContext)}
      *             <li>{@link #processBatched(MigrationContext, int, Collection, Consumer, String)}
+     *             </ul>
      */
     @Deprecated(since = "11.1", forRemoval = true)
     protected MigrationContext migrationContext;

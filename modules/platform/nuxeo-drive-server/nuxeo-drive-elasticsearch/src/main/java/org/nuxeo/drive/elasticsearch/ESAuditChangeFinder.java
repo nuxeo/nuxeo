@@ -60,6 +60,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * The structure of the query executed by the {@link AuditChangeFinder} is:
  *
  * <pre>
+ * {@code
  * from LogEntry log where log.repositoryId = :repositoryId
  *
  * + AND if ActiveRoots (activeRoots) NOT empty
@@ -76,6 +77,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * + AND (log.id > :lowerBound and log.id <= :upperBound) + order by
  * log.repositoryId asc, log.eventDate desc
+ * }
  * </pre>
  *
  * @since 7.3

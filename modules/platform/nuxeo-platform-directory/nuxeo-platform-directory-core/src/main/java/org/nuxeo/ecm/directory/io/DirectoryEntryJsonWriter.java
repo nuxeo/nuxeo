@@ -64,12 +64,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link DirectoryEntryJsonWriter#extend(Object, JsonGenerator)}.
+ * {@link ExtensibleEntityJsonWriter#extend(Object, JsonGenerator)}.
  * </p>
  * <p>
  * Format is:
  *
  * <pre>
+ * {@code
  * {
  *   "entity-type": "directoryEntry",
  *   "directoryName": "DIRECTORY_NAME", <- use it to update an existing document
@@ -80,8 +81,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *             <-- contextParameters if there are enrichers activated
  *             <-- additional property provided by extend() method
  * }
+ * }
  * </pre>
- * </p>
  *
  * @since 7.2
  */

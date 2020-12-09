@@ -49,8 +49,6 @@ public interface HtmlPreviewAdapter {
     /**
      * Check if the document holds some blobs that are suitable for preview
      *
-     * @return
-     * @throws PreviewException
      * @since 5.7.3
      */
     boolean hasBlobToPreview() throws PreviewException;

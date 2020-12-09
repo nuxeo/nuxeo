@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Interface to make Session behave as a source for a DirectoryCache instance
  *
- * @author Olivier Grisel <ogrisel@nuxeo.com>
+ * @author Olivier Grisel
  */
 public interface EntrySource {
 

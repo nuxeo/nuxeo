@@ -21,16 +21,15 @@
 package org.nuxeo.ecm.core.model;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -232,8 +231,8 @@ public interface Document {
      * Sets a retention date for the document (a record).
      * <p>
      * If no previous retention date was set, or if the previous retention date was
-     * {@linkplain #RETAIN_UNTIL_INDETERMINATE indeterminate}, or if the previous retention date was <em>before</em>
-     * the given value, then the retention date is set to the given value.
+     * {@linkplain CoreSession#RETAIN_UNTIL_INDETERMINATE indeterminate}, or if the previous retention date was
+     * <em>before</em> the given value, then the retention date is set to the given value.
      * <p>
      * If the previous retention date was <em>after</em> the given value (that is, if trying to reduce the retention
      * time), an exception is thrown.
@@ -246,7 +245,7 @@ public interface Document {
      * @param retainUntil the new retention date
      * @throws PropertyException if trying to reduce the retention time, or if the document is not a record
      * @see #getRetainUntil
-     * @see #RETAIN_UNTIL_INDETERMINATE
+     * @see CoreSession#RETAIN_UNTIL_INDETERMINATE
      * @since 11.1
      */
     void setRetainUntil(Calendar retainUntil) throws PropertyException;
@@ -257,7 +256,7 @@ public interface Document {
      * @return the retention date, or {@value org.nuxeo.ecm.core.api.security.SecurityConstants#SET_RETENTION} for a
      *         retention in the indeterminate future, or {@code null} if there is no retention date
      * @see #setRetainUntil
-     * @see #RETAIN_UNTIL_INDETERMINATE
+     * @see CoreSession#RETAIN_UNTIL_INDETERMINATE
      * @since 11.1
      */
     Calendar getRetainUntil();

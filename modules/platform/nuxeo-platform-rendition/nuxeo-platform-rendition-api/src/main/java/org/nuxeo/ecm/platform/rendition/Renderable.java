@@ -31,24 +31,16 @@ public interface Renderable {
 
     /**
      * Returns {@link RenditionDefinition} that are available on the underlying object
-     *
-     * @return
      */
     List<RenditionDefinition> getAvailableRenditionDefinitions();
 
     /**
      * Retrieve the {@link Rendition} by it's name
-     *
-     * @param name
-     * @return
      */
     Rendition getRenditionByName(String name);
 
     /**
      * Retrieve the {@link Rendition} by it's king (first match rendition is returned)
-     *
-     * @param name
-     * @return
      */
     Rendition getRenditionByKind(String name);
 

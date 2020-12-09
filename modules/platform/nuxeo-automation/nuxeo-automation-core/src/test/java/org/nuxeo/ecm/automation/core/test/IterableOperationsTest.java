@@ -99,7 +99,7 @@ public class IterableOperationsTest {
         ctx.close();
     }
 
-    protected DocumentModel createFolder(String name, String title) throws Exception {
+    protected DocumentModel createFolder(String name, String title) {
         DocumentModel doc = session.createDocumentModel("/src", name, "Folder");
         doc.setPropertyValue("dc:title", title);
         doc = session.createDocument(doc);
@@ -107,7 +107,7 @@ public class IterableOperationsTest {
         return session.getDocument(doc.getRef());
     }
 
-    protected DocumentModel createFile(DocumentModel parent, String name, String title) throws Exception {
+    protected DocumentModel createFile(DocumentModel parent, String name, String title) {
         DocumentModel doc = session.createDocumentModel(parent.getPathAsString(), name, "File");
         doc.setPropertyValue("dc:title", title);
         doc = session.createDocument(doc);
@@ -138,8 +138,6 @@ public class IterableOperationsTest {
 
     /**
      * The same as before but use doc ref as input
-     *
-     * @throws Exception
      */
     @Test
     public void testChain2() throws Exception {
@@ -159,8 +157,6 @@ public class IterableOperationsTest {
 
     /**
      * lock documents passed as a list of docrefs
-     *
-     * @throws Exception
      */
     @Test
     public void testChain3() throws Exception {
@@ -186,8 +182,6 @@ public class IterableOperationsTest {
 
     /**
      * test that input context variable is pointing to the current iterated object and not to the list object.
-     *
-     * @throws Exception
      */
     @Test
     public void testChain4() throws Exception {

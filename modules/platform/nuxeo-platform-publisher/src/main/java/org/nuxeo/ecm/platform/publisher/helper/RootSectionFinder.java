@@ -32,7 +32,6 @@ public interface RootSectionFinder {
      *
      * @param currentDoc the target Workspace
      * @param addDefaultSectionRoots flag to indicate is default roots should be added
-     * @return
      */
     DocumentModelList getSectionRootsForWorkspace(DocumentModel currentDoc, boolean addDefaultSectionRoots);
 
@@ -42,7 +41,6 @@ public interface RootSectionFinder {
      * If no specific binding is defined at the workspace level, an empty list is returned.
      *
      * @param currentDoc the target Workspace
-     * @return
      */
     DocumentModelList getSectionRootsForWorkspace(DocumentModel currentDoc);
 

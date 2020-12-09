@@ -663,8 +663,8 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
      *             { "ecm:mixinTypes" : { "$in" : [ "Foo" , "Bar]}}]}
      * </pre>
      *
-     * ecm:mixinTypes NOT IN ('Foo', 'Bar')
      * <p>
+     * ecm:mixinTypes NOT IN ('Foo', 'Bar')
      *
      * <pre>
      * { "$and" : [ { "ecm:primaryType" : { "$in" : [ ... types without Foo nor Bar ...]}} ,

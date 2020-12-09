@@ -1061,7 +1061,6 @@ public class NuxeoAuthenticationFilter implements Filter {
      *
      * @param username the user name
      * @return the login context, which MUST be used for logout in a {@code finally} block
-     * @throws LoginException
      */
     public static NuxeoLoginContext loginAs(String username) throws LoginException {
         NuxeoPrincipal principal = createPrincipal(username);

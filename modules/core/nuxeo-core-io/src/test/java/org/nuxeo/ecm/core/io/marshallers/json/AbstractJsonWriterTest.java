@@ -40,7 +40,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * Base class to test Java to Json marshallers.
  * <p>
  * see {@link JsonAssert} to see use simple json assertion.
- * </p>
  * <p>
  * To use it, write a default constructor and call the parent with the needed classes.
  *
@@ -55,7 +54,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  *     ...
  * }
  * </pre>
- * </p>
  *
  * @param <WriterClass> The marshaller type to test.
  * @param <MarshalledType> The marshalled type to test.

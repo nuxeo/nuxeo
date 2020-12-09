@@ -69,14 +69,13 @@ public class BinaryManagerRootDescriptor {
      * Writes the descriptor to an XML file.
      *
      * @param out the output file to use
-     * @throws IOException
      */
     public void write(File out) throws IOException {
         DocumentBuilder parser;
         try {
             parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            throw (IOException) new IOException().initCause(e);
+            throw new IOException(e);
         }
         Document doc = parser.newDocument();
 
@@ -97,7 +96,7 @@ public class BinaryManagerRootDescriptor {
                 trans.transform(new DOMSource(doc), outputTarget);
             }
         } catch (TransformerException e) {
-            throw (IOException) new IOException().initCause(e);
+            throw new IOException(e);
         }
     }
 

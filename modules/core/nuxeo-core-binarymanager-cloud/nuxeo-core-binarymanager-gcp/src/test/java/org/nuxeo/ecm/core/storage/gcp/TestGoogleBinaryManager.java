@@ -53,7 +53,7 @@ import com.google.cloud.storage.StorageException;
 
 /**
  * WARNING: You must pass those variables to your test configuration:
- * <p/>
+ * <p>
  *
  * <pre>
  *   -Dnuxeo.gcp.project: GCP Project ID
@@ -65,7 +65,7 @@ import com.google.cloud.storage.StorageException;
  * <li>nuxeo.gcp.credentials=file.json (located in nxserver/config)</li>
  * <li>If nothing is set, Nuxeo will look into 'gcp-credentials.json' file by default (located in nxserver/config)</li>
  * </ul>
- * <p/>
+ * <p>
  * Don't set any bucket prefix (nuxeo.gcp.storage.bucket_prefix) as the unit tests don't check it.
  */
 @RunWith(FeaturesRunner.class)

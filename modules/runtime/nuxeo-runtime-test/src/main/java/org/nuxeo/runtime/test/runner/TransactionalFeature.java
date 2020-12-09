@@ -34,7 +34,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * The transactional feature is responsible of transaction management.
- * <p/>
+ * <p>
  * It brings some API to wait for transaction
  *
  * @since 10.2

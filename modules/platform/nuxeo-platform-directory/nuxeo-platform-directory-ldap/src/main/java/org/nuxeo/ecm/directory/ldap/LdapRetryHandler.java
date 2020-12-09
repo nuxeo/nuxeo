@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  * Wrapper to encapsulate the calls to LDAP and retry the requests in case of ServiceUnavailableException errors
  *
  * @since 5.7
- * @author Thierry Martins <tm@nuxeo.com>
+ * @author Thierry Martins
  */
 public class LdapRetryHandler implements InvocationHandler {
 

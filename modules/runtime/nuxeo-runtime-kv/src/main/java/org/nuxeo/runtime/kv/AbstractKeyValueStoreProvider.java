@@ -53,8 +53,6 @@ public abstract class AbstractKeyValueStoreProvider implements KeyValueStoreProv
 
     /**
      * Converts UTF-8 bytes to a String, or throws if malformed.
-     *
-     * @throws CharacterCodingException
      */
     protected static String bytesToString(byte[] bytes) throws CharacterCodingException {
         return bytes == null ? null : UTF_8_DECODERS.get().decode(ByteBuffer.wrap(bytes)).toString();
@@ -69,8 +67,6 @@ public abstract class AbstractKeyValueStoreProvider implements KeyValueStoreProv
 
     /**
      * Converts UTF-8 bytes to a Long, or throws if malformed.
-     *
-     * @throws NumberFormatException
      */
     protected static Long bytesToLong(byte[] bytes) throws NumberFormatException { // NOSONAR
         if (bytes == null) {

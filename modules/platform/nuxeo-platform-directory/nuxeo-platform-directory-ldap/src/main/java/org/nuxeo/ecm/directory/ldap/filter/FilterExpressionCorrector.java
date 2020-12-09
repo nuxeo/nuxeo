@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  * Example: <code>FilterExpressionCorrector.correctFilter(filterValue,
                             FilterJobs.JOB1, FilterJobs.JOB2);</code>
  *
- * @author Nicolas Ulrich <nulrich@nuxeo.com>
+ * @author Nicolas Ulrich
  */
 public class FilterExpressionCorrector {
 

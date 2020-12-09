@@ -83,7 +83,7 @@ public interface RuntimeMessageHandler {
 
     /**
      * Add new error.
-     * <p />
+     * <p>
      * Error messages block server startup in strict mode.
      *
      * @deprecated since 11.3, use {@link #addMessage(RuntimeMessage)} instead.

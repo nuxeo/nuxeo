@@ -26,9 +26,8 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Helper to handle the UNDEFINED Exif data type.
- * <p>
  *
- * @link https://www.leadtools.com/help/leadtools/v15/main/api/dllaux/exifcomments.htm
+ * @see <a href="https://www.leadtools.com/help/leadtools/v15/main/api/dllaux/exifcomments.htm">Exif Comments</a>
  * @author btatar
  */
 public class ExifHelper {

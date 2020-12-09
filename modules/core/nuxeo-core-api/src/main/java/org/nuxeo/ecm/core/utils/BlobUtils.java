@@ -68,7 +68,6 @@ public class BlobUtils {
      * @param blob the blob
      * @param filename if no filename is given, the blob's filename will be used
      * @return a zip containing the blob
-     * @throws IOException
      */
     public static Blob zip(Blob blob, String filename) throws IOException {
         if (filename == null || (filename = filename.trim()).length() == 0) {
@@ -88,11 +87,8 @@ public class BlobUtils {
 
     protected static void zip(Blob blob, ZipOutputStream out) throws IOException {
         String entry = getFileName(blob);
-        InputStream in = blob.getStream();
-        try {
+        try (InputStream in = blob.getStream()) {
             ZipUtils._zip(entry, in, out);
-        } finally {
-            in.close();
         }
     }
 
@@ -102,7 +98,6 @@ public class BlobUtils {
      * @param blobs the blob list
      * @param fileName if no filename is given, the first blob's filename will be used
      * @return a zip containing the list of blob
-     * @throws IOException
      */
     public static Blob zip(List<Blob> blobs, String fileName) throws IOException {
         if (fileName == null || (fileName = fileName.trim()).length() == 0) {
@@ -129,11 +124,8 @@ public class BlobUtils {
             if (!names.add(entry)) {
                 entry = "renamed_" + (cnt++) + "_" + entry;
             }
-            InputStream in = blob.getStream();
-            try {
+            try (InputStream in = blob.getStream()) {
                 ZipUtils._zip(entry, in, out);
-            } finally {
-                in.close();
             }
         }
     }

@@ -114,8 +114,6 @@ public class PDFMerge {
      *
      * @param inFileName Name of the merged result.
      * @return The Blob embedding the PDF resulting form the merge.
-     * @throws COSVisitorException
-     * @throws IOException
      */
     public Blob merge(String inFileName) throws IOException {
         return merge(inFileName, null, null, null);
@@ -131,8 +129,6 @@ public class PDFMerge {
      * @param inSubject Subject of the resulting PDF.
      * @param inAuthor Author of the resulting PDF.
      * @return The Blob embedding the PDF resulting from the merge.
-     * @throws IOException
-     * @throws COSVisitorException
      */
     public Blob merge(String inFileName, String inTitle, String inSubject, String inAuthor) throws IOException {
         Blob finalBlob;

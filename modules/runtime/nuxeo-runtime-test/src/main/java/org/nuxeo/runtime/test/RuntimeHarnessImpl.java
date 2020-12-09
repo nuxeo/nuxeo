@@ -486,7 +486,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
     /**
      * Removes Nuxeo test system properties that are empty.
      * <p>
-     * This is needed when using maven surefire > 2.17 because since SUREFIRE-649 surefire propagates empty system
+     * This is needed when using maven surefire &gt; 2.17 because since SUREFIRE-649 surefire propagates empty system
      * properties.
      */
     protected void wipeEmptyTestSystemProperties() {

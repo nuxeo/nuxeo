@@ -434,7 +434,7 @@ public class BaseDirectoryDescriptor implements Cloneable {
     }
 
     /**
-     * Creates a new {@link Directory} instance from this {@link BaseDirectoryDescriptor).
+     * Creates a new {@link Directory} instance from this {@link BaseDirectoryDescriptor}.
      */
     public Directory newDirectory() {
         throw new UnsupportedOperationException("Cannot be instantiated as Directory: " + getClass().getName());

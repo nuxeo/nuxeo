@@ -75,7 +75,7 @@ public interface ObjectResolver extends Serializable {
     /**
      * Provides this resolver parameters.
      *
-     * @return A map containing <parameter name , parameter value>
+     * @return A map containing associating parameter name to its value
      * @since 7.1
      */
     Map<String, Serializable> getParameters();

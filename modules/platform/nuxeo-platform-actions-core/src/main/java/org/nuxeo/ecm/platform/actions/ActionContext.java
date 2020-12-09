@@ -94,8 +94,6 @@ public interface ActionContext extends Serializable {
      * Returns true if given expression resolves to true in this context.
      * <p>
      * Returns false if expression is blank (null or empty).
-     *
-     * @throws ELException
      */
     boolean checkCondition(String expression) throws ELException;
 

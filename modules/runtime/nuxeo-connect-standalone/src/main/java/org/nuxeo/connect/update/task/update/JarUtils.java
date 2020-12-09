@@ -37,8 +37,6 @@ public class JarUtils {
     /**
      * Try to find the version part in the given JAR name. Return null if name is not containing a version, otherwise
      * return a match object with the name without the version part and the extension in the 'Match.object' field.
-     *
-     * @param name
      */
     public static Match<String> findJarVersion(String name) {
         Matcher m = JAR_NAME.matcher(name);

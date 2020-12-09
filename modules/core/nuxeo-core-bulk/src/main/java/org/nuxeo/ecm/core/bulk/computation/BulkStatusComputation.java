@@ -22,8 +22,6 @@ import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.UNKNOWN;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.BulkServiceImpl;
@@ -45,13 +43,10 @@ import org.nuxeo.runtime.api.Framework;
  * <ul>
  * <li>o1: Write {@link BulkStatus} full into the done stream.</li>
  * </ul>
- * </p>
  *
  * @since 10.2
  */
 public class BulkStatusComputation extends AbstractComputation {
-
-    private static final Logger log = LogManager.getLogger(BulkStatusComputation.class);
 
     public BulkStatusComputation(String name) {
         super(name, 1, 1);

@@ -77,7 +77,7 @@ import com.microsoft.azure.storage.core.Utility;
 
 /**
  * WARNING: You must pass those variables to your test configuration:
- * <p/>
+ * <p>
  *
  * <pre>
  *   -Dnuxeo.storage.azure.account.name: Azure account name

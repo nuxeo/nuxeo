@@ -34,7 +34,6 @@ public interface RenderingService {
      *
      * @param ctx the context
      * @return the result
-     * @throws RenderingException
      */
     Collection<RenderingResult> process(RenderingContext ctx) throws RenderingException;
 

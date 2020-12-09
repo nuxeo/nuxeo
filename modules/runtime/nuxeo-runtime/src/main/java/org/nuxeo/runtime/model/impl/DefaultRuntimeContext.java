@@ -47,25 +47,25 @@ import org.osgi.framework.Bundle;
 
 /**
  * New behavior @since 9.2 As the runtime lifecycle changed there make no sense to unregister components by their own.
- * <p />
+ * <p>
  * The component registry is either reset to a clean state or shutdown.
- * <p />
+ * <p>
  * So methods like unregister by location used in tests make no sense. These methods are preserved yet for compatibility
  * with some tests but may be removed in future.
- * <p />
+ * <p>
  * Also when a context is destroyed we unregister all the components the context deployed.
- * <p />
+ * <p>
  * This is also deprecated since the unregister component is deprecated too.
- * <p />
+ * <p>
  * The code inside destroy method was removed too since the deployedFiles map was removed.
- * <p />
+ * <p>
  * This map posed problems with the registry snapshot approaches since it was not kept in sync with the registry.
- * <p />
- * <p />
+ * <p>
+ * <p>
  * If unregistering components will be removed completely don't forget to remove
  * {@link ComponentManager#unregisterByLocation(String)} and the {@link ComponentRegistry#deployedFiles}.
- * <p />
- * <p />
+ * <p>
+ * <p>
  * Features like studio or IDE which needs unregistering components must use their own mechanism.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

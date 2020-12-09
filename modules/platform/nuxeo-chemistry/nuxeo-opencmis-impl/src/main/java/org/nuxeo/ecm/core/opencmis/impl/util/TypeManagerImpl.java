@@ -196,7 +196,6 @@ public class TypeManagerImpl implements TypeManager {
      * inherited types.,
      *
      * @param type new type to add
-     * @param addInheritedProperties
      */
     @Override
     public void addTypeDefinition(TypeDefinition type, boolean addInheritedProperties) {

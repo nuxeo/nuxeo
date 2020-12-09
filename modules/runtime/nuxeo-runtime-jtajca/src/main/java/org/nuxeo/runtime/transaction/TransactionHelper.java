@@ -21,7 +21,6 @@ package org.nuxeo.runtime.transaction;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -146,7 +145,7 @@ public class TransactionHelper {
     /**
      * Checks if there is no transaction
      *
-     * @6.0
+     * @since 6.0
      */
     public static boolean isNoTransaction() {
         int status = getTransactionStatus();
@@ -258,7 +257,6 @@ public class TransactionHelper {
      * Suspend the current transaction if active and start a new transaction
      *
      * @return the suspended transaction or null
-     * @throws TransactionRuntimeException
      * @since 5.6
      * @deprecated since 11.1, as not all backends (transaction resource managers) allow suspending the transaction or
      *             transaction interleaving, instead use {@link #runInNewTransaction} or {@link #runWithoutTransaction}
@@ -310,11 +308,11 @@ public class TransactionHelper {
     /**
      * Commit the current transaction if active and resume the principal transaction
      *
-     * @param tx
      * @deprecated since 11.1, as not all backends (transaction resource managers) allow suspending the transaction or
      *             transaction interleaving, instead use {@link #runInNewTransaction} or {@link #runWithoutTransaction}
      *             explicitly
      */
+    @Deprecated(since = "11.1")
     public static void resumeTransaction(Transaction tx) {
         TransactionManager tm = NuxeoContainer.getTransactionManager();
         if (tm == null) {
@@ -336,7 +334,7 @@ public class TransactionHelper {
     /**
      * Starts a new User Transaction with the specified timeout.
      *
-     * @param timeout the timeout in seconds, <= 0 for the default
+     * @param timeout the timeout in seconds, %lt;= 0 for the default
      * @return {@code true} if the transaction was successfully started, {@code false} otherwise
      * @since 5.6
      */
@@ -433,7 +431,7 @@ public class TransactionHelper {
                         e = thrown;
                     }
                 }
-                suppressed.forEach(s -> e.addSuppressed(s));
+                suppressed.forEach(e::addSuppressed);
                 if (thrown == null) {
                     throw e;
                 }
@@ -441,7 +439,7 @@ public class TransactionHelper {
         }
     }
 
-    private static ThreadLocal<List<Exception>> suppressedExceptions = new ThreadLocal<>();
+    private static final ThreadLocal<List<Exception>> suppressedExceptions = new ThreadLocal<>();
 
     /**
      * After this, some exceptions during transaction commit may be suppressed and remembered.
@@ -473,7 +471,7 @@ public class TransactionHelper {
     protected static List<Exception> getSuppressedExceptions() {
         List<Exception> exceptions = suppressedExceptions.get();
         suppressedExceptions.remove();
-        return exceptions == null ? Collections.<Exception> emptyList() : exceptions;
+        return exceptions == null ? List.of() : exceptions;
     }
 
     /**
@@ -644,7 +642,7 @@ public class TransactionHelper {
         }
         // otherwise use a separate thread to get a separate transactional context
         try {
-            return EXECUTOR.submit(() -> supplier.get()).get();
+            return EXECUTOR.submit(supplier::get).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // restore interrupted status
             throw new RuntimeException(e);

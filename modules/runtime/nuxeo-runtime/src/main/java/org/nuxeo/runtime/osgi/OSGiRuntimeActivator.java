@@ -121,9 +121,6 @@ public class OSGiRuntimeActivator implements BundleActivator {
     /**
      * Load a class from another bundle given its reference as <code>bundleSymbolicName:className</code> If no
      * <code>bundleSymbolicName:</code> prefix is given then a classForName will be done
-     *
-     * @param ref
-     * @return
      */
     public Class<?> loadClass(String ref) throws ReflectiveOperationException {
         int i = ref.indexOf(':');

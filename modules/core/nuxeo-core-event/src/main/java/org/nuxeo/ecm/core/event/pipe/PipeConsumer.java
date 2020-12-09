@@ -30,33 +30,21 @@ public interface PipeConsumer<T> {
 
     /**
      * Initialize the Consumer when the {@link EventBundlePipe} is initialized
-     *
-     * @param name
-     * @param params
      */
     void initConsumer(String name, Map<String, String> params);
 
     /**
      * Callback when a batch of messages is available
-     *
-     * @param messages
-     * @return
      */
     boolean receiveMessage(List<T> messages);
 
     /**
      * Shutdown the consumer when the {@link EventBundlePipe} is shutdown
-     *
-     * @throws InterruptedException
      */
     void shutdown() throws InterruptedException;
 
     /**
      * Wait until consumer is done
-     *
-     * @param timeoutMillis
-     * @return
-     * @throws InterruptedException
      */
     boolean waitForCompletion(long timeoutMillis) throws InterruptedException;
 

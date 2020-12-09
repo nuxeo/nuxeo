@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Filter that checks if the current request was called from an external tool (MS Office for instance)
- * <p/>
+ * <p>
  * Then if a session was already opened in user browser, it automatically redirects to the requested URL
  *
  * @author Thierry Martins

@@ -20,8 +20,6 @@ import org.nuxeo.ecm.core.query.*;
 /**
  * Lexer for NXQL
  */
-
-
 public class Scanner implements java_cup.runtime.Scanner {
 
   /** This character denotes the end of file */
@@ -991,7 +989,7 @@ public class Scanner implements java_cup.runtime.Scanner {
    *
    * All internal variables are reset, the old input stream
    * <b>cannot</b> be reused (internal buffer is discarded and lost).
-   * Lexical state is set to <tt>ZZ_INITIAL</tt>.
+   * Lexical state is set to {@code ZZ_INITIAL}.
    *
    * @param reader   the new input stream
    */
@@ -1034,7 +1032,7 @@ public class Scanner implements java_cup.runtime.Scanner {
 
 
   /**
-   * Returns the character at position <tt>pos</tt> from the
+   * Returns the character at position {@code pos} from the
    * matched text.
    *
    * It is equivalent to yytext().charAt(pos), but faster

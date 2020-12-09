@@ -23,7 +23,7 @@ package org.nuxeo.ecm.core.management;
  * <p>
  * For being call-backed during document store initialization, services should implement the StorageClient interface.
  *
- * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ * @author Stephane Lacoin [aka matic]
  */
 public interface CoreManagementService {
 

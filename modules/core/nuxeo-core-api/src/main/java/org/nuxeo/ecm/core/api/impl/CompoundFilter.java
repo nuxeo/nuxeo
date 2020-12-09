@@ -39,8 +39,6 @@ public class CompoundFilter implements Filter {
 
     /**
      * Generic constructor.
-     *
-     * @param filters
      */
     public CompoundFilter(Filter... filters) {
         this(Arrays.asList(filters));
@@ -48,8 +46,6 @@ public class CompoundFilter implements Filter {
 
     /**
      * Generic constructor.
-     *
-     * @param filters
      */
     public CompoundFilter(List<Filter> filters) {
         if (filters == null) {

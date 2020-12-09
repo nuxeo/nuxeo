@@ -30,9 +30,9 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Blob holder able to return the blob of a document default rendition. See
- * {RenditionService#getDefaultRendition(DocumentModel, String, Map<String, Serializable>)}
+ * Blob holder able to return the blob of a document default rendition.
  *
+ * @see RenditionService#getDefaultRendition(DocumentModel, String, Map)
  * @since 9.3
  */
 public class DownloadBlobHolder extends AbstractBlobHolder {

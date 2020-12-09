@@ -116,7 +116,6 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param dueDate the due date, set on the task instance
      * @param taskVariables additional task variables
      * @param parentPath /task-root if null
-     * @param eventInfo
      * @since 5.6
      */
     List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, DocumentModel document,
@@ -145,7 +144,6 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param dueDate the due date, set on the task instance
      * @param taskVariables additional task variables
      * @param parentPath /task-root if null
-     * @param eventInfo
      * @since 5.6
      * @deprecated since 7.4 use
      *             {@link #createTaskForProcess(CoreSession, NuxeoPrincipal, List, String, String, String, String, String, List, boolean, String, String, Date, Map, String, Map)}
@@ -179,7 +177,6 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param dueDate the due date, set on the task instance
      * @param taskVariables additional task variables
      * @param parentPath /task-root if null
-     * @param eventInfo
      * @since 7.4
      */
     List<Task> createTaskForProcess(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
@@ -228,23 +225,17 @@ public interface TaskService extends Serializable, TaskProvider {
 
     /**
      * Remove the documentTask identified by the given taskId if coreSession's principal has the Remove permission.
-     *
-     * @param coreSession
-     * @param taskId
-     * @Since 5.5
+     * @since 5.5
      */
     void deleteTask(CoreSession coreSession, String taskId);
 
     /**
      * @param ti the task
-     * @param coreSession
      * @return the task's target document
      */
     DocumentModel getTargetDocumentModel(Task ti, CoreSession coreSession);
 
     /**
-     * @param coreSession
-     * @param taskId
      * @return the taskDocument with the given taskId
      */
     Task getTask(CoreSession coreSession, String taskId);
@@ -261,9 +252,6 @@ public interface TaskService extends Serializable, TaskProvider {
      * and new actors are granted 'Manage everything' on the task document. The 'workflowTaskReassigned' event is
      * triggered.
      *
-     * @param session
-     * @param taskId
-     * @param actors
      * @since 5.7.3
      */
     void reassignTask(CoreSession session, String taskId, List<String> actors, String comment);
@@ -272,9 +260,6 @@ public interface TaskService extends Serializable, TaskProvider {
      * Delegates the given task to the list of actors. The new actors are granted 'Manage everything' on the task
      * document. The 'workflowTaskDelegated' event is triggered.
      *
-     * @param session
-     * @param taskId
-     * @param actors
      * @since 5.8
      */
     void delegateTask(CoreSession session, String taskId, List<String> actors, String comment);

@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 /**
- * The SPI of a Publish/Subscribe implementation of the {@link PubSubService).
+ * The SPI of a Publish/Subscribe implementation of the {@link PubSubService}.
  *
  * @since 9.1
  */

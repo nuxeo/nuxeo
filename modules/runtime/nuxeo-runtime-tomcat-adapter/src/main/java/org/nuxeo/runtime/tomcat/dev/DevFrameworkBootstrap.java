@@ -277,7 +277,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
 
     /**
      * Writes to the {@link #devBundlesFile} the input {@code devBundles} by replacing the former file.
-     * <p />
+     * <p>
      * This method will {@link #toggleTimer() toggle} the file update check timer if needed.
      *
      * @since 9.3

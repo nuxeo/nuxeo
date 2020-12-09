@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to mark a {@link Page} object to indicate that it is required to wait for JQuery ajax requests to complete
+ * Used to mark a {@code Page} object to indicate that it is required to wait for JQuery ajax requests to complete
  * before the page is returned.
  */
 @Retention(RetentionPolicy.RUNTIME)

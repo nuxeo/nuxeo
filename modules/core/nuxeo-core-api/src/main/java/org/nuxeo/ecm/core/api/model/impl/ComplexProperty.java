@@ -71,7 +71,6 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
      * If you want to change the way a property is fetched / stored, you must override this method.
      *
      * @return the child. Cannot return null
-     * @throws UnsupportedOperationException
      */
     protected Property internalGetChild(Field field) {
         return null; // we don't store property that are not in the cache
@@ -327,7 +326,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement Map&lt;String, Property&gt; interface.
      */
     @Override
     public void clear() {
@@ -335,7 +334,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement Map&lt;String, Property&gt; interface.
      */
     @Override
     public boolean containsKey(Object key) {
@@ -343,7 +342,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement Map&lt;String, Property&gt; interface.
      */
     @Override
     public boolean containsValue(Object value) {
@@ -371,7 +370,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement Map&lt;String, Property&gt; interface.
      */
     @Override
     public Property put(String key, Property value) {
@@ -379,7 +378,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement Map&lt;String, Property&gt; interface.
      */
     @Override
     public void putAll(Map<? extends String, ? extends Property> t) {
@@ -387,7 +386,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement Map&lt;String, Property&gt; interface.
      */
     @Override
     public Property remove(Object key) {

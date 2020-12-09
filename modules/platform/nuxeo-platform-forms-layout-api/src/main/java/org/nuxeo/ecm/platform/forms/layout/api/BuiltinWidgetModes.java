@@ -83,8 +83,6 @@ public class BuiltinWidgetModes {
      * {@link #PDF} or {@link #HIDDEN} mode.
      *
      * @since 5.4.2
-     * @param widgetMode
-     * @return
      */
     public static boolean isLikeViewMode(String widgetMode) {
         if (widgetMode == null) {

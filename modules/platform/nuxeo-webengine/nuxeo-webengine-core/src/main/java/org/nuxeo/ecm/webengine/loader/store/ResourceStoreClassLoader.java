@@ -43,20 +43,20 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
     private final LinkedHashSet<ResourceStore> cp; // class path
 
     public ResourceStoreClassLoader(final ClassLoader pParent) {
-        this(pParent, new LinkedHashSet<ResourceStore>());
+        this(pParent, new LinkedHashSet<>());
     }
 
     protected ResourceStoreClassLoader(final ClassLoader pParent, LinkedHashSet<ResourceStore> cp) {
         super(pParent);
         this.cp = cp;
         if (!cp.isEmpty()) {
-            stores = cp.toArray(new ResourceStore[cp.size()]);
+            stores = cp.toArray(new ResourceStore[0]);
         }
     }
 
     public synchronized boolean addStore(ResourceStore store) {
         if (cp.add(store)) {
-            stores = cp.toArray(new ResourceStore[cp.size()]);
+            stores = cp.toArray(new ResourceStore[0]);
             return true;
         }
         return false;
@@ -64,7 +64,7 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
 
     public synchronized boolean removeStore(ResourceStore store) {
         if (cp.remove(store)) {
-            stores = cp.toArray(new ResourceStore[cp.size()]);
+            stores = cp.toArray(new ResourceStore[0]);
             return true;
         }
         return false;
@@ -98,8 +98,6 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
 
     /**
      * Without this method getPackage() returns null
-     *
-     * @param name
      */
     protected void doDefinePackage(String name) {
         int i = name.lastIndexOf('.');
@@ -218,7 +216,7 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
     }
 
     /**
-     * org.my.Class -> org/my/Class.class
+     * org.my.Class -&gt; org/my/Class.class
      */
     public static String convertClassToResourcePath(final String pName) {
         return pName.replace('.', '/') + ".class";

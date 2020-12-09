@@ -37,15 +37,12 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * Enrich {@link DocumentModel} Json.
  * <p>
  * Add document user visible permissions as json attachment.
- * </p>
  * <p>
  * Enable if parameter enrichers-document=userVisiblePermissions is present.
- * </p>
  * <p>
  * Format is:
  *
  * <pre>
- * {@code
  * {
  *   "entity-type":"document",
  *   ...
@@ -54,8 +51,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *   }
  * }
  * </pre>
- *
- * </p>
  *
  * @since 7.4
  */

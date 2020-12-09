@@ -1,15 +1,29 @@
-elasticsearch:
-  labels:
+image:
+  tag: "6.0.8"
+cluster:
+  enabled: false
+usePassword: false
+master:
+  persistence:
+    enabled: $PERSISTENCE
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "16Mi"
+    limits:
+      cpu: "200m"
+      memory: "64Mi"
+  podLabels:
     branch: "$BRANCH_NAME"
     resource: pod
     team: platform
-    usage: utests
+    usage: "$USAGE"
   service:
     labels:
       branch: "$BRANCH_NAME"
       resource: service
       team: platform
-      usage: utests
+      usage: "$USAGE"
   tolerations:
     - key: team
       operator: Equal
@@ -17,5 +31,3 @@ elasticsearch:
       effect: NoSchedule
   nodeSelector:
     team: platform
-tags:
-  elasticsearch: true

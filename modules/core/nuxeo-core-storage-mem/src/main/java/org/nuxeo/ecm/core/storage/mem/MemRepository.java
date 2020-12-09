@@ -39,11 +39,12 @@ import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepository;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * In-memory implementation of a {@link Repository}.
+ * In-memory implementation of a {@link DBSRepository}.
  * <p>
  * Internally, the repository is a map from id to document object.
  * <p>
@@ -60,7 +61,7 @@ public class MemRepository extends DBSRepositoryBase {
     private final AtomicLong temporaryIdCounter = new AtomicLong(0);
 
     /**
-     * The content of the repository, a map of document id -> object.
+     * The content of the repository, a map of document id -&gt; object.
      */
     protected Map<String, State> states;
 

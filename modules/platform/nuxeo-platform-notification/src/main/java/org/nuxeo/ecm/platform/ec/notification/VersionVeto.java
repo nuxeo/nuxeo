@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  * instance, use documentCheckedIn on the live document, instead of documentCreated on the version
  *
  * @since 5.7
- * @author Thierry Martins <tm@nuxeo.com>
+ * @author Thierry Martins
  */
 public class VersionVeto implements NotificationListenerVeto {
 

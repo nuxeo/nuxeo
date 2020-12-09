@@ -122,11 +122,6 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     /**
      * Create the rootModels under to root document. Grant READ to everyone on the root models ; workflow availability
      * is specified on each route
-     *
-     * @param routeStructureDocType
-     * @param id
-     * @param session
-     * @return
      */
     protected DocumentModel createModelsRoutesStructure(String routeStructureDocType, String id, CoreSession session)
             {
@@ -140,9 +135,6 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         return rootModels;
     }
 
-    /**
-     * @return
-     */
     protected List<ACE> getACEs() {
         List<ACE> aces = new ArrayList<>();
         for (String group : getUserManager().getAdministratorsGroups()) {
@@ -191,7 +183,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         return session.getDocument(runner.getInstanceRef());
     }
 
-    class UndoReadOnlySecurityPolicy extends UnrestrictedSessionRunner {
+    static class UndoReadOnlySecurityPolicy extends UnrestrictedSessionRunner {
 
         DocumentRef documentRef;
 

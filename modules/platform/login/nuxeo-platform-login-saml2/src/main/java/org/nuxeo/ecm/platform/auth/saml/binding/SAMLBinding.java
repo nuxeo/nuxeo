@@ -43,18 +43,15 @@ public abstract class SAMLBinding {
     /**
      * URIComparator that strips scheme to avoid issues with reverse proxies
      */
-    public static final URIComparator uriComparator = new URIComparator() {
-        @Override
-        public boolean compare(String uri1, String uri2) {
-            if (uri1 == null && uri2 == null) {
-                return true;
-            } else if (uri1 == null || uri2 == null) {
-                return false;
-            } else {
-                String uri1Canon = SimpleURLCanonicalizer.canonicalize(uri1).replaceFirst("^(https:|http:)", "");
-                String uri2Canon = SimpleURLCanonicalizer.canonicalize(uri2).replaceFirst("^(https:|http:)", "");
-                return uri1Canon.equals(uri2Canon);
-            }
+    public static final URIComparator uriComparator = (uri1, uri2) -> {
+        if (uri1 == null && uri2 == null) {
+            return true;
+        } else if (uri1 == null || uri2 == null) {
+            return false;
+        } else {
+            String uri1Canon = SimpleURLCanonicalizer.canonicalize(uri1).replaceFirst("^(https:|http:)", "");
+            String uri2Canon = SimpleURLCanonicalizer.canonicalize(uri2).replaceFirst("^(https:|http:)", "");
+            return uri1Canon.equals(uri2Canon);
         }
     };
 
@@ -71,8 +68,6 @@ public abstract class SAMLBinding {
      * Decodes the given message.
      *
      * @param context the message to decode
-     * @throws org.opensaml.xml.security.SecurityException
-     * @throws MessageDecodingException
      */
     public void decode(MessageContext context) throws org.opensaml.xml.security.SecurityException,
             MessageDecodingException {
@@ -83,7 +78,6 @@ public abstract class SAMLBinding {
      * Encodes the given message.
      *
      * @param context the message to encode
-     * @throws MessageEncodingException
      */
     public void encode(MessageContext context) throws MessageEncodingException {
         encoder.encode(context);
@@ -99,7 +93,6 @@ public abstract class SAMLBinding {
     /**
      * Checks if this binding can be used to extract the message from the request.
      *
-     * @param transport
      * @return true if this binding supports the transport
      */
     public abstract boolean supports(InTransport transport);
@@ -107,7 +100,6 @@ public abstract class SAMLBinding {
     /**
      * Checks if this binding can use the given transport to send a message
      *
-     * @param transport
      * @return true if this binding supports the transport
      */
     public abstract boolean supports(OutTransport transport);

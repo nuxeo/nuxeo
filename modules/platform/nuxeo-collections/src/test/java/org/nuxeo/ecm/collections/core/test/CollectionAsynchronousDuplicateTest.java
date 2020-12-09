@@ -46,7 +46,6 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
     /**
      * Test the copy of a folder containing a Collection with many members that are descendants of the given folder.
      *
-     * @throws InterruptedException
      * @since 8.4
      */
     @Test
@@ -57,7 +56,6 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
     /**
      * Test the copy of a folder containing a Collection with a single members that are descendants of the given folder.
      *
-     * @throws InterruptedException
      * @since 8.4
      */
     @Test

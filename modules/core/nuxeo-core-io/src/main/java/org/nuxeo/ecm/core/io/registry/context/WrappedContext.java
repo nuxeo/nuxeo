@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.DEPTH_CONTROL_
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.WRAPPED_CONTEXT;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -117,7 +116,6 @@ public final class WrappedContext {
      * This method increases the current number of "marshaller-to-marshaller" calls. And then checks that this number do
      * not exceed the "depth" parameter. If the "depth" parameter is not provided or if it's not valid, the default
      * value is "root" (expected valid values are "root", "children" or "max" - see {@link DepthValues}).
-     * </p>
      * <p>
      * Here is the prettiest way to write it:
      *
@@ -129,7 +127,6 @@ public final class WrappedContext {
      *     // do not call the other marshaller
      * }
      * </pre>
-     * </p>
      * <p>
      * You can also control the depth before (usefull for list):
      *
@@ -146,7 +143,6 @@ public final class WrappedContext {
      *     // manage the case
      * }
      * </pre>
-     * </p>
      *
      * @since 7.2
      */
@@ -237,12 +233,7 @@ public final class WrappedContext {
      */
     public Closeable open() {
         ctx.setParameterValues(WRAPPED_CONTEXT, this);
-        return new Closeable() {
-            @Override
-            public void close() throws IOException {
-                ctx.setParameterValues(WRAPPED_CONTEXT, parent);
-            }
-        };
+        return () -> ctx.setParameterValues(WRAPPED_CONTEXT, parent);
     }
 
     /**

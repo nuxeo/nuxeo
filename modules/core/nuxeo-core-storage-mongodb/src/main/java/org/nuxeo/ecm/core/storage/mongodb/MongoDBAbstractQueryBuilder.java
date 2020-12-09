@@ -545,7 +545,7 @@ public abstract class MongoDBAbstractQueryBuilder {
          */
         public final String key;
 
-        /** MongoDB field for query. foo/0/bar -> foo.0.bar; foo / * / bar -> foo.bar */
+        /** MongoDB field for query. foo/0/bar -&gt; foo.0.bar; foo / * / bar -&gt; foo.bar */
         public final String queryField;
 
         /** MongoDB field for projection. */

@@ -470,7 +470,7 @@ public class Model {
     protected final Set<String> noPerDocumentQueryFacets;
 
     /**
-     * Map of fragment -> info about whether there's a fulltext text field (PropertyType.STRING), binary field
+     * Map of fragment -&gt; info about whether there's a fulltext text field (PropertyType.STRING), binary field
      * (PropertyType.BINARY), or both (PropertyType.BOOLEAN).
      */
     protected final Map<String, PropertyType> fulltextInfoByFragment;
@@ -1362,7 +1362,8 @@ public class Model {
     }
 
     /**
-     * Special model for the locks table (also, primary key has no foreign key, see {@link SQLInfo#initFragmentSQL}.
+     * Special model for the locks table (also, primary key has no foreign key, see
+     * {@code SQLInfo#initFragmentSQL(String)}).
      */
     private void initLocksModel() {
         addPropertyInfo(LOCK_OWNER_PROP, PropertyType.STRING, LOCK_TABLE_NAME, LOCK_OWNER_KEY, false,

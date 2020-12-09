@@ -107,10 +107,6 @@ public class VideoToolsServiceImpl extends DefaultComponent implements VideoTool
 
     /**
      * Executes the video tool with the provided parameters.
-     * @param toolName
-     * @param blobHolder
-     * @param parameters
-     * @return
      */
     private BlobHolder execute(String toolName, BlobHolder blobHolder, Map<String, Object> parameters) {
         BlobHolder result = null;

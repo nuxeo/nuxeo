@@ -58,8 +58,7 @@ public final class JerseyClientHelper {
      *                                       .setCredentials("joe", "password")
      *                                       .build();
      * }
-     *
-     * <pre>
+     * </pre>
      */
     public static ApacheHttpClientBuilder clientBuilder() {
         return new ApacheHttpClientBuilder();

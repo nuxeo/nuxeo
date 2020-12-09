@@ -40,24 +40,16 @@ public interface EventBundlePipe {
 
     /**
      * Send an {@link EventBundle} inside the pipe
-     *
-     * @param events
      */
     void sendEventBundle(EventBundle events);
 
     /**
      * Wait until the end of event consumption
-     *
-     * @param timeoutMillis
-     * @return
-     * @throws InterruptedException
      */
     boolean waitForCompletion(long timeoutMillis) throws InterruptedException;
 
     /**
      * Shutdown callback when the {@link EventService} stops
-     *
-     * @throws InterruptedException
      */
     void shutdown() throws InterruptedException;
 }

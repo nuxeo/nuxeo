@@ -47,7 +47,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
  * This is done by recursively evaluating the abstract syntax tree of the expression as parsed by an apache directory
  * shared method.
  *
- * @author Olivier Grisel <ogrisel@nuxeo.com>
+ * @author Olivier Grisel
  */
 public class LDAPFilterMatcher {
 
@@ -64,7 +64,7 @@ public class LDAPFilterMatcher {
      * Check whether a raw string filter expression matches on the given LDAP entry.
      *
      * @param attributes the ldap entry to match
-     * @param filter a raw string filter expression (eg. <tt>(!(&(attr1=*)(attr2=value2)(attr3=val*)))</tt> )
+     * @param filter a raw string filter expression (eg. {@code (!(&(attr1=*)(attr2=value2)(attr3=val*)))})
      * @return true if the ldap entry matches the filter
      */
     public boolean match(Attributes attributes, String filter) {
@@ -101,7 +101,7 @@ public class LDAPFilterMatcher {
     }
 
     /**
-     * Handle simple equality test on any non-null value (eg: <tt>(attr2=value2)</tt>).
+     * Handle simple equality test on any non-null value (eg: {@code (attr2=value2)}).
      *
      * @return true if the equality holds
      */
@@ -155,7 +155,7 @@ public class LDAPFilterMatcher {
     }
 
     /**
-     * Implement the substring match on any non-null value of a string attribute (eg: <tt>(attr3=val*)</tt>).
+     * Implement the substring match on any non-null value of a string attribute (eg: {@code (attr3=val*)}).
      *
      * @return the result of the regex evaluation
      */

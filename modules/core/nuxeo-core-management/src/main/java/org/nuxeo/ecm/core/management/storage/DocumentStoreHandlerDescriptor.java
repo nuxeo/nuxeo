@@ -24,7 +24,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * For registering a document store handler
  *
- * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ * @author Stephane Lacoin [aka matic]
  */
 @XObject("handler")
 public class DocumentStoreHandlerDescriptor {

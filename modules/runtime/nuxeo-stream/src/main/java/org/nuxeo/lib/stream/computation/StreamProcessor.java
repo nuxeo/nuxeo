@@ -49,7 +49,7 @@ public interface StreamProcessor {
     /**
      * Stop computations when input streams are empty. The timeout is applied for each computation, the total duration
      * can be up to nb computations * timeout
-     * <p/>
+     * <p>
      * Returns {@code true} if computations are stopped during the timeout delay.
      */
     boolean drainAndStop(Duration timeout);
@@ -87,7 +87,7 @@ public interface StreamProcessor {
     /**
      * Wait for the computations to have assigned partitions ready to process records. The processor must be started.
      * This is useful for writing unit test.
-     * <p/>
+     * <p>
      * Returns {@code true} if all computations have assigned partitions during the timeout delay.
      */
     boolean waitForAssignments(Duration timeout) throws InterruptedException;

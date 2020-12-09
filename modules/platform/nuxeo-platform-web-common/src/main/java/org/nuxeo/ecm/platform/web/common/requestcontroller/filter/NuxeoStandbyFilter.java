@@ -75,7 +75,7 @@ public class NuxeoStandbyFilter implements Filter {
 
     }
 
-    protected class Controller {
+    protected static class Controller {
         protected final Lock lock = new ReentrantLock();
 
         protected final Condition canStandby = lock.newCondition();
@@ -89,7 +89,7 @@ public class NuxeoStandbyFilter implements Filter {
         /**
          * This variable is used to determine if the Thread wanting to shutdown/standby the server has gone through this
          * filter. We need this variable in order to not wait for ourself to end.
-         * <p />
+         * <p>
          * Calls relying on this variable:
          * <ul>
          * <li>org.nuxeo.runtime.reload.NuxeoRestart#restart()</li>

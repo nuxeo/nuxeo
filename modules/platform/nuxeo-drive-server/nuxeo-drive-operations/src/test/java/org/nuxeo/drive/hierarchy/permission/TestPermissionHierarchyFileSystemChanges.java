@@ -170,11 +170,11 @@ public class TestPermissionHierarchyFileSystemChanges {
      * C/Folder D (depth=4)
      *
      * @param session to use
-     * @param path to start creating the tree
+     * @param initialPath to start creating the tree
      * @param depth in number of folder
      */
     private void createFolderTree(CoreSession session, String initialPath, Integer depth) {
-        Character letter = 'A';
+        char letter = 'A';
         StringBuilder path = new StringBuilder(initialPath);
         while (depth-- > 0) {
             createFolder(session, path.toString(), "Folder " + letter, FOLDER_TYPE);

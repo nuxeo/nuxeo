@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  * Usage: <code>NuxeoRestart.restart()</code>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated since 9.10 - use {@link org.nuxeo.ecm.admin.NuxeoCtlManager#restart()} instead which handles windows OS.
+ * @deprecated since 9.10 - use org.nuxeo.ecm.admin.NuxeoCtlManager#restart instead which handles windows OS.
  */
 @Deprecated
 public class NuxeoRestart {
@@ -135,8 +135,9 @@ public class NuxeoRestart {
             }
             Thread.sleep(1000);
             // start nuxeo
-            Runtime.getRuntime().exec(newArgs, new String[] { "JAVA_HOME=" + System.getProperty("java.home") },
-                    script.getParentFile());
+            Runtime.getRuntime()
+                   .exec(newArgs, new String[] { "JAVA_HOME=" + System.getProperty("java.home") },
+                           script.getParentFile());
             ok = true;
         } finally {
             if (!ok) {

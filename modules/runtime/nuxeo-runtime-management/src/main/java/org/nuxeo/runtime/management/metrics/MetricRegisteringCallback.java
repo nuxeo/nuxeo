@@ -34,9 +34,6 @@ public class MetricRegisteringCallback extends CallbackSkeleton {
 
     MetricRegister register;
 
-    /**
-     * @param register
-     */
     public MetricRegisteringCallback(MetricRegister register) {
         this.register = register;
     }

@@ -26,9 +26,6 @@ import org.openqa.selenium.WebDriver;
  */
 public class CollectionCreationFormPage extends DublinCoreCreationDocumentFormPage {
 
-    /**
-     * @param driver
-     */
     public CollectionCreationFormPage(WebDriver driver) {
         super(driver);
     }

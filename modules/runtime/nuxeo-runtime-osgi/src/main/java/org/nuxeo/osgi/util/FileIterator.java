@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -140,15 +141,11 @@ public class FileIterator implements Iterator<File>, Enumeration<File> {
 
     /**
      * Feed the iterator with the given directory content if any
-     *
-     * @param file
      */
     public void feed(File file) {
         File[] content = file.listFiles(filter);
         if (content != null) {
-            for (File f : content) {
-                files.add(f);
-            }
+            files.addAll(Arrays.asList(content));
         }
     }
 

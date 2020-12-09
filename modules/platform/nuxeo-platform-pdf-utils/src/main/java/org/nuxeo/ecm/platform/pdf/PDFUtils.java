@@ -100,7 +100,6 @@ public class PDFUtils {
      *
      * @param inBlob Input Blob.
      * @param inPwd Input password.
-     * @throws NuxeoException
      */
     public static PDDocument load(Blob inBlob, String inPwd) throws NuxeoException {
         PDDocument pdfDoc;
@@ -119,7 +118,6 @@ public class PDFUtils {
      *
      * @param inPdfDoc Input PDF document.
      * @return FileBlob
-     * @throws IOException
      */
     public static FileBlob saveInTempFile(PDDocument inPdfDoc) throws IOException {
         return saveInTempFile(inPdfDoc, null);

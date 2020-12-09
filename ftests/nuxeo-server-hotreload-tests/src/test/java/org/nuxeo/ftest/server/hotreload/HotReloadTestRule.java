@@ -43,10 +43,10 @@ import org.nuxeo.functionaltests.RestHelper;
 
 /**
  * This Rule gives mechanism for hot reload tests.
- * <p />
+ * <p>
  * This rule will deploy the dev bundle located under src/test/resources/${YOUR_TEST_CLASS_NAME}/${YOUR_TEST_NAME} (if
  * exists) before the test starts, and undeploy it when test finish.
- * <p />
+ * <p>
  * In order to use this rule you need to add these properties to your nuxeo.conf:
  * <ul>
  * <li>nuxeo.templates=default,sdk (just add the sdk template)</li>
@@ -105,7 +105,7 @@ public class HotReloadTestRule implements TestRule {
 
     /**
      * Deploys the dev bundle located under src/test/resources/${YOUR_TEST_CLASS_NAME}/${YOUR_TEST_NAME} (if exists).
-     * <p />
+     * <p>
      * This method use {@link #updateDevBundles(String)}.
      */
     @SuppressWarnings("ConstantConditions")
@@ -143,7 +143,7 @@ public class HotReloadTestRule implements TestRule {
 
     /**
      * Deploys the jar dev bundle located under src/test/resources/${TEST_CLASS_NAME}/{@code subPath} (if exists).
-     * <p />
+     * <p>
      * This method use {@link #updateDevBundles(String)}.
      *
      * @since 10.10
@@ -167,11 +167,11 @@ public class HotReloadTestRule implements TestRule {
     /**
      * Updates the dev.bundles file by POSTing a body to {@link org.nuxeo.runtime.tomcat.dev.DevValve}, this will
      * trigger a hot reload on server.
-     * <p />
+     * <p>
      * We do a HTTP POST to /sdk/reload, then wait until Nuxeo server finished to reload.
-     * <p />
+     * <p>
      * This method could throw a {@link java.net.SocketTimeoutException} if server takes more than the timeout set on
-     * java client, see {@link RestHelper#CLIENT}. Furthermore, test will fail if server returns an error.
+     * java client, see {@code RestHelper#CLIENT}. Furthermore, test will fail if server returns an error.
      */
     public void updateDevBundles(String body) {
         // we don't want any aync work to still be running during hot-reload as for now

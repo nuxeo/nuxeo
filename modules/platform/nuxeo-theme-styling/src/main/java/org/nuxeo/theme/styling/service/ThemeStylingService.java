@@ -66,8 +66,6 @@ public interface ThemeStylingService {
      * <p>
      * If not defined on the local flavor, flavor attributes will be resolved from the extended flavor if any.
      * </p>
-     *
-     * @param flavorName
      */
     FlavorDescriptor getFlavor(String flavorName);
 
@@ -82,8 +80,6 @@ public interface ThemeStylingService {
 
     /**
      * Returns the logo configured for given flavor name, and fallbacks on the extends flavor logo if not set.
-     *
-     * @param flavor
      */
     LogoDescriptor getLogo(String flavor);
 

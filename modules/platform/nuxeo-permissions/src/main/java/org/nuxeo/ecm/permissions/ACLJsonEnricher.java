@@ -55,10 +55,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * Enrich {@link DocumentModel} Json.
  * <p>
  * Add {@link DocumentModel}'s ACP as json attachment.
- * </p>
  * <p>
  * Enable if parameter enrichers-document=acls is present.
- * </p>
  * <p>
  * Format is:
  *
@@ -89,15 +87,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *     ]
  *   }
  * }
+ * }
  * </pre>
  *
- * </p>
  * <p>
  * {@code username} and {@code creator} property can be fetched with fetch.acls=username or fetch.acls=creator.
- * </p>
  * <p>
  * Additional ACE fields (such as notify and notification comment) can be written by using fetch.acls=extended.
- * </p>
  *
  * @see org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonWriter
  * @see org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter

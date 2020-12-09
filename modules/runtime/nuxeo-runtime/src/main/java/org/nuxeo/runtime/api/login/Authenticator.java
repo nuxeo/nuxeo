@@ -35,8 +35,6 @@ public interface Authenticator {
      * This method is doing the authentication of the given username / password pair and returns the corresponding
      * principal object if authentication succeeded otherwise returns null.
      *
-     * @param name
-     * @param password
      * @return the authenticated principal if authentication succeded otherwise null
      */
     Principal authenticate(String name, String password);

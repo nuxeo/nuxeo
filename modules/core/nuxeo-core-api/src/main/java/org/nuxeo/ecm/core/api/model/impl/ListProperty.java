@@ -457,7 +457,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public void add(int index, Property element) {
@@ -465,7 +465,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public boolean add(Property o) {
@@ -473,7 +473,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public boolean addAll(Collection<? extends Property> c) {
@@ -481,7 +481,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public boolean addAll(int index, Collection<? extends Property> c) {
@@ -489,7 +489,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public boolean contains(Object o) {
@@ -497,7 +497,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public boolean containsAll(Collection<?> c) {
@@ -505,7 +505,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public int indexOf(Object o) {
@@ -518,7 +518,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public int lastIndexOf(Object o) {
@@ -526,7 +526,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public ListIterator<Property> listIterator() {
@@ -534,7 +534,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public ListIterator<Property> listIterator(int index) {
@@ -542,7 +542,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public boolean remove(Object o) {
@@ -550,7 +550,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public boolean removeAll(Collection<?> c) {
@@ -558,7 +558,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public boolean retainAll(Collection<?> c) {
@@ -566,7 +566,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public Property set(int index, Property element) {
@@ -574,7 +574,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property> interface
+     * Throws UnsupportedOperationException, added to implement List&lt;Property&gt; interface.
      */
     @Override
     public List<Property> subList(int fromIndex, int toIndex) {

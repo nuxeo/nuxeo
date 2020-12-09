@@ -23,9 +23,9 @@ import javax.management.MXBean;
 /**
  * Flush resources in web-app class loader, needed for resetting the i18n.
  * <p>
- * A runtime event listener propagates the same flush to the tomcat context, see {@link WebResourcesReloadHandler}.
+ * A runtime event listener propagates the same flush to the tomcat context, see WebResourcesReloadHandler and
+ * SeamHotReloadHelper#flush().
  *
- * @see SeamHotReloadHelper#flush
  * @since 5.5
  */
 @MXBean
