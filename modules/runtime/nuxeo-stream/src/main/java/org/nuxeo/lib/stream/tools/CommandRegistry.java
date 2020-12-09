@@ -36,6 +36,7 @@ import org.nuxeo.lib.stream.tools.command.RestoreCommand;
 import org.nuxeo.lib.stream.tools.command.TailCommand;
 import org.nuxeo.lib.stream.tools.command.TestCommand;
 import org.nuxeo.lib.stream.tools.command.TrackerCommand;
+import org.nuxeo.lib.stream.tools.command.WorkCatCommand;
 
 /**
  * @since 9.3
@@ -58,6 +59,7 @@ public class CommandRegistry {
         ret.add(new TestCommand());
         ret.add(new MonitorCommand());
         ret.add(new DatadogCommand());
+        ret.add(new WorkCatCommand());
         return ret;
     }
 }
