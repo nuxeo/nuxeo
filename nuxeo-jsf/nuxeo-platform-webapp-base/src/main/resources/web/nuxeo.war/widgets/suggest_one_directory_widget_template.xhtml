@@ -40,26 +40,23 @@
       cache="true">
       <ui:include src="/incl/select2_js.xhtml" />
 
-      <ui:fragment rendered="#{not empty field || widget.mode == 'edit'}">
-        <nxu:valueHolder id="#{widget.id}_select2" value="#{field}"
-          required="#{widgetProperty_required}" var="currentValue">
-          <nxu:validateDocumentConstraint />
-          <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
-            value="#{select2Actions.resolveSingleDirectoryEntry(currentValue, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
-          <ui:insert name="inside_input_widget" />
-          <c:if test="#{not empty widgetProperty_ajaxReRender}">
-            <a4j:ajax render="#{widgetProperty_ajaxReRender}" />
-          </c:if>
-        </nxu:valueHolder>
-
+      <nxu:valueHolder id="#{widget.id}_select2" value="#{field}"
+        required="#{widgetProperty_required}" var="currentValue">
+        <nxu:validateDocumentConstraint />
+        <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
+          value="#{select2Actions.resolveSingleDirectoryEntry(currentValue, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
+        <ui:insert name="inside_input_widget" />
         <c:if test="#{not empty widgetProperty_ajaxReRender}">
-          <a4j:jsFunction name="#{widget.id}_reRender"
-            render="#{widgetProperty_ajaxReRender}" />
+          <a4j:ajax render="#{widgetProperty_ajaxReRender}" />
         </c:if>
-      </ui:fragment>
+      </nxu:valueHolder>
 
-      <c:if
-        test="#{widget.mode == 'edit' and !widgetProperty_hideHelpLabel}">
+      <c:if test="#{not empty widgetProperty_ajaxReRender}">
+        <a4j:jsFunction name="#{widget.id}_reRender"
+          render="#{widgetProperty_ajaxReRender}" />
+      </c:if>
+
+      <c:if test="#{!widgetProperty_hideHelpLabel}">
         <p class="detail">
           <h:outputFormat value="#{helpLabel}">
             <f:param value="#{widgetProperty_minChars}" />
