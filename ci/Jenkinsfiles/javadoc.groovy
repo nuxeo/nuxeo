@@ -79,12 +79,6 @@ pipeline {
           sh """
             kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME}
           """
-          // set branch name in Helm chart values used for the unit tests
-          sh """
-            for valuesFile in ci/helm/*.yaml; do
-              envsubst < \$valuesFile > \$valuesFile~gen
-            done
-          """
           // output pod description
           echo "Describe pod ${NODE_NAME}"
           sh """
