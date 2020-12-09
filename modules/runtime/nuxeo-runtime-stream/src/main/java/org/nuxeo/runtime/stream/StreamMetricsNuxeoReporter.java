@@ -18,7 +18,6 @@
  */
 package org.nuxeo.runtime.stream;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -43,18 +42,7 @@ public class StreamMetricsNuxeoReporter extends AbstractMetricsReporter {
 
     protected ScheduledReporter reporter;
 
-    protected static final MetricFilter STREAM_METRICS_FILTER = (name, metric) -> {
-        String metricName = name.getKey();
-        if (metricName.startsWith("nuxeo.streams")) {
-            return true;
-        }
-        return false;
-    };
-
-    @Override
-    public void init(long pollInterval, Map<String, String> options) {
-        super.init(pollInterval, options);
-    }
+    protected static final MetricFilter STREAM_METRICS_FILTER = MetricFilter.startsWith("nuxeo.stream");
 
     @Override
     public void start(MetricRegistry registry, MetricFilter filter, Set<MetricAttribute> deniedExpansions) {

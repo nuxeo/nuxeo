@@ -81,7 +81,6 @@ public class StreamMetricsReporter extends ScheduledReporter {
         if (nodeId == null) {
             ClusterService clusterService = Framework.getService(ClusterService.class);
             if (clusterService.isEnabled()) {
-                // register cache invalidator
                 nodeId = clusterService.getNodeId();
             }
         }
@@ -92,12 +91,13 @@ public class StreamMetricsReporter extends ScheduledReporter {
     public void report(SortedMap<MetricName, Gauge> gauges, SortedMap<MetricName, Counter> counters,
             SortedMap<MetricName, Histogram> histograms, SortedMap<MetricName, Meter> meters,
             SortedMap<MetricName, Timer> timers) {
-        final long timestamp = System.currentTimeMillis() / 1000;
         StreamService service = Framework.getService(StreamService.class);
         if (service == null) {
             // stream service is not yet ready
             return;
         }
+        // like for other reporters, there is no need for millisecond granularity
+        long timestamp = System.currentTimeMillis() / 1000;
         ArrayNode metrics = OBJECT_MAPPER.createArrayNode();
         for (Map.Entry<MetricName, Gauge> entry : gauges.entrySet()) {
             reportGauge(metrics, entry.getKey(), entry.getValue());

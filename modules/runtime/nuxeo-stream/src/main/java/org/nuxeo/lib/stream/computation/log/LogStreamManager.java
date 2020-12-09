@@ -68,8 +68,6 @@ public class LogStreamManager implements StreamManager {
 
     protected final LogManager logManager;
 
-    protected Map<String, String> systemMetadata;
-
     public LogStreamManager(LogManager logManager) {
         this.logManager = logManager;
         initInternalStreams();
@@ -126,19 +124,17 @@ public class LogStreamManager implements StreamManager {
     }
 
     protected Map<String, String> getSystemMetadata() {
-        if (systemMetadata == null) {
-            systemMetadata = new HashMap<>();
-            try {
-                InetAddress host = InetAddress.getLocalHost();
-                systemMetadata.put("ip",  host.getHostAddress());
-                systemMetadata.put("hostname",  host.getHostName());
-            } catch (UnknownHostException e) {
-                systemMetadata.put("ip",  "unknonwn");
-                systemMetadata.put("hostname",  "unknonwn");
-            }
-            systemMetadata.put("cpuCores", String.valueOf(Runtime.getRuntime().availableProcessors()));
-            systemMetadata.put("jvmHeapSize", String.valueOf(Runtime.getRuntime().maxMemory()));
+        Map<String, String> systemMetadata = new HashMap<>();
+        try {
+            InetAddress host = InetAddress.getLocalHost();
+            systemMetadata.put("ip", host.getHostAddress());
+            systemMetadata.put("hostname", host.getHostName());
+        } catch (UnknownHostException e) {
+            systemMetadata.put("ip", "unknonwn");
+            systemMetadata.put("hostname", "unknonwn");
         }
+        systemMetadata.put("cpuCores", String.valueOf(Runtime.getRuntime().availableProcessors()));
+        systemMetadata.put("jvmHeapSize", String.valueOf(Runtime.getRuntime().maxMemory()));
         return systemMetadata;
     }
 
