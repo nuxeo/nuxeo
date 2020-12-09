@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.restapi.jaxrs.io.capabilities;
 
-import static org.nuxeo.common.function.ThrowableConsumer.asConsumer;
+import static org.nuxeo.common.function.ThrowableBiConsumer.asBiConsumer;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+import org.nuxeo.runtime.capabilities.Capabilities;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -34,22 +35,16 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * @since 11.5
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
-public class ServerInfoJsonWriter extends ExtensibleEntityJsonWriter<ServerInfo> {
+public class CapabilitiesJsonWriter extends ExtensibleEntityJsonWriter<Capabilities> {
 
-    public static final String ENTITY_TYPE = "server";
+    public static final String ENTITY_TYPE = "capabilities";
 
-    public ServerInfoJsonWriter() {
-        super(ENTITY_TYPE, ServerInfo.class);
+    public CapabilitiesJsonWriter() {
+        super(ENTITY_TYPE, Capabilities.class);
     }
 
     @Override
-    protected void writeEntityBody(ServerInfo entity, JsonGenerator jg) throws IOException {
-        jg.writeStringField("distributionName", entity.getDistributionName());
-        jg.writeStringField("distributionVersion", entity.getDistributionVersion());
-        jg.writeStringField("distributionServer", entity.getDistributionServer());
-        entity.getHotfixVersion().ifPresent(asConsumer(h -> jg.writeStringField("hotfixVersion", h)));
-        jg.writeBooleanField("clusterEnabled", entity.isClusterEnabled());
-        jg.writeStringField("clusterNodeId", entity.getClusterNodeId());
-
+    protected void writeEntityBody(Capabilities entity, JsonGenerator jg) throws IOException {
+        entity.get().forEach(asBiConsumer(jg::writeObjectField));
     }
 }

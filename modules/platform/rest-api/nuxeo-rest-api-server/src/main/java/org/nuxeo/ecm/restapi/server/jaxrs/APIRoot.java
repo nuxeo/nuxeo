@@ -113,9 +113,9 @@ public class APIRoot extends ModuleRoot {
     /**
      * @since 11.5
      */
-    @Path("/server")
-    public Object server() {
-        return newObject("server");
+    @Path("/capabilities")
+    public Object capabilities() {
+        return newObject("capabilities");
     }
 
     /**
