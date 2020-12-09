@@ -25,8 +25,10 @@ package org.nuxeo.runtime.model;
  */
 public class ComponentStartOrders {
 
+    /** @since 11.5 */
+    public static final int CAPABILITIES = -2000;
+
     public static final int REPOSITORY = 100;
 
     public static final int DEFAULT = 1000;
-
 }

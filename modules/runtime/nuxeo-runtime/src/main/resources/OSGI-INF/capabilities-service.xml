@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.capabilities.CapabilitiesService" version="1.0">
+
+  <documentation>
+    The Capabilities service allows registration of the capabilities.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.runtime.capabilities.CapabilitiesService" />
+  </service>
+
+  <implementation class="org.nuxeo.runtime.capabilities.CapabilitiesServiceImpl" />
+
+</component>

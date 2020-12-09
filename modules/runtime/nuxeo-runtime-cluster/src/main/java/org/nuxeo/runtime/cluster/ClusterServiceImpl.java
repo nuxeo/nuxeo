@@ -24,12 +24,14 @@ import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.capabilities.CapabilitiesService;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -53,6 +55,9 @@ public class ClusterServiceImpl extends DefaultComponent implements ClusterServi
     public static final String CLUSTERING_ENABLED_OLD_PROP = "repository.clustering.enabled";
 
     public static final String NODE_ID_OLD_PROP = "repository.clustering.id";
+
+    /** @since 11.5 */
+    public static final String CAPABILITY_CLUSTER = "cluster";
 
     protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
 
@@ -102,6 +107,11 @@ public class ClusterServiceImpl extends DefaultComponent implements ClusterServi
                 }
             }
         }
+
+        // capabilities
+        Framework.getService(CapabilitiesService.class)
+                 .registerCapabilities(CAPABILITY_CLUSTER, Map.of("enabled", enabled, "nodeId", nodeId));
+
         super.start(context);
     }
 
