@@ -21,6 +21,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import static javax.ws.rs.core.MediaType.WILDCARD;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.common.Environment.DISTRIBUTION_HOTFIX;
@@ -28,6 +29,8 @@ import static org.nuxeo.common.Environment.DISTRIBUTION_NAME;
 import static org.nuxeo.common.Environment.DISTRIBUTION_SERVER;
 import static org.nuxeo.common.Environment.DISTRIBUTION_VERSION;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_NAME;
+import static org.nuxeo.runtime.capabilities.CapabilitiesServiceImpl.CAPABILITY_SERVER;
+import static org.nuxeo.runtime.cluster.ClusterServiceImpl.CAPABILITY_CLUSTER;
 
 import java.io.IOException;
 
@@ -38,7 +41,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.restapi.jaxrs.io.capabilities.ServerInfoJsonWriter;
+import org.nuxeo.ecm.restapi.jaxrs.io.capabilities.CapabilitiesJsonWriter;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.jaxrs.test.HttpClientTestRule;
@@ -57,7 +60,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features(RestServerFeature.class)
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-cluster.xml")
-public class TestServerInfoObject {
+public class TestCapabilitiesObject {
 
     @Inject
     protected ServletContainerFeature servletContainerFeature;
@@ -87,17 +90,23 @@ public class TestServerInfoObject {
     @WithFrameworkProperty(name = DISTRIBUTION_VERSION, value = DISTRIBUTION_VERSION)
     @WithFrameworkProperty(name = DISTRIBUTION_SERVER, value = DISTRIBUTION_SERVER)
     public void testGet() throws IOException {
-        try (CloseableClientResponse response = httpClientRule.get("/server")) {
+        try (CloseableClientResponse response = httpClientRule.get("/capabilities")) {
             assertEquals(HttpServletResponse.SC_OK, response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-            assertEquals(ServerInfoJsonWriter.ENTITY_TYPE, node.get(ENTITY_FIELD_NAME).asText());
-            assertEquals(DISTRIBUTION_NAME, node.get("distributionName").asText());
-            assertEquals(DISTRIBUTION_VERSION, node.get("distributionVersion").asText());
-            assertEquals(DISTRIBUTION_SERVER, node.get("distributionServer").asText());
-            assertNull(node.get("hotfixVersion"));
-            assertTrue(node.get("clusterEnabled").asBoolean());
-            assertEquals("123", node.get("clusterNodeId").asText());
+            assertEquals(CapabilitiesJsonWriter.ENTITY_TYPE, node.get(ENTITY_FIELD_NAME).asText());
+
+            JsonNode serverNode = node.get(CAPABILITY_SERVER);
+            assertNotNull(serverNode);
+            assertEquals(DISTRIBUTION_NAME, serverNode.get("distributionName").asText());
+            assertEquals(DISTRIBUTION_VERSION, serverNode.get("distributionVersion").asText());
+            assertEquals(DISTRIBUTION_SERVER, serverNode.get("distributionServer").asText());
+            assertNull(serverNode.get("hotfixVersion"));
+
+            JsonNode clusterNode = node.get(CAPABILITY_CLUSTER);
+            assertNotNull(clusterNode);
+            assertTrue(clusterNode.get("enabled").asBoolean());
+            assertEquals("123", clusterNode.get("nodeId").asText());
         }
     }
 
@@ -107,17 +116,23 @@ public class TestServerInfoObject {
     @WithFrameworkProperty(name = DISTRIBUTION_SERVER, value = DISTRIBUTION_SERVER)
     @WithFrameworkProperty(name = DISTRIBUTION_HOTFIX, value = DISTRIBUTION_HOTFIX)
     public void testGetWithHotfixVersion() throws IOException {
-        try (CloseableClientResponse response = httpClientRule.get("/server")) {
+        try (CloseableClientResponse response = httpClientRule.get("/capabilities")) {
             assertEquals(HttpServletResponse.SC_OK, response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-            assertEquals(ServerInfoJsonWriter.ENTITY_TYPE, node.get(ENTITY_FIELD_NAME).asText());
-            assertEquals(DISTRIBUTION_NAME, node.get("distributionName").asText());
-            assertEquals(DISTRIBUTION_VERSION, node.get("distributionVersion").asText());
-            assertEquals(DISTRIBUTION_SERVER, node.get("distributionServer").asText());
-            assertEquals(DISTRIBUTION_HOTFIX, node.get("hotfixVersion").asText());
-            assertTrue(node.get("clusterEnabled").asBoolean());
-            assertEquals("123", node.get("clusterNodeId").asText());
+            assertEquals(CapabilitiesJsonWriter.ENTITY_TYPE, node.get(ENTITY_FIELD_NAME).asText());
+
+            JsonNode serverNode = node.get(CAPABILITY_SERVER);
+            assertNotNull(serverNode);
+            assertEquals(DISTRIBUTION_NAME, serverNode.get("distributionName").asText());
+            assertEquals(DISTRIBUTION_VERSION, serverNode.get("distributionVersion").asText());
+            assertEquals(DISTRIBUTION_SERVER, serverNode.get("distributionServer").asText());
+            assertEquals(DISTRIBUTION_HOTFIX, serverNode.get("hotfixVersion").asText());
+
+            JsonNode clusterNode = node.get(CAPABILITY_CLUSTER);
+            assertNotNull(clusterNode);
+            assertTrue(clusterNode.get("enabled").asBoolean());
+            assertEquals("123", clusterNode.get("nodeId").asText());
         }
     }
 }

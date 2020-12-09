@@ -23,19 +23,21 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.nuxeo.ecm.restapi.jaxrs.io.capabilities.ServerInfo;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.capabilities.Capabilities;
+import org.nuxeo.runtime.capabilities.CapabilitiesService;
 
 /**
  * @since 11.5
  */
-@WebObject(type = "server")
-public class ServerInfoObject extends DefaultObject {
+@WebObject(type = "capabilities")
+public class CapabilitiesObject extends DefaultObject {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ServerInfo getInfo() {
-        return ServerInfo.get();
+    public Capabilities getInfo() {
+        return Framework.getService(CapabilitiesService.class).getCapabilities();
     }
 }
