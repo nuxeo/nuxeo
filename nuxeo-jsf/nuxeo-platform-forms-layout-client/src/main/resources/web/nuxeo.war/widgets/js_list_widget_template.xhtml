@@ -75,55 +75,66 @@
               </ui:fragment>
             </thead>
             <tbody>
-              <nxu:jsInputList value="#{fieldOrValue}"
-                id="#{widget.id}"
-                model="model"
-                template="#{templateValue}"
-                required="#{widgetProperty_required}"
-                removeEmpty="#{widgetProperty_removeEmpty}"
-                number="#{widgetProperty_number}"
-                diff="#{widgetProperty_diff}"
-                rendered="#{isEditMode or not empty fieldOrValue}">
-                <nxu:validateDocumentConstraint handleSubProperties="false" />
-
-                <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'} listItem">
-                  <td style="display:none;">
-                    <h:inputHidden>
-                      <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
-                      <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
-                    </h:inputHidden>
-                  </td>
-                  <c:if test="#{showActions}">
-                    <td class="listWidgetActions">
-                      <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
+              <c:if test="#{isEditMode}">
+                <nxu:jsInputList value="#{fieldOrValue}"
+                  id="#{widget.id}"
+                  model="model"
+                  template="#{templateValue}"
+                  required="#{widgetProperty_required}"
+                  removeEmpty="#{widgetProperty_removeEmpty}"
+                  number="#{widgetProperty_number}"
+                  diff="#{widgetProperty_diff}">
+                  <nxu:validateDocumentConstraint handleSubProperties="false" />
+                  <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'} listItem">
+                    <td style="display:none;">
+                      <h:inputHidden>
+                        <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
+                        <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
+                      </h:inputHidden>
                     </td>
-                  </c:if>
-                  <nxl:subWidget>
-                    <td class="fieldColumn">
-                      <nxu:set var="subWidgetOnchangeProperty"
-                        value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
-                        cache="true">
-                      <nxu:set var="subWidgetOnclickProperty"
-                        value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
-                        cache="true">
-                      <nxl:widget widget="#{widget}" value="#{model.rowData}"
-                        onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
-                      </nxu:set>
-                      </nxu:set>
+                    <c:if test="#{showActions}">
+                      <td class="listWidgetActions">
+                        <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
+                      </td>
+                    </c:if>
+                    <nxl:subWidget>
+                      <td class="fieldColumn">
+                        <nxu:set var="subWidgetOnchangeProperty"
+                          value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
+                          cache="true">
+                        <nxu:set var="subWidgetOnclickProperty"
+                          value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
+                          cache="true">
+                        <nxl:widget widget="#{widget}" value="#{model.rowData}"
+                          onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
+                        </nxu:set>
+                        </nxu:set>
+                      </td>
+                    </nxl:subWidget>
+                  </tr>
+                </nxu:jsInputList>
+                <ui:fragment rendered="#{not widgetProperty_hideAddButton}">
+                  <tr>
+                    <td>
+                      <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
+                         onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).closest('tr').prev())">
+                        <h:outputText value="#{nxu:test(empty widgetProperty_addLabel, messages['command.add'], nxu:test(widget.translated, messages[widgetProperty_addLabel], widgetProperty_addLabel))}" />
+                      </a>
                     </td>
-                  </nxl:subWidget>
-                </tr>
-              </nxu:jsInputList>
-              <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
-                <tr>
-                  <td>
-                    <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
-                       onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).closest('tr').prev())">
-                      <h:outputText value="#{nxu:test(empty widgetProperty_addLabel, messages['command.add'], nxu:test(widget.translated, messages[widgetProperty_addLabel], widgetProperty_addLabel))}" />
-                    </a>
-                  </td>
-                </tr>
-              </ui:fragment>
+                  </tr>
+                </ui:fragment>
+              </c:if>
+              <c:otherwise>
+                <ui:repeat var="listVar" value="#{fieldOrValue}" id="#{widget.id}">
+                  <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'} listItem">
+                    <nxl:subWidget>
+                      <td class="fieldColumn">
+                        <nxl:widget widget="#{widget}" value="#{listVar}" />
+                      </td>
+                    </nxl:subWidget>
+                  </tr>
+                </ui:repeat>
+              </c:otherwise>
             </tbody>
           </table>
         </c:when>
@@ -131,191 +142,274 @@
         <c:when test="#{widgetProperty_display == 'inline'}">
           <table class="widgetTable listWidgetTable #{widgetProperty_styleClass}">
             <tbody>
-              <nxu:jsInputList value="#{fieldOrValue}"
-                id="#{widget.id}"
-                model="model"
-                template="#{templateValue}"
-                required="#{widgetProperty_required}"
-                removeEmpty="#{widgetProperty_removeEmpty}"
-                number="#{widgetProperty_number}"
-                diff="#{widgetProperty_diff}"
-                rendered="#{isEditMode or not empty fieldOrValue}">
-                <nxu:validateDocumentConstraint handleSubProperties="false" />
-                <tr class="listItem">
-                  <td style="display:none;">
-                    <h:inputHidden>
-                      <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
-                      <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
-                    </h:inputHidden>
-                  </td>
-                  <c:if test="#{showActions}">
-                    <td class="listWidgetActions">
-                      <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
+              <c:if test="#{isEditMode}">
+                <nxu:jsInputList value="#{fieldOrValue}"
+                  id="#{widget.id}"
+                  model="model"
+                  template="#{templateValue}"
+                  required="#{widgetProperty_required}"
+                  removeEmpty="#{widgetProperty_removeEmpty}"
+                  number="#{widgetProperty_number}"
+                  diff="#{widgetProperty_diff}">
+                  <nxu:validateDocumentConstraint handleSubProperties="false" />
+                  <tr class="listItem">
+                    <td style="display:none;">
+                      <h:inputHidden>
+                        <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
+                        <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
+                      </h:inputHidden>
                     </td>
-                  </c:if>
-                  <nxl:subWidget>
-                    <c:if test="#{displaySubLabels}">
-                      <td class="boldColumn listWidgetInlineDisplay">
-                        <h:panelGroup rendered="#{model.rowIndex == 0}">
-                          <ui:include src="/widgets/incl/widget_label_template.xhtml" />
-                        </h:panelGroup>
+                    <c:if test="#{showActions}">
+                      <td class="listWidgetActions">
+                        <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
                       </td>
                     </c:if>
-                    <td class="fieldColumn">
-                      <nxu:set var="subWidgetOnchangeProperty"
-                        value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
-                        cache="true">
-                      <nxu:set var="subWidgetOnclickProperty"
-                        value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
-                        cache="true">
-                      <nxl:widget widget="#{widget}" value="#{model.rowData}"
-                        onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
-                      </nxu:set>
-                      </nxu:set>
+                    <nxl:subWidget>
+                      <c:if test="#{displaySubLabels}">
+                        <td class="boldColumn listWidgetInlineDisplay">
+                          <h:panelGroup rendered="#{model.rowIndex == 0}">
+                            <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                          </h:panelGroup>
+                        </td>
+                      </c:if>
+                      <td class="fieldColumn">
+                        <nxu:set var="subWidgetOnchangeProperty"
+                          value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
+                          cache="true">
+                        <nxu:set var="subWidgetOnclickProperty"
+                          value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
+                          cache="true">
+                        <nxl:widget widget="#{widget}" value="#{model.rowData}"
+                          onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
+                        </nxu:set>
+                        </nxu:set>
+                      </td>
+                    </nxl:subWidget>
+                  </tr>
+                </nxu:jsInputList>
+                <ui:fragment rendered="#{not widgetProperty_hideAddButton}">
+                  <tr>
+                    <td>
+                      <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
+                         onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).closest('tr').prev())">
+                        <h:outputText value="#{nxu:test(empty widgetProperty_addLabel, messages['command.add'], nxu:test(widget.translated, messages[widgetProperty_addLabel], widgetProperty_addLabel))}" />
+                      </a>
                     </td>
-                  </nxl:subWidget>
-                </tr>
-              </nxu:jsInputList>
-              <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
-                <tr>
-                  <td>
-                    <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
-                       onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).closest('tr').prev())">
-                      <h:outputText value="#{nxu:test(empty widgetProperty_addLabel, messages['command.add'], nxu:test(widget.translated, messages[widgetProperty_addLabel], widgetProperty_addLabel))}" />
-                    </a>
-                  </td>
-                </tr>
-              </ui:fragment>
+                  </tr>
+                </ui:fragment>
+              </c:if>
+              <c:otherwise>
+                <ui:repeat var="listVar" value="#{fieldOrValue}" id="#{widget.id}">
+                  <tr class="listItem">
+                    <nxl:subWidget>
+                      <c:if test="#{displaySubLabels}">
+                        <td class="boldColumn listWidgetInlineDisplay">
+                          <h:panelGroup rendered="#{model.rowIndex == 0}">
+                            <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                          </h:panelGroup>
+                        </td>
+                      </c:if>
+                      <td class="fieldColumn">
+                        <nxl:widget widget="#{widget}" value="#{listVar}" />
+                      </td>
+                    </nxl:subWidget>
+                  </tr>
+                </ui:repeat>
+              </c:otherwise>
             </tbody>
           </table>
         </c:when>
 
         <c:when test="#{widgetProperty_display == 'block_top'}">
-          <nxu:jsInputList value="#{fieldOrValue}"
-            id="#{widget.id}"
-            model="model"
-            template="#{templateValue}"
-            required="#{widgetProperty_required}"
-            removeEmpty="#{widgetProperty_removeEmpty}"
-            number="#{widgetProperty_number}"
-            diff="#{widgetProperty_diff}"
-            rendered="#{isEditMode or not empty fieldOrValue}">
-            <nxu:validateDocumentConstraint handleSubProperties="false" />
-            <h:panelGrid columns="#{isEditMode and showActions?2:1}" styleClass="listItem">
-              <h:inputHidden>
-                <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
-                <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
-              </h:inputHidden>
-              <c:if test="#{showActions}">
-                <h:panelGroup styleClass="listWidgetActionsTable" id="#{widget.id}_actions">
-                  <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
-                </h:panelGroup>
-              </c:if>
-              <h:panelGroup>
-                <table>
-                  <tbody>
-                    <nxl:subWidget>
-                      <tr>
-                        <c:if test="#{displaySubLabels}">
-                          <td class="boldColumn">
-                            <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                              <ui:param name="labelStyleClass"
-                                value="boldLabel #{widgetProperty_subLabelStyleClass}" />
-                            </ui:include>
-                            <h:outputText value=" " />
-                          </td>
-                        </c:if>
-                      </tr>
-                      <tr>
-                        <td class="fieldColumn">
-                          <nxu:set var="subWidgetOnchangeProperty"
-                            value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
-                            cache="true">
-                          <nxu:set var="subWidgetOnclickProperty"
-                            value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
-                            cache="true">
-                          <nxl:widget widget="#{widget}" value="#{model.rowData}"
-                            onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
-                          </nxu:set>
-                          </nxu:set>
-                        </td>
-                      </tr>
-                    </nxl:subWidget>
-                  </tbody>
-                </table>
-              </h:panelGroup>
-            </h:panelGrid>
-          </nxu:jsInputList>
-
-          <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
-            <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
-               onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).prev());">
-              <h:outputText value="#{nxu:test(empty widgetProperty_addLabel, messages['command.add'], nxu:test(widget.translated, messages[widgetProperty_addLabel], widgetProperty_addLabel))}" />
-            </a>
-          </ui:fragment>
-        </c:when>
-
-        <c:otherwise>
-          <nxu:jsInputList value="#{fieldOrValue}"
-            id="#{widget.id}"
-            model="model"
-            template="#{templateValue}"
-            required="#{widgetProperty_required}"
-            removeEmpty="#{widgetProperty_removeEmpty}"
-            number="#{widgetProperty_number}"
-            diff="#{widgetProperty_diff}"
-            rendered="#{isEditMode or not empty fieldOrValue}">
-            <nxu:validateDocumentConstraint handleSubProperties="false" />
-            <h:panelGrid columns="#{isEditMode and showActions?2:1}" styleClass="listItem">
-              <c:if test="#{showActions}">
-                <h:panelGroup styleClass="listWidgetActionsTable" id="#{widget.id}_actions">
-                  <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
-                </h:panelGroup>
-              </c:if>
-              <h:panelGroup>
+          <c:if test="#{isEditMode}">
+            <nxu:jsInputList value="#{fieldOrValue}"
+              id="#{widget.id}"
+              model="model"
+              template="#{templateValue}"
+              required="#{widgetProperty_required}"
+              removeEmpty="#{widgetProperty_removeEmpty}"
+              number="#{widgetProperty_number}"
+              diff="#{widgetProperty_diff}">
+              <nxu:validateDocumentConstraint handleSubProperties="false" />
+              <h:panelGrid columns="#{showActions?2:1}" styleClass="listItem">
                 <h:inputHidden>
                   <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
                   <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
                 </h:inputHidden>
-                <table>
-                  <tbody>
-                    <nxl:subWidget>
-                      <tr>
-                        <c:if test="#{displaySubLabels}">
-                          <td class="boldColumn">
-                            <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                              <ui:param name="labelStyleClass"
-                                value="boldLabel #{widgetProperty_subLabelStyleClass}" />
-                            </ui:include>
-                            <h:outputText value=" " />
+                <c:if test="#{showActions}">
+                  <h:panelGroup styleClass="listWidgetActionsTable" id="#{widget.id}_actions">
+                    <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
+                  </h:panelGroup>
+                </c:if>
+                <h:panelGroup>
+                  <table>
+                    <tbody>
+                      <nxl:subWidget>
+                        <tr>
+                          <c:if test="#{displaySubLabels}">
+                            <td class="boldColumn">
+                              <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                                <ui:param name="labelStyleClass"
+                                  value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                              </ui:include>
+                              <h:outputText value=" " />
+                            </td>
+                          </c:if>
+                        </tr>
+                        <tr>
+                          <td class="fieldColumn">
+                            <nxu:set var="subWidgetOnchangeProperty"
+                              value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
+                              cache="true">
+                            <nxu:set var="subWidgetOnclickProperty"
+                              value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
+                              cache="true">
+                            <nxl:widget widget="#{widget}" value="#{model.rowData}"
+                              onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
+                            </nxu:set>
+                            </nxu:set>
                           </td>
-                        </c:if>
-                        <td class="fieldColumn">
-                          <nxu:set var="subWidgetOnchangeProperty"
-                            value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
-                            cache="true">
-                          <nxu:set var="subWidgetOnclickProperty"
-                            value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
-                            cache="true">
-                          <nxl:widget widget="#{widget}" value="#{model.rowData}"
-                            onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
-                          </nxu:set>
-                          </nxu:set>
-                        </td>
-                      </tr>
-                    </nxl:subWidget>
-                  </tbody>
-                </table>
-              </h:panelGroup>
-            </h:panelGrid>
-          </nxu:jsInputList>
+                        </tr>
+                      </nxl:subWidget>
+                    </tbody>
+                  </table>
+                </h:panelGroup>
+              </h:panelGrid>
+            </nxu:jsInputList>
 
-          <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
-            <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
-               onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).prev());">
-              <h:outputText value="#{nxu:test(empty widgetProperty_addLabel, messages['command.add'], nxu:test(widget.translated, messages[widgetProperty_addLabel], widgetProperty_addLabel))}" />
-            </a>
-          </ui:fragment>
+            <ui:fragment rendered="#{not widgetProperty_hideAddButton}">
+              <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
+                 onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).prev());">
+                <h:outputText value="#{nxu:test(empty widgetProperty_addLabel, messages['command.add'], nxu:test(widget.translated, messages[widgetProperty_addLabel], widgetProperty_addLabel))}" />
+              </a>
+            </ui:fragment>
+          </c:if>
+
+          <c:otherwise>
+            <ui:repeat var="listVar" value="#{fieldOrValue}" id="#{widget.id}">
+              <h:panelGrid columns="1" styleClass="listItem">
+                <h:panelGroup>
+                  <table>
+                    <tbody>
+                      <nxl:subWidget>
+                        <tr>
+                          <c:if test="#{displaySubLabels}">
+                            <td class="boldColumn">
+                              <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                                <ui:param name="labelStyleClass"
+                                  value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                              </ui:include>
+                              <h:outputText value=" " />
+                            </td>
+                          </c:if>
+                        </tr>
+                        <tr>
+                          <td class="fieldColumn">
+                            <nxl:widget widget="#{widget}" value="#{listVar}" />
+                          </td>
+                        </tr>
+                      </nxl:subWidget>
+                    </tbody>
+                  </table>
+                </h:panelGroup>
+              </h:panelGrid>
+            </ui:repeat>
+          </c:otherwise>
+
+        </c:when>
+
+        <c:otherwise>
+          <c:if test="#{isEditMode}">
+            <nxu:jsInputList value="#{fieldOrValue}"
+              id="#{widget.id}"
+              model="model"
+              template="#{templateValue}"
+              required="#{widgetProperty_required}"
+              removeEmpty="#{widgetProperty_removeEmpty}"
+              number="#{widgetProperty_number}"
+              diff="#{widgetProperty_diff}">
+              <nxu:validateDocumentConstraint handleSubProperties="false" />
+              <h:panelGrid columns="#{showActions?2:1}" styleClass="listItem">
+                <c:if test="#{showActions}">
+                  <h:panelGroup styleClass="listWidgetActionsTable" id="#{widget.id}_actions">
+                    <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
+                  </h:panelGroup>
+                </c:if>
+                <h:panelGroup>
+                  <h:inputHidden>
+                    <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
+                    <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
+                  </h:inputHidden>
+                  <table>
+                    <tbody>
+                      <nxl:subWidget>
+                        <tr>
+                          <c:if test="#{displaySubLabels}">
+                            <td class="boldColumn">
+                              <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                                <ui:param name="labelStyleClass"
+                                  value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                              </ui:include>
+                              <h:outputText value=" " />
+                            </td>
+                          </c:if>
+                          <td class="fieldColumn">
+                            <nxu:set var="subWidgetOnchangeProperty"
+                              value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
+                              cache="true">
+                            <nxu:set var="subWidgetOnclickProperty"
+                              value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
+                              cache="true">
+                            <nxl:widget widget="#{widget}" value="#{model.rowData}"
+                              onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
+                            </nxu:set>
+                            </nxu:set>
+                          </td>
+                        </tr>
+                      </nxl:subWidget>
+                    </tbody>
+                  </table>
+                </h:panelGroup>
+              </h:panelGrid>
+            </nxu:jsInputList>
+
+            <ui:fragment rendered="#{not widgetProperty_hideAddButton}">
+              <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
+                 onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).prev());">
+                <h:outputText value="#{nxu:test(empty widgetProperty_addLabel, messages['command.add'], nxu:test(widget.translated, messages[widgetProperty_addLabel], widgetProperty_addLabel))}" />
+              </a>
+            </ui:fragment>
+          </c:if>
+
+          <c:otherwise>
+            <ui:repeat var="listVar" value="#{fieldOrValue}" id="#{widget.id}">
+              <h:panelGrid columns="1" styleClass="listItem">
+                <h:panelGroup>
+                  <table>
+                    <tbody>
+                      <nxl:subWidget>
+                        <tr>
+                          <c:if test="#{displaySubLabels}">
+                            <td class="boldColumn">
+                              <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                                <ui:param name="labelStyleClass"
+                                  value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                              </ui:include>
+                              <h:outputText value=" " />
+                            </td>
+                          </c:if>
+                          <td class="fieldColumn">
+                            <nxl:widget widget="#{widget}" value="#{listVar}" />
+                          </td>
+                        </tr>
+                      </nxl:subWidget>
+                    </tbody>
+                  </table>
+                </h:panelGroup>
+              </h:panelGrid>
+            </ui:repeat>
+          </c:otherwise>
+
         </c:otherwise>
 
       </c:choose>
