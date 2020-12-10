@@ -1,0 +1,26 @@
+<component name="org.nuxeo.runtime.test.Registry.framework">
+
+  <implementation class="org.nuxeo.runtime.registry.SampleComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.registry.SampleComponent" />
+  </service>
+
+  <extension-point name="single">
+    <object class="org.nuxeo.runtime.registry.SampleSingleDescriptor" />
+  </extension-point>
+
+  <extension-point name="map">
+    <object class="org.nuxeo.runtime.registry.SampleDescriptor" />
+  </extension-point>
+
+  <extension-point name="custom">
+    <object class="org.nuxeo.runtime.registry.SampleDescriptor" />
+    <registry class="org.nuxeo.runtime.registry.SampleRegistry" />
+  </extension-point>
+
+  <extension-point name="legacy">
+    <object class="org.nuxeo.runtime.registry.SampleLegacyDescriptor" />
+  </extension-point>
+
+</component>

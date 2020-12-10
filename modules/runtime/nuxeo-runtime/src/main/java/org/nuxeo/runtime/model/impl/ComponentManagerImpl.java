@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +35,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -43,11 +46,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.common.xmap.XMapException;
+import org.nuxeo.common.xmap.registry.NullRegistry;
+import org.nuxeo.common.xmap.registry.Registry;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
 import org.nuxeo.runtime.RuntimeMessage;
@@ -60,12 +69,12 @@ import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DescriptorRegistry;
 import org.nuxeo.runtime.model.Extension;
+import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.util.Watch;
 
 /**
- * @author Bogdan Stefanescu
- * @author Florent Guillaume
+ * Component handling all Runtime components.
  */
 public class ComponentManagerImpl implements ComponentManager {
 
@@ -129,6 +138,15 @@ public class ComponentManagerImpl implements ComponentManager {
     protected volatile DescriptorRegistry descriptors;
 
     /**
+     * Target Component &gt; Extension Point &gt; Registry
+     *
+     * @since 11.5
+     */
+    protected final Map<String, Map<String, Registry>> registries;
+
+    protected static final Registry NULL_REGISTRY = new NullRegistry();
+
+    /**
      * @since 9.2
      */
     protected volatile boolean isFlushingStash = false;
@@ -147,6 +165,7 @@ public class ComponentManagerImpl implements ComponentManager {
         blacklist = new HashSet<>();
         stash = new Stash();
         descriptors = new DescriptorRegistry();
+        registries = new HashMap<>();
     }
 
     /**
@@ -416,7 +435,7 @@ public class ComponentManagerImpl implements ComponentManager {
         if (ri != null && ri.getComponent() != null
                 && Set.of(RegistrationInfo.ACTIVATED, RegistrationInfo.STARTED).contains(ri.getState())) {
             log.debug("Register contributed extension: {}", extension);
-            loadContributions(ri, extension);
+            register(ri, extension);
             ri.getComponent().registerExtension(extension);
             sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
                     ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
@@ -436,6 +455,7 @@ public class ComponentManagerImpl implements ComponentManager {
         ComponentName name = extension.getTargetComponent();
         RegistrationInfo ri = registry.getComponent(name);
         if (ri != null) {
+            unregister(ri, extension);
             ComponentInstance co = ri.getComponent();
             if (co != null) {
                 co.unregisterExtension(extension);
@@ -453,24 +473,129 @@ public class ComponentManagerImpl implements ComponentManager {
                 ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
     }
 
-    public static void loadContributions(RegistrationInfo ri, Extension xt) {
+    /**
+     * Registers the given extension on target extension point held by given registration info.
+     *
+     * @since 11.5
+     */
+    public void register(RegistrationInfo ri, Extension xt) {
         // in new java based system contributions don't need to be loaded, this is a XML specificity reflected by
         // ExtensionPointImpl coming from XML deserialization
         if (ri.useFormerLifecycleManagement()) {
             // Extension point needing to load contribution are ExtensionPointImpl
-            ri.getExtensionPoint(xt.getExtensionPoint())
-              .filter(xp -> xp.getContributions() != null)
-              .map(ExtensionPointImpl.class::cast)
-              .ifPresent(xp -> {
-                  try {
-                      Object[] contribs = xp.loadContributions(ri, xt);
-                      xt.setContributions(contribs);
-                  } catch (RuntimeException e) {
-                      ComponentName compName = xt.getComponent().getName();
-                      handleError("Failed to load contributions for component " + compName, compName.getName(), e);
-                  }
-              });
+            ri.getExtensionPoint(xt.getExtensionPoint()).filter(xp -> xp.getContributions() != null).ifPresent(xp -> {
+                try {
+                    // should compute now the contributions
+                    Class<?>[] contributions = xp.getContributions();
+                    if (contributions != null) {
+                        Context xctx = new XMapContext(xt.getContext());
+                        Registry registry = getOrCreateRegistry(ri.getName().getName(), xp);
+                        if (registry.isNull()) {
+                            // backward compatibility
+                            if (xt.getContributions() == null) {
+                                xt.setContributions(xp.getXMap().loadAll(xctx, xt.getElement()));
+                            }
+                        } else {
+                            // fill registry
+                            xp.getXMap().register(registry, xctx, xt.getElement(), xt.getId());
+                        }
+                    }
+                } catch (XMapException e) {
+                    ComponentName compName = xt.getComponent().getName();
+                    handleError(e.getMessage() + " while processing component: " + compName, compName.getName(), e);
+                }
+            });
         }
+
+    }
+
+    protected void unregister(RegistrationInfo ri, Extension xt) {
+        if (ri.useFormerLifecycleManagement()) {
+            ri.getExtensionPoint(xt.getExtensionPoint()).filter(xp -> xp.getContributions() != null).ifPresent(xp -> {
+                try {
+                    Optional<Registry> registry = getExtensionPointRegistry(ri.getName().getName(), xp.getName());
+                    if (registry.isPresent() && !registry.get().isNull()) {
+                        try {
+                            xp.getXMap().unregister(registry.get(), xt.getId());
+                        } catch (XMapException e) {
+                            log.error(e.getMessage() + " while unprocessing component: "
+                                    + xt.getComponent().getName().getName(), e);
+                        }
+                    }
+                } catch (RuntimeException e) {
+                    ComponentName compName = xt.getComponent().getName();
+                    handleError("Failed to unregister contributions for component " + compName, compName.getName(), e);
+                }
+            });
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Registry> Optional<T> getExtensionPointRegistry(String component, String point) {
+        Map<String, Registry> target = registries.get(component);
+        if (target != null && target.containsKey(point)) {
+            Registry registry = target.get(point);
+            if (!registry.isNull()) {
+                return Optional.of((T) registry);
+            }
+        }
+        return Optional.empty();
+    }
+
+    protected Registry getOrCreateRegistry(String component, ExtensionPoint xp) {
+        Optional<Registry> stored = getExtensionPointRegistry(component, xp.getName());
+        if (stored.isPresent()) {
+            return stored.get();
+        }
+        Registry registry = NULL_REGISTRY;
+        String point = xp.getName();
+        String registryClass = xp.getRegistryClass();
+        if (registryClass != null) {
+            try {
+                Class<?> clazz = Class.forName(registryClass);
+                Constructor<?> constructor = clazz.getConstructor();
+                registry = (Registry) constructor.newInstance();
+            } catch (ReflectiveOperationException e) {
+                String msg = String.format(
+                        "Failed to create registry on component '%s', extension point '%s': error initializing class '%s' (%s).",
+                        component, point, registryClass, e.toString());
+                throw new RuntimeException(msg, e);
+            }
+        } else {
+            Class<?>[] contributions = xp.getContributions();
+            if (contributions.length != 0) {
+                // compute registry from annotations, taking first registry
+                XMap xmap = xp.getXMap();
+                registry = Arrays.stream(contributions)
+                                 .map(xmap::getObject)
+                                 .filter(Objects::nonNull)
+                                 .map(xmap::getRegistry)
+                                 .filter(Objects::nonNull)
+                                 .findFirst()
+                                 .orElse(NULL_REGISTRY);
+            }
+        }
+        registries.computeIfAbsent(component, k -> new ConcurrentHashMap<>()).put(point, registry);
+        return registry;
+    }
+
+    protected void createRegistries(RegistrationInfo ri) {
+        // instantiate extension point registries if any
+        Stream.of(ri.getExtensionPoints()).filter(xp -> xp.getContributions() != null).forEach(xp -> {
+            getOrCreateRegistry(ri.getName().getName(), xp);
+        });
+    }
+
+    protected void initializeRegistries(RegistrationInfo ri) {
+        String name = ri.getName().getName();
+        if (registries.containsKey(name)) {
+            registries.get(name).values().forEach(Registry::initialize);
+        }
+    }
+
+    protected void resetRegistries(RegistrationInfo ri) {
+        registries.remove(ri.getName().getName());
     }
 
     public synchronized void registerServices(RegistrationInfo ri) {
@@ -575,6 +700,8 @@ public class ComponentManagerImpl implements ComponentManager {
      * @since 9.3
      */
     protected void activateComponent(RegistrationInfo ri) {
+        createRegistries(ri);
+
         if (ri.useFormerLifecycleManagement()) {
             ((RegistrationInfoImpl) ri).activate();
             return;
@@ -681,6 +808,11 @@ public class ComponentManagerImpl implements ComponentManager {
      * @since 9.3
      */
     protected void deactivateComponent(RegistrationInfo ri, boolean isShutdown) {
+        if (!isShutdown) {
+            // reset registries
+            resetRegistries(ri);
+        }
+
         if (ri.useFormerLifecycleManagement()) {
             // don't unregister extension if server is shutdown
             ((RegistrationInfoImpl) ri).deactivate(!isShutdown);
@@ -719,7 +851,7 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     /**
-     * Start all given components
+     * Starts all given components.
      *
      * @since 9.2
      */
@@ -747,6 +879,8 @@ public class ComponentManagerImpl implements ComponentManager {
      * @since 9.3
      */
     protected void startComponent(RegistrationInfo ri) {
+        // make sure corresponding registries are initialized
+        initializeRegistries(ri);
         if (ri.useFormerLifecycleManagement()) {
             ((RegistrationInfoImpl) ri).start();
             return;

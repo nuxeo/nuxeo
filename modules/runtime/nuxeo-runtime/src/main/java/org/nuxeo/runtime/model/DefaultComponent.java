@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.runtime.model;
@@ -23,6 +25,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
+import org.nuxeo.common.xmap.registry.Registry;
 import org.nuxeo.runtime.RuntimeMessage;
 import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeMessage.Source;
@@ -30,9 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
 
 /**
- * Empty implementation for a component.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Default implementation for a component, to be extended by contributed components.
  */
 public class DefaultComponent implements Component, Adaptable {
 
@@ -180,6 +181,20 @@ public class DefaultComponent implements Component, Adaptable {
      */
     protected <T extends Descriptor> List<T> getDescriptors(String xp) {
         return getRegistry().getDescriptors(name, xp);
+    }
+
+    /**
+     * Returns the registry for given extension point of this component.
+     *
+     * @since 11.5
+     */
+    @SuppressWarnings("unchecked")
+    protected <T extends Registry> T getExtensionPointRegistry(String point) {
+        return (T) Framework.getRuntime()
+                            .getComponentManager()
+                            .getExtensionPointRegistry(name, point)
+                            .orElseThrow(() -> new IllegalArgumentException(
+                                    String.format("Unknown registry for extension point '%s--%s'", name, point)));
     }
 
 }
