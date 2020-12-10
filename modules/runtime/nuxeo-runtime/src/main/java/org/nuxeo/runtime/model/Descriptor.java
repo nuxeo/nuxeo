@@ -18,12 +18,16 @@
  */
 package org.nuxeo.runtime.model;
 
+import org.nuxeo.common.xmap.registry.Registry;
+
 /**
  * Descriptors implementing this interface will automatically be registered within the default registry in
  * {@code DefaultComponent}.
  *
  * @since 10.3
+ * @deprecated since 11.5: use {@link Registry} associated annotations instead.
  */
+@Deprecated
 public interface Descriptor {
 
     String UNIQUE_DESCRIPTOR_ID = "";

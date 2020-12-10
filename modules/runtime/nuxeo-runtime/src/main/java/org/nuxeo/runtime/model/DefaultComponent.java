@@ -150,35 +150,48 @@ public class DefaultComponent implements Component, Adaptable {
 
     /**
      * @since 10.3
+     * @deprecated since 11.5: use {@link Registry} associated annotations instead.
+     * @see #getExtensionPointRegistry(String)
      */
+    @Deprecated
     protected DescriptorRegistry getRegistry() {
         return registry;
     }
 
     /**
      * @since 10.3
+     * @deprecated since 11.5: use {@link Registry} associated annotations instead.
      */
+    @Deprecated
     protected boolean register(String xp, Descriptor descriptor) {
         return getRegistry().register(name, xp, descriptor);
     }
 
     /**
      * @since 10.3
+     * @deprecated since 11.5: use {@link Registry} associated annotations instead.
      */
+    @Deprecated
     protected boolean unregister(String xp, Descriptor descriptor) {
         return getRegistry().unregister(name, xp, descriptor);
     }
 
     /**
      * @since 10.3
+     * @deprecated since 11.5: use {@link Registry} associated annotations instead.
+     * @see #getRegistryContribution(String, String)
      */
+    @Deprecated
     protected <T extends Descriptor> T getDescriptor(String xp, String id) {
         return getRegistry().getDescriptor(name, xp, id);
     }
 
     /**
      * @since 10.3
+     * @deprecated since 11.5: use {@link Registry} associated annotations instead.
+     * @see #getRegistryContributions(String)
      */
+    @Deprecated
     protected <T extends Descriptor> List<T> getDescriptors(String xp) {
         return getRegistry().getDescriptors(name, xp);
     }
