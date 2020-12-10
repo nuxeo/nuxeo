@@ -224,7 +224,7 @@ pipeline {
               ----------------------------------------"""
               // comment the PR if it is the first time
               if (!nsExists) {
-                pullRequest.comment("Preview Javadoc environment available [here](https://${url}).")
+                pullRequest.comment("Preview Javadoc environment available [here](https://${host}).")
               }
             }
           }
