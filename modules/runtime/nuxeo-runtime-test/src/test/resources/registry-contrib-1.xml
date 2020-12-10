@@ -1,0 +1,50 @@
+<component name="org.nuxeo.runtime.test.Registry.contrib">
+
+  <extension target="org.nuxeo.runtime.test.Registry.framework" point="single">
+
+    <descriptor name="sample1">
+      <value>Sample 1 Value</value>
+    </descriptor>
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.test.Registry.framework" point="map">
+
+    <descriptor name="sample1">
+      <value>Sample 1 Value</value>
+      <bool>true</bool>
+    </descriptor>
+
+    <descriptor name="sample2">
+      <value>Sample 2 Value</value>
+    </descriptor>
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.test.Registry.framework" point="custom">
+
+    <descriptor name="sample1">
+      <value>Sample 1 Value</value>
+      <bool>true</bool>
+    </descriptor>
+
+    <descriptor name="sample2">
+      <value>Sample 2 Value</value>
+    </descriptor>
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.test.Registry.framework" point="legacy">
+
+    <descriptor name="sample1">
+      <value>Sample 1 Value</value>
+      <bool>true</bool>
+    </descriptor>
+
+    <descriptor name="sample2">
+      <value>Sample 2 Value</value>
+    </descriptor>
+
+  </extension>
+
+</component>

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Anahide Tchertchian
  */
 package org.nuxeo.runtime;
 
@@ -28,6 +29,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.xmap.XMapException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -58,21 +60,21 @@ public class TestExtensionPointWithError {
         DummyContribution[] contribs = co.getContributions();
         assertEquals(0, contribs.length); // contrib with errors not loaded
 
+        String error = "Cannot load class: this-is-not-a-class while processing component: service:OverridingXPoint-witherror";
+
         // check runtime errors
         List<String> errors = Framework.getRuntime().getMessageHandler().getMessages(RuntimeMessage.Level.ERROR);
         assertEquals(1, errors.size());
-        assertEquals("Failed to load contributions for component service:OverridingXPoint-witherror", errors.get(0));
+        assertEquals(error, errors.get(0));
 
         // check logs
         assertEquals(1, logResult.getCaughtEvents().size());
         LogEvent event = logResult.getCaughtEvents().get(0);
         assertEquals(Level.ERROR, event.getLevel());
-        assertEquals("Failed to load contributions for component service:OverridingXPoint-witherror",
-                event.getMessage().getFormattedMessage());
+        assertEquals(error, event.getMessage().getFormattedMessage());
         Throwable t = event.getThrown();
-        assertEquals(RuntimeException.class, t.getClass());
-        assertEquals("Cannot load class: this-is-not-a-class while processing component: OverridingXPoint-witherror",
-                t.getMessage());
+        assertEquals(XMapException.class, t.getClass());
+        assertEquals("Cannot load class: this-is-not-a-class", t.getMessage());
     }
 
 }

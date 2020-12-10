@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,13 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- * $Id$
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.runtime.model;
+
+import org.nuxeo.common.xmap.XMap;
 
 /**
  * A component extension point.
@@ -64,5 +67,19 @@ public interface ExtensionPoint {
      * @return the base extension point if this extension point is extending another extension point, or null if none
      */
     String getSuperComponent();
+
+    /**
+     * Returns the potential custom registry class for this extension point.
+     *
+     * @since 11.5
+     */
+    String getRegistryClass();
+
+    /**
+     * Returns the XMap object that matches {@link #getContributions()} classes.
+     *
+     * @since 11.5
+     */
+    XMap getXMap();
 
 }
