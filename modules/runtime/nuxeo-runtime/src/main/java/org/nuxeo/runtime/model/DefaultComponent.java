@@ -24,8 +24,11 @@ package org.nuxeo.runtime.model;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.common.xmap.registry.Registry;
+import org.nuxeo.common.xmap.registry.SingleRegistry;
 import org.nuxeo.runtime.RuntimeMessage;
 import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeMessage.Source;
@@ -208,6 +211,42 @@ public class DefaultComponent implements Component, Adaptable {
                             .getExtensionPointRegistry(name, point)
                             .orElseThrow(() -> new IllegalArgumentException(
                                     String.format("Unknown registry for extension point '%s--%s'", name, point)));
+    }
+
+    /**
+     * Returns a single contribution from given target extension point.
+     * <p>
+     * Assumes the registry implements {@link SingleRegistry}.
+     *
+     * @since 11.5
+     */
+    protected <T> Optional<T> getRegistryContribution(String point) {
+        SingleRegistry registry = getExtensionPointRegistry(point);
+        return registry.getContribution();
+    }
+
+    /**
+     * Returns a single contribution with given id from given target extension point.
+     * <p>
+     * Assumes the registry implements {@link MapRegistry}.
+     *
+     * @since 11.5
+     */
+    protected <T> Optional<T> getRegistryContribution(String point, String id) {
+        MapRegistry registry = getExtensionPointRegistry(point);
+        return registry.getContribution(id);
+    }
+
+    /**
+     * Returns a list of contributions from given target extension point.
+     * <p>
+     * Assumes the registry implements {@link MapRegistry}.
+     *
+     * @since 11.5
+     */
+    protected <T> List<T> getRegistryContributions(String point) {
+        MapRegistry registry = getExtensionPointRegistry(point);
+        return registry.getContributionValues();
     }
 
 }
