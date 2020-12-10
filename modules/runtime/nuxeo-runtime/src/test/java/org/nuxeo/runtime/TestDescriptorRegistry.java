@@ -24,9 +24,14 @@ import static org.junit.Assert.assertNull;
 import java.util.List;
 
 import org.junit.Test;
+import org.nuxeo.common.xmap.registry.Registry;
 import org.nuxeo.runtime.model.Descriptor;
 import org.nuxeo.runtime.model.DescriptorRegistry;
 
+/**
+ * @deprecated since 11.5: use {@link Registry} associated annotations instead.
+ */
+@Deprecated
 public class TestDescriptorRegistry {
 
     public static class TestDescriptor implements Descriptor {
