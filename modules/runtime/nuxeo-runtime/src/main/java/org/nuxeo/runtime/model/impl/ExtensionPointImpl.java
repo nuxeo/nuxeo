@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,20 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.runtime.model.impl;
 
 import org.nuxeo.common.xmap.XMap;
-import org.nuxeo.common.xmap.XMapException;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.common.xmap.annotation.XParent;
-import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
-import org.w3c.dom.Element;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -56,6 +53,14 @@ public class ExtensionPointImpl implements ExtensionPoint {
     @XParent
     public RegistrationInfo ri;
 
+    /**
+     * Potential registry class declaration for this extension point.
+     *
+     * @since 11.5
+     */
+    @XNode(value = "registry@class")
+    protected String registryKlass;
+
     @Override
     public Class<?>[] getContributions() {
         return contributions;
@@ -76,39 +81,24 @@ public class ExtensionPointImpl implements ExtensionPoint {
         return superComponent;
     }
 
-    public Extension createExtension(Element element) {
-        return null;
+    @Override
+    public String getRegistryClass() {
+        return registryKlass;
     }
 
-    public Object[] loadContributions(RegistrationInfo owner, Extension extension) {
-        Object[] contribs = extension.getContributions();
-        if (contribs != null) {
-            // contributions already computed - this should e an overloaded (extended) extension point
-            return contribs;
-        }
-        // should compute now the contributions
-        if (contributions != null) {
-            if (xmap == null) {
-                xmap = new XMap();
-                for (Class<?> contrib : contributions) {
-                    if (contrib != null) {
-                        xmap.register(contrib);
-                    } else {
-                        throw new RuntimeException("Unknown implementation class when contributing to "
-                                + owner.getComponent().getName());
-                    }
-                }
-            }
-            try {
-                contribs = xmap.loadAll(new XMapContext(extension.getContext()), extension.getElement());
-            } catch (XMapException e) {
+    @Override
+    public XMap getXMap() {
+        XMap xmap = new XMap();
+        for (int i = 0; i < contributions.length; i++) {
+            Class<?> contrib = contributions[i];
+            if (contrib != null) {
+                xmap.register(contrib);
+            } else {
                 throw new RuntimeException(
-                        e.getMessage() + " while processing component: " + extension.getComponent().getName().getName(),
-                        e);
+                        "Unknown implementation class when contributing to " + ri.getComponent().getName());
             }
-            extension.setContributions(contribs);
         }
-        return contribs;
+        return xmap;
     }
 
 }

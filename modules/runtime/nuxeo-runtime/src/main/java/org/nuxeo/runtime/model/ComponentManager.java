@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,23 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Anahide Tchertchian
  */
 package org.nuxeo.runtime.model;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import org.nuxeo.common.xmap.registry.Registry;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.runtime.ComponentListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 
 /**
- * @author Bogdan Stefanescu
- * @author Florent Guillaume
+ * Service managing components registration and processing.
  */
 public interface ComponentManager {
 
@@ -480,5 +483,13 @@ public interface ComponentManager {
         }
 
     }
+
+    /**
+     * Returns the registry for this extension point, typically built thanks to {@link XRegistry} annotation on
+     * corresponding descriptor class.
+     *
+     * @since 11.5
+     */
+    <T extends Registry> Optional<T> getExtensionPointRegistry(String component, String point);
 
 }

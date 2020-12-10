@@ -492,8 +492,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 continue;
             }
             for (Extension xt : pendingExt) {
-                ComponentManagerImpl.loadContributions(this, xt);
                 try {
+                    manager.register(this, xt);
                     component.registerExtension(xt);
                     manager.sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
                             ((ComponentInstanceImpl) xt.getComponent()).ri, xt));

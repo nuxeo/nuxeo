@@ -33,8 +33,10 @@ import org.w3c.dom.ranges.Range;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 11.5, unused.
  */
 @XObject("config")
+@Deprecated
 public class ConfigurationDescriptorImpl {
 
     private static final Log log = LogFactory.getLog(ConfigurationDescriptorImpl.class);
