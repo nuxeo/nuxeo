@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<document>
+
+  <descriptor name="sample1" enable="false">
+    <value>Sample 1 Overridden</value>
+  </descriptor>
+
+</document>

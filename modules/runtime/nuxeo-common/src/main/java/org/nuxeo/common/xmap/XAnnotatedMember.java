@@ -117,13 +117,36 @@ public class XAnnotatedMember {
     }
 
     public void process(Context ctx, Element element) {
-        Object value = getValue(ctx, element);
-        if (value != null) {
-            setValue(ctx.getObject(), value);
+        process(ctx, element, null);
+    }
+
+    /**
+     * Sets the resolved value on the given object, potentially applying merge logics with given existing object.
+     *
+     * @since 11.5
+     */
+    public void process(Context ctx, Element element, Object existing) {
+        if (existing == null || hasValue(ctx, element)) {
+            Object value = getValue(ctx, element);
+            if (value != null) {
+                setValue(ctx.getObject(), value);
+            }
         }
     }
 
-    protected Object getValue(Context ctx, Element base) {
+    protected boolean hasValue(Context ctx, Element element) {
+        if (type == Element.class) {
+            return element != null;
+        }
+        return DOMHelper.hasNode(element, path) || (fallbackPath != null && DOMHelper.hasNode(element, fallbackPath));
+    }
+
+    /**
+     * Returns the resolved value for given element.
+     *
+     * @since 11.5
+     */
+    public Object getValue(Context ctx, Element base) {
         if (xao != null) {
             Element el = (Element) DOMHelper.getElementNode(base, path);
             if (el == null) {

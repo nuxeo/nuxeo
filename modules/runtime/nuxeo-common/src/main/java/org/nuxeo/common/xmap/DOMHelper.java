@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.common.xmap;
@@ -38,7 +38,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Helper methods for DOM processing.
  */
 public final class DOMHelper {
 
@@ -66,6 +66,23 @@ public final class DOMHelper {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns true if given path is declared on given element.
+     *
+     * @since 11.5
+     */
+    public static boolean hasNode(Element base, Path path) {
+        Node node = getElementNode(base, path);
+        if (node != null) {
+            if (path.attribute != null) {
+                Node at = node.getAttributes().getNamedItem(path.attribute);
+                return at != null;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**

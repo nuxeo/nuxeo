@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.common.xmap;
@@ -32,10 +32,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XMerge;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
+import org.nuxeo.common.xmap.registry.XRemove;
 import org.w3c.dom.Element;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Processor for annotated type into an object.
  */
 public class XAnnotatedObject {
 
@@ -43,7 +48,7 @@ public class XAnnotatedObject {
 
     final Class<?> klass;
 
-    final Constructor<?> ctor;
+    final Constructor<?> constructor;
 
     final Path path;
 
@@ -51,12 +56,22 @@ public class XAnnotatedObject {
 
     Sorter sorter;
 
+    protected boolean hasRegistry;
+
+    protected XAnnotatedMember registryId;
+
+    protected XAnnotatedMember merge;
+
+    protected XAnnotatedMember remove;
+
+    protected XAnnotatedMember enable;
+
     public XAnnotatedObject(XMap xmap, Class<?> klass, XObject xob) {
         try {
             this.xmap = xmap;
             this.klass = klass;
-            this.ctor = this.klass.getDeclaredConstructor();
-            ctor.setAccessible(true);
+            this.constructor = this.klass.getDeclaredConstructor();
+            constructor.setAccessible(true);
             path = new Path(xob.value());
             members = new ArrayList<>();
             String[] order = xob.order();
@@ -78,21 +93,38 @@ public class XAnnotatedObject {
         return path;
     }
 
+    public Class<?> getKlass() {
+        return klass;
+    }
+
     public Object newInstance(Context ctx, Element element) {
-        Object ob;
-        try {
-            ob = ctor.newInstance();
-        } catch (InstantiationException e) {
-            throw new IllegalArgumentException(e);
-        } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException(e);
-        } catch (InvocationTargetException e) {
-            if (e.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) e.getCause();
+        return newInstance(ctx, element, null);
+    }
+
+    /**
+     * Returns a new instance for given element, and given existing object, potentially applying merge logics.
+     *
+     * @since 11.5
+     */
+    public Object newInstance(Context ctx, Element element, Object existing) {
+        if (existing == null) {
+            Object ob;
+            try {
+                ob = constructor.newInstance();
+            } catch (InstantiationException e) {
+                throw new IllegalArgumentException(e);
+            } catch (IllegalAccessException e) {
+                throw new IllegalArgumentException(e);
+            } catch (InvocationTargetException e) {
+                if (e.getCause() instanceof RuntimeException) {
+                    throw (RuntimeException) e.getCause();
+                }
+                throw new IllegalArgumentException(e);
             }
-            throw new IllegalArgumentException(e);
+            ctx.push(ob);
+        } else {
+            ctx.push(existing);
         }
-        ctx.push(ob);
 
         if (sorter != null) {
             Collections.sort(members, sorter);
@@ -101,11 +133,102 @@ public class XAnnotatedObject {
 
         // set annotated members
         for (XAnnotatedMember member : members) {
-            member.process(ctx, element);
+            member.process(ctx, element, existing);
         }
 
         return ctx.pop();
     }
+
+    /**
+     * Returns true if a {@link XRegistry} annotation was resolved on this object.
+     *
+     * @since 11.5
+     */
+    public boolean hasRegistry() {
+        return hasRegistry;
+    }
+
+    /**
+     * Sets whether a {@link XRegistry} annotation was resolved on this object.
+     *
+     * @since 11.5
+     */
+    public void setHasRegistry(boolean hasRegistry) {
+        this.hasRegistry = hasRegistry;
+    }
+
+    /**
+     * Returns the {@link XRegistryId} annotation that was resolved for this object.
+     *
+     * @since 11.5
+     */
+    public XAnnotatedMember getRegistryId() {
+        return registryId;
+    }
+
+    /**
+     * Sets the {@link XRegistryId} annotation for this object.
+     *
+     * @since 11.5
+     */
+    public void setRegistryId(XAnnotatedMember registryId) {
+        this.registryId = registryId;
+    }
+
+    /**
+     * Returns the {@link XMerge} annotation that was resolved for this object.
+     *
+     * @since 11.5
+     */
+    public XAnnotatedMember getMerge() {
+        return merge;
+    }
+
+    /**
+     * Sets the {@link XMerge} annotation for this object.
+     *
+     * @since 11.5
+     */
+    public void setMerge(XAnnotatedMember merge) {
+        this.merge = merge;
+    }
+
+    /**
+     * Returns the {@link XRemove} annotation that was resolved for this object.
+     *
+     * @since 11.5
+     */
+    public XAnnotatedMember getRemove() {
+        return remove;
+    }
+
+    /**
+     * Sets the {@link XRemove} annotation for this object.
+     *
+     * @since 11.5
+     */
+    public void setRemove(XAnnotatedMember remove) {
+        this.remove = remove;
+    }
+
+    /**
+     * Returns the {@link XEnable} annotation that was resolved for this object.
+     *
+     * @since 11.5
+     */
+    public XAnnotatedMember getEnable() {
+        return enable;
+    }
+
+    /**
+     * Sets the {@link XEnable} annotation for this object.
+     *
+     * @since 11.5
+     */
+    public void setEnable(XAnnotatedMember enable) {
+        this.enable = enable;
+    }
+
 }
 
 class Sorter implements Comparator<XAnnotatedMember>, Serializable {
