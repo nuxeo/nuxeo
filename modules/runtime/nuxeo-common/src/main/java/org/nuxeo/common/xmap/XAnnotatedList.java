@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,28 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.common.xmap;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.registry.XMerge;
+import org.nuxeo.common.xmap.registry.XRemove;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Processor for annotated field or method into a list-like object.
  */
 public class XAnnotatedList extends XAnnotatedMember {
 
@@ -46,6 +50,10 @@ public class XAnnotatedList extends XAnnotatedMember {
     protected Class<?> componentType;
 
     protected boolean isNullByDefault;
+
+    protected XAnnotatedReference merge;
+
+    protected XAnnotatedReference remove;
 
     protected XAnnotatedList(XMap xmap, XAccessor setter) {
         super(xmap, setter);
@@ -62,10 +70,50 @@ public class XAnnotatedList extends XAnnotatedMember {
         isNullByDefault = anno.nullByDefault();
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Sets the {@link XMerge} annotation that was resolved for this list.
+     *
+     * @since 11.5
+     */
+    public void setMerge(XAnnotatedReference merge) {
+        this.merge = merge;
+    }
+
+    /**
+     * Sets the {@link XRemove} annotation that was resolved for this list.
+     *
+     * @since 11.5
+     */
+    public void setRemove(XAnnotatedReference remove) {
+        this.remove = remove;
+    }
+
     @Override
-    protected Object getValue(Context ctx, Element base) {
-        List<Object> values = new ArrayList<>();
+    public void process(Context ctx, Element element, Object existing) {
+        if (remove != null && Boolean.TRUE.equals(remove.getValue(ctx, element))) {
+            setValue(ctx.getObject(), convertList(Collections.emptyList()));
+            return;
+        }
+        List<Object> initList = new ArrayList<>();
+        if (existing != null
+                && (!hasValue(ctx, element) || merge == null || Boolean.TRUE.equals(merge.getValue(ctx, element)))) {
+            Object[] currentListValue = getCurrentListValue(existing);
+            if (currentListValue != null) {
+                initList.addAll(Arrays.asList(currentListValue));
+            }
+        }
+        Object value = getValue(ctx, element, initList);
+        if (value != null) {
+            setValue(ctx.getObject(), value);
+        }
+    }
+
+    @Override
+    public Object getValue(Context ctx, Element base) {
+        return getValue(ctx, base, new ArrayList<>());
+    }
+
+    protected Object getValue(Context ctx, Element base, List<Object> values) {
         if (xao != null) {
             DOMHelper.visitNodes(ctx, this, base, path, elementListVisitor, values);
         } else {
@@ -77,7 +125,11 @@ public class XAnnotatedList extends XAnnotatedMember {
                 DOMHelper.visitNodes(ctx, this, base, path, elementVisitor, values);
             }
         }
+        return convertList(values);
+    }
 
+    @SuppressWarnings("unchecked")
+    protected Object convertList(List<Object> values) {
         if (isNullByDefault && values.isEmpty()) {
             return null;
         }
@@ -104,8 +156,7 @@ public class XAnnotatedList extends XAnnotatedMember {
         return values;
     }
 
-    @Override
-    public void toXML(Object instance, Element parent) {
+    protected Object[] getCurrentListValue(Object instance) {
         Object v = accessor.getValue(instance);
         if (v != null) {
             Object[] objects;
@@ -118,20 +169,27 @@ public class XAnnotatedList extends XAnnotatedMember {
             } else {
                 objects = PrimitiveArrays.toObjectArray(v);
             }
-            if (objects != null) {
-                if (xao == null) {
-                    for (Object o : objects) {
-                        String value = valueFactory.serialize(null, o);
-                        if (value != null) {
-                            Element e = XMLBuilder.addElement(parent, path);
-                            XMLBuilder.fillField(e, value, path.attribute);
-                        }
-                    }
-                } else {
-                    for (Object o : objects) {
+            return objects;
+        }
+        return null;
+    }
+
+    @Override
+    public void toXML(Object instance, Element parent) {
+        Object[] objects = getCurrentListValue(instance);
+        if (objects != null) {
+            if (xao == null) {
+                for (Object o : objects) {
+                    String value = valueFactory.serialize(null, o);
+                    if (value != null) {
                         Element e = XMLBuilder.addElement(parent, path);
-                        XMLBuilder.toXML(o, e, xao);
+                        XMLBuilder.fillField(e, value, path.attribute);
                     }
+                }
+            } else {
+                for (Object o : objects) {
+                    Element e = XMLBuilder.addElement(parent, path);
+                    XMLBuilder.toXML(o, e, xao);
                 }
             }
         }
@@ -144,6 +202,7 @@ class ElementVisitor implements DOMHelper.NodeVisitor {
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
         result.add(xam.xao.newInstance(ctx, (Element) node));
     }
+
 }
 
 class ElementValueVisitor implements DOMHelper.NodeVisitor {

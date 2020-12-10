@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<document>
+
+  <descriptor name="sample1" enable="true">
+    <value>Sample 1 Re-enabled</value>
+  </descriptor>
+
+  <descriptor name="sample2">
+    <value>Sample 2 Re-added</value>
+  </descriptor>
+
+</document>
