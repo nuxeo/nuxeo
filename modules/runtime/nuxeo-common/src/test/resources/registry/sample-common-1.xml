@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<document>
+
+  <descriptor name="sample1">
+    <value>Sample 1 Value</value>
+  </descriptor>
+
+  <descriptor name="sample2">
+    <value>Sample 2 Value</value>
+  </descriptor>
+
+  <descriptor name="sample3">
+    <value>Sample 3 Value</value>
+  </descriptor>
+
+  <descriptor name="sample4">
+    <value>Sample 4 Value</value>
+  </descriptor>
+
+</document>

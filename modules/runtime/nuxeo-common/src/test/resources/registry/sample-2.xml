@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<document>
+
+  <descriptor name="sample1">
+    <value>Sample 1 Additions</value>
+    <stringList>
+      <item>sample1 - item1 added</item>
+    </stringList>
+    <stringListAnnotated>
+      <item>sample1 - annotated item1 added</item>
+    </stringListAnnotated>
+    <stringMap>
+      <item id="item1">sample1 - item1 added</item>
+    </stringMap>
+    <stringMapAnnotated>
+      <item id="item1">sample1 - annotated item1 added</item>
+    </stringMapAnnotated>
+  </descriptor>
+
+  <descriptor name="sample2">
+    <!-- check emptying is possible and does not result in using default value -->
+    <value></value>
+    <stringList remove="true" />
+    <stringListAnnotated remove="true" />
+    <stringMap remove="true" />
+    <stringMapAnnotated empty="true" />
+  </descriptor>
+
+  <descriptor name="sample3">
+    <value>Sample 3 Overridden</value>
+    <stringList merge="false">
+      <item>sample3 - item1 overridden</item>
+    </stringList>
+    <stringListAnnotated merge="false">
+      <item>sample3 - annotated item1 overridden</item>
+    </stringListAnnotated>
+    <stringMap merge="false">
+      <item id="item1">sample3 - item1 overridden</item>
+      <item id="item3">sample3 - item3 overridden</item>
+    </stringMap>
+    <stringMapAnnotated merge="false">
+      <item id="item1">sample3 - annotated item1 overridden</item>
+      <item id="item3">sample3 - annotated item3 overridden</item>
+    </stringMapAnnotated>
+  </descriptor>
+
+  <descriptor name="sample4">
+    <value>Sample 4 Merged</value>
+    <stringList append="true">
+      <item>sample4 - item1 merged</item>
+    </stringList>
+    <stringListAnnotated append="true">
+      <item>sample4 - annotated item1 merged</item>
+    </stringListAnnotated>
+    <stringMap merge="true">
+      <item id="item1">sample4 - item1 merged</item>
+      <item id="item3">sample4 - item3 merged</item>
+    </stringMap>
+    <stringMapAnnotated merge="true">
+      <item id="item1">sample4 - annotated item1 merged</item>
+      <item id="item3">sample4 - annotated item3 merged</item>
+    </stringMapAnnotated>
+  </descriptor>
+
+  <descriptor name="sample5">
+    <value>Sample 5 Implicit Merge</value>
+    <stringList>
+      <item>sample5 - item1 added</item>
+    </stringList>
+    <stringListAnnotated>
+      <item>sample5 - annotated item1 added</item>
+    </stringListAnnotated>
+    <stringMap>
+      <item id="item1">sample5 - item1 added</item>
+      <item id="item3">sample5 - item3 added</item>
+    </stringMap>
+    <stringMapAnnotated>
+      <item id="item1">sample5 - annotated item1 added</item>
+      <item id="item3">sample5 - annotated item3 added</item>
+    </stringMapAnnotated>
+  </descriptor>
+
+  <descriptor name="sample6">
+    <value>Sample 6 Value</value>
+  </descriptor>
+
+</document>

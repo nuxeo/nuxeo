@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,30 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Anahide Tchertchian
  */
+package org.nuxeo.common.xmap.registry;
 
-package org.nuxeo.common.xmap;
-
-import org.w3c.dom.Element;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Sample descriptor supporting removal but not merge and enable.
+ *
+ * @since 11.5
  */
-public class XAnnotatedParent extends XAnnotatedMember {
+@XObject("descriptor")
+@XRegistry(merge = false, enable = false)
+@XRegistryId(value = "@name")
+public class SampleNoMergeDescriptor {
 
-    protected XAnnotatedParent(XMap xmap, XAccessor accessor) {
-        super(xmap, accessor);
-    }
+    @XNode("@name")
+    public String name;
 
-    @Override
-    public Object getValue(Context ctx, Element base) {
-        return ctx.getParent();
-    }
+    @XNode("value")
+    public String value;
+
+    @XNode(value = "bool")
+    public Boolean bool;
 
 }

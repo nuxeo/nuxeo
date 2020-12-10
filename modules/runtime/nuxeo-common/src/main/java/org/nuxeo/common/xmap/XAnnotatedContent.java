@@ -23,14 +23,13 @@ package org.nuxeo.common.xmap;
 
 import java.io.IOException;
 
+import org.apache.xml.serialize.OutputFormat;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ranges.DocumentRange;
 import org.w3c.dom.ranges.Range;
-
-import org.apache.xml.serialize.OutputFormat;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -47,15 +46,11 @@ public class XAnnotatedContent extends XAnnotatedMember {
     }
 
     public XAnnotatedContent(XMap xmap, XAccessor setter, XContent anno) {
-        super(xmap, setter);
-        path = new Path(anno.value());
-        type = setter.getType();
-        valueFactory = xmap.getValueFactory(type);
-        xao = xmap.register(type);
+        super(xmap, setter, anno.value(), null, null, false);
     }
 
     @Override
-    protected Object getValue(Context ctx, Element base) {
+    public Object getValue(Context ctx, Element base) {
         Element el = (Element) DOMHelper.getElementNode(base, path);
         if (el == null) {
             return null;
