@@ -32,6 +32,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class MockComponentManagerListener extends DefaultComponent implements ComponentListener {
 
+    public static final String NAME = "component.manager.listener";
+
     protected List<ComponentEvent> events = new ArrayList<>();
 
     public MockComponentManagerListener() {
