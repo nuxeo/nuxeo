@@ -19,6 +19,7 @@
 
 package org.nuxeo.runtime;
 
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
@@ -29,13 +30,10 @@ import com.google.inject.Binder;
  */
 public class RuntimeInitializationPreprocessorErrorFeature implements RunnerFeature {
 
+    protected static final String KEY = "org.nuxeo.runtime.deployment.errors";
+
     protected void addDeploymentError(String message) {
-        String value = System.getProperty("org.nuxeo.runtime.deployment.errors");
-        if (value == null) {
-            value = "";
-        }
-        value += message + "\n";
-        System.setProperty("org.nuxeo.runtime.deployment.errors", value);
+        System.setProperty(KEY, System.getProperty(KEY, "") + message + "\n");
     }
 
     @Override
@@ -51,6 +49,11 @@ public class RuntimeInitializationPreprocessorErrorFeature implements RunnerFeat
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         addDeploymentError("Runtime test configure error");
+    }
+
+    @Override
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
+        System.clearProperty(KEY);
     }
 
 }
