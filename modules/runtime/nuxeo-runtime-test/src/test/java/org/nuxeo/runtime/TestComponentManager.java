@@ -15,17 +15,20 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Bogdan Stefanescu
  *     Anahide Tchertchian
  */
 package org.nuxeo.runtime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.runtime.MockComponentManagerListener.NAME;
 
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
@@ -39,48 +42,68 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  * Test component manager events
  *
  * @since 9.2
- * @author bogdan
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.runtime.test.tests:component-manager-listener.xml")
 @Deploy("org.nuxeo.runtime.test.tests:component-manager-listener-dep.xml")
+@Deploy("org.nuxeo.runtime.test.tests:component-manager-listener2.xml")
 public class TestComponentManager {
 
     protected MyListener listener = new MyListener();
+
+    public void checkCounters(MockEventsInfo info, int beforeStart, int afterStart, int beforeStop, int afterStop) {
+        assertEquals(beforeStart, info.beforeStart);
+        assertEquals(afterStart, info.afterStart);
+        assertEquals(beforeStop, info.beforeStop);
+        assertEquals(afterStop, info.afterStop);
+    }
+
+    protected MockEventsInfo checkMockComponentManagerListener2(boolean isNull) {
+        // this listener should be automatically registered
+        MockComponentManagerListener2 listener2 = (MockComponentManagerListener2) Framework.getRuntime()
+                                                                                           .getComponent(
+                                                                                                   MockComponentManagerListener2.NAME);
+        if (isNull) {
+            assertNull(listener2);
+            return null;
+        } else {
+            assertNotNull(listener2);
+            return listener2.info;
+        }
+    }
+
+    public void checkCounters2(int beforeStart, int afterStart, int beforeStop, int afterStop) {
+        MockEventsInfo info = checkMockComponentManagerListener2(false);
+        checkCounters(info, beforeStart, afterStart, beforeStop, afterStop);
+    }
 
     @Test
     public void testManagerEvents() throws Exception {
         ComponentManager mgr = Framework.getRuntime().getComponentManager();
         mgr.addListener(listener);
-        listener.assertCounters(0, 0, 0, 0);
+        checkCounters(listener.info, 0, 0, 0, 0);
+        checkCounters2(1, 1, 0, 0);
         mgr.restart(false);
-        listener.assertCounters(1, 1, 1, 1);
+        checkCounters(listener.info, 1, 1, 1, 1);
+        checkCounters2(1, 1, 0, 0);
         mgr.restart(true);
-        listener.assertCounters(2, 2, 2, 2);
+        checkCounters(listener.info, 2, 2, 2, 2);
+        checkCounters2(1, 1, 0, 0);
         mgr.refresh(true);
-        listener.assertCounters(2, 2, 2, 2);
+        checkCounters(listener.info, 2, 2, 2, 2);
+        checkCounters2(1, 1, 0, 0);
         mgr.stop();
-        listener.assertCounters(2, 2, 3, 3);
+        checkCounters(listener.info, 2, 2, 3, 3);
+        checkMockComponentManagerListener2(true);
         mgr.start();
-        listener.assertCounters(3, 3, 3, 3);
-    }
-
-    protected static class EventsInfo {
-
-        public int beforeStop = 0;
-
-        public int afterStop = 0;
-
-        public int beforeStart = 0;
-
-        public int afterStart = 0;
-
+        checkCounters(listener.info, 3, 3, 3, 3);
+        checkCounters2(1, 1, 0, 0);
     }
 
     protected static class MyListener implements ComponentManager.Listener {
 
-        public EventsInfo info = new EventsInfo();
+        public MockEventsInfo info = new MockEventsInfo();
 
         @Override
         public void beforeStop(ComponentManager mgr, boolean isStandby) {
@@ -102,25 +125,18 @@ public class TestComponentManager {
             info.afterStart++;
         }
 
-        public void assertCounters(int beforeStart, int afterStart, int beforeStop, int afterStop) {
-            Assert.assertEquals(beforeStart, info.beforeStart);
-            Assert.assertEquals(afterStart, info.afterStart);
-            Assert.assertEquals(beforeStop, info.beforeStop);
-            Assert.assertEquals(afterStop, info.afterStop);
-        }
     }
 
     @Test
     public void testComponentListener() {
-        String mockComponentName = "component.manager.listener";
-        Object component = Framework.getRuntime().getComponent(mockComponentName);
+        Object component = Framework.getRuntime().getComponent(NAME);
         assertTrue(component instanceof MockComponentManagerListener);
         MockComponentManagerListener mockComponent = (MockComponentManagerListener) component;
         List<ComponentEvent> events = mockComponent.getEvents();
         assertFalse(events.isEmpty());
         ComponentEvent firstEvent = events.get(0);
         assertEquals("ACTIVATING_COMPONENT: service:org.nuxeo.runtime.EventService", firstEvent.toString());
-        for (String testedComp : List.of("org.nuxeo.runtime.EventService", mockComponentName)) {
+        for (String testedComp : List.of("org.nuxeo.runtime.EventService", NAME)) {
             for (int event : List.of(ComponentEvent.ACTIVATING_COMPONENT, ComponentEvent.COMPONENT_ACTIVATED,
                     ComponentEvent.STARTING_COMPONENT, ComponentEvent.COMPONENT_STARTED)) {
                 assertTrue(
@@ -130,15 +146,15 @@ public class TestComponentManager {
         }
 
         // too late
-        assertFalse(mockComponent.hasEvent(ComponentEvent.COMPONENT_REGISTERED, mockComponentName));
-        assertFalse(mockComponent.hasEvent(ComponentEvent.COMPONENT_RESOLVED, mockComponentName));
+        assertFalse(mockComponent.hasEvent(ComponentEvent.COMPONENT_REGISTERED, NAME));
+        assertFalse(mockComponent.hasEvent(ComponentEvent.COMPONENT_RESOLVED, NAME));
         // check extension registration event
         assertTrue(mockComponent.hasEvent(ComponentEvent.EXTENSION_REGISTERED,
                 "org.nuxeo.runtime.trackers.files.threadstracking.config"));
 
         // check pending extension registration
-        assertTrue(mockComponent.hasEvent(ComponentEvent.EXTENSION_PENDING, "component.manager.listener"));
-        assertTrue(mockComponent.hasEvent(ComponentEvent.EXTENSION_REGISTERED, "component.manager.listener"));
+        assertTrue(mockComponent.hasEvent(ComponentEvent.EXTENSION_PENDING, NAME));
+        assertTrue(mockComponent.hasEvent(ComponentEvent.EXTENSION_REGISTERED, NAME));
     }
 
 }

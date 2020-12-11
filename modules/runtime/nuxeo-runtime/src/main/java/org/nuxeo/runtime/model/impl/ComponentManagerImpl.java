@@ -654,6 +654,11 @@ public class ComponentManagerImpl implements ComponentManager {
             iwatch.start(ri.getName().getName());
             if (instantiateComponent(ri)) {
                 iris.add(ri);
+                // register potential listener
+                ComponentInstance component = ri.getComponent();
+                if (component != null && component.getInstance() instanceof Listener) {
+                    addListener((Listener) component.getInstance());
+                }
             }
             iwatch.stop(ri.getName().getName());
         }
@@ -814,6 +819,11 @@ public class ComponentManagerImpl implements ComponentManager {
     protected void deactivateComponent(RegistrationInfo ri, boolean isShutdown) {
         // reset registries (even when shutting down, to comply with HotDeployer logic in tests)
         resetRegistries(ri);
+        // unregister potential listener
+        ComponentInstance component = ri.getComponent();
+        if (component.getInstance() instanceof Listener) {
+            removeListener((Listener) component.getInstance());
+        }
 
         if (ri.useFormerLifecycleManagement()) {
             // don't unregister extension if server is shutdown
@@ -824,8 +834,8 @@ public class ComponentManagerImpl implements ComponentManager {
         if (state != RegistrationInfo.ACTIVATED && state != RegistrationInfo.START_FAILURE) {
             return;
         }
-
         ri.setState(RegistrationInfo.DEACTIVATING);
+
         unregisterServices(ri);
 
         // unregister contributed extensions if any
@@ -846,7 +856,6 @@ public class ComponentManagerImpl implements ComponentManager {
             }
         }
 
-        ComponentInstance component = ri.getComponent();
         component.deactivate();
         log.debug("Component deactivated: {}", ri.getName());
         ri.setState(RegistrationInfo.RESOLVED);
