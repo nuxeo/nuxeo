@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.types.marshallers" version="1.0.0">
+  <documentation>
+    Platform types registered marshallers set.
+  </documentation>
+  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+    <!-- subtypes enricher -->
+    <register class="org.nuxeo.ecm.platform.types.SubtypesJsonEnricher" enable="true" />
+   </extension>
+</component>

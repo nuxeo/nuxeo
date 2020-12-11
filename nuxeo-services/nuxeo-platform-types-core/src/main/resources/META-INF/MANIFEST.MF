@@ -15,7 +15,8 @@ Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/nxtypes-framework.xml,
  OSGI-INF/ui-types-local-configuration.xml,
  OSGI-INF/contentview-local-configuration.xml,
- OSGI-INF/listeners-contrib.xml
+ OSGI-INF/listeners-contrib.xml,
+ OSGI-INF/subtypes-enricher-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation;version="1.0",
  org.apache.commons.logging,
