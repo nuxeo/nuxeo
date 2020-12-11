@@ -85,7 +85,7 @@ public class StreamIntrospectionConverter {
                             String pos = streamMetrics.get(stream + ":" + computation + ":pos");
                             String end = getStreamEnd(streamMetrics, stream);
                             // provide info only when there is a lag
-                            if (lag != null && "0".equals(lag)) {
+                            if (lag != null && !"0".equals(lag)) {
                                 comment = String.format(": %s/%s lag: %s, latency: %ss", pos, end, lag, latency);
                             }
                         }
@@ -127,7 +127,7 @@ public class StreamIntrospectionConverter {
                                         metric.get("v").asText());
                             } else if ("nuxeo.streams.global.stream.group.latency".equals(key)) {
                                 streamMetrics.put(streamName + ":" + computationName + ":latency",
-                                        metric.get("v").asText());
+                                        getNiceDouble(metric.get("v").asDouble() / 1000.0));
                             } else if ("nuxeo.streams.global.stream.group.pos".equals(key)) {
                                 streamMetrics.put(streamName + ":" + computationName + ":pos",
                                         metric.get("v").asText());

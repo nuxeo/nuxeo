@@ -238,7 +238,7 @@ rate 1min: 0.00op/s, 5min: 0.00op/s
 timer count: 37902, total: 1.443s
 mean: 0.000s, p50: 0.000s, p99: 0.000s
 rate 5min: 1.89op/s]
-stream.audit.audit==>computation.audit.writer.192.168.192.9: 2123/2123 lag: 0, latency: 0s
+stream.audit.audit==>computation.audit.writer.192.168.192.9: 2113/2123 lag: 10, latency: 1.20s
 component computation.bulk.automation.192.168.192.9 [bulk/automation on 192.168.192.9
 ----
 threads: 2
@@ -258,7 +258,7 @@ record count: 2, total: 0.047s
 mean: 0.023s, p50: 0.017s, p99: 0.030s
 rate 1min: 0.00op/s, 5min: 0.00op/s]
 computation.bulk.deletion.192.168.192.9==>stream.bulk.status
-stream.bulk.deletion==>computation.bulk.deletion.192.168.192.9: 10/10 lag: 0, latency: 0s
+stream.bulk.deletion==>computation.bulk.deletion.192.168.192.9
 component computation.bulk.trash.192.168.192.9 [bulk/trash on 192.168.192.9
 ----
 threads: 1
@@ -325,11 +325,11 @@ rate 1min: 0.00op/s, 5min: 0.00op/s
 timer count: 7926, total: 1.002s
 mean: 0.000s, p50: 0.000s, p99: 0.000s
 rate 5min: 0.40op/s]
-stream.bulk.done==>computation.bulk.indexCompletion.192.168.192.9: 12/12 lag: 0, latency: 0s
+stream.bulk.done==>computation.bulk.indexCompletion.192.168.192.9
 computation.bulk.index.192.168.192.9==>stream.bulk.bulkIndex
-stream.bulk.index==>computation.bulk.index.192.168.192.9: 3/3 lag: 0, latency: 0s
+stream.bulk.index==>computation.bulk.index.192.168.192.9
 computation.bulk.bulkIndex.192.168.192.9==>stream.bulk.status
-stream.bulk.bulkIndex==>computation.bulk.bulkIndex.192.168.192.9: 5/5 lag: 0, latency: 0s
+stream.bulk.bulkIndex==>computation.bulk.bulkIndex.192.168.192.9
 component computation.retention.retentionExpired.192.168.192.9 [retention/retentionExpired on 192.168.192.9
 ----
 threads: 1
@@ -348,8 +348,8 @@ no retry
 record count: 348, total: 1.807s
 mean: 0.003s, p50: 0.002s, p99: 0.009s
 rate 1min: 0.01op/s, 5min: 0.02op/s]
-stream.internal.processors==>computation.stream.introspection.192.168.192.9: 96/96 lag: 0, latency: 0s
-stream.internal.metrics==>computation.stream.introspection.192.168.192.9: 543/543 lag: 0, latency: 0s
+stream.internal.processors==>computation.stream.introspection.192.168.192.9
+stream.internal.metrics==>computation.stream.introspection.192.168.192.9
 component computation.bulk.csvExport.192.168.192.9 [bulk/csvExport on 192.168.192.9
 ----
 threads: 2
@@ -406,14 +406,14 @@ stream.bulk.zipBlob==>computation.bulk.zipBlob.192.168.192.9
 computation.bulk.makeBlob.192.168.192.9==>stream.bulk.zipBlob
 computation.bulk.makeBlob.192.168.192.9==>stream.bulk.sortBlob
 computation.bulk.makeBlob.192.168.192.9==>stream.bulk.exposeBlob
-stream.bulk.makeBlob==>computation.bulk.makeBlob.192.168.192.9: 21/21 lag: 0, latency: 0s
+stream.bulk.makeBlob==>computation.bulk.makeBlob.192.168.192.9
 computation.bulk.csvExport.192.168.192.9==>stream.bulk.makeBlob
-stream.bulk.csvExport==>computation.bulk.csvExport.192.168.192.9: 21/21 lag: 0, latency: 0s
+stream.bulk.csvExport==>computation.bulk.csvExport.192.168.192.9
 computation.bulk.sortBlob.192.168.192.9==>stream.bulk.zipBlob
 computation.bulk.sortBlob.192.168.192.9==>stream.bulk.exposeBlob
-stream.bulk.sortBlob==>computation.bulk.sortBlob.192.168.192.9: 1/1 lag: 0, latency: 0s
+stream.bulk.sortBlob==>computation.bulk.sortBlob.192.168.192.9
 computation.bulk.exposeBlob.192.168.192.9==>stream.bulk.status
-stream.bulk.exposeBlob==>computation.bulk.exposeBlob.192.168.192.9: 1/1 lag: 0, latency: 0s
+stream.bulk.exposeBlob==>computation.bulk.exposeBlob.192.168.192.9
 component computation.work.videoConversion.192.168.192.9 [work/videoConversion on 192.168.192.9
 ----
 threads: 4
@@ -495,13 +495,13 @@ no retry]
 stream.work.videoConversion==>computation.work.videoConversion.192.168.192.9
 stream.work.permissionsPurge==>computation.work.permissionsPurge.192.168.192.9
 stream.work.blobs==>computation.work.blobs.192.168.192.9
-stream.work.default==>computation.work.default.192.168.192.9: 5195/5195 lag: 0, latency: 0s
-stream.work.elasticSearchIndexing==>computation.work.elasticSearchIndexing.192.168.192.9: 3052/3052 lag: 0, latency: 0s
+stream.work.default==>computation.work.default.192.168.192.9
+stream.work.elasticSearchIndexing==>computation.work.elasticSearchIndexing.192.168.192.9
 stream.work.collections==>computation.work.collections.192.168.192.9
 stream.work.escalation==>computation.work.escalation.192.168.192.9
 stream.work.renditionBuilder==>computation.work.renditionBuilder.192.168.192.9
 stream.work.fulltextUpdater==>computation.work.fulltextUpdater.192.168.192.9
-stream.work.updateACEStatus==>computation.work.updateACEStatus.192.168.192.9: 105/105 lag: 0, latency: 0s
+stream.work.updateACEStatus==>computation.work.updateACEStatus.192.168.192.9
 stream.work.pictureViewsGeneration==>computation.work.pictureViewsGeneration.192.168.192.9
 component computation.bulk.recomputeThumbnails.192.168.192.9 [bulk/recomputeThumbnails on 192.168.192.9
 ----
@@ -551,7 +551,7 @@ computation.bulk.scroller.192.168.192.9==>stream.bulk.index
 computation.bulk.scroller.192.168.192.9==>stream.bulk.setProperties
 computation.bulk.scroller.192.168.192.9==>stream.bulk.recomputeViews
 computation.bulk.scroller.192.168.192.9==>stream.bulk.setSystemProperties
-stream.bulk.command==>computation.bulk.scroller.192.168.192.9: 12/12 lag: 0, latency: 0s
+stream.bulk.command==>computation.bulk.scroller.192.168.192.9
 computation.bulk.status.192.168.192.9==>stream.bulk.done
-stream.bulk.status==>computation.bulk.status.192.168.192.9: 40/40 lag: 0, latency: 0s
+stream.bulk.status==>computation.bulk.status.192.168.192.9
 @enduml
