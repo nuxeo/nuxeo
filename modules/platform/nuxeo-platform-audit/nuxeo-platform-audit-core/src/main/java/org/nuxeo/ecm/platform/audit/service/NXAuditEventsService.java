@@ -46,7 +46,6 @@ import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
-import org.nuxeo.runtime.model.ComponentManager.Listener;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -55,7 +54,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class NXAuditEventsService extends DefaultComponent {
+public class NXAuditEventsService extends DefaultComponent implements ComponentManager.Listener {
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.audit.service.NXAuditEventsService");
@@ -119,26 +118,18 @@ public class NXAuditEventsService extends DefaultComponent {
             bulker = bulkerConfig.newInstance(backend);
             bulker.onApplicationStarted();
         }
+    }
+
+    @Override
+    public void afterStart(ComponentManager mgr, boolean isResume) {
         // init storages after runtime was started (as we don't have started order for storages which are backends)
-        Framework.getRuntime().getComponentManager().addListener(new Listener() {
-
-            @Override
-            public void afterStart(ComponentManager mgr, boolean isResume) {
-                for (Entry<String, AuditStorageDescriptor> descriptor : auditStorageDescriptors.entrySet()) {
-                    AuditStorage storage = descriptor.getValue().newInstance();
-                    if (storage instanceof AuditBackend) {
-                        ((AuditBackend) storage).onApplicationStarted();
-                    }
-                    auditStorages.put(descriptor.getKey(), storage);
-                }
+        for (Entry<String, AuditStorageDescriptor> descriptor : auditStorageDescriptors.entrySet()) {
+            AuditStorage storage = descriptor.getValue().newInstance();
+            if (storage instanceof AuditBackend) {
+                ((AuditBackend) storage).onApplicationStarted();
             }
-
-            @Override
-            public void afterStop(ComponentManager mgr, boolean isStandby) {
-                uninstall();
-            }
-
-        });
+            auditStorages.put(descriptor.getKey(), storage);
+        }
     }
 
     @Override

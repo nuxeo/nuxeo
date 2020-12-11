@@ -55,7 +55,7 @@ import com.google.common.cache.CacheBuilder;
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5
  */
-public class UserProfileServiceImpl extends DefaultComponent implements UserProfileService {
+public class UserProfileServiceImpl extends DefaultComponent implements UserProfileService, ComponentManager.Listener {
 
     private static final Log log = LogFactory.getLog(UserProfileServiceImpl.class);
 
@@ -189,18 +189,12 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
         if (config == null || config.getDataFileName() == null) {
             return;
         }
-        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
-            @Override
-            public void afterStart(ComponentManager mgr, boolean isResume) {
-                // needs to run after RepositoryInitializationHandlers, run by RepositoryService
-                scheduleImport();
-            }
+    }
 
-            @Override
-            public void afterStop(ComponentManager mgr, boolean isStandby) {
-                Framework.getRuntime().getComponentManager().removeListener(this);
-            }
-        });
+    @Override
+    public void afterStart(ComponentManager mgr, boolean isResume) {
+        // needs to run after RepositoryInitializationHandlers, run by RepositoryService
+        scheduleImport();
     }
 
     protected void scheduleImport() {

@@ -92,7 +92,7 @@ import io.opencensus.trace.Tracing;
  *
  * @since 5.6
  */
-public class WorkManagerImpl extends DefaultComponent implements WorkManager {
+public class WorkManagerImpl extends DefaultComponent implements WorkManager, ComponentManager.Listener {
 
     private static final Logger log = LogManager.getLogger(WorkManagerImpl.class);
 
@@ -322,7 +322,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected boolean isProcessingDisabled() {
         if (Boolean.parseBoolean(Framework.getProperty(WORKMANAGER_PROCESSING_DISABLE, "false"))) {
-            log.warn("nuxeo.work.processing.disable=true is now deprecated, use nuxeo.work.processing.enabled=false instead");
+            log.warn(
+                    "nuxeo.work.processing.disable=true is now deprecated, use nuxeo.work.processing.enabled=false instead");
             return true;
         }
         if (Framework.isBooleanPropertyFalse(WORKMANAGER_PROCESSING_ENABLED)) {
@@ -426,41 +427,34 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             for (WorkQueueDescriptor descriptor : descriptors) {
                 initializeQueue(descriptor);
             }
+        }
+    }
 
-            Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
-                @Override
-                public void beforeStop(ComponentManager mgr, boolean isStandby) {
-                    List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
-                    for (WorkQueueDescriptor descriptor : descriptors) {
-                        deactivateQueue(descriptor);
-                    }
-                    try {
-                        if (!shutdown(10, TimeUnit.SECONDS)) {
-                            log.error("Some processors are still active");
-                        }
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        throw new NuxeoException("Interrupted while stopping work manager thread pools", e);
-                    }
-                }
+    @Override
+    public void afterStart(ComponentManager mgr, boolean isResume) {
+        if (isProcessingDisabled()) {
+            log.warn("WorkManager processing has been disabled on this node");
+            return;
+        }
+        List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
+        for (WorkQueueDescriptor descriptor : descriptors) {
+            activateQueue(descriptor);
+        }
+    }
 
-                @Override
-                public void afterStart(ComponentManager mgr, boolean isResume) {
-                    if (isProcessingDisabled()) {
-                        log.warn("WorkManager processing has been disabled on this node");
-                        return;
-                    }
-                    List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
-                    for (WorkQueueDescriptor descriptor : descriptors) {
-                        activateQueue(descriptor);
-                    }
-                }
-
-                @Override
-                public void afterStop(ComponentManager mgr, boolean isStandby) {
-                    Framework.getRuntime().getComponentManager().removeListener(this);
-                }
-            });
+    @Override
+    public void beforeStop(ComponentManager mgr, boolean isStandby) {
+        List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
+        for (WorkQueueDescriptor descriptor : descriptors) {
+            deactivateQueue(descriptor);
+        }
+        try {
+            if (!shutdown(10, TimeUnit.SECONDS)) {
+                log.error("Some processors are still active");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new NuxeoException("Interrupted while stopping work manager thread pools", e);
         }
     }
 
@@ -665,12 +659,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             queueId = queue.queueId;
             running = new ConcurrentLinkedQueue<>();
             // init metrics
-            scheduledCount = registry.counter(
-                    MetricName.build("nuxeo.works.queue.scheduled").tagged("queue", queueId));
-            runningCount = registry.counter(
-                    MetricName.build("nuxeo.works.queue.running").tagged("queue", queueId));
-            completedCount = registry.counter(
-                    MetricName.build("nuxeo.works.queue.completed").tagged("queue", queueId));
+            scheduledCount = registry.counter(MetricName.build("nuxeo.works.queue.scheduled").tagged("queue", queueId));
+            runningCount = registry.counter(MetricName.build("nuxeo.works.queue.running").tagged("queue", queueId));
+            completedCount = registry.counter(MetricName.build("nuxeo.works.queue.completed").tagged("queue", queueId));
             workTimer = registry.timer(MetricName.build("nuxeo.works.queue.timer").tagged("queue", queueId));
         }
 

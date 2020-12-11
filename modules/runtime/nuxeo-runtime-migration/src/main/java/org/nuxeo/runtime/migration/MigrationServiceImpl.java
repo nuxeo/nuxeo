@@ -47,6 +47,7 @@ import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.migration.MigrationDescriptor.MigrationStepDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
+import org.nuxeo.runtime.model.ComponentManager.Listener;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Descriptor;
 import org.nuxeo.runtime.pubsub.AbstractPubSubBroker;
@@ -70,7 +71,7 @@ import org.nuxeo.runtime.pubsub.SerializableMessage;
  *
  * @since 9.3
  */
-public class MigrationServiceImpl extends DefaultComponent implements MigrationService {
+public class MigrationServiceImpl extends DefaultComponent implements MigrationService, ComponentManager.Listener {
 
     private static final Logger log = LogManager.getLogger(MigrationServiceImpl.class);
 
@@ -335,21 +336,13 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         } else {
             log.info("Not registering a migration invalidator because clustering is not enabled");
         }
-
         executor = new MigrationThreadPoolExecutor();
-        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
+    }
 
-            @Override
-            public void beforeStop(ComponentManager mgr, boolean isStandby) {
-                // flag all migration threads as shutdown requested, without interrupting them
-                executor.requestShutdown();
-            }
-
-            @Override
-            public void afterStop(ComponentManager mgr, boolean isStandby) {
-                Framework.getRuntime().getComponentManager().removeListener(this);
-            }
-        });
+    @Override
+    public void beforeStop(ComponentManager mgr, boolean isResume) {
+        // flag all migration threads as shutdown requested, without interrupting them
+        executor.requestShutdown();
     }
 
     @Override
