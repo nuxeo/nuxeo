@@ -526,6 +526,10 @@ public class ComponentManagerImpl implements ComponentManager {
             if (instantiateComponent(ri)) {
                 iris.add(ri);
             }
+            // register potential listener
+            if (ri.getComponent() instanceof Listener) {
+                addListener((Listener) ri.getComponent());
+            }
             iwatch.stop(ri.getName().getName());
         }
         log.debug("Components instantiated in {}s", iwatch.total::formatSeconds);
@@ -690,8 +694,12 @@ public class ComponentManagerImpl implements ComponentManager {
         if (state != RegistrationInfo.ACTIVATED && state != RegistrationInfo.START_FAILURE) {
             return;
         }
-
         ri.setState(RegistrationInfo.DEACTIVATING);
+
+        // unregister potential listener
+        if (ri.getComponent() instanceof Listener) {
+            removeListener((Listener) ri.getComponent());
+        }
         unregisterServices(ri);
 
         // unregister contributed extensions if any
