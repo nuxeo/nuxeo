@@ -130,8 +130,8 @@ public class LogStreamManager implements StreamManager {
             systemMetadata.put("ip", host.getHostAddress());
             systemMetadata.put("hostname", host.getHostName());
         } catch (UnknownHostException e) {
-            systemMetadata.put("ip", "unknonwn");
-            systemMetadata.put("hostname", "unknonwn");
+            systemMetadata.put("ip", "unknown");
+            systemMetadata.put("hostname", "unknown");
         }
         systemMetadata.put("cpuCores", String.valueOf(Runtime.getRuntime().availableProcessors()));
         systemMetadata.put("jvmHeapSize", String.valueOf(Runtime.getRuntime().maxMemory()));
