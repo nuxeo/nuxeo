@@ -26,8 +26,9 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchHandler;
-import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * BatchHandler Descriptor
@@ -35,9 +36,11 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 10.1
  */
 @XObject("batchHandler")
-public class BatchHandlerDescriptor implements Descriptor {
+@XRegistry
+public class BatchHandlerDescriptor {
 
     @XNode("name")
+    @XRegistryId
     public String name;
 
     @XNode("class")
@@ -46,7 +49,6 @@ public class BatchHandlerDescriptor implements Descriptor {
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties = new HashMap<>();
 
-    @Override
     public String getId() {
         return name;
     }
