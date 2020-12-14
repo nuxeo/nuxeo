@@ -20,6 +20,8 @@
 
 package org.nuxeo.template.serializer.service;
 
+import java.util.Optional;
+
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.template.serializer.executors.TemplateSerializer;
@@ -41,16 +43,14 @@ public class TemplateSerializerServiceImpl extends DefaultComponent implements T
 
     @Override
     public TemplateSerializer getSerializer(String id) {
-        SerializerDescriptor contrib = getDescriptor(EXTENSION_POINT_NAME, id);
-
-        if (contrib == null) {
-            contrib = getDescriptor(EXTENSION_POINT_NAME, DEFAULT_SERIALIZER_NAME);
-            if (contrib == null) {
+        Optional<SerializerDescriptor> optContrib = getRegistryContribution(EXTENSION_POINT_NAME, id);
+        if (optContrib.isEmpty()) {
+            optContrib = getRegistryContribution(EXTENSION_POINT_NAME, DEFAULT_SERIALIZER_NAME);
+            if (optContrib.isEmpty()) {
                 throw new NuxeoException("UnknownSerializer named " + id);
             }
         }
-
-        return contrib.newInstance();
+        return optContrib.get().newInstance();
     }
 
 }
