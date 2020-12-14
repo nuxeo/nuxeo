@@ -51,6 +51,7 @@
 
     <object class="org.nuxeo.ecm.core.redis.RedisServerDescriptor" />
     <object class="org.nuxeo.ecm.core.redis.RedisSentinelDescriptor" />
+    <registry class="org.nuxeo.ecm.core.redis.RedisPoolRegistry" />
   </extension-point>
 
 

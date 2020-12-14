@@ -18,12 +18,11 @@ package org.nuxeo.ecm.core.redis;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
 
 import redis.clients.jedis.Protocol;
 
 @XObject("pool")
-public abstract class RedisPoolDescriptor implements Descriptor {
+public abstract class RedisPoolDescriptor {
 
     @XNode("disabled")
     protected boolean disabled;
@@ -44,11 +43,6 @@ public abstract class RedisPoolDescriptor implements Descriptor {
 
     @XNode("prefix")
     public String prefix;
-
-    @Override
-    public final String getId() {
-        return UNIQUE_DESCRIPTOR_ID;
-    }
 
     @XNode("password")
     public void setPassword(String value) {

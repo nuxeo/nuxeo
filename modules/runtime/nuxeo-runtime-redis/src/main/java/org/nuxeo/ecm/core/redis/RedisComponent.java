@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.redis;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +53,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
 
     @Override
     public RedisPoolDescriptor getConfig() {
-        return getDescriptor(XP_CONFIG, UNIQUE_DESCRIPTOR_ID);
+        return (RedisPoolDescriptor) getRegistryContribution(XP_CONFIG).orElse(null);
     }
 
     @Override

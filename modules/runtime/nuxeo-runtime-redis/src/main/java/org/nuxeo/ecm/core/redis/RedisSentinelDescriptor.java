@@ -22,7 +22,6 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
@@ -33,7 +32,7 @@ import redis.clients.util.Pool;
 public class RedisSentinelDescriptor extends RedisPoolDescriptor {
 
     @XObject("host")
-    public static class RedisHostDescriptor implements Descriptor {
+    public static class RedisHostDescriptor {
 
         @XNode("@name")
         public String name;
@@ -50,7 +49,6 @@ public class RedisSentinelDescriptor extends RedisPoolDescriptor {
             this.port = port;
         }
 
-        @Override
         public String getId() {
             return name;
         }
