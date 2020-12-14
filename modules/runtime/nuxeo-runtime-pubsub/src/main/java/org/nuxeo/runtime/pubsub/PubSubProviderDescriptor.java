@@ -24,7 +24,8 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor for a {@link PubSubProvider} implementation.
@@ -32,16 +33,14 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 9.1
  */
 @XObject("provider")
-public class PubSubProviderDescriptor implements Descriptor {
+@XRegistry
+public class PubSubProviderDescriptor {
 
     @XNode("@class")
-    public Class<? extends PubSubProvider> klass;
+    @XRegistryId
+    public String klass;
 
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> options = new HashMap<>();
 
-    @Override
-    public String getId() {
-        return klass.getName();
-    }
 }
