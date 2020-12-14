@@ -174,7 +174,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertEquals("Wrong old value", "default,common,testinclude,testenv,backing", oldValue);
         assertEquals(ConfigurationGenerator.PARAM_TEMPLATES_NAME + " should be reset", "default",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
-        configGenerator.changeTemplates(oldValue);
+        configGenerator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, oldValue);
         configGenerator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
         assertEquals(ConfigurationGenerator.PARAM_TEMPLATES_NAME + " should be reset", "default",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
@@ -250,15 +250,15 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         String originalTemplates = configGenerator.getUserConfig()
                                                   .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         assertEquals("Error calculating db template", "default",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBTYPE));
         configGenerator.addTemplate("newTemplate");
         assertEquals("Error calculating db template", "postgresql",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBTYPE));
         assertEquals("newTemplate not added", originalTemplates + ",newTemplate",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
         configGenerator.rmTemplate("newTemplate");
         assertEquals("Error calculating db template", "default",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBTYPE));
         assertEquals("newTemplate not removed", originalTemplates,
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
     }
@@ -276,36 +276,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertTrue(outfile.exists());
         String fileContents = FileUtils.readFileToString(outfile, UTF_8).trim();
         assertEquals(fileContents, "Success");
-    }
-
-    @Test
-    public void testChangeDatabase() {
-        String originalTemplates = configGenerator.getUserConfig()
-                                                  .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
-        configGenerator.changeDBTemplate("postgresql");
-        assertEquals("Failed to change database default to postgresql",
-                originalTemplates.replaceFirst("default", "postgresql"), configGenerator.getUserTemplates());
-    }
-
-    @Test
-    public void testChangeDatabaseFromCustom() throws Exception {
-        configGenerator.changeTemplates("testinclude2");
-        String originalTemplates = configGenerator.getUserConfig()
-                                                  .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
-        configGenerator.changeDBTemplate("postgresql");
-        assertEquals("Failed to change database default to postgresql", originalTemplates.concat(",postgresql"),
-                configGenerator.getUserTemplates());
-        Map<String, String> customParameters = new HashMap<>();
-        customParameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME, "postgresql");
-        configGenerator.saveFilteredConfiguration(customParameters);
-        // Check stored value
-        assertTrue(configGenerator.init(true));
-        assertEquals("Failed to change database default to postgresql", originalTemplates.concat(",postgresql"),
-                configGenerator.getUserTemplates());
-        assertEquals("Failed to change database default to postgresql", originalTemplates.concat(",postgresql"),
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
-        assertEquals("Failed to change database default to postgresql", "postgresql",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
     }
 
     @Test
@@ -463,7 +433,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         // Test configuration generator context before reloading it
         // getUserTemplates lazy load templates in the configuration generator context and put it back to userConfig
         // That's explain the two assertions below
-        assertEquals("default,common,testinclude,testenv,backing", configGenerator.getUserTemplates());
+        assertEquals("default,common,testinclude,testenv,backing", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
         assertEquals("default,common,testinclude,testenv,backing",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
 
@@ -473,7 +443,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
         // Check values
         // userConfig was filled with values from nuxeo.conf and getUserTemplates re-load templates from userConfig
-        assertEquals("default,mongodb", configGenerator.getUserTemplates());
+        assertEquals("default,mongodb", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
         assertEquals("default,mongodb",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
     }

@@ -20,13 +20,18 @@
 package org.nuxeo.launcher.config;
 
 import static java.util.Objects.requireNonNull;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_LIST;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -57,6 +62,9 @@ public class ConfigurationHolder {
     /** Properties representing {@code nuxeo.conf} with a fallback on {@link #defaultConfig}. */
     protected final CryptoProperties userConfig;
 
+    /** Templates included in this configuration. */
+    protected final List<Path> templates;
+
     public ConfigurationHolder(Path home, Path nuxeoConf) {
         this.home = requireNonNull(home).toAbsolutePath();
         this.nuxeoConf = requireNonNull(nuxeoConf).toAbsolutePath();
@@ -72,6 +80,7 @@ public class ConfigurationHolder {
         basicConfig.put(Environment.NUXEO_TMP_DIR, homeResolver.apply(Environment.DEFAULT_TMP_DIR));
         defaultConfig = new Properties(basicConfig);
         userConfig = new CryptoProperties(defaultConfig);
+        templates = new ArrayList<>();
     }
 
     public Path getHomePath() {
@@ -235,8 +244,42 @@ public class ConfigurationHolder {
         userConfig.putAll(properties);
     }
 
+    /**
+     * Put all given {@code properties} into default configuration for the given template.
+     */
+    public void putTemplateAll(Path template, Properties properties) {
+        templates.add(template);
+        defaultConfig.putAll(properties);
+    }
+
+    /**
+     * @return the absolute {@link Path}s of the included templates
+     */
+    public List<Path> getIncludedTemplates() {
+        return Collections.unmodifiableList(templates);
+    }
+
+    /**
+     * @return the names of the included templates (ie: name of template directory)
+     */
+    public List<String> getIncludedTemplateNames() {
+        return templates.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
+     * @return the name of the included DB template
+     */
+    public String getIncludedDBTemplateName() {
+        return templates.stream()
+                        .map(Path::getFileName)
+                        .map(Path::toString)
+                        .filter(DB_LIST::contains)
+                        .reduce("unknown", (first, second) -> second);
+    }
+
     protected void clear() {
         defaultConfig.clear();
         userConfig.clear();
+        templates.clear();
     }
 }

@@ -45,7 +45,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
@@ -164,10 +163,10 @@ public class ServerConfigurator {
         deleteTemplateFiles();
         // add included templates directories
         List<String> newFilesList = new ArrayList<>();
-        for (File includedTemplate : generator.getIncludedTemplates()) {
-            File[] listFiles = includedTemplate.listFiles(filter);
+        for (Path includedTemplate : configHolder.getIncludedTemplates()) {
+            File[] listFiles = includedTemplate.toFile().listFiles(filter);
             if (listFiles != null) {
-                String templateName = includedTemplate.getName();
+                String templateName = includedTemplate.getFileName().toString();
                 log.debug("Parsing {}... {}", () -> templateName, () -> Arrays.toString(listFiles));
                 // Check for deprecation
                 boolean isDeprecated = Boolean.parseBoolean(config.getProperty(templateName + ".deprecated"));
@@ -583,10 +582,8 @@ public class ServerConfigurator {
         }
         // templates
         nxInstance.config.dbtemplate = generator.extractDatabaseTemplateName();
-        String userTemplates = generator.getUserTemplates();
-        StringTokenizer st = new StringTokenizer(userTemplates, ",");
-        while (st.hasMoreTokens()) {
-            String template = st.nextToken();
+        List<String> userTemplates = configHolder.getIncludedTemplateNames();
+        for (String template : userTemplates) {
             if (template.equals(nxInstance.config.dbtemplate)) {
                 continue;
             }
