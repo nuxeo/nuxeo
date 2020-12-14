@@ -15,12 +15,14 @@
   <extension-point name="bindings">
     <documentation>Rest security bindings on operations</documentation>
     <object class="org.nuxeo.ecm.automation.server.RestBinding"/>
+    <registry class="org.nuxeo.ecm.automation.server.RestBindingRegistry" />
   </extension-point>
 
 
   <extension-point name="marshallers">
     <documentation>JAX-RS writer/reader declarations</documentation>
     <object class="org.nuxeo.ecm.automation.server.MarshallerDescriptor"/>
+    <registry class="org.nuxeo.ecm.automation.server.MarshallerRegistry" />
   </extension-point>
 
 </component>

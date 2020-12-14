@@ -134,7 +134,12 @@ public class XAnnotatedMember {
         }
     }
 
-    protected boolean hasValue(Context ctx, Element element) {
+    /**
+     * Returns true if there is a specified value in given element.
+     *
+     * @since 11.5
+     */
+    public boolean hasValue(Context ctx, Element element) {
         if (type == Element.class) {
             return element != null;
         }

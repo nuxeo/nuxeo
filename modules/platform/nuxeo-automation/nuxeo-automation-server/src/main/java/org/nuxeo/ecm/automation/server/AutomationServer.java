@@ -54,25 +54,6 @@ public interface AutomationServer {
     RestBinding[] getBindings();
 
     /**
-     * Registers a new operation binding.
-     *
-     * @param binding the new binding to register
-     * @deprecated since 10.3 unused
-     */
-    @Deprecated
-    void addBinding(RestBinding binding);
-
-    /**
-     * Removes a binding for the given operation name.
-     *
-     * @param binding the binding to remove
-     * @return the removed binding if any, otherwise null
-     * @deprecated since 10.3 unused
-     */
-    @Deprecated
-    RestBinding removeBinding(RestBinding binding);
-
-    /**
      * Checks if the given operation name is allowed in a REST call.
      */
     boolean accept(String name, boolean isChain, HttpServletRequest req);

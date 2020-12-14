@@ -65,7 +65,7 @@ public abstract class AbstractRegistry implements Registry {
 
     @Override
     public void initialize() {
-        registrations.forEach(rc -> register(rc.getContext(), rc.getObject(), rc.getElement()));
+        registrations.forEach(this::register);
         setInitialized(true);
     }
 
@@ -94,6 +94,10 @@ public abstract class AbstractRegistry implements Registry {
         tags.remove(tag);
         registrations.removeIf(reg -> tag.equals(reg.getTag()));
         setInitialized(false);
+    }
+
+    protected void register(RegistryContribution rc) {
+        register(rc.getContext(), rc.getObject(), rc.getElement());
     }
 
     protected abstract void register(Context ctx, XAnnotatedObject xObject, Element element);

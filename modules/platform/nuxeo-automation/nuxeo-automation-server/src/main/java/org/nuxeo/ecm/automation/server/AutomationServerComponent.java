@@ -55,7 +55,8 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        List<MarshallerDescriptor> marshallers = getDescriptors(XP_MARSHALLER);
+        List<MarshallerDescriptor> marshallers = ((MarshallerRegistry) getExtensionPointRegistry(
+                XP_MARSHALLER)).getContributionValues();
         marshallers.forEach(m -> {
             writers.addAll(m.writers);
             readers.addAll(m.readers);
@@ -79,28 +80,17 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
 
     @Override
     public RestBinding getOperationBinding(String name) {
-        return getDescriptor(XP_BINDINGS, name);
+        return (RestBinding) getRegistryContribution(XP_BINDINGS, name).orElse(null);
     }
 
     @Override
     public RestBinding getChainBinding(String name) {
-        return getDescriptor(XP_BINDINGS, Constants.CHAIN_ID_PREFIX + name);
+        return (RestBinding) getRegistryContribution(XP_BINDINGS, Constants.CHAIN_ID_PREFIX + name).orElse(null);
     }
 
     @Override
     public RestBinding[] getBindings() {
-        List<RestBinding> descriptors = getDescriptors(XP_BINDINGS);
-        return descriptors.toArray(new RestBinding[0]);
-    }
-
-    @Override
-    public synchronized void addBinding(RestBinding binding) {
-        register(XP_BINDINGS, binding);
-    }
-
-    @Override
-    public synchronized RestBinding removeBinding(RestBinding binding) {
-        return unregister(XP_BINDINGS, binding) ? binding : null;
+        return getRegistryContributions(XP_BINDINGS).toArray(new RestBinding[0]);
     }
 
     @Override
@@ -108,11 +98,8 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
         if (isChain) {
             name = Constants.CHAIN_ID_PREFIX + name;
         }
-        RestBinding binding = getDescriptor(XP_BINDINGS, name);
+        RestBinding binding = (RestBinding) getRegistryContribution(XP_BINDINGS, name).orElse(null);
         if (binding != null) {
-            if (binding.isDisabled) {
-                return false;
-            }
             if (binding.isSecure && !req.isSecure()) {
                 return false;
             }

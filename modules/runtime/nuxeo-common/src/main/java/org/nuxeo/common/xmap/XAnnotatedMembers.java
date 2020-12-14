@@ -69,7 +69,7 @@ public class XAnnotatedMembers extends XAnnotatedMember {
     }
 
     @Override
-    protected boolean hasValue(Context ctx, Element element) {
+    public boolean hasValue(Context ctx, Element element) {
         return Arrays.stream(members).anyMatch(member -> member.hasValue(ctx, element));
     }
 
