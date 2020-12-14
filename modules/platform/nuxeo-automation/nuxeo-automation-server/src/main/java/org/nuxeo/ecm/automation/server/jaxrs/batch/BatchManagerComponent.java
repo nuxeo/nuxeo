@@ -85,7 +85,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        List<BatchHandlerDescriptor> descriptors = getDescriptors(XP_BATCH_HANDLER);
+        List<BatchHandlerDescriptor> descriptors = getRegistryContributions(XP_BATCH_HANDLER);
         descriptors.forEach(d -> {
             try {
                 BatchHandler handler = d.klass.getDeclaredConstructor().newInstance();
