@@ -59,19 +59,19 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
         if (provider != null) {
             provider.close();
         }
-        List<PubSubProviderDescriptor> descs = getDescriptors(XP_CONFIG);
+        List<PubSubProviderDescriptor> descs = getRegistryContributions(XP_CONFIG);
         PubSubProviderDescriptor providerDescriptor = descs.isEmpty() ? null : descs.get(descs.size() - 1);
         if (providerDescriptor == null) {
             provider = new MemPubSubProvider(); // default implementation
             options = Collections.emptyMap();
         } else {
-            Class<? extends PubSubProvider> klass = providerDescriptor.klass;
-            // dynamic class check, the generics aren't enough
-            if (!PubSubProvider.class.isAssignableFrom(klass)) {
-                throw new RuntimeException("Class does not implement PubSubServiceProvider: " + klass.getName());
-            }
             try {
-                provider = klass.getDeclaredConstructor().newInstance();
+                Class<?> klass = Class.forName(providerDescriptor.klass);
+                // dynamic class check, the generics aren't enough
+                if (!PubSubProvider.class.isAssignableFrom(klass)) {
+                    throw new RuntimeException("Class does not implement PubSubServiceProvider: " + klass.getName());
+                }
+                provider = (PubSubProvider) klass.getDeclaredConstructor().newInstance();
                 options = providerDescriptor.options;
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
