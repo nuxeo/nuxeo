@@ -134,13 +134,13 @@ public class RedisFeature implements RunnerFeature {
         Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
             @Override
             public void afterActivation(ComponentManager mgr) {
-                // overwrite the redis config (before redis component is started)
-                RedisComponent redisComponent = (RedisComponent) Framework.getService(RedisAdmin.class);
-                if (redisComponent != null) {
-                    Mode mode = getMode();
-                    if (!Mode.disabled.equals(mode)) {
-                        redisComponent.registerContribution(getDescriptor(mode), RedisComponent.XP_CONFIG, null);
-                    }
+                Mode mode = getMode();
+                if (!Mode.disabled.equals(mode)) {
+                    // overwrite the redis config (before redis component is started)
+                    Framework.getRuntime()
+                             .getComponentManager()
+                             .getExtensionPointRegistry("org.nuxeo.runtime.redis", RedisComponent.XP_CONFIG)
+                             .ifPresent(reg -> ((RedisPoolRegistry) reg).setContribution(getDescriptor(mode)));
                 }
             }
         });
