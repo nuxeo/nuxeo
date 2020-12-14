@@ -23,6 +23,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -31,41 +33,51 @@ import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.RestBinding;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.webengine.test.WebEngineFeatureCore;
+import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, WebEngineFeatureCore.class })
+@Features({ CoreFeature.class, WebEngineFeatureCore.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.io")
 @Deploy("org.nuxeo.ecm.automation.server")
-@Deploy("org.nuxeo.ecm.automation.server:test-bindings.xml")
-// @RepositoryConfig(cleanup=Granularity.METHOD)
 public class ContributionTest {
+
+    public static final int DEFAULT_BINDINGS = 8;
 
     @Inject
     AutomationServer server;
 
-    // ------ Tests comes here --------
+    @Inject
+    protected HotDeployer hotDeployer;
 
-    public static final int DEFAULT_BINDINGS = 8;
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     /**
      * Test registration of a studio generated contribution
      */
     @Test
-    public void testContribution() {
-        assertEquals(DEFAULT_BINDINGS + 2, server.getBindings().length);
+    @LogCaptureFeature.FilterOn(loggerClass = DeprecationLogger.class, logLevel = "WARN")
+    public void testContribution() throws Exception {
+        hotDeployer.deploy("org.nuxeo.ecm.automation.server:test-bindings.xml");
+        assertEquals(DEFAULT_BINDINGS + 1, server.getBindings().length);
         RestBinding binding = server.getChainBinding("principals");
-
-        assertTrue(binding.isDisabled);
-        assertFalse(binding.isSecure);
-        assertFalse(binding.isAdministrator);
-        assertNull(binding.groups);
+        assertNull(binding);
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
+        assertEquals(1, caughtEvents.size());
+        assertEquals(
+                "Since version 11.5: Usage of \"disabled\" attribute on RestBinding contribution 'Chain.principals', "
+                        + "in extension 'org.nuxeo.ecm.automation.server.test-bindings#bindings', "
+                        + "is deprecated: use \"enable\" attribute instead",
+                caughtEvents.get(0));
 
         binding = server.getChainBinding("audit");
         assertFalse(binding.isDisabled);

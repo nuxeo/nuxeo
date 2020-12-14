@@ -21,14 +21,16 @@ package org.nuxeo.ecm.automation.server;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.automation.core.Constants;
-import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("binding")
-public class RestBinding implements Descriptor {
+@XRegistry
+public class RestBinding {
 
     @XNode("@name")
     public String name;
@@ -36,6 +38,10 @@ public class RestBinding implements Descriptor {
     @XNode("@chain")
     public boolean chain;
 
+    /**
+     * @deprecated since 11.5: should use {@link XEnable#ENABLE} instead
+     */
+    @Deprecated
     @XNode("@disabled")
     public boolean isDisabled;
 
@@ -47,7 +53,6 @@ public class RestBinding implements Descriptor {
 
     public String[] groups;
 
-    @Override
     public String getId() {
         return chain ? Constants.CHAIN_ID_PREFIX + name : name;
     }
