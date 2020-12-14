@@ -22,6 +22,8 @@ package org.nuxeo.launcher.config;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.function.Predicate.not;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.launcher.config.ServerConfigurator.PARAM_HTTP_TOMCAT_ADMIN_PORT;
 
 import java.io.BufferedReader;
@@ -286,9 +288,6 @@ public class ConfigurationGenerator {
     /** @since 11.5 */
     protected static final Path DEFAULT_NUXEO_CONF_PATH = Path.of("bin", "nuxeo.conf");
 
-    // Chosen templates
-    private final List<File> includedTemplates = new ArrayList<>();
-
     /** @since 11.5 */
     private final ConfigurationHolder configHolder;
 
@@ -302,8 +301,6 @@ public class ConfigurationGenerator {
     private boolean forceGeneration;
 
     private boolean onceGeneration = false;
-
-    private String templates;
 
     // if PARAM_FORCE_GENERATION=once, set to false; else keep current value
     private boolean setOnceToFalse = true;
@@ -468,10 +465,6 @@ public class ConfigurationGenerator {
             return false;
         } else if (!configHolder.isLoaded() || forceReload) {
             try {
-                if (forceReload) {
-                    // force 'templates' reload
-                    templates = null;
-                }
                 loadConfiguration(true);
             } catch (ConfigurationException e) {
                 log.warn("Error reading basic configuration.", e);
@@ -479,30 +472,6 @@ public class ConfigurationGenerator {
             }
         }
         return configHolder.isLoaded();
-    }
-
-    /**
-     * @return Old templates
-     */
-    public String changeTemplates(String newTemplates) {
-        String oldTemplates = templates;
-        templates = newTemplates;
-        try {
-            loadConfiguration(false);
-        } catch (ConfigurationException e) {
-            log.warn("Error reading basic configuration.", e);
-        }
-        return oldTemplates;
-    }
-
-    /**
-     * Change templates using given database template
-     *
-     * @param dbTemplate new database template
-     * @since 5.4.2
-     */
-    public void changeDBTemplate(String dbTemplate) {
-        changeTemplates(rebuildTemplatesStr(dbTemplate));
     }
 
     private void loadConfiguration(boolean evalDynamicProperties) throws ConfigurationException {
@@ -524,15 +493,7 @@ public class ConfigurationGenerator {
 
         // Override default configuration with specific configuration(s) of
         // the chosen template(s) which can be outside of server filesystem
-        try {
-            includeTemplates();
-            extractDatabaseTemplateName();
-            extractSecondaryDatabaseTemplateName();
-        } catch (FileNotFoundException e) {
-            throw new ConfigurationException("Missing file", e);
-        } catch (IOException e) {
-            throw new ConfigurationException("Error reading " + configHolder.getNuxeoConfPath(), e);
-        }
+        includeTemplates();
         if (evalDynamicProperties) {
             Map<String, String> newParametersToSave = evalDynamicProperties();
             if (newParametersToSave != null && !newParametersToSave.isEmpty()) {
@@ -547,17 +508,19 @@ public class ConfigurationGenerator {
     /**
      * @since 5.7
      */
-    protected void includeTemplates() throws IOException, ConfigurationException {
-        includedTemplates.clear();
-        String templates = getUserTemplates();
+    protected void includeTemplates() throws ConfigurationException {
+        String templates = configHolder.getProperty(PARAM_TEMPLATES_NAME);
+        if (isBlank(templates)) {
+            log.warn("No template found in configuration! Fallback on 'default'.");
+            templates = "default";
+            configHolder.put(PARAM_TEMPLATES_NAME, templates);
+        }
         String profiles = getEnvironment(NUXEO_PROFILES);
         if (StringUtils.isNotBlank(profiles)) {
             templates += TEMPLATE_SEPARATOR + profiles;
         }
-        List<File> orderedTemplates = includeTemplates(templates);
-        includedTemplates.clear();
-        includedTemplates.addAll(orderedTemplates);
-        log.debug(includedTemplates);
+        includeTemplates(templates, new HashSet<>());
+        log.debug("Templates included: {}", configHolder::getIncludedTemplates);
     }
 
     /**
@@ -618,19 +581,6 @@ public class ConfigurationGenerator {
         }
     }
 
-    public String getUserTemplates() {
-        if (templates == null) {
-            templates = configHolder.getProperty(PARAM_TEMPLATES_NAME);
-        }
-        if (templates == null) {
-            log.warn("No template found in configuration! Fallback on 'default'.");
-            templates = "default";
-        }
-        templates = configLoader.replaceEnvironmentVariables(templates);
-        configHolder.put(PARAM_TEMPLATES_NAME, templates);
-        return templates;
-    }
-
     protected void generateFiles() throws ConfigurationException {
         try {
             serverConfigurator.parseAndCopy(configHolder.userConfig);
@@ -650,8 +600,9 @@ public class ConfigurationGenerator {
         }
     }
 
-    private List<File> includeTemplates(String templatesList) throws ConfigurationException {
-        List<File> orderedTemplates = new ArrayList<>();
+    private List<Path> includeTemplates(String templatesList, Set<Path> includedTemplates)
+            throws ConfigurationException {
+        List<Path> orderedTemplates = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(templatesList, TEMPLATE_SEPARATOR);
         while (st.hasMoreTokens()) {
             String nextToken = st.nextToken();
@@ -659,7 +610,7 @@ public class ConfigurationGenerator {
             if (!chosenTemplate.isAbsolute() || Files.notExists(chosenTemplate)) {
                 chosenTemplate = configHolder.getTemplatesPath().resolve(nextToken);
             }
-            if (includedTemplates.contains(chosenTemplate.toFile())) {
+            if (includedTemplates.contains(chosenTemplate)) {
                 log.debug("Already included {}", nextToken);
                 continue;
             }
@@ -670,7 +621,7 @@ public class ConfigurationGenerator {
                         nextToken, chosenTemplate, PARAM_TEMPLATES_NAME, PARAM_INCLUDED_TEMPLATES);
                 continue;
             }
-            includedTemplates.add(chosenTemplate.toFile());
+            includedTemplates.add(chosenTemplate);
             if (Files.notExists(chosenTemplate.resolve(NUXEO_DEFAULT_CONF))) {
                 log.warn("Ignore template (no default configuration): {}", nextToken);
                 continue;
@@ -679,11 +630,11 @@ public class ConfigurationGenerator {
             Properties templateProperties = configLoader.loadNuxeoDefaults(chosenTemplate);
             String subTemplatesList = templateProperties.getProperty(PARAM_INCLUDED_TEMPLATES);
             if (StringUtils.isNotBlank(subTemplatesList)) {
-                orderedTemplates.addAll(includeTemplates(subTemplatesList));
+                orderedTemplates.addAll(includeTemplates(subTemplatesList, includedTemplates));
             }
             // Load configuration from chosen templates
-            configHolder.putDefaultAll(templateProperties);
-            orderedTemplates.add(chosenTemplate.toFile());
+            configHolder.putTemplateAll(chosenTemplate, templateProperties);
+            orderedTemplates.add(chosenTemplate);
             log.log(logLevel, "Include template: {}", chosenTemplate);
         }
         return orderedTemplates;
@@ -697,16 +648,8 @@ public class ConfigurationGenerator {
         return configHolder.getHomePath().resolve("bin").toFile();
     }
 
-    /**
-     * @deprecated since 11.1, unused
-     */
-    @Deprecated(since = "11.1")
-    public File getNuxeoDefaultConf() {
-        return configHolder.getTemplatesPath().resolve(NUXEO_DEFAULT_CONF).toFile();
-    }
-
     public List<File> getIncludedTemplates() {
-        return includedTemplates;
+        return configHolder.getIncludedTemplates().stream().map(Path::toFile).collect(Collectors.toUnmodifiableList());
     }
 
     /**
@@ -798,14 +741,15 @@ public class ConfigurationGenerator {
      */
     public Map<String, String> getChangedParameters(Map<String, String> changedParameters) {
         Map<String, String> filteredChangedParameters = new HashMap<>();
-        for (String key : changedParameters.keySet()) {
-            String oldParam = getStoredConfig().getProperty(key);
-            String newParam = changedParameters.get(key);
-            if (newParam != null) {
-                newParam = newParam.trim();
-            }
+        for (Entry<String, String> entry : changedParameters.entrySet()) {
+            String key = entry.getKey();
+            String oldParam = configHolder.getProperty(key);
+            String newParam = StringUtils.trim(entry.getValue());
             if (oldParam == null && StringUtils.isNotEmpty(newParam)
                     || oldParam != null && !oldParam.trim().equals(newParam)) {
+                if (PARAM_TEMPLATES_NAME.equals(key)) {
+                    newParam = StringUtils.defaultIfEmpty(newParam, "default");
+                }
                 filteredChangedParameters.put(key, newParam);
             }
         }
@@ -971,8 +915,8 @@ public class ConfigurationGenerator {
             String paramTemplateDbName, String defaultTemplate) {
         String dbTemplate = defaultTemplate;
         boolean found = false;
-        for (File templateFile : includedTemplates) {
-            String template = templateFile.getName();
+        for (var templatePath : configHolder.getIncludedTemplates()) {
+            String template = templatePath.getFileName().toString();
             if (knownDbList.contains(template)) {
                 dbTemplate = template;
                 found = true;
@@ -1297,11 +1241,10 @@ public class ConfigurationGenerator {
      * @return new templates string using given dbTemplate
      * @since 5.4.2
      * @see #extractDatabaseTemplateName()
-     * @see #changeDBTemplate(String)
-     * @see #changeTemplates(String)
      */
     public String rebuildTemplatesStr(String dbTemplate) {
-        List<String> templatesList = new ArrayList<>(asList(templates.split(TEMPLATE_SEPARATOR)));
+        List<String> templatesList = new ArrayList<>(
+                asList(configHolder.getProperty(PARAM_TEMPLATES_NAME).split(TEMPLATE_SEPARATOR)));
         String currentDBTemplate = null;
         if (DB_LIST.contains(dbTemplate)) {
             currentDBTemplate = configHolder.getProperty(PARAM_TEMPLATE_DBNAME);
@@ -1320,7 +1263,7 @@ public class ConfigurationGenerator {
         int dbIdx = templatesList.indexOf(currentDBTemplate);
         if (dbIdx < 0) {
             if (dbTemplate == null) {
-                return templates;
+                return configHolder.getProperty(PARAM_TEMPLATES_NAME);
             }
             // current db template is implicit => set the new one
             templatesList.add(dbTemplate);
@@ -1383,19 +1326,17 @@ public class ConfigurationGenerator {
      * @since 5.5
      */
     public void addTemplate(String templatesToAdd) throws ConfigurationException {
-        List<String> templatesList = getTemplateList();
-        List<String> templatesToAddList = asList(templatesToAdd.split(TEMPLATE_SEPARATOR));
-        if (templatesList.addAll(templatesToAddList)) {
-            String newTemplatesStr = String.join(TEMPLATE_SEPARATOR, templatesList);
-            Map<String, String> parametersToSave = new HashMap<>();
-            parametersToSave.put(PARAM_TEMPLATES_NAME, newTemplatesStr);
-            saveFilteredConfiguration(parametersToSave);
-            changeTemplates(newTemplatesStr);
-        }
+        String newTemplatesStr = Stream.concat(
+                Stream.of(configHolder.getProperty(PARAM_TEMPLATES_NAME).split(TEMPLATE_SEPARATOR)),
+                Stream.of(templatesToAdd.split(TEMPLATE_SEPARATOR)))
+                                       .distinct()
+                                       .collect(Collectors.joining(TEMPLATE_SEPARATOR));
+        saveFilteredConfiguration(Map.of(PARAM_TEMPLATES_NAME, newTemplatesStr));
+        loadConfiguration(false);
     }
 
     /**
-     * Return the list of templates.
+     * Return the list of templates declared by {@link #PARAM_TEMPLATES_NAME}.
      *
      * @since 9.2
      */
@@ -1414,15 +1355,12 @@ public class ConfigurationGenerator {
      * @since 5.5
      */
     public void rmTemplate(String templatesToRm) throws ConfigurationException {
-        List<String> templatesList = getTemplateList();
-        List<String> templatesToRmList = asList(templatesToRm.split(TEMPLATE_SEPARATOR));
-        if (templatesList.removeAll(templatesToRmList)) {
-            String newTemplatesStr = String.join(TEMPLATE_SEPARATOR, templatesList);
-            Map<String, String> parametersToSave = new HashMap<>();
-            parametersToSave.put(PARAM_TEMPLATES_NAME, newTemplatesStr);
-            saveFilteredConfiguration(parametersToSave);
-            changeTemplates(newTemplatesStr);
-        }
+        Set<String> templatesToRmSet = Set.of(templatesToRm.split(TEMPLATE_SEPARATOR));
+        String newTemplatesStr = Stream.of(configHolder.getProperty(PARAM_TEMPLATES_NAME).split(TEMPLATE_SEPARATOR))
+                                       .filter(not(templatesToRmSet::contains))
+                                       .collect(Collectors.joining(TEMPLATE_SEPARATOR));
+        saveFilteredConfiguration(Map.of(PARAM_TEMPLATES_NAME, newTemplatesStr));
+        loadConfiguration(false);
     }
 
     /**
@@ -1432,15 +1370,9 @@ public class ConfigurationGenerator {
      * @since 5.5
      */
     public String setProperty(String key, String value) throws ConfigurationException {
-        String oldValue = getStoredConfig().getProperty(key);
-        if (PARAM_TEMPLATES_NAME.equals(key)) {
-            templates = StringUtils.isBlank(value) ? null : value;
-        }
-        HashMap<String, String> newParametersToSave = new HashMap<>();
+        Map<String, String> newParametersToSave = new HashMap<>();
         newParametersToSave.put(key, value);
-        saveFilteredConfiguration(newParametersToSave);
-        loadConfiguration(true);
-        return oldValue;
+        return setProperties(newParametersToSave).get(key);
     }
 
     /**
@@ -1452,11 +1384,7 @@ public class ConfigurationGenerator {
     public Map<String, String> setProperties(Map<String, String> newParametersToSave) throws ConfigurationException {
         Map<String, String> oldValues = new HashMap<>();
         for (String key : newParametersToSave.keySet()) {
-            oldValues.put(key, getStoredConfig().getProperty(key));
-            if (PARAM_TEMPLATES_NAME.equals(key)) {
-                String value = newParametersToSave.get(key);
-                templates = StringUtils.isBlank(value) ? null : value;
-            }
+            oldValues.put(key, configHolder.getProperty(key));
         }
         saveFilteredConfiguration(newParametersToSave);
         loadConfiguration(true);
