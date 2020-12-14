@@ -20,29 +20,26 @@
 
 package org.nuxeo.template.serializer.service;
 
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.runtime.model.Descriptor;
 import org.nuxeo.template.serializer.executors.TemplateSerializer;
 
 /**
  * @since 11.1
  */
 @XObject("serializer")
-public class SerializerDescriptor implements Descriptor {
+@XRegistry
+public class SerializerDescriptor {
 
     @XNode("@class")
     public Class<TemplateSerializer> implementationClass;
 
     @XNode("@name")
+    @XRegistryId(defaultAssignment = "default")
     public String name;
-
-    @Override
-    public String getId() {
-        return StringUtils.defaultIfBlank(name, "default");
-    }
 
     public TemplateSerializer newInstance() {
         try {
