@@ -149,9 +149,10 @@ public class ServerConfigurator {
      */
     protected void parseAndCopy(Properties config) throws IOException, TemplateException, ConfigurationException {
         // FilenameFilter for excluding "nuxeo.defaults" files from copy
-        String nuxeoEnvironmentConf = generator.getNuxeoEnvironmentConfName();
         final FilenameFilter filter = (dir, name) -> !ConfigurationGenerator.NUXEO_DEFAULT_CONF.equals(name)
-                && !nuxeoEnvironmentConf.equals(name);
+                // exclude nuxeo.ENVIRONMENT files
+                && !(name.startsWith("nuxeo.")
+                        && Files.exists(dir.toPath().resolve(ConfigurationGenerator.NUXEO_DEFAULT_CONF)));
         final TextTemplate templateParser = new TextTemplate(config);
         templateParser.setKeepEncryptedAsVar(true);
         templateParser.setTrim(true);
@@ -576,7 +577,7 @@ public class ServerConfigurator {
         }
         nxInstance.config = new ConfigurationInfo();
         // profiles
-        String profiles = generator.getEnvironment(NUXEO_PROFILES);
+        String profiles = System.getenv(NUXEO_PROFILES);
         if (isNotBlank(profiles)) {
             nxInstance.config.profiles.addAll(Arrays.asList(profiles.split(TEMPLATE_SEPARATOR)));
         }
