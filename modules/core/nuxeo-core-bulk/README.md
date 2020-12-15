@@ -3,7 +3,7 @@ nuxeo-core-bulk
 
 ## About
 
-This module provides the ability to execute actions asynchronously on a -possibly large- set of documents. This is done by leveraging [Nuxeo Streams](https://github.com/nuxeo/nuxeo/tree/master/nuxeo-runtime/nuxeo-runtime-stream#nuxeo-runtime-stream) that bring scalability and fault tolerance.
+This module provides the ability to execute actions asynchronously on a -possibly large- set of documents. This is done by leveraging [Nuxeo Streams](https://github.com/nuxeo/nuxeo/tree/master/modules/runtime/nuxeo-runtime-stream#nuxeo-runtime-stream) that bring scalability and fault tolerance.
 
 ## Definitions
 
@@ -120,7 +120,7 @@ You need to register a couple action / stream processor :
 See [`SetPropertiesAction`](./src/main/java/org/nuxeo/ecm/core/bulk/action/SetPropertiesAction.java) for a very basic action implementation.
 
 You can find more info on how to configure a stream processor in the following link:
-https://github.com/nuxeo/nuxeo/tree/master/nuxeo-runtime/nuxeo-runtime-stream#stream-processing
+https://github.com/nuxeo/nuxeo/tree/master/modules/runtime/nuxeo-runtime-stream#stream-processing
 
 
 ## Testing a bulk action with REST API
