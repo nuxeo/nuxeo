@@ -30,7 +30,6 @@ import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.client.ESRestClient;
 import org.nuxeo.elasticsearch.client.ESRestClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
 import org.nuxeo.runtime.api.Framework;
 
@@ -73,7 +72,8 @@ public class TestESRestClient extends TestESClient {
         config.options.put(ESRestClientFactory.AUTH_PASSWORD_OPT, "bob");
         try (ESRestClient esClient = (ESRestClient) factory.create(null, config)) {
             assertNotNull(esClient);
-            // Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+            // Its not possible to get a reference to check the configuration, but the absence of an error is itself a
+            // test.
         }
     }
 
@@ -91,7 +91,8 @@ public class TestESRestClient extends TestESClient {
         config.options.put(ESRestClientFactory.KEY_STORE_TYPE_OPT, null);
         try (ESRestClient esClient = (ESRestClient) factory.create(null, config)) {
             assertNotNull(esClient);
-            // Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+            // Its not possible to get a reference to check the configuration, but the absence of an error is itself a
+            // test.
         }
     }
 
@@ -133,7 +134,8 @@ public class TestESRestClient extends TestESClient {
         config.options.put(ESRestClientFactory.KEY_STORE_TYPE_OPT, keystoreType);
         try (ESRestClient esClient = (ESRestClient) factory.create(null, config)) {
             assertNotNull(esClient);
-            // Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+            // Its not possible to get a reference to check the configuration, but the absence of an error is itself a
+            // test.
         }
 
         keystoreFile.delete();

@@ -25,7 +25,6 @@ import java.util.Arrays;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkItemResponse;
