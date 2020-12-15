@@ -58,7 +58,6 @@ import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.api.EsScrollResult;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
-import org.nuxeo.elasticsearch.config.ESHintQueryBuilderDescriptor;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchDocWriterDescriptor;
 import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
@@ -163,10 +162,6 @@ public class ElasticSearchComponent extends DefaultComponent
                 throw new NuxeoException(e);
             }
             break;
-        case EP_HINTS:
-            ESHintQueryBuilderDescriptor esHintDescriptor = (ESHintQueryBuilderDescriptor) contribution;
-            register(EP_HINTS, esHintDescriptor);
-            break;
         default:
             throw new IllegalStateException("Invalid EP: " + extensionPoint);
         }
@@ -178,7 +173,8 @@ public class ElasticSearchComponent extends DefaultComponent
             log.info("Elasticsearch service is disabled");
             return;
         }
-        esa = new ElasticSearchAdminImpl(embeddedServerConfig, clientConfig, indexConfig, getDescriptors(EP_HINTS));
+        esa = new ElasticSearchAdminImpl(embeddedServerConfig, clientConfig, indexConfig,
+                getRegistryContributions(EP_HINTS));
         esi = new ElasticSearchIndexingImpl(esa, jsonESDocumentWriter);
         ess = new ElasticSearchServiceImpl(esa);
         initListenerThreadPool();

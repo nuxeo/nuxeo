@@ -19,13 +19,12 @@
 
 package org.nuxeo.elasticsearch.config;
 
-import static java.util.Objects.requireNonNullElse;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESHintQueryBuilder;
-import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * This descriptor allows to add a Elasticsearch Hint.
@@ -33,35 +32,18 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 11.1
  */
 @XObject("hint")
-public class ESHintQueryBuilderDescriptor implements Descriptor {
+@XRegistry
+public class ESHintQueryBuilderDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@class")
     protected Class<? extends ESHintQueryBuilder> klass;
 
-    @XNode("@remove")
-    public boolean remove;
-
-    @Override
     public String getId() {
         return name;
-    }
-
-    @Override
-    public ESHintQueryBuilderDescriptor merge(Descriptor descriptor) {
-        ESHintQueryBuilderDescriptor other = ESHintQueryBuilderDescriptor.class.cast(descriptor);
-        ESHintQueryBuilderDescriptor merged = new ESHintQueryBuilderDescriptor();
-        merged.name = requireNonNullElse(other.name, name);
-        merged.klass = requireNonNullElse(other.klass, klass);
-        merged.remove = other.remove;
-        return merged;
-    }
-
-    @Override
-    public boolean doesRemove() {
-        return remove;
     }
 
     public String getName() {
