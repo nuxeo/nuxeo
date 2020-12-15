@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.web.idempotency">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Properties controlling idempotent requests TTL and KeyValue storename.
+
+      Default TTL in seconds matches 1 day.
+
+      @since 11.5
+    </documentation>
+    <property name="org.nuxeo.request.idempotency.ttl.duration">1d</property>
+    <property name="org.nuxeo.request.idempotency.keyvaluestore.name">idempotentrequest</property>
+  </extension>
+
+
+</component>
