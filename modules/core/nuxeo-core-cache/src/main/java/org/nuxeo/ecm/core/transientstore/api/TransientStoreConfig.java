@@ -26,7 +26,8 @@ import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * {@link XMap} descriptor for representing the Configuration of a {@link TransientStore}
@@ -34,7 +35,8 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 7.2
  */
 @XObject("store")
-public class TransientStoreConfig implements Descriptor {
+@XRegistry
+public class TransientStoreConfig {
 
     public static final int DEFAULT_TARGET_MAX_SIZE_MB = -1;
 
@@ -45,6 +47,7 @@ public class TransientStoreConfig implements Descriptor {
     public static final int DEFAULT_SECOND_LEVEL_TTL = 10;
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@path")
@@ -68,7 +71,7 @@ public class TransientStoreConfig implements Descriptor {
     public Class<? extends TransientStoreProvider> implClass;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class, nullByDefault = true)
-    protected Map<String, String> properties  = new HashMap<>();
+    protected Map<String, String> properties = new HashMap<>();
 
     public TransientStoreConfig() {
     }
@@ -93,9 +96,7 @@ public class TransientStoreConfig implements Descriptor {
         properties.putAll(other.properties);
     }
 
-    @Override
-    public TransientStoreConfig merge(Descriptor o) {
-        TransientStoreConfig other = (TransientStoreConfig) o;
+    public TransientStoreConfig merge(TransientStoreConfig other) {
         TransientStoreConfig merged = new TransientStoreConfig();
         merged.name = other.name;
         merged.path = defaultValue(other.path, path);
@@ -113,7 +114,6 @@ public class TransientStoreConfig implements Descriptor {
         return value == null ? defaultValue : value;
     }
 
-    @Override
     public String getId() {
         return name;
     }
