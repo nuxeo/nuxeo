@@ -51,23 +51,13 @@ import org.junit.Test;
 
 public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
-    protected Map<String, String> env = new HashMap<>();
-
     @Before
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        env.put("NUXEO_DB_HOST", "10.0.0.1");
         FileUtils.copyDirectory(getResourceFile("templates/jboss"), new File(nuxeoHome, "templates"));
         setSystemProperty("jboss.home.dir", nuxeoHome.getPath());
-        configGenerator = new ConfigurationGenerator() {
-
-            @Override
-            protected String getEnvironment(String key) {
-                return env.get(key);
-            }
-
-        };
+        configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         log.debug("Test with {}",
                 () -> configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
@@ -77,7 +67,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Override
     public void tearDown() {
         super.tearDown();
-        env.clear();
+//        env.clear();
     }
 
     @Test
@@ -454,7 +444,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertFalse("Profile should not be included", isTemplateIncluded(profileToTest));
         assertNotEquals("true", configGenerator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
 
-        env.put(NUXEO_PROFILES, profileToTest);
+//        env.put(NUXEO_PROFILES, profileToTest);
 
         configGenerator.init(true);
 
