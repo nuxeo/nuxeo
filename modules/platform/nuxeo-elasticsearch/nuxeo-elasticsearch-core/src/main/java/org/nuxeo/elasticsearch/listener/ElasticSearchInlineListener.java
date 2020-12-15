@@ -54,7 +54,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker impleme
     protected static ThreadLocal<Map<String, IndexingCommands>> transactionCommands = ThreadLocal.withInitial(
             HashMap::new);
 
-    public static final ThreadLocal<Boolean> useSyncIndexing = new ThreadLocal<Boolean>() {
+    public static final ThreadLocal<Boolean> useSyncIndexing = new ThreadLocal<>() {
         @Override
         protected Boolean initialValue() {
             return Boolean.FALSE;
