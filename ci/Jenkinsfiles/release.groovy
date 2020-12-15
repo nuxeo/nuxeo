@@ -30,8 +30,8 @@ void getReleaseVersion(version) {
   return version.replace('-SNAPSHOT', '')
 }
 
-void getLatestVersion() {
-  return "${REFERENCE_BRANCH}"
+void getLatestVersion(version) {
+  return version.split('\\.')[0];
 }
 
 void dockerPull(String image) {
@@ -71,14 +71,14 @@ pipeline {
 
   environment {
     CURRENT_VERSION = getCurrentVersion()
-    RELEASE_VERSION = getReleaseVersion(CURRENT_VERSION)
-    LATEST_VERSION = getLatestVersion()
+    RELEASE_VERSION = getReleaseVersion("${CURRENT_VERSION}")
+    LATEST_VERSION = getLatestVersion("${RELEASE_VERSION}")
     MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true -P-nexus,nexus-private'
     CONNECT_PROD_URL = 'https://connect.nuxeo.com/nuxeo'
     DOCKER_NAMESPACE = 'nuxeo'
     NUXEO_IMAGE_NAME = 'nuxeo'
     SLACK_CHANNEL = 'platform-notifs'
-    REFERENCE_BRANCH = "2021"
+    REFERENCE_BRANCH = '2021'
   }
 
   stages {
