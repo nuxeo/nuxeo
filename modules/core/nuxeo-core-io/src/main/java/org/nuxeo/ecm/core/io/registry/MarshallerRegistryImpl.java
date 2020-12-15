@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.io.registry;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,7 +37,6 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.reflect.MarshallerInspector;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * Implementation of {@link MarshallerRegistry}.
@@ -82,38 +82,21 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
     private static final Map<Class<?>, MarshallerInspector> marshallersByType = new ConcurrentHashMap<>();
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public void start(ComponentContext context) {
         clear();
-        super.deactivate(context);
+        List<MarshallerRegistryDescriptor> descriptors = getRegistryContributions(XP_MARSHALLERS);
+        for (MarshallerRegistryDescriptor descriptor : descriptors) {
+            try {
+                register(Class.forName(descriptor.klass));
+            } catch (ReflectiveOperationException e) {
+                log.error("Unable to instantiate MarshallerRegistryDescriptor", e);
+            }
+        }
     }
 
     @Override
-    protected boolean register(String xp, Descriptor descriptor) {
-        boolean registered = super.register(xp, descriptor);
-        if (registered) {
-            MarshallerRegistryDescriptor mrd = getDescriptor(xp, descriptor.getId());
-            if (mrd.enable) {
-                register(mrd.klass);
-            } else {
-                deregister(mrd.klass);
-            }
-        }
-        return registered;
-    }
-
-    @Override
-    protected boolean unregister(String xp, Descriptor descriptor) {
-        MarshallerRegistryDescriptor mrd = getDescriptor(xp, descriptor.getId());
-        if (mrd == null) {
-            return false;
-        }
-        boolean unregistered = super.unregister(xp, descriptor);
-        if (unregistered) {
-            if (mrd.enable) {
-                deregister(mrd.klass);
-            }
-        }
-        return unregistered;
+    public void stop(ComponentContext context) throws InterruptedException {
+        clear();
     }
 
     @Override

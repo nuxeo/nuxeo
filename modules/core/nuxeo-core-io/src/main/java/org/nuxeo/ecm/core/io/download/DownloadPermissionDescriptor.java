@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.io.download;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.runtime.model.Descriptor;
 
 /**
@@ -28,11 +30,13 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 7.4
  */
 @XObject("permission")
-public class DownloadPermissionDescriptor implements Descriptor {
+@XRegistry
+public class DownloadPermissionDescriptor {
 
     public static final String DEFAULT_SCRIPT_LANGUAGE = "JavaScript";
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("script")
@@ -41,23 +45,12 @@ public class DownloadPermissionDescriptor implements Descriptor {
     @XNode("script@language")
     private String scriptLanguage;
 
-    @Override
     public String getId() {
         return name;
     }
 
     public String getScriptLanguage() {
         return scriptLanguage == null ? DEFAULT_SCRIPT_LANGUAGE : scriptLanguage;
-    }
-
-    @Override
-    public Descriptor merge(Descriptor o) {
-        DownloadPermissionDescriptor other = (DownloadPermissionDescriptor) o;
-        DownloadPermissionDescriptor merged = new DownloadPermissionDescriptor();
-        merged.name = name;
-        merged.script = other.script != null ? other.script : script;
-        merged.scriptLanguage = other.scriptLanguage != null ? other.scriptLanguage : scriptLanguage;
-        return merged;
     }
 
 }
