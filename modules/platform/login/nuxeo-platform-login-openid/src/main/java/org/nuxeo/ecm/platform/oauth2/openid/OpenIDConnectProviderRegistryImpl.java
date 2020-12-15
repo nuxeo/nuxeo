@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -53,24 +52,6 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (PROVIDER_EP.equals(extensionPoint)) {
-            OpenIDConnectProviderDescriptor provider = (OpenIDConnectProviderDescriptor) contribution;
-
-            if (provider.getClientId() == null || provider.getClientSecret() == null) {
-                log.info(
-                        "OpenId provider for {} is disabled because clientId and/or clientSecret are empty (component id = {})",
-                        provider::getName, contributor::getName);
-                provider.setEnabled(false);
-            }
-            log.info("OpenId provider for {} will be registred at application startup", provider::getName);
-            // delay registration because data sources may not be available
-            // at this point
-            register(PROVIDER_EP, provider);
-        }
-    }
-
-    @Override
     public Collection<OpenIDConnectProvider> getProviders() {
         return providers.values();
     }
@@ -86,7 +67,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
     }
 
     protected void registerPendingProviders() {
-        List<OpenIDConnectProviderDescriptor> providers = getDescriptors(PROVIDER_EP);
+        List<OpenIDConnectProviderDescriptor> providers = getRegistryContributions(PROVIDER_EP);
         for (OpenIDConnectProviderDescriptor provider : providers) {
             // former registry discarded disabled providers
             if (provider.isEnabled()) {
