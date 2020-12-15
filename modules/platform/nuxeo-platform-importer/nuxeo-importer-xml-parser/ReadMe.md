@@ -372,7 +372,7 @@ ____
 
 ### Full examples
 
-You can look the unit test of the [XML Parser project](https://github.com/nuxeo/nuxeo-platform-importer/tree/master/nuxeo-importer-xml-parser/src/test) and also the [Adullact WebDelib addon](https://github.com/nuxeo/nuxeo-adullact/tree/master/nuxeo-adullact-webdelib-parent/nuxeo-adullact-webdelib-core/src) using deeply this service.
+You can look the unit test of the [XML Parser project](https://github.com/nuxeo/nuxeo/tree/master/modules/platform/nuxeo-platform-importer/nuxeo-importer-xml-parser/src/test).
 
 
 # Calling the service
