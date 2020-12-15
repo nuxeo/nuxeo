@@ -20,7 +20,8 @@ package org.nuxeo.runtime.avro;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * The Avro mapper descriptor.
@@ -28,15 +29,16 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 10.2
  */
 @XObject("mapper")
-public class AvroMapperDescriptor implements Descriptor {
+@XRegistry
+public class AvroMapperDescriptor {
 
     @XNode("@type")
+    @XRegistryId
     public String type;
 
     @XNode("@class")
     public String klass;
 
-    @Override
     public String getId() {
         return type;
     }

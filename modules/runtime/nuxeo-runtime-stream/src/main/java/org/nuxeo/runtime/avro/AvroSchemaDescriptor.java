@@ -20,7 +20,8 @@ package org.nuxeo.runtime.avro;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * The Avro schema descriptor.
@@ -28,15 +29,16 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 10.2
  */
 @XObject("schema")
-public class AvroSchemaDescriptor implements Descriptor {
+@XRegistry
+public class AvroSchemaDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@file")
     public String file;
 
-    @Override
     public String getId() {
         return name;
     }

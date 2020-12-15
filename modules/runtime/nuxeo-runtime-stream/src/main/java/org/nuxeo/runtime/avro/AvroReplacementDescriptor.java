@@ -22,7 +22,8 @@ import java.util.Objects;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * The Avro forbidden character replacement descriptor.<br>
@@ -38,9 +39,11 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 10.2
  */
 @XObject("replacement")
-public class AvroReplacementDescriptor implements Descriptor, Comparable<AvroReplacementDescriptor> {
+@XRegistry
+public class AvroReplacementDescriptor implements Comparable<AvroReplacementDescriptor> {
 
     @XNode("@forbidden")
+    @XRegistryId
     protected String forbidden;
 
     @XNode("@replacement")
@@ -69,7 +72,6 @@ public class AvroReplacementDescriptor implements Descriptor, Comparable<AvroRep
         return Objects.equals(forbidden, other.forbidden);
     }
 
-    @Override
     public String getId() {
         return forbidden;
     }

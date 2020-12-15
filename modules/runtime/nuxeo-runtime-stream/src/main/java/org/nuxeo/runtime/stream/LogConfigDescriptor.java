@@ -29,23 +29,27 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("logConfig")
-public class LogConfigDescriptor implements Descriptor {
+@XRegistry(enable = false)
+public class LogConfigDescriptor {
     // @since 11.1
     public static final String SEP = ":";
 
     // @since 11.1
-    @XNode("@enabled")
-    protected boolean isEnabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    protected boolean isEnabled;
 
     // @since 11.1
-    @XNode("@default")
-    protected boolean isDefault = false;
+    @XNode(value = "@default", defaultAssignment = "false")
+    protected boolean isDefault;
 
     @XObject(value = "log")
-    public static class LogDescriptor implements Descriptor {
+    public static class LogDescriptor {
 
         public static final Integer DEFAULT_PARTITIONS = 4;
 
@@ -55,7 +59,6 @@ public class LogConfigDescriptor implements Descriptor {
         @XNode("@size")
         public Integer size = DEFAULT_PARTITIONS;
 
-        @Override
         public String getId() {
             return name;
         }
@@ -63,7 +66,7 @@ public class LogConfigDescriptor implements Descriptor {
 
     // @since 11.1
     @XObject(value = "match")
-    public static class LogMatchDescriptor implements Descriptor {
+    public static class LogMatchDescriptor {
 
         @XNode("@name")
         public String name;
@@ -71,13 +74,13 @@ public class LogConfigDescriptor implements Descriptor {
         @XNode("@group")
         public String group;
 
-        @Override
         public String getId() {
             return (group != null && !group.isBlank()) ? name + SEP + group : name;
         }
     }
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@type")
@@ -93,7 +96,6 @@ public class LogConfigDescriptor implements Descriptor {
     @XNodeList(value = "match", type = ArrayList.class, componentType = LogMatchDescriptor.class)
     public List<LogMatchDescriptor> matches = new ArrayList<>();
 
-    @Override
     public String getId() {
         return name;
     }

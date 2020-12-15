@@ -30,31 +30,35 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
 import org.nuxeo.lib.stream.computation.RecordFilter;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.Descriptor;
 
 import net.jodah.failsafe.RetryPolicy;
 
 @XObject("streamProcessor")
-public class StreamProcessorDescriptor implements Descriptor {
+@XRegistry(enable = false)
+public class StreamProcessorDescriptor {
 
     // @since 11.1
     public static String RECOVERY_SKIP_FIRST_FAILURES_OPTION = "nuxeo.stream.recovery.skipFirstFailures";
 
     // @since 11.1
-    @XNode("@enabled")
-    protected boolean isEnabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    protected boolean isEnabled;
 
     // @since 11.1
-    @XNode("@start")
-    protected boolean start = true;
+    @XNode(value = "@start", defaultAssignment = "true")
+    protected boolean start;
 
     @XObject(value = "computation")
-    public static class ComputationDescriptor implements Descriptor {
+    public static class ComputationDescriptor {
 
         @XNode("@name")
         public String name;
@@ -62,19 +66,17 @@ public class StreamProcessorDescriptor implements Descriptor {
         @XNode("@concurrency")
         public Integer concurrency = DEFAULT_CONCURRENCY;
 
-        @Override
         public String getId() {
             return name;
         }
     }
 
     @XObject(value = "filter")
-    public static class FilterDescriptor implements Descriptor {
+    public static class FilterDescriptor {
 
         @XNode("@name")
         public String name;
 
-        @Override
         public String getId() {
             return name;
         }
@@ -102,7 +104,7 @@ public class StreamProcessorDescriptor implements Descriptor {
     }
 
     @XObject(value = "stream")
-    public static class StreamDescriptor implements Descriptor {
+    public static class StreamDescriptor {
 
         @XNode("@name")
         public String name;
@@ -121,14 +123,13 @@ public class StreamProcessorDescriptor implements Descriptor {
         @XNodeList(value = "filter", type = ArrayList.class, componentType = FilterDescriptor.class)
         public List<FilterDescriptor> filters = new ArrayList<>();
 
-        @Override
         public String getId() {
             return name;
         }
     }
 
     @XObject(value = "policy")
-    public static class PolicyDescriptor implements Descriptor {
+    public static class PolicyDescriptor {
         public static final int DEFAULT_MAX_RETRIES = 0;
 
         public static final Duration DEFAULT_DELAY = Duration.ofSeconds(1);
@@ -158,7 +159,6 @@ public class StreamProcessorDescriptor implements Descriptor {
         @XNode("@skipFirstFailures")
         public Integer skipFirstFailures = 0;
 
-        @Override
         public String getId() {
             return name;
         }
@@ -193,6 +193,7 @@ public class StreamProcessorDescriptor implements Descriptor {
     public static final Integer DEFAULT_CONCURRENCY = 4;
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@logConfig")
@@ -281,7 +282,6 @@ public class StreamProcessorDescriptor implements Descriptor {
         this.isEnabled = isEnabled;
     }
 
-    @Override
     public String getId() {
         return name;
     }

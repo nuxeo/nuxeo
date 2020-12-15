@@ -41,7 +41,7 @@ public class CodecServiceImpl extends DefaultComponent implements CodecService {
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        List<CodecDescriptor> descriptors = getDescriptors(XP_CODEC);
+        List<CodecDescriptor> descriptors = getRegistryContributions(XP_CODEC);
         for (CodecDescriptor descriptor : descriptors) {
             log.debug("Creating CodecFactory : {}", descriptor.klass::getSimpleName);
             try {
