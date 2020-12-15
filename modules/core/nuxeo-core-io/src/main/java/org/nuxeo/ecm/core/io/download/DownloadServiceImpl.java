@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -137,11 +138,16 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        List<RedirectResolverDescriptor> descriptors = getDescriptors(XP_REDIRECT_RESOLVER);
-        if (!descriptors.isEmpty()) {
-            RedirectResolverDescriptor descriptor = descriptors.get(descriptors.size() - 1);
+        Optional<RedirectResolverDescriptor> optDesc = getRegistryContribution(XP_REDIRECT_RESOLVER);
+        if (optDesc.isPresent()) {
+            RedirectResolverDescriptor descriptor = optDesc.get();
             try {
-                redirectResolver = descriptor.klass.getDeclaredConstructor().newInstance();
+                Class<?> klass = Class.forName(descriptor.klass);
+                // dynamic class check, the generics aren't enough
+                if (!RedirectResolver.class.isAssignableFrom(klass)) {
+                    throw new RuntimeException("Class does not implement RedirectResolver: " + klass.getName());
+                }
+                redirectResolver = (RedirectResolver) klass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 log.error("Unable to instantiate redirectResolver", e);
             }
@@ -338,7 +344,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     protected static final String CHEMISTRY_HEAD_REQUEST_CLASS = "HEADHttpServletRequestWrapper";
 
     protected static boolean isHead(HttpServletRequest request) {
-        return "HEAD".equals(request.getMethod()) || request.getClass().getSimpleName().equals(CHEMISTRY_HEAD_REQUEST_CLASS);
+        return "HEAD".equals(request.getMethod())
+                || request.getClass().getSimpleName().equals(CHEMISTRY_HEAD_REQUEST_CLASS);
     }
 
     protected void handleDownload(HttpServletRequest req, HttpServletResponse resp, String downloadPath, String baseUrl,
@@ -453,10 +460,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             blob = blobs.get(0);
         }
         try {
-            DownloadContext context = DownloadContext.builder(request, response)
-                                                     .blob(blob)
-                                                     .reason(reason)
-                                                     .build();
+            DownloadContext context = DownloadContext.builder(request, response).blob(blob).reason(reason).build();
             downloadBlob(context);
         } finally {
             if (!status && !isHead(request)) {
@@ -881,7 +885,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public boolean checkPermission(DocumentModel doc, String xpath, Blob blob, String reason,
             Map<String, Serializable> extendedInfos) {
-        List<DownloadPermissionDescriptor> descriptors = getDescriptors(XP_PERMISSIONS);
+        List<DownloadPermissionDescriptor> descriptors = getRegistryContributions(XP_PERMISSIONS);
         if (descriptors.isEmpty()) {
             return true;
         }
@@ -912,8 +916,9 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 engine.getBindings(ScriptContext.ENGINE_SCOPE).putAll(context);
                 result = ((Invocable) engine).invokeFunction(RUN_FUNCTION);
             } catch (NoSuchMethodException e) {
-                throw new NuxeoException("Script does not contain function: " + RUN_FUNCTION + "() in permission: "
-                        + descriptor.name, e);
+                throw new NuxeoException(
+                        "Script does not contain function: " + RUN_FUNCTION + "() in permission: " + descriptor.name,
+                        e);
             } catch (ScriptException e) {
                 log.error("Failed to evaluate script: {}", descriptor.name, e);
                 continue;
@@ -952,7 +957,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
         if (userAgent != null && userAgent.contains("MSIE") && (secure || forceNoCacheOnMSIE())) {
             String cacheControl = "max-age=15, must-revalidate";
-            log.debug("Setting Cache-Control: {}",  cacheControl);
+            log.debug("Setting Cache-Control: {}", cacheControl);
             response.setHeader("Cache-Control", cacheControl);
         }
     }

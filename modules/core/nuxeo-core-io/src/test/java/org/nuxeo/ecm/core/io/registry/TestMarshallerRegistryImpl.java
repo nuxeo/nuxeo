@@ -60,14 +60,11 @@ public class TestMarshallerRegistryImpl {
     @Test
     public void testRegisterUnregisterDescriptor() throws Exception {
         registry.clear();
-        MarshallerRegistryDescriptor desc = new MarshallerRegistryDescriptor();
-        desc.klass = DefaultNumberReader.class;
-        desc.enable = true;
         MarshallerRegistryImpl component = (MarshallerRegistryImpl) registry;
         assertIsEmpty();
-        component.registerContribution(desc, XP_MARSHALLERS, null);
+        component.register(DefaultNumberReader.class);
         assertHasOne();
-        component.unregisterContribution(desc, XP_MARSHALLERS, null);
+        component.deregister(DefaultNumberReader.class);
         assertIsEmpty();
     }
 
