@@ -902,8 +902,14 @@ pipeline {
 
     stage('Deploy Server Preview') {
       when {
-        not {
-          branch 'PR-*'
+        anyOf {
+          branch 'master'
+          allOf {
+            branch 'PR-*'
+            expression {
+              return pullRequest.labels.contains('preview')
+            }
+          }
         }
       }
       steps {
@@ -914,6 +920,7 @@ pipeline {
             ----------------------------------------
             Deploy Preview environment
             ----------------------------------------"""
+            boolean isReferenceBranch = BRANCH_NAME == 'master'
             boolean nsExists = sh(returnStatus: true, script: "kubectl get namespace ${PREVIEW_NAMESPACE}") == 0
             if (!nsExists) {
               echo 'Create preview namespace'
@@ -939,7 +946,7 @@ pipeline {
             helmAddNuxeoRepository()
 
             echo 'Substitute environment variables in chart values'
-            helmGenerateValues("${HELM_VALUES_DIR}", true, 'preview')
+            helmGenerateValues("${HELM_VALUES_DIR}", isReferenceBranch, 'preview')
 
             echo 'Upgrade external service releases'
             helmUpgradeMongoDB("${PREVIEW_NAMESPACE}")
@@ -962,6 +969,7 @@ pipeline {
                 --values=${HELM_VALUES_DIR}/values-nuxeo.yaml~gen \
                 --output-dir=target
             """
+            // TODO: use "jx preview" if not reference branch (for PR previews)
             helmUpgrade(
               "${PREVIEW_HELM_RELEASE}",
               "${NUXEO_CHART_REPOSITORY_NAME}",
