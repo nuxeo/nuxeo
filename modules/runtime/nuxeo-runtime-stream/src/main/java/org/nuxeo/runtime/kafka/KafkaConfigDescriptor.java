@@ -24,10 +24,12 @@ import java.util.Properties;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("kafkaConfig")
-public class KafkaConfigDescriptor implements Descriptor {
+@XRegistry
+public class KafkaConfigDescriptor {
 
     @XObject("consumer")
     public static class ConsumerProperties {
@@ -49,6 +51,7 @@ public class KafkaConfigDescriptor implements Descriptor {
     }
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@zkServers")
@@ -70,7 +73,6 @@ public class KafkaConfigDescriptor implements Descriptor {
     @XNode("admin")
     public AdminProperties adminProperties = new AdminProperties();
 
-    @Override
     public String getId() {
         return name;
     }

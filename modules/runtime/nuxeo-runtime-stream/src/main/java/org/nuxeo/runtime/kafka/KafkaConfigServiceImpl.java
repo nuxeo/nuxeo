@@ -27,7 +27,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Descriptor;
 
 public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaConfigService {
 
@@ -47,9 +46,10 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
 
     @Override
     public Set<String> listConfigNames() {
-        return getDescriptors(XP_KAFKA_CONFIG).stream()
-                                              .map(Descriptor::getId)
-                                              .collect(Collectors.toSet());
+        return getRegistryContributions(XP_KAFKA_CONFIG).stream()
+                                                        .map(KafkaConfigDescriptor.class::cast)
+                                                        .map(KafkaConfigDescriptor::getId)
+                                                        .collect(Collectors.toSet());
     }
 
     @Override
@@ -90,11 +90,8 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
     }
 
     protected KafkaConfigDescriptor getDescriptor(String configName) {
-        KafkaConfigDescriptor descriptor = getDescriptor(XP_KAFKA_CONFIG, configName);
-        if (descriptor == null) {
-            throw new IllegalArgumentException("Unknown configuration name: " + configName);
-        }
-        return descriptor;
+        return (KafkaConfigDescriptor) getRegistryContribution(XP_KAFKA_CONFIG, configName).orElseThrow(
+                () -> new IllegalArgumentException("Unknown configuration name: " + configName));
     }
 
 }

@@ -69,7 +69,7 @@ public class AvroComponent extends DefaultComponent {
     public void start(ComponentContext context) {
         super.start(context);
         // schema factories can be give to the constructor since they don't need a service instance
-        List<AvroSchemaFactoryDescriptor> factoryDescs = getDescriptors(XP_FACTORY);
+        List<AvroSchemaFactoryDescriptor> factoryDescs = getRegistryContributions(XP_FACTORY);
         Map<Class<?>, Class<AvroSchemaFactory<?>>> factories = new HashMap<>(factoryDescs.size());
         for (AvroSchemaFactoryDescriptor descriptor : factoryDescs) {
             try {
@@ -80,10 +80,10 @@ public class AvroComponent extends DefaultComponent {
             }
         }
         // as well as replacements
-        List<AvroReplacementDescriptor> replacementDescs = getDescriptors(XP_REPLACEMENT);
+        List<AvroReplacementDescriptor> replacementDescs = getRegistryContributions(XP_REPLACEMENT);
         AvroServiceImpl impl = new AvroServiceImpl(replacementDescs, factories);
         // mappers are instantiated with an instance of the service
-        List<AvroMapperDescriptor> mapperDescs = getDescriptors(XP_MAPPER);
+        List<AvroMapperDescriptor> mapperDescs = getRegistryContributions(XP_MAPPER);
         Map<Class<?>, AvroMapper<?, ?>> mappers = new HashMap<>(mapperDescs.size());
         for (AvroMapperDescriptor descriptor : mapperDescs) {
             try {
@@ -97,7 +97,7 @@ public class AvroComponent extends DefaultComponent {
         }
         // and are added to the service implementation
         impl.setMappers(mappers);
-        List<AvroSchemaDescriptor> schemaDescs = getDescriptors(XP_SCHEMA);
+        List<AvroSchemaDescriptor> schemaDescs = getRegistryContributions(XP_SCHEMA);
         // schemas are registered through the SchemaService interface
         AvroSchemaStore schemaStore = impl.getSchemaStore();
         for (AvroSchemaDescriptor descriptor : schemaDescs) {

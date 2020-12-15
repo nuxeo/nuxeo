@@ -132,15 +132,15 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         List<LogConfig> configs = getLogConfigs();
         logManager = new UnifiedLogManager(configs);
         streamManager = new LogStreamManager(logManager);
-        List<LogConfigDescriptor> logDescs = getDescriptors(XP_LOG_CONFIG);
+        List<LogConfigDescriptor> logDescs = getRegistryContributions(XP_LOG_CONFIG);
         logDescs.forEach(this::createLogIfNotExists);
-        List<StreamProcessorDescriptor> streamDescs = getDescriptors(XP_STREAM_PROCESSOR);
+        List<StreamProcessorDescriptor> streamDescs = getRegistryContributions(XP_STREAM_PROCESSOR);
         streamDescs.forEach(this::initProcessor);
         new ComponentsLifeCycleListener().install();
     }
 
     protected List<LogConfig> getLogConfigs() {
-        List<LogConfigDescriptor> logDescs = getDescriptors(XP_LOG_CONFIG);
+        List<LogConfigDescriptor> logDescs = getRegistryContributions(XP_LOG_CONFIG);
         List<LogConfig> ret = new ArrayList<>(logDescs.size());
         for (LogConfigDescriptor desc : logDescs) {
             if (!desc.isEnabled() || desc.onlyLogDeclaration()) {
@@ -159,9 +159,8 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         String kafkaConfig = desc.options.getOrDefault("kafkaConfig", "default");
         KafkaConfigService service = Framework.getService(KafkaConfigService.class);
         return new KafkaLogConfig(desc.getId(), desc.isDefault(), desc.getPatterns(),
-                service.getTopicPrefix(kafkaConfig),
-                service.getAdminProperties(kafkaConfig), service.getProducerProperties(kafkaConfig),
-                service.getConsumerProperties(kafkaConfig));
+                service.getTopicPrefix(kafkaConfig), service.getAdminProperties(kafkaConfig),
+                service.getProducerProperties(kafkaConfig), service.getConsumerProperties(kafkaConfig));
     }
 
     protected LogConfig createChronicleLogConfig(LogConfigDescriptor desc) {
@@ -172,7 +171,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     }
 
     protected void initProcessor(StreamProcessorDescriptor descriptor) {
-        if (! descriptor.isEnabled()) {
+        if (!descriptor.isEnabled()) {
             log.info("Processor {} disabled", descriptor.getId());
             return;
         }
@@ -228,8 +227,8 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
 
     protected void startProcessors() {
         log.debug("Start processors");
-        getDescriptors(XP_STREAM_PROCESSOR).forEach(d -> {
-            StreamProcessor processor = processors.get(d.getId());
+        getRegistryContributions(XP_STREAM_PROCESSOR).forEach(d -> {
+            StreamProcessor processor = processors.get(((StreamProcessorDescriptor) d).getId());
             if (processor != null) {
                 processor.start();
             }
