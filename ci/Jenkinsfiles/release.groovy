@@ -224,7 +224,7 @@ pipeline {
       }
     }
 
-    stage("Bump ${REFERENCE_BRANCH} branch") {
+    stage('Bump reference branch') {
       steps {
         container('maven') {
           script {
