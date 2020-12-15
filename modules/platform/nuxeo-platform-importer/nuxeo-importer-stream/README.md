@@ -204,7 +204,7 @@ Here is an overview of possible usage to generate mass import and load tests wit
 
 ![import diagram](import-diag.png)
 
-Visit [nuxe-jsf-ui-gatling](https://github.com/nuxeo/nuxeo/tree/master/nuxeo-distribution/nuxeo-jsf-ui-gatling-tests) for more information.
+Visit [nuxe-jsf-ui-gatling](https://github.com/nuxeo/nuxeo/tree/master/ftests/nuxeo-server-gatling-tests) for more information.
 
 
 
