@@ -685,15 +685,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected void appendSubgroups(String groupId, Set<String> groups, DocumentModel context) {
-        List<String> groupsToAppend = getGroupsInGroup(groupId, context);
+        List<String> groupsToAppend = getDescendantGroups(groupId);
         groups.addAll(groupsToAppend);
-        for (String subgroupId : groupsToAppend) {
-            groups.add(subgroupId);
-            // avoiding infinite loop
-            if (!groups.contains(subgroupId)) {
-                appendSubgroups(subgroupId, groups, context);
-            }
-        }
 
     }
 
