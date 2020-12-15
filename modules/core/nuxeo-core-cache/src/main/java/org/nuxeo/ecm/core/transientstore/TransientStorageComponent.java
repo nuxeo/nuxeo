@@ -20,8 +20,10 @@
 package org.nuxeo.ecm.core.transientstore;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +34,6 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * Component exposing the {@link TransientStoreService} and managing the underlying extension point
@@ -54,14 +55,17 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
         Objects.requireNonNull(name, "Transient store name cannot be null");
         TransientStore store = stores.get(name);
         if (store == null) {
-            TransientStoreConfig descriptor = getDescriptor(EP_STORE, name);
-            if (descriptor == null) {
+            TransientStoreConfig descriptor;
+            Optional<TransientStoreConfig> optDescriptor = getRegistryContribution(EP_STORE, name);
+            if (optDescriptor.isEmpty()) {
                 // instantiate a copy of the default descriptor
                 descriptor = new TransientStoreConfig(getDefaultDescriptor()); // copy
                 descriptor.name = name; // set new name in copy
             } else if (!DEFAULT_STORE_NAME.equals(name)) {
                 // make sure descriptor inherits config from default
-                descriptor = getDefaultDescriptor().merge(descriptor);
+                descriptor = getDefaultDescriptor().merge(optDescriptor.get());
+            } else {
+                descriptor = optDescriptor.get();
             }
             TransientStoreProvider provider;
             try {
@@ -81,16 +85,16 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
     }
 
     protected TransientStoreConfig getDefaultDescriptor() {
-        TransientStoreConfig descriptor = getDescriptor(EP_STORE, DEFAULT_STORE_NAME);
-        if (descriptor == null) {
+        Optional<TransientStoreConfig> descriptor = getRegistryContribution(EP_STORE, DEFAULT_STORE_NAME);
+        if (descriptor.isEmpty()) {
             // TODO make this a hard error
             String message = "Missing configuration for default transient store, using in-memory";
             log.warn(message);
             addRuntimeMessage(Level.WARNING, message);
             // use in-memory store
-            descriptor = new TransientStoreConfig(DEFAULT_STORE_NAME);
+            return new TransientStoreConfig(DEFAULT_STORE_NAME);
         }
-        return descriptor;
+        return descriptor.get();
     }
 
     @Override
@@ -99,23 +103,12 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
     }
 
     @Override
-    protected boolean unregister(String xp, Descriptor descriptor) {
-        boolean removed = super.unregister(xp, descriptor);
-        if (removed) {
-            TransientStoreProvider store = stores.remove(descriptor.getId());
-            if (store != null) {
-                store.shutdown();
-            }
-        }
-        return removed;
-    }
-
-    @Override
     public void start(ComponentContext context) {
         // make sure we have a default store
         getStore(DEFAULT_STORE_NAME);
         // instantiate all registered stores
-        getDescriptors(EP_STORE).forEach(desc -> getStore(desc.getId()));
+        List<TransientStoreConfig> stores = getRegistryContributions(EP_STORE);
+        stores.forEach(desc -> getStore(desc.getId()));
     }
 
     @Override
