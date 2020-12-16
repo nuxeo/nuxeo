@@ -287,7 +287,9 @@ public abstract class AbstractTestTrashService {
         DocumentRef versionRef = session.checkIn(doc3.getRef(), VersioningOption.MAJOR, null);
         DocumentModel version = session.getDocument(versionRef);
         DocumentModel proxy = session.createProxy(versionRef, fold.getRef());
-        session.save();
+        // commit transaction to make sure the query to fetch the descendants in PropertyTrashService#trashDescendants
+        // gets the right documents when the bulk command is processed
+        transactionalFeature.nextTransaction();
 
         assertFalse(fold.isTrashed());
         assertFalse(proxy.isTrashed());
