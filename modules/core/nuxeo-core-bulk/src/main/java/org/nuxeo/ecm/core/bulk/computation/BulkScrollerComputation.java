@@ -176,6 +176,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                         return;
                     }
                     List<String> docIds = scroll.next();
+                    log.debug("docIds: {}", docIds);
                     int scrollCount = docIds.size();
                     if (documentCount + scrollCount < queryLimit) {
                         documentIds.addAll(docIds);
@@ -228,17 +229,19 @@ public class BulkScrollerComputation extends AbstractComputation {
 
     protected Scroll buildScroll(BulkCommand command) {
         ScrollRequest request;
+        String query = command.getQuery();
+        log.debug("Build scroll with query: {}", query);
         if (command.useExternalScroller()) {
             request = EmptyScrollRequest.of();
 
         } else if (command.useGenericScroller()) {
-            request = GenericScrollRequest.builder(command.getScroller(), command.getQuery())
+            request = GenericScrollRequest.builder(command.getScroller(), query)
                                           .options(command.getParams())
                                           .size(scrollSize)
                                           .build();
 
         } else {
-            request = DocumentScrollRequest.builder(command.getQuery())
+            request = DocumentScrollRequest.builder(query)
                                            .username(command.getUsername())
                                            .repository(command.getRepository())
                                            .size(scrollSize)
