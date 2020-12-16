@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.automation.core.operations.notification;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.PASSIVE;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,6 +59,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.runtime.api.Framework;
@@ -165,6 +167,11 @@ public class SendMail {
         // TODO should sent one by one to each recipient? and have the template
         // rendered for each recipient? Use: "mailto" var name?
         try {
+            AdministrativeStatusManager asm = Framework.getService(AdministrativeStatusManager.class);
+            if (asm != null && PASSIVE.equals(asm.getStatus("org.nuxeo.ecm.smtp").getState())) {
+                log.debug("SMTP is in passive mode, mail not sent");
+                return;
+            }
             Map<String, Object> map = Scripting.initBindings(ctx);
             // do not use document wrapper which is working only in mvel.
             map.put("Document", doc);
@@ -205,6 +212,11 @@ public class SendMail {
 
     // Only visible for testing purposes
     protected String createDocUrlWithToken(String documentUrl, String token) {
+        AdministrativeStatusManager asm = Framework.getService(AdministrativeStatusManager.class);
+        if (asm != null && PASSIVE.equals(asm.getStatus("org.nuxeo.ecm.smtp").getState())) {
+            log.debug("SMTP is in passive mode, mail not sent");
+            return null;
+        }
         return token != null ? UriBuilder.fromUri(documentUrl).queryParam("token", token).build().toString()
                 : documentUrl;
     }
