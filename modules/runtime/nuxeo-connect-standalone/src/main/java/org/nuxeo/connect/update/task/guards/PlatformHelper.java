@@ -35,8 +35,7 @@ public class PlatformHelper {
     protected final String version;
 
     public PlatformHelper() {
-        var cg = new ConfigurationGenerator();
-        cg.init();
+        var cg = ConfigurationGenerator.builder().init(true).build();
         name = cg.getEnv().getProperty(Environment.DISTRIBUTION_NAME);
         version = cg.getEnv().getProperty(Environment.DISTRIBUTION_VERSION);
     }

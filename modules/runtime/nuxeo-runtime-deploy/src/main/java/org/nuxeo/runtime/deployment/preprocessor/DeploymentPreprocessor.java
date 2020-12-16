@@ -133,8 +133,7 @@ public class DeploymentPreprocessor {
     }
 
     protected void initContextProperties(CommandContext ctx) {
-        ConfigurationGenerator confGen = new ConfigurationGenerator();
-        confGen.init();
+        ConfigurationGenerator confGen = ConfigurationGenerator.builder().init(true).build();
         Properties props = confGen.getUserConfig();
         for (String key : props.stringPropertyNames()) {
             ctx.put(key, props.getProperty(key));

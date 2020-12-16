@@ -72,8 +72,7 @@ public class Config extends AbstractCommand {
     @Override
     protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         Config rollback = new Config();
-        ConfigurationGenerator cg = new ConfigurationGenerator();
-        cg.init();
+        ConfigurationGenerator cg = ConfigurationGenerator.builder().init(true).build();
         try {
             if (addtemplate != null) {
                 cg.addTemplate(addtemplate);
