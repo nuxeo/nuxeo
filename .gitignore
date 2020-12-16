@@ -26,7 +26,7 @@ bin
 .factorypath
 
 # build artifacts
-target/
+target*/
 nashorn_code_cache/
 chromedriver.log
 *.log
