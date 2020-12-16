@@ -48,13 +48,6 @@ public class TestBridgeTrashService extends AbstractTestTrashService {
         trashServiceImpl.invalidateTrashServiceImplementation();
     }
 
-    @Ignore(value = "NXP-28982")
-    @Override
-    @Test
-    public void testUntrashChildren() {
-        // temporarily ignored
-    }
-
     @Ignore(value = "NXP-29005")
     @Override
     @Test
