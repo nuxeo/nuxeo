@@ -125,8 +125,7 @@ public class NuxeoCtlManager {
      */
     public String getServerURL() {
         if (cg == null) {
-            cg = new ConfigurationGenerator();
-            cg.init();
+            cg = ConfigurationGenerator.builder().init(true).build();
         }
         return cg.getUserConfig().getProperty(ConfigurationGenerator.PARAM_NUXEO_URL);
     }

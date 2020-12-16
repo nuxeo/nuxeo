@@ -50,8 +50,6 @@ import java.util.TreeSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -282,28 +280,6 @@ public class ServerConfigurator {
     }
 
     /**
-     * Initialize logs. This is called before {@link ConfigurationGenerator#init()} so the {@code logDir} field is not
-     * yet initialized
-     *
-     * @since 5.4.2
-     */
-    public void initLogs() {
-        File logFile = getLogConfFile();
-        String logDirectory = System.getProperty(Environment.NUXEO_LOG_DIR);
-        if (logDirectory == null) {
-            System.setProperty(Environment.NUXEO_LOG_DIR, getLogDir().getPath());
-        }
-        if (logFile == null || !logFile.exists()) {
-            System.out.println("No logs configuration, will setup a basic one.");
-            Configurator.initialize(new DefaultConfiguration());
-        } else {
-            System.out.println("Try to configure logs with " + logFile);
-            Configurator.initialize(Log4JHelper.newConfiguration(logFile));
-        }
-        log.info("Logs successfully configured.");
-    }
-
-    /**
      * @return Pid directory (usually known as "run directory"); Returns log directory if not set by configuration.
      * @since 5.4.2
      */
@@ -448,14 +424,6 @@ public class ServerConfigurator {
             log.error("Unknown directory key: {}", key);
             return null;
         }
-    }
-
-    /**
-     * @return Log4J configuration file
-     * @since 5.4.2
-     */
-    public File getLogConfFile() {
-        return new File(getServerLibDir(), "log4j2.xml");
     }
 
     /**

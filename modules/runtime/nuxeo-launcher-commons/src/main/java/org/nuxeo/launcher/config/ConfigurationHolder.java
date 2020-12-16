@@ -43,6 +43,8 @@ import org.nuxeo.common.codec.CryptoProperties;
  */
 public class ConfigurationHolder {
 
+    protected static final Path LOG4J2_CONF = Path.of("lib", "log4j2.xml");
+
     protected static final Path NXSERVER = Path.of("nxserver");
 
     protected static final Path TEMPLATES = Path.of("templates");
@@ -116,6 +118,10 @@ public class ConfigurationHolder {
 
     public Path getLogPath() {
         return getPropertyAsPath(Environment.NUXEO_LOG_DIR);
+    }
+
+    public Path getLogConfigPath() {
+        return getHomePath().resolve(LOG4J2_CONF);
     }
 
     protected Path getPackagesPath() {

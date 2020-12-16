@@ -80,6 +80,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -290,6 +292,13 @@ public class ConfigurationGenerator {
     /** Environment used to load the configuration, generally {@link System#getenv()}. */
     private final Map<String, String> environment;
 
+    /**
+     * System properties used to load the configuration, generally {@link System#getProperties()}.
+     *
+     * @since 11.5
+     */
+    protected final Properties systemProperties;
+
     /** @since 11.5 */
     private final ConfigurationHolder configHolder;
 
@@ -312,70 +321,90 @@ public class ConfigurationGenerator {
 
     private final Level logLevel;
 
-    private static boolean hideDeprecationWarnings = false;
-
     private Environment env;
 
     private Properties storedConfig;
 
     private String currentConfigurationDigest;
 
-    protected static final Map<String, String> parametersMigration = Map.ofEntries(
-            Map.entry(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS, PARAM_TEMPLATES_PARSING_EXTENSIONS), //
-            Map.entry("nuxeo.db.user.separator.key", "nuxeo.db.user_separator_key"), //
-            Map.entry("mail.pop3.host", "mail.store.host"), //
-            Map.entry("mail.pop3.port", "mail.store.port"), //
-            Map.entry("mail.smtp.host", "mail.transport.host"), //
-            Map.entry("mail.smtp.port", "mail.transport.port"), //
-            Map.entry("mail.smtp.username", "mail.transport.username"), //
-            Map.entry("mail.transport.username", "mail.transport.user"), //
-            Map.entry("mail.smtp.password", "mail.transport.password"), //
-            Map.entry("mail.smtp.usetls", "mail.transport.usetls"), //
-            Map.entry("mail.smtp.auth", "mail.transport.auth"), //
-            Map.entry("nuxeo.server.tomcat-admin.port", PARAM_HTTP_TOMCAT_ADMIN_PORT));
-
+    /**
+     * @deprecated since 11.5, use {@link ConfigurationGenerator#build()} instead.
+     */
+    @Deprecated(since = "11.5")
     public ConfigurationGenerator() {
-        this(true, false);
+        this(builder());
     }
 
     /**
      * @param quiet Suppress info level messages from the console output
      * @param debug Activate debug level logging
      * @since 5.6
+     * @deprecated since 11.5, use {@link ConfigurationGenerator#builder()} instead.
      */
+    @Deprecated(since = "11.5")
     public ConfigurationGenerator(boolean quiet, boolean debug) {
-        logLevel = quiet ? Level.DEBUG : Level.INFO;
-        environment = System.getenv();
-        File serverHome = Environment.getDefault().getServerHome();
-        Path nuxeoHome;
-        if (serverHome != null) {
-            nuxeoHome = serverHome.toPath();
-        } else {
-            nuxeoHome = Path.of(System.getProperty("user.dir"));
-            if ("bin".equalsIgnoreCase(nuxeoHome.getFileName().toString())) {
-                nuxeoHome = nuxeoHome.getParent();
-            }
-        }
-        String nuxeoConfPath = System.getProperty(NUXEO_CONF);
-        if (nuxeoConfPath == null) {
-            configHolder = new ConfigurationHolder(nuxeoHome, nuxeoHome.resolve(DEFAULT_NUXEO_CONF_PATH));
-        } else {
-            configHolder = new ConfigurationHolder(nuxeoHome, Path.of(nuxeoConfPath));
-        }
-        System.setProperty(NUXEO_CONF, configHolder.getNuxeoConfPath().toString());
+        this(builder().quiet(quiet));
+    }
 
-        configLoader = new ConfigurationLoader(System.getenv(), parametersMigration);
-
+    /**
+     * @since 11.5
+     */
+    protected ConfigurationGenerator(Builder builder) {
+        logLevel = builder.quiet ? Level.DEBUG : Level.INFO;
+        environment = builder.environment;
+        systemProperties = builder.systemProperties;
+        configHolder = new ConfigurationHolder(builder.nuxeoHome, builder.nuxeoConf);
+        configLoader = new ConfigurationLoader(builder.environment, builder.parametersMigration,
+                builder.hideDeprecationWarnings);
         serverConfigurator = new ServerConfigurator(this, configHolder);
-        if (LoggerContext.getContext(false).getRootLogger().getAppenders().isEmpty()) {
-            serverConfigurator.initLogs();
-        }
         backingServicesConfigurator = new BackingServiceConfigurator(this);
+
+        systemProperties.setProperty(NUXEO_CONF, configHolder.getNuxeoConfPath().toString());
+
+        initLogsIfNeeded(configHolder);
+
         log.log(logLevel, "Nuxeo home:          {}", configHolder::getHomePath);
         log.log(logLevel, "Nuxeo configuration: {}", configHolder::getNuxeoConfPath);
         String nuxeoProfiles = environment.get(NUXEO_PROFILES);
         if (StringUtils.isNotBlank(nuxeoProfiles)) {
             log.log(logLevel, "Nuxeo profiles:      {}", nuxeoProfiles);
+        }
+    }
+
+    /**
+     * @since 11.5
+     */
+    public static ConfigurationGenerator build() {
+        return new Builder().build();
+    }
+
+    /**
+     * @since 11.5
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Initializes log configuration if it doesn't exist.
+     * <p>
+     * This is called in {@link ConfigurationGenerator#ConfigurationGenerator(Builder)}, so the given
+     * {@link ConfigurationHolder configHolder} is not yet {@link ConfigurationHolder#isLoaded() loaded}.
+     *
+     * @since 11.5
+     */
+    protected static void initLogsIfNeeded(ConfigurationHolder configHolder) {
+        if (LoggerContext.getContext(false).getRootLogger().getAppenders().isEmpty()) {
+            // log config is relative to home path, which is populated at initialization
+            Path logConfigPath = configHolder.getLogConfigPath();
+            if (Files.notExists(logConfigPath)) {
+                System.out.println("No logs configuration, will setup a basic one.");
+                Configurator.initialize(new DefaultConfiguration());
+            } else {
+                System.out.println("Try to configure logs with configuration: " + logConfigPath);
+                Configurator.initialize(Log4JHelper.newConfiguration(logConfigPath.toFile()));
+            }
+            log.info("Logs successfully configured.");
         }
     }
 
@@ -387,10 +416,6 @@ public class ConfigurationGenerator {
             updateStoredConfig();
         }
         return storedConfig;
-    }
-
-    public void hideDeprecationWarnings(boolean hide) {
-        hideDeprecationWarnings = hide;
     }
 
     /**
@@ -488,7 +513,7 @@ public class ConfigurationGenerator {
         // Load default configuration
         configHolder.putDefaultAll(configLoader.loadNuxeoDefaults(templatesPath));
         // Load System properties
-        configHolder.putDefaultAll(System.getProperties());
+        configHolder.putDefaultAll(systemProperties);
         // Load user configuration
         configHolder.putAll(configLoader.loadProperties(configHolder.getNuxeoConfPath()));
         forceGeneration = isGenerationOnce()
@@ -956,15 +981,6 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Delegate logs initialization to serverConfigurator instance
-     *
-     * @since 5.4.2
-     */
-    public void initLogs() {
-        serverConfigurator.initLogs();
-    }
-
-    /**
      * @return log directory
      * @since 5.4.2
      */
@@ -1024,7 +1040,7 @@ public class ConfigurationGenerator {
      * @since 5.6
      */
     public void checkJavaVersion() throws ConfigurationException {
-        String version = System.getProperty("java.version");
+        String version = systemProperties.getProperty("java.version");
         checkJavaVersion(version, COMPLIANT_JAVA_VERSIONS);
     }
 
@@ -1232,9 +1248,7 @@ public class ConfigurationGenerator {
      * @since 5.4.2
      */
     public List<String> getLogFiles() {
-        File log4jConfFile = serverConfigurator.getLogConfFile();
-        System.setProperty(Environment.NUXEO_LOG_DIR, getLogDir().getPath());
-        return Log4JHelper.getFileAppendersFileNames(log4jConfFile);
+        return Log4JHelper.getFileAppendersFileNames(configHolder.getLogConfigPath().toFile());
     }
 
     /**
@@ -1654,7 +1668,7 @@ public class ConfigurationGenerator {
      * @since 9.3
      */
     public List<String> getJavaOpts(Function<String, String> mapper) {
-        return Arrays.stream(JAVA_OPTS_PATTERN.split(System.getProperty(JAVA_OPTS_PROP, "")))
+        return Arrays.stream(JAVA_OPTS_PATTERN.split(systemProperties.getProperty(JAVA_OPTS_PROP, "")))
                      .map(option -> StringSubstitutor.replace(option, getUserConfig()))
                      .map(mapper)
                      .collect(Collectors.toList());
@@ -1680,5 +1694,103 @@ public class ConfigurationGenerator {
      */
     public ConfigurationHolder getConfigurationHolder() {
         return configHolder;
+    }
+
+    /**
+     * @since 11.5
+     */
+    public static class Builder {
+
+        protected Path nuxeoHome;
+
+        protected Path nuxeoConf;
+
+        protected Map<String, String> environment = System.getenv();
+
+        protected Properties systemProperties = System.getProperties();
+
+        protected boolean quiet = true;
+
+        protected Map<String, String> parametersMigration = Map.ofEntries(
+                Map.entry(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS, PARAM_TEMPLATES_PARSING_EXTENSIONS), //
+                Map.entry("nuxeo.db.user.separator.key", "nuxeo.db.user_separator_key"), //
+                Map.entry("mail.pop3.host", "mail.store.host"), //
+                Map.entry("mail.pop3.port", "mail.store.port"), //
+                Map.entry("mail.smtp.host", "mail.transport.host"), //
+                Map.entry("mail.smtp.port", "mail.transport.port"), //
+                Map.entry("mail.smtp.username", "mail.transport.username"), //
+                Map.entry("mail.transport.username", "mail.transport.user"), //
+                Map.entry("mail.smtp.password", "mail.transport.password"), //
+                Map.entry("mail.smtp.usetls", "mail.transport.usetls"), //
+                Map.entry("mail.smtp.auth", "mail.transport.auth"), //
+                Map.entry("nuxeo.server.tomcat-admin.port", PARAM_HTTP_TOMCAT_ADMIN_PORT));
+
+        protected boolean hideDeprecationWarnings;
+
+        protected boolean init;
+
+        protected Builder() {
+            // nothing
+        }
+
+        protected Builder environment(Map<String, String> environment) {
+            this.environment = environment;
+            return this;
+        }
+
+        protected Builder systemProperties(Properties systemProperties) {
+            this.systemProperties = systemProperties;
+            return this;
+        }
+
+        protected Builder putSystemProperty(String key, String value) {
+            this.systemProperties.put(key, value);
+            return this;
+        }
+
+        public Builder quiet(boolean quiet) {
+            this.quiet = quiet;
+            return this;
+        }
+
+        public Builder hideDeprecationWarnings(boolean hideDeprecationWarnings) {
+            this.hideDeprecationWarnings = hideDeprecationWarnings;
+            return this;
+        }
+
+        public Builder init(boolean init) {
+            this.init = init;
+            return this;
+        }
+
+        public ConfigurationGenerator build() {
+            if (nuxeoHome == null) {
+                // resolve nuxeoHome from System properties
+                Environment nuxeoEnvironment = Environment.getDefault(systemProperties);
+                if (nuxeoEnvironment != null && nuxeoEnvironment.getServerHome() != null) {
+                    nuxeoHome = nuxeoEnvironment.getServerHome().toPath();
+                } else {
+                    nuxeoHome = Path.of(systemProperties.getProperty("user.dir"));
+                    if ("bin".equalsIgnoreCase(nuxeoHome.getFileName().toString())) {
+                        nuxeoHome = nuxeoHome.getParent();
+                    }
+                }
+            }
+            if (nuxeoConf == null) {
+                // resolve nuxeoConf from System properties
+                String nuxeoConfProperty = systemProperties.getProperty(NUXEO_CONF);
+                if (nuxeoConfProperty == null) {
+                    nuxeoConf = nuxeoHome.resolve(DEFAULT_NUXEO_CONF_PATH);
+                } else {
+                    nuxeoConf = Path.of(nuxeoConfProperty);
+                }
+            }
+
+            var generator = new ConfigurationGenerator(this);
+            if (init) {
+                generator.init();
+            }
+            return generator;
+        }
     }
 }

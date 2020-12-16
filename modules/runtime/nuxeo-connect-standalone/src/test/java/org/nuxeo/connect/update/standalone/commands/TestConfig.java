@@ -67,7 +67,7 @@ public class TestConfig extends AbstractCommandTest {
         FileUtils.copyDirectory(new File(URLDecoder.decode(url.getPath(), UTF_8)),
                 new File(Environment.getDefault().getServerHome(), "templates"));
 
-        configurationGenerator = new ConfigurationGenerator();
+        configurationGenerator = ConfigurationGenerator.build();
         assertTrue(configurationGenerator.init());
         configurationGenerator.addTemplate("oldtemplate");
         configurationGenerator.addTemplate("oldtemplate1,oldtemplate2");
@@ -81,7 +81,7 @@ public class TestConfig extends AbstractCommandTest {
     @Override
     protected void installDone(Task task, Throwable error) throws Exception {
         super.installDone(task, error);
-        configurationGenerator = new ConfigurationGenerator();
+        configurationGenerator = ConfigurationGenerator.build();
         assertTrue(configurationGenerator.init());
 
         log.info("Install done. nuxeo.conf content:");
@@ -107,7 +107,7 @@ public class TestConfig extends AbstractCommandTest {
     @Override
     protected void uninstallDone(Task task, Throwable error) throws Exception {
         super.uninstallDone(task, error);
-        configurationGenerator = new ConfigurationGenerator();
+        configurationGenerator = ConfigurationGenerator.build();
         assertTrue(configurationGenerator.init());
 
         log.info("Uninstall done. nuxeo.conf content:");

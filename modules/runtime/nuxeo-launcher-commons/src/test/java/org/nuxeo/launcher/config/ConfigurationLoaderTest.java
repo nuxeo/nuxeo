@@ -42,7 +42,7 @@ public class ConfigurationLoaderTest {
 
     @Test
     public void testLoadNuxeoDefaults() throws Exception {
-        var loader = new ConfigurationLoader(Map.of(), Map.of());
+        var loader = newConfigurationLoader(Map.of());
         var directory = getResourcePath("configuration/loader/testLoadNuxeoDefaults");
 
         var properties = loader.loadNuxeoDefaults(directory);
@@ -55,7 +55,7 @@ public class ConfigurationLoaderTest {
      */
     @Test
     public void testLoadNuxeoDefaultsWithEnvironment() throws Exception {
-        var loader = new ConfigurationLoader(Map.of(NUXEO_ENVIRONMENT, "utest"), Map.of());
+        var loader = newConfigurationLoader(Map.of(NUXEO_ENVIRONMENT, "utest"));
         var directory = getResourcePath("configuration/loader/testLoadNuxeoDefaults");
 
         var properties = loader.loadNuxeoDefaults(directory);
@@ -73,13 +73,12 @@ public class ConfigurationLoaderTest {
     public void testEnvironmentVariableInNuxeoDefaults() throws Exception {
         var directory = getResourcePath("configuration/loader/testEnvironmentVariableInNuxeoDefaults");
 
-        var loader = new ConfigurationLoader(Map.of(), Map.of());
+        var loader = newConfigurationLoader(Map.of());
         var properties = loader.loadNuxeoDefaults(directory);
         assertEquals("myprop1defaultvalue", properties.getProperty("my.prop1"));
         assertEquals("", properties.getProperty("my.prop2"));
 
-        loader = new ConfigurationLoader(Map.of("MY_PROP_1", "myprop1newvalue", "MY_PROP_2", "myprop2newvalue"),
-                Map.of());
+        loader = newConfigurationLoader(Map.of("MY_PROP_1", "myprop1newvalue", "MY_PROP_2", "myprop2newvalue"));
         properties = loader.loadNuxeoDefaults(directory);
         assertEquals("myprop1newvalue", properties.getProperty("my.prop1"));
         assertEquals("myprop2newvalue", properties.getProperty("my.prop2"));
@@ -87,7 +86,7 @@ public class ConfigurationLoaderTest {
 
     @Test
     public void testLoadProperties() throws Exception {
-        var loader = new ConfigurationLoader(Map.of("SOME_ENV", "value"), Map.of("old.prop", "new.prop"));
+        var loader = new ConfigurationLoader(Map.of("SOME_ENV", "value"), Map.of("old.prop", "new.prop"), true);
         var propertiesFile = getResourcePath("configuration/loader/test-load-properties.conf");
 
         var properties = loader.loadProperties(propertiesFile);
@@ -99,7 +98,7 @@ public class ConfigurationLoaderTest {
 
     @Test
     public void testCheckFileCharset() throws Exception {
-        var loader = new ConfigurationLoader(Map.of(), Map.of());
+        var loader = newConfigurationLoader(Map.of());
         Path tempFile = Files.createTempFile("", "");
         // Test UTF8
         Files.writeString(tempFile, "nuxéo", UTF_8, CREATE);
@@ -129,7 +128,7 @@ public class ConfigurationLoaderTest {
 
     @Test
     public void testEnvironmentVariablesReplacement() {
-        var loader = new ConfigurationLoader(Map.of("MY_TEST_PROP", "value"), Map.of());
+        var loader = newConfigurationLoader(Map.of("MY_TEST_PROP", "value"));
 
         // test null / empty
         assertNull(loader.replaceEnvironmentVariables(null));
@@ -164,5 +163,9 @@ public class ConfigurationLoaderTest {
     public Path getResourcePath(String resource) throws Exception {
         URL url = getClass().getClassLoader().getResource(resource);
         return Path.of(url.getPath());
+    }
+
+    protected ConfigurationLoader newConfigurationLoader(Map<String, String> environment) {
+        return new ConfigurationLoader(environment, Map.of(), false);
     }
 }
