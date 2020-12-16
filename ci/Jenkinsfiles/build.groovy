@@ -415,7 +415,7 @@ pipeline {
     KAFKA_CHART_NAME = 'kafka'
     KAFKA_CHART_VERSION = '11.8.8'
     NUXEO_CHART_NAME = 'nuxeo'
-    NUXEO_CHART_VERSION = '2.0.1'
+    NUXEO_CHART_VERSION = '2.0.2'
     USAGE = 'utests'
     TEST_NAMESPACE_PREFIX = "nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
@@ -963,6 +963,7 @@ pipeline {
             echo 'Upgrade nuxeo preview release'
             sh """
               helm3 template ${NUXEO_CHART_REPOSITORY_NAME}/${NUXEO_CHART_NAME} \
+                --version=${NUXEO_CHART_VERSION} \
                 --values=${HELM_VALUES_DIR}/values-nuxeo.yaml~gen \
                 --output-dir=target
             """
