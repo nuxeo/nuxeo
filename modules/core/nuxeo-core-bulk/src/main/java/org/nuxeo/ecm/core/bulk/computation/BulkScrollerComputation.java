@@ -139,7 +139,8 @@ public class BulkScrollerComputation extends AbstractComputation {
         boolean newTransaction = true;
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             newTransaction = false;
-            log.warn("Already inside a transaction, timeout cannot be applied, record: " + record, new Throwable("stack"));
+            log.warn("Already inside a transaction, timeout cannot be applied, record: " + record,
+                    new Throwable("stack"));
         } else if (!TransactionHelper.startTransaction(transactionTimeoutSeconds)) {
             throw new TransactionRuntimeException("Cannot start transaction");
         }
@@ -167,8 +168,7 @@ public class BulkScrollerComputation extends AbstractComputation {
             long bucketNumber = 1;
             final long queryLimit = getQueryLimit(command);
             boolean limitReached = false;
-            scrollLoop:
-            try (Scroll scroll = buildScroll(command)) {
+            scrollLoop: try (Scroll scroll = buildScroll(command)) {
                 while (scroll.hasNext()) {
                     if (isAbortedCommand(commandId)) {
                         log.debug("Skipping aborted command: {}", commandId);
