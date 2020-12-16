@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>11.5-SNAPSHOT</version>
+    <version>11.5.16</version>
   </parent>
 
   <artifactId>nuxeo-core-convert-plugins-test</artifactId>
