@@ -27,24 +27,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_FAIL;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_NOFAIL;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_PROP;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,7 +58,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Override
     public void tearDown() {
         super.tearDown();
-//        env.clear();
+        // env.clear();
     }
 
     @Test
@@ -268,147 +259,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertEquals(fileContents, "Success");
     }
 
-    @Test
-    public void testCheckJavaVersionFail() {
-        testCheckJavaVersion(true);
-    }
-
-    @Test
-    public void testCheckJavaVersionNoFail() {
-        testCheckJavaVersion(false);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testWrongJavaVersionFail() {
-        ConfigurationGenerator.checkJavaVersion("1.not-a-version", "1.8.0_40", false, true);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testWrongPreJdk9VersionFail() {
-        ConfigurationGenerator.checkJavaVersion("1.not-a-version", "1.8.0_40", false, false);
-    }
-
-    @Test
-    public void testWrongJavaVersionNoFail() {
-        runJVMCheck(false, () -> ConfigurationGenerator.checkJavaVersion("not-a-version", "1.8.0_40", true, true));
-    }
-
-    protected void testCheckJavaVersion(boolean fail) {
-        runJVMCheck(fail, () -> checkJavaVersions(!fail));
-    }
-
-    protected void runJVMCheck(boolean fail, Runnable runnable) {
-        String old = System.getProperty(JVMCHECK_PROP);
-        try {
-            System.setProperty(JVMCHECK_PROP, fail ? JVMCHECK_FAIL : JVMCHECK_NOFAIL);
-            runnable.run();
-        } finally {
-            if (old == null) {
-                System.clearProperty(JVMCHECK_PROP);
-            } else {
-                System.setProperty(JVMCHECK_PROP, old);
-            }
-        }
-    }
-
-    protected void checkJavaVersions(boolean compliant) {
-        // ok
-        checkJavaVersion(true, "1.7.0_10", "1.7.0_1");
-        checkJavaVersion(true, "1.8.0_92", "1.7.0_1");
-        checkJavaVersion(true, "1.8.0_40", "1.8.0_40");
-        checkJavaVersion(true, "1.8.0_45", "1.8.0_40");
-        checkJavaVersion(true, "1.8.0_101", "1.8.0_40");
-        checkJavaVersion(true, "1.8.0_400", "1.8.0_40");
-        checkJavaVersion(true, "1.8.0_72-internal", "1.8.0_40");
-        checkJavaVersion(true, "1.8.0-internal", "1.8.0");
-        checkJavaVersion(true, "1.9.0_1", "1.8.0_40");
-        // compliant if jvmcheck=nofail
-        checkJavaVersion(compliant, "1.7.0_1", "1.8.0_40");
-        checkJavaVersion(compliant, "1.7.0_40", "1.8.0_40");
-        checkJavaVersion(compliant, "1.7.0_101", "1.8.0_40");
-        checkJavaVersion(compliant, "1.7.0_400", "1.8.0_40");
-        checkJavaVersion(compliant, "1.8.0_1", "1.8.0_40");
-        checkJavaVersion(compliant, "1.8.0_25", "1.8.0_40");
-        checkJavaVersion(compliant, "1.8.0_39", "1.8.0_40");
-    }
-
-    protected void checkJavaVersion(boolean compliant, String version, String requiredVersion) {
-        assertEquals(version + " vs " + requiredVersion, compliant,
-                ConfigurationGenerator.checkJavaVersion(version, requiredVersion, true, false));
-    }
-
-    @Test
-    public void testParseJVMVersion() throws Exception {
-        checkParsed("7.10", "1.7.0_10");
-        checkParsed("8.45", "1.8.0_45");
-        checkParsed("8.72", "1.8.0_72-internal");
-        checkParsed("9.0", "9");
-        checkParsed("9.0", "9.0");
-        checkParsed("9.0", "9.0.1");
-        checkParsed("9.0", "9.0.1.15");
-        checkParsed("9.4", "9.4.5.6");
-        checkParsed("10.0", "10.0.1");
-        checkParsed("15.0", "15");
-    }
-
-    protected void checkParsed(String expected, String version) throws Exception {
-        JVMVersion v = JVMVersion.parse(version);
-        assertEquals(expected, v.toString());
-    }
-
-    @Test
-    public void testCheckJavaVersionCompliant() throws Exception {
-        LogCaptureAppender logCaptureAppender = new LogCaptureAppender(Level.WARN, ConfigurationGenerator.class);
-        logCaptureAppender.start();
-        Logger rootLogger = LoggerContext.getContext(false).getRootLogger();
-        rootLogger.addAppender(logCaptureAppender);
-        try {
-            // Nuxeo 6.0 case
-            ConfigurationGenerator.checkJavaVersion("1.7.0_10", new String[] { "1.7.0_1", "1.8.0_1" });
-            assertTrue(logCaptureAppender.isEmpty());
-            ConfigurationGenerator.checkJavaVersion("1.8.0_92", new String[] { "1.7.0_1", "1.8.0_1" });
-            assertTrue(logCaptureAppender.isEmpty());
-            // Nuxeo 7.10/8.10 case
-            ConfigurationGenerator.checkJavaVersion("1.8.0_50", new String[] { "1.8.0_40" });
-            assertTrue(logCaptureAppender.isEmpty());
-
-            // may log warn message cases
-            ConfigurationGenerator.checkJavaVersion("1.8.0_92", new String[] { "1.7.0_1" });
-            assertEquals(1, logCaptureAppender.size());
-            assertEquals("Nuxeo requires Java 1.7.0_1+ (detected 1.8.0_92).", logCaptureAppender.get(0));
-            logCaptureAppender.clear();
-
-            ConfigurationGenerator.checkJavaVersion("1.8.0_92", new String[] { "1.6.0_1", "1.7.0_1" });
-            assertEquals(1, logCaptureAppender.size());
-            assertEquals("Nuxeo requires Java 1.7.0_1+ (detected 1.8.0_92).", logCaptureAppender.get(0));
-            logCaptureAppender.clear();
-
-            // jvmcheck=nofail case
-            runJVMCheck(false, () -> {
-                try {
-                    ConfigurationGenerator.checkJavaVersion("1.6.0_1", new String[] { "1.7.0_1" });
-                    assertEquals(1, logCaptureAppender.size());
-                    assertEquals("Nuxeo requires Java 1.7.0_1+ (detected 1.6.0_1).", logCaptureAppender.get(0));
-                    logCaptureAppender.clear();
-                } catch (Exception e) {
-                    fail("Exception thrown " + e.getMessage());
-                }
-            });
-
-            // fail case
-            try {
-                ConfigurationGenerator.checkJavaVersion("1.6.0_1", new String[] { "1.7.0_1" });
-            } catch (ConfigurationException ce) {
-                assertEquals(
-                        "Nuxeo requires Java {1.7.0_1} (detected 1.6.0_1). See 'jvmcheck' option to bypass version check.",
-                        ce.getMessage());
-            }
-        } finally {
-            logCaptureAppender.stop();
-            rootLogger.removeAppender(logCaptureAppender);
-        }
-    }
-
     /**
      * NXP-22031 - test the configuration reloading after wizard setup when using Nuxeo GUI launcher.
      */
@@ -423,7 +273,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         // Test configuration generator context before reloading it
         // getUserTemplates lazy load templates in the configuration generator context and put it back to userConfig
         // That's explain the two assertions below
-        assertEquals("default,common,testinclude,testenv,backing", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        assertEquals("default,common,testinclude,testenv,backing",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
         assertEquals("default,common,testinclude,testenv,backing",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
 
@@ -433,7 +284,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
         // Check values
         // userConfig was filled with values from nuxeo.conf and getUserTemplates re-load templates from userConfig
-        assertEquals("default,mongodb", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        assertEquals("default,mongodb",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
         assertEquals("default,mongodb",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
     }
@@ -444,7 +296,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertFalse("Profile should not be included", isTemplateIncluded(profileToTest));
         assertNotEquals("true", configGenerator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
 
-//        env.put(NUXEO_PROFILES, profileToTest);
+        // env.put(NUXEO_PROFILES, profileToTest);
 
         configGenerator.init(true);
 
