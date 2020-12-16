@@ -19,7 +19,6 @@
  */
 package org.nuxeo.launcher.config;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.function.Predicate.isEqual;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -27,116 +26,130 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.common.Environment.NUXEO_HOME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.JAVA_OPTS_PROP;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_CONF;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_FORCE_GENERATION;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_LOOPBACK_URL;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATES_NAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBTYPE;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.function.Function;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.nuxeo.common.Environment;
 
-public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
+public class ConfigurationGeneratorTest {
+
+    @Rule
+    public final ConfigurationRule rule = new ConfigurationRule("configuration/generator");
 
     @Before
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        FileUtils.copyDirectory(getResourceFile("templates/jboss"), new File(nuxeoHome, "templates"));
-        setSystemProperty("jboss.home.dir", nuxeoHome.getPath());
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
-        log.debug("Test with {}",
-                () -> configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
+    public void setUp() {
+        // have to set the home property for Environment class
+        System.setProperty(NUXEO_HOME, rule.getNuxeoHome().toString());
     }
 
     @After
-    @Override
     public void tearDown() {
-        super.tearDown();
-        // env.clear();
+        System.clearProperty(NUXEO_HOME);
+    }
+
+    @Test
+    public void testDefault() {
+        var generator = generatorBuilder().build();
+        assertTrue(generator.init());
+        assertEquals("true", generator.getUserConfig().getProperty("nuxeo.test.default.home"));
+        // check nuxeo.conf has been set by generator
+        assertEquals(rule.getNuxeoConf().toString(), generator.systemProperties.getProperty(NUXEO_CONF));
     }
 
     @Test
     public void getJavaOptsStringWithoutConfig() {
-        assertThat(configGenerator.getJavaOptsString()).isEmpty();
+        var generator = generatorBuilder().init(true).build();
+        assertThat(generator.getJavaOptsString()).isEmpty();
     }
 
     @Test
     public void getJavaOptsWithoutConfig() {
-        List<String> javaOpts = configGenerator.getJavaOpts(Function.identity());
+        var generator = generatorBuilder().init(true).build();
+        List<String> javaOpts = generator.getJavaOpts(Function.identity());
         assertThat(javaOpts).containsExactly("");
     }
 
     @Test
     public void getJavaOptsWithConfig() {
-        setSystemProperty(ConfigurationGenerator.JAVA_OPTS_PROP, "-Xms1g -Xmx2g");
-        List<String> javaOpts = configGenerator.getJavaOpts(Function.identity());
+        var generator = generatorBuilder().init(true).putSystemProperty(JAVA_OPTS_PROP, "-Xms1g -Xmx2g").build();
+        List<String> javaOpts = generator.getJavaOpts(Function.identity());
         assertThat(javaOpts).containsExactly("-Xms1g", "-Xmx2g");
     }
 
     @Test
     public void getJavaOptsWithMultivaluedProperty() {
-        setSystemProperty(ConfigurationGenerator.JAVA_OPTS_PROP, "-Da=\"a1 a2\" -Db=\"b1 b2\"");
-        List<String> javaOpts = configGenerator.getJavaOpts(Function.identity());
+        var generator = generatorBuilder().init(true)
+                                          .putSystemProperty(JAVA_OPTS_PROP, "-Da=\"a1 a2\" -Db=\"b1 b2\"")
+                                          .build();
+        List<String> javaOpts = generator.getJavaOpts(Function.identity());
         assertThat(javaOpts).containsExactly("-Da=\"a1 a2\"", "-Db=\"b1 b2\"");
     }
 
     @Test
     public void testEvalDynamicProperties() {
-        assertEquals("Bad loop back URL", "http://127.0.0.1:8080/nuxeo",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_LOOPBACK_URL));
-        try {
-            testAddress("10.213.2.105", "http://10.213.2.105:8080/nuxeo");
-        } catch (ConfigurationException e) {
-            log.error(e);
-        }
-        log.debug("Force IPv6");
-        setSystemProperty("java.net.preferIPv4Stack", "false");
-        setSystemProperty("java.net.preferIPv6Addresses", "true");
-        try {
-            testAddress("::", "http://[0:0:0:0:0:0:0:1]:8080/nuxeo");
-        } catch (ConfigurationException e) {
-            log.error(e);
-        }
-        try {
-            testAddress("2a01:240:fe8e::226:bbff:fe09:55cd", "http://[2a01:240:fe8e:0:226:bbff:fe09:55cd]:8080/nuxeo");
-        } catch (ConfigurationException e) {
-            log.error(e);
-        }
-    }
+        // IPv4
+        var generator = generatorBuilder().init(true).build();
+        assertEquals("http://127.0.0.1:8080/nuxeo", generator.getUserConfig().getProperty(PARAM_LOOPBACK_URL));
 
-    private void testAddress(String bindAddress, String expectedLoopback) throws ConfigurationException {
-        configGenerator.setProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS, bindAddress);
-        log.debug("Test with {}",
-                () -> configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
-        configGenerator.init(true);
-        assertEquals("Bad loop back URL", expectedLoopback,
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_LOOPBACK_URL));
+        generator = generatorBuilder().init(true).putSystemProperty(PARAM_BIND_ADDRESS, "10.213.2.105").build();
+        assertEquals("http://10.213.2.105:8080/nuxeo", generator.getUserConfig().getProperty(PARAM_LOOPBACK_URL));
+
+        // IPv6
+        generator = generatorBuilder().init(true)
+                                      .putSystemProperty(PARAM_BIND_ADDRESS, "::")
+                                      .putSystemProperty("java.net.preferIPv4Stack", "false")
+                                      .putSystemProperty("java.net.preferIPv6Addresses", "true")
+                                      .build();
+        assertEquals("http://[0:0:0:0:0:0:0:1]:8080/nuxeo", generator.getUserConfig().getProperty(PARAM_LOOPBACK_URL));
+
+        generator = generatorBuilder().init(true)
+                                      .putSystemProperty(PARAM_BIND_ADDRESS, "2a01:240:fe8e::226:bbff:fe09:55cd")
+                                      .putSystemProperty("java.net.preferIPv4Stack", "false")
+                                      .putSystemProperty("java.net.preferIPv6Addresses", "true")
+                                      .build();
+        assertEquals("http://[2a01:240:fe8e:0:226:bbff:fe09:55cd]:8080/nuxeo",
+                generator.getUserConfig().getProperty(PARAM_LOOPBACK_URL));
     }
 
     @Test
     public void testSetProperty() throws ConfigurationException {
+        var generator = generatorBuilder().init(true).build();
+
         final String testProperty = "test.prop.key";
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
-        String oldValue = configGenerator.setProperty(testProperty, "test.prop.value");
+        String oldValue = generator.setProperty(testProperty, "test.prop.value");
         assertNull("Wrong old value", oldValue);
-        assertEquals("Property not set", "test.prop.value", configGenerator.getUserConfig().getProperty(testProperty));
-        oldValue = configGenerator.setProperty(testProperty, null);
+        assertEquals("Property not set", "test.prop.value", generator.getUserConfig().getProperty(testProperty));
+        oldValue = generator.setProperty(testProperty, null);
         assertEquals("Wrong old value", "test.prop.value", oldValue);
-        assertNull("Property not unset", configGenerator.getUserConfig().getProperty(testProperty));
-        oldValue = configGenerator.setProperty(testProperty, "");
+        assertNull("Property not unset", generator.getUserConfig().getProperty(testProperty));
+        oldValue = generator.setProperty(testProperty, "");
         assertNull("Wrong old value", oldValue);
-        assertNull("Property must not be set", configGenerator.getUserConfig().getProperty(testProperty));
-        configGenerator.setProperty(testProperty, "test.prop.value");
-        oldValue = configGenerator.setProperty(testProperty, "");
+        assertNull("Property must not be set", generator.getUserConfig().getProperty(testProperty));
+        generator.setProperty(testProperty, "test.prop.value");
+        oldValue = generator.setProperty(testProperty, "");
         assertEquals("Wrong old value", "test.prop.value", oldValue);
-        assertNull("Property not unset", configGenerator.getUserConfig().getProperty(testProperty));
+        assertNull("Property not unset", generator.getUserConfig().getProperty(testProperty));
     }
 
     /**
@@ -145,34 +158,40 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
      * cannot be unset</q>
      *
      * <pre>
-     * nuxeo.templates=default,common,testinclude
+     * nuxeo.templates=default,common
      * nuxeo.force.generation=true
      * </pre>
      */
     @Test
     public void testSetSpecialProperties() throws ConfigurationException {
-        String oldValue = configGenerator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, null);
-        assertEquals("Wrong old value", "default,common,testinclude,testenv,backing", oldValue);
-        assertEquals(ConfigurationGenerator.PARAM_TEMPLATES_NAME + " should be reset", "default",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
-        configGenerator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, oldValue);
-        configGenerator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
-        assertEquals(ConfigurationGenerator.PARAM_TEMPLATES_NAME + " should be reset", "default",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
-        configGenerator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, oldValue);
-        assertEquals(ConfigurationGenerator.PARAM_TEMPLATES_NAME + " should be modifiable", oldValue,
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        var generator = generatorBuilder().init(true).build();
 
-        oldValue = configGenerator.setProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION, null);
+        String oldValue = generator.setProperty(PARAM_TEMPLATES_NAME, null);
+        assertEquals("Wrong old value", "default,common", oldValue);
+        assertEquals(PARAM_TEMPLATES_NAME + " should be reset", "default",
+                generator.getUserConfig().getProperty(PARAM_TEMPLATES_NAME));
+        generator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, oldValue);
+
+        generator.setProperty(PARAM_TEMPLATES_NAME, "");
+        assertEquals(PARAM_TEMPLATES_NAME + " should be reset", "default",
+                generator.getUserConfig().getProperty(PARAM_TEMPLATES_NAME));
+
+        generator.setProperty(PARAM_TEMPLATES_NAME, oldValue);
+        assertEquals(PARAM_TEMPLATES_NAME + " should be modifiable", oldValue,
+                generator.getUserConfig().getProperty(PARAM_TEMPLATES_NAME));
+
+        oldValue = generator.setProperty(PARAM_FORCE_GENERATION, null);
         assertEquals("Wrong old value", "true", oldValue);
         assertEquals("Property should not be unset", oldValue,
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION));
-        configGenerator.setProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION, "");
+                generator.getUserConfig().getProperty(PARAM_FORCE_GENERATION));
+
+        generator.setProperty(PARAM_FORCE_GENERATION, "");
         assertEquals("Property should not be unset", oldValue,
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION));
-        configGenerator.setProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION, "false");
-        assertEquals(ConfigurationGenerator.PARAM_FORCE_GENERATION + " should not be modifiable like this", oldValue,
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION));
+                generator.getUserConfig().getProperty(PARAM_FORCE_GENERATION));
+
+        generator.setProperty(PARAM_FORCE_GENERATION, "false");
+        assertEquals(PARAM_FORCE_GENERATION + " should not be modifiable like this", oldValue,
+                generator.getUserConfig().getProperty(PARAM_FORCE_GENERATION));
     }
 
     /**
@@ -184,21 +203,22 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
      */
     @Test
     public void testSetSampledCommentedProperty() throws ConfigurationException {
+        var generator = generatorBuilder().init(true).build();
+
         final String testProperty = "test.sampled.prop";
-        assertTrue(configGenerator.init());
-        String oldValue = configGenerator.setProperty(testProperty, "anotherValue");
+        String oldValue = generator.setProperty(testProperty, "anotherValue");
         assertNull("Wrong old value", oldValue);
-        assertEquals("Property not set", "anotherValue", configGenerator.getUserConfig().getProperty(testProperty));
-        oldValue = configGenerator.setProperty(testProperty, null);
+        assertEquals("Property not set", "anotherValue", generator.getUserConfig().getProperty(testProperty));
+        oldValue = generator.setProperty(testProperty, null);
         assertEquals("Wrong old value", "anotherValue", oldValue);
-        assertNull("Property not unset", configGenerator.getUserConfig().getProperty(testProperty));
-        oldValue = configGenerator.setProperty(testProperty, "");
+        assertNull("Property not unset", generator.getUserConfig().getProperty(testProperty));
+        oldValue = generator.setProperty(testProperty, "");
         assertNull("Wrong old value", oldValue);
-        assertNull("Property must not be set", configGenerator.getUserConfig().getProperty(testProperty));
-        configGenerator.setProperty(testProperty, "someValue");
-        oldValue = configGenerator.setProperty(testProperty, "");
+        assertNull("Property must not be set", generator.getUserConfig().getProperty(testProperty));
+        generator.setProperty(testProperty, "someValue");
+        oldValue = generator.setProperty(testProperty, "");
         assertEquals("Wrong old value", "someValue", oldValue);
-        assertNull("Property not unset", configGenerator.getUserConfig().getProperty(testProperty));
+        assertNull("Property not unset", generator.getUserConfig().getProperty(testProperty));
     }
 
     /**
@@ -210,53 +230,72 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
      */
     @Test
     public void testSetSampledActiveProperty() throws ConfigurationException {
+        var generator = generatorBuilder().init(true).build();
+
         final String testProperty = "test.sampled.prop2";
-        String oldValue = configGenerator.setProperty(testProperty, "anotherValue");
+        String oldValue = generator.setProperty(testProperty, "anotherValue");
         assertEquals("Wrong old value", "someValue", oldValue);
-        assertEquals("Property not set", "anotherValue", configGenerator.getUserConfig().getProperty(testProperty));
-        oldValue = configGenerator.setProperty(testProperty, null);
+        assertEquals("Property not set", "anotherValue", generator.getUserConfig().getProperty(testProperty));
+        oldValue = generator.setProperty(testProperty, null);
         assertEquals("Wrong old value", "anotherValue", oldValue);
-        assertNull("Property not unset", configGenerator.getUserConfig().getProperty(testProperty));
-        oldValue = configGenerator.setProperty(testProperty, "");
+        assertNull("Property not unset", generator.getUserConfig().getProperty(testProperty));
+        oldValue = generator.setProperty(testProperty, "");
         assertNull("Wrong old value", oldValue);
-        assertNull("Property must not be set", configGenerator.getUserConfig().getProperty(testProperty));
-        configGenerator.setProperty(testProperty, "someValue");
-        oldValue = configGenerator.setProperty(testProperty, "");
+        assertNull("Property must not be set", generator.getUserConfig().getProperty(testProperty));
+        generator.setProperty(testProperty, "someValue");
+        oldValue = generator.setProperty(testProperty, "");
         assertEquals("Wrong old value", "someValue", oldValue);
-        assertNull("Property not unset", configGenerator.getUserConfig().getProperty(testProperty));
+        assertNull("Property not unset", generator.getUserConfig().getProperty(testProperty));
     }
 
     @Test
     public void testAddRmTemplate() throws ConfigurationException {
-        String originalTemplates = configGenerator.getUserConfig()
-                                                  .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+        var generator = generatorBuilder().init(true).build();
+
+        String originalTemplates = generator.getUserConfig().getProperty(PARAM_TEMPLATES_NAME);
         assertEquals("Error calculating db template", "default",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBTYPE));
-        configGenerator.addTemplate("newTemplate");
+                generator.getUserConfig().getProperty(PARAM_TEMPLATE_DBTYPE));
+
+        // newTemplate will include postgresql
+        generator.addTemplate("newTemplate");
         assertEquals("Error calculating db template", "postgresql",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBTYPE));
+                generator.getUserConfig().getProperty(PARAM_TEMPLATE_DBTYPE));
         assertEquals("newTemplate not added", originalTemplates + ",newTemplate",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
-        configGenerator.rmTemplate("newTemplate");
+                generator.getUserConfig().getProperty(PARAM_TEMPLATES_NAME));
+
+        generator.rmTemplate("newTemplate");
         assertEquals("Error calculating db template", "default",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBTYPE));
+                generator.getUserConfig().getProperty(PARAM_TEMPLATE_DBTYPE));
         assertEquals("newTemplate not removed", originalTemplates,
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+                generator.getUserConfig().getProperty(PARAM_TEMPLATES_NAME));
     }
 
     @Test
     public void testFreemarkerTemplate() throws ConfigurationException, IOException {
-        configGenerator.addTemplate("fmtest");
-        configGenerator.setProperty("test.freemarker.part1", "tr");
-        configGenerator.setProperty("test.freemarker.part2", "ue");
-        configGenerator.setProperty("test.freemarker.key", "${test.freemarker.part1}${test.freemarker.part2}");
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
-        configGenerator.run();
-        File outfile = new File(nuxeoHome, "testfm");
-        assertTrue(outfile.exists());
-        String fileContents = FileUtils.readFileToString(outfile, UTF_8).trim();
+        var generator = generatorBuilder().build();
+
+        generator.run();
+        Path out = generator.getNuxeoHome().toPath().resolve("test-freemarker");
+        assertTrue(Files.exists(out));
+        String fileContents = Files.readString(out).trim();
         assertEquals(fileContents, "Success");
+
+        var expectedConfiguration = rule.getResourcePath("testFreemarkerTemplate-configuration.properties");
+        var actualConfiguration = generator.getDumpedConfig().toPath();
+        List<String> actualLines = Files.readAllLines(actualConfiguration);
+        assertFalse("The generated configuration.properties is empty", actualLines.isEmpty());
+        // second line is a date - remove it as we don't control the clock
+        assertTrue(actualLines.remove(1).startsWith("#"));
+        // remove status key which is random
+        assertTrue(actualLines.removeIf(line -> line.startsWith(Environment.SERVER_STATUS_KEY)));
+        // paths are absolute to the computer - make them absolute to nuxeo home
+        String toRemove = generator.getNuxeoHome().getParent();
+        actualLines.replaceAll(line -> line.replace(toRemove, ""));
+
+        String expected = Files.readString(expectedConfiguration);
+        // add a new line at the end
+        String actual = String.join(System.lineSeparator(), actualLines) + System.lineSeparator();
+        assertEquals(expected, actual);
     }
 
     /**
@@ -264,47 +303,45 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
      */
     @Test
     public void testReloadConfigurationWhenConfigurationFileWasEditedByAnotherGenerator() throws Exception {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
+        var generator = generatorBuilder().init(true).build();
+        var generator2 = generatorBuilder().init(true).build();
         // Update template - write it to nuxeo.conf
-        configGenerator.saveConfiguration(
-                Collections.singletonMap(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "default,mongodb"));
+        generator.saveConfiguration(Collections.singletonMap(PARAM_TEMPLATES_NAME, "default,mongodb"));
 
         // Test configuration generator context before reloading it
-        // getUserTemplates lazy load templates in the configuration generator context and put it back to userConfig
-        // That's explain the two assertions below
-        assertEquals("default,common,testinclude,testenv,backing",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
-        assertEquals("default,common,testinclude,testenv,backing",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        assertEquals("default", generator2.getUserConfig().getProperty(PARAM_TEMPLATES_NAME));
 
         // Reload it
         // At this point we test that we flush correctly the configuration generator context
-        assertTrue(configGenerator.init(true));
+        assertTrue(generator2.init(true));
 
         // Check values
-        // userConfig was filled with values from nuxeo.conf and getUserTemplates re-load templates from userConfig
-        assertEquals("default,mongodb",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
-        assertEquals("default,mongodb",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        assertEquals("default,mongodb", generator2.getUserConfig().getProperty(PARAM_TEMPLATES_NAME));
     }
 
     @Test
-    public void testIncludeProfile() {
+    public void testIncludeProfile() throws Exception {
         String profileToTest = "testprofile";
-        assertFalse("Profile should not be included", isTemplateIncluded(profileToTest));
-        assertNotEquals("true", configGenerator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
 
-        // env.put(NUXEO_PROFILES, profileToTest);
+        // test without NUXEO_PROFILES environment variable
+        ConfigurationGenerator generator = generatorBuilder().init(true).build();
+        assertFalse("Profile should not be included", isTemplateIncluded(generator, profileToTest));
+        assertNotEquals("true", generator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
 
-        configGenerator.init(true);
-
-        assertTrue("Profile should be included", isTemplateIncluded(profileToTest));
-        assertEquals("true", configGenerator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
+        // test with NUXEO_PROFILES environment variable
+        generator = generatorBuilder().environment(Map.of(NUXEO_PROFILES, profileToTest)).init(true).build();
+        assertTrue("Profile should be included", isTemplateIncluded(generator, profileToTest));
+        assertEquals("true", generator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
     }
 
-    protected boolean isTemplateIncluded(String template) {
-        return configGenerator.getIncludedTemplates().stream().map(File::getName).anyMatch(isEqual(template));
+    protected boolean isTemplateIncluded(ConfigurationGenerator generator, String template) {
+        return generator.getIncludedTemplates().stream().map(File::getName).anyMatch(isEqual(template));
+    }
+
+    protected ConfigurationGenerator.Builder generatorBuilder() {
+        // protect System properties - putAll usage on purpose for loadConfiguration to work correctly
+        var systemProperties = new Properties();
+        systemProperties.putAll(System.getProperties());
+        return ConfigurationGenerator.builder().systemProperties(systemProperties);
     }
 }

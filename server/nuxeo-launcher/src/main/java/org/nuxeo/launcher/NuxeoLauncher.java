@@ -1663,8 +1663,7 @@ public class NuxeoLauncher {
                             configurationGenerator.getInstallFile().getName(), OPTION_IGNORE_MISSING), EXIT_CODE_ERROR);
                 }
                 // reload configuration
-                configurationGenerator = new ConfigurationGenerator(quiet, debug);
-                configurationGenerator.init();
+                configurationGenerator = ConfigurationGenerator.builder().quiet(quiet).init(true).build();
                 configure();
                 configurationGenerator.verifyInstallation();
             }
@@ -2029,10 +2028,7 @@ public class NuxeoLauncher {
      */
     public static NuxeoLauncher createLauncher(String[] args) throws ParseException, IOException, PackageException {
         CommandLine cmdLine = parseOptions(args);
-        ConfigurationGenerator cg = new ConfigurationGenerator(quiet, debug);
-        if (cmdLine.hasOption(OPTION_HIDE_DEPRECATION)) {
-            cg.hideDeprecationWarnings(true);
-        }
+        ConfigurationGenerator cg = ConfigurationGenerator.builder().quiet(quiet).hideDeprecationWarnings(cmdLine.hasOption(OPTION_HIDE_DEPRECATION)).build();
         NuxeoLauncher launcher = new NuxeoLauncher(cg);
         launcher.connectBroker = new ConnectBroker(launcher.configurationGenerator.getEnv());
         launcher.setArgs(cmdLine);

@@ -296,10 +296,17 @@ public class Environment {
     }
 
     public static Environment getDefault() {
+        return getDefault(System.getProperties());
+    }
+
+    /**
+     * @since 11.5
+     */
+    public static Environment getDefault(Properties systemProperties) {
         if (defaultEnvironment == null) {
             synchronized (Environment.class) {
                 if (defaultEnvironment == null) {
-                    String homeDir = System.getProperty(NUXEO_HOME);
+                    String homeDir = systemProperties.getProperty(NUXEO_HOME);
                     if (homeDir != null) {
                         File home = new File(homeDir);
                         if (home.isDirectory()) {
