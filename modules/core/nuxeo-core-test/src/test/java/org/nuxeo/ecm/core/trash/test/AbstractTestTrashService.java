@@ -433,6 +433,9 @@ public abstract class AbstractTestTrashService {
         folder3 = session.createDocument(folder3);
         var doc = session.createDocumentModel("/folder1/folder2/folder3", "doc", "File");
         doc = session.createDocument(doc);
+        // commit transaction to make sure the query to fetch the descendants in PropertyTrashService#trashDescendants
+        // gets the right documents when the bulk command is processed
+        transactionalFeature.nextTransaction();
 
         // trashing /folder1
         trashService.trashDocument(folder1);
