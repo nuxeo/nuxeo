@@ -959,6 +959,7 @@ pipeline {
             echo 'Upgrade nuxeo preview release'
             sh """
               helm3 template ${NUXEO_CHART_REPOSITORY_NAME}/${NUXEO_CHART_NAME} \
+                --version=${NUXEO_CHART_VERSION} \
                 --values=${HELM_VALUES_DIR}/values-nuxeo.yaml~gen \
                 --output-dir=target
             """
