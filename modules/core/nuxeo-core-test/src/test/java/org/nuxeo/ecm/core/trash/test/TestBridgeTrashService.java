@@ -39,13 +39,13 @@ public class TestBridgeTrashService extends AbstractTestTrashService {
     protected MigrationFeature migrationFeature;
 
     @Inject
-    protected TrashServiceImpl trashService;
+    protected TrashServiceImpl trashServiceImpl;
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() {
         super.setUp();
         migrationFeature.changeStatus(MIGRATION_ID, MIGRATION_STEP_LIFECYCLE_TO_PROPERTY);
-        trashService.invalidateTrashServiceImplementation();
+        trashServiceImpl.invalidateTrashServiceImplementation();
     }
 
     @Ignore(value = "NXP-28982")

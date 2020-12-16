@@ -82,7 +82,7 @@ public abstract class AbstractTestTrashService {
     protected NuxeoPrincipal principal;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         principal = session.getPrincipal();
     }
 
@@ -349,7 +349,7 @@ public abstract class AbstractTestTrashService {
 
     protected void doTestTrashCheckedInDocument(boolean expectCheckedIn) {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
-        folder = session.createDocument(folder);
+        session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/folder", "doc", "File");
         doc = session.createDocument(doc);
 
