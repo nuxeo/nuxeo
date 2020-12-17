@@ -57,4 +57,14 @@ public @interface XRegistry {
      */
     boolean remove() default true;
 
+    /**
+     * Boolean specifying that there should a warning when merge is not explicit on this contribution.
+     * <p>
+     * This is useful for compatibility where some contributions were not previously merged by default: the merge
+     * behaviour might be unexpected when migrating.
+     *
+     * @since 11.5
+     */
+    boolean compatWarnOnMerge() default false;
+
 }

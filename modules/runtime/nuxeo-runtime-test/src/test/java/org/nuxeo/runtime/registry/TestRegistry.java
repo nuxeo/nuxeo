@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,19 +42,23 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @since 11.5
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.runtime.test.tests:registry-framework.xml")
 @Deploy("org.nuxeo.runtime.test.tests:registry-contrib-1.xml")
 public class TestRegistry {
 
     @Inject
     protected SampleComponent service;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     protected void hotDeploy(String contrib) throws Exception {
         hotDeploy(true, contrib);
@@ -155,6 +160,53 @@ public class TestRegistry {
         checkOverriddenMapRegistry(service.getMapRegistry());
         hotUndeploy("registry-contrib-2.xml");
         checkInitialMapRegistry(service.getMapRegistry());
+    }
+
+    protected void checkSampleCompat(MapRegistry reg, String name, String value, Boolean bool) {
+        Optional<SampleWarnOnMergeDescriptor> desc = reg.getContribution(name);
+        assertTrue(desc.isPresent());
+        assertEquals(name, desc.get().name);
+        assertEquals(value, desc.get().value);
+        assertEquals(bool, desc.get().bool);
+    }
+
+    protected void checkInitialCompatMapRegistry(MapRegistry reg) throws Exception {
+        assertNotNull(reg);
+        assertEquals(2, reg.getContributions().size());
+        checkSampleCompat(reg, "sample1", "Sample 1 Value", true);
+        checkSampleCompat(reg, "sample2", "Sample 2 Value", null);
+    }
+
+    protected void checkOverriddenCompatMapRegistry(MapRegistry reg) throws Exception {
+        assertNotNull(reg);
+        assertEquals(2, reg.getContributions().size());
+        // values have been merged
+        checkSampleCompat(reg, "sample1", "Sample 1 Implicit Merge", true);
+        checkSampleCompat(reg, "sample2", "Sample 2 Explicit Merge", null);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(loggerClass = MapRegistry.class, logLevel = "WARN")
+    public void testCompatWarnMapRegistry() throws Exception {
+        checkInitialCompatMapRegistry(service.getCompatWarnMapRegistry());
+        assertEquals(0, logCaptureResult.getCaughtEventMessages().size());
+        hotDeploy("registry-contrib-2.xml");
+        if (useHotDeployer()) {
+            assertEquals(1, logCaptureResult.getCaughtEventMessages().size());
+        } else {
+            assertEquals(0, logCaptureResult.getCaughtEventMessages().size());
+        }
+        checkOverriddenCompatMapRegistry(service.getCompatWarnMapRegistry());
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
+        assertEquals(1, caughtEvents.size());
+        assertEquals(
+                "The contribution with id 'sample1' on extension 'org.nuxeo.runtime.test.Registry.override#map_compat_warn' has been implicitely merged: "
+                        + "the compatibility mechanism on its descriptor class 'org.nuxeo.runtime.registry.SampleWarnOnMergeDescriptor' detected it, "
+                        + "and the attribute merge=\"true\" should be added to this definition.",
+                caughtEvents.get(0));
+        hotUndeploy("registry-contrib-2.xml");
+        checkInitialCompatMapRegistry(service.getCompatWarnMapRegistry());
+        assertEquals(1, logCaptureResult.getCaughtEventMessages().size());
     }
 
     @Test

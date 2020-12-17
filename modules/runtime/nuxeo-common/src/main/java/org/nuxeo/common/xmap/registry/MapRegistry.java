@@ -27,6 +27,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XAnnotatedMember;
 import org.nuxeo.common.xmap.XAnnotatedObject;
@@ -38,6 +40,8 @@ import org.w3c.dom.Element;
  * @since 11.5
  */
 public class MapRegistry extends AbstractRegistry implements Registry {
+
+    private static final Logger log = LogManager.getLogger(MapRegistry.class);
 
     protected Map<String, Object> contributions = Collections.synchronizedMap(new LinkedHashMap<>());
 
@@ -100,7 +104,15 @@ public class MapRegistry extends AbstractRegistry implements Registry {
         Object contrib;
         XAnnotatedMember merge = xObject.getMerge();
         if (merge != null && Boolean.TRUE.equals(merge.getValue(ctx, element))) {
-            contrib = xObject.newInstance(ctx, element, contributions.get(id));
+            Object contribution = contributions.get(id);
+            if (contribution != null && xObject.getCompatWarnOnMerge() && !merge.hasValue(ctx, element)) {
+                log.warn(
+                        "The contribution with id '{}' on extension '{}' has been implicitely merged: "
+                                + "the compatibility mechanism on its descriptor class '{}' detected it, "
+                                + "and the attribute merge=\"true\" should be added to this definition.",
+                        id, extensionId, contribution.getClass().getName());
+            }
+            contrib = xObject.newInstance(ctx, element, contribution);
         } else {
             contrib = xObject.newInstance(ctx, element);
         }
