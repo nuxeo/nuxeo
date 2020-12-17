@@ -21,6 +21,19 @@
 
   </extension>
 
+  <extension target="org.nuxeo.runtime.test.Registry.framework" point="map_compat_warn">
+
+    <descriptor name="sample1">
+      <value>Sample 1 Value</value>
+      <bool>true</bool>
+    </descriptor>
+
+    <descriptor name="sample2">
+      <value>Sample 2 Value</value>
+    </descriptor>
+
+  </extension>
+
   <extension target="org.nuxeo.runtime.test.Registry.framework" point="custom">
 
     <descriptor name="sample1">

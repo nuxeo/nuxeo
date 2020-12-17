@@ -14,6 +14,10 @@
     <object class="org.nuxeo.runtime.registry.SampleDescriptor" />
   </extension-point>
 
+  <extension-point name="map_compat_warn">
+    <object class="org.nuxeo.runtime.registry.SampleWarnOnMergeDescriptor" />
+  </extension-point>
+
   <extension-point name="custom">
     <object class="org.nuxeo.runtime.registry.SampleDescriptor" />
     <registry class="org.nuxeo.runtime.registry.SampleRegistry" />

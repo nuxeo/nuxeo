@@ -21,6 +21,18 @@
 
   </extension>
 
+  <extension target="org.nuxeo.runtime.test.Registry.framework" point="map_compat_warn">
+
+    <descriptor name="sample1">
+      <value>Sample 1 Implicit Merge</value>
+    </descriptor>
+
+    <descriptor name="sample2" merge="true">
+      <value>Sample 2 Explicit Merge</value>
+    </descriptor>
+
+  </extension>
+
   <extension target="org.nuxeo.runtime.test.Registry.framework" point="custom">
 
     <descriptor name="sample1">

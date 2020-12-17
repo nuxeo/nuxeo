@@ -36,6 +36,8 @@ public class SampleComponent extends DefaultComponent {
 
     public static final String MAP_XP = "map";
 
+    public static final String MAP_COMPAT_WARN_XP = "map_compat_warn";
+
     public static final String CUSTOM_XP = "custom";
 
     public static final String LEGACY_XP = "legacy";
@@ -52,6 +54,10 @@ public class SampleComponent extends DefaultComponent {
 
     public MapRegistry getMapRegistry() {
         return getExtensionPointRegistry(MAP_XP);
+    }
+
+    public MapRegistry getCompatWarnMapRegistry() {
+        return getExtensionPointRegistry(MAP_COMPAT_WARN_XP);
     }
 
     public SampleRegistry getCustomRegistry() {

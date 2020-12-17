@@ -20,6 +20,8 @@ package org.nuxeo.common.xmap.registry;
 
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XAnnotatedMember;
 import org.nuxeo.common.xmap.XAnnotatedObject;
@@ -31,6 +33,8 @@ import org.w3c.dom.Element;
  * @since 11.5
  */
 public class SingleRegistry extends AbstractRegistry implements Registry {
+
+    private static final Logger log = LogManager.getLogger(MapRegistry.class);
 
     // volatile for double-checked locking
     protected volatile Object contribution;
@@ -63,6 +67,11 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
         Object contrib;
         XAnnotatedMember merge = xObject.getMerge();
         if (merge != null && Boolean.TRUE.equals(merge.getValue(ctx, element))) {
+            if (contribution != null && xObject.getCompatWarnOnMerge() && !merge.hasValue(ctx, element)) {
+                log.warn("A contribution on extension '{}' has been implicitely merged: the compatibility "
+                        + "mechanism on its descriptor class '{}' detected it, and the attribute merge=\"true\" "
+                        + "should be added to this definition.", extensionId, contribution.getClass().getName());
+            }
             contrib = xObject.newInstance(ctx, element, contribution);
         } else {
             contrib = xObject.newInstance(ctx, element);

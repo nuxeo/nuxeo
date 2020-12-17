@@ -292,6 +292,9 @@ public class XMap {
             if (xreg.remove()) {
                 xob.setRemove(new XAnnotatedReference(this, XRemove.REMOVE, null, false));
             }
+            if (xreg.compatWarnOnMerge()) {
+                xob.setCompatWarnOnMerge(true);
+            }
         }
     }
 
