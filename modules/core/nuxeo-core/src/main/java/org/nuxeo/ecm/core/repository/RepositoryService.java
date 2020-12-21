@@ -59,7 +59,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Component and service managing low-level repository instances.
  */
-public class RepositoryService extends DefaultComponent {
+public class RepositoryService extends DefaultComponent implements ComponentManager.Listener {
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.repository.RepositoryService");
 
@@ -97,17 +97,11 @@ public class RepositoryService extends DefaultComponent {
     public void start(ComponentContext context) {
         initPool();
         TransactionHelper.runInTransaction(this::doCreateRepositories);
-        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
-            @Override
-            public void afterStart(ComponentManager mgr, boolean isResume) {
-                initRepositories(); // call all RepositoryInitializationHandler
-            }
+    }
 
-            @Override
-            public void afterStop(ComponentManager mgr, boolean isStandby) {
-                Framework.getRuntime().getComponentManager().removeListener(this);
-            }
-        });
+    @Override
+    public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
+        initRepositories(); // call all RepositoryInitializationHandler
     }
 
     @Override

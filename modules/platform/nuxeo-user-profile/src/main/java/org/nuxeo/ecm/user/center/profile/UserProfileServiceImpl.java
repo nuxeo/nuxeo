@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -55,7 +54,7 @@ import com.google.common.cache.CacheBuilder;
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5
  */
-public class UserProfileServiceImpl extends DefaultComponent implements UserProfileService {
+public class UserProfileServiceImpl extends DefaultComponent implements UserProfileService, ComponentManager.Listener {
 
     private static final Log log = LogFactory.getLog(UserProfileServiceImpl.class);
 
@@ -185,22 +184,12 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     }
 
     @Override
-    public void start(ComponentContext context) {
+    public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
         if (config == null || config.getDataFileName() == null) {
             return;
         }
-        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
-            @Override
-            public void afterStart(ComponentManager mgr, boolean isResume) {
-                // needs to run after RepositoryInitializationHandlers, run by RepositoryService
-                scheduleImport();
-            }
-
-            @Override
-            public void afterStop(ComponentManager mgr, boolean isStandby) {
-                Framework.getRuntime().getComponentManager().removeListener(this);
-            }
-        });
+        // needs to run after RepositoryInitializationHandlers, run by RepositoryService
+        scheduleImport();
     }
 
     protected void scheduleImport() {

@@ -35,13 +35,14 @@ import java.util.function.Supplier;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
+import org.nuxeo.runtime.model.ComponentManager.Listener;
 import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @since 11.5
  */
-public class CapabilitiesServiceImpl extends DefaultComponent implements CapabilitiesService {
+public class CapabilitiesServiceImpl extends DefaultComponent implements CapabilitiesService, Listener {
 
     public static final String CAPABILITY_SERVER = "server";
 
@@ -50,12 +51,11 @@ public class CapabilitiesServiceImpl extends DefaultComponent implements Capabil
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        new ComponentManager.Listener() {
-            @Override
-            public void beforeStart(ComponentManager mgr, boolean isResume) {
-                capabilitiesSuppliers.clear();
-            }
-        }.install();
+    }
+
+    @Override
+    public void beforeRuntimeStart(ComponentManager mgr, boolean isResume) {
+        capabilitiesSuppliers.clear();
     }
 
     @Override
