@@ -32,9 +32,11 @@ import org.w3c.dom.Element;
  */
 public class SingleRegistry extends AbstractRegistry implements Registry {
 
-    protected Object contribution;
+    // volatile for double-checked locking
+    protected volatile Object contribution;
 
-    protected boolean enabled = true;
+    // volatile for double-checked locking
+    protected volatile boolean enabled = true;
 
     public SingleRegistry() {
         super();

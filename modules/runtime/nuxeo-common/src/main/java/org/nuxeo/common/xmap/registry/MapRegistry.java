@@ -18,12 +18,13 @@
  */
 package org.nuxeo.common.xmap.registry;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.nuxeo.common.xmap.Context;
@@ -38,9 +39,9 @@ import org.w3c.dom.Element;
  */
 public class MapRegistry extends AbstractRegistry implements Registry {
 
-    protected Map<String, Object> contributions = new LinkedHashMap<>();
+    protected Map<String, Object> contributions = Collections.synchronizedMap(new LinkedHashMap<>());
 
-    protected Set<String> disabled = new HashSet<>();
+    protected Set<String> disabled = ConcurrentHashMap.newKeySet();
 
     @Override
     public void initialize() {
@@ -81,6 +82,10 @@ public class MapRegistry extends AbstractRegistry implements Registry {
     @Override
     protected void register(Context ctx, XAnnotatedObject xObject, Element element) {
         String id = (String) xObject.getRegistryId().getValue(ctx, element);
+        if (id == null) {
+            // prevent NPE on map key
+            id = "null";
+        }
         XAnnotatedMember remove = xObject.getRemove();
         if (remove != null && Boolean.TRUE.equals(remove.getValue(ctx, element))) {
             contributions.remove(id);

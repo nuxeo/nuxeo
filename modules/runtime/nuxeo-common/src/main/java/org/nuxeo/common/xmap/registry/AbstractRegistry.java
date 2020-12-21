@@ -18,10 +18,10 @@
  */
 package org.nuxeo.common.xmap.registry;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XAnnotatedObject;
@@ -34,11 +34,12 @@ import org.w3c.dom.Element;
  */
 public abstract class AbstractRegistry implements Registry {
 
-    protected boolean initialized;
+    // volatile for double-checked locking
+    protected volatile boolean initialized;
 
-    protected Set<String> tags = new HashSet<>();
+    protected Set<String> tags = ConcurrentHashMap.newKeySet();
 
-    protected List<RegistryContribution> registrations = new ArrayList<>();
+    protected List<RegistryContribution> registrations = new CopyOnWriteArrayList<>();
 
     public AbstractRegistry() {
     }
@@ -49,18 +50,26 @@ public abstract class AbstractRegistry implements Registry {
     }
 
     protected boolean isInitialized() {
-        return initialized;
+        synchronized (this) {
+            return initialized;
+        }
     }
 
     protected void setInitialized(boolean initialized) {
-        this.initialized = initialized;
+        synchronized (this) {
+            this.initialized = initialized;
+        }
     }
 
     protected void checkInitialized() {
-        if (isInitialized()) {
-            return;
+        if (!initialized) {
+            synchronized (this) {
+                if (!initialized) {
+                    initialize();
+                    initialized = true;
+                }
+            }
         }
-        initialize();
     }
 
     @Override

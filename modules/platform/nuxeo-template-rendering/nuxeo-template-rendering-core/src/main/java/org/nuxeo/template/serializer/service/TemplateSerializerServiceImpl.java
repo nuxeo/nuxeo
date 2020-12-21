@@ -43,6 +43,9 @@ public class TemplateSerializerServiceImpl extends DefaultComponent implements T
 
     @Override
     public TemplateSerializer getSerializer(String id) {
+        if (id == null) {
+            id = DEFAULT_SERIALIZER_NAME;
+        }
         Optional<SerializerDescriptor> optContrib = getRegistryContribution(EXTENSION_POINT_NAME, id);
         if (optContrib.isEmpty()) {
             optContrib = getRegistryContribution(EXTENSION_POINT_NAME, DEFAULT_SERIALIZER_NAME);
