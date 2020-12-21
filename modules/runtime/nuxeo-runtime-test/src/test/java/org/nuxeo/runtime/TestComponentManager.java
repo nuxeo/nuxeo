@@ -50,6 +50,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.runtime.test.tests:component-manager-listener2.xml")
 public class TestComponentManager {
 
+    protected MyLegacyListener legacyListener = new MyLegacyListener();
+
     protected MyListener listener = new MyListener();
 
     public void checkCounters(MockEventsInfo info, int beforeStart, int afterStart, int beforeStop, int afterStop) {
@@ -81,27 +83,34 @@ public class TestComponentManager {
     @Test
     public void testManagerEvents() throws Exception {
         ComponentManager mgr = Framework.getRuntime().getComponentManager();
+        mgr.addListener(legacyListener);
         mgr.addListener(listener);
+        checkCounters(legacyListener.info, 0, 0, 0, 0);
         checkCounters(listener.info, 0, 0, 0, 0);
         checkCounters2(1, 1, 0, 0);
         mgr.restart(false);
+        checkCounters(legacyListener.info, 1, 1, 1, 1);
         checkCounters(listener.info, 1, 1, 1, 1);
         checkCounters2(1, 1, 0, 0);
         mgr.restart(true);
+        checkCounters(legacyListener.info, 2, 2, 2, 2);
         checkCounters(listener.info, 2, 2, 2, 2);
         checkCounters2(1, 1, 0, 0);
         mgr.refresh(true);
+        checkCounters(legacyListener.info, 2, 2, 2, 2);
         checkCounters(listener.info, 2, 2, 2, 2);
         checkCounters2(1, 1, 0, 0);
         mgr.stop();
+        checkCounters(legacyListener.info, 2, 2, 3, 3);
         checkCounters(listener.info, 2, 2, 3, 3);
         checkMockComponentManagerListener2(true);
         mgr.start();
+        checkCounters(legacyListener.info, 3, 3, 3, 3);
         checkCounters(listener.info, 3, 3, 3, 3);
         checkCounters2(1, 1, 0, 0);
     }
 
-    protected static class MyListener implements ComponentManager.Listener {
+    protected static class MyLegacyListener implements ComponentManager.Listener {
 
         public MockEventsInfo info = new MockEventsInfo();
 
@@ -122,6 +131,32 @@ public class TestComponentManager {
 
         @Override
         public void afterStart(ComponentManager mgr, boolean isResume) {
+            info.afterStart++;
+        }
+
+    }
+
+    protected static class MyListener implements ComponentManager.Listener {
+
+        public MockEventsInfo info = new MockEventsInfo();
+
+        @Override
+        public void beforeRuntimeStop(ComponentManager mgr, boolean isStandby) {
+            info.beforeStop++;
+        }
+
+        @Override
+        public void beforeRuntimeStart(ComponentManager mgr, boolean isResume) {
+            info.beforeStart++;
+        }
+
+        @Override
+        public void afterRuntimeStop(ComponentManager mgr, boolean isStandby) {
+            info.afterStop++;
+        }
+
+        @Override
+        public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
             info.afterStart++;
         }
 

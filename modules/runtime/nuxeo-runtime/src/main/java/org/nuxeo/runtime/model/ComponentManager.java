@@ -415,43 +415,116 @@ public interface ComponentManager {
 
         /**
          * Called just before activating components. This is fired when entering {@link ComponentManager#start()}
+         *
+         * @deprecated since 11.5: use {@link #beforeRuntimeActivation(ComponentManager)} instead.
          */
+        @Deprecated
         default void beforeActivation(ComponentManager mgr) {
         }
 
         /**
-         * Called just after all the components were activated.
+         * Called just before activating components. This is fired when entering {@link ComponentManager#start()}
+         *
+         * @since 11.5
          */
+        default void beforeRuntimeActivation(ComponentManager mgr) {
+            beforeActivation(mgr);
+        }
+
+        /**
+         * Called just after all the components were activated.
+         *
+         * @deprecated since 11.5: use {@link #afterRuntimeActivation(ComponentManager)} instead.
+         */
+        @Deprecated
         default void afterActivation(ComponentManager mgr) {
         }
 
         /**
-         * Called just before activating components.
+         * Called just after all the components were activated.
+         *
+         * @since 11.5
          */
+        default void afterRuntimeActivation(ComponentManager mgr) {
+            afterActivation(mgr);
+        }
+
+        /**
+         * Called just before activating components.
+         *
+         * @deprecated since 11.5: use {@link #beforeRuntimeDeactivation(ComponentManager)} instead.
+         */
+        @Deprecated
         default void beforeDeactivation(ComponentManager mgr) {
+        }
+
+        /**
+         * Called just before activating components.
+         *
+         * @since 11.5
+         */
+        default void beforeRuntimeDeactivation(ComponentManager mgr) {
+            beforeDeactivation(mgr);
         }
 
         /**
          * Called just after all the components were deactivated. This is fired just before exiting from
          * {@link ComponentManager#stop()}.
+         *
+         * @deprecated since 11.5: use {@link #afterRuntimeDeactivation(ComponentManager)} instead.
          */
+        @Deprecated
         default void afterDeactivation(ComponentManager mgr) {
+        }
+
+        /**
+         * Called just after all the components were deactivated. This is fired just before exiting from
+         * {@link ComponentManager#stop()}.
+         *
+         * @since 11.5
+         */
+        default void afterRuntimeDeactivation(ComponentManager mgr) {
+            afterDeactivation(mgr);
         }
 
         /**
          * Called just before starting components.
          *
          * @param isResume true if the event was initiated by a {@link ComponentManager#resume()} call, false otherwise.
+         * @deprecated since 11.5: use {@link #beforeRuntimeStart(ComponentManager, boolean)} instead.
          */
+        @Deprecated
         default void beforeStart(ComponentManager mgr, boolean isResume) {
+        }
+
+        /**
+         * Called just before starting components.
+         *
+         * @param isResume true if the event was initiated by a {@link ComponentManager#resume()} call, false otherwise.
+         * @since 11.5
+         */
+        default void beforeRuntimeStart(ComponentManager mgr, boolean isResume) {
+            beforeStart(mgr, isResume);
         }
 
         /**
          * Called just after all components were started
          *
          * @param isResume true if the event was initiated by a {@link ComponentManager#resume()} call, false otherwise.
+         * @deprecated since 11.5: use {@link #afterRuntimeStart(ComponentManager, boolean)} instead.
          */
+        @Deprecated
         default void afterStart(ComponentManager mgr, boolean isResume) {
+        }
+
+        /**
+         * Called just after all components were started
+         *
+         * @param isResume true if the event was initiated by a {@link ComponentManager#resume()} call, false otherwise.
+         * @since 11.5
+         */
+        default void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
+            afterStart(mgr, isResume);
         }
 
         /**
@@ -459,8 +532,21 @@ public interface ComponentManager {
          *
          * @param isStandby true if the event was initiated by a {@link ComponentManager#standby()} call, false
          *            otherwise
+         * @deprecated since 11.5: use {@link #beforeRuntimeStop(ComponentManager, boolean)} instead.
          */
+        @Deprecated
         default void beforeStop(ComponentManager mgr, boolean isStandby) {
+        }
+
+        /**
+         * Called just before stopping components.
+         *
+         * @param isStandby true if the event was initiated by a {@link ComponentManager#standby()} call, false
+         *            otherwise
+         * @since 11.5
+         */
+        default void beforeRuntimeStop(ComponentManager mgr, boolean isStandby) {
+            beforeStop(mgr, isStandby);
         }
 
         /**
@@ -468,8 +554,21 @@ public interface ComponentManager {
          *
          * @param isStandby true if the event was initiated by a {@link ComponentManager#standby()} call, false
          *            otherwise
+         * @deprecated since 11.5: use {@link #afterRuntimeStop(ComponentManager, boolean)} instead.
          */
+        @Deprecated
         default void afterStop(ComponentManager mgr, boolean isStandby) {
+        }
+
+        /**
+         * Called just after the components were stopped.
+         *
+         * @param isStandby true if the event was initiated by a {@link ComponentManager#standby()} call, false
+         *            otherwise
+         * @since 11.5
+         */
+        default void afterRuntimeStop(ComponentManager mgr, boolean isStandby) {
+            afterStop(mgr, isStandby);
         }
 
         default Listener install() {
