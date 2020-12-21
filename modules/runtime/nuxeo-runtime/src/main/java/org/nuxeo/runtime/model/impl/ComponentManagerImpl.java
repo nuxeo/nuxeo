@@ -1292,49 +1292,49 @@ public class ComponentManagerImpl implements ComponentManager {
 
         public void beforeActivation() {
             for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).beforeActivation(ComponentManagerImpl.this);
+                ((ComponentManager.Listener) listener).beforeRuntimeActivation(ComponentManagerImpl.this);
             }
         }
 
         public void afterActivation() {
             for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).afterActivation(ComponentManagerImpl.this);
+                ((ComponentManager.Listener) listener).afterRuntimeActivation(ComponentManagerImpl.this);
             }
         }
 
         public void beforeDeactivation() {
             for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).beforeDeactivation(ComponentManagerImpl.this);
+                ((ComponentManager.Listener) listener).beforeRuntimeDeactivation(ComponentManagerImpl.this);
             }
         }
 
         public void afterDeactivation() {
             for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).afterDeactivation(ComponentManagerImpl.this);
+                ((ComponentManager.Listener) listener).afterRuntimeDeactivation(ComponentManagerImpl.this);
             }
         }
 
         public void beforeStart(boolean isResume) {
             for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).beforeStart(ComponentManagerImpl.this, isResume);
+                ((ComponentManager.Listener) listener).beforeRuntimeStart(ComponentManagerImpl.this, isResume);
             }
         }
 
         public void afterStart(boolean isResume) {
             for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).afterStart(ComponentManagerImpl.this, isResume);
+                ((ComponentManager.Listener) listener).afterRuntimeStart(ComponentManagerImpl.this, isResume);
             }
         }
 
         public void beforeStop(boolean isStandby) {
             for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).beforeStop(ComponentManagerImpl.this, isStandby);
+                ((ComponentManager.Listener) listener).beforeRuntimeStop(ComponentManagerImpl.this, isStandby);
             }
         }
 
         public void afterStop(boolean isStandby) {
             for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).afterStop(ComponentManagerImpl.this, isStandby);
+                ((ComponentManager.Listener) listener).afterRuntimeStop(ComponentManagerImpl.this, isStandby);
             }
         }
 
