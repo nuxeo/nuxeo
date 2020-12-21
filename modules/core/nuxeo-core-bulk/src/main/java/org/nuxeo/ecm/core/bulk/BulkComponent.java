@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.bulk;
 
 import java.util.List;
 
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kafka.KafkaConfigServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -31,7 +30,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @since 10.2
  */
-public class BulkComponent extends DefaultComponent {
+public class BulkComponent extends DefaultComponent implements ComponentManager.Listener {
 
     public static final String XP_ACTIONS = "actions";
 
@@ -64,29 +63,25 @@ public class BulkComponent extends DefaultComponent {
         super.start(context);
         bulkAdminService = new BulkAdminServiceImpl(getEnabledDescriptors());
         bulkService = new BulkServiceImpl();
-        new ComponentListener().install();
     }
 
     protected List<BulkActionDescriptor> getEnabledDescriptors() {
         return getRegistryContributions(XP_ACTIONS);
     }
 
-    protected class ComponentListener implements ComponentManager.Listener {
-        @Override
-        public void afterStart(ComponentManager mgr, boolean isResume) {
-            // this is called once all components are started and ready
-            ((BulkAdminServiceImpl) bulkAdminService).afterStart();
-        }
-
-        @Override
-        public void beforeStop(ComponentManager mgr, boolean isStandby) {
-            // this is called before components are stopped
-            if (bulkAdminService != null) {
-                ((BulkAdminServiceImpl) bulkAdminService).beforeStop();
-                bulkAdminService = null;
-            }
-            bulkService = null;
-            Framework.getRuntime().getComponentManager().removeListener(this);
-        }
+    @Override
+    public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
+        ((BulkAdminServiceImpl) bulkAdminService).afterStart();
     }
+
+    @Override
+    public void beforeRuntimeStop(ComponentManager mgr, boolean isStandby) {
+        // this is called before components are stopped
+        if (bulkAdminService != null) {
+            ((BulkAdminServiceImpl) bulkAdminService).beforeStop();
+            bulkAdminService = null;
+        }
+        bulkService = null;
+    }
+
 }

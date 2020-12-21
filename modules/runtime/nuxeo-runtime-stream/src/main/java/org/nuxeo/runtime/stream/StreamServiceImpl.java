@@ -53,7 +53,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * @since 9.3
  */
-public class StreamServiceImpl extends DefaultComponent implements StreamService {
+public class StreamServiceImpl extends DefaultComponent implements StreamService, ComponentManager.Listener {
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(StreamServiceImpl.class);
 
@@ -136,7 +136,6 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         logDescs.forEach(this::createLogIfNotExists);
         List<StreamProcessorDescriptor> streamDescs = getRegistryContributions(XP_STREAM_PROCESSOR);
         streamDescs.forEach(this::initProcessor);
-        new ComponentsLifeCycleListener().install();
     }
 
     protected List<LogConfig> getLogConfigs() {
@@ -246,21 +245,18 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         processors.clear();
     }
 
-    protected class ComponentsLifeCycleListener implements ComponentManager.Listener {
-        @Override
-        public void afterStart(ComponentManager mgr, boolean isResume) {
-            // this is called once all components are started and ready
-            log.debug("afterStart");
-            startProcessors();
-        }
+    @Override
+    public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
+        // this is called once all components are started and ready
+        log.debug("afterRuntimeStart");
+        startProcessors();
+    }
 
-        @Override
-        public void beforeStop(ComponentManager mgr, boolean isStandby) {
-            // this is called before components are stopped
-            log.debug("beforeStop");
-            stopProcessors();
-            Framework.getRuntime().getComponentManager().removeListener(this);
-        }
+    @Override
+    public void beforeRuntimeStop(ComponentManager mgr, boolean isStandby) {
+        // this is called before components are stopped
+        log.debug("beforeRuntimeStop");
+        stopProcessors();
     }
 
     protected boolean isProcessingDisabled() {
