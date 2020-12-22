@@ -46,6 +46,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
@@ -64,6 +65,7 @@ import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -1314,28 +1316,50 @@ public class ComponentManagerImpl implements ComponentManager {
             }
         }
 
+        /**
+         * Sort listeners to follow start order on components.
+         *
+         * @since 11.5
+         */
+        protected Stream<ComponentManager.Listener> sortedForStart() {
+            Stream<ComponentManager.Listener> regularListeners = Arrays.stream(listeners.getListeners())
+                                                                       .filter(l -> !(l instanceof Component))
+                                                                       .map(ComponentManager.Listener.class::cast);
+            Stream<ComponentManager.Listener> componentListeners = Arrays.stream(listeners.getListeners())
+                                                                         .filter(Component.class::isInstance)
+                                                                         .map(Component.class::cast)
+                                                                         .sorted(Comparator.comparingInt(
+                                                                                 Component::getApplicationStartedOrder))
+                                                                         .map(ComponentManager.Listener.class::cast);
+            return Stream.concat(regularListeners, componentListeners);
+        }
+
+        /**
+         * Sort listeners to follow stop order on components (reversing start order).
+         *
+         * @since 11.5
+         */
+        protected Stream<ComponentManager.Listener> sortedForStop() {
+            return sortedForStart().collect(Collectors.collectingAndThen(Collectors.toList(), list -> {
+                Collections.reverse(list);
+                return list.stream();
+            }));
+        }
+
         public void beforeStart(boolean isResume) {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).beforeRuntimeStart(ComponentManagerImpl.this, isResume);
-            }
+            sortedForStart().forEach(listener -> listener.beforeRuntimeStart(ComponentManagerImpl.this, isResume));
         }
 
         public void afterStart(boolean isResume) {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).afterRuntimeStart(ComponentManagerImpl.this, isResume);
-            }
+            sortedForStart().forEach(listener -> listener.afterRuntimeStart(ComponentManagerImpl.this, isResume));
         }
 
         public void beforeStop(boolean isStandby) {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).beforeRuntimeStop(ComponentManagerImpl.this, isStandby);
-            }
+            sortedForStop().forEach(listener -> listener.beforeRuntimeStop(ComponentManagerImpl.this, isStandby));
         }
 
         public void afterStop(boolean isStandby) {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).afterRuntimeStop(ComponentManagerImpl.this, isStandby);
-            }
+            sortedForStop().forEach(listener -> listener.afterRuntimeStop(ComponentManagerImpl.this, isStandby));
         }
 
     }
