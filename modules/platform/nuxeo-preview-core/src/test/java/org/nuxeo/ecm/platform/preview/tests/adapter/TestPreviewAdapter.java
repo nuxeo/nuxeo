@@ -19,12 +19,15 @@
 
 package org.nuxeo.ecm.platform.preview.tests.adapter;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,12 +35,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -49,6 +55,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -103,16 +110,53 @@ public class TestPreviewAdapter {
         doTestFileDocument(blob, "\n\n<b>test</b>");
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.preview:test-zip-preview-contrib.xml")
+    public void testZIPDocument() throws Exception {
+        File file = Framework.createTempFile("testZIPDocument", ".zip");
+        try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
+            writeZipEntry(out, "payload.html");
+            writeZipEntry(out, "payload.xml");
+            writeZipEntry(out, "payload.txt");
+        }
+        Blob blob = Blobs.createBlob(file, "application/zip", null, "testZIPDocument.zip");
+        List<Blob> blobs = doGetPreviewBlobs(blob);
+        assertEquals(4, blobs.size());
+        String index = blobs.get(0).getString();
+        assertEquals("<!doctype html><html><body><h1>testZIPDocument.zip</h1><ul>"
+                + "<li><a href=\"payload.html\">payload.html</a></li><li><a href=\"payload.xml\">payload.xml</a></li>"
+                + "<li><a href=\"payload.txt\">payload.txt</a></li></ul></body></html>", index);
+        String payloadHtml = blobs.get(1).getString();
+        assertEquals("<!doctype html><html><body>\n\n<b>test</b></body></html>", payloadHtml);
+        String payloadXml = blobs.get(2).getString();
+        assertEquals("<!doctype html><html><body>\n\n<b>test</b></body></html>", payloadXml);
+        String payloadTxt = blobs.get(3).getString();
+        assertEquals("<!doctype html><html><body>\n\n<b>test</b></body></html>", payloadTxt);
+    }
+
+    protected void writeZipEntry(ZipOutputStream out, String filename) throws IOException {
+        ZipEntry e = new ZipEntry(filename);
+        out.putNextEntry(e);
+
+        byte[] data = BAD.getBytes(UTF_8);
+        out.write(data, 0, data.length);
+        out.closeEntry();
+    }
+
     protected void doTestFileDocument(Blob blob, String expectedBody) throws Exception {
+        List<Blob> blobs = doGetPreviewBlobs(blob);
+        assertEquals(1, blobs.size());
+        String preview = blobs.get(0).getString();
+        assertEquals("<!doctype html><html><body>" + expectedBody + "</body></html>", preview);
+    }
+
+    protected List<Blob> doGetPreviewBlobs(Blob blob) {
         DocumentModel document = session.createDocumentModel("File");
         HtmlPreviewAdapter adapter = document.getAdapter(HtmlPreviewAdapter.class);
         document.setPropertyValue("file:content", (Serializable) blob);
         assertTrue(adapter.hasBlobToPreview());
         assertTrue(PreviewHelper.blobSupportsPreview(document, "file:content"));
-        List<Blob> blobs = adapter.getFilePreviewBlobs();
-        assertEquals(1, blobs.size());
-        String preview = blobs.get(0).getString();
-        assertEquals("<!doctype html><html><body>" + expectedBody + "</body></html>", preview);
+        return adapter.getFilePreviewBlobs();
     }
 
     @Test
