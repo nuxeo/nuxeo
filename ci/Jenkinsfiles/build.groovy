@@ -760,6 +760,30 @@ pipeline {
       }
     }
 
+    stage('Trigger REST API tests') {
+      steps {
+        echo """
+        ----------------------------------------
+        Trigger REST API tests
+        ----------------------------------------
+        """
+        script {
+          def parameters = [
+            string(name: 'NUXEO_REPOSITORY', value: "${repositoryUrl}"),
+            string(name: 'NUXEO_SHA', value: "${GIT_COMMIT}"),
+          ]
+          if (isPullRequest()) {
+            parameters.add(string(name: 'NUXEO_VERSION', value: "${VERSION}"))
+          }
+          build(
+            job: 'nuxeo/rest-api-compatibility-tests/master',
+            parameters: parameters,
+            wait: false
+          )
+        }
+      }
+    }
+
     stage('Git tag and push') {
       when {
         allOf {
