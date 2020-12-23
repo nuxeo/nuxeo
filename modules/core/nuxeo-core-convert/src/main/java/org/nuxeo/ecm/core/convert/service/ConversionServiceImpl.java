@@ -214,6 +214,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         // Convert the blob to HTML
         if (!MediaType.TEXT_HTML.equals(mimetype)) {
             blobHolder = convertBlobToMimeType(blobHolder, MediaType.TEXT_HTML);
+            blob = blobHolder.getBlob();
         }
         try {
             tempDirectory = Framework.createTempDirectory("blobs");

@@ -27,6 +27,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -36,8 +38,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -51,13 +55,16 @@ import org.nuxeo.ecm.core.convert.extension.ChainedConverter;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
+import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 
 @RunWith(FeaturesRunner.class)
-@Features(ConvertFeature.class)
+@Features({ ConvertFeature.class, MockitoFeature.class })
 @Deploy("org.nuxeo.ecm.core.mimetype")
 public class TestService {
 
@@ -66,6 +73,15 @@ public class TestService {
 
     @Inject
     protected HotDeployer deployer;
+
+    @Mock
+    @RuntimeService
+    protected DownloadService downloadService;
+
+    @Before
+    public void before() {
+        when(downloadService.resolveBlobFromDownloadUrl(anyString())).thenReturn(null);
+    }
 
     @Test
     public void testServiceRegistration() {
@@ -340,6 +356,18 @@ public class TestService {
         Map<String, Serializable> parameters = new HashMap<>();
         Blob blob = Blobs.createBlob("dummy", "application/octet-stream", null, "dummy");
         BlobHolder result = cs.convert("dummyPdf", new SimpleBlobHolder(blob), parameters);
+        Blob resultBlob = result.getBlob();
+        assertNotNull(resultBlob);
+        assertEquals("application/pdf", resultBlob.getMimeType());
+        assertEquals("dummy.pdf", resultBlob.getFilename());
+    }
+
+    // NXP-29996
+    @Test
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib7.xml")
+    public void testConvertThroughHTML() {
+        Blob blob = Blobs.createBlob("dummy", "application/zip", null, "dummy");
+        BlobHolder result = cs.convertToMimeType("application/pdf", new SimpleBlobHolder(blob), Map.of());
         Blob resultBlob = result.getBlob();
         assertNotNull(resultBlob);
         assertEquals("application/pdf", resultBlob.getMimeType());
