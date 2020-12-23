@@ -55,9 +55,9 @@ public class DummyRegistry extends AbstractRegistry {
 
     @Override
     public void unregister(String tag) {
-        getTargetRegistry().ifPresentOrElse(reg -> {
+        getTargetRegistry().ifPresent(reg -> {
             reg.unregister(tag);
-        }, () -> new RuntimeException());
+        });
     }
 
 }
