@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.tests.7">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+             point="converter">
+
+    <converter name="zipToHtml" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>application/zip</sourceMimeType>
+      <destinationMimeType>text/html</destinationMimeType>
+    </converter>
+
+    <converter name="htmlToPdf" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>text/html</sourceMimeType>
+      <destinationMimeType>application/pdf</destinationMimeType>
+    </converter>
+
+  </extension>
+
+</component>
