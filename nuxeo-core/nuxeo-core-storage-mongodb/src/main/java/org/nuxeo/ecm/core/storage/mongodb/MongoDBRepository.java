@@ -150,6 +150,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     public static final String MONGODB_PUSH = "$push";
 
+    /** @since 11.5 */
+    public static final String MONGODB_PULLALL = "$pullAll";
+
     public static final String MONGODB_EACH = "$each";
 
     public static final String MONGODB_META = "$meta";

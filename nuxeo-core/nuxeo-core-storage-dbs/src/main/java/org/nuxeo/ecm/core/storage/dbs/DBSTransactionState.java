@@ -1226,6 +1226,9 @@ public class DBSTransactionState {
             if (value.rpush != null) {
                 findDirtyPaths(value.rpush, newPath);
             }
+            if (value.pull != null) {
+                findDirtyPaths(value.pull, newPath);
+            }
         }
 
         protected void findDirtyPaths(State value, String path) {

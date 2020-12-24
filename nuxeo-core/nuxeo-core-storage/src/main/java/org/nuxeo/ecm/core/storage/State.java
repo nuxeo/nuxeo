@@ -112,6 +112,7 @@ public class State implements StateAccessor, Serializable {
      * <ul>
      * <li>{@link #diff}, if any, is applied,
      * <li>{@link #rpush}, if any, is applied.
+     * <li>{@link #pull}, if any, is applied.
      * </ul>
      *
      * @since 5.9.5
@@ -141,10 +142,19 @@ public class State implements StateAccessor, Serializable {
          */
         public List<Object> rpush;
 
+        /**
+         * If pull is not {@code null}, this is removed from the existing array/{@link List}.
+         *
+         * @since 11.5
+         */
+        public List<Object> pull;
+
         @Override
         public String toString() {
             return getClass().getSimpleName() + '(' + (isArray ? "array" : "list")
-                    + (diff == null ? "" : ", DIFF " + diff) + (rpush == null ? "" : ", RPUSH " + rpush) + ')';
+                    + (diff == null ? "" : ", DIFF " + diff) //
+                    + (rpush == null ? "" : ", RPUSH " + rpush) //
+                    + (pull == null ? "" : ", PULL " + pull) + ')';
         }
     }
 
