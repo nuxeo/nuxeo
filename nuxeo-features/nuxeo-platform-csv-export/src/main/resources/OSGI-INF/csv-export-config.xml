@@ -5,6 +5,7 @@
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
     <action name="csvExport" bucketSize="100" batchSize="50" httpEnabled="true"
+      defaultQueryLimit="${nuxeo.core.bulk.csvExport.queryLimit:=0}"
       validationClass="org.nuxeo.ecm.platform.csv.export.validation.CSVExportValidation"/>
   </extension>
 
