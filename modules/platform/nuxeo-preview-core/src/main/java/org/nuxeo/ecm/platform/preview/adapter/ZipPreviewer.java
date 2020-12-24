@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Previewer for Zip blobs.
@@ -56,6 +57,8 @@ import org.nuxeo.runtime.api.Framework;
 public class ZipPreviewer implements MimeTypePreviewer {
 
     private static final Logger log = LogManager.getLogger(ZipPreviewer.class);
+
+    protected static final String SANITIZE_ZIP_PREVIEW = "nuxeo.preview.zip.sanitize.enabled";
 
     protected static final Set<String> HTML_MIME_TYPES = Set.of(TEXT_HTML, TEXT_XML, TEXT_PLAIN);
 
@@ -69,7 +72,11 @@ public class ZipPreviewer implements MimeTypePreviewer {
 
         try {
             BlobHolder result = conversionService.convert(converterName, new SimpleBlobHolder(blob), null);
-            return result.getBlobs().stream().map(this::sanitize).collect(Collectors.toList());
+            List<Blob> blobs = result.getBlobs();
+            if (Framework.getService(ConfigurationService.class).isBooleanTrue(SANITIZE_ZIP_PREVIEW)) {
+                blobs.replaceAll(this::sanitize);
+            }
+            return blobs;
         } catch (ConversionException e) {
             throw new PreviewException(e.getMessage(), e);
         }
