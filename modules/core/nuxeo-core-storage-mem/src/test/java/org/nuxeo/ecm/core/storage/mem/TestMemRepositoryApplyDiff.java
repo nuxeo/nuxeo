@@ -49,15 +49,16 @@ public class TestMemRepositoryApplyDiff {
         return diff;
     }
 
-    private static final ListDiff listDiff(List<Object> diff, List<Object> rpush) {
+    private static final ListDiff listDiff(List<Object> diff, List<Object> rpush, List<Object> pull) {
         ListDiff listDiff = new ListDiff();
         listDiff.diff = diff;
         listDiff.rpush = rpush;
+        listDiff.pull = pull;
         return listDiff;
     }
 
     private static final ListDiff rpush(Object... values) {
-        return listDiff(null, list(values));
+        return listDiff(null, list(values), null);
     }
 
     private static final State state(Serializable... values) {
@@ -111,7 +112,7 @@ public class TestMemRepositoryApplyDiff {
     public void testCopiesListDiffDiff() {
         ArrayList<Object> list = list(list("L1"));
         ArrayList<Object> list1 = list("L2");
-        MemConnection.applyDiff(list, listDiff(list(list1), null)); // diff
+        MemConnection.applyDiff(list, listDiff(list(list1), null, null)); // diff
         // make sure we don't end up with the actual list1 in the new list, but with a copy
         Serializable list2 = (Serializable) list.get(0);
         assertEqualsStrict("Should be equal", list1, list2);
@@ -122,7 +123,7 @@ public class TestMemRepositoryApplyDiff {
     public void testCopiesListDiffRpush() {
         ArrayList<Object> list = list();
         ArrayList<Object> list1 = list("L1");
-        MemConnection.applyDiff(list, listDiff(null, list(list1))); // rpush
+        MemConnection.applyDiff(list, listDiff(null, list(list1), null)); // rpush
         // make sure we don't end up with the actual list1 in the new list, but with a copy
         Serializable list2 = (Serializable) list.get(0);
         assertEqualsStrict("Should be equal", list1, list2);
@@ -132,12 +133,19 @@ public class TestMemRepositoryApplyDiff {
     @Test
     public void testCopiesArrayDiffRpushOnNull() {
         ArrayList<Object> list = list("L1");
-        ListDiff listDiff = listDiff(null, list);
+        ListDiff listDiff = listDiff(null, list, null);
         listDiff.isArray = true;
         Serializable res = MemConnection.applyDiff(null, listDiff); // rpush
         assertTrue(res.getClass().toString(), res instanceof String[]);
         String[] array = (String[]) res;
         assertArrayEquals(list.toArray(), array);
+    }
+
+    @Test
+    public void testCopiesListDiffPull() {
+        ArrayList<Object> list = list("A", "B", "C", "B", "A");
+        MemConnection.applyDiff(list, listDiff(null, null, list("A", "B"))); // pull
+        assertEqualsStrict("Should be equal", (Serializable) Arrays.asList("C"), list);
     }
 
 }

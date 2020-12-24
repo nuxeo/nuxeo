@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_EACH;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_ID;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_INC;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_PULLALL;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_PUSH;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_SET;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_UNSET;
@@ -314,6 +315,8 @@ public class MongoDBConverter {
 
         protected final Document push = new Document();
 
+        protected final Document pull = new Document();
+
         protected final Document inc = new Document();
 
         protected final List<Document> updates = new ArrayList<>(10);
@@ -335,6 +338,9 @@ public class MongoDBConverter {
             }
             for (Entry<String, Object> en : push.entrySet()) {
                 update(MONGODB_PUSH, en.getKey(), en.getValue());
+            }
+            for (Entry<String, Object> en : pull.entrySet()) {
+                update(MONGODB_PULLALL, en.getKey(), en.getValue());
             }
             for (Entry<String, Object> en : inc.entrySet()) {
                 update(MONGODB_INC, en.getKey(), en.getValue());
@@ -384,6 +390,9 @@ public class MongoDBConverter {
                     pushed = new Document(MONGODB_EACH, listToBson(prefix, listDiff.rpush));
                 }
                 push.put(prefix, pushed);
+            }
+            if (listDiff.pull != null) {
+                pull.put(prefix, valueToBson(prefix, listDiff.pull));
             }
         }
 

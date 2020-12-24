@@ -25,9 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -80,7 +82,10 @@ public class StateHelper {
         } else if (a instanceof ListDiff && b instanceof ListDiff) {
             ListDiff lda = (ListDiff) a;
             ListDiff ldb = (ListDiff) b;
-            return lda.isArray == ldb.isArray && equalsStrict(lda.diff, ldb.diff) && equalsStrict(lda.rpush, ldb.rpush);
+            return lda.isArray == ldb.isArray //
+                    && equalsStrict(lda.diff, ldb.diff) //
+                    && equalsStrict(lda.rpush, ldb.rpush) //
+                    && equalsStrict(lda.pull, ldb.pull);
         } else if (isScalar(a) && isScalar(b)) {
             return a.equals(b);
         } else {
@@ -347,10 +352,10 @@ public class StateHelper {
         if (equalsLoose(a, b)) {
             return NOP;
         }
-        if ((a == null || a instanceof Object[]) && b instanceof Object[]) {
+        if ((a == null || a instanceof Object[]) && (b == null || b instanceof Object[])) {
             return diff((Object[]) a, (Object[]) b);
         }
-        if ((a == null || a instanceof List) && b instanceof List) {
+        if ((a == null || a instanceof List) && (b == null || b instanceof List)) {
             @SuppressWarnings("unchecked")
             List<Object> la = (List<Object>) a;
             @SuppressWarnings("unchecked")
@@ -366,7 +371,7 @@ public class StateHelper {
 
     public static Serializable diff(Object[] a, Object[] b) {
         List<Object> la = a == null ? null : Arrays.asList(a);
-        List<Object> lb = Arrays.asList(b);
+        List<Object> lb = b == null ? null : Arrays.asList(b);
         Serializable diff = diff(la, lb);
         if (diff instanceof List) {
             return b;
@@ -380,6 +385,14 @@ public class StateHelper {
         ListDiff listDiff = new ListDiff();
         if (a == null) {
             a = Collections.emptyList();
+        }
+        if (b == null) {
+            b = Collections.emptyList();
+        }
+        List<Object> pull = findPull(a, b);
+        if (pull != null) {
+            listDiff.pull = pull;
+            return listDiff;
         }
         int aSize = a.size();
         int bSize = b.size();
@@ -422,6 +435,33 @@ public class StateHelper {
             listDiff.rpush = rpush;
         }
         return listDiff;
+    }
+
+    /** @since 11.5 */
+    public static List<Object> findPull(List<Object> a, List<Object> b) {
+        // check that list size decreased
+        if (a.size() <= b.size()) {
+            return null;
+        }
+        // check that we have scalar element types (complex not supported)
+        Object value = a.get(0);
+        if (!isScalar(value)) {
+            return null;
+        }
+        // get the set difference
+        Set<Object> set = new HashSet<>(a);
+        set.removeAll(b);
+        if (set.isEmpty()) {
+            return null;
+        }
+        // check that it's really a pull operation (all candidates are removed)
+        List<Object> list = new ArrayList<>(a);
+        List<Object> pull = new ArrayList<>(set);
+        list.removeAll(pull);
+        if (!equalsLoose(list, b)) {
+            return null;
+        }
+        return pull;
     }
 
     /**
