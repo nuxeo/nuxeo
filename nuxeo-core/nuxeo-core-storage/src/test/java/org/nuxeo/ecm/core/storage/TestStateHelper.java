@@ -47,19 +47,24 @@ public class TestStateHelper {
         return diff;
     }
 
-    private static final ListDiff listDiff(List<Object> diff, List<Object> rpush) {
+    private static final ListDiff listDiff(List<Object> diff, List<Object> rpush, List<Object> pull) {
         ListDiff listDiff = new ListDiff();
         listDiff.diff = diff;
         listDiff.rpush = rpush;
+        listDiff.pull = pull;
         return listDiff;
     }
 
     private static final ListDiff listDiff(Object... diffs) {
-        return listDiff(list(diffs), null);
+        return listDiff(list(diffs), null, null);
     }
 
     private static final ListDiff rpush(Object... values) {
-        return listDiff(null, list(values));
+        return listDiff(null, list(values), null);
+    }
+
+    private static final ListDiff pull(Object... values) {
+        return listDiff(null, null, list(values));
     }
 
     private static final State state(Serializable... values) {
@@ -206,11 +211,30 @@ public class TestStateHelper {
                 list("A"), list("A", "B"));
         assertDiff(rpush("C", "D"), //
                 list("A", "B"), list("A", "B", "C", "D"));
-        // overwrite for zero-length "b"
-        assertDiff(null, //
+        // "PULL"
+        assertDiff(pull("A"), //
+                list("A", "B"), list("B"));
+        assertDiff(pull("A"), //
+                list("B", "A"), list("B"));
+        assertDiff(pull("A"), //
+                list("A", "B", "A"), list("B"));
+        assertDiff(pull("B"), //
+                list("A", "B", "C"), list("A", "C"));
+        // PULL of more than one element
+        assertDiff(pull("A", "B"), //
+                list("A", "B", "C", "B", "A"), list("C"));
+        // PULL even for zero-length "b"
+        assertDiff(pull("A"), //
                 list("A"), null);
-        assertDiff(list(), //
+        assertDiff(pull("A"), //
+                list("A", "A"), null);
+        assertDiff(pull("A"), //
                 list("A"), list());
+        assertDiff(pull("A"), //
+                list("A", "A"), list());
+        // not a PULL (PULL removes all instances of the pulled value)
+        assertDiff(list("A", "B"), //
+                list("A", "B", "A"), list("A", "B"));
     }
 
     @Test
@@ -236,7 +260,7 @@ public class TestStateHelper {
                 list(state()), //
                 list(state("A", "B")));
 
-        assertDiff(listDiff(list(state("C", "D")), list(state("E", "F"))), //
+        assertDiff(listDiff(list(state("C", "D")), list(state("E", "F")), null), //
                 list(state("A", "B")), //
                 list(state("A", "B", "C", "D"), state("E", "F")));
     }

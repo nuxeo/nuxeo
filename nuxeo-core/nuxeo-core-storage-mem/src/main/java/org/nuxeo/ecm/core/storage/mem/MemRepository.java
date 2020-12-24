@@ -502,6 +502,9 @@ public class MemRepository extends DBSRepositoryBase {
             // update CopyOnWriteArrayList in one step
             list.addAll(add);
         }
+        if (listDiff.pull != null) {
+            list.removeAll(listDiff.pull);
+        }
         if (list.isEmpty()) {
             return null;
         }

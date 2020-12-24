@@ -383,6 +383,61 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
+    public void testArrayConcurrentPull() throws InterruptedException {
+        assumeTrue("pull optimization only available on DBS", coreFeature.getStorageConfiguration().isDBS());
+
+        doc.setPropertyValue("tp:stringArray", (Serializable) Arrays.asList("foo", "bar", "baz"));
+        session.saveDocument(doc);
+        session.save();
+        nextTransaction();
+
+        CyclicBarrier barrier = new CyclicBarrier(2);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        List<Exception> exc = Collections.synchronizedList(new ArrayList<>());
+        executor.execute(() -> removeValueFromDoc("foo", barrier, exc));
+        executor.execute(() -> removeValueFromDoc("bar", barrier, exc));
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+        if (!exc.isEmpty()) {
+            NuxeoException e = new NuxeoException("Exceptions in threads");
+            exc.forEach(e::addSuppressed);
+            throw e;
+        }
+
+        nextTransaction();
+        doc.refresh();
+        Object[] array = (Object[]) doc.getPropertyValue("tp:stringArray");
+        assertEquals(Arrays.asList("baz"), Arrays.asList(array));
+    }
+
+    protected void removeValueFromDoc(String value, CyclicBarrier barrier, List<Exception> exc) {
+        try {
+            TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(session, s -> {
+                // wait for both threads to be at the same point
+                try {
+                    barrier.await(5, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new NuxeoException(e);
+                } catch (BrokenBarrierException | TimeoutException e) {
+                    throw new NuxeoException(e);
+                }
+                // remove the value from the existing list
+                DocumentModel d = s.getDocument(new PathRef("/doc"));
+                String[] array = (String[]) d.getPropertyValue("tp:stringArray");
+                List<String> list = array == null ? new ArrayList<>() : new ArrayList<>(Arrays.asList(array));
+                list.remove(value);
+                d.setPropertyValue("tp:stringArray", (Serializable) list);
+                s.saveDocument(d);
+                s.save();
+            }));
+        } catch (Exception e) { // NOSONAR
+            exc.add(e);
+            throw e;
+        }
+    }
+
+    @Test
     public void testComplexList() throws Exception {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:complexList") instanceof List);
