@@ -13,4 +13,11 @@
     <property name="nuxeo.preview.zip.enabled">false</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that enables or disables sanitization on zip files preview.
+    </documentation>
+    <property name="nuxeo.preview.zip.sanitize.enabled">true</property>
+  </extension>
+
 </component>
