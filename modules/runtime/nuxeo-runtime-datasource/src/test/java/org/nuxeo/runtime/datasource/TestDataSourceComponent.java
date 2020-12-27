@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.junit.Test;
@@ -46,41 +47,32 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TestDataSourceComponent {
 
     @Test
-    public void testJNDIName() throws Exception {
+    public void testJNDIName() {
         assertEquals("java:comp/env/jdbc/foo", DataSourceHelper.getDataSourceJNDIName("foo"));
     }
 
-    protected static void checkDataSourceOk(String name, boolean autocommit) throws Exception {
+    protected static void checkDataSourceOk(String name, boolean autocommit) throws NamingException, SQLException {
         DataSource ds = DataSourceHelper.getDataSource(name);
-        Connection conn = ds.getConnection();
-        assertEquals(autocommit, conn.getAutoCommit());
-        Statement st = conn.createStatement();
-        try (ResultSet rs = st.executeQuery("SELECT 123")) {
+        try (Connection conn = ds.getConnection(); //
+                Statement st = conn.createStatement(); //
+                ResultSet rs = st.executeQuery("SELECT 123")) {
+            assertEquals(autocommit, conn.getAutoCommit());
             assertNotNull(rs);
             assertTrue(rs.next());
             assertEquals(123, rs.getInt(1));
         }
-        st.close();
-        conn.close();
     }
 
     @Test
     @Deploy("org.nuxeo.runtime.datasource:datasource-contrib.xml")
-    public void testNonXANoTM() throws Exception {
+    public void testNonXA() throws NamingException, SQLException {
         checkDataSourceOk("foo", true);
         checkDataSourceOk("alias", true);
     }
 
     @Test
     @Deploy("org.nuxeo.runtime.datasource:datasource-contrib.xml")
-    public void testNonXA() throws Exception {
-        checkDataSourceOk("foo", true);
-        checkDataSourceOk("alias", true);
-    }
-
-    @Test
-    @Deploy("org.nuxeo.runtime.datasource:datasource-contrib.xml")
-    public void testNonShared() throws Exception {
+    public void testNonShared() throws NamingException, SQLException {
         DataSource ds = DataSourceHelper.getDataSource("foo");
         DataSource dsNoSharing = DataSourceHelper.getDataSource("foo", true);
         TransactionHelper.startTransaction();
@@ -111,13 +103,13 @@ public class TestDataSourceComponent {
 
     @Test
     @Deploy("org.nuxeo.runtime.datasource:xadatasource-contrib.xml")
-    public void testXANoTx() throws Exception {
+    public void testXANoTx() throws NamingException, SQLException {
         checkDataSourceOk("foo", true);
     }
 
     @Test
     @Deploy("org.nuxeo.runtime.datasource:xadatasource-contrib.xml")
-    public void testXA() throws Exception {
+    public void testXA() throws NamingException, SQLException {
         TransactionHelper.startTransaction();
         try {
             checkDataSourceOk("foo", false);
