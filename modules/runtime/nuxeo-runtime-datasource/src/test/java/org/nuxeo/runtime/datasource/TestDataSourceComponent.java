@@ -20,6 +20,7 @@
 package org.nuxeo.runtime.datasource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -43,8 +44,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @TransactionalConfig(autoStart = false)
 @Features(TransactionalFeature.class)
 public class TestDataSourceComponent {
-
-    private static final String COUNT_SQL = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SESSIONS";
 
     @Test
     public void testJNDIName() throws Exception {
@@ -85,24 +84,26 @@ public class TestDataSourceComponent {
         DataSource ds = DataSourceHelper.getDataSource("foo");
         DataSource dsNoSharing = DataSourceHelper.getDataSource("foo", true);
         TransactionHelper.startTransaction();
-        try (Connection c1 = ds.getConnection()) {
-            int n1 = countPhysicalConnections(c1);
-            try (Connection c2 = dsNoSharing.getConnection()) {
-                int n2 = countPhysicalConnections(c2);
-                assertEquals(n1 + 1, n2);
-                try (Connection c3 = dsNoSharing.getConnection()) {
-                    int n3 = countPhysicalConnections(c3);
-                    assertEquals(n1 + 2, n3);
-                }
-            }
+        try (Connection c1 = ds.getConnection(); //
+                Connection c2 = ds.getConnection(); //
+                Connection c3 = dsNoSharing.getConnection(); //
+                Connection c4 = dsNoSharing.getConnection()) {
+            int s1 = getSessionId(c1);
+            int s2 = getSessionId(c2);
+            int s3 = getSessionId(c3);
+            int s4 = getSessionId(c4);
+            assertEquals(s1, s2); // sharing
+            assertNotEquals(s1, s3); // no sharing
+            assertNotEquals(s1, s4); // no sharing
+            assertNotEquals(s3, s4); // no sharing
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
     }
 
-    public int countPhysicalConnections(Connection conn) throws SQLException {
+    public int getSessionId(Connection conn) throws SQLException {
         try (Statement st = conn.createStatement(); //
-                ResultSet rs = st.executeQuery(COUNT_SQL)) {
+                ResultSet rs = st.executeQuery("SELECT SESSION_ID()")) {
             rs.next();
             return rs.getInt(1);
         }
