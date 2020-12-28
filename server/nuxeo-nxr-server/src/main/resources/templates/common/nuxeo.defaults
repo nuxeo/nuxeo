@@ -51,7 +51,7 @@ nuxeo.user.emergency.firstname=
 nuxeo.user.emergency.lastname=
 
 nuxeo.cache.ttl=20
-nuxeo.cache.maxsize=100
+nuxeo.cache.maxsize=10000
 nuxeo.cache.concurrencylevel=500
 
 # boolean to switch back to former hot reload mechanism
