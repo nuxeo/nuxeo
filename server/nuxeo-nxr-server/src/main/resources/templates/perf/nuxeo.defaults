@@ -5,7 +5,7 @@ nuxeo.db.max-pool-size=52
 nuxeo.vcs.max-pool-size=50
 
 # Use a descent cache size for directories
-nuxeo.cache.maxsize=510
+nuxeo.cache.maxsize=10000
 nuxeo.cache.ttl=20
 nuxeo.cache.concurrencylevel=50
 
