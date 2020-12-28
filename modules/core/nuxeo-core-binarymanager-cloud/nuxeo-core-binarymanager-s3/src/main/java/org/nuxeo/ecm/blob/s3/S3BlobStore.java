@@ -123,7 +123,7 @@ public class S3BlobStore extends AbstractBlobStore {
         bucketName = config.bucketName;
         bucketPrefix = config.bucketPrefix;
         allowByteRange = config.getBooleanProperty(ALLOW_BYTE_RANGE);
-        useVersion = isBucketVersioningEnabled() && !keyStrategy.useDeDuplication();
+        useVersion = !keyStrategy.useDeDuplication() && isBucketVersioningEnabled();
         gc = new S3BlobGarbageCollector();
     }
 
@@ -135,10 +135,24 @@ public class S3BlobStore extends AbstractBlobStore {
         return e.getStatusCode() == 404 || "NoSuchKey".equals(e.getErrorCode()) || "Not Found".equals(e.getMessage());
     }
 
+    protected static boolean isNotImplemented(AmazonServiceException e) {
+        return e.getStatusCode() == 501 || "NotImplemented".equals(e.getErrorCode());
+    }
+
     protected boolean isBucketVersioningEnabled() {
-        BucketVersioningConfiguration v = amazonS3.getBucketVersioningConfiguration(bucketName);
-        // if versioning is suspended, created objects won't have versions
-        return v.getStatus().equals(BucketVersioningConfiguration.ENABLED);
+        try {
+            BucketVersioningConfiguration v = amazonS3.getBucketVersioningConfiguration(bucketName);
+            // if versioning is suspended, created objects won't have versions
+            return v.getStatus().equals(BucketVersioningConfiguration.ENABLED);
+        } catch (AmazonServiceException e) {
+            if (isNotImplemented(e)) {
+                // minio does not implement versioning
+                log.warn("Versioning not implemented for bucket: {}: {}", () -> bucketName, e::getMessage);
+                log.debug(e, e);
+                return false;
+            }
+            throw e;
+        }
     }
 
     @Override
