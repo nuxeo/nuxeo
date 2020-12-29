@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
@@ -48,12 +49,17 @@ public class FullTextConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+        return new SimpleBlobHolder(convert(blobHolder.getBlob(), parameters));
+    }
 
-        String srcMT = blobHolder.getBlob().getMimeType();
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
+
+        String srcMT = blob.getMimeType();
 
         if (TEXT_PLAIN_MT.equals(srcMT)) {
             // no need to convert !
-            return blobHolder;
+            return blob;
         }
 
         ConversionService cs = Framework.getService(ConversionService.class);
@@ -65,12 +71,12 @@ public class FullTextConverter implements Converter {
             if (converterName.equals(descriptor.getConverterName())) {
                 // Should never happen !
                 log.debug("Existing from converter to avoid a loop");
-                return new SimpleBlobHolder(Blobs.createBlob(""));
+                return Blobs.createBlob("");
             }
-            return cs.convert(converterName, blobHolder, parameters);
+            return cs.convert(converterName, blob, parameters);
         } else {
             log.debug("Unable to find full text extractor for source mime type " + srcMT);
-            return new SimpleBlobHolder(Blobs.createBlob(""));
+            return Blobs.createBlob("");
         }
     }
 

@@ -63,6 +63,15 @@ public class UTF8CharsetConverter implements Converter {
         return new SimpleBlobHolder(transcodedBlob);
     }
 
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
+        try {
+            return convert(blob);
+        } catch (IOException | ConversionException e) {
+            throw new ConversionException("Cannot transcode blob to UTF-8", e);
+        }
+    }
+
     protected Blob convert(Blob blob) throws IOException, ConversionException {
         String mimetype = blob.getMimeType();
         if (mimetype == null || !mimetype.startsWith(TEXT_PREFIX)) {

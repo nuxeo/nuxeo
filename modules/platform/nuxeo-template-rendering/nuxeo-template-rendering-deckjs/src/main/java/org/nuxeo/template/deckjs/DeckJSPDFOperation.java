@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.template.jaxrs.context.JAXRSExtensions;
 
 @Operation(id = DeckJSPDFOperation.ID, category = Constants.CAT_CONVERSION, label = "Convert a deckJS slide to a pdf", description = "Convert a deckJS slide to a pdf.")
@@ -80,9 +79,9 @@ public class DeckJSPDFOperation {
 
         Blob indexBlob = Blobs.createBlob(index);
         indexBlob.setFilename(blob.getFilename());
-        BlobHolder bh = conversionService.convert("deckJSToPDF", new SimpleCachableBlobHolder(indexBlob), null);
+        Blob result = conversionService.convert("deckJSToPDF", indexBlob, null);
         FileUtils.deleteDirectory(workingDir);
-        return bh.getBlob();
+        return result;
     }
 
     private void writeToTempDirectory(File workingDir, Blob b) throws IOException {

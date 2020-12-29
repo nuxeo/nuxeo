@@ -52,16 +52,16 @@ public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Con
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+        return new SimpleCachableBlobHolder(convert(blobHolder.getBlob(), parameters));
+    }
 
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
         StringBuilder sb = new StringBuilder();
-
         try {
-            Blob blob = blobHolder.getBlob();
-
             if (blob.getLength() > maxSize4POI) {
-                return runFallBackConverter(blobHolder, "xl/");
+                return runFallBackConverter(blob, "xl/");
             }
-
             try (InputStream stream = blob.getStream(); //
                     OPCPackage p = OPCPackage.open(stream); //
                     XSSFWorkbook workbook = new XSSFWorkbook(p)) {
@@ -79,9 +79,9 @@ public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Con
                     }
                 }
             }
-            return new SimpleCachableBlobHolder(Blobs.createBlob(sb.toString()));
+            return Blobs.createBlob(sb.toString());
         } catch (IOException | OpenXML4JException e) {
-            throw new ConversionException("Error during XLX2Text conversion", blobHolder, e);
+            throw new ConversionException("Error during XLX2Text conversion", blob, e);
         }
     }
 

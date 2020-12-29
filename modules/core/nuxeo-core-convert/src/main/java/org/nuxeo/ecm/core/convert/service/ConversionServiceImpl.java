@@ -355,6 +355,55 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         return result;
     }
 
+    @Override
+    public Blob convert(String converterName, Blob blob, Map<String, Serializable> parameters)
+            throws ConversionException {
+
+        // set parameters if null to avoid NPE in converters
+        if (parameters == null) {
+            parameters = new HashMap<>();
+        }
+
+        // exit if not registered
+        ConverterCheckResult check = isConverterAvailable(converterName);
+        if (!check.isAvailable()) {
+            // exit is not installed / configured
+            throw new ConverterNotAvailable(converterName);
+        }
+
+        ConverterDescriptor desc = converterDescriptors.get(converterName);
+        if (desc == null) {
+            throw new ConversionException("Converter " + converterName + " can not be found");
+        }
+
+        // make sure the converter can handle the blob mime type
+        String mimeType = blob.getMimeType();
+        if (!hasSourceMimeType(desc, mimeType)) {
+            throw new ConversionException(
+                    String.format("%s mime type not supported by %s converter", mimeType, desc.getConverterName()));
+        }
+
+        String cacheKey = CacheKeyGenerator.computeKey(converterName, blobHolder, parameters);
+
+        Blob result = ConversionCacheHolder.getFromCache(cacheKey);
+
+        if (result == null) {
+            Converter converter = desc.getConverterInstance();
+            result = converter.convert(blob, parameters);
+
+            if (config.isCacheEnabled()) {
+                ConversionCacheHolder.addToCache(cacheKey, result);
+            }
+        } else {
+            // we need to reset the filename if result is a single file from the cache because the name is just a hash
+            result.setFilename(null);
+            updateResultBlobMimeType(result, desc);
+            updateResultBlobFileName(blob, result);
+        }
+
+        return result;
+    }
+
     /**
      * Returns true if the converter has the given {@code mimeType} as source mime type, false otherwise.
      *
@@ -369,7 +418,10 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     protected void updateResultBlobMimeType(BlobHolder resultBh, ConverterDescriptor desc) {
-        Blob mainBlob = resultBh.getBlob();
+        updateResultBlobMimeType(resultBh.getBlob(), desc);
+    }
+
+    protected void updateResultBlobMimeType(Blob mainBlob, ConverterDescriptor desc) {
         if (mainBlob == null) {
             return;
         }
@@ -380,13 +432,15 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     protected void updateResultBlobFileName(BlobHolder srcBh, BlobHolder resultBh) {
-        Blob mainBlob = resultBh.getBlob();
+        updateResultBlobFileName(srcBh.getBlob(), resultBh.getBlob());
+    }
+
+    protected void updateResultBlobFileName(Blob srcBlob, Blob mainBlob) {
         if (mainBlob == null) {
             return;
         }
         String filename = mainBlob.getFilename();
         if (StringUtils.isBlank(filename) || filename.startsWith("nxblob-")) {
-            Blob srcBlob = srcBh.getBlob();
             if (srcBlob != null && StringUtils.isNotBlank(srcBlob.getFilename())) {
                 String baseName = FilenameUtils.getBaseName(srcBlob.getFilename());
 

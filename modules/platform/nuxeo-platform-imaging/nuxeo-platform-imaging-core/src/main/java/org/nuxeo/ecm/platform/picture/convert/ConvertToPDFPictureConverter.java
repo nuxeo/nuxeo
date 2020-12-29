@@ -43,16 +43,21 @@ public class ConvertToPDFPictureConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-        ImagingService service = Framework.getService(ImagingService.class);
         List<Blob> sources = blobHolder.getBlobs();
         List<Blob> results = new ArrayList<>(sources.size());
         sources.stream().filter(source -> source != null).forEach(source -> {
-            Blob result = service.convertToPDF(source);
+            Blob result = convert(source, parameters);
             if (result != null) {
                 results.add(result);
             }
         });
         return new SimpleCachableBlobHolder(results);
+    }
+
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
+        ImagingService service = Framework.getService(ImagingService.class);
+        return service.convertToPDF(blob);
     }
 
     @Override

@@ -46,7 +46,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -172,8 +171,8 @@ public class RFC822ToTextConverter implements Converter {
             try (InputStream in = p.getInputStream()) {
                 blob = Blobs.createBlob(in, p.getContentType());
             }
-            BlobHolder result = cs.convert(converterName, new SimpleBlobHolder(blob), null);
-            return result.getBlob().getByteArray();
+            Blob result = cs.convert(converterName, blob, null);
+            return result.getByteArray();
         }
     }
 
@@ -214,9 +213,12 @@ public class RFC822ToTextConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-        Blob inputBlob = blobHolder.getBlob();
-        Blob outputBlob = extractTextFromMessage(inputBlob);
-        return new SimpleCachableBlobHolder(outputBlob);
+        return new SimpleCachableBlobHolder(convert(blobHolder.getBlob(), parameters));
+    }
+
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
+        return extractTextFromMessage(blob);
     }
 
     @Override

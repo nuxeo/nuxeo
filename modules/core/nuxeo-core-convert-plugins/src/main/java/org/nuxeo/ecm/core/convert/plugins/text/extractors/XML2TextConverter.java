@@ -39,24 +39,17 @@ public class XML2TextConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder holder, Map<String, Serializable> parameters) throws ConversionException {
-        return new SimpleBlobHolder(new StringBlob(convert(holder.getBlob())));
+        return new SimpleBlobHolder(convert(holder.getBlob(), parameters));
     }
 
-    /**
-     * @deprecated since 11.1. Use {@link #convert(Blob)} instead.
-     */
-    @Deprecated
-    String convert(Blob blob, Map<String, Serializable> parameters) {
-        return convert(blob);
-    }
-
-    protected String convert(Blob blob) {
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) {
         if (blob.getLength() == 0L) {
-            return "";
+            return new StringBlob("");
         }
         try (InputStream stream = blob.getStream()) {
             Xml2TextHandler xml2text = new Xml2TextHandler();
-            return xml2text.parse(stream);
+            return new StringBlob(xml2text.parse(stream));
         } catch (IOException | SAXException | ParserConfigurationException e) {
             throw new ConversionException("Error during XML2Text conversion", blob, e);
         }

@@ -78,12 +78,17 @@ public class PDF2TextConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+        Blob blob = convert(blobHolder.getBlob(), parameters);
+        return new SimpleCachableBlobHolder(blob);
+    }
 
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
         PDDocument document = null;
         File f = null;
         OutputStream fas = null;
         try {
-            document = PDDocument.load(blobHolder.getBlob().getStream());
+            document = PDDocument.load(blob.getStream());
             // NXP-1556: if document is protected an IOException will be raised
             // Instead of catching the exception based on its message string
             // lets avoid sending messages that will generate this error
@@ -106,14 +111,13 @@ public class PDF2TextConverter implements Converter {
                 fas = new FileOutputStream(f);
                 fas.write(text.getBytes("UTF-8"));
                 try (FileInputStream is = new FileInputStream(f)) {
-                    Blob blob = Blobs.createBlob(is, "text/plain", "UTF-8");
-                    return new SimpleCachableBlobHolder(blob);
+                    return Blobs.createBlob(is, "text/plain", "UTF-8");
                 }
             } else {
-                return new SimpleCachableBlobHolder(Blobs.createBlob(""));
+                return Blobs.createBlob("");
             }
         } catch (IOException e) {
-            throw new ConversionException("Error during text extraction with PDFBox", blobHolder, e);
+            throw new ConversionException("Error during text extraction with PDFBox", blob, e);
         } finally {
             if (document != null) {
                 try {

@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -52,8 +53,12 @@ public class AnyToThumbnailConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) {
-        Blob sourceBlob;
-        sourceBlob = blobHolder.getBlob();
+        Blob blob = convert(blobHolder.getBlob(), parameters);
+        return blob == null ? null : new SimpleCachableBlobHolder(blob);
+   }
+
+    @Override
+    public Blob convert(Blob sourceBlob, Map<String, Serializable> parameters) {
         if (sourceBlob == null) {
             return null;
         }
@@ -74,6 +79,7 @@ public class AnyToThumbnailConverter implements Converter {
                 && conversionService.isConverterAvailable(ANY_TO_PDF_CONVERTER_NAME, true).isAvailable()) {
             converterName = ANY_TO_PDF_TO_THUMBNAIL_CONVERTER_NAME;
         }
-        return converterName == null ? null : conversionService.convert(converterName, blobHolder, parameters);
+        return converterName == null ? null : conversionService.convert(converterName, sourceBlob, parameters);
     }
+
 }

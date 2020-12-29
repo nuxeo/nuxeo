@@ -47,18 +47,21 @@ public class MD2TextConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+        Blob blob = convert(blobHolder.getBlob(), parameters);
+        return blob == null ? blobHolder : new SimpleCachableBlobHolder(blob);
+    }
 
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
         try {
-            Blob blob = blobHolder.getBlob();
             if (blob == null) {
-                LOGGER.warn(
-                        "Trying to convert a blobHolder that has a null blob. Nothing to do, returning the blobHolder.");
-                return blobHolder;
+                LOGGER.warn("Trying to convert a null blob");
+                return blob;
             }
             String text = blob.getString();
-            return new SimpleCachableBlobHolder(Blobs.createBlob(text));
+            return Blobs.createBlob(text);
         } catch (IOException e) {
-            throw new ConversionException("Error during MD2Text conversion", blobHolder, e);
+            throw new ConversionException("Error during MD2Text conversion", blob, e);
         }
     }
 

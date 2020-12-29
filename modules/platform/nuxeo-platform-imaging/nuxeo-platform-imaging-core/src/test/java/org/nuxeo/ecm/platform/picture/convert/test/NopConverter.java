@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.picture.convert.test;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -44,5 +45,10 @@ public class NopConverter implements Converter {
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         return new SimpleBlobHolder(blobHolder.getBlobs());
+    }
+
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
+        return blob;
     }
 }

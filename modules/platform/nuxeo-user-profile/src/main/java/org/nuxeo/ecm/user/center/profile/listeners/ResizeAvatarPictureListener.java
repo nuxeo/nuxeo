@@ -32,8 +32,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -77,15 +75,13 @@ public class ResizeAvatarPictureListener implements EventListener {
 
     protected void resizeAvatar(DocumentModel doc, Blob avatarImage) throws PropertyException {
         ConversionService conversionService = Framework.getService(ConversionService.class);
-        BlobHolder bh = new SimpleBlobHolder(avatarImage);
         Map<String, Serializable> parameters = new HashMap<>();
         parameters.put("targetWidth", String.valueOf(RESIZED_IMAGE_WIDTH));
         parameters.put("targetHeight", String.valueOf(RESIZED_IMAGE_HEIGHT));
 
         try {
-            BlobHolder result = conversionService.convert("resizeAvatar", bh, parameters);
-            if (result != null) {
-                Blob blob = result.getBlob();
+            Blob blob = conversionService.convert("resizeAvatar", avatarImage, parameters);
+            if (blob != null) {
                 blob.setFilename(avatarImage.getFilename());
                 doc.setPropertyValue(USER_PROFILE_AVATAR_FIELD, (Serializable) blob);
             }

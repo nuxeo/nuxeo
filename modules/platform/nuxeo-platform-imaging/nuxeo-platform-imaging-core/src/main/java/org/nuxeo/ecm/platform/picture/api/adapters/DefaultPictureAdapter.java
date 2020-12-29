@@ -32,8 +32,6 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.PropertyException;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
@@ -126,13 +124,13 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         int size = doc.getProperty(VIEWS_PROPERTY).size();
         for (int i = 0; i < size; i++) {
             String xpath = "picture:views/view[" + i + "]/";
-            BlobHolder blob = new SimpleBlobHolder(doc.getProperty(xpath + "content").getValue(Blob.class));
-            String type = blob.getBlob().getMimeType();
+            Blob blob = doc.getProperty(xpath + "content").getValue(Blob.class);
+            String type = blob.getMimeType();
             if (!"image/png".equals(type)) {
                 Map<String, Serializable> options = new HashMap<>();
                 options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE, angle);
                 blob = getConversionService().convert(ImagingConvertConstants.OPERATION_ROTATE, blob, options);
-                doc.getProperty(xpath + "content").setValue(blob.getBlob());
+                doc.getProperty(xpath + "content").setValue(blob);
                 Long height = (Long) doc.getProperty(xpath + "height").getValue();
                 Long width = (Long) doc.getProperty(xpath + "width").getValue();
                 doc.getProperty(xpath + "height").setValue(width);

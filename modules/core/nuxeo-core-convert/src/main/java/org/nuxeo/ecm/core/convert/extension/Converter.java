@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.convert.extension;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.CachableBlobHolder;
@@ -49,5 +50,15 @@ public interface Converter {
      * Returned {@link BlobHolder} must implement {@link CachableBlobHolder}, otherwise result won't be cached.
      */
     BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException;
+
+    /**
+     * Converts a {@link Blob} according to the {@code parameters}.
+     *
+     * @param blob the blob to convert
+     * @param parameters the conversion parameters
+     * @return the converted blob
+     * @since 11.5
+     */
+    Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException;
 
 }

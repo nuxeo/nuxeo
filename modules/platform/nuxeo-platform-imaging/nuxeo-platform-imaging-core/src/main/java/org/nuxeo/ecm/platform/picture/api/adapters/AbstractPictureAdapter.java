@@ -80,12 +80,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
@@ -377,22 +373,16 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     }
 
     protected Blob crop(Blob blob, Map<String, Serializable> coords) {
-        try {
-            BlobHolder bh = new SimpleBlobHolder(blob);
-            String type = blob.getMimeType();
-
-            Map<String, Serializable> options = new HashMap<>();
-            options.put(OPTION_CROP_X, coords.get("x"));
-            options.put(OPTION_CROP_Y, coords.get("y"));
-            options.put(OPTION_RESIZE_HEIGHT, coords.get("h"));
-            options.put(OPTION_RESIZE_WIDTH, coords.get("w"));
-
-            if (!"image/png".equals(type)) {
-                bh = getConversionService().convert(OPERATION_CROP, bh, options);
-                return Blobs.createBlob(bh.getBlob().getStream(), type);
-            }
-        } catch (IOException e) {
-            throw new NuxeoException("Crop failed", e);
+        String type = blob.getMimeType();
+        Map<String, Serializable> options = new HashMap<>();
+        options.put(OPTION_CROP_X, coords.get("x"));
+        options.put(OPTION_CROP_Y, coords.get("y"));
+        options.put(OPTION_RESIZE_HEIGHT, coords.get("h"));
+        options.put(OPTION_RESIZE_WIDTH, coords.get("w"));
+        if (!"image/png".equals(type)) {
+            Blob result = getConversionService().convert(OPERATION_CROP, blob, options);
+            result.setMimeType(type);
+            return result;
         }
         return null;
     }

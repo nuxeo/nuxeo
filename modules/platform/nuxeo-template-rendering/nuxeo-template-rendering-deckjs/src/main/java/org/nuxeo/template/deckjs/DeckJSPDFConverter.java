@@ -46,12 +46,16 @@ public class DeckJSPDFConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+        return new SimpleCachableBlobHolder(convert(blobHolder.getBlob(), parameters));
+    }
+
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
         CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         CommandAvailability commandAvailability = cles.getCommandAvailability(DeckJSConverterConstants.PHANTOM_JS_COMMAND_NAME);
         if (!commandAvailability.isAvailable()) {
             return null;
         }
-        Blob blob = blobHolder.getBlob();
         File jsFile = null;
         try (CloseableFile inputFile = blob.getCloseableFile(".html")) {
             jsFile = Framework.createTempFile("phantomJsScript", ".js");
@@ -68,7 +72,7 @@ public class DeckJSPDFConverter implements Converter {
             if (!res.isSuccessful()) {
                 throw res.getError();
             }
-            return new SimpleCachableBlobHolder(pdfOutput);
+            return pdfOutput;
         } catch (CommandNotAvailable | IOException | CommandException e) {
             throw new ConversionException("PDF conversion failed", e);
         } finally {

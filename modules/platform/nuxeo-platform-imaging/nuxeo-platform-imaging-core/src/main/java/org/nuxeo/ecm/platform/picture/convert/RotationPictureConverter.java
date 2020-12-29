@@ -41,19 +41,24 @@ public class RotationPictureConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-        ImagingService service = Framework.getService(ImagingService.class);
         List<Blob> results = new ArrayList<>();
         List<Blob> sources = blobHolder.getBlobs();
-        int angle = (Integer) parameters.get(ImagingConvertConstants.OPTION_ROTATE_ANGLE);
         for (Blob source : sources) {
             if (source != null) {
-                Blob result = service.rotate(source, angle);
+                Blob result = convert(source, parameters);
                 if (result != null) {
                     results.add(result);
                 }
             }
         }
         return new SimpleCachableBlobHolder(results);
+    }
+
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
+        int angle = (Integer) parameters.get(ImagingConvertConstants.OPTION_ROTATE_ANGLE);
+        ImagingService service = Framework.getService(ImagingService.class);
+        return service.rotate(blob, angle);
     }
 
     @Override

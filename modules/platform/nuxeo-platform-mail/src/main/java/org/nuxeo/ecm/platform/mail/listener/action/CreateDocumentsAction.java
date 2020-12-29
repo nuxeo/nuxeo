@@ -54,8 +54,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -120,15 +118,14 @@ public class CreateDocumentsAction extends AbstractMailAction {
 
         documentModel.setPropertyValue(HTML_TEXT_PROPERTY_NAME, text);
         if (text != null && !text.isEmpty()) {
-            Blob sb = Blobs.createBlob(text, "text/html");
-            BlobHolder simpleBlobHolder = new SimpleBlobHolder(sb);
+            Blob blob = Blobs.createBlob(text, "text/html");
             ConversionService conversionService = Framework.getService(ConversionService.class);
             Map<String, Serializable> parameters = new HashMap<>();
             parameters.put("tagFilter", "body");
-            BlobHolder simpleTextBH = conversionService.convert("html2text", simpleBlobHolder, parameters);
+            Blob simpleTextBlob = conversionService.convert("html2text", blob, parameters);
             String simpleText;
             try {
-                simpleText = simpleTextBH.getBlob().getString();
+                simpleText = simpleTextBlob.getString();
             } catch (IOException e) {
                 throw new NuxeoException(e);
             }

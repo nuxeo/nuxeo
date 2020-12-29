@@ -24,8 +24,6 @@ import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
@@ -45,12 +43,11 @@ public class ConvertHelper {
 
     protected Blob applyConverter(Blob blob, String converter, String destMimeType, Map<String, Serializable> params) {
         ConversionService cs = Framework.getService(ConversionService.class);
-        BlobHolder bh = cs.convert(converter, new SimpleBlobHolder(blob), params);
+        Blob result = cs.convert(converter, blob, params);
 
-        if (bh == null || bh.getBlob() == null) {
+        if (result == null) {
             return blob;
         } else {
-            Blob result = bh.getBlob();
             MimetypeRegistry mtr = Framework.getService(MimetypeRegistry.class);
             String filename = FileUtils.getFileNameNoExt(blob.getFilename());
             filename = filename + "." + mtr.getExtensionsFromMimetypeName(destMimeType).get(0);

@@ -37,8 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -281,11 +279,7 @@ public class FulltextExtractorWork extends AbstractWork {
                 log.debug("No ConversionService available");
                 return "";
             }
-            BlobHolder blobHolder = conversionService.convert(ANY2TEXT_CONVERTER, new SimpleBlobHolder(blob), null);
-            if (blobHolder == null) {
-                return "";
-            }
-            Blob resultBlob = blobHolder.getBlob();
+            Blob resultBlob = conversionService.convert(ANY2TEXT_CONVERTER, blob, null);
             if (resultBlob == null) {
                 return "";
             }

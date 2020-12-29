@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.signature.api.exception.AlreadySignedException;
@@ -256,9 +255,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
                 parameters.put(PDFA1_PARAM, Boolean.TRUE);
             }
             try {
-                BlobHolder holder = conversionService.convert("any2pdf", new SimpleBlobHolder(originalBlob),
-                        parameters);
-                pdfBlob = holder.getBlob();
+                pdfBlob = conversionService.convert("any2pdf", originalBlob, parameters);
             } catch (ConversionException conversionException) {
                 throw new SignException(conversionException);
             }

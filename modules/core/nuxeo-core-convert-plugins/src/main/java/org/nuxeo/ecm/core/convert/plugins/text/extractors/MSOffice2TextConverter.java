@@ -45,10 +45,14 @@ public class MSOffice2TextConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+        Blob blob = convert(blobHolder.getBlob(), parameters);
+        return new SimpleCachableBlobHolder(blob);
+    }
 
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
         File f = null;
-
-        try (POITextExtractor extractor = ExtractorFactory.createExtractor(blobHolder.getBlob().getStream())) {
+        try (POITextExtractor extractor = ExtractorFactory.createExtractor(blob.getStream())) {
             // TODO: find a way to distinguish headings from paragraphs using
             // WordExtractor#getParagraphText()?
 
@@ -62,11 +66,10 @@ public class MSOffice2TextConverter implements Converter {
             }
 
             try (InputStream is = new FileInputStream(f)) {
-                Blob blob = Blobs.createBlob(is, "text/plain", "UTF-8");
-                return new SimpleCachableBlobHolder(blob);
+                return Blobs.createBlob(is, "text/plain", "UTF-8");
             }
         } catch (IOException | OpenXML4JException | XmlException e) {
-            throw new ConversionException("Error during MSOffice2Text conversion", blobHolder, e);
+            throw new ConversionException("Error during MSOffice2Text conversion", blob, e);
         } finally {
             if (f != null) {
                 f.delete();

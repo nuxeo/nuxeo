@@ -38,6 +38,11 @@ public class IdentityConverter implements Converter {
     }
 
     @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
+        return blob;
+    }
+
+    @Override
     public void init(ConverterDescriptor descriptor) {
         // NOP
     }

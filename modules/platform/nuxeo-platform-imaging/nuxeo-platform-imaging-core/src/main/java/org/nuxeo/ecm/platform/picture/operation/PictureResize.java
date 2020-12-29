@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
@@ -93,7 +92,6 @@ public class PictureResize {
     @OperationMethod
     public Blob run(Blob blob) {
 
-        SimpleBlobHolder bh = new SimpleBlobHolder(blob);
         Map<String, Serializable> parameters = new HashMap<>();
 
         parameters.put(WIDTH, maxWidth);
@@ -103,10 +101,10 @@ public class PictureResize {
             return blob;
         }
 
-        BlobHolder result = service.convert(PICTURE_RESIZE_CONVERTER, bh, parameters);
+        Blob result = service.convert(PICTURE_RESIZE_CONVERTER, blob, parameters);
 
         if (result != null) {
-            return result.getBlob();
+            return result;
         } else {
             return Blobs.createBlob("Converter did not return any result");
         }

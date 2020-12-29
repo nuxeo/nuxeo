@@ -36,6 +36,12 @@ public class DummyPDFConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+        Blob blob = convert((Blob) null, parameters);
+        return new SimpleBlobHolder(blob);
+    }
+
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
         Boolean setMimeType = (Boolean) parameters.get("setMimeType");
         if (setMimeType == null) {
             setMimeType = false;
@@ -44,13 +50,12 @@ public class DummyPDFConverter implements Converter {
         if (tempFilename == null) {
             tempFilename = false;
         }
-        Blob blob = Blobs.createBlob("", setMimeType ? "application/octet-stream" : null);
+        blob = Blobs.createBlob("", setMimeType ? "application/octet-stream" : null);
         if (tempFilename) {
             blob.setFilename("nxblob-434523.tmp");
         }
-        return new SimpleBlobHolder(blob);
+        return blob;
     }
-
     @Override
     public void init(ConverterDescriptor descriptor) {
     }

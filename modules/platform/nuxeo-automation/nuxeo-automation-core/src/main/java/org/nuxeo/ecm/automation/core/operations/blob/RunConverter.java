@@ -33,8 +33,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 
 /**
@@ -62,10 +60,7 @@ public class RunConverter {
         if (log.isDebugEnabled()) {
             log.debug("Call converter named: " + converter);
         }
-
-        BlobHolder holder = conversionService.convert(converter, new SimpleBlobHolder(blob), propertiesToMap());
-
-        return holder.getBlob();
+        return conversionService.convert(converter, blob, propertiesToMap());
     }
 
     private Map<String, Serializable> propertiesToMap() {

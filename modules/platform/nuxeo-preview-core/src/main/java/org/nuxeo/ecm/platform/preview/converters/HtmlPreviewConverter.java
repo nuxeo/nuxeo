@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
+import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 import org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService;
@@ -119,23 +120,24 @@ public class HtmlPreviewConverter implements ExternalConverter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+        return new SimpleCachableBlobHolder(convert(blobHolder.getBlob(), parameters));
+    }
 
-        Blob sourceBlob = blobHolder.getBlob();
-
+    @Override
+    public Blob convert(Blob sourceBlob, Map<String, Serializable> parameters) throws ConversionException {
         List<String> subConverters = getConverterChain(sourceBlob.getMimeType());
-
         if (subConverters == null) {
             throw new ConversionException("Can not find suitable underlying converters to handle html preview",
-                    blobHolder);
+                    sourceBlob);
         }
 
-        BlobHolder result = blobHolder;
+        Blob result = sourceBlob;
 
         for (String converterName : subConverters) {
             result = Framework.getService(ConversionService.class).convert(converterName, result, parameters);
         }
 
-        Blob blob = result.getBlob();
+        Blob blob = result;
 
         // sanitize result
         HtmlSanitizerService sanitizer = Framework.getService(HtmlSanitizerService.class);
@@ -149,10 +151,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
             throw new ConversionException(e);
         }
         String html = PreviewHelper.makeHtmlPage(body);
-        blob = Blobs.createBlob(html, "text/html", null, blob.getFilename());
-        result.setBlob(blob);
-
-        return result;
+        return Blobs.createBlob(html, "text/html", null, blob.getFilename());
     }
 
     @Override

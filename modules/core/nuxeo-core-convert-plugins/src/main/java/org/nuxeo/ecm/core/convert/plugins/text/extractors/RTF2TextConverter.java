@@ -45,21 +45,24 @@ public class RTF2TextConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+        return new SimpleCachableBlobHolder(convert(blobHolder.getBlob(), parameters));
+    }
+
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
         File f = null;
         try {
             RTFEditorKit rtfParser = new RTFEditorKit();
             Document document = rtfParser.createDefaultDocument();
-            rtfParser.read(blobHolder.getBlob().getStream(), document, 0);
+            rtfParser.read(blob.getStream(), document, 0);
             String text = document.getText(0, document.getLength());
             f = Framework.createTempFile("swing-rtf2text", ".txt");
             FileUtils.writeStringToFile(f, text, UTF_8);
-            Blob blob;
             try (InputStream in = new FileInputStream(f)) {
-                blob = Blobs.createBlob(in, "text/plain");
+                return Blobs.createBlob(in, "text/plain");
             }
-            return new SimpleCachableBlobHolder(blob);
         } catch (IOException | BadLocationException e) {
-            throw new ConversionException("Error during Word2Text conversion", blobHolder, e);
+            throw new ConversionException("Error during Word2Text conversion", blob, e);
         } finally {
             if (f != null) {
                 f.delete();

@@ -55,6 +55,14 @@ public class ThumbnailDocumentConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) {
+        return new SimpleCachableBlobHolder(convert(blobHolder.getBlob(), parameters));
+    }
+
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) {
+        if (blob == null) {
+            return null;
+        }
         try {
             // Make sure the toThumbnail command is available
             CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
@@ -62,12 +70,6 @@ public class ThumbnailDocumentConverter implements Converter {
             if (!commandAvailability.isAvailable()) {
                 return null;
             }
-            // get the input and output of the command
-            Blob blob = blobHolder.getBlob();
-            if (blob == null) {
-                return new SimpleCachableBlobHolder((Blob) null);
-            }
-
             Blob targetBlob = Blobs.createBlobWithExtension(".png");
             targetBlob.setMimeType("image/png");
             try (CloseableFile source = blob.getCloseableFile()) {
@@ -83,9 +85,9 @@ public class ThumbnailDocumentConverter implements Converter {
                     throw res.getError();
                 }
             }
-            return new SimpleCachableBlobHolder(targetBlob);
+            return targetBlob;
         } catch (CommandNotAvailable | IOException | NuxeoException | CommandException e) {
-            throw new ConversionException("Thumbnail conversion failed", blobHolder, e);
+            throw new ConversionException("Thumbnail conversion failed", blob, e);
         }
     }
 
