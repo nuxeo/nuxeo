@@ -4747,7 +4747,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <release>11</release>
+          <release>15</release>
         </configuration>
       </plugin>
       <plugin>
@@ -5156,7 +5156,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>1.4.1</version>
+          <version>3.0.0-M3</version>
           <configuration>
             <rules>
               <requirePluginVersions>
