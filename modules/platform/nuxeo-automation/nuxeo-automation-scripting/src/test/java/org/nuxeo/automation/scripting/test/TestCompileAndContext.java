@@ -53,10 +53,9 @@ import org.nuxeo.automation.scripting.internals.ScriptObjectMirrors;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 
 import com.google.common.base.Charsets;
-
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 /**
  * @since 7.2
