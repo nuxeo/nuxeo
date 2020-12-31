@@ -81,33 +81,33 @@
     <apache.axiom.version>1.2.22</apache.axiom.version>
     <chemistry.opencmis.version>1.1.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
-    <apache.httpcore.version>4.4.13</apache.httpcore.version>
+    <apache.httpcore.version>4.4.14</apache.httpcore.version>
     <apache.httpcomponents.version>4.5.13</apache.httpcomponents.version>
     <apache.poi.version>4.1.2</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0.6-NX02</jxls.version>
-    <jxls2.version>2.8.1</jxls2.version>
-    <xdocreport.version>1.0.5</xdocreport.version>
-    <google.http.client.version>1.19.0</google.http.client.version>
-    <google.oauth.client.version>1.20.0</google.oauth.client.version>
-    <google.api.client.version>1.25.0</google.api.client.version>
+    <jxls2.version>2.9.0</jxls2.version>
+    <xdocreport.version>1.0.6</xdocreport.version>
+    <google.http.client.version>1.38.0</google.http.client.version>
     <google.api.drive.version>v2-rev161-1.19.1</google.api.drive.version>
     <box.api.version>1.1.0</box.api.version>
     <selenium.version>2.53.0</selenium.version>
-    <pdfbox.version>2.0.21</pdfbox.version>
+    <pdfbox.version>2.0.22</pdfbox.version>
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
-    <aws.version>1.11.885</aws.version>
+    <aws.version>1.11.930</aws.version>
     <gcp.version>1.76.0</gcp.version>
     <azure.version>3.1.0</azure.version>
-    <jackson1.version>1.8.1</jackson1.version>
+    <jackson1.version>1.9.11</jackson1.version>
     <jackson.version>2.11.3</jackson.version>
-    <bouncycastle.version>1.66</bouncycastle.version>
+    <bouncycastle.version>1.68</bouncycastle.version>
     <avro.version>1.9.2</avro.version>
     <xz.version>1.8</xz.version>
-    <restlet.version>2.4.2</restlet.version>
+    <restlet.version>2.4.3</restlet.version>
     <batik.version>1.13</batik.version>
     <jmock.version>2.12.0</jmock.version>
     <wro4j.version>1.9.0</wro4j.version>
+    <osgi.version>4.2.0</osgi.version>
+    <net.oauth.core.version>20100527</net.oauth.core.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.vfs>2.1.2.GA</version.org.jboss.vfs>
@@ -117,12 +117,10 @@
 
     <!-- deprecated property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
-    <org.ops4j.pax.version>4.4.0</org.ops4j.pax.version>
-    <org.apache.log4j.version>2.13.3</org.apache.log4j.version>
+    <org.ops4j.pax.version>4.13.1</org.ops4j.pax.version>
+    <org.apache.log4j.version>2.14.0</org.apache.log4j.version>
     <org.slf4j.version>1.7.30</org.slf4j.version>
     <gatling.version>3.3.1</gatling.version>
-    <scala.version>2.12.3</scala.version>
-    <scala-logging.version>3.9.0</scala-logging.version>
     <jgiven.version>0.18.2</jgiven.version>
 
     <nuxeo.skip.enforcer>false</nuxeo.skip.enforcer>
@@ -153,12 +151,10 @@
     <quartz.mongodb.version>2.2.0-rc2</quartz.mongodb.version>
 
     <kafka.version>2.6.0</kafka.version>
-    <confluent.version>6.0.0</confluent.version>
-    <chronicle.bom.version>2.20.40</chronicle.bom.version>
-    <chronicle.threads.version>2.17.25</chronicle.threads.version>
+    <confluent.version>6.0.1</confluent.version>
     <metrics.version>5.0.0-rc3</metrics.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
-    <opencensus.version>0.27.1</opencensus.version>
+    <opencensus.version>0.28.2</opencensus.version>
   </properties>
 
   <dependencyManagement>
@@ -962,7 +958,7 @@
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
-        <version>1.0.0.GA</version>
+        <version>1.1.0.Final</version>
       </dependency>
 
       <!-- Nuxeo DM -->
@@ -2273,7 +2269,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-vfs2</artifactId>
-        <version>2.6.0</version>
+        <version>2.7.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -2344,7 +2340,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.10.6</version>
+        <version>2.10.9</version>
       </dependency>
 
       <!-- JNA, required by Elasticsearch and Chronicle Queue -->
@@ -2630,7 +2626,7 @@
       <dependency>
         <groupId>org.jboss.naming</groupId>
         <artifactId>jnp-client</artifactId>
-        <version>5.0.3.GA</version>
+        <version>5.0.5.Final</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.logging</groupId>
@@ -2814,7 +2810,7 @@
       <dependency>
         <groupId>com.github.librepdf</groupId>
         <artifactId>openpdf</artifactId>
-        <version>1.3.22</version>
+        <version>1.3.24</version>
       </dependency>
       <dependency>
         <groupId>org.freemarker</groupId>
@@ -2840,7 +2836,7 @@
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>3.17.2</version>
+        <version>3.18.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -3022,14 +3018,12 @@
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.core</artifactId>
-        <version>4.2.0</version>
+        <version>${osgi.version}</version>
       </dependency>
-      <!-- OSGI compendium - do not change to org.osgi group since it is
-        not containing all needed classes -->
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.compendium</artifactId>
-        <version>4.2.0</version>
+        <version>${osgi.version}</version>
       </dependency>
       <dependency>
         <groupId>oro</groupId>
@@ -3076,7 +3070,7 @@
       <dependency>
         <groupId>org.mariadb.jdbc</groupId>
         <artifactId>mariadb-java-client</artifactId>
-        <version>1.7.4</version>
+        <version>1.8.0</version>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.jtds</groupId>
@@ -3203,7 +3197,7 @@
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
-        <version>2.4.12</version>
+        <version>2.4.21</version>
       </dependency>
       <dependency>
         <groupId>org.mvel</groupId>
@@ -3248,7 +3242,7 @@
       <dependency>
         <groupId>org.mock-server</groupId>
         <artifactId>mockserver-netty</artifactId>
-        <version>5.11.1</version>
+        <version>5.11.2</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -3329,7 +3323,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>30.0-jre</version>
+        <version>30.1-jre</version>
       </dependency>
       <dependency>
         <groupId>com.google.inject.extensions</groupId>
@@ -3438,7 +3432,7 @@
       <dependency>
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j</artifactId>
-        <version>67.1</version>
+        <version>68.2</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
@@ -3617,12 +3611,12 @@
       <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
-        <version>20200518</version>
+        <version>20201115</version>
       </dependency>
       <dependency>
         <groupId>net.minidev</groupId>
         <artifactId>json-smart</artifactId>
-        <version>1.1.1</version>
+        <version>1.3.1</version>
       </dependency>
       <dependency>
         <groupId>net.logstash.log4j</groupId>
@@ -3714,7 +3708,7 @@
       <dependency>
         <groupId>biz.neustar</groupId>
         <artifactId>browsermob-proxy</artifactId>
-        <version>2.0-beta-6</version>
+        <version>2.0-beta-7</version>
         <exclusions>
           <exclusion>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -3756,11 +3750,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>net.oauth.core</groupId>
-        <artifactId>oauth</artifactId>
-        <version>20090531</version>
-      </dependency>
       <!-- OAUth2 libs -->
       <dependency>
         <groupId>com.google.http-client</groupId>
@@ -3785,7 +3774,7 @@
       <dependency>
         <groupId>com.google.oauth-client</groupId>
         <artifactId>google-oauth-client</artifactId>
-        <version>${google.oauth.client.version}</version>
+        <version>1.31.2</version>
         <exclusions>
           <exclusion>
             <groupId>com.google.guava</groupId>
@@ -3796,7 +3785,7 @@
       <dependency>
         <groupId>com.google.api-client</groupId>
         <artifactId>google-api-client</artifactId>
-        <version>${google.api.client.version}</version>
+        <version>1.31.1</version>
         <exclusions>
           <exclusion>
             <groupId>com.google.guava</groupId>
@@ -3927,11 +3916,10 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- former xmlsec was not compatible jdk9+ -->
       <dependency>
         <groupId>org.apache.santuario</groupId>
         <artifactId>xmlsec</artifactId>
-        <version>2.2.0</version>
+        <version>2.2.1</version>
       </dependency>
       <dependency>
         <groupId>org.opensaml</groupId>
@@ -3941,7 +3929,7 @@
       <dependency>
         <groupId>org.owasp.esapi</groupId>
         <artifactId>esapi</artifactId>
-        <version>2.2.1.1</version>
+        <version>2.2.2.0</version>
         <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
@@ -4053,7 +4041,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymockclassextension</artifactId>
-        <version>2.2.2</version>
+        <version>2.5.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -4065,7 +4053,7 @@
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-webdav</artifactId>
-        <version>2.21.3</version>
+        <version>2.21.4</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -4157,18 +4145,23 @@
 
       <dependency>
         <groupId>net.oauth.core</groupId>
+        <artifactId>oauth</artifactId>
+        <version>${net.oauth.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.oauth.core</groupId>
         <artifactId>oauth-consumer</artifactId>
-        <version>20090531</version>
+        <version>${net.oauth.core.version}</version>
       </dependency>
       <dependency>
         <groupId>net.oauth.core</groupId>
         <artifactId>oauth-httpclient3</artifactId>
-        <version>20090531</version>
+        <version>${net.oauth.core.version}</version>
       </dependency>
       <dependency>
         <groupId>net.oauth.core</groupId>
         <artifactId>oauth-provider</artifactId>
-        <version>20090531</version>
+        <version>${net.oauth.core.version}</version>
       </dependency>
       <dependency>
         <groupId>org.javasimon</groupId>
@@ -4214,7 +4207,7 @@
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
-        <version>7.3.1</version>
+        <version>9.0</version>
       </dependency>
 
       <dependency>
@@ -4361,7 +4354,7 @@
       <dependency>
         <groupId>org.samba.jcifs</groupId>
         <artifactId>jcifs</artifactId>
-        <version>1.2.19</version>
+        <version>1.3.3</version>
       </dependency>
 
       <dependency>
@@ -4481,12 +4474,12 @@
       <dependency>
         <groupId>com.thetransactioncompany</groupId>
         <artifactId>cors-filter</artifactId>
-        <version>2.9</version>
+        <version>2.9.1</version>
       </dependency>
       <dependency>
         <groupId>io.github.classgraph</groupId>
         <artifactId>classgraph</artifactId>
-        <version>4.8.90</version>
+        <version>4.8.98</version>
       </dependency>
 
       <!-- dmk adaptor -->
@@ -4499,7 +4492,7 @@
       <dependency>
         <groupId>redis.clients</groupId>
         <artifactId>jedis</artifactId>
-        <version>2.9.0</version>
+        <version>2.10.2</version>
       </dependency>
 
       <dependency>
@@ -4582,12 +4575,12 @@
       <dependency>
         <groupId>org.scala-lang</groupId>
         <artifactId>scala-library</artifactId>
-        <version>${scala.version}</version>
+        <version>2.12.3</version>
       </dependency>
       <dependency>
         <groupId>com.typesafe.scala-logging</groupId>
         <artifactId>scala-logging_2.12</artifactId>
-        <version>${scala-logging.version}</version>
+        <version>3.9.0</version>
       </dependency>
       <dependency>
         <groupId>org.jolokia</groupId>
@@ -4674,7 +4667,7 @@
       <dependency>
         <groupId>net.openhft</groupId>
         <artifactId>chronicle-bom</artifactId>
-        <version>${chronicle.bom.version}</version>
+        <version>2.20.40</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -4750,7 +4743,7 @@
         <!-- unused dependency, declared to exclude affinity -->
         <groupId>net.openhft</groupId>
         <artifactId>chronicle-threads</artifactId>
-        <version>${chronicle.threads.version}</version>
+        <version>2.17.25</version>
         <exclusions>
           <exclusion>
             <groupId>net.openhft</groupId>
@@ -4761,7 +4754,7 @@
       <dependency>
         <groupId>net.jodah</groupId>
         <artifactId>failsafe</artifactId>
-        <version>1.1.0</version>
+        <version>1.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.jgrapht</groupId>
@@ -4787,7 +4780,7 @@
       <dependency>
         <groupId>com.auth0</groupId>
         <artifactId>java-jwt</artifactId>
-        <version>3.11.0</version>
+        <version>3.12.0</version>
       </dependency>
       <dependency>
         <groupId>com.beetstra.jutf7</groupId>
@@ -4812,7 +4805,7 @@
       <dependency>
         <groupId>org.coursera</groupId>
         <artifactId>metrics-datadog</artifactId>
-        <version>2.0.0-RC1</version>
+        <version>2.0.0-RC2</version>
       </dependency>
 
     </dependencies>
