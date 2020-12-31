@@ -3941,7 +3941,7 @@
       <dependency>
         <artifactId>scim-sdk</artifactId>
         <groupId>com.unboundid.product.scim</groupId>
-        <version>1.7.1</version>
+        <version>1.8.25</version>
         <exclusions>
           <!-- we use official javax.servlet:javax.servlet-api instead -->
           <exclusion>

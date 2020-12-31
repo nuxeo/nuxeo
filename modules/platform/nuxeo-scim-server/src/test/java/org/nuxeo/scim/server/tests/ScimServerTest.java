@@ -26,20 +26,6 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.wink.client.ClientConfig;
-import org.apache.wink.client.httpclient.ApacheHttpClientConfig;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -54,7 +40,6 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import com.google.inject.Inject;
 import com.unboundid.scim.data.Entry;
 import com.unboundid.scim.data.UserResource;
-import com.unboundid.scim.sdk.PreemptiveAuthInterceptor;
 import com.unboundid.scim.sdk.Resources;
 import com.unboundid.scim.sdk.SCIMEndpoint;
 import com.unboundid.scim.sdk.SCIMService;
@@ -77,8 +62,7 @@ public class ScimServerTest {
         int port = servletContainerFeature.getPort();
         final URI uri = URI.create("http://localhost:" + port + "/scim/v1/");
 
-        final ClientConfig clientConfig = createHttpBasicClientConfig("user0", "user0");
-        final SCIMService scimService = new SCIMService(uri, clientConfig);
+        final SCIMService scimService = new SCIMService(uri, "user0", "user0");
         scimService.setAcceptType(MediaType.APPLICATION_JSON_TYPE);
 
         // Core user resource CRUD operation example
@@ -108,34 +92,6 @@ public class ScimServerTest {
         Assert.assertEquals(1, users.getTotalResults());
         Assert.assertEquals("user1", users.iterator().next().getId());
 
-    }
-
-    @SuppressWarnings("resource") // not important in a test
-    protected static ClientConfig createHttpBasicClientConfig(final String userName, final String password) {
-
-        final HttpParams params = new BasicHttpParams();
-        DefaultHttpClient.setDefaultHttpParams(params);
-        params.setBooleanParameter(CoreConnectionPNames.SO_REUSEADDR, true);
-        params.setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
-        params.setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, true);
-
-        final SchemeRegistry schemeRegistry = new SchemeRegistry();
-        schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-
-        final PoolingClientConnectionManager mgr = new PoolingClientConnectionManager(schemeRegistry);
-        mgr.setMaxTotal(200);
-        mgr.setDefaultMaxPerRoute(20);
-
-        final DefaultHttpClient httpClient = new DefaultHttpClient(mgr, params);
-
-        final Credentials credentials = new UsernamePasswordCredentials(userName, password);
-        httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, credentials);
-        httpClient.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
-
-        ClientConfig clientConfig = new ApacheHttpClientConfig(httpClient);
-        clientConfig.setBypassHostnameVerification(true);
-
-        return clientConfig;
     }
 
 }
