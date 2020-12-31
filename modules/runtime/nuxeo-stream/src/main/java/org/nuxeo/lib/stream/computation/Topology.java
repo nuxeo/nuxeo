@@ -27,8 +27,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedAcyclicGraph;
 
 /**
  * Represent a Directed Acyclic Graph (DAG) of computations.
@@ -52,7 +52,7 @@ public class Topology {
         this.metadataList = new ArrayList<>(builder.metadataSet.size());
         try {
             generateDag(builder.metadataSet);
-        } catch (DirectedAcyclicGraph.CycleFoundException e) {
+        } catch (IllegalArgumentException e) {
             throw new IllegalStateException("Cycle found in topology: " + e.getMessage(), e);
         }
     }
@@ -110,8 +110,7 @@ public class Topology {
         return name.replaceAll("[^a-zA-Z]", ".");
     }
 
-    protected void generateDag(Set<ComputationMetadataMapping> metadataSet)
-            throws DirectedAcyclicGraph.CycleFoundException {
+    protected void generateDag(Set<ComputationMetadataMapping> metadataSet) throws IllegalArgumentException {
         for (ComputationMetadata metadata : metadataSet) {
             Vertex computationVertex = new Vertex(VertexType.COMPUTATION, metadata.name);
             dag.addVertex(computationVertex);
@@ -119,14 +118,14 @@ public class Topology {
                 for (String stream : metadata.outputStreams) {
                     Vertex streamVertex = new Vertex(VertexType.STREAM, stream);
                     dag.addVertex(streamVertex);
-                    dag.addDagEdge(computationVertex, streamVertex);
+                    dag.addEdge(computationVertex, streamVertex);
                 }
             }
             if (metadata.inputStreams() != null) {
                 for (String streamName : metadata.inputStreams()) {
                     Vertex streamVertex = new Vertex(VertexType.STREAM, streamName);
                     dag.addVertex(streamVertex);
-                    dag.addDagEdge(streamVertex, computationVertex);
+                    dag.addEdge(streamVertex, computationVertex);
                 }
             }
         }
@@ -199,12 +198,12 @@ public class Topology {
 
     public Set<String> getDescendants(String name) {
         Vertex start = getVertex(name);
-        return dag.getDescendants(dag, start).stream().map(Vertex::getName).collect(Collectors.toSet());
+        return dag.getDescendants(start).stream().map(Vertex::getName).collect(Collectors.toSet());
     }
 
     public Set<String> getDescendantComputationNames(String name) {
         Vertex start = getVertex(name);
-        return dag.getDescendants(dag, start)
+        return dag.getDescendants(start)
                   .stream()
                   .filter(vertex -> vertex.type == VertexType.COMPUTATION)
                   .map(vertex -> vertex.name)
@@ -250,7 +249,7 @@ public class Topology {
     }
 
     public Set<String> getAncestorComputationNames(String name) {
-        Set<Vertex> ancestors = dag.getAncestors(dag, new Vertex(VertexType.COMPUTATION, name));
+        Set<Vertex> ancestors = dag.getAncestors(new Vertex(VertexType.COMPUTATION, name));
         return ancestors.stream()
                         .filter(vertex -> vertex.type == VertexType.COMPUTATION)
                         .map(vertex -> vertex.name)
@@ -259,13 +258,13 @@ public class Topology {
 
     public Set<String> getAncestors(String name) {
         Vertex start = getVertex(name);
-        return dag.getAncestors(dag, start).stream().map(Vertex::getName).collect(Collectors.toSet());
+        return dag.getAncestors(start).stream().map(Vertex::getName).collect(Collectors.toSet());
     }
 
     public Set<String> getRoots() {
         Set<String> ret = new HashSet<>();
         for (Vertex vertex : dag) {
-            if (dag.getAncestors(dag, vertex).isEmpty()) {
+            if (dag.getAncestors(vertex).isEmpty()) {
                 ret.add(vertex.getName());
             }
         }
