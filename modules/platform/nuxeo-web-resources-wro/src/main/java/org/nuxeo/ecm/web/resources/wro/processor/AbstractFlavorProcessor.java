@@ -31,7 +31,7 @@ import org.nuxeo.ecm.web.resources.wro.provider.NuxeoUriLocator;
 
 import ro.isdc.wro.config.Context;
 import ro.isdc.wro.config.ReadOnlyContext;
-import ro.isdc.wro.config.jmx.WroConfiguration;
+import ro.isdc.wro.config.support.ConfigConstants;
 import ro.isdc.wro.model.group.Inject;
 import ro.isdc.wro.model.resource.Resource;
 import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
@@ -63,7 +63,8 @@ public abstract class AbstractFlavorProcessor implements ResourcePreProcessor {
             String flavorName) throws IOException;
 
     public String getEncoding() {
-        return Context.isContextSet() ? context.getConfig().getEncoding() : WroConfiguration.DEFAULT_ENCODING;
+        return Context.isContextSet() ? context.getConfig().getEncoding()
+                : (String) ConfigConstants.encoding.getDefaultPropertyValue();
     }
 
     protected String getFlavor() {
