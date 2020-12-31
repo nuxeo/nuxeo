@@ -24,6 +24,7 @@ package org.nuxeo.osgi;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Dictionary;
 
 import org.nuxeo.osgi.services.ServiceReferenceImpl;
@@ -96,6 +97,11 @@ public class OSGiBundleContext implements BundleContext {
     }
 
     @Override
+    public Bundle getBundle(String location) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Bundle[] getBundles() {
         return bundle.osgi.registry.getInstalledBundles();
     }
@@ -122,9 +128,20 @@ public class OSGiBundleContext implements BundleContext {
     }
 
     @Override
+    public <S> ServiceReference<S> getServiceReference(Class<S> clazz) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
         ServiceRegistration reg = bundle.osgi.services.get(clazz);
         return reg != null ? new ServiceReference[] { reg.getReference() } : null;
+    }
+
+    @Override
+    public <S> Collection<ServiceReference<S>> getServiceReferences(Class<S> clazz, String filter)
+            throws InvalidSyntaxException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -166,6 +183,11 @@ public class OSGiBundleContext implements BundleContext {
     @Override
     public ServiceRegistration registerService(String clazz, Object service, Dictionary properties) {
         return registerService(new String[] { clazz }, service, properties);
+    }
+
+    @Override
+    public <S> ServiceRegistration<S> registerService(Class<S> clazz, S service, Dictionary<String, ?> properties) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
