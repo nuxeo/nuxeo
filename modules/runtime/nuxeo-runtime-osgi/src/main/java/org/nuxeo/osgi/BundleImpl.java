@@ -20,6 +20,7 @@
 
 package org.nuxeo.osgi;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -440,6 +441,11 @@ public class BundleImpl implements Bundle {
     }
 
     @Override
+    public int compareTo(Bundle obj) {
+        return symbolicName.compareTo(obj.getSymbolicName());
+    }
+
+    @Override
     public String toString() {
         return symbolicName;
     }
@@ -453,6 +459,16 @@ public class BundleImpl implements Bundle {
     @Override
     public Version getVersion() {
         return Version.parseVersion(headers.get(Constants.BUNDLE_VERSION));
+    }
+
+    @Override
+    public <A> A adapt(Class<A> type) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public File getDataFile(String filename) {
+        throw new UnsupportedOperationException();
     }
 
 }
