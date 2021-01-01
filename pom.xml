@@ -109,12 +109,6 @@
     <osgi.version>4.3.1</osgi.version>
     <net.oauth.core.version>20100527</net.oauth.core.version>
 
-    <!-- JBoss properties -->
-    <version.org.jboss.vfs>2.1.2.GA</version.org.jboss.vfs>
-    <version.org.jboss.cache.pojo>3.0.0.GA</version.org.jboss.cache.pojo>
-    <version.org.jboss.microcontainer>2.0.6.GA</version.org.jboss.microcontainer>
-    <version.org.jboss.integration>5.1.0.GA</version.org.jboss.integration>
-
     <!-- deprecated property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
     <org.ops4j.pax.version>4.13.1</org.ops4j.pax.version>
@@ -2551,45 +2545,10 @@
         </exclusions>
       </dependency>
 
-      <!-- Guessed versions of code included in JBoss 5.1.0.GA or at least
-        compliant -->
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging-log4j</artifactId>
-        <version>2.1.0.GA</version>
-      </dependency>
-
-      <!-- jboss (+ hibernate, richfaces...) -->
-      <dependency>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-vfs</artifactId>
-        <version>${version.org.jboss.vfs}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>jboss-common-core</artifactId>
-            <groupId>jboss</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.microcontainer</groupId>
-        <artifactId>jboss-dependency</artifactId>
-        <version>${version.org.jboss.microcontainer}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.microcontainer</groupId>
-        <artifactId>jboss-kernel</artifactId>
-        <version>${version.org.jboss.microcontainer}</version>
-      </dependency>
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
         <version>3.3.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.remoting</groupId>
-        <artifactId>jboss-remoting</artifactId>
-        <version>2.5.1</version>
       </dependency>
       <dependency>
         <groupId>org.javassist</groupId>
@@ -2611,31 +2570,6 @@
             <artifactId>el-api</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-serialization</artifactId>
-        <version>1.0.3.GA</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.security</groupId>
-        <artifactId>jbosssx</artifactId>
-        <version>2.0.3.SP1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.naming</groupId>
-        <artifactId>jnp-client</artifactId>
-        <version>5.0.5.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging-spi</artifactId>
-        <version>2.1.0.GA</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-common-core</artifactId>
-        <version>2.2.14.GA</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -3416,11 +3350,6 @@
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
         <version>1.10.9</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jdt</groupId>
-        <artifactId>core</artifactId>
-        <version>3.1.1-NXP-4284</version>
       </dependency>
       <dependency>
         <groupId>rhino</groupId>
@@ -4932,11 +4861,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jboss-packaging-maven-plugin</artifactId>
-        <extensions>true</extensions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
         <configuration>
@@ -5049,11 +4973,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
           <version>1.7</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>jboss-packaging-maven-plugin</artifactId>
-          <version>2.2</version>
         </plugin>
         <plugin>
           <groupId>net.sourceforge.maven-taglib</groupId>
