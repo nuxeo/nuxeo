@@ -19,7 +19,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.samba.jcifs</groupId>
+      <groupId>org.codelibs</groupId>
       <artifactId>jcifs</artifactId>
     </dependency>
 
@@ -55,7 +55,7 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.samba.jcifs</groupId>
+                  <groupId>org.codelibs</groupId>
                   <artifactId>jcifs</artifactId>
                 </artifactItem>
               </artifactItems>
