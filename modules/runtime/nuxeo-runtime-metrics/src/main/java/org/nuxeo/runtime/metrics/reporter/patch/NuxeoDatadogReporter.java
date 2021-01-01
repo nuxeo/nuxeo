@@ -108,7 +108,7 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
     }
 
     @Override
-    public void report(SortedMap<MetricName, Gauge> gauges, SortedMap<MetricName, Counter> counters,
+    public void report(SortedMap<MetricName, Gauge<?>> gauges, SortedMap<MetricName, Counter> counters,
             SortedMap<MetricName, Histogram> histograms, SortedMap<MetricName, Meter> meters,
             SortedMap<MetricName, Timer> timers) {
         final long timestamp = clock.getTime() / 1000;
@@ -116,7 +116,7 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
         try {
             request = transport.prepare();
 
-            for (Map.Entry<MetricName, Gauge> entry : gauges.entrySet()) {
+            for (Map.Entry<MetricName, Gauge<?>> entry : gauges.entrySet()) {
                 reportGauge(prefix(entry.getKey().getKey()), entry.getValue(), timestamp,
                         getTags(entry.getKey().getTags()));
             }
@@ -221,7 +221,7 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
      * Gauges are the only metrics which can throw exceptions. With a thrown exception all other metrics will not be
      * reported to Datadog.
      */
-    private void reportGauge(String name, Gauge gauge, long timestamp, List<String> tags) {
+    private void reportGauge(String name, Gauge<?> gauge, long timestamp, List<String> tags) {
         try {
             final Number value = toNumber(gauge.getValue());
             if (value != null) {

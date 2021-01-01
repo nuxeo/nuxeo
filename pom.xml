@@ -152,7 +152,6 @@
 
     <kafka.version>2.6.0</kafka.version>
     <confluent.version>6.0.1</confluent.version>
-    <metrics.version>5.0.0-rc3</metrics.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.28.2</opencensus.version>
   </properties>
@@ -4188,7 +4187,7 @@
       <dependency>
         <groupId>io.dropwizard.metrics5</groupId>
         <artifactId>metrics-bom</artifactId>
-        <version>${metrics.version}</version>
+        <version>5.0.0-rc4</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
