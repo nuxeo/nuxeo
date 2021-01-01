@@ -164,8 +164,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
                 MetricName.build("nuxeo", "repositories", "repository", "cache", "unified", "sor", "timer")
                           .tagged("repository", repositoryName));
         MetricName gaugeName = MetricName.build("nuxeo", "repositories", "repository", "cache", "unified", "size");
-        @SuppressWarnings("rawtypes")
-        SortedMap<MetricName, Gauge> gauges = registry.getGauges();
+        SortedMap<MetricName, Gauge<?>> gauges = registry.getGauges();
         if (!gauges.containsKey(gaugeName)) {
             registry.register(gaugeName, new Gauge<Integer>() {
                 @Override

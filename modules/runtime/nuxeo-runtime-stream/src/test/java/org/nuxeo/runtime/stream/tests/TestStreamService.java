@@ -220,7 +220,7 @@ public class TestStreamService {
     public void testStreamMetrics() {
         // before running the stream metrics computation no stream metrics are registered
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(NUXEO_METRICS_REGISTRY_NAME);
-        SortedMap<MetricName, Gauge> gauges = registry.getGauges((name, metric) -> name.getKey().startsWith("nuxeo.streams.global"));
+        SortedMap<MetricName, Gauge<?>> gauges = registry.getGauges((name, metric) -> name.getKey().startsWith("nuxeo.streams.global"));
         assertTrue(gauges.isEmpty());
 
         // create a stream metrics computation
@@ -235,9 +235,9 @@ public class TestStreamService {
         // we have a gauges per existing computations
         gauges = registry.getGauges((name, metric) -> name.getKey().startsWith("nuxeo.streams.global"));
         assertFalse(gauges.isEmpty());
-        Gauge gauge = gauges.get(MetricName.build("nuxeo.streams.global.stream.group.end")
-                                           .tagged("stream", "input")
-                                           .tagged("group", "myComputation"));
+        Gauge<?> gauge = gauges.get(MetricName.build("nuxeo.streams.global.stream.group.end")
+                                              .tagged("stream", "input")
+                                              .tagged("group", "myComputation"));
         assertNotNull(gauge);
         assertNotNull(gauge.getValue());
 
