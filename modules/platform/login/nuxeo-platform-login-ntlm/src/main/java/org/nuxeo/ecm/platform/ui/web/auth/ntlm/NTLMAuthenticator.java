@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.ntlm;
 
+import static jcifs.smb1.smb1.NtStatus.NT_STATUS_ACCESS_VIOLATION;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -30,34 +32,34 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import jcifs.Config;
-import jcifs.UniAddress;
-import jcifs.http.NtlmSsp;
-
-import jcifs.smb.NtlmChallenge;
-import jcifs.smb.NtlmPasswordAuthentication;
-import jcifs.smb.SmbAuthException;
-import jcifs.smb.SmbSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
-import static jcifs.smb.NtStatus.NT_STATUS_ACCESS_VIOLATION;
+import jcifs.smb1.Config;
+import jcifs.smb1.UniAddress;
+import jcifs.smb1.http.NtlmSsp;
+import jcifs.smb1.smb1.NtlmChallenge;
+import jcifs.smb1.smb1.NtlmPasswordAuthentication;
+import jcifs.smb1.smb1.SmbAuthException;
+import jcifs.smb1.smb1.SmbSession;
 
 public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
 
     private static final String JCIFS_PREFIX = "jcifs.";
 
-    public static final String JCIFS_NETBIOS_CACHE_POLICY = "jcifs.netbios.cachePolicy";
+    private static final String JCIFS_SMB1_PREFIX = "jcifs.smb1.";
 
-    public static final String JCIFS_SMB_CLIENT_SO_TIMEOUT = "jcifs.smb.client.soTimeout";
+    public static final String JCIFS_NETBIOS_CACHE_POLICY = "jcifs.smb1.netbios.cachePolicy";
 
-    public static final String JCIFS_HTTP_LOAD_BALANCE = "jcifs.http.loadBalance";
+    public static final String JCIFS_SMB_CLIENT_SO_TIMEOUT = "jcifs.smb1.netbios.soTimeout";
 
-    public static final String JCIFS_HTTP_DOMAIN_CONTROLLER = "jcifs.http.domainController";
+    public static final String JCIFS_HTTP_LOAD_BALANCE = "jcifs.smb1.http.loadBalance";
 
-    public static final String JCIFS_SMB_CLIENT_DOMAIN = "jcifs.smb.client.domain";
+    public static final String JCIFS_HTTP_DOMAIN_CONTROLLER = "jcifs.smb1.http.domainController";
+
+    public static final String JCIFS_SMB_CLIENT_DOMAIN = "jcifs.smb1.smb.client.domain";
 
     public static final boolean FORCE_SESSION_CREATION = true;
 
@@ -149,9 +151,14 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
         Config.setProperty(JCIFS_NETBIOS_CACHE_POLICY, "1200");
 
         // init CIFS from parameters
-        for (String name : parameters.keySet()) {
+        for (Map.Entry<String, String> en : parameters.entrySet()) {
+            String name = en.getKey();
             if (name.startsWith(JCIFS_PREFIX)) {
-                Config.setProperty(name, parameters.get(name));
+                if (!name.startsWith(JCIFS_SMB1_PREFIX)) {
+                    // compat
+                    name = name.replace(JCIFS_PREFIX, JCIFS_SMB1_PREFIX);
+                }
+                Config.setProperty(name, en.getValue());
             }
         }
 
