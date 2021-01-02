@@ -43,7 +43,7 @@ public final class JsonFactoryProvider {
      */
     public static JsonFactory get() {
         if (jsonFactory == null) {
-            jsonFactory = new JsonFactory(new ObjectMapper());
+            jsonFactory = new JsonFactory(new ObjectMapper().findAndRegisterModules());
         }
         return jsonFactory;
     }
