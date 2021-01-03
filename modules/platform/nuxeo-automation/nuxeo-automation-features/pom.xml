@@ -164,7 +164,7 @@
     </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>
-      <artifactId>persistence-api</artifactId>
+      <artifactId>javax.persistence-api</artifactId>
     </dependency>
     <!-- for http helpers -->
     <dependency>
