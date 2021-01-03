@@ -2124,8 +2124,8 @@
       </dependency>
       <dependency>
         <groupId>javax.persistence</groupId>
-        <artifactId>persistence-api</artifactId>
-        <version>1.0.2</version>
+        <artifactId>javax.persistence-api</artifactId>
+        <version>2.2</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
@@ -2640,29 +2640,8 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
-        <version>3.3.2.GA</version>
+        <version>5.4.27.Final</version>
         <exclusions>
-          <!-- use org.dom4j:dom4j instead -->
-          <exclusion>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-          </exclusion>
-          <!-- exposes a package conflicting with JDK -->
-          <exclusion>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-annotations</artifactId>
-        <version>3.4.0.GA</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.hibernate</groupId>
-            <artifactId>ejb3-persistence</artifactId>
-          </exclusion>
           <!-- use org.dom4j:dom4j instead -->
           <exclusion>
             <groupId>dom4j</groupId>
@@ -2678,38 +2657,7 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
-        <version>3.4.0.GA</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.hibernate</groupId>
-            <artifactId>ejb3-persistence</artifactId>
-          </exclusion>
-          <!-- use org.javassist:javassist instead -->
-          <exclusion>
-            <groupId>javassist</groupId>
-            <artifactId>javassist</artifactId>
-          </exclusion>
-          <!-- use org.dom4j:dom4j instead -->
-          <exclusion>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-          </exclusion>
-          <!-- use managed version -->
-          <exclusion>
-            <groupId>jaxen</groupId>
-            <artifactId>jaxen</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-commons-annotations</artifactId>
-        <version>3.1.0.GA</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-validator</artifactId>
-        <version>3.1.0.GA</version>
+        <version>5.4.27.Final</version>
       </dependency>
 
       <dependency>
@@ -5464,6 +5412,12 @@
                   <exclude>javax.servet:servlet-api</exclude> <!-- use official javax.servlet:javax.servlet-api instead -->
                 </excludes>
                 <message>javax.servlet:servlet-api must not be used, use javax.servlet:javax.servlet-api instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>javax.persistence:persistence-api</exclude> <!-- use javax.persistence:javax.persistence-api instead -->
+                </excludes>
+                <message>javax.persistence:persistence-api must not be used, use javax.persistence:javax.persistence-api instead</message>
               </bannedDependencies>
               <bannedDependencies>
                 <excludes>
