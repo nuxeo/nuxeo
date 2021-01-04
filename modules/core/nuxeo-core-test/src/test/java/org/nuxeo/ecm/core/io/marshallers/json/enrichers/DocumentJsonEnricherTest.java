@@ -62,16 +62,15 @@ public class DocumentJsonEnricherTest extends AbstractJsonWriterTest.Local<Docum
         params.put("param1", "value1");
         params.put("param2", "value2");
         RenderingContext ctx = CtxBuilder.enrichDoc("contextualParameters", "children", "breadcrumb",
-                                                    "permissions", "subtypes")
+                                                    "permissions")
                                          .param("contextualParameters", params)
                                          .get();
         JsonAssert json = jsonAssert(root, ctx);
         json = json.has("contextParameters");
-        json.properties(6);
+        json.properties(5);
         json.has("children");
         json.has("breadcrumb");
         json.has("permissions");
-        json.has("subtypes");
         json.has("param1");
         json.has("param2");
     }
