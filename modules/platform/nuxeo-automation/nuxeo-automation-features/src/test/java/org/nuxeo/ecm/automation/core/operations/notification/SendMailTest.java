@@ -18,17 +18,25 @@
  */
 package org.nuxeo.ecm.automation.core.operations.notification;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.PASSIVE;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class })
+@Features({ RuntimeFeature.class, CoreFeature.class })
+@Deploy("org.nuxeo.runtime.management")
+@Deploy("org.nuxeo.ecm.core.management")
 public class SendMailTest {
 
     protected static final String TOKEN = "ABC";
@@ -57,5 +65,14 @@ public class SendMailTest {
         final String docUrl = "http://www.nuxeo.com/#/server";
         assertEquals("http://www.nuxeo.com/?token=" + TOKEN + "#/server",
                 sendMail.createDocUrlWithToken(docUrl, TOKEN));
+    }
+
+    @Test
+    public void shouldReturnNullOnPassiveSMTPSetting() {
+        AdministrativeStatusManager localManager = Framework.getService(AdministrativeStatusManager.class);
+        localManager.setStatus("org.nuxeo.ecm.smtp", PASSIVE, "turn off SMTP service", "Administrator");
+        assertTrue(localManager.getStatus("org.nuxeo.ecm.smtp").isPassive());
+        final String docUrl = "http://www.nuxeo.com/";
+        assertNull(sendMail.createDocUrlWithToken(docUrl, TOKEN));
     }
 }
