@@ -37,7 +37,9 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
  * document.
  *
  * @since 8.4
+ * @deprecated Since 11.5, use the SubtypesJsonEnricher in org.nuxeo.ecm.platform.types instead.
  */
+@Deprecated
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class SubtypesJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
