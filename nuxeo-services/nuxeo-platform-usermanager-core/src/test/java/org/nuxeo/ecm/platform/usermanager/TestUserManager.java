@@ -1443,8 +1443,7 @@ public class TestUserManager extends UserManagerTestCase {
 
         // basic query, directory configured for "subinitial" substring match type
         query = getQueryForPattern("foo");
-        assertEquals("OR(firstName ILIKE 'foo%', lastName ILIKE 'foo%', username ILIKE 'foo%')",
-                query);
+        assertEquals("OR(firstName ILIKE 'foo%', lastName ILIKE 'foo%', username ILIKE 'foo%')", query);
 
         // query containing wildcards that should be escaped (except if compat)
         query = getQueryForPattern("a_b%c");
