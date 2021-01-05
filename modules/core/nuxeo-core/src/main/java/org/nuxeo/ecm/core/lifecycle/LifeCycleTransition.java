@@ -20,10 +20,12 @@
 
 package org.nuxeo.ecm.core.lifecycle;
 
+import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTransitionDescriptor;
+
 /**
  * Life cycle transition.
  *
- * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleTransitionImpl
+ * @see LifeCycleTransitionDescriptor
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public interface LifeCycleTransition {

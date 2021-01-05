@@ -20,9 +20,6 @@
 
 package org.nuxeo.ecm.core.lifecycle.impl;
 
-import static java.util.function.Predicate.isEqual;
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETED_STATE;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +30,6 @@ import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleState;
-import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleDescriptor;
-import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTypesDescriptor;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -53,16 +48,17 @@ public class LifeCycleServiceImpl extends DefaultComponent implements LifeCycleS
 
     private static final Log log = LogFactory.getLog(LifeCycleServiceImpl.class);
 
-    protected LifeCycleRegistry lifeCycles = new LifeCycleRegistry();
+    protected LifeCycleRegistry getLifeCycleRegistry() {
+        return getExtensionPointRegistry("lifecycle");
+    }
 
-    protected LifeCycleTypeRegistry lifeCycleTypes = new LifeCycleTypeRegistry();
-
-    public LifeCycleServiceImpl() {
+    protected LifeCycleTypeRegistry getLifeCycleTypeRegistry() {
+        return getExtensionPointRegistry("types");
     }
 
     @Override
     public LifeCycle getLifeCycleByName(String name) {
-        return lifeCycles.getLifeCycle(name);
+        return getLifeCycleRegistry().getLifeCycle(name);
     }
 
     @Override
@@ -73,22 +69,22 @@ public class LifeCycleServiceImpl extends DefaultComponent implements LifeCycleS
 
     @Override
     public String getLifeCycleNameFor(String typeName) {
-        return lifeCycleTypes.getLifeCycleNameForType(typeName);
+        return getLifeCycleTypeRegistry().getLifeCycleNameForType(typeName);
     }
 
     @Override
     public Collection<LifeCycle> getLifeCycles() {
-        return lifeCycles.getLifeCycles();
+        return getLifeCycleRegistry().getLifeCycles();
     }
 
     @Override
     public Collection<String> getTypesFor(String lifeCycleName) {
-        return lifeCycleTypes.getTypesFor(lifeCycleName);
+        return getLifeCycleTypeRegistry().getTypesFor(lifeCycleName);
     }
 
     @Override
     public Map<String, String> getTypesMapping() {
-        return lifeCycleTypes.getTypesMapping();
+        return getLifeCycleTypeRegistry().getTypesMapping();
     }
 
     @Override
@@ -151,59 +147,15 @@ public class LifeCycleServiceImpl extends DefaultComponent implements LifeCycleS
      */
     @Override
     public void registerExtension(Extension extension) {
-        Object[] contributions = extension.getContributions();
-        if (contributions != null) {
-            String point = extension.getExtensionPoint();
-            if (point.equals("lifecycle")) {
-                for (Object contribution : contributions) {
-                    LifeCycleDescriptor desc = (LifeCycleDescriptor) contribution;
-                    lifeCycles.addContribution(desc);
-                    // look for delete state to warn about usage
-                    if (!"default".equals(desc.getName())
-                            && desc.getStates().stream().map(LifeCycleState::getName).anyMatch(
-                                    isEqual(DELETED_STATE))) {
-                        log.warn("The 'deleted' state is deprecated and shouldn't be use anymore."
-                                + " Please consider removing it from you life cycle policy and use trash service instead.");
-                    }
-                }
-            } else if (point.equals("lifecyclemanager")) {
-                log.warn("Ignoring deprecated lifecyclemanager extension point");
-            } else if (point.equals("types")) {
-                for (Object mapping : contributions) {
-                    LifeCycleTypesDescriptor desc = (LifeCycleTypesDescriptor) mapping;
-                    lifeCycleTypes.addContribution(desc);
-                }
-            }
-        }
-    }
-
-    /**
-     * Unregisters an extension.
-     */
-    @Override
-    public void unregisterExtension(Extension extension) {
-        super.unregisterExtension(extension);
-        Object[] contributions = extension.getContributions();
-        if (contributions != null) {
-            String point = extension.getExtensionPoint();
-            if (point.equals("lifecycle")) {
-                for (Object lifeCycle : contributions) {
-                    LifeCycleDescriptor lifeCycleDescriptor = (LifeCycleDescriptor) lifeCycle;
-                    lifeCycles.removeContribution(lifeCycleDescriptor);
-                }
-            } else if (point.equals("types")) {
-                for (Object contrib : contributions) {
-                    LifeCycleTypesDescriptor desc = (LifeCycleTypesDescriptor) contrib;
-                    lifeCycleTypes.removeContribution(desc);
-                }
-
-            }
+        super.registerExtension(extension);
+        if ("lifecyclemanager".equals(extension.getExtensionPoint())) {
+            log.warn("Ignoring deprecated lifecyclemanager extension point");
         }
     }
 
     @Override
     public List<String> getNonRecursiveTransitionForDocType(String docTypeName) {
-        return lifeCycleTypes.getNonRecursiveTransitionForDocType(docTypeName);
+        return getLifeCycleTypeRegistry().getNonRecursiveTransitionForDocType(docTypeName);
     }
 
 }

@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.lifecycle.extensions;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Life cycle types mapping descriptor.
@@ -30,8 +32,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @XObject(value = "type")
+@XRegistry(compatWarnOnMerge = true)
 public class LifeCycleTypesDescriptor {
+
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@noRecursionForTransitions")

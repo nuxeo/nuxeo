@@ -18,68 +18,54 @@
  */
 package org.nuxeo.ecm.core.lifecycle.impl;
 
+import static java.util.function.Predicate.isEqual;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETED_STATE;
+
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleState;
 import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleDescriptor;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * Registry for life cycles
  *
  * @since 5.6
  */
-public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDescriptor> {
+public class LifeCycleRegistry extends MapRegistry {
 
-    private static final Log log = LogFactory.getLog(LifeCycleRegistry.class);
+    private static final Logger log = LogManager.getLogger(LifeCycleRegistry.class);
 
-    protected Map<String, LifeCycle> lifeCycles = new HashMap<>();
-
-    @Override
-    public String getContributionId(LifeCycleDescriptor contrib) {
-        return contrib.getName();
-    }
+    protected Map<String, LifeCycle> lifeCycles = new ConcurrentHashMap<>();
 
     @Override
-    public void contributionUpdated(String id, LifeCycleDescriptor contrib, LifeCycleDescriptor newOrigContrib) {
-        log.info("Registering lifecycle: " + contrib.getName());
-        lifeCycles.put(contrib.getName(), getLifeCycle(contrib));
-    }
-
-    @Override
-    public void contributionRemoved(String id, LifeCycleDescriptor lifeCycleDescriptor) {
-        log.info("Unregistering lifecycle: " + lifeCycleDescriptor.getName());
-        lifeCycles.remove(lifeCycleDescriptor.getName());
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public LifeCycleDescriptor clone(LifeCycleDescriptor orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(LifeCycleDescriptor src, LifeCycleDescriptor dst) {
-        throw new UnsupportedOperationException();
+    public void initialize() {
+        super.initialize();
+        lifeCycles.clear();
+        lifeCycles.putAll(this.<LifeCycleDescriptor> getContributionValues()
+                              .stream()
+                              .collect(Collectors.toConcurrentMap(LifeCycleDescriptor::getName, this::getLifeCycle)));
     }
 
     // API
 
     public LifeCycle getLifeCycle(String name) {
+        if (name == null) {
+            return null;
+        }
+        checkInitialized();
         return lifeCycles.get(name);
     }
 
     public Collection<LifeCycle> getLifeCycles() {
+        checkInitialized();
         return lifeCycles.values();
     }
 
@@ -87,15 +73,16 @@ public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDes
      * Returns a life cycle instance out of the life cycle configuration.
      */
     public LifeCycle getLifeCycle(LifeCycleDescriptor desc) {
+        checkInitialized();
         String name = desc.getName();
         String initialStateName = desc.getInitialStateName();
         String defaultInitialStateName = desc.getDefaultInitialStateName();
         if (initialStateName != null) {
             defaultInitialStateName = initialStateName;
-            log.warn(String.format("Lifecycle registration of default initial"
-                    + " state has changed, change initial=\"%s\" to "
-                    + "defaultInitial=\"%s\" in lifecyle '%s' definition", defaultInitialStateName,
-                    defaultInitialStateName, name));
+            log.warn(
+                    "Lifecycle registration of default initial state has changed, change initial=\"{}\" to "
+                            + "defaultInitial=\"{}\" in lifecyle '{}' definition",
+                    defaultInitialStateName, defaultInitialStateName, name);
         }
         boolean defaultInitialStateFound = false;
         Collection<String> initialStateNames = new HashSet<>();
@@ -111,7 +98,13 @@ public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDes
             }
         }
         if (!defaultInitialStateFound) {
-            log.error(String.format("Default initial state %s not found on lifecycle %s", defaultInitialStateName, name));
+            log.error("Default initial state '{}' not found on lifecycle '{}'", defaultInitialStateName, name);
+        }
+        // look for "deleted" state to warn about usage
+        if (!"default".equals(desc.getName())
+                && desc.getStates().stream().map(LifeCycleState::getName).anyMatch(isEqual(DELETED_STATE))) {
+            log.warn("The 'deleted' state is deprecated and shouldn't be use anymore."
+                    + " Please consider removing it from you life cycle policy and use trash service instead.");
         }
         return new LifeCycleImpl(name, defaultInitialStateName, initialStateNames, states, desc.getTransitions());
     }
