@@ -31,7 +31,7 @@ import org.nuxeo.template.serializer.executors.TemplateSerializer;
  * @since 11.1
  */
 @XObject("serializer")
-@XRegistry
+@XRegistry(compatWarnOnMerge = true)
 public class SerializerDescriptor {
 
     @XNode("@class")

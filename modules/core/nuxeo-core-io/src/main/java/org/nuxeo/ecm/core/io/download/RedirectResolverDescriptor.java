@@ -28,7 +28,7 @@ import org.nuxeo.common.xmap.registry.XRegistry;
  * @author Remi Cattiau
  */
 @XObject("redirectResolver")
-@XRegistry
+@XRegistry(compatWarnOnMerge = true)
 public class RedirectResolverDescriptor {
 
     @XNode("@class")

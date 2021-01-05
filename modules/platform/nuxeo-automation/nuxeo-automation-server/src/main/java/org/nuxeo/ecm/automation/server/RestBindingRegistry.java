@@ -51,7 +51,14 @@ public class RestBindingRegistry extends MapRegistry {
         Object contrib;
         XAnnotatedMember merge = xObject.getMerge();
         if (merge != null && Boolean.TRUE.equals(merge.getValue(ctx, element))) {
-            contrib = xObject.newInstance(ctx, element, contributions.get(id));
+            Object contribution = contributions.get(id);
+            if (contribution != null && !merge.hasValue(ctx, element)) {
+                DeprecationLogger.log(String.format(
+                        "The contribution with id '%s' has been implicitely merged: "
+                                + " the attribute merge=\"true\" should be added to this definition.",
+                        id, contribution.getClass().getName()), "11.5");
+            }
+            contrib = xObject.newInstance(ctx, element, contribution);
         } else {
             contrib = xObject.newInstance(ctx, element);
         }

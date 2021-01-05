@@ -33,7 +33,7 @@ import org.nuxeo.common.xmap.registry.XRegistryId;
  * @since 11.1
  */
 @XObject("reporter")
-@XRegistry(enable = false)
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class MetricsReporterDescriptor {
 
     @XEnable

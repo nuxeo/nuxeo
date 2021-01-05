@@ -37,7 +37,7 @@ import io.dropwizard.metrics5.MetricFilter;
 import io.dropwizard.metrics5.MetricName;
 
 @XObject("configuration")
-@XRegistry
+@XRegistry(compatWarnOnMerge = true)
 public class MetricsConfigurationDescriptor implements MetricFilter {
 
     protected static final String ALL_METRICS = "ALL";

@@ -33,7 +33,7 @@ import org.nuxeo.common.xmap.registry.XRegistryId;
  * @since 9.1
  */
 @XObject("provider")
-@XRegistry
+@XRegistry(compatWarnOnMerge = true)
 public class PubSubProviderDescriptor {
 
     @XNode("@class")

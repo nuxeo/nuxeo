@@ -29,7 +29,7 @@ import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("codec")
-@XRegistry
+@XRegistry(compatWarnOnMerge = true)
 public class CodecDescriptor {
 
     @XNode("@name")

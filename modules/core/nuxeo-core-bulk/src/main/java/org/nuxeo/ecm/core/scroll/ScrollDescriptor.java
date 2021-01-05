@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.scroll.Scroll;
  * @since 11.1
  */
 @XObject("scroll")
-@XRegistry(enable = false)
+@XRegistry(enable = false, compatWarnOnMerge = true)
 @XRegistryId(value = { "@type", "@name" })
 public class ScrollDescriptor {
 

@@ -27,7 +27,7 @@ import org.nuxeo.common.xmap.registry.XRegistryId;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("codec")
-@XRegistry
+@XRegistry(compatWarnOnMerge = true)
 public class CodecDescriptor {
 
     @XNode("@class")
