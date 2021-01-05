@@ -69,7 +69,8 @@
       may retry execution if it resulted in a ConcurrentUpdateException.
       The default is 1.
     </documentation>
-    <object class="org.nuxeo.ecm.core.event.impl.EventListenerDescriptor"/>
+    <object class="org.nuxeo.ecm.core.event.impl.EventListenerDescriptor" />
+    <registry class="org.nuxeo.ecm.core.event.impl.EventListenerList" />
   </extension-point>
 
   <extension-point name="pipe">

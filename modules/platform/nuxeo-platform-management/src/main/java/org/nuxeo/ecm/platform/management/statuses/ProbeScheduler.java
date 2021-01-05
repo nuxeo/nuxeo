@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.platform.management.statuses;
 
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
-import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -27,20 +26,22 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ProbeScheduler {
 
+    protected static final String NAME = "probeScheduleListener";
+
+    protected EventServiceAdmin getService() {
+        return Framework.getService(EventServiceAdmin.class);
+    }
+
     public void enable() {
-        EventServiceAdmin admin = Framework.getService(EventServiceAdmin.class);
-        admin.setListenerEnabledFlag("probeScheduleListener", true);
+        getService().setListenerEnabledFlag(NAME, true);
     }
 
     public void disable() {
-        EventServiceAdmin admin = Framework.getService(EventServiceAdmin.class);
-        admin.setListenerEnabledFlag("probeScheduleListener", false);
+        getService().setListenerEnabledFlag(NAME, false);
     }
 
     public boolean isEnabled() {
-        EventServiceAdmin admin = Framework.getService(EventServiceAdmin.class);
-        EventListenerDescriptor descriptor = admin.getListenerList().getDescriptor("probeScheduleListener");
-        return descriptor.isEnabled();
+        return getService().getListenerList().getContribution(NAME).isPresent();
     }
 
 }

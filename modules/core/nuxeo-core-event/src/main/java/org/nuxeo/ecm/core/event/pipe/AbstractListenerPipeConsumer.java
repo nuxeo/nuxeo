@@ -62,7 +62,7 @@ public abstract class AbstractListenerPipeConsumer<T> extends AbstractPipeConsum
     protected boolean processEventBundles(List<EventBundle> bundles) {
             EventServiceAdmin eventService = Framework.getService(EventServiceAdmin.class);//
             EventListenerList listeners = eventService.getListenerList();
-            List<EventListenerDescriptor> postCommitAsync = listeners.getEnabledAsyncPostCommitListenersDescriptors();
+            List<EventListenerDescriptor> postCommitAsync = listeners.getAsyncPostCommitListenersDescriptors();
 
             // could introduce bulk mode for EventListeners
             for (EventBundle eventBundle : bundles) {

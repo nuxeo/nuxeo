@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="test-listener.reenable">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener script="script/listener.groovy" enable="true" />
+  </extension>
+
+</component>

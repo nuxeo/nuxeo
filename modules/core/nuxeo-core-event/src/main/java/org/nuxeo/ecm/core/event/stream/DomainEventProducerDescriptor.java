@@ -24,8 +24,10 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.runtime.model.Descriptor;
 import org.nuxeo.runtime.stream.StreamProcessorDescriptor;
 
 /**
@@ -34,13 +36,16 @@ import org.nuxeo.runtime.stream.StreamProcessorDescriptor;
  * @since 11.4
  */
 @XObject("domainEventProducer")
-public class DomainEventProducerDescriptor implements Descriptor {
+@XRegistry(enable = false, compatWarnOnMerge = true)
+public class DomainEventProducerDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
-    @XNode("@enabled")
-    protected boolean isEnabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    protected boolean isEnabled;
 
     @XNode("@class")
     protected Class<? extends DomainEventProducer> domainEventProducerClass;
@@ -51,17 +56,12 @@ public class DomainEventProducerDescriptor implements Descriptor {
     @XNode("stream")
     protected StreamProcessorDescriptor.StreamDescriptor stream;
 
-    @Override
     public String getId() {
-        return name;
+        return getName();
     }
 
     public boolean isEnabled() {
         return isEnabled;
-    }
-
-    public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
     }
 
     public DomainEventProducer newInstance() {

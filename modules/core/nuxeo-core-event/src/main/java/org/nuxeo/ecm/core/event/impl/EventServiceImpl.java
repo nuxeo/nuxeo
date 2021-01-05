@@ -21,6 +21,12 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
+import static org.nuxeo.ecm.core.event.EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP;
+import static org.nuxeo.ecm.core.event.EventServiceComponent.EVENT_DISPATCHER_XP;
+import static org.nuxeo.ecm.core.event.EventServiceComponent.EVENT_LISTENER_XP;
+import static org.nuxeo.ecm.core.event.EventServiceComponent.EVENT_PIPE_XP;
+import static org.nuxeo.ecm.core.event.EventServiceComponent.NAME;
+
 import java.rmi.dgc.VMID;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -39,6 +46,9 @@ import javax.transaction.SystemException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.common.xmap.registry.MapRegistry;
+import org.nuxeo.common.xmap.registry.Registry;
+import org.nuxeo.common.xmap.registry.SingleRegistry;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
@@ -48,21 +58,17 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
-import org.nuxeo.ecm.core.event.EventServiceComponent;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
-import org.nuxeo.ecm.core.event.pipe.EventPipeRegistry;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventBundleDispatcher;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor;
-import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherRegistry;
 import org.nuxeo.ecm.core.event.stream.DomainEventProducer;
 import org.nuxeo.ecm.core.event.stream.DomainEventProducerDescriptor;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.codec.CodecService;
-import org.nuxeo.runtime.model.DescriptorRegistry;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -80,7 +86,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     private static final Log log = LogFactory.getLog(EventServiceImpl.class);
 
-    protected static final ThreadLocal<CompositeEventBundle> threadBundles = new ThreadLocal<CompositeEventBundle>() {
+    protected static final ThreadLocal<CompositeEventBundle> threadBundles = new ThreadLocal<>() {
         @Override
         protected CompositeEventBundle initialValue() {
             return new CompositeEventBundle();
@@ -103,7 +109,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     }
 
-    protected final EventListenerList listenerDescriptors;
+    protected EventListenerList listenerDescriptors;
 
     protected PostCommitEventExecutor postCommitExec;
 
@@ -117,35 +123,36 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     protected boolean bulkModeEnabled = false;
 
-    protected EventPipeRegistry registeredPipes = new EventPipeRegistry();
-
-    protected EventDispatcherRegistry dispatchers = new EventDispatcherRegistry();
-
     protected EventBundleDispatcher pipeDispatcher;
 
-    // @since 11.4
-    protected DescriptorRegistry domainEventProducers = new DescriptorRegistry();
-
-    // @since 11.4
-    protected static final String REGISTRY_TARGET_NAME = "EventService";
-
     public EventServiceImpl() {
-        listenerDescriptors = new EventListenerList();
         postCommitExec = new PostCommitEventExecutor();
         asyncExec = new AsyncEventExecutor();
     }
 
+    @SuppressWarnings("unchecked")
+    protected <T extends Registry> T getRegistry(String extensionPoint) {
+        return (T) Framework.getRuntime()
+                            .getComponentManager()
+                            .getExtensionPointRegistry(NAME, extensionPoint)
+                            .orElseThrow(() -> new IllegalArgumentException(String.format(
+                                    "Unknown registry for extension point '%s--%s'", NAME, extensionPoint)));
+
+    }
+
     public void init() {
         asyncExec.init();
-
-        EventDispatcherDescriptor dispatcherDescriptor = dispatchers.getDispatcherDescriptor();
-        if (dispatcherDescriptor != null) {
-            List<EventPipeDescriptor> pipes = registeredPipes.getPipes();
-            if (!pipes.isEmpty()) {
-                pipeDispatcher = dispatcherDescriptor.getInstance();
-                pipeDispatcher.init(pipes, dispatcherDescriptor.getParameters());
-            }
-        }
+        listenerDescriptors = getRegistry(EVENT_LISTENER_XP);
+        this.<SingleRegistry> getRegistry(EVENT_DISPATCHER_XP)
+            .getContribution()
+            .map(EventDispatcherDescriptor.class::cast)
+            .ifPresent(dispatcher -> {
+                List<EventPipeDescriptor> pipes = this.<MapRegistry> getRegistry(EVENT_PIPE_XP).getContributionValues();
+                if (!pipes.isEmpty()) {
+                    pipeDispatcher = dispatcher.getInstance();
+                    pipeDispatcher.init(pipes, dispatcher.getParameters());
+                }
+            });
         initDomainEventStreams();
     }
 
@@ -153,28 +160,11 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         return pipeDispatcher;
     }
 
-    public void addDomainEventProducer(DomainEventProducerDescriptor descriptor) {
-        if (descriptor.isEnabled()) {
-            domainEventProducers.register(REGISTRY_TARGET_NAME, EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP,
-                    descriptor);
-            log.debug("Registered domain event producer: " + descriptor.getName());
-        } else {
-            domainEventProducers.unregister(REGISTRY_TARGET_NAME, EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP,
-                    descriptor);
-            log.debug("Unregistered domain event producer (disabled): " + descriptor.getName());
-        }
-    }
-
-    public void removeDomainEventProducer(DomainEventProducerDescriptor descriptor) {
-        domainEventProducers.unregister(REGISTRY_TARGET_NAME, EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP,
-                descriptor);
-        log.debug("Unregistered domain event producer: " + descriptor.getName());
-    }
-
     public void shutdown(long timeoutMillis) throws InterruptedException {
         postCommitExec.shutdown(timeoutMillis);
-        Set<AsyncWaitHook> notTerminated = asyncWaitHooks.stream().filter(hook -> !hook.shutdown()).collect(
-                Collectors.toSet());
+        Set<AsyncWaitHook> notTerminated = asyncWaitHooks.stream()
+                                                         .filter(hook -> !hook.shutdown())
+                                                         .collect(Collectors.toSet());
         if (!notTerminated.isEmpty()) {
             throw new RuntimeException("Asynch services are still running : " + notTerminated);
         }
@@ -233,30 +223,10 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         log.debug("Registered event listener: " + listener.getName());
     }
 
-    public void addEventPipe(EventPipeDescriptor pipeDescriptor) {
-        registeredPipes.addContribution(pipeDescriptor);
-        log.debug("Registered event pipe: " + pipeDescriptor.getName());
-    }
-
-    public void addEventDispatcher(EventDispatcherDescriptor dispatcherDescriptor) {
-        dispatchers.addContrib(dispatcherDescriptor);
-        log.debug("Registered event dispatcher: " + dispatcherDescriptor.getName());
-    }
-
     @Override
     public void removeEventListener(EventListenerDescriptor listener) {
         listenerDescriptors.removeDescriptor(listener);
         log.debug("Unregistered event listener: " + listener.getName());
-    }
-
-    public void removeEventPipe(EventPipeDescriptor pipeDescriptor) {
-        registeredPipes.removeContribution(pipeDescriptor);
-        log.debug("Unregistered event pipe: " + pipeDescriptor.getName());
-    }
-
-    public void removeEventDispatcher(EventDispatcherDescriptor dispatcherDescriptor) {
-        dispatchers.removeContrib(dispatcherDescriptor);
-        log.debug("Unregistered event dispatcher: " + dispatcherDescriptor.getName());
     }
 
     @Override
@@ -270,7 +240,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         String ename = event.getName();
         EventStats stats = Framework.getService(EventStats.class);
         Tracer tracer = Tracing.getTracer();
-        for (EventListenerDescriptor desc : listenerDescriptors.getEnabledInlineListenersDescriptors()) {
+        for (EventListenerDescriptor desc : listenerDescriptors.getInlineListenersDescriptors()) {
             if (!desc.acceptEvent(ename)) {
                 continue;
             }
@@ -379,14 +349,14 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         Span span = Tracing.getTracer().getCurrentSpan();
         span.addAnnotation("EventService#fireEventBundle");
         try {
-            List<EventListenerDescriptor> postCommitSync = listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors();
-            List<EventListenerDescriptor> postCommitAsync = listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors();
+            List<EventListenerDescriptor> postCommitSync = listenerDescriptors.getSyncPostCommitListenersDescriptors();
+            List<EventListenerDescriptor> postCommitAsync = listenerDescriptors.getAsyncPostCommitListenersDescriptors();
 
             if (bulkModeEnabled) {
                 // run all listeners synchronously in one transaction
                 List<EventListenerDescriptor> listeners = new ArrayList<>();
                 if (!blockSyncPostCommitProcessing) {
-                    listeners = postCommitSync;
+                    listeners.addAll(postCommitSync);
                 }
                 if (!blockAsyncProcessing) {
                     listeners.addAll(postCommitAsync);
@@ -425,12 +395,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     @Override
     public void fireEventBundleSync(EventBundle event) {
-        for (EventListenerDescriptor desc : listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors()) {
-            desc.asPostCommitListener().handleEvent(event);
-        }
-        for (EventListenerDescriptor desc : listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors()) {
-            desc.asPostCommitListener().handleEvent(event);
-        }
+        listenerDescriptors.getSyncPostCommitListeners().forEach(l -> l.handleEvent(event));
+        listenerDescriptors.getAsyncPostCommitListeners().forEach(l -> l.handleEvent(event));
     }
 
     @Override
@@ -440,21 +406,21 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     @Override
     public List<PostCommitEventListener> getPostCommitEventListeners() {
-        List<PostCommitEventListener> result = new ArrayList<>();
-
-        result.addAll(listenerDescriptors.getSyncPostCommitListeners());
-        result.addAll(listenerDescriptors.getAsyncPostCommitListeners());
-
-        return result;
+        return Stream.concat(listenerDescriptors.getSyncPostCommitListeners().stream(),
+                listenerDescriptors.getAsyncPostCommitListeners().stream()).collect(Collectors.toList());
     }
 
+    /**
+     * @deprecated since 11.5: use {@link #getListenerList()} instead.
+     */
+    @Deprecated(since = "11.5")
     public EventListenerList getEventListenerList() {
-        return listenerDescriptors;
+        return getEventListenerList();
     }
 
     @Override
     public EventListenerDescriptor getEventListener(String name) {
-        return listenerDescriptors.getDescriptor(name);
+        return (EventListenerDescriptor) listenerDescriptors.getContribution(name).orElse(null);
     }
 
     // methods for monitoring
@@ -466,39 +432,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     @Override
     public void setListenerEnabledFlag(String listenerName, boolean enabled) {
-        if (!listenerDescriptors.hasListener(listenerName)) {
-            return;
-        }
-
-        for (EventListenerDescriptor desc : listenerDescriptors.getAsyncPostCommitListenersDescriptors()) {
-            if (desc.getName().equals(listenerName)) {
-                desc.setEnabled(enabled);
-                synchronized (this) {
-                    listenerDescriptors.recomputeEnabledListeners();
-                }
-                return;
-            }
-        }
-
-        for (EventListenerDescriptor desc : listenerDescriptors.getSyncPostCommitListenersDescriptors()) {
-            if (desc.getName().equals(listenerName)) {
-                desc.setEnabled(enabled);
-                synchronized (this) {
-                    listenerDescriptors.recomputeEnabledListeners();
-                }
-                return;
-            }
-        }
-
-        for (EventListenerDescriptor desc : listenerDescriptors.getInlineListenersDescriptors()) {
-            if (desc.getName().equals(listenerName)) {
-                desc.setEnabled(enabled);
-                synchronized (this) {
-                    listenerDescriptors.recomputeEnabledListeners();
-                }
-                return;
-            }
-        }
+        listenerDescriptors.setListenerEnabledFlag(listenerName, enabled);
     }
 
     @Override
@@ -601,14 +535,17 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     @Override
     public List<DomainEventProducer> createDomainEventProducers() {
         // TODO: optimize this by keeping an immutable list
-        List<DomainEventProducerDescriptor> descriptors = domainEventProducers.getDescriptors(REGISTRY_TARGET_NAME,
-                EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP);
-        return descriptors.stream().map(DomainEventProducerDescriptor::newInstance).collect(Collectors.toList());
+        return this.<MapRegistry> getRegistry(DOMAIN_EVENT_PRODUCER_XP)
+                   .getContributionValues()
+                   .stream()
+                   .map(DomainEventProducerDescriptor.class::cast)
+                   .map(DomainEventProducerDescriptor::newInstance)
+                   .collect(Collectors.toList());
     }
 
     protected void initDomainEventStreams() {
-        List<DomainEventProducerDescriptor> descriptors = domainEventProducers.getDescriptors(REGISTRY_TARGET_NAME,
-                EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP);
+        List<DomainEventProducerDescriptor> descriptors = this.<MapRegistry> getRegistry(DOMAIN_EVENT_PRODUCER_XP)
+                                                              .getContributionValues();
         Settings settings = new Settings(1, 1);
         List<String> streams = new ArrayList<>();
         CodecService codecService = Framework.getService(CodecService.class);
