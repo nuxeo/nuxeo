@@ -21,17 +21,9 @@ package org.nuxeo.ecm.core.event;
 
 import java.time.Duration;
 
-import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
-import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
-import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor;
-import org.nuxeo.runtime.RuntimeMessage.Level;
-import org.nuxeo.runtime.RuntimeMessage.Source;
-import org.nuxeo.ecm.core.event.stream.DomainEventProducerDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -41,6 +33,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class EventServiceComponent extends DefaultComponent {
 
     public static final int APPLICATION_STARTED_ORDER = -500;
+
+    // @since 11.5
+    public static final String NAME = "org.nuxeo.ecm.core.event.EventServiceComponent";
 
     public static final String EVENT_LISTENER_XP = "listener";
 
@@ -83,47 +78,6 @@ public class EventServiceComponent extends DefaultComponent {
     @Override
     public int getApplicationStartedOrder() {
         return APPLICATION_STARTED_ORDER;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (EVENT_LISTENER_XP.equals(extensionPoint)) {
-            EventListenerDescriptor descriptor = (EventListenerDescriptor) contribution;
-            descriptor.setRuntimeContext(contributor.getRuntimeContext());
-            try {
-                service.addEventListener(descriptor);
-            } catch (RuntimeException e) {
-                ComponentName compName = contributor.getName();
-                String msg = "Failed to register event listener in component '" + compName
-                        + "': error initializing event listener '" + descriptor.getName() + "' (" + e.toString() + ')';
-                addRuntimeMessage(Level.ERROR, msg, Source.EXTENSION, compName.getName());
-            }
-        } else if (EVENT_PIPE_XP.equals(extensionPoint)) {
-            EventPipeDescriptor descriptor = (EventPipeDescriptor) contribution;
-            service.addEventPipe(descriptor);
-        } else if (EVENT_DISPATCHER_XP.equals(extensionPoint)) {
-            EventDispatcherDescriptor descriptor = (EventDispatcherDescriptor) contribution;
-            service.addEventDispatcher(descriptor);
-        } else if (DOMAIN_EVENT_PRODUCER_XP.equals(extensionPoint)) {
-            DomainEventProducerDescriptor descriptor = (DomainEventProducerDescriptor) contribution;
-            service.addDomainEventProducer(descriptor);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (EVENT_LISTENER_XP.equals(extensionPoint)) {
-            service.removeEventListener((EventListenerDescriptor) contribution);
-        } else if (EVENT_PIPE_XP.equals(extensionPoint)) {
-            EventPipeDescriptor descriptor = (EventPipeDescriptor) contribution;
-            service.removeEventPipe(descriptor);
-        } else if (EVENT_DISPATCHER_XP.equals(extensionPoint)) {
-            EventDispatcherDescriptor descriptor = (EventDispatcherDescriptor) contribution;
-            service.removeEventDispatcher(descriptor);
-        } else if (DOMAIN_EVENT_PRODUCER_XP.equals(extensionPoint)) {
-            DomainEventProducerDescriptor descriptor = (DomainEventProducerDescriptor) contribution;
-            service.removeDomainEventProducer(descriptor);
-        }
     }
 
     @SuppressWarnings("unchecked")

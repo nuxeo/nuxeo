@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.event.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -85,8 +84,7 @@ public class TestEventServiceComponent {
     @Deploy("org.nuxeo.ecm.core.event:test-disabling-listeners1.xml")
     public void testDisablingListener() throws Exception {
         EventServiceImpl eventServiceImpl = (EventServiceImpl) eventService;
-
-        List<EventListenerDescriptor> eventListenerDescriptors = eventServiceImpl.getEventListenerList()
+        List<EventListenerDescriptor> eventListenerDescriptors = eventServiceImpl.getListenerList()
                                                                                  .getSyncPostCommitListenersDescriptors();
         assertEquals(1, eventListenerDescriptors.size());
 
@@ -95,11 +93,9 @@ public class TestEventServiceComponent {
 
         hotDeployer.deploy("org.nuxeo.ecm.core.event:test-disabling-listeners2.xml");
 
-        eventListenerDescriptors = eventServiceImpl.getEventListenerList().getSyncPostCommitListenersDescriptors();
-        assertEquals(1, eventListenerDescriptors.size());
-
-        eventListenerDescriptor = eventListenerDescriptors.get(0);
-        assertFalse(eventListenerDescriptor.isEnabled());
+        eventServiceImpl = (EventServiceImpl) Framework.getService(EventService.class);
+        eventListenerDescriptors = eventServiceImpl.getListenerList().getSyncPostCommitListenersDescriptors();
+        assertEquals(0, eventListenerDescriptors.size());
     }
 
     @Test

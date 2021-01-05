@@ -19,14 +19,14 @@
  */
 package org.nuxeo.ecm.core.event.pipe;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * XMap Descriptor for contributing a new {@link EventBundlePipe}
@@ -34,11 +34,11 @@ import java.util.Map;
  * @since 8.4
  */
 @XObject("eventPipe")
+@XRegistry
 public class EventPipeDescriptor {
 
-    private static final Log log = LogFactory.getLog(EventPipeDescriptor.class);
-
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@priority")
@@ -84,21 +84,4 @@ public class EventPipeDescriptor {
         }
     }
 
-    public void merge(EventPipeDescriptor other) {
-        if (other.priority != null) {
-            priority = other.priority;
-        }
-        if (other.clazz != null) {
-            clazz = other.clazz;
-        }
-        parameters.putAll(other.getParameters());
-    }
-
-    @Override
-    public EventPipeDescriptor clone() {
-        EventPipeDescriptor copy = new EventPipeDescriptor(name, clazz);
-        copy.priority=priority;
-        copy.parameters = parameters;
-        return copy;
-    }
 }

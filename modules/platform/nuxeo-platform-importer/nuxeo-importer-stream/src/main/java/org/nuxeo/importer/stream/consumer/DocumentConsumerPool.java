@@ -18,10 +18,11 @@
  */
 package org.nuxeo.importer.stream.consumer;
 
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
-import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.pattern.Message;
@@ -29,8 +30,6 @@ import org.nuxeo.lib.stream.pattern.consumer.ConsumerFactory;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPool;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
 /**
  * Consumer Pool that block Nuxeo listeners during import.
@@ -144,8 +143,7 @@ public class DocumentConsumerPool<M extends Message> extends ConsumerPool<M> {
     }
 
     protected boolean disableSyncListener(EventServiceAdmin eventAdmin, String name) {
-        EventListenerDescriptor desc = eventAdmin.getListenerList().getDescriptor(name);
-        if (desc != null && desc.isEnabled()) {
+        if (eventAdmin.getListenerList().getContribution(name).isPresent()) {
             eventAdmin.setListenerEnabledFlag(name, false);
             return true;
         }

@@ -26,9 +26,12 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -44,6 +47,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
  * XObject descriptor to declare event listeners
  */
 @XObject("listener")
+@XRegistry(enable = false)
 public class EventListenerDescriptor {
 
     public static final Log log = LogFactory.getLog(EventListenerDescriptor.class);
@@ -85,7 +89,8 @@ public class EventListenerDescriptor {
     @XNode("@priority")
     protected Integer priority;
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
     protected boolean isEnabled = true;
 
     @XNode("@retryCount")
@@ -94,9 +99,10 @@ public class EventListenerDescriptor {
     @XNode("@singlethread")
     protected boolean singleThreaded = false;
 
+    @XNodeList(value = "event", componentType = String.class, type = HashSet.class, nullByDefault = true)
     protected Set<String> events;
 
-    protected RuntimeContext rc;
+    protected RuntimeContext context;
 
     protected EventListener inLineListener;
 
@@ -104,14 +110,6 @@ public class EventListenerDescriptor {
 
     public int getPriority() {
         return priority == null ? 0 : priority.intValue();
-    }
-
-    public void setRuntimeContext(RuntimeContext rc) {
-        this.rc = rc;
-    }
-
-    public RuntimeContext getRuntimeContext() {
-        return rc;
     }
 
     public boolean isEnabled() {
@@ -126,23 +124,10 @@ public class EventListenerDescriptor {
         return events;
     }
 
-    @XNodeList(value = "event", componentType = String.class, type = HashSet.class, nullByDefault = true)
-    public void setEvents(Set<String> events) {
-        this.events = events.isEmpty() ? null : events;
-    }
-
-    public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
-    }
-
-    public void setRetryCount(Integer retryCount) {
-        this.retryCount = retryCount;
-    }
-
-    public void initListener() {
+    public void initListener(Context context) {
         try {
             if (className != null) {
-                Class<?> klass = getRuntimeContext().loadClass(className);
+                Class<?> klass = context.loadClass(className);
                 if (EventListener.class.isAssignableFrom(klass)) {
                     inLineListener = (EventListener) klass.getDeclaredConstructor().newInstance();
                     isPostCommit = false;
@@ -155,10 +140,11 @@ public class EventListenerDescriptor {
                                     + className + "'.");
                 }
             } else if (script != null) {
+                Script script = getScript(context);
                 if (isPostCommit) {
-                    postCommitEventListener = new ScriptingPostCommitEventListener(getScript());
+                    postCommitEventListener = new ScriptingPostCommitEventListener(script);
                 } else {
-                    inLineListener = new ScriptingEventListener(getScript());
+                    inLineListener = new ScriptingEventListener(script);
                 }
             } else {
                 throw new IllegalArgumentException("Listener extension must define either a class or a script");
@@ -176,16 +162,11 @@ public class EventListenerDescriptor {
         return postCommitEventListener;
     }
 
-    public Script getScript() throws IOException {
-        if (rc != null) {
-            URL url = rc.getBundle().getEntry(script);
+    public Script getScript(Context context) throws IOException {
+        if (context != null) {
+            URL url = context.getResource(script);
             if (url == null) {
-                // if not found using bundle entries try using classloader
-                // in a test environment bundle entries may not work
-                url = rc.getResource(script);
-                if (url == null) {
-                    throw new IOException("Script Not found: " + script);
-                }
+                throw new IOException("Script Not found: " + script);
             }
             return Script.newScript(url);
         } else {
@@ -208,46 +189,8 @@ public class EventListenerDescriptor {
         return transactionTimeOut;
     }
 
-    public void merge(EventListenerDescriptor other) {
-
-        isEnabled = other.isEnabled;
-
-        if (other.className != null) {
-            className = other.className;
-            rc = other.rc;
-        } else if (other.script != null) {
-            script = other.script;
-            className = null;
-            rc = other.rc;
-        }
-
-        if (other.isAsync != null) {
-            isAsync = other.isAsync;
-        }
-
-        if (other.events != null) {
-            events = other.events;
-        }
-
-        if (other.transactionTimeOut != null) {
-            transactionTimeOut = other.transactionTimeOut;
-        }
-
-        if (other.priority != null) {
-            priority = other.priority;
-        }
-
-        if (other.retryCount != null) {
-            retryCount = other.retryCount;
-        }
-    }
-
     public final boolean acceptEvent(String eventName) {
         return events == null || events.contains(eventName);
-    }
-
-    public void setIsAsync(Boolean isAsync) {
-        this.isAsync = isAsync;
     }
 
     public boolean getIsAsync() {
