@@ -103,10 +103,6 @@ public class TransmissionThreeD extends ThreeD {
         return name;
     }
 
-    public String getId() {
-        return String.valueOf(name.hashCode() & 0x7fffffff);
-    }
-
     public Map<String, Serializable> toMap() {
         Map<String, Serializable> map = new HashMap<>();
         map.put(NAME, name);

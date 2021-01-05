@@ -20,6 +20,9 @@ package org.nuxeo.ecm.platform.threed.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Object representing a registered render view conversion on the {@link ThreeDService}. An {@code RenderView}
@@ -28,9 +31,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 8.4
  */
 @XObject("renderView")
+@XRegistry(enable = false)
 public class RenderView implements Comparable<RenderView> {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@zenith")
@@ -45,8 +50,9 @@ public class RenderView implements Comparable<RenderView> {
     @XNode("@height")
     protected Integer height;
 
-    @XNode("@enabled")
-    protected Boolean enabled;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    protected boolean enabled;
 
     @XNode("@rendition")
     protected Boolean rendition;
@@ -54,115 +60,40 @@ public class RenderView implements Comparable<RenderView> {
     @XNode("@renditionVisible")
     protected Boolean renditionVisible;
 
-    public RenderView(RenderView other) {
-        name = other.name;
-        zenith = other.zenith;
-        azimuth = other.azimuth;
-        width = other.width;
-        height = other.height;
-        enabled = other.enabled;
-        rendition = other.rendition;
-        renditionVisible = other.renditionVisible;
-    }
-
-    public RenderView() {
-        super();
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Integer getZenith() {
         return zenith;
     }
 
-    public void setZenith(Integer zenith) {
-        this.zenith = zenith;
-    }
-
     public Integer getAzimuth() {
         return azimuth;
-    }
-
-    public void setAzimuth(Integer azimuth) {
-        this.azimuth = azimuth;
     }
 
     public Integer getWidth() {
         return width;
     }
 
-    public void setWidth(Integer width) {
-        this.width = width;
-    }
-
     public Integer getHeight() {
         return height;
     }
 
-    public void setHeight(Integer height) {
-        this.height = height;
-    }
-
     public boolean isEnabled() {
-        return (enabled == null) || enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        return enabled;
     }
 
     public boolean isRendition() {
         return (rendition == null) || rendition;
     }
 
-    public void setRendition(boolean rendition) {
-        this.rendition = rendition;
-    }
-
     public boolean isRenditionVisible() {
         return (renditionVisible == null) || renditionVisible;
     }
 
-    public void setRenditionVisible(boolean renditionVisible) {
-        this.renditionVisible = renditionVisible;
-    }
-
-    public void merge(RenderView src) {
-        if (src.enabled != null) {
-            enabled = src.enabled;
-        }
-        if (src.rendition != null) {
-            rendition = src.rendition;
-        }
-        if (src.renditionVisible != null) {
-            renditionVisible = src.renditionVisible;
-        }
-        if (src.zenith != null) {
-            zenith = src.zenith;
-        }
-        if (src.azimuth != null) {
-            azimuth = src.azimuth;
-        }
-        if (src.width != null) {
-            width = src.width;
-        }
-        if (src.height != null) {
-            height = src.height;
-        }
-    }
-
-    public String getId() {
-        return String.valueOf(name.hashCode() & 0x7fffffff);
-    }
-
     @Override
     public int compareTo(RenderView o) {
-        return getId().compareTo(o.getId());
+        return name.compareTo(o.name);
     }
 }

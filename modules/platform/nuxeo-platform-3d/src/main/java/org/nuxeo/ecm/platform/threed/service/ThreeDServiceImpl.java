@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,6 @@ import org.nuxeo.ecm.platform.threed.ThreeDBatchProgress;
 import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -72,19 +72,6 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
 
     public static final String DEFAULT_LODS_EP = "automaticLOD";
 
-    protected AutomaticLODContributionHandler automaticLODs;
-
-    protected AutomaticRenderViewContributionHandler automaticRenderViews;
-
-    protected RenderViewContributionHandler renderViews;
-
-    @Override
-    public void activate(ComponentContext context) {
-        automaticLODs = new AutomaticLODContributionHandler();
-        automaticRenderViews = new AutomaticRenderViewContributionHandler();
-        renderViews = new RenderViewContributionHandler();
-    }
-
     @Override
     public void deactivate(ComponentContext context) {
         WorkManager workManager = Framework.getService(WorkManager.class);
@@ -97,37 +84,6 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }
-        }
-        automaticLODs = null;
-        automaticRenderViews = null;
-        renderViews = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case RENDER_VIEWS_EP:
-            renderViews.addContribution((RenderView) contribution);
-            break;
-        case DEFAULT_RENDER_VIEWS_EP:
-            automaticRenderViews.addContribution((AutomaticRenderView) contribution);
-            break;
-        case DEFAULT_LODS_EP:
-            automaticLODs.addContribution((AutomaticLOD) contribution);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case RENDER_VIEWS_EP:
-            renderViews.removeContribution((RenderView) contribution);
-            break;
-        case DEFAULT_RENDER_VIEWS_EP:
-            automaticRenderViews.removeContribution((AutomaticRenderView) contribution);
-            break;
-        case DEFAULT_LODS_EP:
-            automaticLODs.removeContribution((AutomaticLOD) contribution);
         }
     }
 
@@ -172,10 +128,10 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         params.put(OPERATORS_PARAMETER, operators);
 
         // render ids
-        params.put(RENDER_IDS_PARAMETER, renderViews.stream().map(RenderView::getId).collect(Collectors.joining(" ")));
+        params.put(RENDER_IDS_PARAMETER, renderViews.stream().map(RenderView::getName).collect(Collectors.joining(" ")));
 
         // lod ids
-        params.put(LOD_IDS_PARAMETER, lods.stream().map(AutomaticLOD::getId).collect(Collectors.joining(" ")));
+        params.put(LOD_IDS_PARAMETER, lods.stream().map(AutomaticLOD::getName).collect(Collectors.joining(" ")));
 
         // percPoly
         params.put(PERC_POLY_PARAMETER,
@@ -186,66 +142,65 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
                 lods.stream().map(AutomaticLOD::getMaxPoly).map(String::valueOf).collect(Collectors.joining(" ")));
 
         params.put(COORDS_PARAMETER,
-                renderViews.stream().map(renderView -> renderView.getAzimuth() + "," + renderView.getZenith()).collect(
-                        Collectors.joining(" ")));
+                renderViews.stream()
+                           .map(renderView -> renderView.getAzimuth() + "," + renderView.getZenith())
+                           .collect(Collectors.joining(" ")));
 
         // dimensions
         params.put(DIMENSIONS_PARAMETER,
-                renderViews.stream().map(renderView -> renderView.getWidth() + "x" + renderView.getHeight()).collect(
-                        Collectors.joining(" ")));
+                renderViews.stream()
+                           .map(renderView -> renderView.getWidth() + "x" + renderView.getHeight())
+                           .collect(Collectors.joining(" ")));
 
         return cs.convert(BATCH_CONVERTER, new SimpleBlobHolder(in), params);
     }
 
     @Override
     public Collection<RenderView> getAvailableRenderViews() {
-        return renderViews.registry.values();
+        return getRegistryContributions(RENDER_VIEWS_EP);
     }
 
     @Override
     public Collection<RenderView> getAutomaticRenderViews() {
-        return automaticRenderViews.registry.values()
-                                            .stream()
-                                            .filter(AutomaticRenderView::isEnabled)
-                                            .sorted((o1, o2) -> o1.getOrder() - o2.getOrder())
-                                            .map(AutomaticRenderView::getId)
-                                            .map(this::getRenderView)
-                                            .filter(RenderView::isEnabled)
-                                            .collect(Collectors.toList());
+        return getRegistryContributions(DEFAULT_RENDER_VIEWS_EP).stream()
+                                                                .map(AutomaticRenderView.class::cast)
+                                                                .sorted((o1, o2) -> o1.getOrder() - o2.getOrder())
+                                                                .map(AutomaticRenderView::getName)
+                                                                .map(this::getRenderView)
+                                                                .filter(Objects::nonNull)
+                                                                .collect(Collectors.toList());
     }
 
     @Override
     public Collection<AutomaticLOD> getAvailableLODs() {
-        return automaticLODs.registry.values();
+        return getRegistryContributions(DEFAULT_LODS_EP);
     }
 
     @Override
     public Collection<AutomaticLOD> getAutomaticLODs() {
-        return automaticLODs.registry.values()
-                                     .stream()
-                                     .filter(AutomaticLOD::isEnabled)
-                                     .sorted((o1, o2) -> o1.getOrder() - o2.getOrder())
-                                     .collect(Collectors.toList());
+        return getAvailableLODs().stream()
+                                 .sorted((o1, o2) -> o1.getOrder() - o2.getOrder())
+                                 .collect(Collectors.toList());
     }
 
     @Override
     public AutomaticLOD getAutomaticLOD(String automaticLODId) {
-        return automaticLODs.registry.get(automaticLODId);
+        return (AutomaticLOD) getRegistryContribution(DEFAULT_LODS_EP, automaticLODId).orElse(null);
     }
 
     @Override
     public RenderView getRenderView(String renderViewId) {
-        return renderViews.registry.get(renderViewId);
+        return (RenderView) getRegistryContribution(RENDER_VIEWS_EP, renderViewId).orElse(null);
     }
 
     @Override
     public RenderView getRenderView(Integer azimuth, Integer zenith) {
-        return renderViews.registry.values()
-                                   .stream()
-                                   .filter(renderView -> renderView.getAzimuth().equals(azimuth)
-                                           && renderView.getZenith().equals(zenith))
-                                   .findFirst()
-                                   .orElse(null);
+        return getRegistryContributions(RENDER_VIEWS_EP).stream()
+                                                        .map(RenderView.class::cast)
+                                                        .filter(renderView -> renderView.getAzimuth().equals(azimuth)
+                                                                && renderView.getZenith().equals(zenith))
+                                                        .findFirst()
+                                                        .orElse(null);
     }
 
     @Override
