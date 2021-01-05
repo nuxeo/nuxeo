@@ -18,7 +18,9 @@
  */
 package org.nuxeo.ecm.core.event.pipe;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.test.TestEventServiceComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -31,14 +33,13 @@ import org.nuxeo.runtime.test.runner.Deploy;
 @Deploy("org.nuxeo.ecm.core.event.test:test-LocalQueues.xml")
 public class TestEventListenerViaQueue extends TestEventServiceComponent {
 
-    @Override
-    protected EventServiceImpl getService() {
-        EventServiceImpl service = super.getService();
-        Assert.assertEquals(service.getEventBundleDispatcher().getClass(),
+    @Test
+    public void testEventBundlePipe() {
+        EventServiceImpl eventServiceImpl = (EventServiceImpl) eventService;
+        assertEquals(eventServiceImpl.getEventBundleDispatcher().getClass(),
                 TestableSimpleEventBundlePipeDispatcher.class);
-        TestableSimpleEventBundlePipeDispatcher dispatcher = (TestableSimpleEventBundlePipeDispatcher) service.getEventBundleDispatcher();
-        Assert.assertEquals(dispatcher.getPipes().get(0).getClass(), QueueBaseEventBundlePipe.class);
-        return service;
+        TestableSimpleEventBundlePipeDispatcher dispatcher = (TestableSimpleEventBundlePipeDispatcher) eventServiceImpl.getEventBundleDispatcher();
+        assertEquals(dispatcher.getPipes().get(0).getClass(), QueueBaseEventBundlePipe.class);
     }
 
 }
