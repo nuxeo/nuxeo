@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 import net.jodah.failsafe.RetryPolicy;
 
 @XObject("streamProcessor")
-@XRegistry(enable = false)
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class StreamProcessorDescriptor {
 
     // @since 11.1

@@ -36,7 +36,7 @@ import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchHandler;
  * @since 10.1
  */
 @XObject("batchHandler")
-@XRegistry
+@XRegistry(compatWarnOnMerge = true)
 public class BatchHandlerDescriptor {
 
     @XNode("name")

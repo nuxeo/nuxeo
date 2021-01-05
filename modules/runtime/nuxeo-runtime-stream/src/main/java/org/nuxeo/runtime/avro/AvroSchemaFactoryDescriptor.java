@@ -29,7 +29,7 @@ import org.nuxeo.common.xmap.registry.XRegistryId;
  * @since 10.2
  */
 @XObject("factory")
-@XRegistry
+@XRegistry(compatWarnOnMerge = true)
 public class AvroSchemaFactoryDescriptor {
 
     @XNode("@type")

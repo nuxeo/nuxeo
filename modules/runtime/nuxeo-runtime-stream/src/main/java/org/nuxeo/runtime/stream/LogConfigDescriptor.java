@@ -34,7 +34,7 @@ import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("logConfig")
-@XRegistry(enable = false)
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class LogConfigDescriptor {
     // @since 11.1
     public static final String SEP = ":";

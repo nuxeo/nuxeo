@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @since 10.2
  */
 @XObject("action")
-@XRegistry(enable = false)
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class BulkActionDescriptor {
 
     protected static final String DEFAULT_BUCKET_SIZE = "100";
