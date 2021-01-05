@@ -55,9 +55,7 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        List<MarshallerDescriptor> marshallers = ((MarshallerRegistry) getExtensionPointRegistry(
-                XP_MARSHALLER)).getContributionValues();
-        marshallers.forEach(m -> {
+        this.<MarshallerRegistry> getExtensionPointRegistry(XP_MARSHALLER).getContributionValues().forEach(m -> {
             writers.addAll(m.writers);
             readers.addAll(m.readers);
         });
