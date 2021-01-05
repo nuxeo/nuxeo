@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.transientstore;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -107,8 +106,7 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
         // make sure we have a default store
         getStore(DEFAULT_STORE_NAME);
         // instantiate all registered stores
-        List<TransientStoreConfig> stores = getRegistryContributions(EP_STORE);
-        stores.forEach(desc -> getStore(desc.getId()));
+        this.<TransientStoreConfig>getRegistryContributions(EP_STORE).forEach(desc -> getStore(desc.getId()));
     }
 
     @Override
