@@ -21,77 +21,55 @@ package org.nuxeo.ecm.core.lifecycle.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTypesDescriptor;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * Registry for lifecycle &lt;-&gt; types association
  *
  * @since 5.6
  */
-public class LifeCycleTypeRegistry extends ContributionFragmentRegistry<LifeCycleTypesDescriptor> {
-
-    private static final Log log = LogFactory.getLog(LifeCycleTypeRegistry.class);
+public class LifeCycleTypeRegistry extends MapRegistry {
 
     /** Type name -&gt; life cycle name. */
-    protected Map<String, String> typesMapping = new HashMap<>();
+    protected Map<String, String> typesMapping = new ConcurrentHashMap<>();
 
     /**
      * a mapping from doc type -&gt; list of transitions that should not recurse.
      */
-    protected Map<String, List<String>> docTypeToNonRecursiveTransition = new HashMap<>();
+    protected Map<String, List<String>> docTypeToNonRecursiveTransition = new ConcurrentHashMap<>();
 
     @Override
-    public String getContributionId(LifeCycleTypesDescriptor contrib) {
-        return contrib.getDocumentType();
-    }
-
-    @Override
-    public void contributionUpdated(String id, LifeCycleTypesDescriptor contrib, LifeCycleTypesDescriptor newOrigContrib) {
-        log.info("Registering lifecycle types mapping: " + contrib.getDocumentType() + "-" + contrib.getLifeCycleName());
-        typesMapping.put(contrib.getDocumentType(), contrib.getLifeCycleName());
-        String transitionArray = contrib.getNoRecursionForTransitions();
-        List<String> transitions = new ArrayList<>();
-        if (transitionArray != null && !transitionArray.isEmpty()) {
-            transitions = Arrays.asList(contrib.getNoRecursionForTransitions().split(","));
-        }
-        docTypeToNonRecursiveTransition.put(contrib.getDocumentType(), transitions);
-    }
-
-    @Override
-    public void contributionRemoved(String id, LifeCycleTypesDescriptor origContrib) {
-        typesMapping.remove(id);
-        docTypeToNonRecursiveTransition.remove(id);
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public LifeCycleTypesDescriptor clone(LifeCycleTypesDescriptor orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(LifeCycleTypesDescriptor src, LifeCycleTypesDescriptor dst) {
-        throw new UnsupportedOperationException();
+    public void initialize() {
+        typesMapping.clear();
+        docTypeToNonRecursiveTransition.clear();
+        super.initialize();
+        this.<LifeCycleTypesDescriptor> getContributionValues().forEach(contrib -> {
+            typesMapping.put(contrib.getDocumentType(), contrib.getLifeCycleName());
+            String transitionArray = contrib.getNoRecursionForTransitions();
+            List<String> transitions = new ArrayList<>();
+            if (transitionArray != null && !transitionArray.isEmpty()) {
+                transitions = Arrays.asList(contrib.getNoRecursionForTransitions().split(","));
+            }
+            docTypeToNonRecursiveTransition.put(contrib.getDocumentType(), transitions);
+        });
     }
 
     // API
 
     public String getLifeCycleNameForType(String docType) {
+        checkInitialized();
         return typesMapping.get(docType);
     }
 
     public Collection<String> getTypesFor(String lifeCycleName) {
+        checkInitialized();
         Collection<String> types = new ArrayList<>();
         for (String typeName : typesMapping.keySet()) {
             if (typesMapping.get(typeName).equals(lifeCycleName)) {
@@ -102,10 +80,12 @@ public class LifeCycleTypeRegistry extends ContributionFragmentRegistry<LifeCycl
     }
 
     public Map<String, String> getTypesMapping() {
-        return typesMapping;
+        checkInitialized();
+        return Collections.unmodifiableMap(typesMapping);
     }
 
     public List<String> getNonRecursiveTransitionForDocType(String docTypeName) {
+        checkInitialized();
         return docTypeToNonRecursiveTransition.get(docTypeName);
     }
 

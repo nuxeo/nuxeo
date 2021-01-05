@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,63 +16,55 @@
  * Contributors:
  *     Julien Anguenot
  *     Florent Guillaume
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.ecm.core.lifecycle.extensions;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleState;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleTransition;
-import org.w3c.dom.Element;
 
 /**
  * Descriptor for a life cycle extension.
  *
  * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl
  * @see org.nuxeo.ecm.core.lifecycle.LifeCycle
- * @author Julien Anguenot
- * @author Florent Guillaume
  */
 @XObject(value = "lifecycle", order = { "@name" })
+@XRegistry(compatWarnOnMerge = true)
 public class LifeCycleDescriptor {
 
-    private static final Log log = LogFactory.getLog(LifeCycleDescriptor.class);
-
-    @XNode("@name")
-    private String name;
-
-    @XNode("@lifecyclemanager")
-    public void setLifeCycleManager(String lifeCycleManager) {
-        log.warn("Ignoring deprecated lifecyclemanager attribute '" + lifeCycleManager + "' for lifecycle '" + name
-                + "'");
-    }
+    @XNode(value = "@name", defaultAssignment = "")
+    @XRegistryId
+    protected String name;
 
     @XNode("@initial")
-    private String initialStateName;
+    protected String initialStateName;
 
     @XNode("@defaultInitial")
-    private String defaultInitialStateName;
+    protected String defaultInitialStateName;
 
     @XNode("description")
-    private String description;
+    protected String description;
 
-    @XNode("states")
-    private Element states;
+    @XNodeList(value = "states/state", type = ArrayList.class, componentType = LifeCycleStateDescriptor.class)
+    protected List<LifeCycleStateDescriptor> states;
 
-    @XNode("transitions")
-    private Element transitions;
+    @XNodeList(value = "transitions/transition", type = ArrayList.class, componentType = LifeCycleTransitionDescriptor.class)
+    protected List<LifeCycleTransitionDescriptor> transitions;
 
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getName() {
@@ -88,12 +80,11 @@ public class LifeCycleDescriptor {
     }
 
     public Collection<LifeCycleState> getStates() {
-        LifeCycleStateConfiguration conf = new LifeCycleStateConfiguration(states);
-        return conf.getStates();
+        return Collections.unmodifiableList(states);
     }
 
     public Collection<LifeCycleTransition> getTransitions() {
-        return new LifeCycleTransitionConfiguration(transitions).getTransitions();
+        return Collections.unmodifiableList(transitions);
     }
 
 }

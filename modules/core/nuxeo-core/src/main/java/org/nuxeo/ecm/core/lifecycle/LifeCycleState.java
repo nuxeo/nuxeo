@@ -22,10 +22,12 @@ package org.nuxeo.ecm.core.lifecycle;
 
 import java.util.Collection;
 
+import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleStateDescriptor;
+
 /**
  * Life cycle state.
  *
- * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleStateImpl
+ * @see LifeCycleStateDescriptor
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public interface LifeCycleState {

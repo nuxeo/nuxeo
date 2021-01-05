@@ -28,6 +28,7 @@
     </documentation>
 
     <object class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleDescriptor"/>
+    <registry class="org.nuxeo.ecm.core.lifecycle.impl.LifeCycleRegistry" />
 
   </extension-point>
 
@@ -41,6 +42,7 @@
     </documentation>
 
     <object class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTypesDescriptor"/>
+    <registry class="org.nuxeo.ecm.core.lifecycle.impl.LifeCycleTypeRegistry" />
 
   </extension-point>
 
