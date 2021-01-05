@@ -596,34 +596,46 @@ public class TestUserManager extends UserManagerTestCase {
     public void testGetUsersInGroupAndSubgroups() throws Exception {
         deleteTestObjects();
 
+        // G2 = (u2,u2bis)
+        // |->G1 = (u1)
+        //    |->G3 = (u3)
+
         DocumentModel u1 = getUser("test_u1");
         DocumentModel u2 = getUser("test_u2");
         DocumentModel u2bis = getUser("test_u2bis");
+        DocumentModel u3 = getUser("test_u3");
 
         userManager.createUser(u1);
         userManager.createUser(u2);
         userManager.createUser(u2bis);
+        userManager.createUser(u3);
         DocumentModel g1 = getGroup("test_g1");
         DocumentModel g2 = getGroup("test_g2");
+        DocumentModel g3 = getGroup("test_g3");
 
         List<String> g1Users = Collections.singletonList("test_u1");
+        List<String> g1Groups = Collections.singletonList("test_g3");
         List<String> g2Users = Arrays.asList("test_u2", "test_u2bis");
         List<String> g2Groups = Collections.singletonList("test_g1");
+        List<String> g3Users = Collections.singletonList("test_u3");
 
         g1.setProperty("group", "members", g1Users);
+        g1.setProperty("group", "subGroups", g1Groups);
         userManager.createGroup(g1);
         g2.setProperty("group", "members", g2Users);
         g2.setProperty("group", "subGroups", g2Groups);
         userManager.createGroup(g2);
+        g3.setProperty("group", "members", g3Users);
+        userManager.createGroup(g3);
 
-        List<String> expectedUsersInGroup1 = Collections.singletonList("test_u1");
+        List<String> expectedUsersInGroup1 = Arrays.asList("test_u1", "test_u3");
         List<String> usersInGroupAndSubGroups1 = userManager.getUsersInGroupAndSubGroups("test_g1");
         Collections.sort(expectedUsersInGroup1);
         Collections.sort(usersInGroupAndSubGroups1);
         assertEquals(expectedUsersInGroup1, usersInGroupAndSubGroups1);
 
         // should have all the groups from group1 and group2
-        List<String> expectedUsersInGroup2 = Arrays.asList("test_u2bis", "test_u2", "test_u1");
+        List<String> expectedUsersInGroup2 = Arrays.asList("test_u2bis", "test_u2", "test_u1", "test_u3");
         List<String> usersInGroupAndSubGroups2 = userManager.getUsersInGroupAndSubGroups("test_g2");
         Collections.sort(expectedUsersInGroup2);
         Collections.sort(usersInGroupAndSubGroups2);
