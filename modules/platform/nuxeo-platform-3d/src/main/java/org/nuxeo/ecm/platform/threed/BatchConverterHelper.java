@@ -104,7 +104,7 @@ public class BatchConverterHelper {
 
         // start with automatic LODs so we get the transmission 3Ds correctly ordered
         return threeDService.getAutomaticLODs().stream().map(automaticLOD -> {
-            Integer index = lodIdIndexes.get(automaticLOD.getId());
+            Integer index = lodIdIndexes.get(automaticLOD.getName());
 
             if (index != null) {
                 Blob dae = blobs.get(index);
@@ -116,7 +116,7 @@ public class BatchConverterHelper {
                 List<Blob> lodResourceBlobs = lodResources.stream()
                                                           .map(BlobHolder::getBlob)
                                                           .collect(Collectors.toList());
-                Integer idx = ((Map<String, Integer>) batch.getProperty("infoIndexes")).get(automaticLOD.getId());
+                Integer idx = ((Map<String, Integer>) batch.getProperty("infoIndexes")).get(automaticLOD.getName());
                 if (idx == null) {
                     return null;
                 }
@@ -238,7 +238,7 @@ public class BatchConverterHelper {
         return orderedRV.stream().map(renderView -> {
             Blob png = blobs.stream().filter(blob -> {
                 String[] fileNameArray = FilenameUtils.getBaseName(blob.getFilename()).split("-");
-                return renderView.getId().equals(fileNameArray[1]);
+                return renderView.getName().equals(fileNameArray[1]);
             }).findFirst().orElse(null);
 
             if (png == null) {
