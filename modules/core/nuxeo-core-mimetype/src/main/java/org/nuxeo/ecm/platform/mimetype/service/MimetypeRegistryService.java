@@ -22,31 +22,25 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Extension;
-import org.nuxeo.runtime.model.RuntimeContext;
 
 import net.sf.jmimemagic.Magic;
 import net.sf.jmimemagic.MagicException;
@@ -67,6 +61,10 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService");
 
+    protected static final String MIMETYPE_XP = "mimetype";
+
+    protected static final String EXTENSION_XP = "extension";
+
     // 10 MB is the max size to allow full file scan
     public static final long MAX_SIZE_FOR_SCAN = 10 * 1024 * 1024;
 
@@ -74,24 +72,8 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
 
     public static final String MSOFFICE_TMP_PREFIX = "~$";
 
-    private static final Log log = LogFactory.getLog(MimetypeRegistryService.class);
-
-    protected Map<String, MimetypeEntry> mimetypeByNormalisedRegistry;
-
-    protected Map<String, MimetypeEntry> mimetypeByExtensionRegistry;
-
-    protected Map<String, ExtensionDescriptor> extensionRegistry;
-
-    private RuntimeContext bundle;
-
-    public MimetypeRegistryService() {
-        initializeRegistries();
-    }
-
-    protected void initializeRegistries() {
-        mimetypeByNormalisedRegistry = new HashMap<>();
-        mimetypeByExtensionRegistry = new HashMap<>();
-        extensionRegistry = new HashMap<>();
+    protected MimetypeDescriptorRegistry getMimetypeRegistry() {
+        return getExtensionPointRegistry(MIMETYPE_XP);
     }
 
     /**
@@ -99,102 +81,21 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
      */
     @Deprecated(since = "11.1", forRemoval = true)
     protected boolean isMimetypeEntry(String mimetypeName) {
-        return mimetypeByNormalisedRegistry.containsKey(mimetypeName);
-    }
-
-    @Override
-    public void activate(ComponentContext context) {
-        bundle = context.getRuntimeContext();
-        initializeRegistries();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        mimetypeByNormalisedRegistry = null;
-        mimetypeByExtensionRegistry = null;
-        extensionRegistry = null;
-    }
-
-    @Override
-    public void registerExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        if (contribs == null) {
-            return;
-        }
-        for (Object contrib : contribs) {
-            if (contrib instanceof MimetypeDescriptor) {
-                MimetypeDescriptor mimetypeDescriptor = (MimetypeDescriptor) contrib;
-                registerMimetype(mimetypeDescriptor.getMimetype());
-            } else if (contrib instanceof ExtensionDescriptor) {
-                registerFileExtension((ExtensionDescriptor) contrib);
-            }
-        }
-    }
-
-    public void registerMimetype(MimetypeEntry mimetype) {
-        log.debug("Registering mimetype: " + mimetype.getNormalized());
-        mimetypeByNormalisedRegistry.put(mimetype.getNormalized(), mimetype);
-        for (String extension : mimetype.getExtensions()) {
-            mimetypeByExtensionRegistry.put(extension, mimetype);
-        }
-    }
-
-    public void registerFileExtension(ExtensionDescriptor extensionDescriptor) {
-        log.debug("Registering file extension: " + extensionDescriptor.getName());
-        extensionRegistry.put(extensionDescriptor.getName(), extensionDescriptor);
-    }
-
-    @Override
-    public void unregisterExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        if (contribs == null) {
-            return;
-        }
-        for (Object contrib : contribs) {
-            if (contrib instanceof MimetypeDescriptor) {
-                MimetypeDescriptor mimetypeDescriptor = (MimetypeDescriptor) contrib;
-                unregisterMimetype(mimetypeDescriptor.getNormalized());
-            } else if (contrib instanceof ExtensionDescriptor) {
-                ExtensionDescriptor extensionDescriptor = (ExtensionDescriptor) contrib;
-                unregisterFileExtension(extensionDescriptor);
-            }
-        }
-    }
-
-    public void unregisterMimetype(String mimetypeName) {
-        log.debug("Unregistering mimetype: " + mimetypeName);
-        MimetypeEntry mimetype = mimetypeByNormalisedRegistry.get(mimetypeName);
-        if (mimetype == null) {
-            return;
-        }
-        List<String> extensions = mimetype.getExtensions();
-        mimetypeByNormalisedRegistry.remove(mimetypeName);
-        for (String extension : extensions) {
-            mimetypeByExtensionRegistry.remove(extension);
-        }
-    }
-
-    public void unregisterFileExtension(ExtensionDescriptor extensionDescriptor) {
-        log.debug("Unregistering file extension: " + extensionDescriptor.getName());
-        extensionRegistry.remove(extensionDescriptor.getName());
-    }
-
-    public RuntimeContext getContext() {
-        return bundle;
+        return isMimeTypeNormalized(mimetypeName);
     }
 
     @Override
     public List<String> getExtensionsFromMimetypeName(String mimetypeName) {
-        return mimetypeByNormalisedRegistry.entrySet()
-                                           .stream()
-                                           .filter(e -> e.getValue().getMimetypes().contains(mimetypeName))
-                                           .flatMap(e -> e.getValue().getExtensions().stream())
-                                           .collect(Collectors.toList());
+        return getMimetypeRegistry().getEntryKeys()
+                                    .stream()
+                                    .filter(e -> e.getValue().getMimetypes().contains(mimetypeName))
+                                    .flatMap(e -> e.getValue().getExtensions().stream())
+                                    .collect(Collectors.toList());
     }
 
     @Override
     public MimetypeEntry getMimetypeEntryByName(String name) {
-        return mimetypeByNormalisedRegistry.get(name);
+        return getMimetypeRegistry().getEntryByName(name);
     }
 
     @Override
@@ -260,17 +161,19 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     @Override
     public String getMimetypeFromExtension(String extension) {
         String lowerCaseExtension = extension.toLowerCase();
-        ExtensionDescriptor extensionDescriptor = extensionRegistry.get(lowerCaseExtension);
-        if (extensionDescriptor == null) {
-            // no explicit extension rule, analyse the inverted mimetype
+        Optional<ExtensionDescriptor> optExtensionDescriptor = getRegistryContribution(EXTENSION_XP,
+                lowerCaseExtension);
+        if (optExtensionDescriptor.isEmpty()) {
+            // no explicit extension rule, analyze the inverted mimetype
             // registry
-            MimetypeEntry mimetype = mimetypeByExtensionRegistry.get(lowerCaseExtension);
+            MimetypeEntry mimetype = getMimetypeRegistry().getEntryByExtension(lowerCaseExtension);
             if (mimetype == null) {
                 throw new MimetypeNotFoundException("no registered mimetype has extension: " + lowerCaseExtension);
             } else {
                 return mimetype.getNormalized();
             }
         } else {
+            ExtensionDescriptor extensionDescriptor = optExtensionDescriptor.get();
             if (extensionDescriptor.isAmbiguous()) {
                 throw new MimetypeNotFoundException(
                         String.format("mimetype for %s is ambiguous, binary sniffing needed", lowerCaseExtension));
@@ -309,7 +212,9 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
                 FileUtils.copyInputStreamToFile(is, file);
                 return getMimetypeFromFile(file);
             } finally {
-                file.delete();
+                if (file != null) {
+                    Files.delete(file.toPath());
+                }
             }
         } catch (IOException e) {
             throw new MimetypeDetectionException(e.getMessage(), e);
@@ -318,8 +223,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
 
     @Override
     public MimetypeEntry getMimetypeEntryByMimeType(String mimetype) {
-        String normalized = getNormalizedMimeType(mimetype).orElse(DEFAULT_MIMETYPE);
-        return mimetypeByNormalisedRegistry.get(normalized);
+        return getMimetypeEntryByName(getNormalizedMimeType(mimetype).orElse(DEFAULT_MIMETYPE));
     }
 
     @Override
@@ -367,7 +271,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
         } else if (blob.getFilename() == null) {
             blob.setFilename(filename);
         }
-        if (withBlobMimetypeFallback) {
+        if (Boolean.TRUE.equals(withBlobMimetypeFallback)) {
             blob.setMimeType(getMimetypeFromFilenameWithBlobMimetypeFallback(filename, blob, DEFAULT_MIMETYPE));
         } else {
             blob.setMimeType(getMimetypeFromFilenameAndBlobWithDefault(filename, blob, DEFAULT_MIMETYPE));
@@ -390,16 +294,17 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
         if (mimeType == null) {
             return Optional.empty();
         }
-
-        Set<Map.Entry<String, MimetypeEntry>> entries = mimetypeByNormalisedRegistry.entrySet();
-        return entries.stream()
-                      .filter(e -> e.getKey().equals(mimeType) || e.getValue().getMimetypes().contains(mimeType))
-                      .findAny()
-                      .map(Map.Entry::getKey);
+        return getMimetypeRegistry().getEntryKeys()
+                                    .stream()
+                                    .filter(e -> e.getKey().equals(mimeType)
+                                            || e.getValue().getMimetypes().contains(mimeType))
+                                    .findAny()
+                                    .map(Map.Entry::getKey);
     }
 
     @Override
     public boolean isMimeTypeNormalized(String mimeType) {
-        return mimetypeByNormalisedRegistry.containsKey(mimeType);
+        return getMimetypeRegistry().isNormalized(mimeType);
     }
+
 }

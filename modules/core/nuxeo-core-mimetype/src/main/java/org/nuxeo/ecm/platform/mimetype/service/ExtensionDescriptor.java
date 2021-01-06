@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.mimetype.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Filename extension definition.
@@ -32,9 +34,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:og@nuxeo.com">Olivier Grisel</a>
  */
 @XObject("fileExtension")
+@XRegistry(compatWarnOnMerge = true)
 public class ExtensionDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@mimetype")

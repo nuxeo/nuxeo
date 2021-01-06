@@ -68,6 +68,7 @@
     </documentation>
 
     <object class="org.nuxeo.ecm.platform.mimetype.service.MimetypeDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.mimetype.service.MimetypeDescriptorRegistry" />
 
   </extension-point>
 

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="test-mimetype-contrib2">
+
+  <extension target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService" point="mimetype">
+
+    <mimetype normalized="application/docbook+xml" iconPath="icons/doc.png" binary="false">
+      <mimetypes>
+        <mimetype>application/docbook+xml</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>xml</extension>
+        <extension>doc.xml</extension>
+        <extension>docb</extension>
+      </extensions>
+    </mimetype>
+
+  </extension>
+
+</component>
