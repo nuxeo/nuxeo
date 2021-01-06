@@ -33,6 +33,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
@@ -49,6 +50,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, RuntimeStreamFeature.class, LogCaptureFeature.class })
@@ -281,6 +283,40 @@ public class TestEventServiceComponent {
             fail("should throw ConcurrentUpdateException");
         } catch (ConcurrentUpdateException e) {
             assertEquals("too fast bro", e.getMessage());
+        }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.event:test-rollback-listener.xml")
+    public void testMarkRollbackWithNuxeoException() {
+        Event event = new EventImpl("markRollback", new EventContextImpl());
+        try {
+            eventService.fireEvent(event);
+            fail("should throw NuxeoException");
+        } catch (NuxeoException e) {
+            assertEquals("NuxeoException", e.getMessage());
+            assertEquals(400, e.getStatusCode());
+            assertTrue(TransactionHelper.isTransactionMarkedRollback());
+        }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.event:test-rollback-listener.xml")
+    public void testMarkRollbackWithRuntimeException() {
+        Event event = new EventImpl("markRollback", new EventContextImpl());
+        event.getContext().setProperty("RuntimeException", true);
+        try {
+            eventService.fireEvent(event);
+            fail("should throw NuxeoException");
+        } catch (NuxeoException e) {
+            assertEquals(
+                    "Exception during testRollbackListener sync listener execution, transaction will be rolled back",
+                    e.getMessage());
+            assertEquals(500, e.getStatusCode());
+            assertTrue(TransactionHelper.isTransactionMarkedRollback());
+            Throwable cause = e.getCause();
+            assertTrue(cause instanceof RuntimeException);
+            assertEquals("RuntimeException", cause.getMessage());
         }
     }
 
