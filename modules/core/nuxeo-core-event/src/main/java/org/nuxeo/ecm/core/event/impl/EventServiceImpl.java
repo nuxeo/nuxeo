@@ -316,15 +316,22 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                 } else if (event.isBubbleException()) {
                     throw e;
                 } else if (event.isMarkedForRollBack()) {
+                    // make sure the transaction is marked rollback-only,
+                    // even if some code later incorrectly swallows the rethrown exception
+                    TransactionHelper.setTransactionRollbackOnly();
+
                     Exception ee;
                     if (event.getRollbackException() != null) {
                         ee = event.getRollbackException();
                     } else {
                         ee = e;
                     }
-                    // when marked for rollback, throw a generic
-                    // RuntimeException to make sure nobody catches it
-                    throw new RuntimeException(message, ee);
+
+                    if (ee instanceof NuxeoException) {
+                        throw (NuxeoException) ee;
+                    } else {
+                        throw new NuxeoException(message, ee);
+                    }
                 } else {
                     // swallow exception
                 }
