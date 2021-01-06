@@ -1,0 +1,9 @@
+<component name="org.nuxeo.ecm.automation.test.resources">
+
+  <extension target="org.nuxeo.runtime.services.resource.ResourceService" point="resources">
+    <resource name="render.mvel">render.mvel</resource>
+    <resource name="render.ftl">render.ftl</resource>
+  </extension>
+
+
+</component>

@@ -26,6 +26,8 @@ import java.net.URL;
 import org.nuxeo.common.xmap.Resource;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * A pointer to a template located in the contributor bundle.
@@ -33,22 +35,15 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("resource")
+@XRegistry
 public class ResourceDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode
     protected Resource resource;
-
-    public ResourceDescriptor() {
-
-    }
-
-    public ResourceDescriptor(String name, Resource resource) {
-        this.name = name;
-        this.resource = resource;
-    }
 
     public Resource getResource() {
         return resource;
@@ -60,10 +55,6 @@ public class ResourceDescriptor {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
     }
 
     public URL getUrl() {
