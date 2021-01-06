@@ -1063,9 +1063,8 @@ public class TestDocumentsSizeUpdater {
             secondFile = session.createDocument(secondFile);
             session.saveDocument(secondFile);
             fail("Should have failed due to quota exceeded");
-        } catch (Exception e) {
-            assertTrue("Should have failed with a QuotaExceededException cause",
-                    e.getCause() instanceof QuotaExceededException);
+        } catch (QuotaExceededException e) {
+            assertEquals("Current event documentCreated would break Quota restriction, rolling back, QuotaExceeded", e.getMessage());
         }
 
         try {
@@ -1074,9 +1073,8 @@ public class TestDocumentsSizeUpdater {
             firstFile = session.createDocument(firstFile);
             session.saveDocument(firstFile);
             fail("Should have failed due to quota exceeded");
-        } catch (Exception e) {
-            assertTrue("Should have failed with a QuotaExceededException cause",
-                    e.getCause() instanceof QuotaExceededException);
+        } catch (QuotaExceededException e) {
+            assertEquals("Current event documentCreated would break Quota restriction, rolling back, QuotaExceeded", e.getMessage());
         }
     }
 
