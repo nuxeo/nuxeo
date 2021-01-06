@@ -18,20 +18,20 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import java.net.URL;
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.junit.runner.RunWith;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.rendering.Renderer;
 import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocument;
@@ -43,8 +43,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.resource.ResourceService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -138,12 +136,8 @@ public class RenderingServiceTest {
     }
 
     @Test
-    public void testRenderingFeed() throws Exception {
-        URL url = getClass().getClassLoader().getResource("render.mvel");
-        Framework.getService(ResourceService.class).addResource("render.mvel", url);
-        url = getClass().getClassLoader().getResource("render.ftl");
-        Framework.getService(ResourceService.class).addResource("render.ftl", url);
-
+    @Deploy("org.nuxeo.ecm.automation.core:test-resources.xml")
+    public void testRenderingFeed() throws OperationException, IOException {
         DocumentModelList list = new DocumentModelListImpl();
         list.add(src);
         list.add(dst);
