@@ -54,8 +54,11 @@ import org.quartz.impl.jdbcjobstore.LockException;
 import org.quartz.impl.matchers.GroupMatcher;
 
 /**
- * Schedule service implementation. Since the cleanup of the quartz job is done when service is activated, ( see see
- * https://jira.nuxeo.com/browse/NXP-7303 ) in cluster mode, the schedules contributions MUST be the same on all nodes.
+ * Schedule service implementation.
+ * <p>
+ * Since the cleanup of the quartz job is done when service is activated in cluster mode (see
+ * https://jira.nuxeo.com/browse/NXP-7303), the schedules contributions MUST be the same on all nodes.
+ * <p>
  * Due the fact that all jobs are removed when service starts on a node it may be a short period with no schedules in
  * quartz table even other node is running.
  */
@@ -69,22 +72,14 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     /** @since 11.1 */
     public static final Duration CLUSTER_START_DURATION_DEFAULT = Duration.ofMinutes(1);
 
-    protected RuntimeContext context;
+    protected static final String XP = "schedule";
 
     protected Scheduler scheduler;
-
-    protected final ScheduleExtensionRegistry registry = new ScheduleExtensionRegistry();
 
     /**
      * @since 7.10
      */
     private Map<String, JobKey> jobKeys = new HashMap<>();
-
-    @Override
-    public void activate(ComponentContext context) {
-        log.debug("Activate");
-        this.context = context.getRuntimeContext();
-    }
 
     protected void setupScheduler() throws IOException, SchedulerException {
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
@@ -119,9 +114,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
         Set<JobKey> jobs = scheduler.getJobKeys(matcher);
         try {
             scheduler.deleteJobs(new ArrayList<>(jobs)); // raise a lock error in case of concurrencies
-            for (Schedule each : registry.getSchedules()) {
-                registerSchedule(each);
-            }
+            this.<Schedule> getRegistryContributions(XP).forEach(this::registerSchedule);
         } catch (LockException cause) {
             log.warn("scheduler already re-initializing, another cluster node concurrent startup ?", cause);
         }
@@ -180,42 +173,17 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
         return scheduler != null;
     }
 
-    @Override
-    public void registerExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            registerSchedule((Schedule) contrib);
-        }
-    }
-
-    @Override
-    public void unregisterExtension(Extension extension) {
-        // do nothing to do ;
-        // clean up will be done when service is activated
-        // see https://jira.nuxeo.com/browse/NXP-7303
-    }
-
-    public RuntimeContext getContext() {
-        return context;
-    }
-
-    @Override
-    public void registerSchedule(Schedule schedule) {
+    protected void registerSchedule(Schedule schedule) {
         registerSchedule(schedule, null);
     }
 
-    @Override
-    public void registerSchedule(Schedule schedule, Map<String, Serializable> parameters) {
-        registry.addContribution(schedule);
-        if (scheduler == null) {
+    protected void registerSchedule(Schedule schedule, Map<String, Serializable> parameters) {
+        if (scheduler == null || schedule == null) {
             return;
         }
-        Schedule contributed = registry.getSchedule(schedule);
-        if (contributed != null) {
-            schedule(contributed, parameters);
-        } else {
-            unschedule(schedule.getId());
-        }
+        String id = schedule.getId();
+        this.<Schedule> getRegistryContribution(XP, id)
+            .ifPresentOrElse(c -> schedule(c, parameters), () -> unschedule(id));
     }
 
     protected void schedule(Schedule schedule, Map<String, Serializable> parameters) {
@@ -245,17 +213,6 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
         }
     }
 
-    @Override
-    public boolean unregisterSchedule(String id) {
-        log.info("Unregistering schedule with id" + id);
-        Schedule schedule = registry.getSchedule(id);
-        if (schedule == null) {
-            return false;
-        }
-        registry.removeContribution(schedule, true);
-        return unschedule(id);
-    }
-
     protected void schedule(String id, JobDetail job, Trigger trigger) throws SchedulerException {
         scheduler.scheduleJob(job, trigger);
         // record the jobKey only if scheduleJob didn't throw
@@ -278,11 +235,6 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
             log.error(String.format("failed to unschedule job with '%s': %s", id, e.getMessage()), e);
             return true; // didn't exist so consider it removed (maybe concurrency)
         }
-    }
-
-    @Override
-    public boolean unregisterSchedule(Schedule schedule) {
-        return unregisterSchedule(schedule.getId());
     }
 
 }

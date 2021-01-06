@@ -21,15 +21,20 @@ package org.nuxeo.ecm.core.scheduler;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * ScheduleImpl extension definition.
  */
 @XObject("schedule")
+@XRegistry(enable = false)
 public class ScheduleImpl implements Schedule {
 
     @XNode("@id")
+    @XRegistryId
     public String id;
 
     /**
@@ -38,15 +43,8 @@ public class ScheduleImpl implements Schedule {
     @XNode("@jobFactoryClass")
     public Class<? extends EventJobFactory> jobFactoryClass = DefaultEventJobFactory.class;
 
-    @XNode("event")
+    @XNode(value = "event", fallback = "eventId")
     public String eventId;
-
-    // BBB compat with old descriptors. use <event> now for consistency with
-    // EventListenerDescriptor
-    @XNode("eventId")
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
-    }
 
     @XNode("eventCategory")
     public String eventCategory;
@@ -66,8 +64,9 @@ public class ScheduleImpl implements Schedule {
     /**
      * @since 5.7.3
      */
-    @XNode("@enabled")
-    public boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    public boolean enabled;
 
     @Override
     public String getId() {
@@ -128,7 +127,6 @@ public class ScheduleImpl implements Schedule {
     public boolean isEnabled() {
         return enabled;
     }
-
 
     /**
      * @since 10.2
