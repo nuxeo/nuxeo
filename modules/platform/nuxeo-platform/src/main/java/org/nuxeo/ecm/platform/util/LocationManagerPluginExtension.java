@@ -23,18 +23,24 @@ package org.nuxeo.ecm.platform.util;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author Thierry Delprat
  */
 @XObject("locationManagerPlugin")
+@XRegistry(enable = false)
 public class LocationManagerPluginExtension {
 
     @XNode("locationName")
+    @XRegistryId
     protected String locationName;
 
-    @XNode("locationEnabled")
-    protected boolean locationEnabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "locationEnabled", defaultAssignment = "true")
+    @XEnable
+    protected boolean locationEnabled;
 
     public boolean getLocationEnabled() {
         return locationEnabled;

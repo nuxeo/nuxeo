@@ -21,59 +21,36 @@
 
 package org.nuxeo.ecm.platform.util;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Extension;
 
 /**
  * @author Thierry Delprat
  */
 public class LocationManagerService extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.platform.util.LocationManagerService");
-
-    private static final Log log = LogFactory.getLog(LocationManagerService.class);
-
     private Map<String, RepositoryLocation> locations = new HashMap<>();
 
     @Override
-    public void registerExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            register((LocationManagerPluginExtension) contrib);
-        }
-    }
-
-    private void register(LocationManagerPluginExtension pluginExtension) {
-        String locationName = pluginExtension.getLocationName();
-        boolean locationEnabled = pluginExtension.getLocationEnabled();
-
-        log.info("Registering location manager: " + locationName + (locationEnabled ? "" : " (disabled)"));
-
-        RepositoryLocation locationTempPlugin = new RepositoryLocation(locationName);
-
-        if (locations.containsKey(locationName)) {
-            if (!locationEnabled) {
-                locations.remove(locationName);
-            }
-        } else {
-            locations.put(locationName, locationTempPlugin);
-        }
+    public void start(ComponentContext context) {
+        locations.clear();
+        this.<LocationManagerPluginExtension> getRegistryContributions("location").forEach(c -> {
+            String name = c.getLocationName();
+            locations.put(name, new RepositoryLocation(name));
+        });
     }
 
     @Override
-    public void unregisterExtension(Extension extension) {
+    public void stop(ComponentContext context) throws InterruptedException {
         locations.clear();
-        locations = null;
     }
 
     public Map<String, RepositoryLocation> getAvailableLocations() {
-        return locations;
+        return Collections.unmodifiableMap(locations);
     }
 
 }
