@@ -24,18 +24,15 @@ package org.nuxeo.ecm.platform.mimetype;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.DEFAULT_MIMETYPE;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -44,11 +41,11 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.ecm.platform.mimetype.service.ExtensionDescriptor;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
@@ -64,11 +61,24 @@ public class TestMimetypeRegistryService {
     @Inject
     private MimetypeRegistry mimetypeRegistry;
 
-    protected MimetypeRegistryService mimetypeRegistryService;
+    @Inject
+    protected HotDeployer hotDeployer;
 
-    private static MimetypeEntryImpl getMimetypeSample() {
-        return new MimetypeEntryImpl("application/msword", //
-                List.of("application/msword", "app/whatever-word"), //
+    protected static final String SAMPLE_MIMETYPE_NORMALIZED = "application/msword";
+
+    protected static MimetypeEntryImpl getMimetypeDefault() {
+        return new MimetypeEntryImpl(SAMPLE_MIMETYPE_NORMALIZED, //
+                List.of(SAMPLE_MIMETYPE_NORMALIZED), //
+                List.of("doc", "dot"), //
+                "word.png", //
+                true, //
+                true, //
+                true);
+    }
+
+    protected static MimetypeEntryImpl getMimetypeSample() {
+        return new MimetypeEntryImpl(SAMPLE_MIMETYPE_NORMALIZED, //
+                List.of(SAMPLE_MIMETYPE_NORMALIZED, "app/whatever-word"), //
                 List.of("doc", "xml"), //
                 "icons/doc.png", //
                 true, //
@@ -76,99 +86,98 @@ public class TestMimetypeRegistryService {
                 true);
     }
 
-    @Before
-    public void before() {
-        mimetypeRegistryService = ((MimetypeRegistryService) mimetypeRegistry);
+    protected void check(MimetypeEntry expected, MimetypeEntry actual) {
+        assertNotNull(expected);
+        assertNotNull(actual);
+        assertEquals(expected.getClass(), actual.getClass());
+        assertEquals(expected.getExtensions(), actual.getExtensions());
+        assertEquals(expected.getIconPath(), actual.getIconPath());
+        assertEquals(expected.getMajor(), actual.getMajor());
+        assertEquals(expected.getMimetypes(), actual.getMimetypes());
+        assertEquals(expected.getMinor(), actual.getMinor());
+        assertEquals(expected.getNormalized(), actual.getNormalized());
+        assertEquals(expected.isBinary(), actual.isBinary());
+        assertEquals(expected.isOleSupported(), actual.isOleSupported());
+        assertEquals(expected.isOnlineEditable(), actual.isOnlineEditable());
     }
 
     @Test
-    public void testMimetypeRegistration() {
-        MimetypeEntry mimetype = getMimetypeSample();
-        mimetypeRegistryService.registerMimetype(mimetype);
-        assertEquals(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()), mimetype);
+    public void testMimetypeRegistration() throws Exception {
+        check(getMimetypeDefault(), mimetypeRegistry.getMimetypeEntryByName(SAMPLE_MIMETYPE_NORMALIZED));
 
-        // Second registration
-        mimetypeRegistryService.registerMimetype(mimetype);
-        assertEquals(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()), mimetype);
+        hotDeployer.deploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml");
 
-        mimetypeRegistryService.unregisterMimetype(mimetype.getNormalized());
-        assertNull(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()));
+        // check override
+        check(getMimetypeSample(), mimetypeRegistry.getMimetypeEntryByName(SAMPLE_MIMETYPE_NORMALIZED));
+
+        // Second registration (?)
+        hotDeployer.deploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml");
+        check(getMimetypeSample(), mimetypeRegistry.getMimetypeEntryByName(SAMPLE_MIMETYPE_NORMALIZED));
+
+        // check hot undeploy
+        hotDeployer.undeploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml");
+        check(getMimetypeDefault(), mimetypeRegistry.getMimetypeEntryByName(SAMPLE_MIMETYPE_NORMALIZED));
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml")
     public void testGetExtensionsFromMimetype() {
         MimetypeEntry mimetype = getMimetypeSample();
-        mimetypeRegistryService.registerMimetype(mimetype);
-
         assertEquals(mimetypeRegistry.getExtensionsFromMimetypeName(mimetype.getNormalized()),
                 mimetype.getExtensions());
-
-        mimetypeRegistryService.unregisterMimetype(mimetype.getNormalized());
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml")
     public void testGetMimetypeFromFile() throws Exception {
-        MimetypeEntry mimetypeEntry = getMimetypeSample();
-        mimetypeRegistryService.registerMimetype(mimetypeEntry);
-
         File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
 
         String mimetype = mimetypeRegistry.getMimetypeFromFile(file);
-        assertEquals("application/msword", mimetype);
+        assertEquals(SAMPLE_MIMETYPE_NORMALIZED, mimetype);
 
         List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
         assertTrue(extensions.contains("doc"));
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml")
     public void testGetMimetypeFromBlob() throws Exception {
-        MimetypeEntry mimetypeEntry = getMimetypeSample();
-        mimetypeRegistryService.registerMimetype(mimetypeEntry);
         String mimetype = mimetypeRegistry.getMimetypeFromBlob(getWordBlob());
-        assertEquals("application/msword", mimetype);
+        assertEquals(SAMPLE_MIMETYPE_NORMALIZED, mimetype);
 
         List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
         assertTrue(extensions.contains("doc"));
     }
 
-    protected Blob getWordBlob() throws FileNotFoundException {
+    protected Blob getWordBlob() {
         return new URLBlob(getClass().getResource("/test-data/hello.doc"));
     }
 
-    protected Blob getWordMLBlob() throws FileNotFoundException {
+    protected Blob getWordMLBlob() {
         return new URLBlob(getClass().getResource("/test-data/wordml-sample.xml"));
     }
 
     @Test
-    public void testGetMimetypeFromFilnameAndBlobWithDefault() throws Exception {
-        MimetypeEntry mimetypeEntry = getMimetypeSample();
-        mimetypeRegistryService.registerMimetype(mimetypeEntry);
-
-        MimetypeEntry docbook = new MimetypeEntryImpl("application/docbook+xml", List.of("application/docbook+xml"),
-                List.of("xml", "doc.xml", "docb"), "", false, false, false);
-        mimetypeRegistryService.registerMimetype(docbook);
-
-        ExtensionDescriptor ed = new ExtensionDescriptor("xml");
-        ed.setAmbiguous(true);
-        ed.setMimetype("text/xml");
-        mimetypeRegistryService.registerFileExtension(ed);
-
+    @Deploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib2.xml")
+    @Deploy("org.nuxeo.ecm.core.mimetype:test-extension-contrib.xml")
+    public void testGetMimetypeFromFilnameAndBlobWithDefault() {
         // doc filename + empty file gives word mimetype
         String mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("hello.doc", Blobs.createBlob(""),
                 "default/mimetype");
-        assertEquals("application/msword", mimetype);
+        assertEquals(SAMPLE_MIMETYPE_NORMALIZED, mimetype);
         List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
         assertTrue(extensions.contains("doc"));
 
         // bad filename extension + word file gives word mimetype
         mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("bad_file_name.ext", getWordBlob(),
                 "default/mimetype");
-        assertEquals("application/msword", mimetype);
+        assertEquals(SAMPLE_MIMETYPE_NORMALIZED, mimetype);
 
         // bad filename (without extension) + word file gives word mimetype
         mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("bad_file_name", getWordBlob(),
                 "default/mimetype");
-        assertEquals("application/msword", mimetype);
+        assertEquals(SAMPLE_MIMETYPE_NORMALIZED, mimetype);
 
         // bad name and empty file: fallback to default mimetype
         mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("bad_file_name", Blobs.createBlob(""),
@@ -178,7 +187,7 @@ public class TestMimetypeRegistryService {
         // test ambiguous file extension with wordml sniffing
         mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("sample-wordml.xml", getWordMLBlob(),
                 "default/mimetype");
-        assertEquals("application/msword", mimetype);
+        assertEquals(SAMPLE_MIMETYPE_NORMALIZED, mimetype);
 
         // test ambiguous file extension with empty file
         mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("sample-wordml.xml", Blobs.createBlob(""),
@@ -198,23 +207,21 @@ public class TestMimetypeRegistryService {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml")
     public void testGetMimetypeFromFilenameWithBlobMimetypeFallback() throws Exception {
-        MimetypeEntry mimetypeEntry = getMimetypeSample();
-        mimetypeRegistryService.registerMimetype(mimetypeEntry);
-
         // bad filename + word mimetype : fallback to excel mimetype
         Blob blob = Blobs.createBlob("");
-        blob.setMimeType("application/msword");
+        blob.setMimeType(SAMPLE_MIMETYPE_NORMALIZED);
         String mimetype = mimetypeRegistry.getMimetypeFromFilenameWithBlobMimetypeFallback("bad_file_name", blob,
                 "default/mimetype");
-        assertEquals("application/msword", mimetype);
+        assertEquals(SAMPLE_MIMETYPE_NORMALIZED, mimetype);
 
         // bad filename + bad mimetype : fallback to sniffing blob
         blob = getWordBlob();
         blob.setMimeType("bad/mimetype");
         mimetype = mimetypeRegistry.getMimetypeFromFilenameWithBlobMimetypeFallback("bad_file_name", blob,
                 "default/mimetype");
-        assertEquals("application/msword", mimetype);
+        assertEquals(SAMPLE_MIMETYPE_NORMALIZED, mimetype);
 
         // bad filename + bad mimetype : fallback to default mimetype
         blob = Blobs.createBlob("");
@@ -237,19 +244,18 @@ public class TestMimetypeRegistryService {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml")
     public void testGetMimetypeEntryByMimetype() {
-        MimetypeEntry mimetypeEntry = getMimetypeSample();
-        mimetypeRegistryService.registerMimetype(mimetypeEntry);
 
         // Using normalized name.
-        MimetypeEntry entry = mimetypeRegistry.getMimetypeEntryByMimeType("application/msword");
+        MimetypeEntry entry = mimetypeRegistry.getMimetypeEntryByMimeType(SAMPLE_MIMETYPE_NORMALIZED);
         assertNotNull(entry);
-        assertEquals("application/msword", entry.getNormalized());
+        assertEquals(SAMPLE_MIMETYPE_NORMALIZED, entry.getNormalized());
 
         // Using other mimetype
         entry = mimetypeRegistry.getMimetypeEntryByMimeType("app/whatever-word");
         assertNotNull(entry);
-        assertEquals("application/msword", entry.getNormalized());
+        assertEquals(SAMPLE_MIMETYPE_NORMALIZED, entry.getNormalized());
     }
 
     @Test
@@ -280,22 +286,22 @@ public class TestMimetypeRegistryService {
 
     @Test
     public void iCannotRetrieveNormalizedMimeType() {
-        assertFalse(mimetypeRegistryService.getNormalizedMimeType("application/unExisting").isPresent());
-        assertFalse(mimetypeRegistryService.getNormalizedMimeType("application/photoshob").isPresent());
+        assertFalse(mimetypeRegistry.getNormalizedMimeType("application/unExisting").isPresent());
+        assertFalse(mimetypeRegistry.getNormalizedMimeType("application/photoshob").isPresent());
     }
 
     @Test
     public void iCanCheckIfMimeTypeIsNormalized() {
-        assertTrue(mimetypeRegistryService.isMimeTypeNormalized("application/zip"));
-        assertTrue(mimetypeRegistryService.isMimeTypeNormalized("application/photoshop"));
-        assertTrue(mimetypeRegistryService.isMimeTypeNormalized("text/plain"));
-        assertFalse(mimetypeRegistryService.isMimeTypeNormalized("application/x-photoshop"));
-        assertFalse(mimetypeRegistryService.isMimeTypeNormalized("image/photoshop"));
+        assertTrue(mimetypeRegistry.isMimeTypeNormalized("application/zip"));
+        assertTrue(mimetypeRegistry.isMimeTypeNormalized("application/photoshop"));
+        assertTrue(mimetypeRegistry.isMimeTypeNormalized("text/plain"));
+        assertFalse(mimetypeRegistry.isMimeTypeNormalized("application/x-photoshop"));
+        assertFalse(mimetypeRegistry.isMimeTypeNormalized("image/photoshop"));
     }
 
     protected void verifyNormalizedMimetype(String expectedNormalizedMimetype, String mimetype) {
-        mimetypeRegistryService.getNormalizedMimeType(mimetype)
-                               .ifPresentOrElse(r -> assertEquals(expectedNormalizedMimetype, r),
-                                       () -> fail(String.format("'%s' should have a normalized mime type", mimetype)));
+        mimetypeRegistry.getNormalizedMimeType(mimetype)
+                        .ifPresentOrElse(r -> assertEquals(expectedNormalizedMimetype, r),
+                                () -> fail(String.format("'%s' should have a normalized mime type", mimetype)));
     }
 }

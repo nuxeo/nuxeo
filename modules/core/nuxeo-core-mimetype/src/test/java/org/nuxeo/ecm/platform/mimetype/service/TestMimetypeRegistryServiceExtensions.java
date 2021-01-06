@@ -33,8 +33,10 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -63,7 +65,14 @@ public class TestMimetypeRegistryServiceExtensions {
     public void setUp() throws Exception {
         wordMimeType = mimetypeRegistry.getMimetypeEntryByName("application/msword");
         pdfMimeType = mimetypeRegistry.getMimetypeEntryByName("application/pdf");
-        xmlExtension = ((MimetypeRegistryService) mimetypeRegistry).extensionRegistry.get("xml");
+        xmlExtension = (ExtensionDescriptor) Framework.getRuntime()
+                                                      .getComponentManager()
+                                                      .getExtensionPointRegistry(MimetypeRegistryService.NAME.getName(),
+                                                              "extension")
+                                                      .map(MapRegistry.class::cast)
+                                                      .get()
+                                                      .getContribution("xml")
+                                                      .orElse(null);
     }
 
     @Test

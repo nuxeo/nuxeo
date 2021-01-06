@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="test-mimetype-contrib">
+
+  <extension target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService" point="mimetype">
+
+    <mimetype normalized="application/msword" iconPath="icons/doc.png" binary="true" onlineEditable="true"
+      oleSupported="true">
+      <mimetypes>
+        <mimetype>application/msword</mimetype>
+        <mimetype>app/whatever-word</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>doc</extension>
+        <extension>xml</extension>
+      </extensions>
+    </mimetype>
+
+  </extension>
+
+</component>

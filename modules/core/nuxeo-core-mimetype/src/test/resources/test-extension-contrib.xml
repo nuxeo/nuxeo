@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="test-mimetype-contrib">
+
+  <extension target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService" point="extension">
+
+    <fileExtension name="xml" mimetype="text/xml" ambiguous="true" />
+
+  </extension>
+
+</component>

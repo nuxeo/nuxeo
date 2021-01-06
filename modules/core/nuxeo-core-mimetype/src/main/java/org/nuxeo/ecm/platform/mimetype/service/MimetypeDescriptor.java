@@ -21,14 +21,15 @@
 package org.nuxeo.ecm.platform.mimetype.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.platform.mimetype.MimetypeEntryImpl;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  * MimetypeEntry extension definition.
@@ -36,6 +37,7 @@ import org.w3c.dom.NodeList;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @XObject("mimetype")
+@XRegistry(merge = false, enable = false, remove = false)
 public class MimetypeDescriptor {
 
     @XNode("@normalized")
@@ -53,70 +55,34 @@ public class MimetypeDescriptor {
     @XNode("@iconPath")
     protected String iconPath;
 
-    @XNode("mimetypes")
-    protected Element mimetypes;
+    @XNodeList(value = "mimetypes/mimetype", type = ArrayList.class, componentType = String.class)
+    protected List<String> mimetypes;
 
-    @XNode("extensions")
-    protected Element extensions;
+    @XNodeList(value = "extensions/extension", type = ArrayList.class, componentType = String.class)
+    protected List<String> extensions;
 
     public boolean isBinary() {
         return binary;
-    }
-
-    public void setBinary(boolean binary) {
-        this.binary = binary;
     }
 
     public boolean isOnlineEditable() {
         return onlineEditable;
     }
 
-    public void setOnlineEditable(boolean onlineEditable) {
-        this.onlineEditable = onlineEditable;
-    }
-
     public boolean isOleSupported() {
         return oleSupported;
     }
 
-    public void setOleSupported(boolean oleSupported) {
-        this.oleSupported = oleSupported;
-    }
-
     public List<String> getExtensions() {
-        List<String> exts = new ArrayList<>();
-        NodeList elements = extensions.getElementsByTagName("extension");
-        int len = elements.getLength();
-        for (int i = 0; i < len; i++) {
-            exts.add(elements.item(i).getTextContent().trim());
-        }
-        return exts;
-    }
-
-    public void setExtensions(Element extensions) {
-        this.extensions = extensions;
+        return Collections.unmodifiableList(extensions);
     }
 
     public String getIconPath() {
         return iconPath;
     }
 
-    public void setIconPath(String iconPath) {
-        this.iconPath = iconPath;
-    }
-
     public List<String> getMimetypes() {
-        List<String> mtypes = new ArrayList<>();
-        NodeList elements = mimetypes.getElementsByTagName("mimetype");
-        int len = elements.getLength();
-        for (int i = 0; i < len; i++) {
-            mtypes.add(elements.item(i).getTextContent().trim());
-        }
-        return mtypes;
-    }
-
-    public void setMimetypes(Element mimetypes) {
-        this.mimetypes = mimetypes;
+        return Collections.unmodifiableList(mimetypes);
     }
 
     public MimetypeEntry getMimetype() {
@@ -126,10 +92,6 @@ public class MimetypeDescriptor {
 
     public String getNormalized() {
         return normalized;
-    }
-
-    public void setNormalized(String normalized) {
-        this.normalized = normalized;
     }
 
 }
