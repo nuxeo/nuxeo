@@ -18,9 +18,9 @@
  */
 package org.nuxeo.ecm.automation.server;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XAnnotatedObject;
@@ -34,7 +34,7 @@ import org.w3c.dom.Element;
  */
 public class MarshallerRegistry extends AbstractRegistry {
 
-    protected List<MarshallerDescriptor> contributions = new ArrayList<>();
+    protected List<MarshallerDescriptor> contributions = new CopyOnWriteArrayList<>();
 
     @Override
     public void initialize() {
@@ -48,8 +48,13 @@ public class MarshallerRegistry extends AbstractRegistry {
     }
 
     @Override
-    protected void register(Context ctx, XAnnotatedObject xObject, Element element) {
-        contributions.add((MarshallerDescriptor) xObject.newInstance(ctx, element));
+    @SuppressWarnings("unchecked")
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        MarshallerDescriptor contrib = (MarshallerDescriptor) xObject.newInstance(ctx, element);
+        if (contrib != null) {
+            contributions.add(contrib);
+        }
+        return (T) contrib;
     }
 
 }

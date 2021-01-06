@@ -34,17 +34,20 @@ import org.w3c.dom.Element;
 public class ConfigurationServiceRegistry extends MapRegistry {
 
     @Override
-    protected void register(Context ctx, XAnnotatedObject xObject, Element element) {
-        String id = (String) xObject.getRegistryId().getValue(ctx, element);
+    @SuppressWarnings("unchecked")
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        String id = computeId(ctx, xObject, element);
         XAnnotatedMember remove = xObject.getRemove();
         if (remove != null && Boolean.TRUE.equals(remove.getValue(ctx, element))) {
             contributions.remove(id);
-            return;
+            return null;
         }
         ConfigurationPropertyDescriptor contrib = (ConfigurationPropertyDescriptor) xObject.newInstance(ctx, element);
         if (Framework.getProperties().containsKey(id)) {
-            String message = "Property '" + id + "' should now be contributed to extension "
-                    + "point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'";
+            String message = String.format(
+                    "Property '%s', contributed by '%s', should now be contributed to extension "
+                            + "point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'",
+                    id, extensionId);
             DeprecationLogger.log(message, "7.4");
         }
         ConfigurationPropertyDescriptor existing = (ConfigurationPropertyDescriptor) contributions.get(id);
@@ -54,6 +57,7 @@ public class ConfigurationServiceRegistry extends MapRegistry {
         } else {
             contributions.put(id, contrib);
         }
+        return (T) contrib;
     }
 
 }

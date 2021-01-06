@@ -53,11 +53,12 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
     }
 
     @Override
-    public void register(Context ctx, XAnnotatedObject xObject, Element element) {
+    @SuppressWarnings("unchecked")
+    public <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
         XAnnotatedMember remove = xObject.getRemove();
         if (remove != null && Boolean.TRUE.equals(remove.getValue(ctx, element))) {
             setContribution(null);
-            return;
+            return null;
         }
         Object contrib;
         XAnnotatedMember merge = xObject.getMerge();
@@ -74,6 +75,7 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
                 this.enabled = Boolean.TRUE.equals(enabled);
             }
         }
+        return (T) contrib;
     }
 
 }

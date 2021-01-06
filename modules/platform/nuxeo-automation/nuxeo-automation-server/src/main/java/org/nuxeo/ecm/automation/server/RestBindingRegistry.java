@@ -18,12 +18,10 @@
  */
 package org.nuxeo.ecm.automation.server;
 
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XAnnotatedMember;
 import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.nuxeo.common.xmap.registry.MapRegistry;
-import org.nuxeo.common.xmap.registry.RegistryContribution;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.w3c.dom.Element;
@@ -36,11 +34,8 @@ import org.w3c.dom.Element;
 public class RestBindingRegistry extends MapRegistry {
 
     @Override
-    protected void register(RegistryContribution rc) {
-        Context ctx = rc.getContext();
-        XAnnotatedObject xObject = rc.getObject();
-        Element element = rc.getElement();
-
+    @SuppressWarnings("unchecked")
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
         // generate the new instance in all cases, to check if this is a chain and if it is disabled
         RestBinding ob = (RestBinding) xObject.newInstance(ctx, element);
         boolean isChain = ob.chain;
@@ -51,7 +46,7 @@ public class RestBindingRegistry extends MapRegistry {
         XAnnotatedMember remove = xObject.getRemove();
         if (remove != null && Boolean.TRUE.equals(remove.getValue(ctx, element))) {
             contributions.remove(id);
-            return;
+            return null;
         }
         Object contrib;
         XAnnotatedMember merge = xObject.getMerge();
@@ -63,10 +58,8 @@ public class RestBindingRegistry extends MapRegistry {
         contributions.put(id, contrib);
         // handle deprecated disablement
         if (isDisabled) {
-            String message = String.format(
-                    "Usage of \"disabled\" attribute on RestBinding contribution '%s',"
-                            + " in extension '%s', is deprecated: use \"enable\" attribute instead",
-                    id, StringUtils.substringBeforeLast(rc.getTag(), "."));
+            String message = String.format("Usage of \"disabled\" attribute on RestBinding contribution '%s',"
+                    + " in extension '%s', is deprecated: use \"enable\" attribute instead.", id, extensionId);
             DeprecationLogger.log(message, "11.5");
             disabled.add(id);
         }
@@ -79,6 +72,7 @@ public class RestBindingRegistry extends MapRegistry {
                 disabled.remove(id);
             }
         }
+        return (T) contrib;
     }
 
 }
