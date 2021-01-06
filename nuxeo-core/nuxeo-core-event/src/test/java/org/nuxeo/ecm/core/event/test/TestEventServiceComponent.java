@@ -47,10 +47,10 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features(TransactionalFeature.class)
 @Deploy("org.nuxeo.runtime.jtajca")
 @Deploy("org.nuxeo.ecm.core.event")
 public class TestEventServiceComponent {
@@ -58,6 +58,8 @@ public class TestEventServiceComponent {
     @Inject
     protected HotDeployer hotDeployer;
 
+    @Inject
+    protected TransactionalFeature txFeature;
     protected int initialThreadCount;
 
     @Before
@@ -112,8 +114,9 @@ public class TestEventServiceComponent {
         Event test2 = new EventImpl("testnotmached", new EventContextImpl());
         test2.setIsCommitEvent(true);
         service.fireEvent(test2);
+        txFeature.nextTransaction();
         service.waitForAsyncCompletion();
-        Thread.sleep(100); // TODO async completion has race conditions
+
         assertEquals(1, DummyPostCommitEventListener.handledCount());
         assertEquals(1, DummyPostCommitEventListener.eventCount());
 
@@ -135,7 +138,9 @@ public class TestEventServiceComponent {
         Event test1 = new EventImpl("testasync", context);
         test1.setIsCommitEvent(true);
         service.fireEvent(test1);
+        txFeature.nextTransaction();
         service.waitForAsyncCompletion();
+
         assertEquals(2, DummyPostCommitEventListener.handledCount());
     }
 
@@ -154,7 +159,8 @@ public class TestEventServiceComponent {
     public void testSyncPostCommitTimeout() throws Exception {
         // returned after timeout (300ms), so only one listener done at this time
         doTestSyncPostCommit(false, false, true, 1, 2);
-        Thread.sleep(3000); // wait other listener
+        txFeature.nextTransaction();
+
         assertEquals(2, DummyPostCommitEventListener.handledCount());
         assertEquals(4, DummyPostCommitEventListener.eventCount());
     }
@@ -174,7 +180,8 @@ public class TestEventServiceComponent {
     public void testSyncPostCommitTimeoutBulk() throws Exception {
         // returned after timeout (300ms), so only one listener done
         doTestSyncPostCommit(true, false, true, 1, 2);
-        Thread.sleep(3000); // wait other listener
+        txFeature.nextTransaction();
+
         // other listener was never run due to interrupt
         assertEquals(1, DummyPostCommitEventListener.handledCount());
         assertEquals(2, DummyPostCommitEventListener.eventCount());
@@ -196,9 +203,10 @@ public class TestEventServiceComponent {
         Event test1 = new EventImpl("test1", new EventContextImpl());
         test1.setIsCommitEvent(true);
         service.fireEvent(test1);
-        // wait for async processing to be done
-        service.waitForAsyncCompletion(2 * 1000);
+        txFeature.nextTransaction();
+
         assertEquals(1, DummyPostCommitEventListener.handledCount());
+
         // can still fire events
         Event test2 = new EventImpl("test1", new EventContextImpl());
         test2.setIsCommitEvent(true);
@@ -260,8 +268,8 @@ public class TestEventServiceComponent {
         event4.setIsCommitEvent(true);
         assertEquals(0, DummyPostCommitEventListener.handledCount());
         service.fireEvent(event4);
-        service.waitForAsyncCompletion();
-        // Thread.sleep(3000);
+        txFeature.nextTransaction();
+
         assertEquals(expectedHandled, DummyPostCommitEventListener.handledCount());
         assertEquals(expectedEvents, DummyPostCommitEventListener.eventCount());
         if (timeout) {
