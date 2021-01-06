@@ -3,7 +3,7 @@
 
   <documentation>
     This service manage the different repository locations that can be accessed via the platform.
-    This service is available via a EJB3 facade that is used to retrive the lis of available cores.
+    This service is available via a EJB3 facade that is used to retrieve the list of available cores.
   </documentation>
 
   <implementation class="org.nuxeo.ecm.platform.util.LocationManagerService" version="1.0.0"/>

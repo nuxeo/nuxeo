@@ -11,15 +11,17 @@
       <locationName>default</locationName>
     </locationManagerPlugin>
 
-    <!--  		<locationManagerPlugin>
-           <locationEnabled>true</locationEnabled>
-          <locationName>pgsql</locationName>
-        </locationManagerPlugin>
-         <locationManagerPlugin>
-           <locationEnabled>true</locationEnabled>
-          <locationName>demo2</locationName>
-        </locationManagerPlugin>
+    <!--
+    <locationManagerPlugin>
+      <locationEnabled>true</locationEnabled>
+      <locationName>pgsql</locationName>
+    </locationManagerPlugin>
+    <locationManagerPlugin>
+      <locationEnabled>true</locationEnabled>
+      <locationName>demo2</locationName>
+    </locationManagerPlugin>
     -->
+
   </extension>
 
 </component>
