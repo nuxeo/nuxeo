@@ -79,17 +79,23 @@ public class MapRegistry extends AbstractRegistry implements Registry {
         return Optional.ofNullable((T) contributions.get(id));
     }
 
-    @Override
-    protected void register(Context ctx, XAnnotatedObject xObject, Element element) {
+    protected String computeId(Context ctx, XAnnotatedObject xObject, Element element) {
         String id = (String) xObject.getRegistryId().getValue(ctx, element);
         if (id == null) {
             // prevent NPE on map key
             id = "null";
         }
+        return id;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        String id = computeId(ctx, xObject, element);
         XAnnotatedMember remove = xObject.getRemove();
         if (remove != null && Boolean.TRUE.equals(remove.getValue(ctx, element))) {
             contributions.remove(id);
-            return;
+            return null;
         }
         Object contrib;
         XAnnotatedMember merge = xObject.getMerge();
@@ -108,6 +114,7 @@ public class MapRegistry extends AbstractRegistry implements Registry {
                 disabled.remove(id);
             }
         }
+        return (T) contrib;
     }
 
 }

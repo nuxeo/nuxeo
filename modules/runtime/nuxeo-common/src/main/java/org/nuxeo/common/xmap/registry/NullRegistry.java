@@ -37,7 +37,7 @@ public class NullRegistry extends AbstractRegistry implements Registry {
     }
 
     @Override
-    protected void register(Context ctx, XAnnotatedObject xObject, Element element) {
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
         throw new UnsupportedOperationException();
     }
 

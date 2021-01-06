@@ -74,7 +74,8 @@ public abstract class AbstractRegistry implements Registry {
 
     @Override
     public void initialize() {
-        registrations.forEach(this::register);
+        registrations.forEach(
+                rc -> doRegister(rc.getContext(), rc.getObject(), rc.getElement(), rc.getRuntimeExtensionFromTag()));
         setInitialized(true);
     }
 
@@ -105,10 +106,6 @@ public abstract class AbstractRegistry implements Registry {
         setInitialized(false);
     }
 
-    protected void register(RegistryContribution rc) {
-        register(rc.getContext(), rc.getObject(), rc.getElement());
-    }
-
-    protected abstract void register(Context ctx, XAnnotatedObject xObject, Element element);
+    protected abstract <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId);
 
 }

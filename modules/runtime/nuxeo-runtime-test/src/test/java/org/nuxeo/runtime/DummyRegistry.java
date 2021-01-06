@@ -49,8 +49,9 @@ public class DummyRegistry extends AbstractRegistry {
     }
 
     @Override
-    protected void register(Context ctx, XAnnotatedObject xObject, Element element) {
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
         // NOOP
+        return null;
     }
 
     @Override

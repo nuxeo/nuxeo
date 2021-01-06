@@ -35,18 +35,19 @@ public class OpenIDDescriptorRegistry extends MapRegistry {
     private static final Logger log = LogManager.getLogger(OpenIDDescriptorRegistry.class);
 
     @Override
-    protected void register(Context ctx, XAnnotatedObject xObject, Element element) {
-        super.register(ctx, xObject, element);
-        String id = (String) xObject.getRegistryId().getValue(ctx, element);
-        OpenIDConnectProviderDescriptor provider = (OpenIDConnectProviderDescriptor) contributions.get(id);
-        if (provider.isEnabled()) {
+    @SuppressWarnings("unchecked")
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        OpenIDConnectProviderDescriptor provider = super.doRegister(ctx, xObject, element, extensionId);
+        if (provider != null && provider.isEnabled()) {
             if (provider.getClientId() == null || provider.getClientSecret() == null) {
-                log.info("OpenId provider for {} is disabled because clientId and/or clientSecret are empty",
-                        provider::getName);
+                log.info(
+                        "OpenId provider for '{}', contributed by '{}', is disabled because clientId and/or clientSecret are empty",
+                        provider.getName(), extensionId);
                 provider.setEnabled(false);
-                disabled.add(id);
+                disabled.add(provider.getId());
             }
         }
+        return (T) provider;
     }
 
 }

@@ -34,11 +34,15 @@ import org.w3c.dom.Element;
  */
 public class RedisPoolRegistry extends SingleRegistry {
 
-    protected RedisPoolDescriptor config;
+    // volatile for double-checked locking
+    protected volatile RedisPoolDescriptor config;
 
     @Override
-    public void register(Context ctx, XAnnotatedObject xObject, Element element) {
-        setContribution(xObject.newInstance(ctx, element));
+    @SuppressWarnings("unchecked")
+    public <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        T contrib = (T) xObject.newInstance(ctx, element);
+        setContribution(contrib);
+        return contrib;
     }
 
     @Override

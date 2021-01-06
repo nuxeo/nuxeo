@@ -18,6 +18,7 @@
  */
 package org.nuxeo.common.xmap.registry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.w3c.dom.Element;
@@ -58,6 +59,16 @@ public class RegistryContribution {
 
     public String getTag() {
         return tag;
+    }
+
+    /**
+     * Helper method for logging, assuming the tag will match a runtime extension id.
+     * <p>
+     * The tag should match the pattern "componentName#targetExtensionPoint.randomNumber", in which case
+     * "componentName#targetExtensionPoint" will be returned.
+     */
+    public String getRuntimeExtensionFromTag() {
+        return StringUtils.substringBeforeLast(tag, ".");
     }
 
 }
