@@ -18,41 +18,10 @@
  */
 package org.nuxeo.ecm.core.scheduler;
 
-import java.io.Serializable;
-import java.util.Map;
-
 /**
  * Scheduler service.
  */
 public interface SchedulerService {
-
-    /**
-     * Registers a schedule.
-     *
-     * @param schedule the schedule
-     */
-    void registerSchedule(Schedule schedule);
-
-    /**
-     * Registers a schedule. Add all parameters to eventContext.
-     */
-    void registerSchedule(Schedule schedule, Map<String, Serializable> parameters);
-
-    /**
-     * UnRegisters a schedule.
-     *
-     * @param scheduleId the schedule id
-     * @return true if schedule has been successfully removed.
-     */
-    boolean unregisterSchedule(String scheduleId);
-
-    /**
-     * UnRegisters a schedule.
-     *
-     * @param schedule to be unregistered
-     * @return true if schedule has been successfully removed.
-     */
-    boolean unregisterSchedule(Schedule schedule);
 
     /**
      * Checks if the framework has fully started.

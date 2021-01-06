@@ -18,17 +18,9 @@
  */
 package org.nuxeo.ecm.core.scheduler;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -82,60 +74,6 @@ public class TestSchedulerService {
         waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue("count " + count, count >= 1);
-    }
-
-    @Test
-    public void testScheduleManualRegistration() throws Exception {
-        ScheduleImpl schedule = buildTestSchedule();
-        schedule.cronExpression = "*/1 * * * * ?";
-        scheduler.registerSchedule(schedule);
-
-        waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
-
-        boolean unregistered = scheduler.unregisterSchedule(schedule.id);
-        // schedule can happen again, it hasn't been unregistered after first
-        // launch.
-        assertTrue(unregistered);
-    }
-
-    @Test
-    public void testScheduleManualRegistrationWithParameters() throws Exception {
-        ScheduleImpl schedule = buildTestSchedule();
-        LocalDateTime future = LocalDateTime.now().plusSeconds(3);
-
-        schedule.cronExpression = CRON_EXPRESSION_FORMATTER.format(future);
-
-        // Passing this parameters makes the counter of the DummyEventListener decrement
-        // instead of increment
-        Map<String, Serializable> parameters = new HashMap<>();
-        parameters.put("flag", "1");
-
-        scheduler.registerSchedule(schedule, parameters);
-        waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
-        long count = DummyEventListener.getCount();
-        assertTrue("count " + count, count < 0);
-        boolean unregistered = scheduler.unregisterSchedule(schedule.id);
-        // schedule should happen only one time, it has already been
-        // unregistered
-        assertFalse(unregistered);
-    }
-
-    @Test
-    public void testScheduleManualRegistrationWithTimeZone() throws Exception {
-        ScheduleImpl schedule = buildTestSchedule();
-        schedule.timeZone = "UTC";
-        ZonedDateTime future = LocalDateTime.now().plusSeconds(3).atZone(ZoneId.systemDefault())
-                .withZoneSameInstant(ZoneOffset.UTC);
-
-        schedule.cronExpression = CRON_EXPRESSION_FORMATTER.format(future);
-
-        scheduler.registerSchedule(schedule);
-
-        waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
-        boolean unregistered = scheduler.unregisterSchedule(schedule.id);
-        // schedule should happen only one time, it has already been
-        // unregistered
-        assertFalse(unregistered);
     }
 
     protected ScheduleImpl buildTestSchedule() {
