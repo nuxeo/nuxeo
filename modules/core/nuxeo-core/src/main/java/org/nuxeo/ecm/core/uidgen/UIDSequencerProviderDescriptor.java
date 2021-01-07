@@ -20,14 +20,19 @@ package org.nuxeo.ecm.core.uidgen;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @since 7.3
  */
 @XObject("sequencer")
+@XRegistry(enable = false)
 public class UIDSequencerProviderDescriptor {
 
-    @XNode("@name")
+    @XNode(value = "@name", fallback = "@class")
+    @XRegistryId
     protected String name;
 
     @XNode("@default")
@@ -36,30 +41,23 @@ public class UIDSequencerProviderDescriptor {
     @XNode("@class")
     protected Class<? extends UIDSequencer> sequencerClass;
 
-    @XNode("@enabled")
-    protected boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    protected boolean enabled;
 
     public boolean isEnabled() {
         return enabled;
     }
 
-    public UIDSequencer getSequencer() throws Exception {
-
-        if (sequencerClass != null) {
-            return sequencerClass.getDeclaredConstructor().newInstance();
-        }
-
-        return null;
+    public UIDSequencer getSequencer() throws ReflectiveOperationException {
+        return sequencerClass.getDeclaredConstructor().newInstance();
     }
 
     public String getName() {
-        if (name == null && sequencerClass != null) {
-            name = sequencerClass.getSimpleName();
-        }
         return name;
     }
 
-    public boolean isIsdefault() {
+    public boolean isDefault() {
         return isdefault;
     }
 

@@ -18,136 +18,55 @@
  */
 package org.nuxeo.ecm.core.uidgen;
 
-import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * UID generator configuration holder.
  */
 @XObject("generator")
+@XRegistry(compatWarnOnMerge = true)
 public class UIDGeneratorDescriptor {
 
-    private static final Log log = LogFactory.getLog(UIDGeneratorDescriptor.class);
-
-    private static final int DEFAULT_COUNTER_START = 1;
-
-    // @XNode
-    private String generationExpression;
-
-    // @XNode
-    private Set<?> generationCriteria;
-
-    // @XNode
-    private int counterStart;
-
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     @XNode("@class")
-    private String className;
+    private Class<? extends UIDGenerator> generatorClass;
 
-    // @XNode("propertyName")
-    // private String propertyName;
+    /** @since 11.5 **/
+    @XNode(value = "counterStart", defaultAssignment = "1")
+    private int counterStart;
+
     @XNodeList(value = "propertyName", type = String[].class, componentType = String.class)
     private String[] propertyNames;
 
     @XNodeList(value = "docType", type = String[].class, componentType = String.class)
     private String[] docTypes;
 
-    /**
-     * Default constructor - used normally when created as an XObject.
-     */
-    public UIDGeneratorDescriptor() {
-        log.debug("<UIDGeneratorDescriptor:init>");
-    }
-
-    /**
-     * Explicit constructor.
-     */
-    public UIDGeneratorDescriptor(String generationExp, Set<?> generationCrit) {
-        this(generationExp, generationCrit, DEFAULT_COUNTER_START);
-    }
-
-    /**
-     * Explicit constructor.
-     */
-    public UIDGeneratorDescriptor(String generationExp, Set<?> generationCrit, int counterStart) {
-        generationExpression = generationExp;
-        generationCriteria = generationCrit;
-        this.counterStart = counterStart;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
+    /** @since 11.5 **/
+    public UIDGenerator getGenerator() throws ReflectiveOperationException {
+        return generatorClass.getDeclaredConstructor().newInstance();
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String[] getDocTypes() {
         return docTypes;
-    }
-
-    public void setDocTypes(String[] docTypes) {
-        this.docTypes = docTypes;
     }
 
     public int getCounterStart() {
         return counterStart;
     }
 
-    public Set<?> getGenerationCriteria() {
-        return generationCriteria;
-    }
-
-    public String getGenerationExpression() {
-        return generationExpression;
-    }
-
-    /**
-     * Kept for convenience. If there is only one property to be set with generated UID.
-     *
-     * @return first propertyName
-     */
-    public String getPropertyName() {
-        if (propertyNames.length == 0) {
-            log.warn("No propertyName specified");
-            return null;
-        }
-        return propertyNames[0];
-    }
-
-    /**
-     * Set the value as first property name. Kept for convenience. If there is only one property to be set with
-     * generated UID.
-     */
-    public void setPropertyName(String propertyName) {
-        if (propertyNames.length == 0) {
-            log.warn("Cannot set propertyName.");
-        }
-        propertyNames[0] = propertyName;
-    }
-
     public String[] getPropertyNames() {
         return propertyNames;
-    }
-
-    public void setPropertyNames(String[] propNames) {
-        propertyNames = propNames;
     }
 
 }
