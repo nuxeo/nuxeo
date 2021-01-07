@@ -769,11 +769,11 @@ pipeline {
         """
         script {
           def parameters = [
-            string(name: 'NUXEO_REPOSITORY', value: "${repositoryUrl}"),
-            string(name: 'NUXEO_SHA', value: "${GIT_COMMIT}"),
+            string(name: 'NUXEO_VERSION', value: "${VERSION}"),
           ]
           if (isPullRequest()) {
-            parameters.add(string(name: 'NUXEO_VERSION', value: "${VERSION}"))
+            parameters.add(string(name: 'NUXEO_REPOSITORY', value: "${repositoryUrl}"))
+            parameters.add(string(name: 'NUXEO_SHA', value: "${GIT_COMMIT}"))
           }
           build(
             job: 'nuxeo/rest-api-compatibility-tests/master',
