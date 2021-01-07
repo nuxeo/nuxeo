@@ -452,11 +452,6 @@ pipeline {
           sh """
             kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME}
           """
-          // output pod description
-          echo "Describe pod ${NODE_NAME}"
-          sh """
-            kubectl describe pod ${NODE_NAME}
-          """
         }
       }
     }
