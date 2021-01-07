@@ -302,7 +302,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
 
         Map<String, Serializable> eventInfo = ctx.getProperties();
         String userDest = (String) eventInfo.get(NotificationConstants.DESTINATION_KEY);
-        NotificationImpl notif = (NotificationImpl) eventInfo.get(NotificationConstants.NOTIFICATION_KEY);
+        Notification notif = (Notification) eventInfo.get(NotificationConstants.NOTIFICATION_KEY);
 
         // send email
         NuxeoPrincipal recepient = NotificationServiceHelper.getUsersService().getPrincipal(userDest);

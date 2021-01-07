@@ -15,45 +15,39 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Narcis Paslaru
  */
 
 package org.nuxeo.ecm.platform.ec.notification.service;
 
+import org.nuxeo.common.xmap.Resource;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
- * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
+ * Descriptor for notification template.
  */
 @XObject("template")
+@XRegistry
 public class TemplateDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@src")
-    protected String src;
+    protected Resource src;
 
-    // this is set by the type service to the context that knows how to locate
-    // the schema file
-    private RuntimeContext context;
-
-    public TemplateDescriptor() {
+    /** @since 11.5 */
+    public String getName() {
+        return name;
     }
 
-    public TemplateDescriptor(String name) {
-        this.name = name;
-    }
-
-    public RuntimeContext getContext() {
-        return context;
-    }
-
-    public void setContext(RuntimeContext context) {
-        this.context = context;
+    /** @since 11.5 */
+    public Resource getSrc() {
+        return src;
     }
 
 }

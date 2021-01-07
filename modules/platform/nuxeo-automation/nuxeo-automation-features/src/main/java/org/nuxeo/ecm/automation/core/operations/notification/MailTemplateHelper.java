@@ -66,7 +66,7 @@ public class MailTemplateHelper {
     }
 
     public static URL getTemplate(String name) {
-        return NotificationService.getTemplateURL(name);
+        return NotificationServiceHelper.getNotificationService().getTemplateURL(name);
     }
 
 }

@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.ec.notification.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 
 /**
@@ -26,39 +28,22 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
  * @author Thierry Martins
  */
 @XObject("veto")
+@XRegistry
 public class NotificationListenerVetoDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     @XNode("@class")
     private Class<? extends NotificationListenerVeto> notificationVeto;
 
-    @XNode("@remove")
-    private boolean remove = false;
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Class<? extends NotificationListenerVeto> getNotificationVeto() {
         return notificationVeto;
-    }
-
-    public void setNotificationVeto(Class<? extends NotificationListenerVeto> notificationVeto) {
-        this.notificationVeto = notificationVeto;
-    }
-
-    public boolean isRemove() {
-        return remove;
-    }
-
-    public void setRemove(boolean remove) {
-        this.remove = remove;
     }
 
 }

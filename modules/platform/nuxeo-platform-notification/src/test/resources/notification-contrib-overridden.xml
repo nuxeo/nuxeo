@@ -9,7 +9,7 @@
     <notification name="test" channel="email-ov" enabled="true" availableIn="folder"
       autoSubscribed="true" template="test-template-ov" subject="Test Notification Subject-ov"
       label="Test Notification Label-ov" subjectTemplate="Test Notification Subject Template-ov"
-      templateExpr="NotificationContext['exp1-ov']">
+      templateExpr="NotificationContext['exp1-ov']" merge="false">
       <event name="testEvent-ov"/>
     </notification>
 

@@ -19,15 +19,19 @@ package org.nuxeo.ecm.platform.ec.notification.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerHook;
 
 /**
  * @since 5.5
  */
 @XObject("hookListener")
+@XRegistry
 public class NotificationListenerHookDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@class")

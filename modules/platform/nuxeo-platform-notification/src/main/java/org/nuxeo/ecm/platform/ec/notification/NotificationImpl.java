@@ -21,6 +21,7 @@
 
 package org.nuxeo.ecm.platform.ec.notification;
 
+import org.nuxeo.ecm.platform.ec.notification.service.NotificationDescriptor;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 
 /**
@@ -36,7 +37,9 @@ import org.nuxeo.ecm.platform.notification.api.Notification;
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
+ * @deprecated since 11.5: unused, see {@link NotificationDescriptor} instead.
  */
+@Deprecated(since = "11.5")
 public class NotificationImpl implements Notification {
 
     private static final long serialVersionUID = 6550698875484943882L;

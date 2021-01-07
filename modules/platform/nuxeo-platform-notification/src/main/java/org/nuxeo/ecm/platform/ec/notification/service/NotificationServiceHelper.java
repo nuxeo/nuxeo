@@ -30,10 +30,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class NotificationServiceHelper {
 
-    // Utility class.
-    private NotificationServiceHelper() {
-    }
-
     /**
      * Locates the notification service using NXRuntime.
      */
