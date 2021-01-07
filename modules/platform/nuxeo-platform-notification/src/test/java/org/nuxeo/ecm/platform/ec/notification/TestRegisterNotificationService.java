@@ -28,7 +28,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +57,6 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 public class TestRegisterNotificationService {
-
 
     protected EmailHelper mailHelper = new EmailHelper();
 
@@ -100,7 +99,7 @@ public class TestRegisterNotificationService {
         notifications = getService().getNotificationsForSubscriptions("section");
         assertEquals(1, notifications.size());
 
-        URL newModifTemplate = NotificationService.getTemplateURL("test-template");
+        URL newModifTemplate = getService().getTemplateURL("test-template");
         assertTrue(newModifTemplate.getFile().endsWith("templates/test-template.ftl"));
 
     }
@@ -147,7 +146,7 @@ public class TestRegisterNotificationService {
         notifications = getService().getNotificationsForSubscriptions("folder");
         assertEquals(0, notifications.size());
 
-        URL newModifTemplate = NotificationService.getTemplateURL("test-template");
+        URL newModifTemplate = getService().getTemplateURL("test-template");
         assertTrue(newModifTemplate.getFile().endsWith("templates/test-template-ov.ftl"));
     }
 
@@ -174,14 +173,12 @@ public class TestRegisterNotificationService {
     @Deploy("org.nuxeo.ecm.platform.notification.tests:notification-veto-contrib.xml")
     @Deploy("org.nuxeo.ecm.platform.notification.tests:notification-veto-contrib-overridden.xml")
     public void testVetoRegistration() {
-
-        Collection<NotificationListenerVeto> vetos = getService().getNotificationVetos();
+        List<NotificationListenerVeto> vetos = new ArrayList<>(getService().getNotificationVetos());
         assertEquals(2, vetos.size());
         assertEquals("org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto1",
-                getService().getNotificationListenerVetoRegistry().getVeto("veto1").getClass().getCanonicalName());
+                vetos.get(0).getClass().getCanonicalName());
         assertEquals("org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto20",
-                getService().getNotificationListenerVetoRegistry().getVeto("veto2").getClass().getCanonicalName());
-
+                vetos.get(1).getClass().getCanonicalName());
     }
 
     protected NotificationService getService() {

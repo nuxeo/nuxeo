@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +15,38 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Narcis Paslaru
+ *     Thierry Martins
  */
 
 package org.nuxeo.ecm.platform.ec.notification.service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 
 /**
- * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
+ * Descriptor for a notification.
  */
 @XObject("notification")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class NotificationDescriptor implements Notification {
 
-    private static final long serialVersionUID = -5974825427889204458L;
+    private static final long serialVersionUID = 1L;
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@label")
-    protected String label; // used for i10n
+    protected String label; // used for l10n
 
     @XNode("@channel")
     protected String channel;
@@ -57,15 +61,16 @@ public class NotificationDescriptor implements Notification {
     protected String template;
 
     /**
-     * The mail template name will be dinamycally evaluated from a Mvel exp
+     * The mail template name will be dynamically evaluated from a Mvel expression.
      *
      * @since 5.6
      */
     @XNode("@templateExpr")
     protected String templateExpr;
 
-    @XNode("@enabled")
-    protected boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    protected boolean enabled;
 
     @XNode("@autoSubscribed")
     protected boolean autoSubscribed = false;
@@ -73,8 +78,8 @@ public class NotificationDescriptor implements Notification {
     @XNode("@availableIn")
     protected String availableIn;
 
-    @XNodeList(value = "event", type = ArrayList.class, componentType = NotificationEventDescriptor.class)
-    protected List<NotificationEventDescriptor> events;
+    @XNodeList(value = "event@name", type = HashSet.class, componentType = String.class)
+    protected HashSet<String> events;
 
     @Override
     public boolean getAutoSubscribed() {
@@ -96,7 +101,8 @@ public class NotificationDescriptor implements Notification {
         return enabled;
     }
 
-    public List<NotificationEventDescriptor> getEvents() {
+    /** @since 11.5 **/
+    public Set<String> getEvents() {
         return events;
     }
 

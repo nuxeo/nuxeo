@@ -82,7 +82,7 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
     }
 
     private static Map<String, Object> unPrefixedMap(Map<String, Object> props) {
-        Map<String, Object> res = new HashMap<String, Object>();
+        Map<String, Object> res = new HashMap<>();
         for (Entry<String, Object> e : props.entrySet()) {
             String key = e.getKey();
             int pos = key.indexOf(':');

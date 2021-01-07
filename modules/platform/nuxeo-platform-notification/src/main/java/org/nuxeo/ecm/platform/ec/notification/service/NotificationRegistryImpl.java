@@ -15,95 +15,51 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Narcis Paslaru
+ *     Thierry Martins
  */
 package org.nuxeo.ecm.platform.ec.notification.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.ec.notification.NotificationImpl;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
 
 /**
- * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
+ * Registry with extra API for notification configurations retrieval.
  */
-public class NotificationRegistryImpl implements NotificationRegistry {
-
-    private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(NotificationRegistryImpl.class);
+public class NotificationRegistryImpl extends MapRegistry implements NotificationRegistry {
 
     // maps EventId to a list of notifications
-    private final Map<String, List<Notification>> notificationRegistry = new HashMap<>();
-
-    private final List<Notification> notificationList = new ArrayList<>();
+    protected final Map<String, List<Notification>> notificationsByEvent = new ConcurrentHashMap<>();
 
     @Override
-    public void clear() {
-        notificationRegistry.clear();
-    }
-
-    @Override
-    public void registerNotification(Notification notif, List<String> events) {
-        if (notif.getName() == null) {
-            log.error("Notifications contributions must have a name");
-        }
-
-        if (notif.getEnabled()) {
-            NotificationImpl notification = new NotificationImpl(notif.getName(), notif.getTemplate(),
-                    notif.getChannel(), notif.getSubjectTemplate(), notif.getAutoSubscribed(), notif.getSubject(),
-                    notif.getAvailableIn(), notif.getLabel());
-
-            if (notif.getTemplateExpr() != null) {
-                notification.setTemplateExpr(notif.getTemplateExpr());
-            }
-
-            if (notificationList.contains(notification)) {
-                unregisterNotification(notification);
-            }
-            notificationList.add(notification);
-
-            if (events != null && !events.isEmpty()) {
-                for (String event : events) {
-                    List<Notification> regNotifs = getNotificationsForEvent(event);
-                    if (!regNotifs.contains(notification)) {
-                        regNotifs.add(notification);
-                    }
-                }
-            }
-        } else {
-            unregisterNotification(notif);
-        }
-    }
-
-    @Override
-    public void unregisterNotification(Notification notif) {
-        if (notif == null) {
-            log.warn("Try to unregister a null notification, do nothing");
-            return;
-        }
-
-        NotificationImpl notification = new NotificationImpl(notif.getName(), notif.getTemplate(), notif.getChannel(),
-                notif.getSubjectTemplate(), notif.getAutoSubscribed(), notif.getSubject(), notif.getAvailableIn(),
-                notif.getLabel());
-
-        notificationList.remove(notification);
-        notificationRegistry.values().forEach(notifications -> notifications.remove(notification));
+    public void initialize() {
+        super.initialize();
+        notificationsByEvent.clear();
+        contributions.entrySet()
+                     .stream()
+                     .filter(x -> !disabled.contains(x.getKey()))
+                     .map(Map.Entry::getValue)
+                     .map(NotificationDescriptor.class::cast)
+                     .forEach(
+                             n -> n.getEvents()
+                                   .forEach(event -> notificationsByEvent.computeIfAbsent(event, k -> new ArrayList<>())
+                                                                         .add(n)));
     }
 
     @Override
     public Set<String> getNotificationEventNames() {
-        return notificationRegistry.entrySet()
+        return notificationsByEvent.entrySet()
                                    .stream()
                                    .filter(entry -> !entry.getValue().isEmpty())
                                    .map(Entry::getKey)
@@ -115,26 +71,22 @@ public class NotificationRegistryImpl implements NotificationRegistry {
      */
     @Override
     public List<Notification> getNotificationsForEvent(String eventId) {
-        return notificationRegistry.computeIfAbsent(eventId, k -> new ArrayList<>());
+        if (eventId == null) {
+            return Collections.emptyList();
+        }
+        checkInitialized();
+        return notificationsByEvent.computeIfAbsent(eventId, k -> new ArrayList<>());
     }
 
     @Override
     public List<Notification> getNotifications() {
-        return notificationList;
-    }
-
-    /**
-     * @deprecated since 10.2, seems unused
-     */
-    @Deprecated
-    public Map<String, List<Notification>> getNotificationRegistry() {
-        return notificationRegistry;
+        return getContributionValues();
     }
 
     @Override
     public List<Notification> getNotificationsForSubscriptions(String parentType) {
         List<Notification> result = new ArrayList<>();
-        for (Notification notification : notificationList) {
+        for (Notification notification : getNotifications()) {
             if (notification.getAutoSubscribed()) {
                 continue;
             }

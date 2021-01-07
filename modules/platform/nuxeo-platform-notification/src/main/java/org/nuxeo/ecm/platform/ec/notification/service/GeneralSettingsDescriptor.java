@@ -23,11 +23,13 @@ package org.nuxeo.ecm.platform.ec.notification.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  */
 @XObject("settings")
+@XRegistry
 public class GeneralSettingsDescriptor {
 
     @XNode("serverPrefix")
@@ -39,11 +41,24 @@ public class GeneralSettingsDescriptor {
     @XNode("mailSessionJndiName")
     protected String mailSessionJndiName;
 
+    public GeneralSettingsDescriptor() {
+    }
+
+    public GeneralSettingsDescriptor(String serverPrefix, String eMailSubjectPrefix, String mailSessionJndiName) {
+        super();
+        this.serverPrefix = serverPrefix;
+        this.eMailSubjectPrefix = eMailSubjectPrefix;
+        this.mailSessionJndiName = mailSessionJndiName;
+    }
+
     public String getEMailSubjectPrefix() {
         return eMailSubjectPrefix;
     }
 
     public String getServerPrefix() {
+        if (serverPrefix != null) {
+            return serverPrefix.endsWith("//") ? serverPrefix.substring(0, serverPrefix.length() - 1) : serverPrefix;
+        }
         return serverPrefix;
     }
 

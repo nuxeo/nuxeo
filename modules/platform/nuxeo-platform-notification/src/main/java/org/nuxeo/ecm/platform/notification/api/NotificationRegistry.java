@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,30 +15,19 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Narcis Paslaru
  */
 package org.nuxeo.ecm.platform.notification.api;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
+import org.nuxeo.common.xmap.registry.Registry;
+
 /**
- * This class holds data about the notifications.
- *
- * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
+ * Notification descriptors registry API.
  */
-public interface NotificationRegistry extends Serializable {
-
-    void clear();
-
-    void registerNotification(Notification notif, List<String> events);
-
-    /**
-     * Unregister notification contribution and remove reference in event registry
-     *
-     * @since 5.6
-     */
-    void unregisterNotification(Notification notif);
+public interface NotificationRegistry extends Registry {
 
     /**
      * Gets the list of event names used by notifications.
