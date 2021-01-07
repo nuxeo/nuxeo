@@ -484,7 +484,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     @Override
     public void reassignTask(CoreSession session, final String taskId, final List<String> newActors,
-            final String comment) {
+            final String comment, Map<String, Serializable> eventInfo) {
 
         new UnrestrictedSessionRunner(session) {
 
@@ -546,7 +546,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     docs.add(session.getDocument(new IdRef(string)));
 
                 }
-                notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_REASSIGNED, new HashMap<>(), comment,
+                notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_REASSIGNED, eventInfo, comment,
                         session.getPrincipal(), actorIds);
 
             }
@@ -556,7 +556,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     @Override
     public void delegateTask(CoreSession session, final String taskId, final List<String> delegatedActors,
-            final String comment) {
+            final String comment, Map<String, Serializable> eventInfo) {
 
         new UnrestrictedSessionRunner(session) {
             @Override
@@ -604,7 +604,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     docs.add(session.getDocument(new IdRef(string)));
 
                 }
-                notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_DELEGATED, new HashMap<>(),
+                notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_DELEGATED, eventInfo,
                         String.format("Task delegated by '%s' to '%s'", currentUser, StringUtils.join(actorIds, ","))
                                 + (!StringUtils.isEmpty(comment) ? " with the following comment: " + comment : ""),
                         session.getPrincipal(), actorIds);
