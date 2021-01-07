@@ -90,6 +90,7 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.audit.RoutingAuditHelper;
+import org.nuxeo.ecm.platform.routing.core.io.NodeAccessRunner;
 import org.nuxeo.ecm.platform.routing.core.listener.RouteModelsInitializator;
 import org.nuxeo.ecm.platform.routing.core.registries.RouteTemplateResourceRegistry;
 import org.nuxeo.ecm.platform.task.Task;
@@ -1124,7 +1125,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 // remove permissions on the document following the
                 // workflow for the current assignees
                 removePermissionFromTaskAssignees(session, docs, task);
-                Framework.getService(TaskService.class).reassignTask(session, taskId, actors, comment);
+                Framework.getService(TaskService.class)
+                         .reassignTask(session, taskId, actors, comment, getWorkflowContextualInfo(session, task));
                 // refresh task
                 task.getDocument().refresh();
                 // grant permission to the new assignees
@@ -1161,6 +1163,19 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         });
     }
 
+    protected Map<String, Serializable> getWorkflowContextualInfo(CoreSession session, Task item) {
+        String workflowInstanceId = item.getProcessId();
+        String nodeId = item.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
+
+        if (session != null && StringUtils.isNotEmpty(workflowInstanceId)) {
+            NodeAccessRunner nodeAccessRunner = new NodeAccessRunner(session, workflowInstanceId, nodeId);
+            nodeAccessRunner.runUnrestricted();
+            GraphNode node = nodeAccessRunner.getNode();
+            return node.getWorkflowContextualInfo(session, true);
+        }
+        return Collections.emptyMap();
+    }
+
     @Override
     public void delegateTask(CoreSession s, final String taskId, final List<String> delegatedActors,
             final String comment) throws DocumentRouteException {
@@ -1183,7 +1198,9 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     throw new DocumentRouteException("Invalid node " + routeId + " referenced by the task " + taskId);
                 }
                 DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                Framework.getService(TaskService.class).delegateTask(session, taskId, delegatedActors, comment);
+                Framework.getService(TaskService.class)
+                         .delegateTask(session, taskId, delegatedActors, comment,
+                                 getWorkflowContextualInfo(session, task));
                 // refresh task
                 task.getDocument().refresh();
                 // grant permission to the new assignees

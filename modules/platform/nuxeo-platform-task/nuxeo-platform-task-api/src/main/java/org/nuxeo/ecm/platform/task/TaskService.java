@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.task;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -254,7 +255,16 @@ public interface TaskService extends Serializable, TaskProvider {
      *
      * @since 5.7.3
      */
-    void reassignTask(CoreSession session, String taskId, List<String> actors, String comment);
+    default void reassignTask(CoreSession session, String taskId, List<String> actors, String comment) {
+        reassignTask(session, taskId, actors, comment, Collections.emptyMap());
+    }
+
+    /**
+     * @since 11.5
+     * @see #reassignTask(CoreSession, String, List, String)
+     */
+    void reassignTask(CoreSession session, String taskId, List<String> actors, String comment,
+            Map<String, Serializable> eventInfo);
 
     /**
      * Delegates the given task to the list of actors. The new actors are granted 'Manage everything' on the task
@@ -262,6 +272,15 @@ public interface TaskService extends Serializable, TaskProvider {
      *
      * @since 5.8
      */
-    void delegateTask(CoreSession session, String taskId, List<String> actors, String comment);
+    default void delegateTask(CoreSession session, String taskId, List<String> actors, String comment) {
+        delegateTask(session, taskId, actors, comment, Collections.emptyMap());
+    }
+
+    /**
+     * @since 11.5
+     * @see #delegateTask(CoreSession, String, List, String)
+     */
+    void delegateTask(CoreSession session, String taskId, List<String> actors, String comment,
+            Map<String, Serializable> eventInfo);
 
 }
