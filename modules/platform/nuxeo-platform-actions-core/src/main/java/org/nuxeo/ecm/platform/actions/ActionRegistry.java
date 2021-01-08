@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,140 +15,203 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: ActionRegistry.java 20637 2007-06-17 12:37:03Z sfermigier $
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.ecm.platform.actions;
 
-import java.io.Serializable;
+import static org.nuxeo.ecm.platform.actions.ActionService.FILTERS_XP;
+import static org.nuxeo.ecm.platform.actions.ActionService.ID;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
+import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.common.xmap.registry.MapRegistry;
+import org.nuxeo.common.xmap.registry.Registry;
+import org.nuxeo.runtime.api.Framework;
+import org.w3c.dom.Element;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Custom registry with extra API that can lookup filter registry for embedded filters registration.
  */
-public class ActionRegistry implements Serializable {
+public class ActionRegistry extends MapRegistry {
 
-    private static final Log log = LogFactory.getLog(ActionRegistry.class);
+    private static final Logger log = LogManager.getLogger(ActionRegistry.class);
 
-    private static final long serialVersionUID = 8425627293154848041L;
+    private final Map<String, Action> programmaticActions = new ConcurrentHashMap<>();
 
-    private final Map<String, Action> actions;
+    // mapping of actions by category
+    protected Map<String, List<String>> categories = new ConcurrentHashMap<>();
 
-    private final Map<String, List<String>> categories;
+    // mapping of types per compat category
+    protected Map<String, String> typeByCategory = new ConcurrentHashMap<>();
 
-    private List<TypeCompatibility> typeCategoryRelations;
+    protected static XAnnotatedObject xFilter;
 
-    public ActionRegistry() {
-        actions = new HashMap<>();
-        categories = new HashMap<>();
-        typeCategoryRelations = new ArrayList<>();
+    static {
+        XMap fxmap = new XMap();
+        fxmap.register(DefaultActionFilter.class);
+        xFilter = fxmap.getObject(DefaultActionFilter.class);
     }
 
     public synchronized void addAction(Action action) {
         String id = action.getId();
+        if (id == null) {
+            log.debug("Cannot add action with null id.");
+            return;
+        }
         if (log.isDebugEnabled()) {
-            if (actions.containsKey(id)) {
-                log.debug("Overriding action: " + action);
+            if (programmaticActions.containsKey(id)) {
+                log.debug("Overriding action: '{}'", action);
             } else {
-                log.debug("Registering action: " + action);
+                log.debug("Registering action: '{}'", action);
             }
         }
-        // add a default label if not set
-        if (action.getLabel() == null) {
-            action.setLabel(action.getId());
-        }
-        actions.put(id, action);
-        for (String category : action.getCategories()) {
-            List<String> acts = categories.get(category);
-            if (acts == null) {
-                acts = new ArrayList<>();
-            }
-            if (!acts.contains(id)) {
-                acts.add(id);
-            }
-            categories.put(category, acts);
-        }
+        applyCompatibility(action);
+        programmaticActions.put(id, action);
+        setInitialized(false);
     }
 
     public synchronized Action removeAction(String id) {
+        if (id == null) {
+            return null;
+        }
         if (log.isDebugEnabled()) {
-            log.debug("Unregistering action: " + id);
+            log.debug("Unregistering action: '{}'", id);
         }
-
-        Action action = actions.remove(id);
-        if (action != null) {
-            for (String category : action.getCategories()) {
-                List<String> acts = categories.get(category);
-                if (acts != null) {
-                    acts.remove(id);
-                }
-            }
-        }
+        Action action = programmaticActions.remove(id);
+        setInitialized(false);
         return action;
     }
 
-    public synchronized Collection<Action> getActions() {
-        return Collections.unmodifiableCollection(sortActions(actions.values()));
+    @Override
+    public void initialize() {
+        super.initialize();
+        initCache();
+    }
+
+    protected void initCache() {
+        categories.clear();
+        contributions.entrySet()
+                     .stream()
+                     .filter(x -> !disabled.contains(x.getKey()))
+                     .map(Map.Entry::getValue)
+                     .map(ActionDescriptor.class::cast)
+                     .forEach(a -> a.getCategories()
+                                    .forEach(event -> categories.computeIfAbsent(event, k -> new ArrayList<>())
+                                                                .add(a.getId())));
+        programmaticActions.entrySet()
+                           .stream()
+                           .filter(x -> !disabled.contains(x.getKey()))
+                           .map(Map.Entry::getValue)
+                           .filter(Action::getAvailable)
+                           .forEach(a -> a.getCategoryList()
+                                          .forEach(event -> categories.computeIfAbsent(event, k -> new ArrayList<>())
+                                                                      .add(a.getId())));
+    }
+
+    /**
+     * Public initialization method to be called at component start.
+     */
+    public void setTypeCompatibility(List<TypeCompatibility> compats) {
+        typeByCategory.clear();
+        compats.forEach(compat -> compat.getCategories().forEach(cat -> typeByCategory.put(cat, compat.getType())));
+    }
+
+    protected Registry getFilterRegistry() {
+        return Framework.getRuntime()
+                        .getComponentManager()
+                        .getExtensionPointRegistry(ID.getName(), FILTERS_XP)
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                String.format("Unknown registry for extension point '%s--%s'", ID, FILTERS_XP)));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        ActionDescriptor action = (ActionDescriptor) super.doRegister(ctx, xObject, element, extensionId);
+        if (action != null) {
+            List<Element> innerFilters = action.getFilterElements();
+            if (!innerFilters.isEmpty()) {
+                Registry filterRegistry = getFilterRegistry();
+                for (Element innerFilter : innerFilters) {
+                    filterRegistry.register(ctx, xFilter, innerFilter, extensionId);
+                }
+            }
+        }
+        return (T) action;
+    }
+
+    @Override
+    public void unregister(String tag) {
+        super.unregister(tag);
+        getFilterRegistry().unregister(tag);
+    }
+
+    public Action getAction(String id) {
+        if (id == null) {
+            return null;
+        }
+        if (programmaticActions.containsKey(id)) {
+            return programmaticActions.get(id);
+        }
+        return this.<ActionDescriptor> getContribution(id).map(desc -> {
+            Action action = new Action(desc);
+            applyCompatibility(action);
+            return action;
+        }).orElse(null);
     }
 
     public List<Action> getActions(String category) {
-        List<Action> result = new LinkedList<>();
-        Collection<String> ids;
-        synchronized (this) {
-            ids = categories.get(category);
+        checkInitialized();
+        if (category == null) {
+            return Collections.emptyList();
         }
-        if (ids != null) {
-            for (String id : ids) {
-                Action action = actions.get(id);
-                if (action != null && action.isEnabled()) {
-                    // UI type action compat check
-                    Action finalAction = getClonedAction(action);
-                    applyCompatibility(category, finalAction);
-                    // return only enabled actions
-                    result.add(finalAction);
-                }
+        List<String> ids = categories.get(category);
+        if (ids == null) {
+            return Collections.emptyList();
+        }
+        return ids.stream().filter(Objects::nonNull).filter(id -> !disabled.contains(id)).map(id -> {
+            if (contributions.containsKey(id)) {
+                ActionDescriptor desc = (ActionDescriptor) contributions.get(id);
+                Action action = new Action(desc);
+                applyCompatibility(category, action);
+                return action;
+            } else {
+                return programmaticActions.get(id);
             }
-        }
-        result = sortActions(result);
-        return result;
+        }).sorted().collect(Collectors.toList());
     }
 
-    protected void applyCompatibility(Action finalAction) {
-        if (finalAction != null && finalAction.getType() == null) {
+    protected void applyCompatibility(Action action) {
+        if (action != null && action.getType() == null) {
             // iterate over all categories to apply compat
-            String[] cats = finalAction.getCategories();
-            if (cats != null) {
-                for (String cat : cats) {
-                    if (applyCompatibility(cat, finalAction)) {
-                        break;
-                    }
+            for (String cat : action.getCategories()) {
+                if (applyCompatibility(cat, action)) {
+                    break;
                 }
             }
         }
     }
 
-    protected boolean applyCompatibility(String category, Action finalAction) {
-        if (finalAction != null && finalAction.getType() == null) {
-            for (TypeCompatibility compat : typeCategoryRelations) {
-                for (String compatCategory : compat.getCategories()) {
-                    if (StringUtils.equals(compatCategory, category)) {
-                        finalAction.setType(compat.getType());
-                        if (applyCustomCompatibility(compat.getType(), finalAction)) {
-                            return true;
-                        }
-                    }
-                }
+    protected boolean applyCompatibility(String category, Action action) {
+        if (category != null && action != null && action.getType() == null) {
+            String type = typeByCategory.get(category);
+            if (type != null) {
+                action.setType(type);
+                applyCustomCompatibility(type, action);
+                return true;
             }
         }
         return false;
@@ -169,45 +232,12 @@ public class ActionRegistry implements Serializable {
                 applied = true;
             }
             if (applied) {
-                log.warn(String.format(
-                        "Applied compatibility to action '%s', its configuration "
-                                + "should be reviewed: make sure the link references an " + "absolute path",
-                        action.getId()));
+                log.warn("Applied compatibility to action '{}', its configuration should be reviewed: "
+                        + "make sure the link references an absolute path", action.getId());
                 return true;
             }
         }
         return false;
-    }
-
-    public synchronized Action getAction(String id) {
-        Action action = actions.get(id);
-        Action finalAction = getClonedAction(action);
-        applyCompatibility(finalAction);
-        return finalAction;
-    }
-
-    protected Action getClonedAction(Action action) {
-        if (action == null) {
-            return null;
-        }
-        return action.clone();
-    }
-
-    protected static List<Action> sortActions(Collection<Action> actions) {
-        List<Action> sortedActions = new ArrayList<>();
-        if (actions != null) {
-            sortedActions.addAll(actions);
-            Collections.sort(sortedActions);
-        }
-        return sortedActions;
-    }
-
-    public List<TypeCompatibility> getTypeCategoryRelations() {
-        return typeCategoryRelations;
-    }
-
-    public void setTypeCategoryRelations(List<TypeCompatibility> typeCategoryRelations) {
-        this.typeCategoryRelations = typeCategoryRelations;
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,26 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 package org.nuxeo.ecm.platform.actions;
+
+import static org.apache.logging.log4j.Level.DEBUG;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.services.config.ConfigurationService;
@@ -39,25 +44,27 @@ import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Service handling actions and associated filters.
  */
 public class ActionService extends DefaultComponent implements ActionManager {
 
     public static final ComponentName ID = new ComponentName("org.nuxeo.ecm.platform.actions.ActionService");
 
-    private static final long serialVersionUID = -5256555810901945824L;
+    private static final Logger log = LogManager.getFormatterLogger(ActionService.class);
 
-    private static final Log log = LogFactory.getLog(ActionService.class);
+    protected static final String ACTIONS_XP = "actions";
 
-    private ActionContributionHandler actions;
+    protected static final String FILTERS_XP = "filters";
 
-    private FilterContributionHandler filters;
+    protected static final String TYPE_COMPATIBILTIY_XP = "typeCompatibility";
 
     protected final MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    private static final String LOG_MIN_DURATION_KEY = "nuxeo.actions.debug.log_min_duration_ms";
+    protected static final String LOG_MIN_DURATION_KEY = "nuxeo.actions.debug.log_min_duration_ms";
 
-    private long logMinDurationNanos = Duration.ofMillis(-1).toNanos();
+    protected static final long DEFAULT_LOG_MIN_DURATION = Duration.ofMillis(-1).toNanos();
+
+    private long logMinDurationNanos = DEFAULT_LOG_MIN_DURATION;
 
     private Timer actionsTimer;
 
@@ -69,18 +76,16 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     @Override
     public void activate(ComponentContext context) {
-        filters = new FilterContributionHandler();
-        actions = new ActionContributionHandler(filters);
-        actionsTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "actions"));
-        actionTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "action"));
-        filtersTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "filters"));
-        filterTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "filter"));
+        final String mname1 = "nuxeo";
+        final String mname2 = "ActionService";
+        actionsTimer = metrics.timer(MetricRegistry.name(mname1, mname2, "actions"));
+        actionTimer = metrics.timer(MetricRegistry.name(mname1, mname2, "action"));
+        filtersTimer = metrics.timer(MetricRegistry.name(mname1, mname2, "filters"));
+        filterTimer = metrics.timer(MetricRegistry.name(mname1, mname2, "filter"));
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-        actions = null;
-        filters = null;
         actionsTimer = null;
         actionTimer = null;
         filtersTimer = null;
@@ -92,22 +97,14 @@ public class ActionService extends DefaultComponent implements ActionManager {
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         long logMinDurationMillis = configurationService.getLong(LOG_MIN_DURATION_KEY, -1);
         logMinDurationNanos = Duration.ofMillis(logMinDurationMillis).toNanos();
+
+        this.<ActionRegistry> getExtensionPointRegistry(ACTIONS_XP)
+            .setTypeCompatibility(getRegistryContributions(TYPE_COMPATIBILTIY_XP));
     }
 
-    /**
-     * Return the action registry
-     */
-    // used by unit test
-    protected final ActionRegistry getActionRegistry() {
-        return actions.getRegistry();
-    }
-
-    /**
-     * Return the action filter registry
-     */
-    // used by unit test
-    protected final ActionFilterRegistry getFilterRegistry() {
-        return filters.getRegistry();
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        logMinDurationNanos = DEFAULT_LOG_MIN_DURATION;
     }
 
     private void applyFilters(ActionContext context, List<Action> actions) {
@@ -157,6 +154,10 @@ public class ActionService extends DefaultComponent implements ActionManager {
         return getActionRegistry().getActions(category);
     }
 
+    protected ActionRegistry getActionRegistry() {
+        return getExtensionPointRegistry(ACTIONS_XP);
+    }
+
     @SuppressWarnings("resource") // timerContext closed by stop() in finally
     @Override
     public List<Action> getActions(String category, ActionContext context, boolean hideUnavailableActions) {
@@ -178,8 +179,8 @@ public class ActionService extends DefaultComponent implements ActionManager {
         } finally {
             long duration = timerContext.stop();
             if (isTimeTracerLogEnabled() && duration > logMinDurationNanos) {
-                log.debug(String.format("Resolving actions for category '%s' took: %.2f ms", category,
-                        duration / 1000000.0));
+                log.printf(DEBUG, "Resolving actions for category '%s' took: %(,.2f ms", category,
+                        duration / 1000000.0);
             }
         }
     }
@@ -210,7 +211,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         } finally {
             long duration = timerContext.stop();
             if (isTimeTracerLogEnabled() && duration > logMinDurationNanos) {
-                log.debug(String.format("Resolving action with id '%s' took: %.2f ms", actionId, duration / 1000000.0));
+                log.printf(DEBUG, "Resolving action with id '%s' took: %(,.2f ms", actionId, duration / 1000000.0);
             }
         }
     }
@@ -235,10 +236,10 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     public boolean isEnabled(Action action, ActionContext context) {
-        ActionFilterRegistry filterReg = getFilterRegistry();
+        MapRegistry filterReg = getExtensionPointRegistry(FILTERS_XP);
         for (String filterId : action.getFilterIds()) {
-            ActionFilter filter = filterReg.getFilter(filterId);
-            if (filter != null && !filter.accept(action, context)) {
+            Optional<ActionFilter> filter = filterReg.getContribution(filterId);
+            if (filter.isPresent() && !filter.get().accept(context)) {
                 return false;
             }
         }
@@ -251,13 +252,13 @@ public class ActionService extends DefaultComponent implements ActionManager {
         if (action == null) {
             return null;
         }
-        ActionFilterRegistry filterReg = getFilterRegistry();
+        MapRegistry filterReg = getExtensionPointRegistry(FILTERS_XP);
         List<String> filterIds = action.getFilterIds();
         if (filterIds != null && !filterIds.isEmpty()) {
             ActionFilter[] filters = new ActionFilter[filterIds.size()];
             for (int i = 0; i < filters.length; i++) {
                 String filterId = filterIds.get(i);
-                filters[i] = filterReg.getFilter(filterId);
+                filters[i] = (ActionFilter) filterReg.getContribution(filterId).orElse(null);
             }
             return filters;
         }
@@ -266,7 +267,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     @Override
     public ActionFilter getFilter(String filterId) {
-        return getFilterRegistry().getFilter(filterId);
+        return (ActionFilter) getRegistryContribution(FILTERS_XP, filterId).orElse(null);
     }
 
     @SuppressWarnings("resource") // timerContext closed by stop() in finally
@@ -275,11 +276,11 @@ public class ActionService extends DefaultComponent implements ActionManager {
         final Timer.Context timerContext = filterTimer.time();
         try {
             ActionFilter filter = getFilter(filterId);
-            return filter != null && filter.accept(null, context);
+            return filter != null && filter.accept(context);
         } finally {
             long duration = timerContext.stop();
             if (isTimeTracerLogEnabled() && duration > logMinDurationNanos) {
-                log.debug(String.format("Resolving filter with id '%s' took: %.2f ms", filterId, duration / 1000000.0));
+                log.printf(DEBUG, "Resolving filter with id '%s' took: %(,.2f ms", filterId, duration / 1000000.0);
             }
         }
     }
@@ -296,16 +297,16 @@ public class ActionService extends DefaultComponent implements ActionManager {
         }
         final Timer.Context timerContext = filtersTimer.time();
         try {
-            ActionFilterRegistry filterReg = getFilterRegistry();
+            MapRegistry filterReg = getExtensionPointRegistry(FILTERS_XP);
             for (String filterId : filterIds) {
-                ActionFilter filter = filterReg.getFilter(filterId);
+                ActionFilter filter = (ActionFilter) filterReg.getContribution(filterId).orElse(null);
                 if (filter == null) {
                     continue;
                 }
-                if (!filter.accept(action, context)) {
+                if (!filter.accept(context)) {
                     // denying filter found => ignore following filters
                     if (log.isTraceEnabled()) {
-                        log.trace(String.format("Filter '%s' denied access", filterId));
+                        log.trace("Filter '{}' denied access", filterId);
                     }
                     return false;
                 }
@@ -317,7 +318,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         } finally {
             long duration = timerContext.stop();
             if (isTimeTracerLogEnabled() && duration > logMinDurationNanos) {
-                log.debug(String.format("Resolving filters %s took: %.2f ms", filterIds, duration / 1000000.0));
+                log.printf(DEBUG, "Resolving filters '%s' took: %(,.2f ms", filterIds, duration / 1000000.0);
             }
         }
     }
@@ -333,61 +334,8 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if ("actions".equals(extensionPoint)) {
-            actions.addContribution((Action) contribution);
-        } else if ("filters".equals(extensionPoint)) {
-            if (contribution.getClass() == FilterFactory.class) {
-                registerFilterFactory((FilterFactory) contribution);
-            } else {
-                filters.addContribution((DefaultActionFilter) contribution);
-            }
-        } else if ("typeCompatibility".equals(extensionPoint)) {
-            actions.getRegistry().getTypeCategoryRelations().add((TypeCompatibility) contribution);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if ("actions".equals(extensionPoint)) {
-            actions.removeContribution((Action) contribution);
-        } else if ("filters".equals(extensionPoint)) {
-            if (contribution.getClass() == FilterFactory.class) {
-                unregisterFilterFactory((FilterFactory) contribution);
-            } else {
-                filters.removeContribution((DefaultActionFilter) contribution);
-            }
-        }
-    }
-
-    /**
-     * @deprecated seems not used in Nuxeo - should be removed - and anyway the merge is not done
-     */
-    @Deprecated
-    protected void registerFilterFactory(FilterFactory ff) {
-        getFilterRegistry().removeFilter(ff.id);
-        try {
-            ActionFilter filter = (ActionFilter) Thread.currentThread()
-                                                       .getContextClassLoader()
-                                                       .loadClass(ff.className)
-                                                       .newInstance();
-            filter.setId(ff.id);
-            getFilterRegistry().addFilter(filter);
-        } catch (ReflectiveOperationException e) {
-            log.error("Failed to create action filter", e);
-        }
-    }
-
-    /**
-     * @deprecated seems not used in Nuxeo - should be removed - and anyway the merge is not done
-     */
-    @Deprecated
-    public void unregisterFilterFactory(FilterFactory ff) {
-        getFilterRegistry().removeFilter(ff.id);
-    }
-
-    @Override
     public void remove() {
+        // NOOP
     }
 
 }

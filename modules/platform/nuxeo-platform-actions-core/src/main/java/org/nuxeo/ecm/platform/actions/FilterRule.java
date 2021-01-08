@@ -149,30 +149,4 @@ public class FilterRule {
         return getCacheKey().hashCode();
     }
 
-    @Override
-    public FilterRule clone() {
-        FilterRule clone = new FilterRule();
-        clone.grant = grant;
-        if (permissions != null) {
-            clone.permissions = permissions.clone();
-        }
-        if (facets != null) {
-            clone.facets = facets.clone();
-        }
-        if (types != null) {
-            clone.types = types.clone();
-        }
-        if (schemas != null) {
-            clone.schemas = schemas.clone();
-        }
-        if (groups != null) {
-            clone.groups = groups.clone();
-        }
-        if (conditions != null) {
-            clone.conditions = conditions.clone();
-        }
-        clone.cacheKey = cacheKey;
-        return clone;
-    }
-
 }
