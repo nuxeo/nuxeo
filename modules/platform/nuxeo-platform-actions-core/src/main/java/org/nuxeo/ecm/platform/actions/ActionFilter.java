@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,43 +15,42 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: ActionFilter.java 20637 2007-06-17 12:37:03Z sfermigier $
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.ecm.platform.actions;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Interface for filter.
  */
 public interface ActionFilter {
 
     String getId();
 
-    void setId(String id);
+    /**
+     * @see #accept(ActionContext)
+     * @deprecated since 11.5: use {@link #accept(ActionContext)} instead.
+     */
+    @Deprecated(since = "11.5")
+    default boolean accept(Action action, ActionContext context) {
+        return accept(context);
+    }
 
     /**
-     * Checks whether this action is valid in the given context.
+     * Checks whether this filter is valid in the given context.
      * <p>
-     * The action is considered valid if no denying rule is found and at least one granting rule is found. If no rule is
+     * The filter is considered valid if no denying rule is found and at least one granting rule is found. If no rule is
      * found at all, it is valid.
      * <p>
      * In other words: OR between granting rules, AND between denying rules, denial is favored (also if exceptions
      * occur), AND inside of rules, OR inside or rule items (type, facet,...).
      *
-     * @param action the optional action to check against, should be able to be null if filters evaluation only depends
-     *            on given context.
      * @param context mandatory context holding variables to check against.
-     * @return true if filters configuration for given action and context. Returns false if an error occurs during one
-     *          of the conditions evaluation.
+     * @return true if filters configuration for given context. Returns false if an error occurs during one of the
+     *         conditions evaluation.
+     * @since 11.5
      */
-    boolean accept(Action action, ActionContext context);
-
-    /**
-     * Returns a clone, useful for hot reload.
-     *
-     * @since 5.6
-     */
-    ActionFilter clone();
+    boolean accept(ActionContext context);
 
 }

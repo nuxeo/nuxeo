@@ -14,7 +14,7 @@
       <filter id="newFilter2" />
     </action>
 
-    <action id="TAB_VIEW" confirm=" ">
+    <action id="TAB_VIEW">
       <!-- new nested filter to test merging -->
       <filter id="newFilter3">
         <rule grant="false">

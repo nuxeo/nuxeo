@@ -24,16 +24,20 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
- * UI type action compatibility descriptor from category action
+ * UI type action compatibility descriptor from category action.
  *
  * @since 5.6
  */
 @XObject("typeCompatibility")
+@XRegistry(compatWarnOnMerge = true)
 public class TypeCompatibility {
 
     @XNode("@type")
+    @XRegistryId
     String type;
 
     @XNodeList(value = "category", type = ArrayList.class, componentType = String.class)
@@ -43,16 +47,8 @@ public class TypeCompatibility {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public List<String> getCategories() {
         return categories;
-    }
-
-    public void setCategories(List<String> categories) {
-        this.categories = categories;
     }
 
 }

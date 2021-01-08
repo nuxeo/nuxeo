@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,88 +15,56 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 package org.nuxeo.ecm.platform.actions;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.api.Framework;
-
 /**
- * Descriptor for action.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Action implementation, that can be instantiated from an {@link ActionDescriptor} or programmatically.
  */
-@XObject("action")
-public class Action implements Serializable, Cloneable, Comparable<Action> {
-
-    public static final String[] EMPTY_CATEGORIES = new String[0];
+public class Action implements Serializable, Comparable<Action> {
 
     private static final long serialVersionUID = 1L;
 
-    @XNode("@id")
-    protected String id = "";
+    public static final String[] EMPTY_CATEGORIES = new String[0];
 
-    protected String link = null;
+    protected final String id;
 
-    @XNode("@enabled")
-    protected Boolean enabled;
+    protected String link;
 
-    @XNode("@label")
     protected String label;
 
-    @XNode("@icon")
     protected String icon;
 
-    @XNode("@confirm")
-    protected String confirm;
+    protected String confirm = "";
 
-    @XNode("@help")
-    protected String help;
+    protected String help = "";
 
-    @XNode("@immediate")
-    protected Boolean immediate;
+    protected boolean immediate;
 
-    @XNode("@accessKey")
     protected String accessKey;
 
-    /**
-     * @since 5.6
-     */
-    @XNode("@type")
-    protected String type = null;
+    protected String type;
 
-    /**
-     * @since 5.6
-     */
-    @XNode("properties")
-    protected ActionPropertiesDescriptor properties;
+    protected Map<String, Serializable> properties = new HashMap<>();
 
     /**
      * Extra set of properties to be used by API, when creating actions on the fly without contributions to the service.
-     *
-     * @since 5.6
      */
-    protected Map<String, Serializable> localProperties;
-
-    /**
-     * @since 5.6
-     */
-    protected Map<String, Serializable> propertiesCache;
+    protected Map<String, Serializable> localProperties = new HashMap<>();
 
     protected boolean available = true;
 
-    /**
-     * @since 8.2
-     */
+    /** @since 8.2 */
     protected boolean filtered = false;
 
     /**
@@ -105,60 +73,55 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
      * :XXX: Action ordering remains a problem. We will continue to use the existing strategy of, by default, ordering
      * actions by specificity of registration and order of definition.
      */
-    @XNode("@order")
     protected int order = 0;
 
-    @XNodeList(value = "category", type = String[].class, componentType = String.class)
-    protected String[] categories = EMPTY_CATEGORIES;
+    protected List<String> categories = new ArrayList<>();
 
-    // 'action -> filter(s)' association
+    protected List<String> filterIds = new ArrayList<>();
 
-    @XNodeList(value = "filter-id", type = ArrayList.class, componentType = String.class)
-    protected List<String> filterIds;
-
-    @XNodeList(value = "filter", type = ActionFilter[].class, componentType = DefaultActionFilter.class)
-    protected ActionFilter[] filters;
-
+    /**
+     * @deprecated since 11.5
+     */
+    @Deprecated(since = "11.5")
     public Action() {
+        this.id = "";
     }
 
-    public Action(String id, String[] categories) {
+    /** @since 11.5 */
+    public Action(String id) {
         this.id = id;
-        this.categories = categories;
     }
 
     /**
-     * Returns true if the enabled element was set on the descriptor, useful for merging.
-     *
-     * @since 5.8
+     * @deprecated since 11.5
      */
-    public boolean isEnableSet() {
-        return enabled != null;
-    }
-
-    public boolean isEnabled() {
-        return enabled == null || Boolean.TRUE.equals(enabled);
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = Boolean.valueOf(enabled);
-    }
-
-    protected String getStringProperty(String prop) {
-        Map<String, Serializable> props = getProperties();
-        if (props != null && props.containsKey(prop)) {
-            Object obj = props.get(prop);
-            if (obj instanceof String) {
-                return (String) obj;
-            }
+    @Deprecated(since = "11.5")
+    public Action(String id, String[] categories) {
+        this(id);
+        if (categories != null) {
+            setCategories(Arrays.asList(categories));
         }
-        return null;
+    }
+
+    /** @since 11.5 */
+    public Action(ActionDescriptor desc) {
+        this(desc.getId());
+        setLink(desc.getLink());
+        // add a default label if not set
+        setLabel(desc.getLabel() == null ? desc.getId() : desc.getLabel());
+        setIcon(desc.getIcon());
+        setConfirm(desc.getConfirm());
+        setHelp(desc.getHelp());
+        setImmediate(desc.isImmediate());
+        setAccessKey(desc.getAccessKey());
+        setType(desc.getType());
+        properties.putAll(desc.getProperties());
+        setOrder(desc.getOrder());
+        setCategories(desc.getCategories());
+        setFilterIds(desc.getAllFilterIds());
     }
 
     public String getLabel() {
-        if (label == null) {
-            return getStringProperty("label");
-        }
         return label;
     }
 
@@ -167,9 +130,6 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     public String getIcon() {
-        if (icon == null) {
-            return getStringProperty("icon");
-        }
         return icon;
     }
 
@@ -179,25 +139,17 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     /**
      * Returns the link for this action.
-     * <p>
-     * Since 5.7.3, fallbacks on properties when link is not set and retrieve it using key "link".
      */
     public String getLink() {
-        if (link == null) {
-            return getStringProperty("link");
-        }
         return link;
     }
 
-    @XNode("@link")
     public void setLink(String link) {
-        if (link != null) {
-            this.link = Framework.expandVars(link);
-        }
+        this.link = link;
     }
 
     public String[] getCategories() {
-        return categories;
+        return categories.toArray(new String[0]);
     }
 
     /**
@@ -206,10 +158,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
      * @since 7.2
      */
     public List<String> getCategoryList() {
-        if (categories == null) {
-            return null;
-        }
-        return Arrays.asList(categories);
+        return Collections.unmodifiableList(categories);
     }
 
     public String getId() {
@@ -223,8 +172,6 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     /**
      * Returns the action order.
-     *
-     * @return the action order as an integer value
      */
     public int getOrder() {
         return order;
@@ -232,8 +179,6 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     /**
      * Sets the order of the action.
-     *
-     * @param order order of the action
      */
     public void setOrder(int order) {
         this.order = order;
@@ -250,40 +195,26 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     public List<String> getFilterIds() {
-        return filterIds;
+        return Collections.unmodifiableList(filterIds);
     }
 
     public void setFilterIds(List<String> filterIds) {
-        this.filterIds = filterIds;
+        this.filterIds.clear();
+        this.filterIds.addAll(filterIds);
     }
 
-    public ActionFilter[] getFilters() {
-        return filters;
-    }
-
-    public void setFilters(ActionFilter[] filters) {
-        this.filters = filters;
-    }
-
-    public void setCategories(String[] categories) {
-        this.categories = categories;
+    public void setCategories(List<String> categories) {
+        this.categories.clear();
+        this.categories.addAll(categories);
     }
 
     /**
      * Returns the confirm javascript for this element.
      * <p>
-     * Since 5.7.3, fallbacks on properties when link is not set and retrieve it using key "confirm".
+     * Since 5.7.3, fallbacks on descriptor properties when link is not set and retrieve it using key "confirm".
      */
     public String getConfirm() {
-        if (confirm == null) {
-            String conf = getStringProperty("confirm");
-            if (conf == null) {
-                conf = "";
-            }
-            return conf;
-        } else {
-            return confirm;
-        }
+        return confirm;
     }
 
     public void setConfirm(String confirm) {
@@ -313,15 +244,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     public String getHelp() {
-        if (help == null) {
-            String conf = getStringProperty("help");
-            if (conf == null) {
-                conf = "";
-            }
-            return conf;
-        } else {
-            return help;
-        }
+        return help;
     }
 
     public void setHelp(String title) {
@@ -329,23 +252,11 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     public boolean isImmediate() {
-        if (immediate == null) {
-            Map<String, Serializable> props = getProperties();
-            if (props != null && props.containsKey("immediate")) {
-                Object obj = props.get("immediate");
-                if (obj instanceof String) {
-                    return Boolean.valueOf((String) obj).booleanValue();
-                } else if (obj instanceof Boolean) {
-                    return ((Boolean) obj).booleanValue();
-                }
-            }
-            return false;
-        }
-        return immediate.booleanValue();
+        return immediate;
     }
 
     public void setImmediate(boolean immediate) {
-        this.immediate = Boolean.valueOf(immediate);
+        this.immediate = immediate;
     }
 
     /**
@@ -363,28 +274,13 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     /**
-     * @since 5.6
-     */
-    public ActionPropertiesDescriptor getPropertiesDescriptor() {
-        return properties;
-    }
-
-    /**
-     * @since 5.6
-     */
-    public void setPropertiesDescriptor(ActionPropertiesDescriptor properties) {
-        this.properties = properties;
-        this.propertiesCache = null;
-    }
-
-    /**
-     * Sets local properties programatically
+     * Sets local properties programmatically.
      *
      * @since 5.6
      */
     public void setProperties(Map<String, Serializable> localProperties) {
-        this.localProperties = localProperties;
-        this.propertiesCache = null;
+        this.localProperties.clear();
+        this.localProperties.putAll(localProperties);
     }
 
     /**
@@ -393,16 +289,10 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
      * @since 5.6
      */
     public Map<String, Serializable> getProperties() {
-        if (propertiesCache == null) {
-            propertiesCache = new HashMap<>();
-            if (properties != null) {
-                propertiesCache.putAll(properties.getAllProperties());
-            }
-            if (localProperties != null) {
-                propertiesCache.putAll(localProperties);
-            }
-        }
-        return propertiesCache;
+        Map<String, Serializable> res = new HashMap<>();
+        res.putAll(properties);
+        res.putAll(localProperties);
+        return res;
     }
 
     /**
@@ -416,64 +306,23 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
      * @since 5.6
      */
     public String getAccessKey() {
-        if (accessKey == null) {
-            return getStringProperty("accessKey");
-        }
         return accessKey;
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null) {
-            return false;
-        }
-        if (!(other instanceof Action)) {
-            return false;
-        }
-        Action otherAction = (Action) other;
-        return id == null ? otherAction.id == null : id.equals(otherAction.id);
+    /**
+     * @deprecated since 11.5: use {@link #getAvailable()} instead.
+     */
+    @Deprecated(since = "11.5")
+    public boolean isEnabled() {
+        return getAvailable();
     }
 
-    @Override
-    public int hashCode() {
-        return id == null ? 0 : id.hashCode();
-    }
-
-    @Override
-    public Action clone() {
-        Action clone = new Action();
-        clone.id = id;
-        clone.link = link;
-        clone.enabled = enabled;
-        clone.label = label;
-        clone.icon = icon;
-        clone.confirm = confirm;
-        clone.help = help;
-        clone.immediate = immediate;
-        clone.accessKey = accessKey;
-        clone.type = type;
-        if (properties != null) {
-            clone.properties = properties.clone();
-        }
-        clone.available = available;
-        clone.filtered = filtered;
-        clone.order = order;
-        if (categories != null) {
-            clone.categories = categories.clone();
-        }
-        if (filterIds != null) {
-            clone.filterIds = new ArrayList<>(filterIds);
-        }
-        if (filters != null) {
-            clone.filters = new ActionFilter[filters.length];
-            for (int i = 0; i < filters.length; i++) {
-                clone.filters[i] = filters[i].clone();
-            }
-        }
-        return clone;
+    /**
+     * @deprecated since 11.5: use {@link #setAvailable(boolean)} instead.
+     */
+    @Deprecated(since = "11.5")
+    public void setEnabled(boolean enabled) {
+        setAvailable(enabled);
     }
 
 }

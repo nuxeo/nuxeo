@@ -14,7 +14,7 @@
   <implementation class="org.nuxeo.ecm.platform.actions.ActionService" />
 
   <service>
-          <provide interface="org.nuxeo.ecm.platform.actions.ejb.ActionManager" />
+    <provide interface="org.nuxeo.ecm.platform.actions.ejb.ActionManager" />
   </service>
 
   <extension-point name="filters">
@@ -96,7 +96,6 @@
     </documentation>
 
     <object class="org.nuxeo.ecm.platform.actions.DefaultActionFilter" />
-    <object class="org.nuxeo.ecm.platform.actions.FilterFactory" />
   </extension-point>
 
   <extension-point name="actions">
@@ -196,7 +195,8 @@
       the same identifier.
 
     </documentation>
-    <object class="org.nuxeo.ecm.platform.actions.Action" />
+    <object class="org.nuxeo.ecm.platform.actions.ActionDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.actions.ActionRegistry" />
   </extension-point>
 
   <extension-point name="typeCompatibility">

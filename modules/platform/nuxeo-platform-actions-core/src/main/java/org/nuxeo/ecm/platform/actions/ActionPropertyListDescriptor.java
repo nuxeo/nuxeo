@@ -39,13 +39,4 @@ public class ActionPropertyListDescriptor {
         return values;
     }
 
-    @Override
-    public ActionPropertyListDescriptor clone() {
-        ActionPropertyListDescriptor clone = new ActionPropertyListDescriptor();
-        if (values != null) {
-            clone.values = values.clone();
-        }
-        return clone;
-    }
-
 }

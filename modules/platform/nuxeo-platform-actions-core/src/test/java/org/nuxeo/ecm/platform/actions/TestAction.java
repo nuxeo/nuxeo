@@ -28,15 +28,16 @@ import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -54,87 +55,80 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.actions.tests:test-actions-contrib.xml")
 public class TestAction {
 
+    protected static final String OVERRIDE_CONTRIB = "org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml";
+
     @Inject
     protected HotDeployer hotDeployer;
 
-    public ActionService getService() {
-        return (ActionService) Framework.getService(ActionManager.class);
+    public ActionManager getService() {
+        return Framework.getService(ActionManager.class);
+    }
+
+    protected MapRegistry getRegistry(String point) {
+        return (MapRegistry) Framework.getRuntime()
+                                      .getComponentManager()
+                                      .getExtensionPointRegistry(ActionService.ID.getName(), point)
+                                      .orElseThrow(() -> new IllegalArgumentException(
+                                              String.format("Unknown registry '%s'", point)));
+    }
+
+    @Test
+    public void testActionRegistry() {
+        List<ActionDescriptor> actions = getRegistry(ActionService.ACTIONS_XP).getContributionValues();
+        assertEquals(
+                List.of("newDocument", "logout", "TAB_VIEW", "TAB_WITH_LOCAL_FILTER", "TAB_WITH_GLOBAL_FILTER",
+                        "actionTestProperties", "singleActionRetrievedWithFilter"),
+                actions.stream().map(ActionDescriptor::getId).collect(Collectors.toList()));
+    }
+
+    @Test
+    public void testFilterRegistry() {
+        List<ActionFilter> filters = getRegistry(ActionService.FILTERS_XP).getContributionValues();
+        assertEquals(List.of("theFilter", "filter_defined_globally", "createChild", "local_filter"),
+                filters.stream().map(ActionFilter::getId).collect(Collectors.toList()));
     }
 
     @Test
     public void testActionExtensionPoint() {
-        ActionService as = getService();
-        Collection<Action> actions = as.getActionRegistry().getActions();
-        assertEquals(9, actions.size());
-
-        Action newDocument = as.getAction("newDocument");
+        Action newDocument = getService().getAction("newDocument");
         assertEquals("newDocument", newDocument.getId());
         assertEquals("select_document_type", newDocument.getLink());
         assertEquals("action.new.document", newDocument.getLabel());
-        assertTrue(newDocument.isEnabled());
         assertEquals("/icons/action_add.gif", newDocument.getIcon());
 
-        String[] categories = newDocument.getCategories();
-        assertEquals(1, categories.length);
-        assertEquals("folder", categories[0]);
-        List<String> filterIds = new ArrayList<>();
-        filterIds.add("createChild");
-        assertEquals(filterIds, newDocument.getFilterIds());
+        assertEquals(List.of("folder"), newDocument.getCategoryList());
+        assertEquals(List.of("createChild"), newDocument.getFilterIds());
 
-        Action logout = as.getAction("logout");
+        Action logout = getService().getAction("logout");
         assertEquals("logout", logout.getId());
         assertEquals("logout", logout.getLink());
         assertEquals("Logout", logout.getLabel());
-        assertTrue(logout.isEnabled());
         assertEquals("/icons/logout.gif", logout.getIcon());
+        assertEquals(List.of("global"), logout.getCategoryList());
+        assertEquals(Collections.emptyList(), logout.getFilterIds());
 
-        categories = logout.getCategories();
-        assertEquals(1, categories.length);
-        assertEquals("global", categories[0]);
-        filterIds.clear();
-        assertEquals(filterIds, logout.getFilterIds());
+        Action viewHiddenInfo = getService().getAction("viewHiddenInfo");
+        // disabled
+        assertNull(viewHiddenInfo);
 
-        Action viewHiddenInfo = as.getAction("viewHiddenInfo");
-        assertEquals("viewHiddenInfo", viewHiddenInfo.getId());
-        assertEquals("view_hidden_info", viewHiddenInfo.getLink());
-        assertEquals("viewHiddenInfo", viewHiddenInfo.getLabel());
-        assertFalse(viewHiddenInfo.isEnabled());
-        assertNull(viewHiddenInfo.getIcon());
-        categories = logout.getCategories();
-        assertEquals(1, categories.length);
-        assertEquals("global", categories[0]);
-        filterIds.clear();
-        assertEquals(filterIds, viewHiddenInfo.getFilterIds());
-
-        Action view = as.getAction("TAB_VIEW");
+        Action view = getService().getAction("TAB_VIEW");
         assertEquals("TAB_VIEW", view.getId());
         assertEquals("view", view.getLink());
         assertEquals("View", view.getLabel());
-        assertTrue(view.isEnabled());
         assertEquals("/icons/view.gif", view.getIcon());
-        categories = view.getCategories();
-        assertEquals(2, categories.length);
-        assertEquals("tabs", categories[0]);
-        assertEquals("view", categories[1]);
-        filterIds.clear();
-        filterIds.add("MyCustomFilter");
-        assertEquals(filterIds, view.getFilterIds());
+        assertEquals("", view.getConfirm());
+        assertEquals(List.of("tabs", "view"), view.getCategoryList());
+        assertEquals(List.of(), view.getFilterIds());
     }
 
     @Test
     public void testFilterExtensionPoint() {
-        Collection<ActionFilter> filters = getService().getFilterRegistry().getFilters();
-        assertEquals(5, filters.size());
-
-        ActionFilter f1 = getService().getFilter("MyCustomFilter");
         DefaultActionFilter f2 = (DefaultActionFilter) getService().getFilter("theFilter");
         DefaultActionFilter f3 = (DefaultActionFilter) getService().getFilter("createChild");
 
-        assertSame(DummyFilter.class, f1.getClass());
         assertSame(DefaultActionFilter.class, f2.getClass());
         assertSame(DefaultActionFilter.class, f3.getClass());
 
-        assertEquals("MyCustomFilter", f1.getId());
         assertEquals("theFilter", f2.getId());
         assertEquals("createChild", f3.getId());
 
@@ -187,38 +181,31 @@ public class TestAction {
     public void testActionOverride() throws Exception {
         Action viewAction = getService().getAction("TAB_VIEW");
         assertNotNull(viewAction);
-        assertEquals(2, viewAction.getCategories().length);
-        assertFalse(Arrays.asList(viewAction.getCategories()).contains("OVERRIDE"));
-        assertEquals(1, viewAction.getFilterIds().size());
-        assertTrue(viewAction.getFilterIds().contains("MyCustomFilter"));
+        assertEquals("TAB_VIEW", viewAction.getId());
+        assertEquals("view", viewAction.getLink());
+        assertEquals("View", viewAction.getLabel());
+        assertEquals("/icons/view.gif", viewAction.getIcon());
+        assertEquals("", viewAction.getConfirm());
+        assertEquals(List.of("tabs", "view"), viewAction.getCategoryList());
+        assertEquals(List.of(), viewAction.getFilterIds());
 
-        Action disabledAction = getService().getAction("disabledAction");
-        assertFalse(disabledAction.isEnabled());
+        assertNull(getService().getAction("disabledAction"));
 
-        // deploy override
-        hotDeployer.deploy("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
+        hotDeployer.deploy(OVERRIDE_CONTRIB);
 
         Action oviewAction = getService().getAction("TAB_VIEW");
         assertNotNull(oviewAction);
+        assertEquals("TAB_VIEW", oviewAction.getId());
+        assertEquals("view2", oviewAction.getLink());
+        assertEquals("View2", oviewAction.getLabel());
+        assertEquals("/icons/view2.gif", oviewAction.getIcon());
         assertEquals("newConfirm", oviewAction.getConfirm());
-        assertEquals(3, oviewAction.getCategories().length);
-        assertTrue(Arrays.asList(oviewAction.getCategories()).contains("OVERRIDE"));
-        assertTrue(Arrays.asList(oviewAction.getCategories()).contains("view"));
-        List<String> filterIds = oviewAction.getFilterIds();
-        assertNotNull(filterIds);
-        assertEquals(5, filterIds.size());
-        assertEquals("MyCustomFilter", filterIds.get(0));
-        assertEquals("newFilterId1", filterIds.get(1));
-        // filter 4 is not embedded => comes first
-        assertEquals("newFilterId4", filterIds.get(2));
-        assertEquals("newFilter2", filterIds.get(3));
-        assertEquals("newFilter3", filterIds.get(4));
+        assertEquals(List.of("tabs", "view", "OVERRIDE"), oviewAction.getCategoryList());
+        assertEquals(List.of("newFilterId1", "newFilter3", "newFilter2", "newFilterId4"), oviewAction.getFilterIds());
 
         // check corresponding filters are registered correctly
         ActionFilter filter = getService().getFilter("foo");
         assertNull(filter);
-        filter = getService().getFilter("MyCustomFilter");
-        assertNotNull(filter);
         // no filter by that name
         filter = getService().getFilter("newFilterId1");
         assertNull(filter);
@@ -230,21 +217,15 @@ public class TestAction {
         filter = getService().getFilter("newFilter3");
         assertNotNull(filter);
 
-        disabledAction = getService().getAction("disabledAction");
-        assertFalse(disabledAction.isEnabled());
+        assertNull(getService().getAction("disabledAction"));
     }
 
     // NXP-7287: test override of inner filter
     @Test
     public void testActionOverrideOfInnerFilter() throws Exception {
         Action previewAction = getService().getAction("TAB_WITH_LOCAL_FILTER");
-        assertNotNull(previewAction);
-        assertEquals(1, previewAction.getCategories().length);
-        assertTrue(Arrays.asList(previewAction.getCategories()).contains("VIEW_ACTION_LIST"));
-        assertFalse(Arrays.asList(previewAction.getCategories()).contains("OVERRIDE"));
-        List<String> previewFilterIds = previewAction.getFilterIds();
-        assertEquals(1, previewFilterIds.size());
-        assertTrue(previewFilterIds.contains("local_filter"));
+        assertEquals(List.of("VIEW_ACTION_LIST"), previewAction.getCategoryList());
+        assertEquals(List.of("local_filter"), previewAction.getFilterIds());
         DefaultActionFilter previewFilter = (DefaultActionFilter) getService().getFilter("local_filter");
         FilterRule[] previewRules = previewFilter.getRules();
         assertNotNull(previewRules);
@@ -252,37 +233,27 @@ public class TestAction {
         assertTrue(previewRules[0].grant);
         assertEquals("filter defined in action", previewRules[0].types[0]);
 
-        // deploy override
-        hotDeployer.deploy("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
+        hotDeployer.deploy(OVERRIDE_CONTRIB);
 
         Action opreviewAction = getService().getAction("TAB_WITH_LOCAL_FILTER");
-        assertNotNull(opreviewAction);
-        assertEquals(1, opreviewAction.getCategories().length);
-        assertTrue(Arrays.asList(opreviewAction.getCategories()).contains("VIEW_ACTION_LIST"));
-        assertFalse(Arrays.asList(opreviewAction.getCategories()).contains("OVERRIDE"));
-        assertEquals(1, opreviewAction.getFilterIds().size());
-        assertTrue(opreviewAction.getFilterIds().contains("local_filter"));
+        assertEquals(List.of("VIEW_ACTION_LIST"), opreviewAction.getCategoryList());
+        assertEquals(List.of("local_filter"), opreviewAction.getFilterIds());
         DefaultActionFilter opreviewFilter = (DefaultActionFilter) getService().getFilter("local_filter");
         FilterRule[] opreviewRules = opreviewFilter.getRules();
         assertNotNull(opreviewRules);
         assertEquals(2, opreviewRules.length);
-        assertTrue(opreviewRules[0].grant);
-        assertEquals("filter defined in action", previewRules[0].types[0]);
-        assertFalse(opreviewRules[1].grant);
-        assertEquals("filter overriden globally", opreviewRules[1].types[0]);
+        assertFalse(opreviewRules[0].grant);
+        assertEquals("filter overriden globally", opreviewRules[0].types[0]);
+        assertTrue(opreviewRules[1].grant);
+        assertEquals("filter defined in action", opreviewRules[1].types[0]);
     }
 
     // NXP-7287: test override by inner filter
     @Test
     public void testActionOverrideByInnerFilter() throws Exception {
         Action previewAction = getService().getAction("TAB_WITH_GLOBAL_FILTER");
-        assertNotNull(previewAction);
-        assertEquals(1, previewAction.getCategories().length);
-        assertTrue(Arrays.asList(previewAction.getCategories()).contains("VIEW_ACTION_LIST"));
-        assertFalse(Arrays.asList(previewAction.getCategories()).contains("OVERRIDE"));
-        List<String> previewFilterIds = previewAction.getFilterIds();
-        assertEquals(1, previewFilterIds.size());
-        assertTrue(previewFilterIds.contains("filter_defined_globally"));
+        assertEquals(List.of("VIEW_ACTION_LIST"), previewAction.getCategoryList());
+        assertEquals(List.of("filter_defined_globally"), previewAction.getFilterIds());
         DefaultActionFilter previewFilter = (DefaultActionFilter) getService().getFilter("filter_defined_globally");
         FilterRule[] previewRules = previewFilter.getRules();
         assertNotNull(previewRules);
@@ -290,16 +261,13 @@ public class TestAction {
         assertFalse(previewRules[0].grant);
         assertEquals("filter defined in its extension point", previewRules[0].types[0]);
 
-        // deploy override
-        hotDeployer.deploy("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
+        hotDeployer.deploy(OVERRIDE_CONTRIB);
 
         Action opreviewAction = getService().getAction("TAB_WITH_GLOBAL_FILTER");
         assertNotNull(opreviewAction);
-        assertEquals(2, opreviewAction.getCategories().length);
-        assertTrue(Arrays.asList(opreviewAction.getCategories()).contains("VIEW_ACTION_LIST"));
-        assertTrue(Arrays.asList(opreviewAction.getCategories()).contains("OVERRIDE"));
-        assertEquals(1, opreviewAction.getFilterIds().size());
-        assertTrue(opreviewAction.getFilterIds().contains("filter_defined_globally"));
+        assertEquals(List.of("VIEW_ACTION_LIST", "OVERRIDE"), opreviewAction.getCategoryList());
+        assertEquals(2, opreviewAction.getCategoryList().size());
+        assertEquals(List.of("filter_defined_globally"), previewAction.getFilterIds());
         DefaultActionFilter opreviewFilter = (DefaultActionFilter) getService().getFilter("filter_defined_globally");
         FilterRule[] opreviewRules = opreviewFilter.getRules();
         assertNotNull(opreviewRules);
@@ -314,8 +282,8 @@ public class TestAction {
     @Test
     public void testActionSort() {
         List<Action> actions;
-        Action a1 = new Action("id1", null);
-        Action a2 = new Action("id2", null);
+        Action a1 = new Action("id1");
+        Action a2 = new Action("id2");
         actions = new ArrayList<>(Arrays.asList(a1, a2));
         Collections.sort(actions);
         assertEquals("id1", actions.get(0).getId());
@@ -334,51 +302,46 @@ public class TestAction {
      */
     @Test
     public void testActionClone() {
-        Action action1 = getService().getAction("viewHiddenInfo");
+        Action action1 = getService().getAction("TAB_VIEW");
         assertTrue(action1.getAvailable());
         action1.setAvailable(false);
         assertFalse(action1.getAvailable());
-        Action action2 = getService().getAction("viewHiddenInfo");
+        Action action2 = getService().getAction("TAB_VIEW");
         assertTrue(action2.getAvailable());
         // check first action has not changed
         assertFalse(action1.getAvailable());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testActionProperties() throws Exception {
         Action action = getService().getAction("actionTestProperties");
         assertTrue(action.getAvailable());
         Map<String, Serializable> properties = action.getProperties();
+        assertEquals(2, properties.size());
+        // Test single property
+        assertEquals("property", properties.get("property"));
+        // Test property list
+        String[] actionList = (String[]) properties.get("list");
+        assertEquals("listItemA", actionList[0]);
+        assertEquals("listItemB", actionList[1]);
+
+        hotDeployer.deploy(OVERRIDE_CONTRIB);
+
+        action = getService().getAction("actionTestProperties");
+        properties = action.getProperties();
         assertEquals(3, properties.size());
         // Test single property
         assertEquals("property", properties.get("property"));
         // Test property list
-        String[] actionList = (String[]) action.getProperties().get("list");
+        actionList = (String[]) properties.get("list");
         assertEquals("listItemA", actionList[0]);
         assertEquals("listItemB", actionList[1]);
-        // Test property map
-        Map<String, Serializable> mapProperties = (Map<String, Serializable>) action.getProperties().get("map");
-        assertEquals("mapProperty", mapProperties.get("mapProperty"));
-        String[] mapActionList = (String[]) mapProperties.get("mapList");
-        assertEquals("mapListItemA", mapActionList[0]);
-        assertEquals("mapListItemB", mapActionList[1]);
-        // Test sub property map
-        Map<String, Serializable> subMapProperties = (Map<String, Serializable>) mapProperties.get("subMap");
-        assertEquals("subMapProperty", subMapProperties.get("subMapProperty"));
-
-        // deploy override
-        hotDeployer.deploy("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
-
-        action = getService().getAction("actionTestProperties");
-        properties = action.getProperties();
-        assertEquals(4, properties.size());
         // Test added single property
         assertEquals("newProperty", properties.get("newProperty"));
     }
 
     @Test
-    public void testUnknownAction() throws Exception {
+    public void testUnknownAction() {
         assertNull(getService().getAction("FOO", null, true));
     }
 
@@ -386,17 +349,11 @@ public class TestAction {
     // contribution
     @Test
     public void testActionUninstallOverrideOfInnerFilter() throws Exception {
-
-        ActionService as = getService();
+        ActionManager as = getService();
 
         Action previewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
-        assertNotNull(previewAction);
-        assertEquals(1, previewAction.getCategories().length);
-        assertTrue(Arrays.asList(previewAction.getCategories()).contains("VIEW_ACTION_LIST"));
-        assertFalse(Arrays.asList(previewAction.getCategories()).contains("OVERRIDE"));
-        List<String> previewFilterIds = previewAction.getFilterIds();
-        assertEquals(1, previewFilterIds.size());
-        assertTrue(previewFilterIds.contains("local_filter"));
+        assertEquals(List.of("VIEW_ACTION_LIST"), previewAction.getCategoryList());
+        assertEquals(List.of("local_filter"), previewAction.getFilterIds());
         DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilter("local_filter");
         FilterRule[] previewRules = previewFilter.getRules();
         assertTrue(previewRules[0].grant);
@@ -410,12 +367,8 @@ public class TestAction {
         as = getService();
 
         Action opreviewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
-        assertNotNull(opreviewAction);
-        assertEquals(1, opreviewAction.getCategories().length);
-        assertTrue(Arrays.asList(opreviewAction.getCategories()).contains("OVERRIDE"));
-        assertFalse(Arrays.asList(opreviewAction.getCategories()).contains("VIEW_ACTION_LIST"));
-        assertEquals(1, opreviewAction.getFilterIds().size());
-        assertTrue(opreviewAction.getFilterIds().contains("local_filter"));
+        assertEquals(List.of("OVERRIDE"), opreviewAction.getCategoryList());
+        assertEquals(List.of("local_filter"), opreviewAction.getFilterIds());
         DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilter("local_filter");
         FilterRule[] opreviewRules = opreviewFilter.getRules();
         assertNotNull(opreviewRules);
