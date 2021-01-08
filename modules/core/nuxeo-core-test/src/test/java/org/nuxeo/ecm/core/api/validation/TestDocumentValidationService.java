@@ -69,6 +69,12 @@ public class TestDocumentValidationService {
 
     private static final String MESSAGE_FOR_GROUP_CODE = "message_for_groupCode";
 
+    private static final String SINGLE_ERROR_MESSAGE = "Constraint violation thrown on property vs:users[0]/user/firstname[0]: '"
+            + MESSAGE_FOR_USERS_FIRSTNAME + "'";
+
+    private static final String MULTIPLE_ERROR_MESSAGE = "2 constraint violation(s) thrown. First one is thrown on property vs:groupCode[0]: '"
+            + MESSAGE_FOR_GROUP_CODE + "', call DocumentValidationException.getViolations() to get the others";
+
     public static final String SIMPLE_FIELD = "vs:groupCode";
 
     private static final String COMPLEX_FIELD = "vs:manager";
@@ -600,7 +606,7 @@ public class TestDocumentValidationService {
         assertEquals(1, report.numberOfErrors());
     }
 
-    // NXP-29680
+    // NXP-29680 + NXP-29983
     @Test
     public void testDocumentValidationReportMessage() {
         // multiple errors
@@ -609,10 +615,8 @@ public class TestDocumentValidationService {
         assertTrue(report.hasError());
         String expectedMessage = String.join("\n", MESSAGE_FOR_GROUP_CODE, MESSAGE_FOR_USERS_FIRSTNAME);
         assertEquals(expectedMessage, report.toString());
-
         DocumentValidationException e = new DocumentValidationException(report);
-        expectedMessage = String.format(DocumentValidationException.MESSAGE, report.numberOfErrors(),
-                MESSAGE_FOR_GROUP_CODE);
+        expectedMessage = MULTIPLE_ERROR_MESSAGE;
         assertEquals(expectedMessage, e.getMessage());
 
         // one error
@@ -620,9 +624,9 @@ public class TestDocumentValidationService {
         report = validator.validate(doc);
         assertTrue(report.hasError());
         assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, report.toString());
-
         e = new DocumentValidationException(report);
-        expectedMessage = String.format(DocumentValidationException.MESSAGE_SINGLE, MESSAGE_FOR_USERS_FIRSTNAME);
+        expectedMessage = SINGLE_ERROR_MESSAGE;
+
         assertEquals(expectedMessage, e.getMessage());
     }
 
