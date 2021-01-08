@@ -92,17 +92,19 @@ public class TestXMapRegistry {
                 Map.of("item1", "sample5 - annotated item1", "item2", "sample5 - annotated item2"));
     }
 
-    protected void checkSomeMergeStatus(MapRegistry mreg, int nb) {
+    protected void checkSomeMergeStatus(MapRegistry mreg, int nb, boolean checkSample3) {
         assertEquals(nb, mreg.getContributions().size());
         assertEquals(nb, mreg.getContributionValues().size());
-        // annotated list and map overridden, others merged
-        checkSample(mreg, "sample3", "Sample 3 Overridden", true,
-                List.of("sample3 - item1", "sample3 - item2", "sample3 - item1 overridden"),
-                List.of("sample3 - annotated item1 overridden"),
-                Map.of("item1", "sample3 - item1 overridden", "item2", "sample3 - item2", "item3",
-                        "sample3 - item3 overridden"),
-                Map.of("item1", "sample3 - annotated item1 overridden", "item3",
-                        "sample3 - annotated item3 overridden"));
+        if (checkSample3) {
+            // annotated list and map overridden, others merged
+            checkSample(mreg, "sample3", "Sample 3 Overridden", true,
+                    List.of("sample3 - item1", "sample3 - item2", "sample3 - item1 overridden"),
+                    List.of("sample3 - annotated item1 overridden"),
+                    Map.of("item1", "sample3 - item1 overridden", "item2", "sample3 - item2", "item3",
+                            "sample3 - item3 overridden"),
+                    Map.of("item1", "sample3 - annotated item1 overridden", "item3",
+                            "sample3 - annotated item3 overridden"));
+        }
         // all merged
         checkSample(mreg, "sample4", "Sample 4 Merged", true,
                 List.of("sample4 - item1", "sample4 - item2", "sample4 - item1 merged"),
@@ -144,7 +146,7 @@ public class TestXMapRegistry {
         // annotated lists and maps emptied, others merged
         checkSample(mreg, "sample2", "", true, List.of("sample2 - item1", "sample2 - item2"), null,
                 Map.of("item1", "sample2 - item1", "item2", "sample2 - item2"), Map.of());
-        checkSomeMergeStatus(mreg, 6);
+        checkSomeMergeStatus(mreg, 6, true);
 
         // check unregister
         xmap.unregister(registry, "sample-2");
@@ -160,20 +162,39 @@ public class TestXMapRegistry {
         // sample 2 removed
         assertFalse(mreg.getContribution("sample2").isPresent());
         // no change for others
-        checkSomeMergeStatus(mreg, 4);
+        checkSomeMergeStatus(mreg, 4, true);
 
         // check merge again
         xmap.register(registry, ctx, load("sample-4.xml"), "sample-4");
 
-        assertEquals(6, mreg.getContributions().size());
+        assertEquals(5, mreg.getContributions().size());
         // sample 1 re-enabled, old values have been kept
         checkSample(mreg, "sample1", "Sample 1 Re-enabled", false, List.of("sample1 - item1 added"),
                 List.of("sample1 - annotated item1 added"), Map.of("item1", "sample1 - item1 added"),
                 Map.of("item1", "sample1 - annotated item1 added"));
         // sample 2 re-added, with empty values
         checkSample(mreg, "sample2", "Sample 2 Re-added", true, List.of(), null, Map.of(), Map.of());
+        // sample 3 disabled
+        assertFalse(mreg.getContribution("sample3").isPresent());
         // no change for others
-        checkSomeMergeStatus(mreg, 6);
+        checkSomeMergeStatus(mreg, 5, false);
+
+        // check sample 3 override
+        xmap.register(registry, ctx, load("sample-5.xml"), "sample-5");
+        assertEquals(5, mreg.getContributions().size());
+        assertFalse(mreg.getContribution("sample3").isPresent());
+
+        // check sample 3 enablement again
+        xmap.register(registry, ctx, load("sample-6.xml"), "sample-6");
+        assertEquals(6, mreg.getContributions().size());
+        // annotated list and map overridden, others merged
+        checkSample(mreg, "sample3", "Sample 3 Disabled Overridden", true,
+                List.of("sample3 - item1", "sample3 - item2", "sample3 - item1 overridden"),
+                List.of("sample3 - annotated item1 overridden"),
+                Map.of("item1", "sample3 - item1 overridden", "item2", "sample3 - item2", "item3",
+                        "sample3 - item3 overridden"),
+                Map.of("item1", "sample3 - annotated item1 overridden", "item3",
+                        "sample3 - annotated item3 overridden"));
     }
 
     protected void checkSampleEnable(MapRegistry mreg, String name, String value, Boolean bool, Boolean activated) {

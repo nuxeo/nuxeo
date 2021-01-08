@@ -100,7 +100,7 @@ public class MapRegistry extends AbstractRegistry implements Registry {
         }
         contributions.put(id, contrib);
         XAnnotatedMember enable = xObject.getEnable();
-        if (enable != null) {
+        if (enable != null && enable.hasValue(ctx, element)) {
             Object enabled = enable.getValue(ctx, element);
             if (enabled != null && Boolean.FALSE.equals(enabled)) {
                 disabled.add(id);

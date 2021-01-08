@@ -72,7 +72,6 @@ public class RestBindingRegistry extends MapRegistry {
         }
         XAnnotatedMember enable = xObject.getEnable();
         if (enable != null && enable.hasValue(ctx, element)) {
-            // avoid enabling an existing disabled contribution if not explicitely specified
             Object enabled = enable.getValue(ctx, element);
             if (enabled != null && Boolean.FALSE.equals(enabled)) {
                 disabled.add(id);
