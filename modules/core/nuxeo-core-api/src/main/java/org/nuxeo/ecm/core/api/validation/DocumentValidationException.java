@@ -32,9 +32,9 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  */
 public class DocumentValidationException extends NuxeoException {
 
-    protected static final String MESSAGE_SINGLE = "Constraint violation thrown: '%s'";
+    protected static final String MESSAGE_SINGLE = "Constraint violation thrown on property %s: '%s'";
 
-    protected static final String MESSAGE = "%s constraint violation(s) thrown. First one is: '%s', call "
+    protected static final String MESSAGE = "%s constraint violation(s) thrown. First one is thrown on property %s: '%s', call "
             + DocumentValidationException.class.getSimpleName() + ".getViolations() to get the others";
 
     private static final long serialVersionUID = 1L;
@@ -61,11 +61,17 @@ public class DocumentValidationException extends NuxeoException {
     public String getMessage() {
         if (report.hasError()) {
             int num = report.numberOfErrors();
-            String violationMessage = report.asList().get(0).getMessage(null);
+            ValidationViolation violation = report.asList().get(0);
+            String xpath = "";
+            if (violation instanceof ConstraintViolation) {
+                ConstraintViolation cv = (ConstraintViolation) violation;
+                xpath = cv.getPathAsString();
+            }
+            String violationMessage = violation.getMessage(null);
             if (num > 1) {
-                return String.format(MESSAGE, report.numberOfErrors(), violationMessage);
+                return String.format(MESSAGE, report.numberOfErrors(), xpath, violationMessage);
             } else {
-                return String.format(MESSAGE_SINGLE, violationMessage);
+                return String.format(MESSAGE_SINGLE, xpath, violationMessage);
             }
         } else {
             return super.getMessage();

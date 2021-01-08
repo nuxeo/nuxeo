@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -94,6 +95,10 @@ public class ConstraintViolation implements ValidationViolation {
 
     public List<PathNode> getPath() {
         return Collections.unmodifiableList(path);
+    }
+
+    public String getPathAsString() {
+        return path.stream().map(PathNode::toString).collect(Collectors.joining("/"));
     }
 
     public Constraint getConstraint() {
