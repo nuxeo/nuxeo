@@ -9,4 +9,6 @@
     <value>Sample 2 Re-added</value>
   </descriptor>
 
+  <descriptor name="sample3" enable="false" />
+
 </document>
