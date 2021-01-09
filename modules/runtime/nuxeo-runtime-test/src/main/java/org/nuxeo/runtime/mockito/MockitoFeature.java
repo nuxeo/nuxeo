@@ -50,7 +50,8 @@ public class MockitoFeature implements RunnerFeature {
     }
 
     protected void cleanupThread() throws ReflectiveOperationException {
-        ThreadLocal<IMockitoConfiguration> holder = (ThreadLocal<IMockitoConfiguration>) FieldUtils.readStaticField(GlobalConfiguration.class, "globalConfiguration", true);
+        ThreadLocal<IMockitoConfiguration> holder = (ThreadLocal<IMockitoConfiguration>) FieldUtils.readStaticField(
+                GlobalConfiguration.class, "GLOBAL_CONFIGURATION", true);
         holder.remove();
     }
 }
