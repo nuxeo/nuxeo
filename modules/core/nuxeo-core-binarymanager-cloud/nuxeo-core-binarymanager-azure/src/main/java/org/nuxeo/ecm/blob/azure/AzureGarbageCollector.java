@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.blob.azure;
 
-import java.net.URISyntaxException;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -77,15 +76,8 @@ public class AzureGarbageCollector extends AbstractBinaryGarbageCollector<AzureB
 
                 CloudBlockBlob blob = (CloudBlockBlob) item;
 
-                String digest;
-                try {
-                    String name = blob.getName();
-                    digest = name.substring(binaryManager.prefix.length());
-                } catch (URISyntaxException e) {
-                    // Should never happends
-                    // @see com.microsoft.azure.storage.blob.CloudBlob.getName()
-                    continue;
-                }
+                String name = blob.getName();
+                String digest = name.substring(binaryManager.prefix.length());
 
                 if (!isMD5(digest)) {
                     // ignore files that cannot be MD5 digests for
