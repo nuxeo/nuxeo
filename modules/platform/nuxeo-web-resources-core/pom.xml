@@ -30,11 +30,9 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
-
-    <!-- resource dependencies cycle detection -->
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
+      <groupId>org.jgrapht</groupId>
+      <artifactId>jgrapht-core</artifactId>
     </dependency>
 
     <!-- tests -->

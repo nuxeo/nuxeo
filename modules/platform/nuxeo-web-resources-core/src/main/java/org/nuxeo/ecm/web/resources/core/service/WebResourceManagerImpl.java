@@ -27,9 +27,8 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.plexus.util.dag.CycleDetectedException;
-import org.codehaus.plexus.util.dag.DAG;
-import org.codehaus.plexus.util.dag.TopologicalSorter;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.nuxeo.ecm.web.resources.api.Processor;
 import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.api.ResourceBundle;
@@ -182,7 +181,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
 
         Map<String, Resource> all = new HashMap<>();
         // retrieve deps + filter depending on type + detect cycles
-        DAG graph = new DAG();
+        DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
         for (String rn : rb.getResources()) {
             Resource r = getResource(rn);
             if (r == null) {
@@ -198,7 +197,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
             }
         }
 
-        for (Object rn : TopologicalSorter.sort(graph)) {
+        for (String rn : graph) { // iterates in topological order
             Resource r = all.get(rn);
             if (ResourceType.matches(type, r)) {
                 res.add(r);
@@ -208,7 +207,8 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
         return res;
     }
 
-    protected Map<String, Resource> getSubResources(DAG graph, Resource r, String type) {
+    protected Map<String, Resource> getSubResources(DirectedAcyclicGraph<String, DefaultEdge> graph, Resource r,
+            String type) {
         Map<String, Resource> res = new HashMap<>();
         List<String> deps = r.getDependencies();
         if (deps != null) {
@@ -222,9 +222,11 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
                     continue;
                 }
                 res.put(dn, d);
+                graph.addVertex(dn);
+                graph.addVertex(r.getName());
                 try {
-                    graph.addEdge(r.getName(), dn);
-                } catch (CycleDetectedException e) {
+                    graph.addEdge(dn, r.getName());
+                } catch (IllegalArgumentException e) {
                     log.error("Cycle detected in resource dependencies: ", e);
                     break;
                 }
