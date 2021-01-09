@@ -31,27 +31,4 @@
     </dependency>
   </dependencies>
 
-  <!-- <build> -->
-  <!-- <plugins> -->
-  <!-- <plugin> -->
-  <!-- <groupId>org.apache.maven.plugins</groupId> -->
-  <!-- <artifactId>maven-jar-plugin</artifactId> -->
-  <!-- <version>2.2</version> -->
-  <!-- <configuration> -->
-  <!-- <archive> -->
-  <!-- <manifestFile> -->
-  <!-- src/main/resources/META-INF/MANIFEST.MF -->
-  <!-- </manifestFile> -->
-  <!-- <manifestEntries> -->
-  <!-- <Bundle-Version>${eclipseVersion}</Bundle-Version> -->
-  <!-- <Bundle-ManifestVersion>2</Bundle-ManifestVersion> -->
-  <!-- </manifestEntries> -->
-  <!-- </archive> -->
-  <!-- <includes> -->
-  <!-- <include>**/Sample/*</include> -->
-  <!-- </includes> -->
-  <!-- </configuration> -->
-  <!-- </plugin> -->
-  <!-- </plugins> -->
-  <!-- </build> -->
 </project>
