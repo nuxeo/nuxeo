@@ -155,6 +155,10 @@ public class XMapTest {
 
         assertNotNull(author.metadata);
         assertEquals(13, author.metadata.getChildNodes().getLength());
+
+        assertNotNull(author.personElements);
+        assertEquals(2, author.personElements.size());
+        assertEquals(5, author.personElements.get(0).getChildNodes().getLength());
     }
 
 }

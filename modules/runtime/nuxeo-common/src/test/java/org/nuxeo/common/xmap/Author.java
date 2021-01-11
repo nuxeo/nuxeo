@@ -186,6 +186,9 @@ public class Author {
     @XNodeMap(value = "persons/person", key = "firstName", type = HashMap.class, componentType = Name.class)
     Map<String, Name> persons;
 
+    @XNodeList(value = "persons/person", type = ArrayList.class, componentType = Element.class)
+    List<Element> personElements;
+
     @XNodeList(value = "alias", type = Alias[].class, componentType = Alias.class)
     protected Alias[] aliases = new Alias[0];
 
