@@ -8,6 +8,7 @@
 	     point="backend">
     <backend class="org.nuxeo.elasticsearch.audit.ESAuditBackend">
       <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
+      <require>org.nuxeo.ecm.core.uidgen.UIDGeneratorService</require>
     </backend>
   </extension>
 

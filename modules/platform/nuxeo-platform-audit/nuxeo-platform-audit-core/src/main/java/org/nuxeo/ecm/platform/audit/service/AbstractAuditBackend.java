@@ -523,4 +523,9 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
 
     }
 
+    @Override
+    public int getApplicationStartedOrder() {
+        return config.getApplicationStartedOrder();
+    }
+
 }
