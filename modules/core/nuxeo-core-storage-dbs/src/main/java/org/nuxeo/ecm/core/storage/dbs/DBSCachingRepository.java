@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -277,6 +278,11 @@ public class DBSCachingRepository implements DBSRepository {
     @Override
     public void markReferencedBinaries() {
         repository.markReferencedBinaries();
+    }
+
+    @Override
+    public List<List<String>> getBlobKeysPaths() {
+        return repository.getBlobKeysPaths();
     }
 
 }

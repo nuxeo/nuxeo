@@ -18,8 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.mem;
 
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_KEYS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
 
@@ -166,72 +165,19 @@ public class MemRepository extends DBSRepositoryBase {
         return new Lock(oldOwner, oldCreated);
     }
 
-    protected List<List<String>> binaryPaths;
-
-    @Override
-    protected void initBlobsPaths() {
-        MemBlobFinder finder = new MemBlobFinder();
-        finder.visit();
-        binaryPaths = finder.binaryPaths;
-    }
-
-    protected static class MemBlobFinder extends BlobFinder {
-        protected List<List<String>> binaryPaths = new ArrayList<>();
-
-        @Override
-        protected void recordBlobPath() {
-            binaryPaths.add(new ArrayList<>(path));
-        }
-    }
-
     @Override
     public void markReferencedBinaries() {
         DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         for (State state : states.values()) {
-            for (List<String> path : binaryPaths) {
-                markReferencedBinaries(state, path, 0, blobManager);
-            }
-        }
-    }
-
-    protected void markReferencedBinaries(State state, List<String> path, int start, DocumentBlobManager blobManager) {
-        for (int i = start; i < path.size(); i++) {
-            String name = path.get(i);
-            Serializable value = state.get(name);
-            if (value instanceof State) {
-                state = (State) value;
-            } else {
-                if (value instanceof List) {
-                    @SuppressWarnings("unchecked")
-                    List<Object> list = (List<Object>) value;
-                    for (Object v : list) {
-                        if (v instanceof State) {
-                            markReferencedBinaries((State) v, path, i + 1, blobManager);
-                        } else {
-                            markReferencedBinary(v, blobManager);
-                        }
+            Object blobKeys = state.get(KEY_BLOB_KEYS);
+            if (blobKeys instanceof Object[]) {
+                for (Object v : (Object[]) blobKeys) {
+                    if (v instanceof String) {
+                        blobManager.markReferencedBinary((String) v, repositoryName);
                     }
                 }
-                state = null;
-                break;
             }
         }
-        if (state != null) {
-            Serializable data = state.get(KEY_BLOB_DATA);
-            markReferencedBinary(data, blobManager);
-            if (isFulltextStoredInBlob()) {
-                data = state.get(KEY_FULLTEXT_BINARY);
-                markReferencedBinary(data, blobManager);
-            }
-        }
-    }
-
-    protected void markReferencedBinary(Object value, DocumentBlobManager blobManager) {
-        if (!(value instanceof String)) {
-            return;
-        }
-        String key = (String) value;
-        blobManager.markReferencedBinary(key, repositoryName);
     }
 
 }

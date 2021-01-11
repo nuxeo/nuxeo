@@ -34,6 +34,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_KEYS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
@@ -860,6 +861,7 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
      */
     public void save() {
         updateProxies();
+        updateDenormalizedState();
         List<Work> works;
         if (!repository.isFulltextDisabled()) {
             // TODO getting fulltext already does a getStateChange
@@ -1093,6 +1095,81 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
             }
         }
         return schemaManager.isProxySchema(schema.getName(), null); // type unused
+    }
+
+    protected void updateDenormalizedState() {
+        BlobKeysFinder blobKeysFinder = new BlobKeysFinder(repository.getBlobKeysPaths());
+        for (DBSDocumentState docState : transientStates.values()) {
+            computeBlobKeys(docState, blobKeysFinder);
+        }
+    }
+
+    protected void computeBlobKeys(DBSDocumentState docState, BlobKeysFinder blobKeysFinder) {
+        Set<String> blobKeys = blobKeysFinder.findBlobKeys(docState.getState());
+        Object[] blobKeysArray;
+        if (blobKeys.isEmpty()) {
+            blobKeysArray = null;
+        } else {
+            blobKeysArray = blobKeys.toArray();
+            Arrays.sort(blobKeysArray);
+        }
+        docState.put(KEY_BLOB_KEYS, blobKeysArray);
+    }
+
+    /**
+     * Iterates on a {@link State} to find the blob keys.
+     */
+    protected static class BlobKeysFinder {
+
+        protected final List<List<String>> blobKeysPaths;
+
+        protected final Set<String> blobKeys = new HashSet<>();
+
+        public BlobKeysFinder(List<List<String>> blobKeysPaths) {
+            this.blobKeysPaths = blobKeysPaths;
+        }
+
+        public Set<String> findBlobKeys(State state) {
+            blobKeys.clear();
+            blobKeysPaths.forEach(path -> findBlobKeys(state, path, 0));
+            return blobKeys;
+        }
+
+        protected void findBlobKeys(State state, List<String> path, int start) {
+            int size = path.size();
+            for (int i = start; i < size; i++) {
+                Serializable value = state.get(path.get(i));
+                if (value == null) {
+                    // fast path when the property doesn't exist
+                    return;
+                }
+                if (value instanceof State) {
+                    state = (State) value;
+                    continue; // process next path element
+                }
+                if (i == size - 1) {
+                    // end of path
+                    if (value instanceof String) {
+                        blobKeys.add((String) value);
+                    } else if (value instanceof Object[]) {
+                        // array of naked blob keys (no current use case)
+                        for (Object v : (Object[]) value) {
+                            if (v instanceof String) {
+                                blobKeys.add((String) v);
+                            }
+                        }
+                    }
+                } else if (value instanceof List) {
+                    // process all complex list elements
+                    for (Object v : (List<?>) value) {
+                        if (v instanceof State) {
+                            findBlobKeys((State) v, path, i + 1);
+                        }
+                    }
+                }
+                return;
+            }
+        }
     }
 
     /**
