@@ -19,11 +19,14 @@
 package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.FALSE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
@@ -130,6 +133,8 @@ public abstract class DBSRepositoryBase implements DBSRepository {
      */
     protected boolean selfRegisteredLockManager = false;
 
+    protected List<List<String>> blobKeysPaths;
+
     public DBSRepositoryBase(ConnectionManager cm, String repositoryName, DBSRepositoryDescriptor descriptor) {
         this.repositoryName = repositoryName;
         String idt = descriptor.idType;
@@ -213,14 +218,28 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         return lockManager;
     }
 
-    protected abstract void initBlobsPaths();
+    @Override
+    public List<List<String>> getBlobKeysPaths() {
+        return blobKeysPaths;
+    }
+
+    protected void initBlobsPaths() {
+        BlobFinder finder = new BlobFinder();
+        finder.visit();
+        if (isFulltextStoredInBlob()) {
+            finder.visitFulltextStoredInBlob();
+        }
+        blobKeysPaths = finder.blobKeysPaths;
+    }
 
     /** Finds the paths for all blobs in all document types. */
-    protected static abstract class BlobFinder {
+    protected static class BlobFinder {
 
         protected final Set<String> schemaDone = new HashSet<>();
 
         protected final Deque<String> path = new ArrayDeque<>();
+
+        protected List<List<String>> blobKeysPaths = new ArrayList<>();
 
         public void visit() {
             SchemaManager schemaManager = Framework.getService(SchemaManager.class);
@@ -234,6 +253,12 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             }
         }
 
+        public void visitFulltextStoredInBlob() {
+            path.addLast(KEY_FULLTEXT_BINARY);
+            recordBlobPath();
+            path.removeLast();
+        }
+
         protected void visitSchemas(Collection<Schema> schemas) {
             for (Schema schema : schemas) {
                 if (schemaDone.add(schema.getName())) {
@@ -244,7 +269,9 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
         protected void visitComplexType(ComplexType complexType) {
             if (TypeConstants.isContentType(complexType)) {
+                path.addLast(KEY_BLOB_DATA);
                 recordBlobPath();
+                path.removeLast();
                 return;
             }
             for (Field field : complexType.getFields()) {
@@ -253,7 +280,9 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         }
 
         /** Records a blob path, stored in the {@link #path} field. */
-        protected abstract void recordBlobPath();
+        protected void recordBlobPath() {
+            blobKeysPaths.add(new ArrayList<>(path));
+        }
 
         protected void visitField(Field field) {
             Type type = field.getType();

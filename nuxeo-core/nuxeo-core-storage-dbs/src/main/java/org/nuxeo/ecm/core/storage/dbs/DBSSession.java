@@ -37,6 +37,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BASE_VERSION_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_KEYS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
@@ -1967,6 +1968,8 @@ public class DBSSession extends BaseSession {
             return DBSDocument.KEY_MINOR_VERSION;
         case NXQL.ECM_ISTRASHED:
             return KEY_IS_TRASHED;
+        case NXQL.ECM_BLOBKEYS:
+            return KEY_BLOB_KEYS;
         case NXQL.ECM_FULLTEXT:
             throw new UnsupportedOperationException(name);
         }
@@ -2051,6 +2054,8 @@ public class DBSSession extends BaseSession {
             return NXQL.ECM_FULLTEXT_SCORE;
         case KEY_IS_TRASHED:
             return NXQL.ECM_ISTRASHED;
+        case KEY_BLOB_KEYS:
+            return NXQL.ECM_BLOBKEYS;
         case KEY_LIFECYCLE_POLICY:
         case KEY_ACP:
         case KEY_ANCESTOR_IDS:
@@ -2089,6 +2094,7 @@ public class DBSSession extends BaseSession {
         case KEY_ANCESTOR_IDS:
         case KEY_PROXY_IDS:
         case KEY_READ_ACL:
+        case KEY_BLOB_KEYS:
             return STRING_ARRAY_TYPE;
         }
         return null;

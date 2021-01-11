@@ -205,6 +205,9 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String KEY_BLOB_DATA = "data";
 
+    /** @since 11.5 */
+    public static final String KEY_BLOB_KEYS = "ecm:blobKeys";
+
     public static final String KEY_FULLTEXT_SIMPLE = "ecm:fulltextSimple";
 
     public static final String KEY_FULLTEXT_BINARY = "ecm:fulltextBinary";
@@ -999,6 +1002,7 @@ public class DBSDocument extends BaseDocument<State> {
         case KEY_IS_TRASHED:
         case KEY_LIFECYCLE_POLICY:
         case KEY_LIFECYCLE_STATE:
+        case KEY_BLOB_KEYS:
             return "__ecm__";
         }
         if (xpath.startsWith(KEY_FULLTEXT_SIMPLE) || xpath.startsWith(KEY_FULLTEXT_BINARY)) {

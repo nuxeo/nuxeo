@@ -450,4 +450,9 @@ public class DBSCachingRepository implements DBSRepository {
         return repository.queryKeyValueWithOperator(key1, value1, key2, operator, value2, ignored);
     }
 
+    @Override
+    public List<List<String>> getBlobKeysPaths() {
+        return repository.getBlobKeysPaths();
+    }
+
 }

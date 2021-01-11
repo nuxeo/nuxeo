@@ -336,4 +336,13 @@ public interface DBSRepository extends Repository, LockManager {
         NOT_IN, IN;
     }
 
+    /**
+     * Gets the list of blob keys paths of all possible blobs in all schemas.
+     * <p>
+     * Each "path" is a list of path components. Example: {@code [[content, data], [files, file, data], ...]}
+     *
+     * @since 11.5
+     */
+    List<List<String>> getBlobKeysPaths();
+
 }
