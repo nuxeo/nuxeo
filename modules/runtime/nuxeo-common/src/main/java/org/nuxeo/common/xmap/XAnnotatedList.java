@@ -180,10 +180,12 @@ public class XAnnotatedList extends XAnnotatedMember {
         if (objects != null) {
             if (xao == null) {
                 for (Object o : objects) {
-                    String value = valueFactory.serialize(null, o);
-                    if (value != null) {
-                        Element e = XMLBuilder.addElement(parent, path);
-                        XMLBuilder.fillField(e, value, path.attribute);
+                    if (valueFactory != null && !(o instanceof Element)) {
+                        String value = valueFactory.serialize(null, o);
+                        if (value != null) {
+                            Element e = XMLBuilder.addElement(parent, path);
+                            XMLBuilder.fillField(e, value, path.attribute);
+                        }
                     }
                 }
             } else {
