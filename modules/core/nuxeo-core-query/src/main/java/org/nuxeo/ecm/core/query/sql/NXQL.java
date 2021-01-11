@@ -228,6 +228,9 @@ public class NXQL {
     /** @since 11.1 */
     public static final String ECM_HASLEGALHOLD = "ecm:hasLegalHold";
 
+    /** @since 11.5 */
+    public static final String ECM_BLOBKEYS = "ecm:blobKeys";
+
     /**
      * The function returning the current datetime. It can optionally have as an argument a duration that will be added
      * to the current datetime, expressed as a ISO 8601 period.

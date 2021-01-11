@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_KEYS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
@@ -214,6 +215,7 @@ public class MongoDBConnection extends DBSConnectionBase {
     protected void initRepository(MongoDBRepositoryDescriptor descriptor) {
         // check root presence
         if (coll.countDocuments(converter.filterEq(KEY_ID, getRootId())) > 0) {
+            mongoDBRepository.readSettings();
             return;
         }
         // create required indexes
@@ -237,6 +239,7 @@ public class MongoDBConnection extends DBSConnectionBase {
         coll.createIndex(Indexes.ascending(KEY_LIFECYCLE_STATE));
         coll.createIndex(Indexes.ascending(KEY_IS_TRASHED));
         coll.createIndex(Indexes.ascending(KEY_RETAIN_UNTIL));
+        coll.createIndex(Indexes.ascending(KEY_BLOB_KEYS));
         if (!repository.isFulltextDisabled()) {
             coll.createIndex(Indexes.ascending(KEY_FULLTEXT_JOBID));
         }
@@ -275,6 +278,7 @@ public class MongoDBConnection extends DBSConnectionBase {
             idCounter.put(COUNTER_FIELD, Long.valueOf(counter));
             countersColl.insertOne(idCounter);
         }
+        mongoDBRepository.initSettings();
         initRoot();
     }
 
