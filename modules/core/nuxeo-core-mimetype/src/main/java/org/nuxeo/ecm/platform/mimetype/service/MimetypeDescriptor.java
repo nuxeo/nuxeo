@@ -85,7 +85,7 @@ public class MimetypeDescriptor {
 
     public List<String> getExtensions() {
         List<String> exts = new ArrayList<>();
-        NodeList elements = mimetypes.getElementsByTagName("extension");
+        NodeList elements = extensions.getElementsByTagName("extension");
         int len = elements.getLength();
         for (int i = 0; i < len; i++) {
             exts.add(elements.item(i).getTextContent().trim());

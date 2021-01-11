@@ -19,22 +19,20 @@
 package org.nuxeo.common.xmap;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.time.Duration;
+import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.nuxeo.common.xmap.Author.Gender;
 
 public class ReverseXMapTest {
 
     @Test
-    public void testReverse() throws Exception {
+    public void testReverse() throws IOException {
         XMap xmap = new XMap();
         xmap.register(Author.class);
         URL url = Thread.currentThread().getContextClassLoader().getResource("test-xmap.xml");
@@ -47,55 +45,12 @@ public class ReverseXMapTest {
             assertTrue(msg, msg.contains("java.lang.String is NOT registred in xmap"));
         }
 
-        // save the object
-        // System.out.println(xmap.toXML(author));
-        File file = File.createTempFile("xmap", "xml", new File(System.getProperty("java.io.tmpdir")));
-        xmap.toXML(author, file);
+        String content = xmap.toXML(author);
 
-        // load map from new created file
-        xmap = new XMap();
-        xmap.register(Author.class);
-        author = (Author) xmap.load(file.toURI().toURL());
-        file.delete();
+        URL refurl = Thread.currentThread().getContextClassLoader().getResource("test-xmap-saved.xml");
+        String refcontent = IOUtils.toString(refurl, StandardCharsets.UTF_8);
 
-        assertEquals("First test 22", author.title);
-        assertEquals("bla bla", author.description);
-        assertEquals(author, author.name.owner);
-        assertEquals("my first name", author.name.firstName);
-        assertEquals("my last name", author.name.lastName);
-        assertEquals("The content", author.content.trim());
-        assertEquals("author", author.nameType);
-        assertEquals(Gender.MALE, author.gender);
-        assertEquals(32, author.age);
-        assertEquals("test1", author.getId());
-        assertEquals("friend1_fn", author.friends.get(0).firstName);
-        assertEquals("friend1_ln", author.friends.get(0).lastName);
-        assertEquals("friend2_fn", author.friends.get(1).firstName);
-        assertEquals("friend2_ln", author.friends.get(1).lastName);
-
-        // assertEquals("Test <b>content</b>", author.testContent.trim());
-        String t = author.testContent2.getFirstChild().getTextContent().trim();
-        assertEquals("Test", t);
-
-        assertNotEquals(author.content, author.content.trim());
-
-        assertNull(author.testNullByDefaultForList);
-        assertNull(author.testNullByDefaultForMap);
-
-        // test map with objects
-        assertEquals(2, author.persons.size());
-        assertEquals("friend1_ln", author.persons.get("friend1_fn").lastName);
-        assertEquals("friend1_fn", author.persons.get("friend1_fn").firstName);
-        assertEquals("friend2_ln", author.persons.get("friend2_fn").lastName);
-        assertEquals("friend2_fn", author.persons.get("friend2_fn").firstName);
-
-        assertEquals(Duration.ofDays(1), author.durationDay);
-        assertEquals(Duration.ofHours(1), author.durationHour);
-        assertEquals(Duration.ofMinutes(1), author.durationMinute);
-        assertEquals(Duration.ofSeconds(1), author.durationSecond);
-        assertEquals(Duration.ofMillis(1), author.durationMillis);
-        assertEquals(Duration.ofDays(1).plusHours(2).plusMinutes(3).plusSeconds(4).plusMillis(5), author.durationAll);
-        assertEquals(Duration.ofSeconds(1), author.durationJdk);
+        assertEquals(refcontent.trim(), content.trim());
     }
 
 }

@@ -140,10 +140,15 @@ public class XAnnotatedMember {
      * @since 11.5
      */
     public boolean hasValue(Context ctx, Element element) {
-        if (type == Element.class) {
-            return element != null;
-        }
         return DOMHelper.hasNode(element, path) || (fallbackPath != null && DOMHelper.hasNode(element, fallbackPath));
+    }
+
+    protected Element getElement(Element base) {
+        Element el = (Element) DOMHelper.getElementNode(base, path);
+        if (el == null && fallbackPath != null) {
+            el = (Element) DOMHelper.getElementNode(base, fallbackPath);
+        }
+        return el;
     }
 
     /**
@@ -153,7 +158,7 @@ public class XAnnotatedMember {
      */
     public Object getValue(Context ctx, Element base) {
         if (xao != null) {
-            Element el = (Element) DOMHelper.getElementNode(base, path);
+            Element el = getElement(base);
             if (el == null) {
                 return null;
             } else {
@@ -163,7 +168,7 @@ public class XAnnotatedMember {
         // scalar field
         if (type == Element.class) {
             // allow DOM elements as values
-            return base;
+            return getElement(base);
         }
         String val = DOMHelper.getNodeValue(base, path);
         if (val == null && fallbackPath != null) {
