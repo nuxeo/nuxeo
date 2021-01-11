@@ -104,7 +104,6 @@ public class VideoHelper {
     public static void updateStoryboard(DocumentModel docModel, Blob video) {
         if (video == null) {
             docModel.setPropertyValue(VideoConstants.STORYBOARD_PROPERTY, null);
-            docModel.setPropertyValue(VideoConstants.DURATION_PROPERTY, 0);
             return;
         }
 
