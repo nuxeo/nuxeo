@@ -375,7 +375,7 @@ public class TestVideoImporterAndListeners {
     @Deploy("org.nuxeo.ecm.platform.video:test-video-conversions-enabled.xml")
     @Deploy("org.nuxeo.ecm.platform.video:test-video-listeners-contrib.xml")
     @SuppressWarnings("unchecked")
-    public void testVideoConversions() throws IOException, InterruptedException {
+    public void testVideoConversions() throws IOException {
         DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
         Blob blob = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
         doc.setPropertyValue("file:content", (Serializable) blob);

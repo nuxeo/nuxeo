@@ -63,7 +63,6 @@ public interface VideoService {
      */
     TranscodedVideo convert(Video originalVideo, String conversionName);
 
-
     /**
      * Returns the status of the video conversion with the given conversion name on the given document.
      *
