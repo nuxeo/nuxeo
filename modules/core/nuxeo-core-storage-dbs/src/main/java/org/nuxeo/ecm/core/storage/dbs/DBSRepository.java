@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Repository;
@@ -94,5 +96,14 @@ public interface DBSRepository extends Repository, LockManager {
      * @see DBSConnection#rollback
      */
     boolean supportsTransactions();
+
+    /**
+     * Gets the list of blob keys paths of all possible blobs in all schemas.
+     * <p>
+     * Each "path" is a list of path components. Example: {@code [[content, data], [files, file, data], ...]}
+     *
+     * @since 11.5
+     */
+    List<List<String>> getBlobKeysPaths();
 
 }
