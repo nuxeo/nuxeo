@@ -104,7 +104,6 @@ import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.query.NxqlQueryConverter;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -172,15 +171,6 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> entries = reader.queryLogs(new String[] { MIGRATION_DONE_EVENT }, null);
         return !entries.isEmpty();
-    }
-
-    @Override
-    public int getApplicationStartedOrder() {
-        int elasticOrder = ((DefaultComponent) Framework.getRuntime().getComponent(
-                "org.nuxeo.elasticsearch.ElasticSearchComponent")).getApplicationStartedOrder();
-        int uidgenOrder = ((DefaultComponent) Framework.getRuntime().getComponent(
-                "org.nuxeo.ecm.core.uidgen.UIDGeneratorService")).getApplicationStartedOrder();
-        return Integer.max(elasticOrder, uidgenOrder) + 1;
     }
 
     @Override

@@ -122,13 +122,6 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
     }
 
     @Override
-    public int getApplicationStartedOrder() {
-        DefaultComponent component = (DefaultComponent) Framework.getRuntime()
-                                                                 .getComponent(MongoDBComponent.COMPONENT_NAME);
-        return component.getApplicationStartedOrder() + 1;
-    }
-
-    @Override
     public void onApplicationStarted() {
         log.info("Activate MongoDB backend for Audit");
         // First retrieve the collection name

@@ -18,13 +18,20 @@
  */
 package org.nuxeo.ecm.platform.audit.service.extension;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -35,17 +42,28 @@ import org.nuxeo.runtime.model.DefaultComponent;
 @XObject("backend")
 public class AuditBackendDescriptor {
 
+    private static final Logger log = LogManager.getLogger(AuditBackendDescriptor.class);
+
     @XNode("@class")
     protected Class<? extends AuditBackend> klass = DefaultAuditBackend.class;
 
-    @XNode("require")
-    String requiredComponent;
+    @XNodeList(value = "require", type = ArrayList.class, componentType = String.class)
+    protected List<String> requires;
 
     public int getApplicationStartedOrder() {
-        if (StringUtils.isEmpty(requiredComponent)) {
-            return 1000;
+        for (String require : requires) {
+            if (Framework.getRuntime().getComponent(require) == null) {
+                log.warn("Unknown required component '{}' for AuditBackendDescriptor using '{}'", require, klass);
+            }
         }
-        return ((DefaultComponent)Framework.getRuntime().getComponent(requiredComponent)).getApplicationStartedOrder()+1;
+        return requires.stream()
+                       .map(Framework.getRuntime()::getComponent)
+                       .filter(Objects::nonNull)
+                       .map(DefaultComponent.class::cast)
+                       .mapToInt(DefaultComponent::getApplicationStartedOrder)
+                       .max()
+                       .orElse(ComponentStartOrders.DEFAULT)
+                + 1;
     }
 
     public Class<? extends AuditBackend> getKlass() {
@@ -54,7 +72,8 @@ public class AuditBackendDescriptor {
 
     public AuditBackend newInstance(NXAuditEventsService component) {
         try {
-            return klass.getDeclaredConstructor(NXAuditEventsService.class, AuditBackendDescriptor.class).newInstance(component, this);
+            return klass.getDeclaredConstructor(NXAuditEventsService.class, AuditBackendDescriptor.class)
+                        .newInstance(component, this);
         } catch (ReflectiveOperationException cause) {
             throw new RuntimeException("Cannot create audit backend of type " + klass.getName(), cause);
         }
