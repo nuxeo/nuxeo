@@ -26,7 +26,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_KEYS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
@@ -59,13 +59,13 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Spliterators;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.resource.spi.ConnectionManager;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
@@ -94,7 +94,6 @@ import org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.mongodb.Block;
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoBulkWriteException;
 import com.mongodb.MongoExecutionTimeoutException;
@@ -113,6 +112,7 @@ import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
@@ -179,12 +179,23 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected final MongoCollection<Document> countersColl;
 
+    protected final MongoCollection<Document> settingsColl;
+
     /**
      * Default maximum execution time for a query.
      *
      * @since 11.1
      */
     protected static final Duration MAX_TIME_DEFAULT = Duration.ofHours(1);
+
+    protected static final String SETTING_VALUE = "value";
+
+    /**
+     * Settings key to determine whether {@code ecm:blobKeys} is supported.
+     * <p>
+     * The value is {@code true} on new or migrated repositories.
+     */
+    protected static final String SETTING_DENORMALIZED_BLOB_KEYS = "denormalizedBlobKeys";
 
     /** The key to use to store the id in the database. */
     protected String idKey;
@@ -217,6 +228,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
      */
     protected final long maxTimeMS;
 
+    protected boolean supportsDenormalizedBlobKeys;
+
     public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
         MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
@@ -225,6 +238,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         MongoDatabase database = mongoService.getDatabase(databaseID);
         coll = database.getCollection(descriptor.name);
         countersColl = database.getCollection(descriptor.name + ".counters");
+        settingsColl = database.getCollection(descriptor.name + ".settings");
         Duration maxTime = mongoService.getConfig(databaseID).maxTime;
         if (maxTime == null) {
             maxTime = MAX_TIME_DEFAULT;
@@ -285,6 +299,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     protected void initRepository(MongoDBRepositoryDescriptor descriptor) {
         // check root presence
         if (countDocuments(converter.filterEq(KEY_ID, getRootId())) > 0) {
+            readSettings();
             return;
         }
         // create required indexes
@@ -308,6 +323,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending(KEY_LIFECYCLE_STATE));
         coll.createIndex(Indexes.ascending(KEY_IS_TRASHED));
         coll.createIndex(Indexes.ascending(KEY_RETAIN_UNTIL));
+        coll.createIndex(Indexes.ascending(KEY_BLOB_KEYS));
         if (!isFulltextDisabled()) {
             coll.createIndex(Indexes.ascending(KEY_FULLTEXT_JOBID));
         }
@@ -343,7 +359,24 @@ public class MongoDBRepository extends DBSRepositoryBase {
             idCounter.put(COUNTER_FIELD, Long.valueOf(counter));
             countersColl.insertOne(idCounter);
         }
+        initSettings();
         initRoot();
+    }
+
+    protected void initSettings() {
+        supportsDenormalizedBlobKeys = true;
+        Bson filter = Filters.eq(MONGODB_ID, SETTING_DENORMALIZED_BLOB_KEYS);
+        Bson update = Updates.set(SETTING_VALUE, supportsDenormalizedBlobKeys);
+        settingsColl.updateOne(filter, update, new UpdateOptions().upsert(true));
+    }
+
+    protected void readSettings() {
+        Document doc = settingsColl.find(Filters.eq(MONGODB_ID, SETTING_DENORMALIZED_BLOB_KEYS)).first();
+        if (doc == null) {
+            supportsDenormalizedBlobKeys = false;
+        } else {
+            supportsDenormalizedBlobKeys = doc.getBoolean(SETTING_VALUE, false);
+        }
     }
 
     protected synchronized long getNextSequenceId() {
@@ -929,43 +962,53 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
     }
 
-    /** Keys used for document projection when marking all binaries for GC. */
+    /**
+     * Keys used for document projection when marking all binaries for GC.
+     * <p>
+     * Used when denormalized ecm:blobKeys is not available.
+     */
     protected Bson binaryKeys;
 
     @Override
     protected void initBlobsPaths() {
-        MongoDBBlobFinder finder = new MongoDBBlobFinder();
-        finder.visit();
-        if (isFulltextStoredInBlob()) {
-            finder.recordBlobKey(KEY_FULLTEXT_BINARY);
-        }
-        binaryKeys = Projections.fields(finder.binaryKeys);
-    }
-
-    protected static class MongoDBBlobFinder extends BlobFinder {
-        protected List<Bson> binaryKeys = new ArrayList<>(Collections.singleton(Projections.excludeId()));
-
-        @Override
-        protected void recordBlobPath() {
-            path.addLast(KEY_BLOB_DATA);
-            recordBlobKey(StringUtils.join(path, "."));
-            path.removeLast();
-        }
-
-        protected void recordBlobKey(String key) {
-            binaryKeys.add(Projections.include(key));
-        }
+        super.initBlobsPaths();
+        // compute projections for when ecm:blobKeys is not available
+        List<Bson>projections = new ArrayList<>(blobKeysPaths.size() + 1);
+        projections.add(Projections.excludeId());
+        blobKeysPaths.forEach(path -> projections.add(Projections.include(String.join(".", path))));
+        binaryKeys = Projections.fields(projections);
     }
 
     @Override
     public void markReferencedBinaries() {
         DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-        // TODO add a query to not scan all documents
-        if (log.isTraceEnabled()) {
-            logQuery(new Document(), binaryKeys);
+        Bson filter;
+        Bson projection;
+        Consumer<Document> markReferencedBinaries;
+        if (supportsDenormalizedBlobKeys) {
+            filter = Filters.exists(KEY_BLOB_KEYS, true);
+            projection = Projections.fields(Projections.excludeId(), Projections.include(KEY_BLOB_KEYS));
+            markReferencedBinaries = doc -> markReferencedBinariesDenormalized(doc, blobManager);
+        } else {
+            filter = new Document();
+            projection = binaryKeys;
+            markReferencedBinaries = doc -> markReferencedBinaries(doc, blobManager);
         }
-        Block<Document> block = doc -> markReferencedBinaries(doc, blobManager);
-        coll.find().projection(binaryKeys).forEach(block);
+        if (log.isTraceEnabled()) {
+            logQuery(filter, projection);
+        }
+        coll.find(filter).projection(projection).forEach(markReferencedBinaries);
+    }
+
+    protected void markReferencedBinariesDenormalized(Document ob, DocumentBlobManager blobManager) {
+        Object blobKeys = ob.get(KEY_BLOB_KEYS);
+        if (blobKeys instanceof List) {
+            for (Object v : (List<?>) blobKeys) {
+                if (v instanceof String) {
+                    blobManager.markReferencedBinary((String) v, repositoryName);
+                }
+            }
+        }
     }
 
     protected void markReferencedBinaries(Document ob, DocumentBlobManager blobManager) {

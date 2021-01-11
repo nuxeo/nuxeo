@@ -90,6 +90,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.trash.TrashService;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -3972,6 +3973,33 @@ public class TestSQLRepositoryQuery {
         assertEquals(doc.getId(), dml.get(0).getId());
         dml = session.query(queryNoHold) ;
         assertEquals(0, dml.size());
+    }
+
+    @Test
+    public void testBlobKeys() {
+        assumeTrue("Internal ecm:blobKeys only supported on DBS", isDBS());
+
+        DocumentModel doc = session.createDocumentModel("/", "testfile", "File");
+        Blob blob1 = Blobs.createBlob("foo");
+        doc.setPropertyValue("content", (Serializable) blob1);
+        Blob blob2 = Blobs.createBlob("bar");
+        doc.setPropertyValue("files:files", (Serializable) Arrays.asList(Collections.singletonMap("file", blob2)));
+        doc = session.createDocument(doc);
+        session.save();
+
+        blob1 = (Blob) doc.getPropertyValue("file:content");
+        blob2 = (Blob) doc.getPropertyValue("files:files/0/file");
+        String format = "SELECT * FROM File WHERE ecm:blobKeys = '%s'";
+
+        String q = String.format(format, ((ManagedBlob) blob1).getKey());
+        DocumentModelList dml = session.query(q);
+        assertEquals(1, dml.size());
+        assertEquals(doc.getId(), dml.get(0).getId());
+
+        q = String.format(format, ((ManagedBlob) blob2).getKey());
+        dml = session.query(q);
+        assertEquals(1, dml.size());
+        assertEquals(doc.getId(), dml.get(0).getId());
     }
 
 }
