@@ -35,6 +35,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XNodes;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.w3c.dom.DocumentFragment;
+import org.w3c.dom.Element;
 
 @XObject(value = "author", order = { "item1", "item2" })
 public class Author {
@@ -60,6 +61,9 @@ public class Author {
 
     @XNode("metadata/name@gender")
     Gender gender;
+
+    @XNode("metadata")
+    Element metadata;
 
     @XNodeList(value = "list/item", type = ArrayList.class, componentType = String.class)
     List<String> items;

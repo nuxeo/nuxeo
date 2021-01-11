@@ -208,6 +208,10 @@ class ElementVisitor implements DOMHelper.NodeVisitor {
 class ElementValueVisitor implements DOMHelper.NodeVisitor {
     @Override
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
+        if (((XAnnotatedList) xam).componentType == Element.class) {
+            result.add(node);
+            return;
+        }
         String val = node.getTextContent();
         if (xam.trim) {
             val = val.trim();

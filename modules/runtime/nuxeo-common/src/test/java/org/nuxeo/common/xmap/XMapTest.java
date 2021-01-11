@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 
@@ -36,7 +37,7 @@ import org.nuxeo.common.xmap.Author.Gender;
 public class XMapTest {
 
     @Test
-    public void testMapping() throws Exception {
+    public void testMapping() throws IOException {
         XMap xmap = new XMap();
         xmap.register(Author.class);
 
@@ -46,7 +47,7 @@ public class XMapTest {
     }
 
     @Test
-    public void testInheritedMapping() throws Exception {
+    public void testInheritedMapping() throws IOException {
         XMap xmap = new XMap();
         xmap.register(InheritedAuthor.class);
 
@@ -129,7 +130,7 @@ public class XMapTest {
     }
 
     @Test
-    public void testInvalidClass() throws Exception {
+    public void testInvalidClass() throws IOException {
         XMap xmap = new XMap();
         xmap.register(Author.class);
 
@@ -140,6 +141,20 @@ public class XMapTest {
         } catch (XMapException e) {
             assertEquals("Cannot load class: this-is-not-a-class", e.getMessage());
         }
+    }
+
+    /** @since 11.5 **/
+    @Test
+    public void testDOMElementMapping() throws IOException {
+        XMap xmap = new XMap();
+        xmap.register(Author.class);
+
+        URL url = Thread.currentThread().getContextClassLoader().getResource("test-xmap.xml");
+
+        Author author = (Author) xmap.load(url);
+
+        assertNotNull(author.metadata);
+        assertEquals(13, author.metadata.getChildNodes().getLength());
     }
 
 }

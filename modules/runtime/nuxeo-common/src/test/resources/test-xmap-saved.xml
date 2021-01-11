@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <author id="test1">
+        <item1>true</item1>
+        <item2>true</item2>
+        <metadata>
+            <title>First test 22</title>
+            <description>bla bla</description>
+            <name gender="MALE" type="author">
+                <firstName>my first name</firstName>
+                <lastName>my last name</lastName>
+            </name>
+            <double>1.2</double>
+            <double>2.5</double>
+            <double>1.2</double>
+            <double>2.5</double>
+            <age>32</age>
+        </metadata>
+        <content>
+      The content
+    </content>
+        <list>
+            <item>Item 1</item>
+            <item>Item 2</item>
+            <item>Item 3</item>
+            <item>Item with parameters to &lt; unescape</item>
+            <item id="item1"/>
+            <item id="item2"/>
+            <item id="item3"/>
+            <item id="item4"/>
+        </list>
+        <listHashSet>
+            <itemHashSet>item in HashSet1</itemHashSet>
+            <itemHashSet>item in HashSet2</itemHashSet>
+        </listHashSet>
+        <friends>
+            <friend>
+                <firstName>friend1_fn</firstName>
+                <lastName>friend1_ln</lastName>
+            </friend>
+            <friend>
+                <firstName>friend2_fn</firstName>
+                <lastName>friend2_ln</lastName>
+            </friend>
+            <friend>
+                <firstName>toUnescape</firstName>
+                <lastName>Map with parameters to &lt; unescape</lastName>
+            </friend>
+        </friends>
+        <properties>
+            <property name="color">theColor</property>
+            <property name="toUnescape">Prop with parameters to &lt; unescape</property>
+            <property name="name">theName</property>
+            <property name="weight">theWeight</property>
+        </properties>
+        <testContent>
+      Test
+      <b>content</b>
+ not to &lt; unescape
+    
+
+      Test
+      <b>content</b> not to &lt; unescape
+    </testContent>
+        <textToUnescape>SELECT * FROM Document WHERE dc:created &lt; DATE '2013-08-19'</textToUnescape>
+        <persons>
+            <person>
+                <firstName>friend2_fn</firstName>
+                <lastName>friend2_ln</lastName>
+            </person>
+            <person>
+                <firstName>friend1_fn</firstName>
+                <lastName>friend1_ln</lastName>
+            </person>
+        </persons>
+        <alias>
+            <alias name="test2">
+                <description>text to be &lt; unescaped</description>
+            </alias>
+        </alias>
+        <durationDay>PT24H</durationDay>
+        <durationHour>PT1H</durationHour>
+        <durationMinute>PT1M</durationMinute>
+        <durationSecond>PT1S</durationSecond>
+        <durationMillis>PT0.001S</durationMillis>
+        <durationAll>PT26H3M4.005S</durationAll>
+        <durationJdk>PT1S</durationJdk>
+        <stringWithDefault>myDefaultValue</stringWithDefault>
+        <stringWithFallback>fallbackValue</stringWithFallback>
+        <intWithDefault>5</intWithDefault>
+        <boolWithDefault>true</boolWithDefault>
+        <item3>true</item3>
+    </author>
+</root>
