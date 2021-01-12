@@ -21,11 +21,15 @@ package org.nuxeo.binary.metadata.internals;
 import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("processor")
+@XRegistry
 public class MetadataProcessorDescriptor {
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     protected BinaryMetadataProcessor processor;
