@@ -4831,6 +4831,9 @@
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
+        <configuration>
+          <addDefaultExcludes>false</addDefaultExcludes> <!-- needed for some npm builds -->
+        </configuration>
         <executions>
           <execution>
             <id>copy-readme</id>
