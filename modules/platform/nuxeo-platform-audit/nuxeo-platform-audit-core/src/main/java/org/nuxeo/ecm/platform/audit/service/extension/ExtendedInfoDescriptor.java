@@ -24,6 +24,9 @@ package org.nuxeo.ecm.platform.audit.service.extension;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Extended info descriptor
@@ -31,16 +34,19 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @XObject("extendedInfo")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class ExtendedInfoDescriptor {
 
     @XNode("@key")
+    @XRegistryId
     private String key;
 
     @XNode("@expression")
     private String expression;
 
-    @XNode("@enabled")
-    private boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    private boolean enabled;
 
     public String getKey() {
         return key;
@@ -62,35 +68,9 @@ public class ExtendedInfoDescriptor {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
     @Override
     public int hashCode() {
         return key == null ? 0 : key.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        ExtendedInfoDescriptor other = (ExtendedInfoDescriptor) obj;
-        if (key == null) {
-            if (other.key != null) {
-                return false;
-            }
-        } else if (!key.equals(other.key)) {
-            return false;
-        }
-        return true;
     }
 
     @Override

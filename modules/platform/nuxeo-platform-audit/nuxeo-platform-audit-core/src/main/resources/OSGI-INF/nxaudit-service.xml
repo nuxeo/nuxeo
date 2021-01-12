@@ -77,7 +77,7 @@
   <extension-point name="adapter">
 
     <documentation>
-      register the adapter that will be injected in EL context
+      Register the adapter that will be injected in EL context.
     </documentation>
 
     <object class="org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor" />
@@ -86,7 +86,7 @@
   <extension-point name="backend">
 
     <documentation>
-      Allows to register a backend implementation for the Audit Service
+      Allows to register a backend implementation for the Audit Service.
     </documentation>
 
     <object class="org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor" />
@@ -95,7 +95,7 @@
   <extension-point name="storage">
 
     <documentation>
-      Allows to register a storage implementation for the Audit Service
+      Allows to register a storage implementation for the Audit Service.
     </documentation>
 
     <object class="org.nuxeo.ecm.platform.audit.service.extension.AuditStorageDescriptor" />
@@ -103,8 +103,8 @@
 
   <extension-point name="bulk">
     <documentation>
-      CAUTION: Deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement
-      Allows to configure bulk processing
+      CAUTION: Deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement.
+      Allows to configure bulk processing.
     </documentation>
 
     <object class="org.nuxeo.ecm.platform.audit.service.extension.AuditBulkerDescriptor" />

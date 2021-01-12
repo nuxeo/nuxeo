@@ -21,11 +21,15 @@ package org.nuxeo.ecm.platform.audit.service.extension;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("adapter")
+@XRegistry
 public class AdapterDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     @XNode("@class")

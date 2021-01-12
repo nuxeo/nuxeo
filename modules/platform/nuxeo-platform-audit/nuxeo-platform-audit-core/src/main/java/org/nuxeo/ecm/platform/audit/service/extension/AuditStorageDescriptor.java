@@ -22,15 +22,19 @@ package org.nuxeo.ecm.platform.audit.service.extension;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.audit.api.AuditStorage;
 
 /**
  * @since 9.3
  */
 @XObject("storage")
+@XRegistry
 public class AuditStorageDescriptor {
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     @XNode("@class")
