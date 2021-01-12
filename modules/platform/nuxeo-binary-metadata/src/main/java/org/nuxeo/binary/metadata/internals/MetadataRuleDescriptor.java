@@ -19,26 +19,37 @@
 package org.nuxeo.binary.metadata.internals;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @since 7.1
  */
 @XObject("rule")
-public class MetadataRuleDescriptor {
+@XRegistry(enable = false, compatWarnOnMerge = true)
+public class MetadataRuleDescriptor implements Comparable<MetadataRuleDescriptor> {
+
+    /** @since 11.5 **/
+    public static final Comparator<MetadataRuleDescriptor> COMPARATOR = Comparator.comparing(
+            MetadataRuleDescriptor::getOrder).thenComparing(MetadataRuleDescriptor::getId);
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
-    @XNode("@order")
+    @XNode(value = "@order", defaultAssignment = "0")
     protected Integer order;
 
-    @XNode("@enabled")
-    protected Boolean enabled;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    protected boolean enabled;
 
     @XNode("@async")
     protected Boolean isAsync;
@@ -106,6 +117,11 @@ public class MetadataRuleDescriptor {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(MetadataRuleDescriptor o) {
+        return COMPARATOR.compare(this, o);
     }
 
 }

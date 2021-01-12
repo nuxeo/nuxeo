@@ -25,14 +25,18 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @since 7.1
  */
 @XObject("metadataMapping")
+@XRegistry(compatWarnOnMerge = true)
 public class MetadataMappingDescriptor {
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     @XNode("@processor")

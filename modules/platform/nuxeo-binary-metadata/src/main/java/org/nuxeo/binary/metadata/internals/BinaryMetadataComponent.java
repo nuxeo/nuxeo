@@ -18,14 +18,17 @@
  */
 package org.nuxeo.binary.metadata.internals;
 
+import static org.nuxeo.binary.metadata.api.BinaryMetadataConstants.BINARY_METADATA_MONITOR;
+import static org.nuxeo.binary.metadata.api.BinaryMetadataConstants.METADATA_MAPPING_EP;
+import static org.nuxeo.binary.metadata.api.BinaryMetadataConstants.METADATA_PROCESSORS_EP;
+import static org.nuxeo.binary.metadata.api.BinaryMetadataConstants.METADATA_RULES_EP;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.metrics.MetricInvocationHandler;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -37,53 +40,22 @@ public class BinaryMetadataComponent extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(BinaryMetadataComponent.class);
 
-    protected BinaryMetadataService metadataService = new BinaryMetadataServiceImpl(this);
-
-    protected final MetadataMappingRegistry mappingRegistry = new MetadataMappingRegistry();
-
-    protected final MetadataProcessorRegistry processorRegistry = new MetadataProcessorRegistry();
-
-    protected final MetadataRuleRegistry ruleRegistry = new MetadataRuleRegistry();
+    protected BinaryMetadataService metadataService;
 
     @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        if (Boolean.valueOf(Framework.getProperty(BinaryMetadataConstants.BINARY_METADATA_MONITOR,
-                Boolean.toString(log.isTraceEnabled())))) {
-            metadataService = MetricInvocationHandler.newProxy(metadataService, BinaryMetadataService.class);
+    public void start(ComponentContext context) {
+        BinaryMetadataService service = new BinaryMetadataServiceImpl(getExtensionPointRegistry(METADATA_MAPPING_EP),
+                getExtensionPointRegistry(METADATA_PROCESSORS_EP), getExtensionPointRegistry(METADATA_RULES_EP));
+        if (Boolean.parseBoolean(
+                Framework.getProperty(BINARY_METADATA_MONITOR, Boolean.toString(log.isTraceEnabled())))) {
+            service = MetricInvocationHandler.newProxy(service, BinaryMetadataService.class);
         }
+        metadataService = service;
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (BinaryMetadataConstants.METADATA_MAPPING_EP.equals(extensionPoint)) {
-            mappingRegistry.addContribution((MetadataMappingDescriptor) contribution);
-        } else if (BinaryMetadataConstants.METADATA_RULES_EP.equals(extensionPoint)) {
-            ruleRegistry.addContribution((MetadataRuleDescriptor) contribution);
-        } else if (BinaryMetadataConstants.METADATA_PROCESSORS_EP.equals(extensionPoint)) {
-            processorRegistry.addContribution((MetadataProcessorDescriptor) contribution);
-        } else {
-            log.error("Unknown extension point " + extensionPoint);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (BinaryMetadataConstants.METADATA_MAPPING_EP.equals(extensionPoint)) {
-            mappingRegistry.removeContribution((MetadataMappingDescriptor) contribution);
-        } else if (BinaryMetadataConstants.METADATA_RULES_EP.equals(extensionPoint)) {
-            ruleRegistry.removeContribution((MetadataRuleDescriptor) contribution);
-        } else if (BinaryMetadataConstants.METADATA_PROCESSORS_EP.equals(extensionPoint)) {
-            processorRegistry.removeContribution((MetadataProcessorDescriptor) contribution);
-        } else {
-            log.error("Unknown extension point " + extensionPoint);
-        }
-    }
-
-    @Override
-    public void applicationStarted(ComponentContext context) {
-        super.applicationStarted(context);
-        ruleRegistry.handleApplicationStarted();
+    public void stop(ComponentContext context) throws InterruptedException {
+        metadataService = null;
     }
 
     @Override
