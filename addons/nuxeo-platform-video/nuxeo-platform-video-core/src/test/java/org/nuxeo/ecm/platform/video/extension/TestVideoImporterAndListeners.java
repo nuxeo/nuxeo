@@ -25,12 +25,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.video.VideoConstants.DURATION_PROPERTY;
+import static org.nuxeo.ecm.platform.video.VideoConstants.STORYBOARD_PROPERTY;
+import static org.nuxeo.ecm.platform.video.VideoConstants.TRANSCODED_VIDEOS_PROPERTY;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +49,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -57,6 +63,7 @@ import org.nuxeo.ecm.platform.video.Stream;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoConstants;
 import org.nuxeo.ecm.platform.video.VideoDocument;
+import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.ecm.platform.video.listener.VideoChangedListener;
 import org.nuxeo.ecm.platform.video.service.VideoService;
 import org.nuxeo.runtime.api.Framework;
@@ -479,9 +486,9 @@ public class TestVideoImporterAndListeners {
         // no conversion is done because we have disabled them
         assertEquals(Long.valueOf(0), kvs.getLong(doc.getId()));
         List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
-                VideoConstants.TRANSCODED_VIDEOS_PROPERTY);
+                TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(0, transcodedVideos.size());
-        List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(VideoConstants.STORYBOARD_PROPERTY);
+        List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(STORYBOARD_PROPERTY);
         assertEquals(0, storyboard.size());
 
         // re-enable the conversions/storyboard
@@ -493,10 +500,300 @@ public class TestVideoImporterAndListeners {
         // ensure that the conversions are done, once enabled
         assertEquals(Long.valueOf(1), kvs.getLong(doc.getId()));
         transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
-                VideoConstants.TRANSCODED_VIDEOS_PROPERTY);
+                TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(2, transcodedVideos.size());
-        storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(VideoConstants.STORYBOARD_PROPERTY);
+        storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(STORYBOARD_PROPERTY);
         assertEquals(2, storyboard.size());
+    }
+
+    // NXP-29966
+    @Test
+    public void testVideoInfoUpdateWhenCreating() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
+        Blob blob = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        Map<String, Serializable> videoInfoMap = new HashMap<>();
+        videoInfoMap.put(VideoInfo.WIDTH, 100);
+        videoInfoMap.put(VideoInfo.HEIGHT, 50);
+        videoInfoMap.put(VideoInfo.DURATION, 150);
+        videoInfoMap.put(VideoInfo.FORMAT, "foo");
+        doc.setPropertyValue(VideoConstants.INFO_PROPERTY, (Serializable) videoInfoMap);
+        doc = session.createDocument(doc);
+        txFeature.nextTransaction();
+
+        // video info not computed as it was provided at creation time
+        doc = session.getDocument(doc.getRef());
+        VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
+        Video video = videoDocument.getVideo();
+        assertEquals(100, video.getWidth());
+        assertEquals(50, video.getHeight());
+        assertEquals(150, video.getDuration(), 0.1);
+
+        // make the main blob dirty, triggers the video info recompute
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        session.saveDocument(doc);
+        txFeature.nextTransaction();
+
+        doc = session.getDocument(doc.getRef());
+        videoDocument = doc.getAdapter(VideoDocument.class);
+        video = videoDocument.getVideo();
+        assertEquals(320, video.getWidth());
+        assertEquals(200, video.getHeight());
+        assertEquals(0.05, video.getDuration(), 0.1);
+    }
+
+    // NXP-29966
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testPreviewsUpdateWhenCreating() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
+        Blob blob = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        List<Map<String, Serializable>> pictureviews = new ArrayList<>();
+        Map<String, Serializable> pictureView = new HashMap<>();
+        pictureView.put("title", "StaticPlayerView");
+        pictureView.put("content", (Serializable) Blobs.createBlob("dummy"));
+        pictureviews.add(pictureView);
+        doc.setPropertyValue("picture:views", (Serializable) pictureviews);
+        doc = session.createDocument(doc);
+        txFeature.nextTransaction();
+
+        // previews not computed as it was provided at creation time
+        doc = session.getDocument(doc.getRef());
+        pictureviews = (List<Map<String, Serializable>>) doc.getPropertyValue("picture:views");
+        assertEquals(1, pictureviews.size());
+        assertEquals("StaticPlayerView", pictureviews.get(0).get("title"));
+
+        // make the main blob dirty, triggers the previews recompute
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        session.saveDocument(doc);
+        txFeature.nextTransaction();
+
+        doc = session.getDocument(doc.getRef());
+        pictureviews = (List<Map<String, Serializable>>) doc.getPropertyValue("picture:views");
+        assertEquals(2, pictureviews.size());
+        assertEquals("Small", pictureviews.get(0).get("title"));
+        assertEquals("StaticPlayerView", pictureviews.get(1).get("title"));
+    }
+
+    // NXP-29966
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.video.core:video-configuration-override.xml")
+    @SuppressWarnings("unchecked")
+    public void testStoryboardUpdateWhenCreating() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
+        Blob blob = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        Map<String, Serializable> item = new HashMap<>();
+        item.put("content", (Serializable) Blobs.createBlob("dummy"));
+        item.put("timecode", 5);
+        List<Map<String, Serializable>> storyboard = new ArrayList<>();
+        storyboard.add(item);
+        doc.setPropertyValue(STORYBOARD_PROPERTY, (Serializable) storyboard);
+        doc = session.createDocument(doc);
+        txFeature.nextTransaction();
+
+        // storyboard not computed as it was provided at creation time
+        doc = session.getDocument(doc.getRef());
+        storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(STORYBOARD_PROPERTY);
+        assertEquals(1, storyboard.size());
+        Blob storyboardBlob = (Blob) storyboard.get(0).get("content");
+        assertEquals("dummy", storyboardBlob.getString());
+
+        // make the main blob dirty, triggers the storyboard recompute
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        session.saveDocument(doc);
+        txFeature.nextTransaction();
+
+        doc = session.getDocument(doc.getRef());
+        storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(STORYBOARD_PROPERTY);
+        assertEquals(2, storyboard.size());
+    }
+
+    // NXP-29966
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.video.core:test-video-conversions-enabled.xml")
+    @SuppressWarnings("unchecked")
+    public void testVideoConversionsUpdateWhenCreating() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
+        Blob blob = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        List<Map<String, Serializable>> transcodedVideos = new ArrayList<>();
+        Map<String, Serializable> transcodedVideo = new HashMap<>();
+        transcodedVideo.put("name", "MP4 480p");
+        transcodedVideo.put("content", (Serializable) Blobs.createBlob("dummy"));
+        transcodedVideos.add(transcodedVideo);
+        doc.setPropertyValue(TRANSCODED_VIDEOS_PROPERTY, (Serializable) transcodedVideos);
+        doc = session.createDocument(doc);
+        txFeature.nextTransaction();
+
+        // only missing conversion is computed as the other was provided at creation time
+        doc = session.getDocument(doc.getRef());
+        transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
+        assertEquals(2, transcodedVideos.size());
+        assertEquals("MP4 480p", transcodedVideos.get(0).get("name"));
+        Blob transcodedVideoBlob = (Blob) transcodedVideos.get(0).get("content");
+        assertEquals("text/plain", transcodedVideoBlob.getMimeType());
+        assertEquals("dummy", transcodedVideoBlob.getString());
+        assertEquals("WebM 480p", transcodedVideos.get(1).get("name"));
+        transcodedVideoBlob = (Blob) transcodedVideos.get(1).get("content");
+        assertNotNull(transcodedVideoBlob);
+        assertEquals("video/webm", transcodedVideoBlob.getMimeType());
+
+        // make the main blob dirty, triggers the video conversions
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        session.saveDocument(doc);
+        txFeature.nextTransaction();
+
+        doc = session.getDocument(doc.getRef());
+        transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
+        assertEquals(2, transcodedVideos.size());
+        assertEquals("MP4 480p", transcodedVideos.get(0).get("name"));
+        transcodedVideoBlob = (Blob) transcodedVideos.get(0).get("content");
+        assertEquals("video/mp4", transcodedVideoBlob.getMimeType());
+        assertEquals("WebM 480p", transcodedVideos.get(1).get("name"));
+        transcodedVideoBlob = (Blob) transcodedVideos.get(1).get("content");
+        assertEquals("video/webm", transcodedVideoBlob.getMimeType());
+    }
+
+    // NXP-29966
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.video.core:test-video-conversions-enabled.xml")
+    @Deploy("org.nuxeo.ecm.platform.video.core:video-configuration-override.xml")
+    @SuppressWarnings("unchecked")
+    public void testComputeAllOnVersion() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
+        Blob blob = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc.putContextData(VideoChangedListener.DISABLE_VIDEO_CONVERSIONS_GENERATION_LISTENER, true);
+        doc = session.createDocument(doc);
+        txFeature.nextTransaction();
+
+        // nothing computed
+        doc = session.getDocument(doc.getRef());
+        Map<String, Serializable> videoInfo = (Map<String, Serializable>) doc.getPropertyValue(
+                VideoConstants.INFO_PROPERTY);
+        assertNull(videoInfo.get("width"));
+        assertNull(videoInfo.get("height"));
+        List<Map<String, Serializable>> pictureViews = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                "picture:views");
+        assertTrue(pictureViews.isEmpty());
+        List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                STORYBOARD_PROPERTY);
+        assertTrue(storyboard.isEmpty());
+        List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                TRANSCODED_VIDEOS_PROPERTY);
+        assertTrue(transcodedVideos.isEmpty());
+
+        // create a version
+        DocumentRef versionRef = session.checkIn(doc.getRef(), VersioningOption.NONE, null);
+        txFeature.nextTransaction();
+
+        // everything is computed
+        doc = session.getDocument(versionRef);
+        // check video info
+        VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
+        Video video = videoDocument.getVideo();
+        assertEquals(320, video.getWidth());
+        assertEquals(200, video.getHeight());
+        assertEquals(0.05, video.getDuration(), 0.1);
+        // check previews
+        pictureViews = (List<Map<String, Serializable>>) doc.getPropertyValue("picture:views");
+        assertEquals(2, pictureViews.size());
+        assertEquals("Small", pictureViews.get(0).get("title"));
+        assertEquals("StaticPlayerView", pictureViews.get(1).get("title"));
+        // check storyboard
+        storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(STORYBOARD_PROPERTY);
+        assertEquals(2, storyboard.size());
+
+        transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
+        assertEquals(2, transcodedVideos.size());
+        assertEquals("MP4 480p", transcodedVideos.get(0).get("name"));
+        Blob transcodedVideoBlob = (Blob) transcodedVideos.get(0).get("content");
+        assertEquals("video/mp4", transcodedVideoBlob.getMimeType());
+        assertEquals("WebM 480p", transcodedVideos.get(1).get("name"));
+        transcodedVideoBlob = (Blob) transcodedVideos.get(1).get("content");
+        assertEquals("video/webm", transcodedVideoBlob.getMimeType());
+    }
+
+    // NXP-29966
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.video.core:test-video-conversions-enabled.xml")
+    @Deploy("org.nuxeo.ecm.platform.video.core:video-configuration-override.xml")
+    @SuppressWarnings("unchecked")
+    public void testComputeMissingOnVersion() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
+        Blob blob = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc.putContextData(VideoChangedListener.DISABLE_VIDEO_CONVERSIONS_GENERATION_LISTENER, true);
+        // prefill video info and previews
+        Map<String, Serializable> videoInfoMap = new HashMap<>();
+        videoInfoMap.put(VideoInfo.WIDTH, 100);
+        videoInfoMap.put(VideoInfo.HEIGHT, 50);
+        videoInfoMap.put(VideoInfo.DURATION, 150);
+        videoInfoMap.put(VideoInfo.FORMAT, "foo");
+        doc.setPropertyValue(VideoConstants.INFO_PROPERTY, (Serializable) videoInfoMap);
+        List<Map<String, Serializable>> pictureviews = new ArrayList<>();
+        Map<String, Serializable> pictureView = new HashMap<>();
+        pictureView.put("title", "StaticPlayerView");
+        pictureView.put("content", (Serializable) Blobs.createBlob("dummy"));
+        pictureviews.add(pictureView);
+        doc.setPropertyValue("picture:views", (Serializable) pictureviews);
+        doc = session.createDocument(doc);
+        txFeature.nextTransaction();
+
+        // only video info and previews computed
+        doc = session.getDocument(doc.getRef());
+        VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
+        Video video = videoDocument.getVideo();
+        assertEquals(100, video.getWidth());
+        assertEquals(50, video.getHeight());
+        assertEquals(150, video.getDuration(), 0.1);
+        assertEquals("foo", video.getFormat());
+        List<Map<String, Serializable>> pictureViews = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                "picture:views");
+        assertEquals(1, pictureViews.size());
+        assertEquals("StaticPlayerView", pictureViews.get(0).get("title"));
+        Blob pictureViewBlob = (Blob) pictureViews.get(0).get("content");
+        assertEquals("dummy", pictureViewBlob.getString());
+        List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                STORYBOARD_PROPERTY);
+        assertTrue(storyboard.isEmpty());
+        List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                TRANSCODED_VIDEOS_PROPERTY);
+        assertTrue(transcodedVideos.isEmpty());
+
+        // create a version
+        DocumentRef versionRef = session.checkIn(doc.getRef(), VersioningOption.NONE, null);
+        txFeature.nextTransaction();
+
+        // only missing storyboard and conversions are computed
+        doc = session.getDocument(versionRef);
+        // check video info
+        videoDocument = doc.getAdapter(VideoDocument.class);
+        video = videoDocument.getVideo();
+        assertEquals(100, video.getWidth());
+        assertEquals(50, video.getHeight());
+        assertEquals(150, video.getDuration(), 0.1);
+        assertEquals("foo", video.getFormat());
+        // check previews
+        pictureViews = (List<Map<String, Serializable>>) doc.getPropertyValue("picture:views");
+        assertEquals(1, pictureViews.size());
+        assertEquals("StaticPlayerView", pictureViews.get(0).get("title"));
+        pictureViewBlob = (Blob) pictureViews.get(0).get("content");
+        assertEquals("dummy", pictureViewBlob.getString());
+        // check storyboard
+        storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(STORYBOARD_PROPERTY);
+        assertEquals(2, storyboard.size());
+
+        transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
+        assertEquals(2, transcodedVideos.size());
+        assertEquals("MP4 480p", transcodedVideos.get(0).get("name"));
+        Blob transcodedVideoBlob = (Blob) transcodedVideos.get(0).get("content");
+        assertEquals("video/mp4", transcodedVideoBlob.getMimeType());
+        assertEquals("WebM 480p", transcodedVideos.get(1).get("name"));
+        transcodedVideoBlob = (Blob) transcodedVideos.get(1).get("content");
+        assertEquals("video/webm", transcodedVideoBlob.getMimeType());
     }
 
 }

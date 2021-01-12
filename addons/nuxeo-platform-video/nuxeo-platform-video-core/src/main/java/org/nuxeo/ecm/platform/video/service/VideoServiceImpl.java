@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoConversionStatus;
+import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.ecm.platform.video.VideoHelper;
 import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.runtime.api.Framework;
@@ -147,11 +148,14 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     }
 
     @Override
-    public void launchAutomaticConversions(DocumentModel doc) {
+    public void launchAutomaticConversions(DocumentModel doc, boolean onlyMissing) {
         List<AutomaticVideoConversion> conversions = new ArrayList<>(automaticVideoConversions.registry.values());
         Collections.sort(conversions);
+        VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
         for (AutomaticVideoConversion conversion : conversions) {
-            launchConversion(doc, conversion.getName());
+            if (!onlyMissing || videoDocument.getTranscodedVideo(conversion.getName()) == null) {
+                launchConversion(doc, conversion.getName());
+            }
         }
     }
 

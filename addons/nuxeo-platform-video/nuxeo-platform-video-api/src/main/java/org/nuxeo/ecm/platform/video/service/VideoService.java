@@ -52,7 +52,21 @@ public interface VideoService {
      *
      * @param doc the video document to be converted
      */
-    void launchAutomaticConversions(DocumentModel doc);
+    default void launchAutomaticConversions(DocumentModel doc) {
+        launchAutomaticConversions(doc, false);
+    }
+
+    /**
+     * Launch registered automatic video conversions on the given {@code doc}.
+     * <p>
+     * If {@code onlyMissing} is {@code true}, launch only the automatic video conversions that are not on the video
+     * document, otherwise launch all the registered automatic video conversions
+     *
+     * @param doc the video document to be converted
+     * @param onlyMissing whether to launch only the missing video conversions
+     * @since 11.5
+     */
+    void launchAutomaticConversions(DocumentModel doc, boolean onlyMissing);
 
     /**
      * Convert the {@code originalVideo} using the given {@code conversionName}.

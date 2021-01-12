@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.ecm.platform.video.VideoHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -80,17 +81,7 @@ public class VideoInfoWork extends AbstractWork {
 
         // get video blob and update video info
         DocumentModel doc = session.getDocument(new IdRef(docId));
-        BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
-        Blob video = blobHolder.getBlob();
-        log.debug(String.format("Updating video info of document %s.", doc));
-        VideoHelper.updateVideoInfo(doc, video);
-        log.debug(String.format("End updating video info of document %s.", doc));
-
-        // save document
-        if (doc.isVersion()) {
-            doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
-        }
-        session.saveDocument(doc);
+        updateVideoInfo(doc);
 
         if (doc.hasFacet(HAS_VIDEO_PREVIEW_FACET) && doc.hasFacet(HAS_STORYBOARD_FACET)) {
             // schedule storyboard work
@@ -103,9 +94,29 @@ public class VideoInfoWork extends AbstractWork {
         // schedule conversion work
         VideoService videoService = Framework.getService(VideoService.class);
         log.debug(String.format("Launching automatic conversions of Video document %s.", doc));
-        videoService.launchAutomaticConversions(doc);
+        videoService.launchAutomaticConversions(doc, true);
 
         setStatus("Done");
+    }
+
+    protected void updateVideoInfo(DocumentModel doc) {
+        VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
+        if (videoDocument.getVideo().getWidth() != 0 && videoDocument.getVideo().getHeight() != 0) {
+            // assume the video info is already computed
+            return;
+        }
+
+        BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
+        Blob video = blobHolder.getBlob();
+        log.debug(String.format("Updating video info of document %s.", doc));
+        VideoHelper.updateVideoInfo(doc, video);
+        log.debug(String.format("End updating video info of document %s.", doc));
+
+        // save document
+        if (doc.isVersion()) {
+            doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+        }
+        session.saveDocument(doc);
     }
 
 }

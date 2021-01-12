@@ -22,6 +22,9 @@ package org.nuxeo.ecm.platform.video.service;
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.ecm.platform.video.VideoConstants;
 import org.nuxeo.ecm.platform.video.VideoHelper;
 
 /**
@@ -81,28 +85,53 @@ public class VideoStoryboardWork extends AbstractWork {
 
         // update storyboard
         setStatus("Updating storyboard");
-        log.debug(String.format("Updating storyboard of Video document %s.", doc));
-        VideoHelper.updateStoryboard(doc, video);
-        log.debug(String.format("End updating storyboard of Video document %s.", doc));
+        boolean save = updateStoryboard(doc, video);
 
         // update previews
         setStatus("Updating previews");
+        save |= updatePreviews(doc, video);
+
+        if (save) {
+            // save document
+            if (doc.isVersion()) {
+                doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+            }
+            session.saveDocument(doc);
+        }
+
+        setStatus("Done");
+    }
+
+    protected boolean updateStoryboard(DocumentModel doc, Blob blob) {
+        List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                VideoConstants.STORYBOARD_PROPERTY);
+        if (storyboard != null && !storyboard.isEmpty()) {
+            return false;
+        }
+
+        log.debug(String.format("Updating storyboard of Video document %s.", doc));
+        VideoHelper.updateStoryboard(doc, blob);
+        log.debug(String.format("End updating storyboard of Video document %s.", doc));
+        return true;
+    }
+
+    protected boolean updatePreviews(DocumentModel doc, Blob blob) {
+        List<Map<String, Serializable>> previews = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                "picture:views");
+        if (previews != null && !previews.isEmpty()) {
+            return false;
+        }
+
         log.debug(String.format("Updating previews of Video document %s.", doc));
         try {
-            VideoHelper.updatePreviews(doc, video);
+            VideoHelper.updatePreviews(doc, blob);
             log.debug(String.format("End updating previews of Video document %s.", doc));
+            return true;
         } catch (IOException e) {
             // this should only happen if the hard drive is full
             log.debug(String.format("Failed to extract previews of Video document %s.", doc), e);
+            return false;
         }
-
-        // save document
-        if (doc.isVersion()) {
-            doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
-        }
-        session.saveDocument(doc);
-
-        setStatus("Done");
     }
 
 }
