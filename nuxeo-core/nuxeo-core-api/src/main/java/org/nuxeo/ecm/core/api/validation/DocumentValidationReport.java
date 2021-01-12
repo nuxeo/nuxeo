@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api.validation;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * A managed set of {@link ConstraintViolation}.
@@ -52,11 +53,7 @@ public class DocumentValidationReport {
     @Override
     public String toString() {
         if (violations != null) {
-            StringBuilder res = new StringBuilder();
-            for (ConstraintViolation violation : violations) {
-                res.append(violation.getMessage(Locale.ENGLISH)).append('\n');
-            }
-            return res.toString();
+            return violations.stream().map(v -> v.getMessage(null)).collect(Collectors.joining("\n"));
         } else {
             return "no error";
         }
