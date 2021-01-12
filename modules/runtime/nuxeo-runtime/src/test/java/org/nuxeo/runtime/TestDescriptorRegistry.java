@@ -31,7 +31,7 @@ import org.nuxeo.runtime.model.DescriptorRegistry;
 /**
  * @deprecated since 11.5: use {@link Registry} associated annotations instead.
  */
-@Deprecated
+@Deprecated(since = "11.5")
 public class TestDescriptorRegistry {
 
     public static class TestDescriptor implements Descriptor {

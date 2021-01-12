@@ -27,7 +27,7 @@ import org.nuxeo.common.xmap.registry.Registry;
  * @since 10.3
  * @deprecated since 11.5: use {@link Registry} associated annotations instead.
  */
-@Deprecated
+@Deprecated(since = "11.5")
 public interface Descriptor {
 
     String UNIQUE_DESCRIPTOR_ID = "";
