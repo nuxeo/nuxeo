@@ -83,7 +83,7 @@ public interface Extension extends Serializable {
      * @return the contribution objects or null if none
      * @deprecated since 11.5: contributions should be retrieved using a {@link Registry} instead.
      */
-    @Deprecated
+    @Deprecated(since = "11.5")
     Object[] getContributions();
 
     /**
@@ -94,7 +94,7 @@ public interface Extension extends Serializable {
      * @param contributions the contribution objects
      * @deprecated since 11.5: contributions should be registered using {@link Registry} instead.
      */
-    @Deprecated
+    @Deprecated(since = "11.5")
     void setContributions(Object[] contributions);
 
     /**

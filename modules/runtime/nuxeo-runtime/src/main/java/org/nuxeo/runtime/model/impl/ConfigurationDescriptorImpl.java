@@ -36,7 +36,7 @@ import org.w3c.dom.ranges.Range;
  * @deprecated since 11.5, unused.
  */
 @XObject("config")
-@Deprecated
+@Deprecated(since = "11.5")
 public class ConfigurationDescriptorImpl {
 
     private static final Log log = LogFactory.getLog(ConfigurationDescriptorImpl.class);

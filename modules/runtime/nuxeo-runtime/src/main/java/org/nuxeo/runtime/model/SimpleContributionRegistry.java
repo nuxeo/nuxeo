@@ -30,7 +30,7 @@ import org.nuxeo.common.xmap.registry.Registry;
  * @deprecated since 10.3 use DefaultComponent descriptors management methods instead
  * @deprecated since 11.5: use {@link Registry} associated annotations instead.
  */
-@Deprecated
+@Deprecated(since = "10.3")
 public abstract class SimpleContributionRegistry<T> extends ContributionFragmentRegistry<T> {
 
     protected Map<String, T> currentContribs = new HashMap<>();
