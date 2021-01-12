@@ -27,6 +27,9 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Really simple auditable event descriptor.
@@ -34,13 +37,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @XObject("event")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class EventDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
-    @XNode("@enabled")
-    private boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    private boolean enabled;
 
     @XNodeList(value = "extendedInfos/extendedInfo", type = ArrayList.class, componentType = ExtendedInfoDescriptor.class)
     protected List<ExtendedInfoDescriptor> extendedInfoDescriptors;
@@ -58,21 +64,6 @@ public class EventDescriptor {
 
     public String getName() {
         return name;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setExtendedInfoDescriptors(List<ExtendedInfoDescriptor> extendedInfoDescriptors) {
-        this.extendedInfoDescriptors = extendedInfoDescriptors;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
 }

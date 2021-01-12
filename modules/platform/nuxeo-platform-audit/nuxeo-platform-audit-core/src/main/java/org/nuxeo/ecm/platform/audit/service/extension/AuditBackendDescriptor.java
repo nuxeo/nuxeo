@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
@@ -40,6 +41,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author tiry
  */
 @XObject("backend")
+@XRegistry(merge = false)
 public class AuditBackendDescriptor {
 
     private static final Logger log = LogManager.getLogger(AuditBackendDescriptor.class);

@@ -21,11 +21,11 @@ package org.nuxeo.ecm.platform.audit.service;
 import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_AUDIT_ENABLED_PROP;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -56,6 +56,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class NXAuditEventsService extends DefaultComponent implements ComponentManager.Listener {
 
+    private static final Logger log = LogManager.getLogger(NXAuditEventsService.class);
+
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.audit.service.NXAuditEventsService");
 
@@ -65,6 +67,10 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
 
     private static final String ADAPTER_POINT = "adapter";
 
+    private static final String BACKEND_EXT_POINT = "backend";
+
+    private static final String STORAGE_EXT_POINT = "storage";
+
     /**
      * If passed as true on the event properties, event not logged
      *
@@ -72,47 +78,42 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
      */
     public static final String DISABLE_AUDIT_LOGGER = "disableAuditLogger";
 
-    protected static final Logger log = LogManager.getLogger(NXAuditEventsService.class);
-
-    protected final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<>();
-
     protected final Map<String, List<ExtendedInfoDescriptor>> eventExtendedInfoDescriptors = new HashMap<>();
-
-    // the adapters that will injected in the EL context for extended
-    // information
-    protected final Set<AdapterDescriptor> documentAdapters = new HashSet<>();
 
     protected final Set<String> eventNames = new HashSet<>();
 
     protected AuditBackend backend;
 
-    protected AuditBackendDescriptor backendConfig = new AuditBackendDescriptor();
+    protected static final AuditBackendDescriptor DEFAULT_BACKEND_CONFIG = new AuditBackendDescriptor();
 
     /**
      * @deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement
      */
-    @Deprecated
+    @Deprecated(since = "10.10")
     protected AuditBulker bulker;
 
     /**
      * @deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement
      */
-    @Deprecated
+    @Deprecated(since = "10.10")
     protected AuditBulkerDescriptor bulkerConfig = new AuditBulkerDescriptor();
-
-    protected Map<String, AuditStorageDescriptor> auditStorageDescriptors = new HashMap<>();
 
     protected Map<String, AuditStorage> auditStorages = new HashMap<>();
 
+    protected AuditBackendDescriptor getAuditBackendDescriptor() {
+        return this.<AuditBackendDescriptor> getRegistryContribution(BACKEND_EXT_POINT).orElse(DEFAULT_BACKEND_CONFIG);
+    }
+
     @Override
     public int getApplicationStartedOrder() {
-        return backendConfig.getApplicationStartedOrder();
+        return getAuditBackendDescriptor().getApplicationStartedOrder();
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public void start(ComponentContext context) {
-        backend = backendConfig.newInstance(this);
+        this.<EventDescriptor> getRegistryContributions(EVENT_EXT_POINT).forEach(this::doRegisterEvent);
+        backend = getAuditBackendDescriptor().newInstance(this);
         backend.onApplicationStarted();
         if (Framework.isBooleanPropertyFalse(STREAM_AUDIT_ENABLED_PROP)) {
             bulker = bulkerConfig.newInstance(backend);
@@ -122,19 +123,22 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
 
     @Override
     public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
-        // init storages after runtime was started (as we don't have started order for storages which are backends)
-        for (Entry<String, AuditStorageDescriptor> descriptor : auditStorageDescriptors.entrySet()) {
-            AuditStorage storage = descriptor.getValue().newInstance();
+        // init storages after runtime was started (as we don't have start order for storages which are backends)
+        for (AuditStorageDescriptor descriptor : this.<AuditStorageDescriptor> getRegistryContributions(
+                STORAGE_EXT_POINT)) {
+            AuditStorage storage = descriptor.newInstance();
             if (storage instanceof AuditBackend) {
                 ((AuditBackend) storage).onApplicationStarted();
             }
-            auditStorages.put(descriptor.getKey(), storage);
+            auditStorages.put(descriptor.getId(), storage);
         }
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public void stop(ComponentContext context) {
+        eventNames.clear();
+        eventExtendedInfoDescriptors.clear();
         try {
             if (bulker != null) {
                 bulker.onApplicationStopped();
@@ -151,57 +155,15 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
         }
     }
 
-    protected void doRegisterAdapter(AdapterDescriptor desc) {
-        log.debug("Registered adapter : {}", desc::getName);
-        documentAdapters.add(desc);
-    }
-
     protected void doRegisterEvent(EventDescriptor desc) {
         String eventName = desc.getName();
-        if (desc.getEnabled()) {
-            eventNames.add(eventName);
-            log.debug("Registered event: {}", eventName);
-            for (ExtendedInfoDescriptor extInfoDesc : desc.getExtendedInfoDescriptors()) {
-                if (extInfoDesc.getEnabled()) {
-                    if (eventExtendedInfoDescriptors.containsKey(eventName)) {
-                        eventExtendedInfoDescriptors.get(eventName).add(extInfoDesc);
-                    } else {
-                        List<ExtendedInfoDescriptor> toBeAdded = new ArrayList<>();
-                        toBeAdded.add(extInfoDesc);
-                        eventExtendedInfoDescriptors.put(eventName, toBeAdded);
-                    }
-                } else {
-                    if (eventExtendedInfoDescriptors.containsKey(eventName)) {
-                        eventExtendedInfoDescriptors.get(eventName).remove(extInfoDesc);
-                    }
-                }
-            }
-        } else if (eventNames.contains(eventName)) {
-            doUnregisterEvent(desc);
-        }
-    }
-
-    protected void doRegisterExtendedInfo(ExtendedInfoDescriptor desc) {
-        log.debug("Registered extended info mapping : {}", desc::getKey);
-        extendedInfoDescriptors.add(desc);
-    }
-
-    protected void doUnregisterAdapter(AdapterDescriptor desc) {
-        // FIXME: this doesn't look right
-        documentAdapters.remove(desc);
-        log.debug("Unregistered adapter: {}", desc::getName);
-    }
-
-    protected void doUnregisterEvent(EventDescriptor desc) {
-        eventNames.remove(desc.getName());
-        eventExtendedInfoDescriptors.remove(desc.getName());
-        log.debug("Unregistered event: {}", desc::getName);
-    }
-
-    protected void doUnregisterExtendedInfo(ExtendedInfoDescriptor desc) {
-        // FIXME: this doesn't look right
-        extendedInfoDescriptors.remove(desc);
-        log.debug("Unregistered extended info: {}", desc::getKey);
+        eventNames.add(eventName);
+        desc.getExtendedInfoDescriptors()
+            .stream()
+            .filter(ExtendedInfoDescriptor::getEnabled)
+            .forEach(extInfoDesc -> eventExtendedInfoDescriptors.computeIfAbsent(eventName, k -> new ArrayList<>())
+                                                                .add(extInfoDesc));
+        log.debug("Registered event: {}", eventName);
     }
 
     @Override
@@ -221,7 +183,7 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
     }
 
     public Set<String> getAuditableEventNames() {
-        return eventNames;
+        return Collections.unmodifiableSet(eventNames);
     }
 
     public AuditBackend getBackend() {
@@ -229,54 +191,18 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
     }
 
     public Set<AdapterDescriptor> getDocumentAdapters() {
-        return documentAdapters;
+        return new HashSet<>(getRegistryContributions(ADAPTER_POINT));
     }
 
     /**
      * @since 7.4
      */
     public Map<String, List<ExtendedInfoDescriptor>> getEventExtendedInfoDescriptors() {
-        return eventExtendedInfoDescriptors;
+        return Collections.unmodifiableMap(eventExtendedInfoDescriptors);
     }
 
     public Set<ExtendedInfoDescriptor> getExtendedInfoDescriptors() {
-        return extendedInfoDescriptors;
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(EVENT_EXT_POINT)) {
-            doRegisterEvent((EventDescriptor) contribution);
-        } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
-            doRegisterExtendedInfo((ExtendedInfoDescriptor) contribution);
-        } else if (extensionPoint.equals(ADAPTER_POINT)) {
-            doRegisterAdapter((AdapterDescriptor) contribution);
-        } else if (contribution instanceof AuditBackendDescriptor) {
-            backendConfig = (AuditBackendDescriptor) contribution;
-        } else if (contribution instanceof AuditBulkerDescriptor) {
-            bulkerConfig = (AuditBulkerDescriptor) contribution;
-            ComponentName compName = contributor.getName();
-            String message = String.format(
-                    "AuditBulker on component %s is deprecated because it is now handled with nuxeo-stream, no replacement.",
-                    compName);
-            DeprecationLogger.log(message, "10.10");
-            addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
-        } else if (contribution instanceof AuditStorageDescriptor) {
-            AuditStorageDescriptor auditStorageDesc = (AuditStorageDescriptor) contribution;
-            auditStorageDescriptors.put(auditStorageDesc.getId(), auditStorageDesc);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(EVENT_EXT_POINT)) {
-            doUnregisterEvent((EventDescriptor) contribution);
-        } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
-            doUnregisterExtendedInfo((ExtendedInfoDescriptor) contribution);
-        } else if (extensionPoint.equals(ADAPTER_POINT)) {
-            doUnregisterAdapter((AdapterDescriptor) contribution);
-        }
+        return new HashSet<>(getRegistryContributions(EXTENDED_INFO_EXT_POINT));
     }
 
     /**
@@ -284,6 +210,20 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
      */
     public AuditStorage getAuditStorage(String id) {
         return auditStorages.get(id);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (contribution instanceof AuditBulkerDescriptor) {
+            bulkerConfig = (AuditBulkerDescriptor) contribution;
+            ComponentName compName = contributor.getName();
+            String message = String.format(
+                    "AuditBulker on component %s is deprecated because it is now handled with nuxeo-stream, no replacement.",
+                    compName);
+            DeprecationLogger.log(message, "10.10");
+            addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
+        }
     }
 
 }
