@@ -28,16 +28,16 @@ import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STAT
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_PROPERTY_TO_SECURED;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_RELATION_TO_PROPERTY;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.impl.BridgeCommentManager;
 import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
 import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
 import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -46,34 +46,16 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class CommentService extends DefaultComponent {
 
+    private static final Logger log = LogManager.getLogger(CommentService.class);
+
     public static final String ID = "org.nuxeo.ecm.platform.comment.service.CommentService";
 
     /** @since 10.3 */
     public static final ComponentName NAME = new ComponentName(ID);
 
-    public static final String VERSIONING_EXTENSION_POINT_RULES = "rules";
+    protected static final String CONFIG_XP = "config";
 
-    private static final Log log = LogFactory.getLog(CommentService.class);
-
-    // @GuardedBy("this")
     protected volatile CommentManager commentManager;
-
-    private CommentServiceConfig config;
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if ("config".equals(extensionPoint)) {
-            config = (CommentServiceConfig) contribution;
-            log.debug("registered service config: " + config);
-        } else {
-            log.warn("unknown extension point: " + extensionPoint);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        // do nothing
-    }
 
     /**
      * @deprecated since 11.1, it's unused and {@link CommentManagerImpl} is deprecated
@@ -82,13 +64,14 @@ public class CommentService extends DefaultComponent {
     public CommentManager getCommentManager() {
         log.debug("getCommentManager");
         if (commentManager == null) {
-            commentManager = new CommentManagerImpl(config);
+            commentManager = new CommentManagerImpl(getConfig());
         }
         return commentManager;
     }
 
     public CommentServiceConfig getConfig() {
-        return config;
+        return this.<CommentServiceConfig> getRegistryContribution(CONFIG_XP)
+                   .orElseThrow(() -> new RuntimeServiceException("Missing configuration for CommentService"));
     }
 
     @Override
@@ -117,7 +100,7 @@ public class CommentService extends DefaultComponent {
         if (status.isRunning()) {
             String step = status.getStep();
             if (MIGRATION_STEP_RELATION_TO_PROPERTY.equals(step)) {
-                return new BridgeCommentManager(new CommentManagerImpl(config), new PropertyCommentManager());
+                return new BridgeCommentManager(new CommentManagerImpl(getConfig()), new PropertyCommentManager());
             } else if (MIGRATION_STEP_PROPERTY_TO_SECURED.equals(step)) {
                 return new BridgeCommentManager(new PropertyCommentManager(), new TreeCommentManager());
             } else {
@@ -126,7 +109,7 @@ public class CommentService extends DefaultComponent {
         } else {
             String state = status.getState();
             if (MIGRATION_STATE_RELATION.equals(state)) {
-                return new CommentManagerImpl(config);
+                return new CommentManagerImpl(getConfig());
             } else if (MIGRATION_STATE_PROPERTY.equals(state)) {
                 return new PropertyCommentManager();
             } else if (MIGRATION_STATE_SECURED.equals(state)) {

@@ -23,19 +23,20 @@ package org.nuxeo.ecm.platform.comment.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
 @XObject("config")
+@XRegistry(compatWarnOnMerge = true)
 public class CommentServiceConfig {
 
     // These instance variables are accessed directly from other classes in
     // other packages.
 
     @XNode("converterClass")
-    // public Class commentConverterClass;
     public String commentConverterClassName;
 
     @XNode("graphName")
