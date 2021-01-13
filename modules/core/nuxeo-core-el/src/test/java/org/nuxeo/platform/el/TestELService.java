@@ -18,16 +18,17 @@
  */
 package org.nuxeo.platform.el;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import javax.el.ELContext;
+import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.el.ELService;
+import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.platform.el.DummyELContextFactory.DummyELContext;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -39,15 +40,26 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.platform.el")
-@Deploy("org.nuxeo.ecm.platform.el.tests:OSGI-INF/test-elcontextfactory-contrib.xml")
 public class TestELService {
 
-    @Test
-    public void testList() {
-        ELService elService = Framework.getService(ELService.class);
+    @Inject
+    protected ELService elService;
+
+    protected void checkContext(Class<?> expectedClass) {
         ELContext elContext = elService.createELContext();
         assertNotNull(elContext);
-        assertTrue(elContext.getClass().getName(), elContext instanceof DummyELContext);
+        assertEquals(expectedClass, elContext.getClass());
+    }
+
+    @Test
+    public void testDefault() {
+        checkContext(ExpressionContext.class);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.el.tests:OSGI-INF/test-elcontextfactory-contrib.xml")
+    public void testContribution() {
+        checkContext(DummyELContext.class);
     }
 
 }
