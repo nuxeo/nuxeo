@@ -14,20 +14,23 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
  */
 package org.nuxeo.ecm.webengine;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.ecm.webengine.security.PermissionService;
-import org.nuxeo.runtime.RuntimeServiceException;
+import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -35,13 +38,11 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * TODO remove old WebEngine references and rename WebEngine2 to WebEngine
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Runtime component for {@link WebEngine} configuration.
  */
-public class WebEngineComponent extends DefaultComponent { // implements
-    // ConfigurationChangedListener
-    // {
+public class WebEngineComponent extends DefaultComponent {
+
+    private static final Logger log = LogManager.getLogger(WebEngineComponent.class);
 
     public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
@@ -55,9 +56,9 @@ public class WebEngineComponent extends DefaultComponent { // implements
 
     public static final String FORM_XP = "form";
 
-    private static final Log log = LogFactory.getLog(WebEngineComponent.class);
-
     private WebEngine engine;
+
+    private Set<String> renderingExtensions;
 
     @Override
     public void activate(ComponentContext context) {
@@ -75,7 +76,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        log.info("Using web root: " + root);
+        log.info("Using web root: '{}'", root);
 
         engine = new WebEngine(new File(root, "root.war"));
     }
@@ -88,11 +89,36 @@ public class WebEngineComponent extends DefaultComponent { // implements
 
     @Override
     public void start(ComponentContext context) {
+        this.<GuardDescriptor> getRegistryContributions(GUARD_XP).forEach(gd -> {
+            try {
+                PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
+            } catch (ParseException e) {
+                String msg = String.format("Error registering guard '%s': %s", gd.getId(), e.getMessage());
+                log.error(msg, e);
+                addRuntimeMessage(Level.ERROR, msg);
+            }
+        });
+        renderingExtensions = new HashSet<>();
+        this.<RenderingExtensionDescriptor> getRegistryContributions(RENDERING_EXTENSION_XP).forEach(fed -> {
+            try {
+                engine.registerRenderingExtension(fed.name, fed.newInstance());
+                renderingExtensions.add(fed.name);
+            } catch (ReflectiveOperationException e) {
+                String msg = String.format("Error contributing freemarker template extension '%s': %s", fed.name,
+                        e.getMessage());
+                log.error(msg, e);
+                addRuntimeMessage(Level.ERROR, msg);
+            }
+        });
+
         engine.start();
     }
 
     @Override
     public void stop(ComponentContext context) {
+        PermissionService.getInstance().clearGuards();
+        renderingExtensions.forEach(engine::unregisterRenderingExtension);
+        renderingExtensions = null;
         engine.stop();
     }
 
@@ -102,46 +128,23 @@ public class WebEngineComponent extends DefaultComponent { // implements
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (GUARD_XP.equals(extensionPoint)) {
-            GuardDescriptor gd = (GuardDescriptor) contribution;
-            try {
-                PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-        } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
+        if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
+            addRuntimeMessage(Level.WARNING, String.format(
+                    "Extension point '%s' is obsolete since 5.8: use a JAX-RS application to declare more resources.",
+                    RESOURCE_BINDING_XP), Source.EXTENSION, contributor.getName().getName());
             engine.addResourceBinding((ResourceBinding) contribution);
-        } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
-            RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor) contribution;
-            try {
-                engine.registerRenderingExtension(fed.name, fed.newInstance());
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeServiceException(
-                        "Deployment Error. Failed to contribute freemarker template extension: " + fed.name);
-            }
-            // TODO
-            // } else if (extensionPoint.endsWith(FORM_XP)) {
-            // Form form = (Form)contribution;
-            // engine.getFormManager().registerForm(form);
         } else if (extensionPoint.equals(REQUEST_CONFIGURATION_XP)) {
-            log.warn("Extension point " + REQUEST_CONFIGURATION_XP + " is obsolete since 8.4, transactions are always active");
+            addRuntimeMessage(Level.WARNING,
+                    String.format("Extension point '%s' is obsolete since 8.4, transactions are always active.",
+                            REQUEST_CONFIGURATION_XP),
+                    Source.EXTENSION, contributor.getName().getName());
         }
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (GUARD_XP.equals(extensionPoint)) {
-            GuardDescriptor gd = (GuardDescriptor) contribution;
-            PermissionService.getInstance().unregisterGuard(gd.getId());
-        } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
+        if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
             engine.removeResourceBinding((ResourceBinding) contribution);
-        } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
-            RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor) contribution;
-            engine.unregisterRenderingExtension(fed.name);
-            // TODO
-            // } else if (extensionPoint.endsWith(FORM_XP)) {
-            // Form form = (Form)contribution;
-            // engine.getFormManager().unregisterForm(form.getId());
         }
     }
 

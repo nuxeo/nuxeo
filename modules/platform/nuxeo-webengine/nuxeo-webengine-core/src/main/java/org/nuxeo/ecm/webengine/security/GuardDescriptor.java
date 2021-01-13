@@ -30,6 +30,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.webengine.security.guards.And;
 import org.nuxeo.ecm.webengine.security.guards.FacetGuard;
 import org.nuxeo.ecm.webengine.security.guards.GroupGuard;
@@ -47,11 +49,13 @@ import org.w3c.dom.Node;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("permission")
+@XRegistry(merge = false)
 public class GuardDescriptor {
 
     private static final Log log = LogFactory.getLog(GuardDescriptor.class);
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     @XNode("@expression")

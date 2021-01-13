@@ -23,14 +23,18 @@ package org.nuxeo.ecm.webengine.rendering;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("rendering-extension")
+@XRegistry
 public class RenderingExtensionDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@class")

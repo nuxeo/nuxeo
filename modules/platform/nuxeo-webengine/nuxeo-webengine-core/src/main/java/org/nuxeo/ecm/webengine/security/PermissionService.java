@@ -67,6 +67,15 @@ public class PermissionService implements PostfixExpression.Visitor {
         return guards.get(name);
     }
 
+    /**
+     * Clears all registered guards.
+     *
+     * @since 11.5
+     */
+    public void clearGuards() {
+        guards.clear();
+    }
+
     public static Guard parse(String expr) throws ParseException {
         return (Guard) new PostfixExpression(expr).visit(instance);
     }
