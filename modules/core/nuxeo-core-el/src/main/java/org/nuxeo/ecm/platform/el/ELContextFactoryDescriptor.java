@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.el;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
@@ -28,6 +29,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @since 8.3
  */
 @XObject("factory")
+@XRegistry
 public class ELContextFactoryDescriptor {
 
     @XNode("@class")
