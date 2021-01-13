@@ -23,20 +23,19 @@ package org.nuxeo.ecm.platform.computedgroups;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.usermanager.GroupConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -50,65 +49,40 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
 
     public static final String CHAIN_EP = "computerChain";
 
-    protected Map<String, GroupComputerDescriptor> computers = new HashMap<>();
+    protected Map<String, GroupComputer> computers;
 
-    protected List<String> computerNames = new ArrayList<>();
+    protected List<String> computerNames;
 
     protected boolean allowOverride = true;
 
-    protected static Log log = LogFactory.getLog(ComputedGroupsServiceImpl.class);
-
     @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        computers.clear();
-        computerNames.clear();
+    public void start(ComponentContext context) {
+        computers = this.<GroupComputerDescriptor> getRegistryContributions(COMPUTER_EP)
+                        .stream()
+                        .collect(Collectors.toConcurrentMap(GroupComputerDescriptor::getName,
+                                GroupComputerDescriptor::getComputer));
+        computerNames = this.<GroupComputerChainDescriptor> getRegistryContribution(CHAIN_EP)
+                            .map(GroupComputerChainDescriptor::getComputerNames)
+                            .orElse(Collections.emptyList());
+        List<String> missingComputers = computerNames.stream()
+                                                     .filter(Predicate.not(computers::containsKey))
+                                                     .collect(Collectors.toList());
+        if (!missingComputers.isEmpty()) {
+            addRuntimeMessage(Level.ERROR, String.format("Missing group computers: %s", missingComputers));
+        }
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
-        if (COMPUTER_EP.equals(extensionPoint)) {
-            if (contribution instanceof GroupComputerDescriptor) {
-                GroupComputerDescriptor desc = (GroupComputerDescriptor) contribution;
-
-                if (desc.isEnabled()) {
-                    log.debug("Add " + desc.getName() + " from component " + contributor.getName());
-                    computers.put(desc.getName(), desc);
-                } else {
-                    if (computers.containsKey(desc.getName())) {
-                        log.debug("Remove " + desc.getName() + " from component " + contributor.getName());
-                        computers.remove(desc.getName());
-                    } else {
-                        log.warn("Can't remove " + desc.getName() + " as not found, from component "
-                                + contributor.getName());
-                    }
-                }
-                return;
-            } else {
-                throw new RuntimeException("Waiting GroupComputerDescriptor contribution kind, please look component "
-                        + contributor.getName());
-            }
-        }
-
-        if (CHAIN_EP.equals(extensionPoint)) {
-            GroupComputerChainDescriptor desc = (GroupComputerChainDescriptor) contribution;
-            if (desc.isAppend()) {
-                computerNames.addAll(desc.getComputerNames());
-            } else {
-                computerNames = desc.getComputerNames();
-            }
-            return;
-        }
-
-        log.warn("Unkown contribution, please check the component " + contributor.getName());
+    public void stop(ComponentContext context) throws InterruptedException {
+        computers = null;
+        computerNames = null;
     }
 
     @Override
     public List<String> computeGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
         List<String> userGroups = new ArrayList<>();
         for (String computerName : computerNames) {
-            userGroups.addAll(computers.get(computerName).getComputer().getGroupsForUser(nuxeoPrincipal));
+            userGroups.addAll(computers.get(computerName).getGroupsForUser(nuxeoPrincipal));
         }
         return userGroups;
     }
@@ -135,7 +109,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     @Override
     public NuxeoGroup getComputedGroup(String groupName, GroupConfig groupConfig) {
         for (String name : computerNames) {
-            GroupComputer computer = computers.get(name).getComputer();
+            GroupComputer computer = computers.get(name);
             if (computer.hasGroup(groupName)) {
                 if (computer instanceof GroupComputerLabelled) {
                     String groupLabel = ((GroupComputerLabelled) computer).getLabel(groupName);
@@ -151,8 +125,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     public List<String> computeGroupIds() {
         List<String> groupIds = new ArrayList<>();
         for (String name : computerNames) {
-            GroupComputerDescriptor desc = computers.get(name);
-            List<String> foundGroupIds = desc.getComputer().getAllGroupIds();
+            List<String> foundGroupIds = computers.get(name).getAllGroupIds();
             if (foundGroupIds != null) {
                 groupIds.addAll(foundGroupIds);
             }
@@ -164,8 +137,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     public List<String> getComputedGroupMembers(String groupName) {
         List<String> members = new ArrayList<>();
         for (String name : computerNames) {
-            GroupComputerDescriptor desc = computers.get(name);
-            List<String> foundMembers = desc.getComputer().getGroupMembers(groupName);
+            List<String> foundMembers = computers.get(name).getGroupMembers(groupName);
             if (foundMembers != null) {
                 members.addAll(foundMembers);
             }
@@ -177,8 +149,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     public List<String> getComputedGroupParent(String groupName) {
         List<String> parents = new ArrayList<>();
         for (String name : computerNames) {
-            GroupComputerDescriptor desc = computers.get(name);
-            List<String> foundParents = desc.getComputer().getParentsGroupNames(groupName);
+            List<String> foundParents = computers.get(name).getParentsGroupNames(groupName);
             if (foundParents != null) {
                 parents.addAll(foundParents);
             }
@@ -190,8 +161,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     public List<String> getComputedGroupSubGroups(String groupName) {
         List<String> subGroups = new ArrayList<>();
         for (String name : computerNames) {
-            GroupComputerDescriptor desc = computers.get(name);
-            List<String> foundSubGroups = desc.getComputer().getSubGroupsNames(groupName);
+            List<String> foundSubGroups = computers.get(name).getSubGroupsNames(groupName);
             if (foundSubGroups != null) {
                 subGroups.addAll(foundSubGroups);
             }
@@ -200,24 +170,19 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     }
 
     public List<GroupComputerDescriptor> getComputerDescriptors() {
-        List<GroupComputerDescriptor> result = new ArrayList<>();
-        for (String name : computerNames) {
-            result.add(computers.get(name));
-        }
-        return result;
+        return getRegistryContributions(COMPUTER_EP);
     }
 
     @Override
     public boolean activateComputedGroups() {
-        return computerNames.size() > 0;
+        return !computerNames.isEmpty();
     }
 
     @Override
     public List<String> searchComputedGroups(Map<String, Serializable> filter, Set<String> fulltext) {
         List<String> foundGroups = new ArrayList<>();
         for (String name : computerNames) {
-            GroupComputerDescriptor desc = computers.get(name);
-            foundGroups.addAll(desc.getComputer().searchGroups(filter, fulltext));
+            foundGroups.addAll(computers.get(name).searchGroups(filter, fulltext));
         }
         Collections.sort(foundGroups);
         return foundGroups;
@@ -227,16 +192,10 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     public List<String> searchComputedGroups(QueryBuilder queryBuilder) {
         List<String> groups = new ArrayList<>();
         for (String name : computerNames) {
-            GroupComputerDescriptor desc = computers.get(name);
-            groups.addAll(desc.getComputer().searchGroups(queryBuilder));
+            groups.addAll(computers.get(name).searchGroups(queryBuilder));
         }
         Collections.sort(groups);
         return groups;
     }
 
-    @Override
-    public void deactivate(ComponentContext context) {
-        super.deactivate(context);
-
-    }
 }

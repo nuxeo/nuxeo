@@ -48,6 +48,8 @@ import org.nuxeo.ecm.platform.computedgroups.GroupComputerDescriptor;
 import org.nuxeo.ecm.platform.computedgroups.UserManagerWithComputedGroups;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -68,8 +70,14 @@ public class TestComputedGroupService {
     @Test
     public void testContrib() {
         ComputedGroupsServiceImpl component = (ComputedGroupsServiceImpl) cgs;
+        List<GroupComputerDescriptor> contribs = component.getComputerDescriptors();
+        assertEquals(2, contribs.size());
 
-        GroupComputerDescriptor desc = component.getComputerDescriptors().get(0);
+        GroupComputerDescriptor desc = contribs.get(0);
+        assertNotNull(desc);
+        assertEquals("companyGroupComputer", desc.getName());
+
+        desc = contribs.get(1);
         assertNotNull(desc);
         assertEquals("dummy", desc.getName());
 
@@ -95,6 +103,14 @@ public class TestComputedGroupService {
         assertEquals(2, vGroups.size());
         assertTrue(vGroups.contains("Grp1"));
         assertTrue(vGroups.contains("Grp2"));
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.usermanager.tests:invalid-computedgroups-contrib.xml")
+    public void testInvalidContrib() {
+        List<String> errors = Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR);
+        assertEquals(1, errors.size());
+        assertEquals("Missing group computers: [foo]", errors.get(0));
     }
 
     @Test
@@ -161,11 +177,6 @@ public class TestComputedGroupService {
     @Test
     @Deploy("org.nuxeo.ecm.platform.usermanager.tests:companycomputedgroups-contrib.xml")
     public void testCompanyComputer() {
-        dotTestCompanyComputer();
-    }
-
-    public void dotTestCompanyComputer() {
-
         Map<String, Serializable> filter = new HashMap<>();
         HashSet<String> fulltext = new HashSet<>();
         filter.put(um.getGroupIdField(), "Nux");

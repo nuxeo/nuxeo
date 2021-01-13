@@ -22,12 +22,16 @@ package org.nuxeo.ecm.platform.computedgroups;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author Thierry Delprat
  */
 @XObject("groupComputer")
+@XRegistry(enable = false)
 public class GroupComputerDescriptor {
 
     @XNode("computer")
@@ -36,10 +40,12 @@ public class GroupComputerDescriptor {
     protected GroupComputer groupComputer;
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
-    @XNode("@enabled")
-    protected boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    protected boolean enabled;
 
     public String getName() {
         if (name != null) {
