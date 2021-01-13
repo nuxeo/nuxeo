@@ -72,7 +72,13 @@ public class TestDocumentValidationService {
     private static final String SINGLE_ERROR_MESSAGE = "Constraint violation thrown on property vs:users[0]/user/firstname[0]: '"
             + MESSAGE_FOR_USERS_FIRSTNAME + "'";
 
-    private static final String MULTIPLE_ERROR_MESSAGE = "2 constraint violation(s) thrown. First one is thrown on property vs:groupCode[0]: '"
+    private static final String SINGLE_ERROR_MESSAGE_EMPTY_XPATH = "Constraint violation thrown: '"
+            + MESSAGE_FOR_USERS_FIRSTNAME + "'";
+
+    private static final String MULTIPLE_ERROR_MESSAGE = "2 constraint violation(s) thrown. First one thrown on property vs:groupCode[0]: '"
+            + MESSAGE_FOR_GROUP_CODE + "', call DocumentValidationException.getViolations() to get the others";
+
+    private static final String MULTIPLE_ERROR_MESSAGE_EMPTY_XPATH = "2 constraint violation(s) thrown. First one thrown: '"
             + MESSAGE_FOR_GROUP_CODE + "', call DocumentValidationException.getViolations() to get the others";
 
     public static final String SIMPLE_FIELD = "vs:groupCode";
@@ -626,6 +632,33 @@ public class TestDocumentValidationService {
         assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, report.toString());
         e = new DocumentValidationException(report);
         expectedMessage = SINGLE_ERROR_MESSAGE;
+
+        assertEquals(expectedMessage, e.getMessage());
+    }
+
+    // NXP-29983
+    @Test
+    public void testErrorMessageWithEmptyXPath() {
+        // multiple errors
+        List<ValidationViolation> violations = new ArrayList<>();
+        violations.add(new GlobalViolation(MESSAGE_FOR_GROUP_CODE));
+        violations.add(new GlobalViolation(MESSAGE_FOR_USERS_FIRSTNAME));
+        DocumentValidationReport report = new DocumentValidationReport(violations);
+        assertTrue(report.hasError());
+        String expectedMessage = String.join("\n", MESSAGE_FOR_GROUP_CODE, MESSAGE_FOR_USERS_FIRSTNAME);
+        assertEquals(expectedMessage, report.toString());
+        DocumentValidationException e = new DocumentValidationException(report);
+        expectedMessage = MULTIPLE_ERROR_MESSAGE_EMPTY_XPATH;
+        assertEquals(expectedMessage, e.getMessage());
+
+        // one error
+        violations = new ArrayList<>();
+        violations.add(new GlobalViolation(MESSAGE_FOR_USERS_FIRSTNAME));
+        report = new DocumentValidationReport(violations);
+        assertTrue(report.hasError());
+        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, report.toString());
+        e = new DocumentValidationException(report);
+        expectedMessage = SINGLE_ERROR_MESSAGE_EMPTY_XPATH;
 
         assertEquals(expectedMessage, e.getMessage());
     }

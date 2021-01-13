@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api.validation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
@@ -32,9 +33,9 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  */
 public class DocumentValidationException extends NuxeoException {
 
-    protected static final String MESSAGE_SINGLE = "Constraint violation thrown on property %s: '%s'";
+    protected static final String MESSAGE_SINGLE = "Constraint violation thrown%s: '%s'";
 
-    protected static final String MESSAGE = "%s constraint violation(s) thrown. First one is thrown on property %s: '%s', call "
+    protected static final String MESSAGE = "%s constraint violation(s) thrown. First one thrown%s: '%s', call "
             + DocumentValidationException.class.getSimpleName() + ".getViolations() to get the others";
 
     private static final long serialVersionUID = 1L;
@@ -67,11 +68,12 @@ public class DocumentValidationException extends NuxeoException {
                 ConstraintViolation cv = (ConstraintViolation) violation;
                 xpath = cv.getPathAsString();
             }
+            var propertyMessage = StringUtils.isBlank(xpath) ? "" : String.format(" on property %s", xpath);
             String violationMessage = violation.getMessage(null);
             if (num > 1) {
-                return String.format(MESSAGE, report.numberOfErrors(), xpath, violationMessage);
+                return String.format(MESSAGE, report.numberOfErrors(), propertyMessage, violationMessage);
             } else {
-                return String.format(MESSAGE_SINGLE, xpath, violationMessage);
+                return String.format(MESSAGE_SINGLE, propertyMessage, violationMessage);
             }
         } else {
             return super.getMessage();
