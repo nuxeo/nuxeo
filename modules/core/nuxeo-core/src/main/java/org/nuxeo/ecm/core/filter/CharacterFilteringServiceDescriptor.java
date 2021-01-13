@@ -20,21 +20,26 @@
 
 package org.nuxeo.ecm.core.filter;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+
 /**
  * Descriptor for the character filtering service
+ *
  * @since 9.1
  */
 @XObject("filtering")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class CharacterFilteringServiceDescriptor {
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
     public boolean enabled;
 
     @XNodeList(value = "disallowedCharacters/character", type = ArrayList.class, componentType = String.class)
@@ -44,15 +49,8 @@ public class CharacterFilteringServiceDescriptor {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
     public List<String> getDisallowedChars() {
         return disallowedChars;
     }
 
-    public void setDisallowedChars(List<String> disallowedChars) {
-        this.disallowedChars = disallowedChars;
-    }
 }

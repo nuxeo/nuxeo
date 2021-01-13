@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.StringProperty;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.google.common.base.CharMatcher;
@@ -46,16 +46,11 @@ public class CharacterFilteringServiceImpl extends DefaultComponent implements C
 
     public static final String FILTERING_XP = "filtering";
 
-    protected CharacterFilteringServiceDescriptor desc;
-
     protected CharMatcher charsToRemove;
 
     @Override
-    public void registerContribution(Object contrib, String point, ComponentInstance contributor) {
-        if (FILTERING_XP.equals(point)) {
-
-            desc = (CharacterFilteringServiceDescriptor) contrib;
-
+    public void start(ComponentContext context) {
+        this.<CharacterFilteringServiceDescriptor> getRegistryContribution(FILTERING_XP).ifPresent(desc -> {
             CharMatcher charsToPreserve = CharMatcher.anyOf("\r\n\t");
             CharMatcher allButPreserved = charsToPreserve.negate();
             charsToRemove = CharMatcher.javaIsoControl().and(allButPreserved);
@@ -63,23 +58,30 @@ public class CharacterFilteringServiceImpl extends DefaultComponent implements C
 
             List<String> additionalChars = desc.getDisallowedChars();
             if (additionalChars != null && !additionalChars.isEmpty()) {
-                String otherCharsToRemove = additionalChars.stream().map(StringEscapeUtils::unescapeJava).collect(
-                        Collectors.joining());
+                String otherCharsToRemove = additionalChars.stream()
+                                                           .map(StringEscapeUtils::unescapeJava)
+                                                           .collect(Collectors.joining());
                 charsToRemove = charsToRemove.or(CharMatcher.anyOf(otherCharsToRemove));
             }
-        } else {
-            throw new RuntimeException("Unknown extension point: " + point);
-        }
+        });
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        charsToRemove = null;
     }
 
     @Override
     public String filter(String value) {
+        if (charsToRemove == null) {
+            return value;
+        }
         return charsToRemove.removeFrom(value);
     }
 
     @Override
     public void filter(DocumentModel docModel) {
-        if (desc.isEnabled()) {
+        if (charsToRemove != null) {
             // check only loaded datamodels to find the dirty ones
             for (DataModel dm : docModel.getDataModelsCollection()) { // only loaded
                 if (!dm.isDirty()) {
@@ -133,4 +135,5 @@ public class CharacterFilteringServiceImpl extends DefaultComponent implements C
             }
         }
     }
+
 }
