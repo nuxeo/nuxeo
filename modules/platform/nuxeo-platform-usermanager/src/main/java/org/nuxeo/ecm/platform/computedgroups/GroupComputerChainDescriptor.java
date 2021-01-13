@@ -21,35 +21,28 @@
 package org.nuxeo.ecm.platform.computedgroups;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XMerge;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * @author Thierry Delprat
  */
 
 @XObject("groupComputerChain")
+@XRegistry
 public class GroupComputerChainDescriptor {
 
     @XNodeList(value = "computers/computer", type = ArrayList.class, componentType = String.class)
+    @XMerge(value = XMerge.MERGE, fallback = "@append", defaultAssignment = false)
     private List<String> computerNames;
 
-    @XNode("@append")
-    private boolean append = false;
-
-    public boolean isAppend() {
-        return append;
-    }
-
     public List<String> getComputerNames() {
-        if (computerNames != null) {
-            return computerNames;
-        } else {
-            return new ArrayList<>();
-        }
+        return Collections.unmodifiableList(computerNames);
     }
 
 }
