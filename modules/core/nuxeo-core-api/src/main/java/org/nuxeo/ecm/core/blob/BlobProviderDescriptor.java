@@ -24,11 +24,14 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor for a {@link BlobProvider}.
  */
 @XObject(value = "blobprovider")
+@XRegistry
 public class BlobProviderDescriptor {
 
     public static final String PREVENT_USER_UPDATE = "preventUserUpdate";
@@ -93,6 +96,7 @@ public class BlobProviderDescriptor {
     public static final String CREATE_FROM_KEY_GROUPS = "createFromKey.groups";
 
     @XNode("@name")
+    @XRegistryId
     public String name = "";
 
     @XNode("class")
@@ -109,16 +113,6 @@ public class BlobProviderDescriptor {
         name = other.name;
         klass = other.klass;
         properties = new HashMap<>(other.properties);
-    }
-
-    public void merge(BlobProviderDescriptor other) {
-        if (other.name != null) {
-            name = other.name;
-        }
-        if (other.klass != null) {
-            klass = other.klass;
-        }
-        properties.putAll(other.properties);
     }
 
 }
