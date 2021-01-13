@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.api.blobholder;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
@@ -30,9 +32,11 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @author tiry
  */
 @XObject("blobHolderFactory")
+@XRegistry(compatWarnOnMerge = true)
 public class BlobHolderFactoryDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@docType")
@@ -58,7 +62,7 @@ public class BlobHolderFactoryDescriptor {
 
     public BlobHolderFactory getFactory() {
         try {
-            return (BlobHolderFactory) adapterClass.getDeclaredConstructor().newInstance();
+            return adapterClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }

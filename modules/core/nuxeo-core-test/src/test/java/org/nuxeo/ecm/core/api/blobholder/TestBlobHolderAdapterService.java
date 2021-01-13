@@ -46,21 +46,25 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 public class TestBlobHolderAdapterService {
 
     @Inject
+    protected BlobHolderAdapterService service;
+
+    @Inject
     protected HotDeployer hotDeployer;
 
     @Test
-    public void testService() throws Exception {
-        BlobHolderAdapterService bhas = Framework.getService(BlobHolderAdapterService.class);
-        assertNotNull(bhas);
+    public void testService() {
+        assertTrue(service instanceof BlobHolderAdapterComponent);
     }
 
     @Test
     public void testContrib() throws Exception {
-        assertEquals(0, BlobHolderAdapterComponent.getFactoryNames().size());
+        BlobHolderAdapterComponent bhac = (BlobHolderAdapterComponent) service;
+
+        assertEquals(0, bhac.getFactoryNames().size());
 
         hotDeployer.deploy(Constants.CORE_TEST_TESTS_BUNDLE + ":test-blob-holder-adapters-contrib.xml");
 
-        assertEquals(1, BlobHolderAdapterComponent.getFactoryNames().size());
+        assertEquals(1, bhac.getFactoryNames().size());
 
         BlobHolderAdapterService bhas = Framework.getService(BlobHolderAdapterService.class);
         assertNotNull(bhas);

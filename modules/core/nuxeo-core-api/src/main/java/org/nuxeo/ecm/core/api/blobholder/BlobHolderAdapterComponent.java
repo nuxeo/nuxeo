@@ -24,16 +24,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapterDescriptor;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -45,63 +42,58 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class BlobHolderAdapterComponent extends DefaultComponent implements BlobHolderAdapterService {
 
-    private static final Log log = LogFactory.getLog(BlobHolderAdapterComponent.class);
-
     public static final String BLOBHOLDERFACTORY_EP = "BlobHolderFactory";
 
     public static final String EXTERNALBLOB_ADAPTER_EP = "ExternalBlobAdapter";
 
-    protected final Map<String, BlobHolderFactory> factories = new HashMap<>();
+    protected Map<String, BlobHolderFactory> factoriesByName;
 
-    protected Map<String, BlobHolderFactory> factoriesByFacets = new HashMap<>();
+    protected Map<String, BlobHolderFactory> factoriesByType;
 
-    protected Map<String, BlobHolderFactory> factoriesByName = new HashMap<>();
+    protected Map<String, BlobHolderFactory> factoriesByFacets;
 
-    protected static final Map<String, ExternalBlobAdapter> externalBlobAdapters = new HashMap<>();
+    protected Map<String, ExternalBlobAdapter> externalBlobAdapters;
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
-        if (BLOBHOLDERFACTORY_EP.equals(extensionPoint)) {
-            BlobHolderFactoryDescriptor desc = (BlobHolderFactoryDescriptor) contribution;
+    public void start(ComponentContext context) {
+        factoriesByName = new HashMap<>();
+        factoriesByType = new HashMap<>();
+        factoriesByFacets = new HashMap<>();
+        this.<BlobHolderFactoryDescriptor> getRegistryContributions(BLOBHOLDERFACTORY_EP).forEach(desc -> {
             String name = desc.getName();
             if (StringUtils.isNotBlank(name)) {
                 factoriesByName.put(name, desc.getFactory());
             }
             String docType = desc.getDocType();
             if (docType != null) {
-                factories.put(docType, desc.getFactory());
+                factoriesByType.put(docType, desc.getFactory());
             }
             String facet = desc.getFacet();
             if (facet != null) {
                 factoriesByFacets.put(facet, desc.getFactory());
             }
-        } else if (EXTERNALBLOB_ADAPTER_EP.equals(extensionPoint)) {
-            ExternalBlobAdapterDescriptor desc = (ExternalBlobAdapterDescriptor) contribution;
+        });
+        externalBlobAdapters = new HashMap<>();
+        this.<ExternalBlobAdapterDescriptor> getRegistryContributions(EXTERNALBLOB_ADAPTER_EP).forEach(desc -> {
             ExternalBlobAdapter adapter = desc.getAdapter();
-            String prefix = desc.getPrefix();
-            if (externalBlobAdapters.containsKey(prefix)) {
-                log.info(String.format("Overriding external blob adapter with prefix '%s'", prefix));
-                externalBlobAdapters.remove(prefix);
-            }
             adapter.setPrefix(desc.getPrefix());
             adapter.setProperties(desc.getProperties());
             externalBlobAdapters.put(desc.getPrefix(), adapter);
-            log.info(String.format("Registered external blob adapter with prefix '%s'", prefix));
-        } else {
-            log.error("Unknown extension point " + extensionPoint);
-        }
+        });
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+    public void stop(ComponentContext context) throws InterruptedException {
+        factoriesByName = null;
+        factoriesByType = null;
+        factoriesByFacets = null;
+        externalBlobAdapters = null;
     }
 
     /* for test */
 
-    public static Set<String> getFactoryNames() {
-        return ((BlobHolderAdapterComponent) Framework.getService(
-                BlobHolderAdapterService.class)).factories.keySet();
+    public Set<String> getFactoryNames() {
+        return factoriesByType.keySet();
     }
 
     /* Service Interface */
@@ -136,8 +128,8 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
             return factory.getBlobHolder(doc);
         }
 
-        if (factories.containsKey(doc.getType())) {
-            BlobHolderFactory factory = factories.get(doc.getType());
+        if (factoriesByType.containsKey(doc.getType())) {
+            BlobHolderFactory factory = factoriesByType.get(doc.getType());
             return factory.getBlobHolder(doc);
         }
 
