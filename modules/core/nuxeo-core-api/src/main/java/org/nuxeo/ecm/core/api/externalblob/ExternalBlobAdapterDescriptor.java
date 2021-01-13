@@ -24,6 +24,8 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor for registration of an external blob adapter.
@@ -32,9 +34,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Anahide Tchertchian
  */
 @XObject("adapter")
+@XRegistry
 public class ExternalBlobAdapterDescriptor {
 
     @XNode("@prefix")
+    @XRegistryId
     protected String prefix;
 
     @XNode("@class")
