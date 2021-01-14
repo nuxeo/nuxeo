@@ -19,11 +19,6 @@
 package org.nuxeo.ecm.platform.signature.api.exception;
 
 /**
- * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
- */
-
-/**
  * An exception indicating certificate or key generation related problems
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
