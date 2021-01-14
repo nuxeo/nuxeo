@@ -358,7 +358,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         error = session.newRequest("exitError") //
                        .setInput("doc:/")
                        .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Failed to invoke operation: exitError", error);
+        assertEquals("Internal Server Error", error);
         // test the note was not created
         error = session.newRequest(FetchDocument.ID) //
                        .set("value", "/test-exit3")
@@ -388,7 +388,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
         // Call SendMail with rollbackOnError = true (default value)
         String error = operationRequest.executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Failed to invoke operation: Document.Mail", error);
+        assertEquals("Internal Server Error", error);
 
         // Call SendMail with rollbackOnError = false
         // => should only log a WARNING

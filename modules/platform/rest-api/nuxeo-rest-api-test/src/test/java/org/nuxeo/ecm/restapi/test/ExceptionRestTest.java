@@ -28,8 +28,10 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.function.ThrowableRunnable;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.query.sql.model.Function;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
@@ -54,6 +56,9 @@ public class ExceptionRestTest extends BaseTest {
 
     @Inject
     protected LogCaptureFeature.Result logCaptureResult;
+
+    @Inject
+    protected JsonFactoryManager jsonFactoryManager;
 
     @Test
     public void testSimpleException() throws IOException {
@@ -148,6 +153,48 @@ public class ExceptionRestTest extends BaseTest {
             List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
             assertEquals(1, caughtEvents.size());
             assertEquals("org.nuxeo.ecm.core.api.NuxeoException: bad request", caughtEvents.get(0));
+        }
+    }
+
+    // NXP-30050
+    @Test
+    public void testEndpointWithInternalServerErrorException() throws IOException {
+        withNoStackDisplay(() -> testEndpointWithInternalServerErrorException("Internal Server Error"));
+    }
+
+    // NXP-30050
+    @Test
+    @WithFrameworkProperty(name = "org.nuxeo.dev", value = "true")
+    public void testEndpointWithInternalServerErrorExceptionInDevMode() throws IOException {
+        withNoStackDisplay(() -> testEndpointWithInternalServerErrorException("a secret message"));
+    }
+
+    // NXP-30050
+    @Test
+    public void testEndpointWithInternalServerErrorExceptionWithStackDisplay() throws IOException {
+        testEndpointWithInternalServerErrorException("a secret message");
+    }
+
+    protected void testEndpointWithInternalServerErrorException(String expectedMessage) throws IOException {
+        try (CloseableClientResponse r = getResponse(RequestType.GET, "/foo/internal-error")) {
+            assertEquals(500, r.getStatus());
+            JsonNode node = mapper.readTree(r.getEntityInputStream());
+            assertEquals(500, node.get("status").numberValue());
+            assertEquals(expectedMessage, node.get("message").textValue());
+        }
+    }
+
+    protected <E extends Throwable> void withNoStackDisplay(ThrowableRunnable<E> runnable) throws E {
+        boolean initialStackDisplay = jsonFactoryManager.isStackDisplay();
+        try {
+            if (initialStackDisplay) {
+                jsonFactoryManager.toggleStackDisplay();
+            }
+            runnable.run();
+        } finally {
+            if (initialStackDisplay && !jsonFactoryManager.isStackDisplay()) {
+                jsonFactoryManager.toggleStackDisplay();
+            }
         }
     }
 }

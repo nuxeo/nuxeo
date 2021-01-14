@@ -206,7 +206,7 @@ public class AsyncOperationAdapterTest {
                             .set("error", true)
                             .set("rollback", true)
                             .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("termination error", error);
+        assertEquals("Internal Server Error", error);
     }
 
     @Test
@@ -254,8 +254,7 @@ public class AsyncOperationAdapterTest {
                              .set("batchSize", "5")
                              .set("parameters", "{}")
                              .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertTrue(
-                result.startsWith("Unknown operation id null in command: org.nuxeo.ecm.core.bulk.message.BulkCommand"));
+        assertEquals("Internal Server Error", result);
     }
 
     /**
