@@ -241,7 +241,6 @@ public class TestRenditionService {
         // assert the markdown converter is a chained one
         ConverterDescriptor md2pdf = ConversionServiceImpl.getConverterDescriptor("md2pdf");
         assertNotNull(md2pdf);
-        md2pdf.initConverter();
         assertEquals(ConverterDescriptor.CHAINED_CONVERTER_TYPE, md2pdf.getConverterType());
 
         DocumentModel note = session.createDocumentModel("/", "dummy-note", "Note");
