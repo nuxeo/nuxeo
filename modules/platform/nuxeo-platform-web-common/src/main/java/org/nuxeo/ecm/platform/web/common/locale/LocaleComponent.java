@@ -19,7 +19,7 @@
  */
 package org.nuxeo.ecm.platform.web.common.locale;
 
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -29,13 +29,20 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class LocaleComponent extends DefaultComponent {
 
+    protected static final String XP = "providers";
+
     protected LocaleProvider provider;
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if ("providers".equals(extensionPoint)) {
-            provider = ((LocaleProviderDescriptor) contribution).newProvider();
-        }
+    public void start(ComponentContext context) {
+        provider = this.<LocaleProviderDescriptor> getRegistryContribution(XP)
+                       .map(LocaleProviderDescriptor::newProvider)
+                       .orElse(null);
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        provider = null;
     }
 
     public LocaleProvider getProvider() {
