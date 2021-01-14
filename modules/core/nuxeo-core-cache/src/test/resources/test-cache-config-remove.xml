@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.cache.test3">
+
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
+
+    <cache name="myid" remove="true" />
+
+  </extension>
+
+</component>

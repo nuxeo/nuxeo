@@ -21,12 +21,12 @@ package org.nuxeo.ecm.core.cache;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.ecm.core.cache.CacheDescriptor.DEFAULT_MAX_SIZE;
+import static org.nuxeo.ecm.core.cache.CacheDescriptor.DEFAULT_TTL;
 import static org.nuxeo.ecm.core.cache.CacheDescriptor.OPTION_MAX_SIZE;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,24 +51,27 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     private static final Logger log = LogManager.getLogger(CacheServiceImpl.class);
 
-    /**
-     * @since 10.3
-     */
+    /** @since 10.3 */
     public static final String XP_CACHES = "caches";
 
-    /**
-     * @since 8.2
-     */
+    /** @since 8.2 */
     public static final String DEFAULT_CACHE_ID = "default-cache";
 
     /** @since 9.3 */
     public static final String CACHE_INVAL_PUBSUB_TOPIC = "cacheinval";
+
+    /** @since 11.5 */
+    protected static final CacheDescriptor DEFAULT_CACHE_DESCRIPTOR = new CacheDescriptor(DEFAULT_CACHE_ID, null,
+            DEFAULT_TTL, Map.of(OPTION_MAX_SIZE, String.valueOf(DEFAULT_MAX_SIZE)));
 
     // allows us to start caches registered programmatically through registerCache(name)
     protected boolean started;
 
     /** Currently registered caches. */
     protected final Map<String, CacheManagement> caches = new ConcurrentHashMap<>();
+
+    /** Descriptors for caches registered programmatically . */
+    protected final Map<String, CacheDescriptor> programmaticCaches = new ConcurrentHashMap<>();
 
     protected CachePubSubInvalidator invalidator;
 
@@ -110,7 +113,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
         }
     }
 
-    public static abstract class AbstractCachePubSubInvalidator extends AbstractPubSubBroker<CacheInvalidation> {
+    public abstract static class AbstractCachePubSubInvalidator extends AbstractPubSubBroker<CacheInvalidation> {
 
         public static final String ALL_KEYS = "__ALL__";
 
@@ -145,7 +148,6 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     }
 
     protected class CachePubSubInvalidator extends AbstractCachePubSubInvalidator {
-
         @Override
         protected Cache getCache(String name) {
             return CacheServiceImpl.this.getCache(name);
@@ -153,26 +155,18 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     }
 
     @Override
-    @Deprecated
-    public void registerCache(String name, int maxSize, int timeout) {
-        registerCache(name);
-    }
-
-    @Override
     public void registerCache(String name) {
-        CacheDescriptor defaultDescriptor = getCacheDescriptor(DEFAULT_CACHE_ID);
-        if (defaultDescriptor == null) {
-            defaultDescriptor = new CacheDescriptor();
-            defaultDescriptor.name = DEFAULT_CACHE_ID;
-            defaultDescriptor.options.put(OPTION_MAX_SIZE, String.valueOf(DEFAULT_MAX_SIZE));
-            register(XP_CACHES, defaultDescriptor);
+        if (name == null || getCacheDescriptor(name) != null) {
+            // cache already registered
+            return;
         }
-        CacheDescriptor newDescriptor = (CacheDescriptor) new CacheDescriptor().merge(defaultDescriptor);
-        newDescriptor.name = name;
-        // add to registry (merging if needed)
-        register(XP_CACHES, newDescriptor);
+        CacheDescriptor defaultDescriptor = this.<CacheDescriptor> getRegistryContribution(XP_CACHES, DEFAULT_CACHE_ID)
+                                                .orElse(DEFAULT_CACHE_DESCRIPTOR);
+        CacheDescriptor descriptor = new CacheDescriptor(name, defaultDescriptor.getKlass(), defaultDescriptor.getTTL(),
+                defaultDescriptor.getOptions());
+        programmaticCaches.put(name, descriptor);
         // start if needed
-        maybeStart(name);
+        maybeStart(name, descriptor);
     }
 
     @Override
@@ -199,8 +193,11 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
             log.info("Not registering a cache invalidator because clustering is not enabled");
         }
         // create and starts caches
-        Collection<CacheDescriptor> descriptors = getDescriptors(XP_CACHES);
-        descriptors.forEach(this::startCacheDescriptor);
+        this.<CacheDescriptor> getRegistryContributions(XP_CACHES)
+            .stream()
+            .filter(c -> !programmaticCaches.containsKey(c.getName()))
+            .forEach(this::startCacheDescriptor);
+        programmaticCaches.values().forEach(this::startCacheDescriptor);
         started = true;
     }
 
@@ -237,10 +234,11 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
             cache.stop();
         }
         caches.clear();
+        programmaticCaches.clear();
         started = false;
     }
 
-    protected void maybeStart(String name) {
+    protected void maybeStart(String name, CacheDescriptor descriptor) {
         if (!started) {
             // cache will be started by start()
             return;
@@ -251,7 +249,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
             cache.stop();
         }
         // start new one
-        startCacheDescriptor(getCacheDescriptor(name));
+        startCacheDescriptor(descriptor);
     }
 
     // --------------- API ---------------
@@ -264,8 +262,12 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     /**
      * @since 9.3
      */
-    public CacheDescriptor getCacheDescriptor(String descriptor) {
-        return getDescriptor(XP_CACHES, descriptor);
+    public CacheDescriptor getCacheDescriptor(String name) {
+        CacheDescriptor desc = programmaticCaches.get(name);
+        if (desc != null) {
+            return desc;
+        }
+        return this.<CacheDescriptor> getRegistryContribution(XP_CACHES, name).orElse(null);
     }
 
 }

@@ -21,83 +21,93 @@ package org.nuxeo.ecm.core.cache;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.nuxeo.ecm.core.cache.CacheDescriptor.DEFAULT_MAX_SIZE;
 import static org.nuxeo.ecm.core.cache.CacheDescriptor.DEFAULT_TTL;
+import static org.nuxeo.ecm.core.cache.CacheDescriptor.OPTION_MAX_SIZE;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.model.DescriptorRegistry;
+import org.nuxeo.runtime.cluster.ClusterFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, ClusterFeature.class })
+@Deploy("org.nuxeo.ecm.core.cache:OSGI-INF/CacheService.xml")
 public class TestCacheDescriptor {
-
-    private static final String COMPONENT = "component";
-
-    private static final String XP = "extension-point";
 
     protected static final String NAME = "myid";
 
-    @Test
-    public void testMerge() {
-        DescriptorRegistry registry = new DescriptorRegistry();
-        // first contrib
-        CacheDescriptor desc1 = new CacheDescriptor();
-        desc1.name = NAME;
-        desc1.setTTL(Long.valueOf(123));
-        desc1.options = new HashMap<>();
-        desc1.options.put("foo", "foovalue");
-        desc1.options.put("bar", "barvalue");
-        registry.register(COMPONENT, XP, desc1);
-        // second controb
-        CacheDescriptor desc2 = new CacheDescriptor();
-        desc2.name = NAME;
-        desc2.setTTL(Long.valueOf(456));
-        desc2.options = new HashMap<>();
-        desc2.options.put("foo", "foovalue2");
-        registry.register(COMPONENT, XP, desc2);
-        // check result of merge
-        CacheDescriptor desc = registry.getDescriptor(COMPONENT, XP, NAME);
-        assertEquals(456, desc.getTTL());
-        HashMap<String, Serializable> map = new HashMap<>();
-        map.put("foo", "foovalue2");
-        map.put("bar", "barvalue");
-        assertEquals(map, desc.options);
+    @Inject
+    protected HotDeployer hotDeployer;
+
+    @Inject
+    protected CacheService service;
+
+    protected CacheServiceImpl getService() {
+        return (CacheServiceImpl) service;
     }
 
     @Test
-    public void testMergeRemove() {
-        DescriptorRegistry registry = new DescriptorRegistry();
-        // first contrib
-        CacheDescriptor desc1 = new CacheDescriptor();
-        desc1.name = NAME;
-        desc1.setTTL(Long.valueOf(123));
-        registry.register(COMPONENT, XP, desc1);
-        // second contrib
-        CacheDescriptor desc2 = new CacheDescriptor();
-        desc2.name = NAME;
-        desc2.remove = true;
-        registry.register(COMPONENT, XP, desc2);
-        // check result of merge, contrib removed
-        CacheDescriptor desc = registry.getDescriptor(COMPONENT, XP, NAME);
-        assertNull(desc);
-        // add a new one after remove
-        CacheDescriptor desc3 = new CacheDescriptor();
-        desc3.name = NAME;
-        desc3.options = new HashMap<>();
-        desc3.options.put("foo", "foovalue");
-        registry.register(COMPONENT, XP, desc3);
-        // check new one is visible
-        desc = registry.getDescriptor(COMPONENT, XP, NAME);
+    @Deploy("org.nuxeo.ecm.core.cache.test:test-cache-config.xml")
+    public void testMerge() throws Exception {
+        CacheDescriptor desc = getService().getCacheDescriptor(NAME);
         assertNotNull(desc);
-        assertEquals(DEFAULT_TTL, desc.getTTL()); // after a remove original contributions is forgotten
-        assertEquals(Collections.singletonMap("foo", "foovalue"), desc.options);
+        assertEquals(NAME, desc.getName());
+        assertEquals(123, desc.getTTL());
+        assertEquals(Map.of("foo", "foovalue", "bar", "barvalue"), desc.getOptions());
+        assertNotNull(getService().getCache(NAME));
+
+        hotDeployer.deploy("org.nuxeo.ecm.core.cache.test:test-cache-config-merge.xml");
+
+        // check result of merge
+        CacheDescriptor mergedDesc = getService().getCacheDescriptor(NAME);
+        assertNotNull(desc);
+        assertEquals(456, mergedDesc.getTTL());
+        assertEquals(Map.of("foo", "foovalue2", "bar", "barvalue"), mergedDesc.getOptions());
+        assertNotNull(getService().getCache(NAME));
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.cache.test:test-cache-config.xml")
+    public void testRemove() throws Exception {
+        assertNotNull(getService().getCacheDescriptor(NAME));
+        assertNotNull(getService().getCache(NAME));
+
+        hotDeployer.deploy("org.nuxeo.ecm.core.cache.test:test-cache-config-remove.xml");
+
+        assertNull(getService().getCacheDescriptor(NAME));
+        assertNull(getService().getCache(NAME));
+
+        // add a new one after remove
+        hotDeployer.deploy("org.nuxeo.ecm.core.cache.test:test-cache-config-merge.xml");
+
+        CacheDescriptor desc = getService().getCacheDescriptor(NAME);
+        assertNotNull(desc);
+        assertEquals(456, desc.getTTL());
+        assertEquals(Map.of("foo", "foovalue2"), desc.getOptions());
+        assertNotNull(getService().getCache(NAME));
+    }
+
+    @Test
+    public void testRegisterCache() {
+        assertNull(getService().getCacheDescriptor(NAME));
+        assertNull(getService().getCache(NAME));
+
+        getService().registerCache(NAME);
+
+        CacheDescriptor desc = getService().getCacheDescriptor(NAME);
+        assertNotNull(desc);
+        assertEquals(DEFAULT_TTL, desc.getTTL());
+        assertEquals(Map.of(OPTION_MAX_SIZE, String.valueOf(DEFAULT_MAX_SIZE)), desc.getOptions());
+        assertNotNull(getService().getCache(NAME));
     }
 
 }

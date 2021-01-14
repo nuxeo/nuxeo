@@ -64,7 +64,7 @@ public class TestCacheFallbackOnDirectory {
     protected CacheService cacheService;
 
     @Test
-    public void testGetFromCache() throws Exception {
+    public void testGetFromCache() {
 
         Directory dir = directoryService.getDirectory("userDirectory");
         try (Session session = dir.getSession()) {
@@ -75,7 +75,7 @@ public class TestCacheFallbackOnDirectory {
 
             CacheDescriptor desc = ((CacheServiceImpl) cacheService).getCacheDescriptor("cache-" + dir.getName());
             assertEquals(5L, desc.getTTL());
-            assertEquals(100L, Long.parseLong(desc.options.get(OPTION_MAX_SIZE)));
+            assertEquals(100L, Long.parseLong(desc.getOptions().get(OPTION_MAX_SIZE)));
 
             assertNotNull(CacheFeature.unwrapImpl(InMemoryCacheImpl.class, cache.getEntryCache()));
             assertNotNull(cache.getEntryCacheWithoutReferences());
@@ -83,7 +83,7 @@ public class TestCacheFallbackOnDirectory {
 
             desc = ((CacheServiceImpl) cacheService).getCacheDescriptor("cacheWithoutReference-" + dir.getName());
             assertEquals(5L, desc.getTTL());
-            assertEquals(100L, Long.parseLong(desc.options.get(OPTION_MAX_SIZE)));
+            assertEquals(100L, Long.parseLong(desc.getOptions().get(OPTION_MAX_SIZE)));
 
             MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
             Counter hitsCounter = registry.counter(
