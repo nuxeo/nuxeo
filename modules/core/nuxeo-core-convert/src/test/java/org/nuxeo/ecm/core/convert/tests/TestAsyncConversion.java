@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -34,7 +33,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -58,12 +56,6 @@ public class TestAsyncConversion {
 
     @Inject
     protected EventService eventService;
-
-    @Before
-    public void setUp() {
-        // TODO: might be a bug? ensure no cache is used - when file is cached the filename is not preserved!
-        ConversionCacheHolder.deleteCache();
-    }
 
     @Test
     public void shouldDoAsyncConversionGivenDestinationMimeType() throws IOException {

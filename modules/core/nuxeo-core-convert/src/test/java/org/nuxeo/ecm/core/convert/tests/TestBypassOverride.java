@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 /**
  * @since 11.1

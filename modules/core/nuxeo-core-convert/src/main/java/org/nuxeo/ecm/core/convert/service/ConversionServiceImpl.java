@@ -64,9 +64,9 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -86,52 +86,65 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
      */
     public static final String ENFORCE_SOURCE_MIME_TYPE_CHECK = "nuxeo.convert.enforceSourceMimeTypeCheck";
 
-    protected final Map<String, ConverterDescriptor> converterDescriptors = new HashMap<>();
+    protected static final GlobalConfigDescriptor DEFAULT_CONFIG = new GlobalConfigDescriptor();
 
-    protected final MimeTypeTranslationHelper translationHelper = new MimeTypeTranslationHelper();
+    protected Map<String, ConverterDescriptor> converterDescriptors;
 
-    protected final GlobalConfigDescriptor config = new GlobalConfigDescriptor();
+    protected Map<String, Converter> converters;
+
+    protected MimeTypeTranslationHelper translationHelper;
+
+    protected Map<String, ConverterCheckResult> checkResultCache;
+
+    protected GlobalConfigDescriptor config;
 
     protected Thread gcThread;
 
     protected GCTask gcTask;
 
     @Override
-    public void activate(ComponentContext context) {
-        converterDescriptors.clear();
-        translationHelper.clear();
-        config.clearCachingDirectory();
+    public void start(ComponentContext context) {
+        config = this.<GlobalConfigDescriptor> getRegistryContribution(CONFIG_EP).orElse(DEFAULT_CONFIG);
+        if (config.isCacheEnabled()) {
+            ConversionCacheHolder.deleteCache();
+            new File(config.getCachingDirectory()).mkdirs();
+        }
+
+        converterDescriptors = new HashMap<>();
+        converters = new HashMap<>();
+        translationHelper = new MimeTypeTranslationHelper();
+        checkResultCache = new HashMap<>();
+        // follow registry ordered map as order matters for translationHelper
+        this.<ConverterDescriptor> getRegistryContributions(CONVERTER_EP).forEach(desc -> {
+            try {
+                String name = desc.getConverterName();
+                converters.put(name, desc.getConverterInstance());
+                converterDescriptors.put(name, desc);
+                translationHelper.addConverter(desc);
+            } catch (ReflectiveOperationException e) {
+                String msg = String.format("Failed to create converter '%s': %s", desc.getConverterName(),
+                        e.getMessage());
+                addRuntimeMessage(Level.ERROR, msg);
+                log.error(e, e);
+            }
+        });
+
+        startGC();
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public void stop(ComponentContext context) {
+        endGC();
+
         if (config.isCacheEnabled()) {
             ConversionCacheHolder.deleteCache();
         }
-        converterDescriptors.clear();
-        translationHelper.clear();
-    }
+        config = null;
 
-    /**
-     * Component implementation.
-     */
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
-        if (CONVERTER_EP.equals(extensionPoint)) {
-            ConverterDescriptor desc = (ConverterDescriptor) contribution;
-            registerConverter(desc);
-        } else if (CONFIG_EP.equals(extensionPoint)) {
-            GlobalConfigDescriptor desc = (GlobalConfigDescriptor) contribution;
-            config.update(desc);
-            config.clearCachingDirectory();
-        } else {
-            log.error("Unable to handle unknown extensionPoint {}", extensionPoint);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        converterDescriptors = null;
+        converters = null;
+        translationHelper = null;
+        checkResultCache = null;
     }
 
     /* Component API */
@@ -141,11 +154,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     public static Converter getConverter(String converterName) {
-        ConverterDescriptor desc = getConversionService().converterDescriptors.get(converterName);
-        if (desc == null) {
-            return null;
-        }
-        return desc.getConverterInstance();
+        return getConversionService().converters.get(converterName);
     }
 
     public static ConverterDescriptor getConverterDescriptor(String converterName) {
@@ -156,29 +165,8 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         return getConversionService().config.getGCInterval();
     }
 
-    public static void setGCIntervalInMinutes(long interval) {
-        getConversionService().config.setGCInterval(interval);
-    }
-
-    public static void registerConverter(ConverterDescriptor desc) {
-
-        ConversionServiceImpl self = getConversionService();
-        if (self.converterDescriptors.containsKey(desc.getConverterName())) {
-
-            ConverterDescriptor existing = self.converterDescriptors.get(desc.getConverterName());
-            desc = existing.merge(desc);
-        }
-        desc.initConverter();
-        self.translationHelper.addConverter(desc);
-        self.converterDescriptors.put(desc.getConverterName(), desc);
-    }
-
     public static int getMaxCacheSizeInKB() {
         return getConversionService().config.getDiskCacheSize();
-    }
-
-    public static void setMaxCacheSizeInKB(int size) {
-        getConversionService().config.setDiskCacheSize(size);
     }
 
     public static boolean isCacheEnabled() {
@@ -315,7 +303,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
         ConverterDescriptor desc = converterDescriptors.get(converterName);
         if (desc == null) {
-            throw new ConversionException("Converter " + converterName + " can not be found", blobHolder);
+            throw new ConverterNotRegistered(converterName, blobHolder);
         }
 
         // make sure the converter can handle the blob mime type
@@ -336,7 +324,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         BlobHolder result = ConversionCacheHolder.getFromCache(cacheKey);
 
         if (result == null) {
-            Converter converter = desc.getConverterInstance();
+            Converter converter = converters.get(converterName);
             result = converter.convert(blobHolder, parameters);
 
             if (config.isCacheEnabled()) {
@@ -443,8 +431,6 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         return isConverterAvailable(converterName, false);
     }
 
-    protected final Map<String, ConverterCheckResult> checkResultCache = new HashMap<>();
-
     @Override
     public ConverterCheckResult isConverterAvailable(String converterName, boolean refresh)
             throws ConverterNotRegistered {
@@ -455,12 +441,11 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             }
         }
 
-        ConverterDescriptor descriptor = converterDescriptors.get(converterName);
-        if (descriptor == null) {
+        Converter converter = converters.get(converterName);
+        ConverterDescriptor desc = converterDescriptors.get(converterName);
+        if (converter == null || desc == null) {
             throw new ConverterNotRegistered(converterName);
         }
-
-        Converter converter = descriptor.getConverterInstance();
 
         ConverterCheckResult result;
         if (converter instanceof ExternalConverter) {
@@ -482,7 +467,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             result = new ConverterCheckResult();
         }
 
-        result.setSupportedInputMimeTypes(descriptor.getSourceMimeTypes());
+        result.setSupportedInputMimeTypes(desc.getSourceMimeTypes());
         checkResultCache.put(converterName, result);
 
         return result;
@@ -542,16 +527,6 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             return adapter.cast(translationHelper);
         }
         return super.getAdapter(adapter);
-    }
-
-    @Override
-    public void start(ComponentContext context) {
-        startGC();
-    }
-
-    @Override
-    public void stop(ComponentContext context) {
-        endGC();
     }
 
     protected void startGC() {

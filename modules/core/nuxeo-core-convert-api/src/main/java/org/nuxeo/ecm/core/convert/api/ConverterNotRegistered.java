@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.core.convert.api;
 
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+
 /**
  * Exception thrown when selected converter is not registered.
  *
@@ -32,6 +34,11 @@ public class ConverterNotRegistered extends ConversionException {
 
     public ConverterNotRegistered(String message) {
         super("Converter " + message + " is not registered");
+    }
+
+    /** @since 11.5 */
+    public ConverterNotRegistered(String message, BlobHolder blobHolder) {
+        super("Converter " + message + " is not registered", blobHolder);
     }
 
 }

@@ -30,6 +30,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * XMap descriptor for the contribution of a new {@link Converter}.
@@ -37,6 +39,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author tiry
  */
 @XObject("converter")
+@XRegistry
 public class ConverterDescriptor {
 
     protected final Log log = LogFactory.getLog(ConverterDescriptor.class);
@@ -45,9 +48,8 @@ public class ConverterDescriptor {
 
     public static final String CHAINED_CONVERTER_TYPE = "Chain";
 
-    protected Converter instance;
-
     @XNode("@name")
+    @XRegistryId
     protected String converterName;
 
     @XNodeList(value = "sourceMimeType", type = ArrayList.class, componentType = String.class)
@@ -63,9 +65,7 @@ public class ConverterDescriptor {
     protected String converterType = CUSTOM_CONVERTER_TYPE;
 
     @XNode("@bypassIfSameMimeType")
-    protected Boolean bypassIfSameMimeType;
-
-    protected boolean wrappedTransformer = false;
+    protected boolean bypassIfSameMimeType;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String, String> parameters = new HashMap<>();
@@ -77,12 +77,13 @@ public class ConverterDescriptor {
     protected List<String> subConverters = new ArrayList<>();
 
     /**
-     * Returns whether the conversion should be bypassed if the input blob mime type equals the converter destination mime type.
+     * Returns whether the conversion should be bypassed if the input blob mime type equals the converter destination
+     * mime type.
      *
      * @since 11.1
      */
     public boolean isBypassIfSameMimeType() {
-        return Boolean.TRUE.equals(bypassIfSameMimeType);
+        return bypassIfSameMimeType;
     }
 
     public String getConverterName() {
@@ -101,79 +102,26 @@ public class ConverterDescriptor {
         return destinationMimeType;
     }
 
-    public void initConverter() {
-        if (instance == null) {
-            if (className == null || converterType.equals(CHAINED_CONVERTER_TYPE)) {
-
-                if (subConverters == null || subConverters.isEmpty()) {
-                    // create a Chained converter based on mimetypes
-                    instance = new ChainedConverter();
-                } else {
-                    // create a Chained converter based on converter chain
-                    instance = new ChainedConverter(subConverters);
-                }
-                converterType = CHAINED_CONVERTER_TYPE;
+    public Converter getConverterInstance() throws ReflectiveOperationException {
+        Converter instance;
+        if (className == null || converterType.equals(CHAINED_CONVERTER_TYPE)) {
+            if (subConverters == null || subConverters.isEmpty()) {
+                // create a Chained converter based on mimetypes
+                instance = new ChainedConverter();
             } else {
-                try {
-                    instance = (Converter) className.getDeclaredConstructor().newInstance();
-                } catch (ReflectiveOperationException e) {
-                    throw new RuntimeException(e);
-                }
+                // create a Chained converter based on converter chain
+                instance = new ChainedConverter(subConverters);
             }
-            instance.init(this);
+            converterType = CHAINED_CONVERTER_TYPE;
+        } else {
+            instance = (Converter) className.getDeclaredConstructor().newInstance();
         }
-    }
-
-    public Converter getConverterInstance() {
-        initConverter();
+        instance.init(this);
         return instance;
     }
 
     public Map<String, String> getParameters() {
         return parameters;
-    }
-
-    public ConverterDescriptor merge(ConverterDescriptor other) {
-
-        if (!other.converterName.equals(converterName)) {
-            throw new UnsupportedOperationException("Can not merge ConverterDesciptors with different names");
-        }
-
-        if (wrappedTransformer) {
-            // converter completely override wrapped transformers
-            return other;
-        }
-
-        if (other.parameters != null) {
-            parameters.putAll(other.parameters);
-        }
-        if (other.className != null) {
-            instance = null;
-            className = other.className;
-        }
-        if (other.sourceMimeTypes != null) {
-            for (String mt : other.sourceMimeTypes) {
-                if (!sourceMimeTypes.contains(mt)) {
-                    sourceMimeTypes.add(mt);
-                }
-
-            }
-            // sourceMimeTypes.addAll(other.sourceMimeTypes);
-        }
-        if (other.destinationMimeType != null) {
-            destinationMimeType = other.destinationMimeType;
-        }
-        if (other.converterType != null) {
-            converterType = other.converterType;
-        }
-        if (other.steps != null && !other.steps.isEmpty()) {
-            steps = other.steps;
-        }
-        if (other.bypassIfSameMimeType != null) {
-            bypassIfSameMimeType = other.bypassIfSameMimeType;
-        }
-
-        return this;
     }
 
     public String getConverterType() {
