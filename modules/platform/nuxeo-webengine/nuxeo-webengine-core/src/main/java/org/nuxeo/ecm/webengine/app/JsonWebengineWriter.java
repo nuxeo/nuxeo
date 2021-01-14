@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.webengine.app;
 
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -93,13 +95,24 @@ public class JsonWebengineWriter {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "exception");
         jg.writeNumberField("status", statusCode);
-        jg.writeStringField("message", t.getMessage());
+        jg.writeStringField("message", getExceptionMessage(t.getMessage(), statusCode));
         if (jsonFactoryManager.isStackDisplay()) {
             jg.writeStringField("stacktrace", getStackTraceString(t));
             jg.writeObjectField("exception", t);
         }
         jg.writeEndObject();
         jg.flush();
+    }
+
+    /**
+     * @since 11.5
+     */
+    protected static String getExceptionMessage(String exceptionMessage, int statusCode) {
+        if (statusCode < SC_INTERNAL_SERVER_ERROR || jsonFactoryManager.isStackDisplay() || Framework.isDevModeSet()) {
+            return exceptionMessage;
+        } else {
+            return "Internal Server Error";
+        }
     }
 
     protected static String getStackTraceString(Throwable t) throws IOException {

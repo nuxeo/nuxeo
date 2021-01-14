@@ -263,7 +263,7 @@ public class TestFileSystemItemOperations {
                                     .set("id", topLevelFolder.getId())
                                     .set(BATCH_SIZE, 10)
                                     .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", error);
+        assertEquals("Internal Server Error", error);
     }
 
     @Test
@@ -571,7 +571,7 @@ public class TestFileSystemItemOperations {
                                                                         .getTopLevelFolderItem(session.getPrincipal())
                                                                         .getId())
                                     .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Failed to invoke operation: NuxeoDrive.Delete", error);
+        assertEquals("Internal Server Error", error);
     }
 
     @Test
@@ -648,7 +648,7 @@ public class TestFileSystemItemOperations {
                                                                         .getId())
                                     .set("name", "New name for top level folder")
                                     .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Failed to invoke operation: NuxeoDrive.Rename", error);
+        assertEquals("Internal Server Error", error);
     }
 
     /**
@@ -768,11 +768,7 @@ public class TestFileSystemItemOperations {
                                     .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
                                     .set(DEST_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file2.getId())
                                     .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        String expectedMessage = String.format(
-                "Failed to invoke operation: NuxeoDrive.Move, Failed to invoke operation NuxeoDrive.Move, "
-                        + "Cannot move a file system item to file system item with id %s because it is not a folder.",
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file2.getId());
-        assertEquals(expectedMessage, error);
+        assertEquals("Internal Server Error", error);
 
         // ------------------------------------------------------
         // Sync root => fail
@@ -781,7 +777,7 @@ public class TestFileSystemItemOperations {
                              .set(SRC_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
                              .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
                              .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Failed to invoke operation: NuxeoDrive.Move", error);
+        assertEquals("Internal Server Error", error);
 
         // ------------------------------------------------------
         // Top level folder => fail
@@ -793,7 +789,7 @@ public class TestFileSystemItemOperations {
                                                                  .getId())
                              .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
                              .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Failed to invoke operation: NuxeoDrive.Move", error);
+        assertEquals("Internal Server Error", error);
 
         // ------------------------------------------------------
         // File to Folder => succeed
