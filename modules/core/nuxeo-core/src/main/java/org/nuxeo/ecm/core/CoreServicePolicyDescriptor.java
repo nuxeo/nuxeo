@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Descriptor for Core Service versionRemovalPolicy extension point configuration.
@@ -28,6 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Florent Guillaume
  */
 @XObject("policy")
+@XRegistry
 public class CoreServicePolicyDescriptor {
 
     @XNode("@class")
