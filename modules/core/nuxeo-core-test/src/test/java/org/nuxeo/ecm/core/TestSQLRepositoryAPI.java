@@ -49,6 +49,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -1534,6 +1536,61 @@ public class TestSQLRepositoryAPI {
         // then we can remove the folder that contains both the proxy and the target
         assertTrue(session.canRemoveDocument(folder.getRef()));
         session.removeDocument(folder.getRef());
+    }
+
+    @Test
+    public void testConcurrentRemoveProxiesWithSameTarget() throws InterruptedException {
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentModel proxy1 = session.createProxy(doc.getRef(), folder.getRef());
+        DocumentModel proxy2 = session.createProxy(doc.getRef(), folder.getRef());
+        List<DocumentRef> proxies = Arrays.asList(proxy1.getRef(), proxy2.getRef());
+        session.save();
+        nextTransaction();
+
+        CyclicBarrier barrier = new CyclicBarrier(2);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        List<Exception> exc = Collections.synchronizedList(new ArrayList<>());
+        executor.execute(() -> removeProxy(0, proxies, barrier, exc));
+        executor.execute(() -> removeProxy(1, proxies, barrier, exc));
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+        if (!exc.isEmpty()) {
+            NuxeoException e = new NuxeoException("Exceptions in threads");
+            exc.forEach(e::addSuppressed);
+            throw e;
+        }
+    }
+
+    protected void removeProxy(int n, List<DocumentRef> docRefs, CyclicBarrier barrier, List<Exception> exc) {
+        DocumentRef docRef = docRefs.get(n);
+        try {
+            TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(session, s -> {
+                // load all docs
+                docRefs.forEach(s::getDocument);
+                // wait for both threads to be at the same point
+                await(barrier);
+                // remove proxy
+                s.removeDocument(docRef);
+                s.save();
+            }));
+        } catch (Exception e) { // NOSONAR
+            exc.add(e);
+            throw e;
+        }
+    }
+
+    protected void await(CyclicBarrier barrier) {
+        try {
+            barrier.await(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
+        } catch (BrokenBarrierException | TimeoutException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     public void TODOtestQuery() {
