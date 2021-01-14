@@ -40,8 +40,9 @@ import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -54,6 +55,8 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     private static final Log LOG = LogFactory.getLog(CUserServiceImpl.class);
 
     private static final String CERTIFICATE_DIRECTORY_NAME = "certificate";
+
+    private static final String XP = "cuserdescriptor";
 
     /**
      * Configurable country code
@@ -69,6 +72,26 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
      * Configurable organizational unit name
      */
     protected String organizationalUnit;
+
+    @Override
+    public void start(ComponentContext context) {
+        this.<CUserDescriptor> getRegistryContribution(XP).ifPresent(desc -> {
+            countryCode = desc.getCountryCode();
+            if (!CUserDescriptor.validateCountryCode(countryCode)) {
+                String message = String.format("Invalid country code for user certificate: '%s'", countryCode);
+                addRuntimeMessage(Level.ERROR, message);
+            }
+            organization = desc.getOrganization();
+            organizationalUnit = desc.getOrganizationalUnit();
+        });
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        countryCode = null;
+        organization = null;
+        organizationalUnit = null;
+    }
 
     @Override
     public UserInfo getUserInfo(DocumentModel userModel) throws CertException {
@@ -179,11 +202,9 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
     @Override
     public byte[] getRootCertificateData() {
-        byte[] certificateData = getRootService().getRootPublicCertificate();
-        return certificateData;
+        return getRootService().getRootPublicCertificate();
     }
 
-    @SuppressWarnings("boxing")
     @Override
     public boolean hasCertificate(String userID) throws CertException {
         return Framework.doPrivileged(() -> {
@@ -202,16 +223,6 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                 assert (null == session.getEntry(userID));
             }
         });
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof CUserDescriptor) {
-            CUserDescriptor desc = (CUserDescriptor) contribution;
-            countryCode = desc.getCountryCode();
-            organization = desc.getOrganization();
-            organizationalUnit = desc.getOrganizationalUnit();
-        }
     }
 
     protected CertService getCertService() {
