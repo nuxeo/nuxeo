@@ -19,13 +19,15 @@
  */
 package org.nuxeo.ecm.core.cache;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor of cache contrib
@@ -33,7 +35,8 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 6.0
  */
 @XObject("cache")
-public class CacheDescriptor implements Descriptor {
+@XRegistry
+public class CacheDescriptor {
 
     /** Default TTL in minutes. */
     public static final long DEFAULT_TTL = 1;
@@ -56,22 +59,30 @@ public class CacheDescriptor implements Descriptor {
     public static final String OPTION_CONCURRENCY_LEVEL = "concurrencyLevel";
 
     @XNode("@name")
-    public String name;
-
-    @XNode("@remove")
-    public boolean remove;
+    @XRegistryId
+    protected String name;
 
     @XNode("@class")
     protected Class<? extends CacheManagement> klass;
 
     @XNode("ttl")
-    private Long ttl;
+    protected Long ttl;
 
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> options = new HashMap<>();
+    protected Map<String, String> options = new HashMap<>();
 
-    @Override
-    public String getId() {
+    public CacheDescriptor() {
+    }
+
+    /** @since 11.5 */
+    public CacheDescriptor(String name, Class<? extends CacheManagement> klass, Long ttl, Map<String, String> options) {
+        this.name = name;
+        this.klass = klass;
+        this.ttl = ttl;
+        this.options.putAll(options);
+    }
+
+    public String getName() {
         return name;
     }
 
@@ -79,26 +90,12 @@ public class CacheDescriptor implements Descriptor {
         return ttl == null ? DEFAULT_TTL : ttl.longValue();
     }
 
-    public void setTTL(Long value) {
-        ttl = value;
+    public Class<? extends CacheManagement> getKlass() {
+        return klass;
     }
 
-    @Override
-    public Descriptor merge(Descriptor o) {
-        CacheDescriptor other = (CacheDescriptor) o;
-        CacheDescriptor merged = new CacheDescriptor();
-        merged.name = name;
-        merged.remove = other.remove;
-        merged.ttl = other.ttl != null ? other.ttl : ttl;
-        merged.klass = other.klass != null ? other.klass : klass;
-        merged.options.putAll(options);
-        merged.options.putAll(other.options);
-        return merged;
-    }
-
-    @Override
-    public boolean doesRemove() {
-        return remove;
+    public Map<String, String> getOptions() {
+        return Collections.unmodifiableMap(options);
     }
 
 }

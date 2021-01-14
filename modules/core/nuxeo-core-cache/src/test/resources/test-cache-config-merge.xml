@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.cache.test2">
+
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
+
+    <cache name="myid">
+      <ttl>456</ttl>
+      <option name="foo">foovalue2</option>
+    </cache>
+
+  </extension>
+
+</component>
