@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -61,4 +62,9 @@ public class FooObject extends DefaultObject {
         throw new NuxeoException("bad request", SC_BAD_REQUEST);
     }
 
+    @GET
+    @Path("internal-error")
+    public Object doInternalServerErrorException() {
+        throw new NuxeoException("a secret message", SC_INTERNAL_SERVER_ERROR);
+    }
 }

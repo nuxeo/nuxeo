@@ -351,7 +351,7 @@ public class TestPermissionHierarchy {
                                      .set("id", topLevelFolder.getId())
                                      .set(BATCH_SIZE, 10)
                                      .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", error);
+        assertEquals("Internal Server Error", error);
 
         // Get children
         ArrayNode topLevelChildren = clientSession1.newRequest(NuxeoDriveGetChildren.ID)
@@ -474,7 +474,7 @@ public class TestPermissionHierarchy {
                               .set("id", sharedSyncRootParent.getId())
                               .set(BATCH_SIZE, 10)
                               .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", error);
+        assertEquals("Internal Server Error", error);
 
         // Get children
         List<DefaultSyncRootFolderItem> sharedSyncRoots = clientSession1.newRequest(NuxeoDriveGetChildren.ID)
@@ -577,7 +577,7 @@ public class TestPermissionHierarchy {
                               .set("id", userSyncRootParent.getId())
                               .set(BATCH_SIZE, 10)
                               .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", error);
+        assertEquals("Internal Server Error", error);
 
         // Get children
         userSyncRoots = clientSession1.newRequest(NuxeoDriveGetChildren.ID)
