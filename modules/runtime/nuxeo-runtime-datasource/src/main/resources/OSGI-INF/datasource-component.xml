@@ -102,6 +102,7 @@
 
     <object class="org.nuxeo.runtime.datasource.DataSourceDescriptor" />
     <object class="org.nuxeo.runtime.datasource.DataSourceLinkDescriptor" />
+    <registry class="org.nuxeo.runtime.datasource.DataSourceRegistry" />
   </extension-point>
 
 </component>

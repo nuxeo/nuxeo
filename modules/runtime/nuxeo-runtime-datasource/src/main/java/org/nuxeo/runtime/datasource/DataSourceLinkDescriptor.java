@@ -17,8 +17,12 @@ package org.nuxeo.runtime.datasource;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("link")
+@XRegistry(merge = false)
+@XRegistryId("@name")
 public class DataSourceLinkDescriptor {
 
     protected String name;
