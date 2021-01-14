@@ -21,11 +21,13 @@ package org.nuxeo.ecm.platform.web.common.locale;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * @since 5.6
  */
 @XObject("provider")
+@XRegistry
 public class LocaleProviderDescriptor {
 
     @XNode("@class")
