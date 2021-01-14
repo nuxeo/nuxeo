@@ -30,15 +30,6 @@ public class PropertyDescriptor {
     @XNode("@value")
     private String value;
 
-    public PropertyDescriptor() {
-        // default constructor
-    }
-
-    public PropertyDescriptor(PropertyDescriptor toCopy) {
-        this.xpath = toCopy.xpath;
-        this.value = toCopy.value;
-    }
-
     public String getXpath() {
         return xpath;
     }

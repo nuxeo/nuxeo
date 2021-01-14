@@ -18,21 +18,27 @@
  */
 package org.nuxeo.ecm.platform.content.template.service;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.content.template.listener.RepositoryInitializationListener;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class ContentTemplateServiceImpl extends DefaultComponent implements ContentTemplateService {
+
+    private static final Logger log = LogManager.getLogger(ContentTemplateServiceImpl.class);
 
     public static final String NAME = "org.nuxeo.ecm.platform.content.template.service.TemplateService";
 
@@ -42,13 +48,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
 
     public static final String POST_CONTENT_CREATION_HANDLERS_EP = "postContentCreationHandlers";
 
-    private static final Log log = LogFactory.getLog(ContentTemplateServiceImpl.class);
-
-    private final Map<String, ContentFactoryDescriptor> factories = new HashMap<>();
-
-    private FactoryBindingRegistry factoryBindings;
-
-    private PostContentCreationHandlerRegistry postContentCreationHandlers;
+    protected List<PostContentCreationHandler> postContentCreationHandlers;
 
     private RepositoryInitializationHandler initializationHandler;
 
@@ -57,9 +57,6 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
         // register our Repo init listener
         initializationHandler = new RepositoryInitializationListener();
         initializationHandler.install();
-
-        factoryBindings = new FactoryBindingRegistry();
-        postContentCreationHandlers = new PostContentCreationHandlerRegistry();
     }
 
     @Override
@@ -70,81 +67,88 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(FACTORY_DECLARATION_EP)) {
-            // store factories
-            ContentFactoryDescriptor descriptor = (ContentFactoryDescriptor) contribution;
-            factories.put(descriptor.getName(), descriptor);
-        } else if (extensionPoint.equals(FACTORY_BINDING_EP)) {
-            // store factories binding to types
-            FactoryBindingDescriptor descriptor = (FactoryBindingDescriptor) contribution;
-            if (factories.containsKey(descriptor.getFactoryName())) {
-                factoryBindings.addContribution(descriptor);
-            } else {
-                log.error("Factory Binding" + descriptor.getName() + " can not be registered since Factory "
-                        + descriptor.getFactoryName() + " is not registered");
-            }
-        } else if (POST_CONTENT_CREATION_HANDLERS_EP.equals(extensionPoint)) {
-            PostContentCreationHandlerDescriptor descriptor = (PostContentCreationHandlerDescriptor) contribution;
-            postContentCreationHandlers.addContribution(descriptor);
-        }
+    public void start(ComponentContext context) {
+        postContentCreationHandlers = getOrderedHandlers();
+
+        // check factories referenced by bindings
+        Set<String> factories = this.<MapRegistry> getExtensionPointRegistry(FACTORY_DECLARATION_EP)
+                                    .getContributions()
+                                    .keySet();
+        this.<FactoryBindingDescriptor> getRegistryContributions(FACTORY_BINDING_EP)
+            .stream()
+            .filter(binding -> !factories.contains(binding.getFactoryName()))
+            .forEach(binding -> {
+                String msg = String.format("Factory Binding '%s' references unknown factory '%s'", binding.getName(),
+                        binding.getFactoryName());
+                log.error(msg);
+                addRuntimeMessage(Level.ERROR, msg);
+            });
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(FACTORY_DECLARATION_EP)) {
-            ContentFactoryDescriptor descriptor = (ContentFactoryDescriptor) contribution;
-            factories.remove(descriptor.getName());
-        } else if (extensionPoint.equals(FACTORY_BINDING_EP)) {
-            FactoryBindingDescriptor descriptor = (FactoryBindingDescriptor) contribution;
-            factoryBindings.removeContribution(descriptor);
-        } else if (POST_CONTENT_CREATION_HANDLERS_EP.equals(extensionPoint)) {
-            PostContentCreationHandlerDescriptor descriptor = (PostContentCreationHandlerDescriptor) contribution;
-            postContentCreationHandlers.removeContribution(descriptor);
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        postContentCreationHandlers = null;
     }
 
-    /*
-     * Instantiate a new factory for each caller, because factories are actually stateful, they contain the session of
-     * their root.
-     */
+    protected List<PostContentCreationHandler> getOrderedHandlers() {
+        List<PostContentCreationHandlerDescriptor> descs = getRegistryContributions(POST_CONTENT_CREATION_HANDLERS_EP);
+        Collections.sort(descs);
+
+        List<PostContentCreationHandler> handlers = new ArrayList<>();
+        for (PostContentCreationHandlerDescriptor desc : descs) {
+            try {
+                handlers.add(desc.getClazz().getDeclaredConstructor().newInstance());
+            } catch (ReflectiveOperationException e) {
+                String msg = String.format("Unable to instantiate class for handler: %s (%s)", desc.getName(),
+                        e.getMessage());
+                addRuntimeMessage(Level.ERROR, msg);
+                log.error(msg, e);
+            }
+        }
+        return handlers;
+    }
+
     @Override
     public ContentFactory getFactoryForType(String documentType) {
-        FactoryBindingDescriptor descriptor = factoryBindings.getContribution(documentType);
-        if (descriptor == null || !documentType.equals(descriptor.getTargetType())) {
-            return null;
-        }
-        return getFactoryInstance(descriptor);
+        return getFactoryInstance(documentType);
     }
 
-    /*
-     * Instantiate a new factory for each caller, because factories are actually stateful, they contain the session of
+    public ContentFactory getFactoryForFacet(String facet) {
+        return getFactoryInstance(facet);
+    }
+
+    /**
+     * Instantiate a new factory for each caller, because factories are actually stateful: they contain the session of
      * their root.
      */
-    public ContentFactory getFactoryForFacet(String facet) {
-        FactoryBindingDescriptor descriptor = factoryBindings.getContribution(facet);
-        if (descriptor == null || !facet.equals(descriptor.getTargetFacet())) {
+    protected ContentFactory getFactoryInstance(String documentTypeOrFacet) {
+        if (documentTypeOrFacet == null) {
             return null;
         }
-        return getFactoryInstance(descriptor);
-    }
-
-    protected ContentFactory getFactoryInstance(FactoryBindingDescriptor descriptor) {
-        ContentFactoryDescriptor factoryDescriptor = factories.get(descriptor.getFactoryName());
-        try {
-            ContentFactory factory = factoryDescriptor.getClassName().getConstructor().newInstance();
-            boolean factoryOK = factory.initFactory(descriptor.getOptions(), descriptor.getRootAcl(),
-                    descriptor.getTemplate());
-            if (!factoryOK) {
-                log.error("Error while initializing instance of factory " + factoryDescriptor.getName());
-                return null;
+        Optional<FactoryBindingDescriptor> optBinding = getRegistryContribution(FACTORY_BINDING_EP,
+                documentTypeOrFacet);
+        if (optBinding.isPresent()) {
+            FactoryBindingDescriptor binding = optBinding.get();
+            Optional<ContentFactoryDescriptor> optFactory = getRegistryContribution(FACTORY_DECLARATION_EP,
+                    binding.getFactoryName());
+            if (optFactory.isPresent()) {
+                ContentFactoryDescriptor factoryDesc = optFactory.get();
+                try {
+                    ContentFactory factory = factoryDesc.getClassName().getConstructor().newInstance();
+                    boolean factoryOK = factory.initFactory(binding.getOptions(), binding.getRootAcl(),
+                            binding.getTemplate());
+                    if (!factoryOK) {
+                        log.error("Error while initializing instance of factory {}", factoryDesc.getName());
+                        return null;
+                    }
+                    return factory;
+                } catch (ReflectiveOperationException e) {
+                    log.error("Error while creating instance of factory {}: {}", factoryDesc.getName(), e.getMessage());
+                    return null;
+                }
             }
-            return factory;
-        } catch (ReflectiveOperationException e) {
-            log.error(
-                    "Error while creating instance of factory " + factoryDescriptor.getName() + " :" + e.getMessage());
-            return null;
         }
+        return null;
     }
 
     @Override
@@ -164,18 +168,23 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
 
     @Override
     public void executePostContentCreationHandlers(CoreSession session) {
-        for (PostContentCreationHandler handler : postContentCreationHandlers.getOrderedHandlers()) {
+        for (PostContentCreationHandler handler : postContentCreationHandlers) {
             handler.execute(session);
         }
     }
 
     // for testing
+
     public Map<String, ContentFactoryDescriptor> getFactories() {
-        return factories;
+        Map<String, ContentFactoryDescriptor> contribs = this.<MapRegistry> getExtensionPointRegistry(
+                FACTORY_DECLARATION_EP).getContributions();
+        return Collections.unmodifiableMap(contribs);
     }
 
     public Map<String, FactoryBindingDescriptor> getFactoryBindings() {
-        return factoryBindings.toMap();
+        Map<String, FactoryBindingDescriptor> contribs = this.<MapRegistry> getExtensionPointRegistry(
+                FACTORY_BINDING_EP).getContributions();
+        return Collections.unmodifiableMap(contribs);
     }
 
 }

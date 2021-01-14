@@ -23,18 +23,24 @@ package org.nuxeo.ecm.platform.content.template.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Content factory descriptor. Immutable.
  */
 @XObject(value = "contentFactory")
+@XRegistry(enable = false)
 public class ContentFactoryDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
-    @XNode("@enabled")
-    private boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    private boolean enabled;
 
     @XNode("@class")
     private Class<ContentFactory> className;

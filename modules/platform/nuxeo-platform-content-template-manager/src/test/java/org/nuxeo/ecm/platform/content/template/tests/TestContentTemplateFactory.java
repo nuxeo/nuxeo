@@ -52,7 +52,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.platform.content.template.tests:test-content-template-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.content.template:OSGI-INF/content-template-framework.xml")
 @Deploy("org.nuxeo.ecm.platform.content.template.tests:test-content-template-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.content.template.tests:test-content-template-listener.xml")
 public class TestContentTemplateFactory {

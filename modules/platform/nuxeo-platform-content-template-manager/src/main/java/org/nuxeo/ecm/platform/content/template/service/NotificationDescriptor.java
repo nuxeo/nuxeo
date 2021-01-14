@@ -40,18 +40,6 @@ public class NotificationDescriptor {
     @XNodeList(value = "group", type = ArrayList.class, componentType = String.class)
     private List<String> groups;
 
-    public NotificationDescriptor() {
-        // default constructor
-        this.users = new ArrayList<>();
-        this.groups = new ArrayList<>();
-    }
-
-    public NotificationDescriptor(NotificationDescriptor toCopy) {
-        this.event = toCopy.event;
-        this.users = new ArrayList<>(toCopy.users);
-        this.groups = new ArrayList<>(toCopy.groups);
-    }
-
     public String getEvent() {
         return event;
     }

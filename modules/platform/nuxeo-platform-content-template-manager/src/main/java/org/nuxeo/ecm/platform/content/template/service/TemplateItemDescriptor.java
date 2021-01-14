@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.content.template.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -55,24 +54,6 @@ public class TemplateItemDescriptor {
 
     @XNodeList(value = "notifications/notification", type = ArrayList.class, componentType = NotificationDescriptor.class)
     public List<NotificationDescriptor> notifications;
-
-    public TemplateItemDescriptor() {
-        // default constructor
-        acl = new ArrayList<>();
-        properties = new ArrayList<>();
-        notifications = new ArrayList<>();
-    }
-
-    public TemplateItemDescriptor(TemplateItemDescriptor toCopy) {
-        this.typeName = toCopy.typeName;
-        this.id = toCopy.id;
-        this.title = toCopy.title;
-        this.path = toCopy.path;
-        this.description = toCopy.description;
-        this.acl = toCopy.acl.stream().map(ACEDescriptor::new).collect(Collectors.toList());
-        this.properties = toCopy.properties.stream().map(PropertyDescriptor::new).collect(Collectors.toList());
-        this.notifications = toCopy.notifications.stream().map(NotificationDescriptor::new).collect(Collectors.toList());
-    }
 
     public String getPath() {
         return path;

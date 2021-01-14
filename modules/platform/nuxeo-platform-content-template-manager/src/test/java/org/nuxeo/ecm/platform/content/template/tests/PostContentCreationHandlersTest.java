@@ -48,7 +48,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.content.template")
 @Deploy("org.nuxeo.ecm.platform.content.template.tests:test-content-template-handlers-contrib.xml")
-@Deploy("org.nuxeo.ecm.platform.content.template.tests:test-content-template-handlers-contrib.xml")
 public class PostContentCreationHandlersTest {
 
     @Inject

@@ -19,8 +19,13 @@
 
 package org.nuxeo.ecm.platform.content.template.service;
 
+import java.util.Comparator;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor of a registered {@link PostContentCreationHandler}.
@@ -29,10 +34,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  */
 @XObject("postContentCreationHandler")
-public class PostContentCreationHandlerDescriptor implements Cloneable,
-        Comparable<PostContentCreationHandlerDescriptor> {
+@XRegistry(enable = false)
+public class PostContentCreationHandlerDescriptor implements Comparable<PostContentCreationHandlerDescriptor> {
+
+    /** @since 11.5 **/
+    public static final Comparator<PostContentCreationHandlerDescriptor> COMPARATOR = //
+            Comparator.comparing(PostContentCreationHandlerDescriptor::getOrder)
+                      .thenComparing(PostContentCreationHandlerDescriptor::getName);
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     @XNode("@class")
@@ -41,8 +52,9 @@ public class PostContentCreationHandlerDescriptor implements Cloneable,
     @XNode("@order")
     private int order = 0;
 
-    @XNode("@enabled")
-    private boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    private boolean enabled;
 
     public String getName() {
         return name;
@@ -60,37 +72,9 @@ public class PostContentCreationHandlerDescriptor implements Cloneable,
         return enabled;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setClazz(Class<PostContentCreationHandler> clazz) {
-        this.clazz = clazz;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    /*
-     * Override the Object.clone to make it public
-     */
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
     @Override
     public int compareTo(PostContentCreationHandlerDescriptor o) {
-        int cmp = order - o.order;
-        if (cmp == 0) {
-            // make sure we have a deterministic sort
-            cmp = name.compareTo(o.name);
-        }
-        return cmp;
+        return COMPARATOR.compare(this, o);
     }
+
 }
