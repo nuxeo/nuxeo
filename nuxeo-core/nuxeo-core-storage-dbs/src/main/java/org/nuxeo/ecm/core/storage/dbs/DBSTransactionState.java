@@ -975,7 +975,8 @@ public class DBSTransactionState {
     protected void updateProxy(DBSDocumentState target, String proxyId) {
         DBSDocumentState proxy = getStateForUpdate(proxyId);
         if (proxy == null) {
-            throw new ConcurrentUpdateException("Proxy " + proxyId + " concurrently deleted");
+            log.debug("Proxy " + proxyId + " concurrently deleted");
+            return;
         }
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         // clear all proxy data
@@ -999,6 +1000,8 @@ public class DBSTransactionState {
     protected boolean isProxySpecific(String key, SchemaManager schemaManager) {
         switch (key) {
         // these are placeful stuff
+        case KEY_SYS_CHANGE_TOKEN:
+        case KEY_CHANGE_TOKEN:
         case KEY_ID:
         case KEY_PARENT_ID:
         case KEY_ANCESTOR_IDS:
