@@ -25,6 +25,8 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.runtime.api.Framework;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -63,43 +65,40 @@ import org.w3c.dom.Node;
  * For a XA datasource, see the documentation for your JDBC driver.
  */
 @XObject("datasource")
+@XRegistry(merge = false)
 public class DataSourceDescriptor {
 
-    /*
-     * It is not possible to expand the variables in the setters because in tests, values are not available in context.
-     * A clean up needs to be done to have the values during startup.
-     */
-
     @XNode("@name")
+    @XRegistryId
     protected String name;
-
-    public String getName() {
-        return Framework.expandVars(name);
-    }
 
     @XNode("@xaDataSource")
     protected String xaDataSource;
 
-    public String getXaDataSource() {
-        return Framework.expandVars(xaDataSource);
-    }
-
     @XNode("@dataSource")
     protected String dataSource;
-
-    public String getDataSource() {
-        return Framework.expandVars(dataSource);
-    }
 
     @XNode("@driverClassName")
     protected String driverClasssName;
 
-    public String getDriverClasssName() {
-        return Framework.expandVars(driverClasssName);
-    }
-
     @XNode("")
     public Element element;
+
+    public String getName() {
+        return name;
+    }
+
+    public String getXaDataSource() {
+        return xaDataSource;
+    }
+
+    public String getDataSource() {
+        return dataSource;
+    }
+
+    public String getDriverClasssName() {
+        return driverClasssName;
+    }
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties;
