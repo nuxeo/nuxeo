@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor for Core Service orphanVersionRemovalFilter extension point configuration.
@@ -27,6 +29,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @XObject("filter")
+@XRegistry
+@XRegistryId("@class")
 public class CoreServiceOrphanVersionRemovalFilterDescriptor {
 
     @XNode("@class")
