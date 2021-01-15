@@ -18,6 +18,8 @@
  *     Thibaud Arguillere (Nuxeo)
  */
 package org.nuxeo.ecm.platform.importer.factories;
+import static org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent.DEFAULT_FOLDERISH_DOC_TYPE;
+import static org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent.DEFAULT_LEAF_DOC_TYPE;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -58,7 +60,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
      * Instantiate a DefaultDocumentModelFactory that creates Folder and File
      */
     public DefaultDocumentModelFactory() {
-        this("Folder", "File");
+        this(DEFAULT_FOLDERISH_DOC_TYPE, DEFAULT_LEAF_DOC_TYPE);
     }
 
     /**

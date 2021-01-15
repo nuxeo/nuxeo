@@ -18,9 +18,12 @@
  */
 package org.nuxeo.ecm.platform.importer.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.NuxeoException;
+import static java.util.Objects.requireNonNullElse;
+import static org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent.DEFAULT_FOLDERISH_DOC_TYPE;
+import static org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent.DEFAULT_LEAF_DOC_TYPE;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
 import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
@@ -35,21 +38,19 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 public class DefaultImporterServiceImpl implements DefaultImporterService {
 
-    private static Log log = LogFactory.getLog(DefaultImporterServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(DefaultImporterServiceImpl.class);
 
     private Class<? extends ImporterDocumentModelFactory> docModelFactoryClass;
 
     private Class<? extends SourceNode> sourceNodeClass;
 
-    private ImporterDocumentModelFactory documentModelFactory;
-
     private String folderishDocType;
 
     private String leafDocType;
 
-    private ImporterLogger importerLogger;
+    private ImporterDocumentModelFactory documentModelFactory;
 
-    private int transactionTimeout = 0;
+    private ImporterLogger importerLogger;
 
     private String repositoryName;
 
@@ -57,127 +58,115 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
     protected boolean enablePerfLogging = true;
 
+    /**
+     * @since 11.5
+     */
+    public void configure(ImporterConfigurationDescriptor descriptor) throws ReflectiveOperationException {
+        this.sourceNodeClass = requireNonNullElse(descriptor.getSourceNodeClass(), FileSourceNode.class);
+        checkSourceNode(sourceNodeClass);
+
+        ImporterConfigurationDescriptor.DocumentModelFactory factory = descriptor.getDocumentModelFactory();
+        this.docModelFactoryClass = requireNonNullElse(factory.getDocumentModelFactoryClass(),
+                DefaultDocumentModelFactory.class);
+        this.folderishDocType = requireNonNullElse(factory.getFolderishType(), DEFAULT_FOLDERISH_DOC_TYPE);
+        this.leafDocType = requireNonNullElse(factory.getLeafType(), DEFAULT_LEAF_DOC_TYPE);
+        documentModelFactory = createDocumentModelFactory(docModelFactoryClass, folderishDocType, leafDocType);
+
+        Class<? extends ImporterLogger> logClass = descriptor.getImporterLog();
+        if (logClass == null) {
+            log.info("No specific ImporterLogger configured for this importer");
+        } else {
+            importerLogger = logClass.getDeclaredConstructor().newInstance();
+        }
+
+        this.repositoryName = descriptor.getRepository();
+        this.bulkMode = requireNonNullElse(descriptor.getBulkMode(), true);
+        this.enablePerfLogging = requireNonNullElse(descriptor.getEnablePerfLogging(), true);
+    }
+
+    protected void checkSourceNode(Class<? extends SourceNode> sourceNodeClass) {
+        if (sourceNodeClass == null || !FileSourceNode.class.isAssignableFrom(sourceNodeClass)) {
+            throw new IllegalArgumentException("Invalid source node");
+        }
+    }
+
+    protected SourceNode createNewSourceNodeInstanceForSourcePath(String sourcePath) {
+        checkSourceNode(sourceNodeClass);
+        try {
+            return sourceNodeClass.getConstructor(String.class).newInstance(sourcePath);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    protected ImporterDocumentModelFactory createDocumentModelFactory(
+            Class<? extends ImporterDocumentModelFactory> docModelFactoryClass, String folderishDocType,
+            String leafDocType) {
+        try {
+            if (DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
+                return docModelFactoryClass.getConstructor(String.class, String.class)
+                                           .newInstance(folderishDocType, leafDocType);
+            } else {
+                return docModelFactoryClass.getConstructor().newInstance();
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
     @Override
     public void importDocuments(String destinationPath, String sourcePath, boolean skipRootContainerCreation,
             int batchSize, int noImportingThreads) {
         SourceNode sourceNode = createNewSourceNodeInstanceForSourcePath(sourcePath);
-        if (sourceNode == null) {
-            log.error("Need to set a sourceNode to be used by this importer");
-            return;
-        }
-        if (getDocumentModelFactory() == null) {
-            log.error("Need to set a documentModelFactory to be used by this importer");
-        }
-
         DefaultImporterExecutor executor = new DefaultImporterExecutor(repositoryName);
-        executor.setFactory(getDocumentModelFactory());
-        executor.setTransactionTimeout(transactionTimeout);
+        executor.setFactory(documentModelFactory);
+        executor.setTransactionTimeout(0);
         executor.run(sourceNode, destinationPath, skipRootContainerCreation, batchSize, noImportingThreads, true);
+    }
+
+    protected String doImport(AbstractImporterExecutor executor, String destinationPath, String sourcePath,
+            boolean skipRootContainerCreation, int batchSize, int noImportingThreads, boolean interactive,
+            ImporterDocumentModelFactory factory) {
+        SourceNode sourceNode = createNewSourceNodeInstanceForSourcePath(sourcePath);
+        ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(sourceNode, destinationPath,
+                executor.getLogger()).skipRootContainerCreation(skipRootContainerCreation)
+                                     .batchSize(batchSize)
+                                     .nbThreads(noImportingThreads)
+                                     .repository(repositoryName)
+                                     .build();
+        GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
+        runner.setEnablePerfLogging(enablePerfLogging);
+        runner.setTransactionTimeout(executor.getTransactionTimeout());
+        ImporterFilter filter = new EventServiceConfiguratorFilter(false, false, false, false, bulkMode);
+        runner.addFilter(filter);
+        runner.setFactory(factory);
+        return executor.run(runner, interactive);
     }
 
     @Override
     public String importDocuments(AbstractImporterExecutor executor, String destinationPath, String sourcePath,
-            boolean skipRootContainerCreation, int batchSize, int noImportingThreads, boolean interactive)
-            {
-
-        SourceNode sourceNode = createNewSourceNodeInstanceForSourcePath(sourcePath);
-        if (sourceNode == null) {
-            log.error("Need to set a sourceNode to be used by this importer");
-            return "Can not import";
-        }
-        if (getDocumentModelFactory() == null) {
-            log.error("Need to set a documentModelFactory to be used by this importer");
-        }
-
-        ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(sourceNode,
-                destinationPath, executor.getLogger()).skipRootContainerCreation(skipRootContainerCreation).batchSize(
-                batchSize).nbThreads(noImportingThreads).repository(repositoryName).build();
-        GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
-        runner.setEnablePerfLogging(enablePerfLogging);
-        runner.setTransactionTimeout(transactionTimeout);
-        ImporterFilter filter = new EventServiceConfiguratorFilter(false, false, false, false, bulkMode);
-        runner.addFilter(filter);
-        runner.setFactory(getDocumentModelFactory());
-        return executor.run(runner, interactive);
+            boolean skipRootContainerCreation, int batchSize, int noImportingThreads, boolean interactive) {
+        return doImport(executor, destinationPath, sourcePath, skipRootContainerCreation, batchSize, noImportingThreads,
+                interactive, documentModelFactory);
     }
 
     @Override
     public String importDocuments(AbstractImporterExecutor executor, String leafType, String folderishType,
             String destinationPath, String sourcePath, boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads, boolean interactive) {
-        ImporterDocumentModelFactory docModelFactory = getDocumentModelFactory();
-        if (docModelFactory instanceof DefaultDocumentModelFactory) {
-            DefaultDocumentModelFactory defaultDocModelFactory = (DefaultDocumentModelFactory) docModelFactory;
-            defaultDocModelFactory.setLeafType(leafType == null ? getLeafDocType() : leafType);
-            defaultDocModelFactory.setFolderishType(folderishType == null ? getFolderishDocType() : folderishType);
-        }
-        setDocumentModelFactory(docModelFactory);
-        executor.setTransactionTimeout(transactionTimeout);
-        String res = importDocuments(executor, destinationPath, sourcePath, skipRootContainerCreation, batchSize,
-                noImportingThreads, interactive);
-        setDocumentModelFactory(null);
-        return res;
-
-    }
-
-    @Override
-    public void setDocModelFactoryClass(Class<? extends ImporterDocumentModelFactory> docModelFactoryClass) {
-        this.docModelFactoryClass = docModelFactoryClass;
-    }
-
-    @Override
-    public void setSourceNodeClass(Class<? extends SourceNode> sourceNodeClass) {
-        this.sourceNodeClass = sourceNodeClass;
-    }
-
-    protected SourceNode createNewSourceNodeInstanceForSourcePath(String sourcePath) {
-        SourceNode sourceNode = null;
-        if (sourceNodeClass != null && FileSourceNode.class.isAssignableFrom(sourceNodeClass)) {
-            try {
-                sourceNode = sourceNodeClass.getConstructor(String.class).newInstance(sourcePath);
-            } catch (ReflectiveOperationException e) {
-                log.error(e, e);
-            }
-        }
-        return sourceNode;
-    }
-
-    protected ImporterDocumentModelFactory getDocumentModelFactory() {
-        if (documentModelFactory == null && docModelFactoryClass != null) {
-            try {
-                if (DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
-                    setDocumentModelFactory(
-                        docModelFactoryClass.getConstructor(String.class, String.class).newInstance(getFolderishDocType(), getLeafDocType()));
-                } else {
-                    setDocumentModelFactory(docModelFactoryClass.getConstructor().newInstance());
-                }
-            } catch (ReflectiveOperationException e) {
-                throw new NuxeoException(e);
-            }
-        }
-        return documentModelFactory;
-    }
-
-    protected void setDocumentModelFactory(ImporterDocumentModelFactory documentModelFactory) {
-        this.documentModelFactory = documentModelFactory;
+        ImporterDocumentModelFactory factory = createDocumentModelFactory(docModelFactoryClass,
+                requireNonNullElse(folderishType, this.folderishDocType),
+                requireNonNullElse(leafType, this.leafDocType));
+        return doImport(executor, destinationPath, sourcePath, skipRootContainerCreation, batchSize, noImportingThreads,
+                interactive, factory);
     }
 
     public String getFolderishDocType() {
         return folderishDocType;
     }
 
-    @Override
-    public void setFolderishDocType(String folderishDocType) {
-        this.folderishDocType = folderishDocType;
-    }
-
     public String getLeafDocType() {
         return leafDocType;
-    }
-
-    @Override
-    public void setLeafDocType(String fileDocType) {
-        leafDocType = fileDocType;
     }
 
     public ImporterLogger getImporterLogger() {
@@ -185,54 +174,8 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     }
 
     @Override
-    public void setImporterLogger(ImporterLogger importerLogger) {
-        this.importerLogger = importerLogger;
-    }
-
-    /*
-     * @since 5.9.4
-     */
-    @Override
-    public void setTransactionTimeout(int transactionTimeout) {
-        this.transactionTimeout = transactionTimeout;
-    }
-
-    /*
-     * @since 5.7.3
-     */
-    @Override
-    public Class<? extends SourceNode> getSourceNodeClass() {
-        return sourceNodeClass;
-    }
-
-    /*
-     * @since 5.7.3
-     */
-    @Override
-    public Class<? extends ImporterDocumentModelFactory> getDocModelFactoryClass() {
-        return docModelFactoryClass;
-    }
-
-    /**
-     * @since 7.1
-     */
-    @Override
-    public void setRepository(String repositoryName) {
-        this.repositoryName=repositoryName;
-    }
-
-    @Override
-    public void setBulkMode(boolean bulkMode) {
-        this.bulkMode = bulkMode;
-    }
-
-    @Override
-    public void setEnablePerfLogging(boolean enablePerfLogging) {
-        this.enablePerfLogging = enablePerfLogging;
-    }
-
-    @Override
     public boolean getEnablePerfLogging() {
         return this.enablePerfLogging;
     }
+
 }

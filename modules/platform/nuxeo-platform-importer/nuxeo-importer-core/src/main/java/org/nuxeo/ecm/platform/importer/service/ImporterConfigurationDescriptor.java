@@ -18,13 +18,18 @@
  */
 package org.nuxeo.ecm.platform.importer.service;
 
+import static java.util.Objects.requireNonNullElse;
+import static java.util.Objects.requireNonNullElseGet;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 
 @XObject("importerConfig")
+@XRegistry(compatWarnOnMerge = true)
 public class ImporterConfigurationDescriptor {
 
     @XNode("@sourceNodeClass")
@@ -73,12 +78,12 @@ public class ImporterConfigurationDescriptor {
         }
     }
 
-    public Class<?> getSourceNodeClass() {
-        return sourceNodeClass;
+    public Class<? extends FileSourceNode> getSourceNodeClass() {
+        return requireNonNullElse(sourceNodeClass, FileSourceNode.class);
     }
 
     public DocumentModelFactory getDocumentModelFactory() {
-        return documentModelFactory;
+        return requireNonNullElseGet(documentModelFactory, DocumentModelFactory::new);
     }
 
     public Class<? extends ImporterLogger> getImporterLog() {
@@ -100,4 +105,5 @@ public class ImporterConfigurationDescriptor {
     public Boolean getEnablePerfLogging() {
         return enablePerfLogging;
     }
+
 }

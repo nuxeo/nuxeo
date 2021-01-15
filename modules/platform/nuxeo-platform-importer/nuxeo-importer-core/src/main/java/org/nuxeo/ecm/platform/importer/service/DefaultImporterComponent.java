@@ -18,24 +18,17 @@
  */
 package org.nuxeo.ecm.platform.importer.service;
 
-import static java.util.Objects.requireNonNullElseGet;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
-import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
-import org.nuxeo.ecm.platform.importer.service.ImporterConfigurationDescriptor.DocumentModelFactory;
-import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class DefaultImporterComponent extends DefaultComponent {
 
-    private static final Log log = LogFactory.getLog(DefaultImporterComponent.class);
+    private static final Logger log = LogManager.getLogger(DefaultImporterComponent.class);
 
-    protected DefaultImporterService importerService;
+    protected DefaultImporterServiceImpl importerService;
 
     public static final String IMPORTER_CONFIGURATION_XP = "importerConfiguration";
 
@@ -43,75 +36,21 @@ public class DefaultImporterComponent extends DefaultComponent {
 
     public static final String DEFAULT_LEAF_DOC_TYPE = "File";
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (IMPORTER_CONFIGURATION_XP.equals(extensionPoint)) {
-
-            ImporterConfigurationDescriptor descriptor = (ImporterConfigurationDescriptor) contribution;
-            Class<? extends SourceNode> sourceNodeClass = (Class<? extends SourceNode>) descriptor.getSourceNodeClass();
-            if (sourceNodeClass == null) {
-                sourceNodeClass = FileSourceNode.class;
-                log.info("No custom implementation defined for the SourceNode, using FileSourceNode");
-            }
-            importerService.setSourceNodeClass(sourceNodeClass);
-
-            DocumentModelFactory docFactory = requireNonNullElseGet(descriptor.getDocumentModelFactory(),
-                    DocumentModelFactory::new);
-            Class<? extends DefaultDocumentModelFactory> docFactoryClass = docFactory.getDocumentModelFactoryClass();
-            if (docFactoryClass == null) {
-                docFactoryClass = DefaultDocumentModelFactory.class;
-                log.info(
-                        "No custom implementation provided for the documentModelFactory, using DefaultDocumentModelFactory");
-            }
-            importerService.setDocModelFactoryClass(docFactoryClass);
-
-            String folderishType = docFactory.getFolderishType();
-            if (folderishType == null) {
-                folderishType = DEFAULT_FOLDERISH_DOC_TYPE;
-                log.info("No folderish type defined, using Folder by default");
-            }
-            importerService.setFolderishDocType(folderishType);
-
-            String leafType = docFactory.getLeafType();
-            if (leafType == null) {
-                leafType = DEFAULT_LEAF_DOC_TYPE;
-                log.info("No leaf type doc defined, using File by deafult");
-            }
-            importerService.setLeafDocType(leafType);
-
-            Class<? extends ImporterLogger> logClass = descriptor.getImporterLog();
-            if (logClass == null) {
-                log.info("No specific ImporterLogger configured for this importer");
-            } else {
-                try {
-                    importerService.setImporterLogger(logClass.getDeclaredConstructor().newInstance());
-                } catch (ReflectiveOperationException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            if (descriptor.getRepository() != null) {
-                importerService.setRepository(descriptor.getRepository());
-            }
-
-            if (descriptor.getBulkMode() != null) {
-                importerService.setBulkMode(descriptor.getBulkMode().booleanValue());
-            }
-
-            if (descriptor.getEnablePerfLogging() != null) {
-                importerService.setEnablePerfLogging(descriptor.getEnablePerfLogging().booleanValue());
-            }
-        }
-    }
-
-    @Override
-    public void activate(ComponentContext context) {
+    public void start(ComponentContext context) {
         importerService = new DefaultImporterServiceImpl();
+        this.<ImporterConfigurationDescriptor> getRegistryContribution(IMPORTER_CONFIGURATION_XP).ifPresent(desc -> {
+            try {
+                importerService.configure(desc);
+            } catch (ReflectiveOperationException e) {
+                addRuntimeMessage(Level.ERROR, e.getMessage());
+                log.error(e, e);
+            }
+        });
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public void stop(ComponentContext context) throws InterruptedException {
         importerService = null;
     }
 
@@ -122,4 +61,5 @@ public class DefaultImporterComponent extends DefaultComponent {
         }
         return super.getAdapter(adapter);
     }
+
 }

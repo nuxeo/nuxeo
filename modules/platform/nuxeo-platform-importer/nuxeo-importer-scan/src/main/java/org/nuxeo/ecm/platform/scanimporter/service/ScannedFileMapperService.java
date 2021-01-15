@@ -23,6 +23,9 @@ package org.nuxeo.ecm.platform.scanimporter.service;
 import java.io.File;
 import java.io.IOException;
 
+import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
+import org.nuxeo.ecm.platform.scanimporter.processor.ScanedFileFactory;
+
 /**
  * Service interface
  *
@@ -37,4 +40,11 @@ public interface ScannedFileMapperService {
     ImporterConfig getImporterConfig();
 
     String getTargetLeafType();
+
+    /** @since 11.5 */
+    Class<? extends ScanedFileFactory> getFactoryClass();
+
+    /** @since 11.5 */
+    Class<? extends FileSourceNode> getSourceNodeClass();
+
 }

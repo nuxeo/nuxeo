@@ -20,6 +20,8 @@
  */
 package org.nuxeo.ecm.platform.scanimporter.service;
 
+import static java.util.Objects.requireNonNullElse;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -37,10 +39,15 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.tree.DefaultElement;
+import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 import org.nuxeo.ecm.platform.scanimporter.processor.DocumentTypeMapper;
+import org.nuxeo.ecm.platform.scanimporter.processor.ScanedFileFactory;
+import org.nuxeo.ecm.platform.scanimporter.processor.ScanedFileSourceNode;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -55,11 +62,39 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
 
     public static final String MAPPING_EP = "mapping";
 
-    public static final String CONFIG_EP = "config";
-
     protected ScanFileMappingDescriptor mappingDesc = null;
 
+    public static final String CONFIG_EP = "config";
+
     protected ImporterConfig config = null;
+
+    /** @since 11.5 */
+    public static final String GLOBAL_CONFIG_EP = "globalConfig";
+
+    /** @since 11.5 */
+    @XNode("@factoryClass")
+    protected Class<? extends ScanedFileFactory> factoryClass;
+
+    /** @since 11.5 */
+    @XNode("@sourceNodeClass")
+    protected Class<? extends FileSourceNode> sourceNodeClass;
+
+    @Override
+    public void start(ComponentContext context) {
+        this.<ImporterGlobalConfig> getRegistryContribution(GLOBAL_CONFIG_EP).ifPresentOrElse(desc -> {
+            this.factoryClass = requireNonNullElse(desc.getFactoryClass(), ScanedFileFactory.class);
+            this.sourceNodeClass = requireNonNullElse(desc.getSourceNodeClass(), ScanedFileSourceNode.class);
+        }, () -> {
+            this.factoryClass = ScanedFileFactory.class;
+            this.sourceNodeClass = ScanedFileSourceNode.class;
+        });
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        this.factoryClass = null;
+        this.sourceNodeClass = null;
+    }
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -199,4 +234,15 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
     public ImporterConfig getImporterConfig() {
         return config;
     }
+
+    @Override
+    public Class<? extends ScanedFileFactory> getFactoryClass() {
+        return factoryClass;
+    }
+
+    @Override
+    public Class<? extends FileSourceNode> getSourceNodeClass() {
+        return sourceNodeClass;
+    }
+
 }
