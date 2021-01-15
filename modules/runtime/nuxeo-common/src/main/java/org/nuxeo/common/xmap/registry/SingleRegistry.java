@@ -34,7 +34,7 @@ import org.w3c.dom.Element;
  */
 public class SingleRegistry extends AbstractRegistry implements Registry {
 
-    private static final Logger log = LogManager.getLogger(MapRegistry.class);
+    private static final Logger log = LogManager.getLogger(SingleRegistry.class);
 
     // volatile for double-checked locking
     protected volatile Object contribution;
@@ -68,7 +68,7 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
         XAnnotatedMember merge = xObject.getMerge();
         if (merge != null && Boolean.TRUE.equals(merge.getValue(ctx, element))) {
             if (contribution != null && xObject.getCompatWarnOnMerge() && !merge.hasValue(ctx, element)) {
-                log.warn("A contribution on extension '{}' has been implicitely merged: the compatibility "
+                log.warn("A contribution on extension '{}' has been implicitly merged: the compatibility "
                         + "mechanism on its descriptor class '{}' detected it, and the attribute merge=\"true\" "
                         + "should be added to this definition.", extensionId, contribution.getClass().getName());
             }
