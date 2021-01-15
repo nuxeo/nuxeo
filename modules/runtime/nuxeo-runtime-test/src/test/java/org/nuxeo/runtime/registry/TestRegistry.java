@@ -200,7 +200,7 @@ public class TestRegistry {
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         assertEquals(1, caughtEvents.size());
         assertEquals(
-                "The contribution with id 'sample1' on extension 'org.nuxeo.runtime.test.Registry.override#map_compat_warn' has been implicitely merged: "
+                "The contribution with id 'sample1' on extension 'org.nuxeo.runtime.test.Registry.override#map_compat_warn' has been implicitly merged: "
                         + "the compatibility mechanism on its descriptor class 'org.nuxeo.runtime.registry.SampleWarnOnMergeDescriptor' detected it, "
                         + "and the attribute merge=\"true\" should be added to this definition.",
                 caughtEvents.get(0));
