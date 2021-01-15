@@ -31,6 +31,8 @@ import java.util.function.Supplier;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.blob.BlobDispatcher.BlobDispatch;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.helpers.RetentionHelper;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.BlobAccessor;
 import org.nuxeo.ecm.core.model.Repository;
@@ -183,9 +186,9 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     @Override
     public String writeBlob(Blob blob, Document doc, String xpath) throws IOException {
         if (blob == null) {
-            if (MAIN_BLOB_XPATH.equals(xpath) && doc.isUnderRetentionOrLegalHold()) {
-                throw new DocumentSecurityException(
-                        "Cannot delete blob from document " + doc.getUUID() + ", it is under retention / hold");
+            if (MAIN_BLOB_XPATH.equals(xpath)) {
+                CoreSession session = CoreInstance.getCoreSession(doc.getSession().getRepositoryName());
+                RetentionHelper.checkMainContentDeletion(doc, session.getPrincipal());
             }
             return null;
         }

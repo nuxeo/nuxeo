@@ -104,6 +104,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -124,6 +125,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.helpers.RetentionHelper;
 import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
@@ -916,15 +918,8 @@ public class DBSSession extends BaseSession {
         Consumer<State> collector = state -> {
             String id = (String) state.get(KEY_ID);
             removedIds.add(id);
-            if (TRUE.equals(state.get(KEY_HAS_LEGAL_HOLD))) {
-                undeletableIds.add(id);
-            } else {
-                Calendar retainUntil = (Calendar) state.get(KEY_RETAIN_UNTIL);
-                if (retainUntil != null && now.before(retainUntil)) {
-                    undeletableIds.add(id);
-                }
-            }
-            if (TRUE.equals(state.get(KEY_IS_RETENTION_ACTIVE))) {
+            DBSDocument document = getDocument(id);
+            if (!RetentionHelper.canDelete(getDocument(id), principal)) {
                 undeletableIds.add(id);
             }
             if (TRUE.equals(state.get(KEY_IS_PROXY))) {
@@ -1456,18 +1451,10 @@ public class DBSSession extends BaseSession {
         transaction.save();
 
         DBSDocumentState docState = transaction.getStateForUpdate(id);
-
-        Calendar retainUntil = (Calendar) docState.get(KEY_RETAIN_UNTIL);
-        if (retainUntil != null && Calendar.getInstance().before(retainUntil)) {
+        NuxeoPrincipal principal = CoreInstance.getCoreSession(getRepositoryName()).getPrincipal();
+        if(!TRUE.equals(docState.get(KEY_IS_PROXY)) && !RetentionHelper.canDelete(getDocument(docState), principal)) {
             throw new DocumentExistsException("Cannot remove " + id + ", it is under retention / hold");
         }
-        if (TRUE.equals(docState.get(KEY_HAS_LEGAL_HOLD))) {
-            throw new DocumentExistsException("Cannot remove " + id + ", it is under retention / hold");
-        }
-        if (TRUE.equals(docState.get(KEY_IS_RETENTION_ACTIVE))) {
-            throw new DocumentExistsException("Cannot remove " + id + ", it is under active retention");
-        }
-
         // notify blob manager before removal
         try {
             DBSDocument doc = getDocument(docState);

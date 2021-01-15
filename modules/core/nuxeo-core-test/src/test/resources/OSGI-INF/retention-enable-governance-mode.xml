@@ -1,0 +1,7 @@
+<component name="org.nuxeo.runtime.configuration.contribution.retention.mode">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.retention.mode">governance</property>
+  </extension>
+
+</component>

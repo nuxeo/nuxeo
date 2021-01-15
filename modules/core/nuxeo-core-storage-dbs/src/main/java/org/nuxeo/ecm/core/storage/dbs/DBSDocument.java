@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -1231,6 +1230,11 @@ public class DBSDocument extends BaseDocument<State> {
         docState.put(KEY_LOCK_CREATED, null);
         // return old lock
         return new Lock(oldOwner, oldCreated);
+    }
+
+    @Override
+    public boolean isUnderRetentionOrLegalHold() {
+      return super.isUnderRetentionOrLegalHold() || TRUE.equals(getStateOrTarget().get(KEY_IS_RETENTION_ACTIVE));
     }
 
     @Override
