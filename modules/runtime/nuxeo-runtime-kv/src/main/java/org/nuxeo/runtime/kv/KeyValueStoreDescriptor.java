@@ -40,9 +40,6 @@ public class KeyValueStoreDescriptor {
     @XRegistryId
     public String name;
 
-    @XNode("@remove")
-    public boolean remove;
-
     @XNode("@class")
     public Class<? extends KeyValueStoreProvider> klass;
 
@@ -57,10 +54,6 @@ public class KeyValueStoreDescriptor {
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties = new HashMap<>();
 
-    public String getId() {
-        return name;
-    }
-
     /**
      * Empty constructor.
      */
@@ -74,7 +67,6 @@ public class KeyValueStoreDescriptor {
      */
     public KeyValueStoreDescriptor(KeyValueStoreDescriptor other) {
         name = other.name;
-        remove = other.remove;
         klass = other.klass;
         namespace = other.namespace;
         properties.putAll(other.properties);
