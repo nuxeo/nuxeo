@@ -19,100 +19,43 @@
 package org.nuxeo.ecm.platform.importer.service;
 
 import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
-import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
-import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
- * Allows basic configuration of the default importer :
+ * Default importer, configured thanks to contribution to the {@link DefaultImporterComponent} extension point
+ * {@link DefaultImporterComponent#IMPORTER_CONFIGURATION_XP}.
  * <p>
- * Allows configuration of the a DocumentModelFactory and the document types it creates ( if no implementation is
- * contributed, <code>DefaultDocumentModelFactory</code> is used;
+ * Allows configuration of the a DocumentModelFactory and the document types it creates. If no implementation is
+ * contributed, <code>DefaultDocumentModelFactory</code> is used.
  * <p>
- * Also allows configuration of the SourceNode implementation; if none is provided the
- * {@link org.nuxeo.ecm.platform.importer.source.FileSourceNode} it's used by default
+ * Also allows configuration of the SourceNode implementation. If none is contributed, the
+ * {@link org.nuxeo.ecm.platform.importer.source.FileSourceNode} is used.
  */
 public interface DefaultImporterService {
 
     /**
      * Imports documents using a DefaultImporterExecutor and the contributed documentModelFactory and SourceNode
-     * implementations; If no documentModelFactory implementation was contributed to the service,
-     * <code>DefaultDocumentModelFactory</code> it's used If no SourceNode implementation was contributed to the
-     * service, <code>FileSourceNode</code> it's used
+     * implementations.
      */
     void importDocuments(String destionationPath, String sourcePath, boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads);
 
     /***
      * Imports documents using a the given executor and the contributed documentModelFactory and SourceNode
-     * implementations; If no documentModelFactory implementation was contributed to the service,
-     * <code>DefaultDocumentModelFactory</code> it's used If no SourceNode implementation was contributed to the
-     * service, <code>FileSourceNode</code> it's used
+     * implementations.
      */
     String importDocuments(AbstractImporterExecutor executor, String destinationPath, String sourcePath,
             boolean skipRootContainerCreation, int batchSize, int noImportingThreads, boolean interactive);
 
     /***
      * Imports documents using a the given executor and the contributed documentModelFactory and SourceNode
-     * implementations; Allows to overwrite the leaf and folderish types used by the documentModelFactory when
-     * importing; if one of them is not specified then the contributed one is used If no documentModelFactory
-     * implementation was contributed to the service, <code>DefaultDocumentModelFactory</code> it's used If no
-     * SourceNode implementation was contributed to the service, <code>FileSourceNode</code> it's used
+     * implementations.
+     * <p>
+     * Allows specifying the leaf and folderish types to be used by the documentModelFactory when importing. If one of
+     * them is not specified, then the contributed one is used.
      */
     String importDocuments(AbstractImporterExecutor executor, String leafType, String folderishType,
             String destinationPath, String sourcePath, boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads, boolean interactive);
-
-    void setSourceNodeClass(Class<? extends SourceNode> sourceNodeClass);
-
-    void setDocModelFactoryClass(Class<? extends ImporterDocumentModelFactory> docModelFactoryClass);
-
-    void setLeafDocType(String fileDocType);
-
-    void setFolderishDocType(String folderishDocType);
-
-    void setImporterLogger(ImporterLogger importerLogger);
-
-    /**
-     * @since 5.9.4
-     */
-    void setTransactionTimeout(int transactionTimeout);
-
-    /**
-     * @since 7.1
-     */
-    void setRepository(String repositoryName);
-
-    /**
-     * Added waiting the importer refactoring. Only used by Scan Importer.
-     *
-     * @since 5.7.3
-     */
-    @Deprecated
-    Class<? extends SourceNode> getSourceNodeClass();
-
-    /**
-     * Added waiting the importer refactoring. Only used by Scan Importer.
-     *
-     * @since 5.7.3
-     */
-    @Deprecated
-    Class<? extends ImporterDocumentModelFactory> getDocModelFactoryClass();
-
-    /**
-     * Sets the bulk mode for the importer.
-     *
-     * @param bulkMode {@code true} to enable bulk mode (default), or {@code false} to disable it
-     * @since 8.3
-     */
-    void setBulkMode(boolean bulkMode);
-
-    /**
-     * Sets whether or not the GenericMultiThreadedImporter should log performance metrics
-     *
-     * @since 9.3
-     */
-    void setEnablePerfLogging(boolean enablePerfLogging);
 
     /**
      * Gets the enablePerfLogging value used by the GenericMultiThreadImporter. Only used by Scan Importer and JAXRS

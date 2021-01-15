@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent">
-  <implementation
-    class="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent" />
+  <implementation class="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent" />
 
   <service>
-    <provide
-      interface="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperService" />
+    <provide interface="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperService" />
   </service>
 
   <extension-point name="mapping">
-    <object
-      class="org.nuxeo.ecm.platform.scanimporter.service.ScanFileMappingDescriptor" />
+    <object class="org.nuxeo.ecm.platform.scanimporter.service.ScanFileMappingDescriptor" />
   </extension-point>
 
   <extension-point name="config">
-    <object
-      class="org.nuxeo.ecm.platform.scanimporter.service.ImporterConfig" />
+    <object class="org.nuxeo.ecm.platform.scanimporter.service.ImporterConfig" />
+  </extension-point>
+
+  <extension-point name="globalConfig">
+    <object class="org.nuxeo.ecm.platform.scanimporter.service.ImporterGlobalConfig" />
   </extension-point>
 
 </component>

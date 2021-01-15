@@ -70,7 +70,7 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
 
         DefaultImporterService defaultImporterService = Framework.getService(DefaultImporterService.class);
 
-        defaultImporterService.setTransactionTimeout(transactionTimeout);
+        setTransactionTimeout(transactionTimeout);
 
         if (leafType != null || folderishType != null) {
             log.info("Importing with the specified doc types");

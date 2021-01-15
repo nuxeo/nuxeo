@@ -25,7 +25,6 @@ import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.importer.base.GenericThreadedImportTask;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**

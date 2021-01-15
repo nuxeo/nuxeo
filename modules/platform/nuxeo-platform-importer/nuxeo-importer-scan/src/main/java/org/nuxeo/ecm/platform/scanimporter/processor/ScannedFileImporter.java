@@ -73,8 +73,7 @@ public class ScannedFileImporter {
 
     protected static void doCleanUp() {
 
-        ScannedFileMapperService sfms = Framework.getService(ScannedFileMapperService.class);
-        ImporterConfig config = sfms.getImporterConfig();
+        ImporterConfig config = Framework.getService(ScannedFileMapperService.class).getImporterConfig();
         File outDir = null;
 
         if (config != null) {
@@ -107,9 +106,7 @@ public class ScannedFileImporter {
 
     public void doImport() {
 
-        ScannedFileMapperService sfms = Framework.getService(ScannedFileMapperService.class);
-
-        ImporterConfig config = sfms.getImporterConfig();
+        ImporterConfig config = Framework.getService(ScannedFileMapperService.class).getImporterConfig();
         if (config == null) {
             log.error("No configuration can be found, exit importer");
             return;
@@ -142,8 +139,7 @@ public class ScannedFileImporter {
                 !config.isCreateInitialFolder(), config.getBatchSize(), config.getNbThreads(), new BasicLogger(log));
 
         ImporterDocumentModelFactory factory = initDocumentModelFactory(config);
-        importer.setEnablePerfLogging(Framework.getService(
-                DefaultImporterService.class).getEnablePerfLogging());
+        importer.setEnablePerfLogging(Framework.getService(DefaultImporterService.class).getEnablePerfLogging());
         importer.setFactory(factory);
         importer.setTransactionTimeout(config.getTransactionTimeout());
         importer.run();
@@ -158,11 +154,9 @@ public class ScannedFileImporter {
      * @since 5.7.3
      */
     private ImporterDocumentModelFactory initDocumentModelFactory(ImporterConfig config) {
-        Class<? extends ImporterDocumentModelFactory> factoryClass = Framework.getService(
-                DefaultImporterService.class).getDocModelFactoryClass();
-        // Class<? extends DefaultDocumentModelFactory> factoryClass = ScanedFileFactory.class;
+        Class<? extends ScanedFileFactory> factoryClass = Framework.getService(ScannedFileMapperService.class)
+                                                                   .getFactoryClass();
         Constructor<? extends ImporterDocumentModelFactory> cst = null;
-
         try {
             try {
                 cst = factoryClass.getConstructor(ImporterConfig.class);
@@ -179,11 +173,8 @@ public class ScannedFileImporter {
      * @since 5.7.3
      */
     private SourceNode initSourceNode(File file) {
-        Class<? extends SourceNode> srcClass = Framework.getService(DefaultImporterService.class).getSourceNodeClass();
-        // Class<? extends SourceNode> srcClass = ScanedFileSourceNode.class;
-        if (!FileSourceNode.class.isAssignableFrom(srcClass)) {
-            throw new NuxeoException("Waiting source node extending FileSourceNode for Scan Importer");
-        }
+        Class<? extends FileSourceNode> srcClass = Framework.getService(ScannedFileMapperService.class)
+                                                            .getSourceNodeClass();
         try {
             return srcClass.getConstructor(File.class).newInstance(file);
         } catch (ReflectiveOperationException e) {

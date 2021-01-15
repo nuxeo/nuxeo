@@ -21,11 +21,12 @@ package org.nuxeo.ecm.platform.importer.xml.parser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -35,19 +36,18 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.platform.importer.core:OSGI-INF/default-importer-service.xml")
-@Deploy("nuxeo-importer-scan-xml-parser-test:OSGI-INF/xml-importer-scan-config-without-requires.xml")
+@Deploy("org.nuxeo.ecm.platform.scanimporter")
+@Deploy("nuxeo-importer-scan-xml-parser:OSGI-INF/xml-importer-scan-config.xml")
 public class TestDeployment {
+
+    @Inject
+    protected ScannedFileMapperService service;
 
     @Test
     public void testImport() {
-        DefaultImporterService service = Framework.getService(DefaultImporterService.class);
         assertNotNull(service);
-
-        assertEquals("org.nuxeo.ecm.platform.importer.xml.parser.AdvancedScannedFileFactory",
-                service.getDocModelFactoryClass().getName());
-        assertEquals("org.nuxeo.ecm.platform.importer.xml.parser.XMLFileSourceNode",
-                service.getSourceNodeClass().getName());
-
+        assertEquals(AdvancedScannedFileFactory.class, service.getFactoryClass());
+        assertEquals(XMLFileSourceNode.class, service.getSourceNodeClass());
     }
+
 }
