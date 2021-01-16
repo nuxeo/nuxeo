@@ -48,7 +48,6 @@ import org.nuxeo.ecm.platform.scanimporter.processor.ScanedFileFactory;
 import org.nuxeo.ecm.platform.scanimporter.processor.ScanedFileSourceNode;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -62,11 +61,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
 
     public static final String MAPPING_EP = "mapping";
 
-    protected ScanFileMappingDescriptor mappingDesc = null;
-
     public static final String CONFIG_EP = "config";
-
-    protected ImporterConfig config = null;
 
     /** @since 11.5 */
     public static final String GLOBAL_CONFIG_EP = "globalConfig";
@@ -97,20 +92,11 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
-        if (MAPPING_EP.equals(extensionPoint)) {
-            mappingDesc = (ScanFileMappingDescriptor) contribution;
-        } else if (CONFIG_EP.equals(extensionPoint)) {
-            config = (ImporterConfig) contribution;
-        }
-    }
-
-    @Override
     public ScanFileBlobHolder parseMetaData(File xmlFile) throws IOException {
 
         Map<String, Serializable> data = new HashMap<>();
 
+        ScanFileMappingDescriptor mappingDesc = getMappingDesc();
         if (mappingDesc == null) {
             return null;
         }
@@ -211,11 +197,12 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
     }
 
     public ScanFileMappingDescriptor getMappingDesc() {
-        return mappingDesc;
+        return (ScanFileMappingDescriptor) getRegistryContribution(MAPPING_EP).orElse(null);
     }
 
     @Override
     public String getTargetContainerType() {
+        ScanFileMappingDescriptor mappingDesc = getMappingDesc();
         if (mappingDesc == null) {
             return ScanFileMappingDescriptor.DEFAULT_CONTAINER_TYPE;
         }
@@ -224,6 +211,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
 
     @Override
     public String getTargetLeafType() {
+        ScanFileMappingDescriptor mappingDesc = getMappingDesc();
         if (mappingDesc == null) {
             return ScanFileMappingDescriptor.DEFAULT_LEAF_TYPE;
         }
@@ -232,7 +220,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
 
     @Override
     public ImporterConfig getImporterConfig() {
-        return config;
+        return (ImporterConfig) getRegistryContribution(CONFIG_EP).orElse(null);
     }
 
     @Override

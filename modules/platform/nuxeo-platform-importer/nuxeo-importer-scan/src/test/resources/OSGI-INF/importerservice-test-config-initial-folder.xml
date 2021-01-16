@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent.testConfigUpdate">
+
+  <require>org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent.testConfig</require>
+  <extension target="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent" point="config">
+    <importerConfig>
+      <createInitialFolder>false</createInitialFolder>
+    </importerConfig>
+  </extension>
+
+</component>
