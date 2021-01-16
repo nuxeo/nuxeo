@@ -84,7 +84,7 @@ public class TestAction {
     @Test
     public void testFilterRegistry() {
         List<ActionFilter> filters = getRegistry(ActionService.FILTERS_XP).getContributionValues();
-        assertEquals(List.of("theFilter", "filter_defined_globally", "createChild", "local_filter"),
+        assertEquals(List.of("createChild", "local_filter", "theFilter", "filter_defined_globally"),
                 filters.stream().map(ActionFilter::getId).collect(Collectors.toList()));
     }
 
@@ -242,10 +242,10 @@ public class TestAction {
         FilterRule[] opreviewRules = opreviewFilter.getRules();
         assertNotNull(opreviewRules);
         assertEquals(2, opreviewRules.length);
-        assertFalse(opreviewRules[0].grant);
-        assertEquals("filter overriden globally", opreviewRules[0].types[0]);
-        assertTrue(opreviewRules[1].grant);
-        assertEquals("filter defined in action", opreviewRules[1].types[0]);
+        assertTrue(opreviewRules[0].grant);
+        assertEquals("filter defined in action", opreviewRules[0].types[0]);
+        assertFalse(opreviewRules[1].grant);
+        assertEquals("filter overriden globally", opreviewRules[1].types[0]);
     }
 
     // NXP-7287: test override by inner filter
