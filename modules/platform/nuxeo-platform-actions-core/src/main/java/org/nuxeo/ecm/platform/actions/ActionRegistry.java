@@ -147,6 +147,10 @@ public class ActionRegistry extends MapRegistry {
             if (!innerFilters.isEmpty()) {
                 Registry filterRegistry = getFilterRegistry();
                 for (Element innerFilter : innerFilters) {
+                    if (!innerFilter.hasAttribute("append") && !innerFilter.hasAttribute("merge")) {
+                        // compat: inner filters are merged by default
+                        innerFilter.setAttribute("merge", "true");
+                    }
                     filterRegistry.register(ctx, xFilter, innerFilter, tag);
                 }
             }

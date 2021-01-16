@@ -52,8 +52,8 @@ public class DefaultActionFilter implements ActionFilter {
     @XRegistryId
     protected String id;
 
-    @XNode(value = XMerge.MERGE, fallback = "@append", defaultAssignment = "true")
-    @XMerge
+    @XNode(value = XMerge.MERGE, fallback = "@append")
+    @XMerge(defaultAssignment = false)
     protected boolean append;
 
     @XNodeList(value = "rule", type = String[].class, componentType = FilterRule.class)

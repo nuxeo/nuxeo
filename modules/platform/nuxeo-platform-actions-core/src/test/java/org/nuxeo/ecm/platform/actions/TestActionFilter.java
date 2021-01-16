@@ -154,9 +154,7 @@ public class TestActionFilter {
         doc = new MockDocumentModel("Workspace", new String[0]);
         assertTrue(filterAccept(doc, filter));
         doc = new MockDocumentModel("Section", new String[0]);
-        // FIXME
-        // assertFalse(filterAccept(doc, filter));
-        assertTrue(filterAccept(doc, filter));
+        assertFalse(filterAccept(doc, filter));
     }
 
     @Test
