@@ -9,9 +9,15 @@
       </rule>
     </filter>
 
-    <filter id="AppenedFilter" append="true">
+    <filter id="AppendFilter" append="true">
       <rule grant="true">
         <type>Folder</type>
+      </rule>
+    </filter>
+
+    <filter id="MergedFilter" merge="true">
+      <rule grant="true">
+        <type>Workspace</type>
       </rule>
     </filter>
 

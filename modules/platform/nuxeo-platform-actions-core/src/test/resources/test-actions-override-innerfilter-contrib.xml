@@ -6,8 +6,7 @@
     uninstall of actions-contrib.
   </documentation>
 
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-    point="actions">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
 
     <action id="TAB_WITH_LOCAL_FILTER">
       <category>OVERRIDE</category>

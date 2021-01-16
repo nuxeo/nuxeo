@@ -39,6 +39,15 @@
       </filter>
     </action>
 
+    <action id="TAB_WITH_LOCAL_FILTER_MERGED">
+      <category>OVERRIDE</category>
+      <filter id="local_filter_merged">
+        <rule grant="false">
+          <type>local merge of filter</type>
+        </rule>
+      </filter>
+    </action>
+
     <action id="actionTestProperties">
       <properties append="true">
         <property name="newProperty">

@@ -77,7 +77,14 @@
       </rule>
     </filter>
 
-    <filter id="AppenedFilter">
+    <filter id="AppendFilter">
+      <rule grant="true">
+        <type>Workspace</type>
+        <type>Section</type>
+      </rule>
+    </filter>
+
+    <filter id="MergedFilter">
       <rule grant="true">
         <type>Workspace</type>
         <type>Section</type>
