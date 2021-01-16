@@ -77,14 +77,15 @@ public class TestAction {
         List<ActionDescriptor> actions = getRegistry(ActionService.ACTIONS_XP).getContributionValues();
         assertEquals(
                 List.of("newDocument", "logout", "TAB_VIEW", "TAB_WITH_LOCAL_FILTER", "TAB_WITH_GLOBAL_FILTER",
-                        "actionTestProperties", "singleActionRetrievedWithFilter"),
+                        "TAB_WITH_LOCAL_FILTER_MERGED", "actionTestProperties", "singleActionRetrievedWithFilter"),
                 actions.stream().map(ActionDescriptor::getId).collect(Collectors.toList()));
     }
 
     @Test
     public void testFilterRegistry() {
         List<ActionFilter> filters = getRegistry(ActionService.FILTERS_XP).getContributionValues();
-        assertEquals(List.of("createChild", "local_filter", "theFilter", "filter_defined_globally"),
+        assertEquals(
+                List.of("createChild", "local_filter", "local_filter_merged", "theFilter", "filter_defined_globally"),
                 filters.stream().map(ActionFilter::getId).collect(Collectors.toList()));
     }
 
@@ -266,8 +267,7 @@ public class TestAction {
         Action opreviewAction = getService().getAction("TAB_WITH_GLOBAL_FILTER");
         assertNotNull(opreviewAction);
         assertEquals(List.of("VIEW_ACTION_LIST", "OVERRIDE"), opreviewAction.getCategoryList());
-        assertEquals(2, opreviewAction.getCategoryList().size());
-        assertEquals(List.of("filter_defined_globally"), previewAction.getFilterIds());
+        assertEquals(List.of("filter_defined_globally"), opreviewAction.getFilterIds());
         DefaultActionFilter opreviewFilter = (DefaultActionFilter) getService().getFilter("filter_defined_globally");
         FilterRule[] opreviewRules = opreviewFilter.getRules();
         assertNotNull(opreviewRules);
@@ -276,6 +276,34 @@ public class TestAction {
         assertEquals("filter defined in its extension point", previewRules[0].types[0]);
         assertFalse(opreviewRules[1].grant);
         assertEquals("local override of global filter", opreviewRules[1].types[0]);
+    }
+
+    @Test
+    public void testActionOverrideByInnerFilterNotMerging() throws Exception {
+        Action action = getService().getAction("TAB_WITH_LOCAL_FILTER_MERGED");
+        assertEquals(List.of("VIEW_ACTION_LIST"), action.getCategoryList());
+        assertEquals(List.of("local_filter_merged"), action.getFilterIds());
+        DefaultActionFilter filter = (DefaultActionFilter) getService().getFilter("local_filter_merged");
+        FilterRule[] rules = filter.getRules();
+        assertNotNull(rules);
+        assertEquals(1, rules.length);
+        assertTrue(rules[0].grant);
+        assertEquals("filter defined in action", rules[0].types[0]);
+
+        hotDeployer.deploy(OVERRIDE_CONTRIB);
+
+        Action oAction = getService().getAction("TAB_WITH_LOCAL_FILTER_MERGED");
+        assertNotNull(oAction);
+        assertEquals(List.of("VIEW_ACTION_LIST", "OVERRIDE"), oAction.getCategoryList());
+        assertEquals(List.of("local_filter_merged"), oAction.getFilterIds());
+        DefaultActionFilter oFilter = (DefaultActionFilter) getService().getFilter("local_filter_merged");
+        FilterRule[] oRules = oFilter.getRules();
+        assertNotNull(oRules);
+        assertEquals(2, oRules.length);
+        assertTrue(oRules[0].grant);
+        assertEquals("filter defined in action", oRules[0].types[0]);
+        assertFalse(oRules[1].grant);
+        assertEquals("local merge of filter", oRules[1].types[0]);
     }
 
     // test sort of actions with same order value

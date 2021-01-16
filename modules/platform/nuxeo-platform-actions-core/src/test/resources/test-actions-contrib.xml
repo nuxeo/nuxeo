@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.actions.test">
 
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-    point="actions">
-    <action id="newDocument" link="select_document_type" enabled="true"
-      label="action.new.document" icon="/icons/action_add.gif">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+    <action id="newDocument" link="select_document_type" enabled="true" label="action.new.document"
+      icon="/icons/action_add.gif">
       <category>folder</category>
       <filter id="createChild">
         <rule grant="true">
@@ -26,8 +25,7 @@
       <category>global</category>
     </action>
 
-    <action id="TAB_VIEW" link="view" enabled="true" label="View"
-      icon="/icons/view.gif">
+    <action id="TAB_VIEW" link="view" enabled="true" label="View" icon="/icons/view.gif">
       <category>tabs</category>
       <category>view</category>
     </action>
@@ -47,6 +45,15 @@
     <action id="TAB_WITH_GLOBAL_FILTER">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>filter_defined_globally</filter-id>
+    </action>
+
+    <action id="TAB_WITH_LOCAL_FILTER_MERGED">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="local_filter_merged">
+        <rule grant="true">
+          <type>filter defined in action</type>
+        </rule>
+      </filter>
     </action>
 
     <action id="actionTestProperties">
@@ -69,8 +76,7 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-    point="filters">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
 
     <filter id="theFilter">
       <rule grant="true">
