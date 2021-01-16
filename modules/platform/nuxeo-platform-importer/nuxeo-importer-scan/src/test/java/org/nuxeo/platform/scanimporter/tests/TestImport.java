@@ -23,6 +23,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
+
+import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.scanimporter.processor.ScannedFileImporter;
 import org.nuxeo.ecm.platform.scanimporter.service.ImporterConfig;
+import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -41,30 +45,29 @@ public class TestImport extends ImportTestCase {
 
     private static final Log log = LogFactory.getLog(TestImport.class);
 
+    @Inject
+    protected ScannedFileMapperService service;
+
     // MySQL needs to commit the transaction to see the updated state
     protected void nextTransaction() {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
     }
 
+    protected ImporterConfig getConfig() {
+        return service.getImporterConfig();
+    }
+
     @Test
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-config.xml")
     @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
-    public void testImport() throws Exception {
+    public void testImport() throws IOException {
 
         String testPath = deployTestFiles("test3");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
-        ScannedFileImporter importer = new ScannedFileImporter();
-
-        ImporterConfig config = new ImporterConfig();
-        config.setTargetPath("/");
-        config.setNbThreads(1);
-        config.setBatchSize(10);
-        config.setUpdate(false);
-        config.setUseXMLMapping(true);
-
-        importer.doImport(new File(testPath), config);
+        new ScannedFileImporter().doImport(new File(testPath), getConfig());
 
         nextTransaction();
         DocumentModelList alldocs = session.query("select * from File order by ecm:path");
@@ -89,20 +92,15 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-config.xml")
     @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
-    public void shouldCreateContainerTwiceAfterTwoImportationsAsUpdateDisabled() throws Exception {
+    public void shouldCreateContainerTwiceAfterTwoImportationsAsUpdateDisabled() throws IOException {
         String testPath = deployTestFiles("test3");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
         ScannedFileImporter importer = new ScannedFileImporter();
-
-        ImporterConfig config = new ImporterConfig();
-        config.setTargetPath("/");
-        config.setNbThreads(1);
-        config.setBatchSize(10);
-        config.setUpdate(false);
-        config.setUseXMLMapping(true);
+        ImporterConfig config = getConfig();
 
         // Import once
         importer.doImport(new File(testPath), config);
@@ -120,21 +118,16 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-config.xml")
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-config-update.xml")
     @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
-    public void shouldCreateContainerOnceAfterTwoImportationsAsUpdateEnabled() throws Exception {
+    public void shouldCreateContainerOnceAfterTwoImportationsAsUpdateEnabled() throws IOException {
         String testPath = deployTestFiles("test3");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
         ScannedFileImporter importer = new ScannedFileImporter();
-
-        ImporterConfig config = new ImporterConfig();
-        config.setTargetPath("/");
-        config.setNbThreads(1);
-        config.setBatchSize(10);
-        // Enabled Update new Feature
-        config.setUpdate(true);
-        config.setUseXMLMapping(true);
+        ImporterConfig config = getConfig();
 
         // Import once
         importer.doImport(new File(testPath), config);
@@ -152,22 +145,15 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-config.xml")
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-config-initial-folder.xml")
     @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
-    public void shouldSkipInitialContainerCreationSkipped() throws Exception {
+    public void shouldSkipInitialContainerCreationSkipped() throws IOException {
         String testPath = deployTestFiles("test3");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
-        ScannedFileImporter importer = new ScannedFileImporter();
-
-        ImporterConfig config = new ImporterConfig();
-        config.setTargetPath("/");
-        config.setNbThreads(1);
-        config.setBatchSize(10);
-        config.setCreateInitialFolder(false);
-        config.setUseXMLMapping(true);
-
-        importer.doImport(new File(testPath), config);
+        new ScannedFileImporter().doImport(new File(testPath), getConfig());
 
         nextTransaction();
         DocumentModelList alldocs = session.query("select * from File order by ecm:path");
@@ -177,22 +163,15 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-config.xml")
     @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib4.xml")
-    public void testDocTypeMappingInImport() throws Exception {
+    public void testDocTypeMappingInImport() throws IOException {
 
         String testPath = deployTestFiles("test4");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
-        ScannedFileImporter importer = new ScannedFileImporter();
-
-        ImporterConfig config = new ImporterConfig();
-        config.setTargetPath("/");
-        config.setNbThreads(1);
-        config.setBatchSize(10);
-        config.setUseXMLMapping(true);
-
-        importer.doImport(new File(testPath), config);
+        new ScannedFileImporter().doImport(new File(testPath), getConfig());
 
         nextTransaction();
         DocumentModelList alldocs = session.query("select * from Picture order by ecm:path");
@@ -208,22 +187,15 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-config.xml")
     @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib6.xml")
-    public void shouldImportWithNoBlobMapping() throws Exception {
+    public void shouldImportWithNoBlobMapping() throws IOException {
         // Exact same test than above but without blob mapping.
         String testPath = deployTestFiles("test4");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
-        ScannedFileImporter importer = new ScannedFileImporter();
-
-        ImporterConfig config = new ImporterConfig();
-        config.setTargetPath("/");
-        config.setNbThreads(1);
-        config.setBatchSize(10);
-        config.setUseXMLMapping(true);
-
-        importer.doImport(new File(testPath), config);
+        new ScannedFileImporter().doImport(new File(testPath), getConfig());
 
         nextTransaction();
         DocumentModelList alldocs = session.query("select * from Picture order by ecm:path");

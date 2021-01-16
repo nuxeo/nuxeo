@@ -28,14 +28,16 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.platform.scanimporter.processor.DocumentTypeMapper;
 
 /**
- * Top level descriptor for mapping
+ * Top level descriptor for mapping.
  *
  * @author Thierry Delprat
  */
 @XObject("mapping")
+@XRegistry(compatWarnOnMerge = true)
 public class ScanFileMappingDescriptor {
 
     public static final String DEFAULT_CONTAINER_TYPE = "Folder";

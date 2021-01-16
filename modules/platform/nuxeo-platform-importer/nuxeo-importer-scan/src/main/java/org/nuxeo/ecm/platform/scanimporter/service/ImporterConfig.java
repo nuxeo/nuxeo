@@ -23,13 +23,15 @@ package org.nuxeo.ecm.platform.scanimporter.service;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
- * XMap Descriptor for importer config
+ * XMap Descriptor for importer config.
  *
  * @author Thierry Delprat
  */
 @XObject("importerConfig")
+@XRegistry(compatWarnOnMerge = true)
 public class ImporterConfig {
 
     @XNode("sourcePath")
@@ -107,51 +109,8 @@ public class ImporterConfig {
         return update;
     }
 
-    public void setCreateInitialFolder(boolean createInitialFolder) {
-        this.createInitialFolder = createInitialFolder;
-    }
-
     public boolean isMergeInitialFolder() {
         return mergeInitialFolder;
-    }
-
-    public void setMergeInitialFolder(boolean mergeInitialFolder) {
-        this.mergeInitialFolder = mergeInitialFolder;
-    }
-
-    public void setSourcePath(String sourcePath) {
-        this.sourcePath = sourcePath;
-    }
-
-    public void setProcessedPath(String processedPath) {
-        this.processedPath = processedPath;
-    }
-
-    public void setNbThreads(Integer nbThreads) {
-        this.nbThreads = nbThreads;
-    }
-
-    public void setBatchSize(Integer batchSize) {
-        this.batchSize = batchSize;
-    }
-
-    /**
-     * @since 5.9.4
-     */
-    public void setTransactionTimeout(Integer transactionTimeout) {
-        this.transactionTimeout = transactionTimeout;
-    }
-
-    public void setTargetPath(String tagetPath) {
-        this.targetPath = tagetPath;
-    }
-
-    public void setUseXMLMapping(boolean useXMLMapping) {
-        this.useXMLMapping = useXMLMapping;
-    }
-
-    public void setUpdate(boolean update) {
-        this.update = update;
     }
 
 }

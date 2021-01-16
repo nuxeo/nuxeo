@@ -62,7 +62,7 @@ public abstract class ImportTestCase {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() throws IOException {
         for (File dir : tmp) {
             if (dir.exists()) {
                 FileUtils.deleteDirectory(dir);
