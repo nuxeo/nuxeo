@@ -23,11 +23,16 @@ package org.nuxeo.ecm.platform.url.codec.descriptor;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject(value = "documentViewCodec")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class DocumentViewCodecDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@class")
@@ -39,11 +44,9 @@ public class DocumentViewCodecDescriptor {
     @XNode("@default")
     protected boolean defaultCodec;
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
     protected boolean enabled;
-
-    @XNode("@priority")
-    protected int priority = 0;
 
     public String getClassName() {
         return className;
@@ -51,10 +54,6 @@ public class DocumentViewCodecDescriptor {
 
     public boolean getEnabled() {
         return enabled;
-    }
-
-    public int getPriority() {
-        return priority;
     }
 
     public String getName() {
