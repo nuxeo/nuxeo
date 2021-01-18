@@ -280,7 +280,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
         actionContext.setDocumentManager(session);
         actionContext.setCurrentPrincipal(session.getPrincipal());
         if (node != null) {
-            Map<String, Object> workflowContextualInfo = new HashMap<String, Object>();
+            Map<String, Object> workflowContextualInfo = new HashMap<>();
             workflowContextualInfo.putAll(node.getWorkflowContextualInfo(session, true));
             actionContext.putAllLocalVariables(workflowContextualInfo);
         }

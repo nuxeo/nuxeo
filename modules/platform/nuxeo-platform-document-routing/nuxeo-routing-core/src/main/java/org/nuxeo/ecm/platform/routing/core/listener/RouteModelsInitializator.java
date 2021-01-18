@@ -24,8 +24,9 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Imports route models in the root folder defined by the current persister from a contributed zip resource. Uses the IO
- * core service, through @{link FileManager}
+ * Imports route models in the root folder defined by the current persister from a contributed zip resource.
+ * <p>
+ * Uses the IO core service, through @{link FileManager}.
  *
  * @since 5.6
  */

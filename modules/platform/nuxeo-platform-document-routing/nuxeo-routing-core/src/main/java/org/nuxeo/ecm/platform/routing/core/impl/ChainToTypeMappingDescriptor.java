@@ -20,6 +20,8 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
@@ -27,8 +29,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @Deprecated
 @XObject("mapping")
+@XRegistry
 public class ChainToTypeMappingDescriptor {
+
     @XNode("@documentType")
+    @XRegistryId
     protected String documentType;
 
     @XNode("@chainId")

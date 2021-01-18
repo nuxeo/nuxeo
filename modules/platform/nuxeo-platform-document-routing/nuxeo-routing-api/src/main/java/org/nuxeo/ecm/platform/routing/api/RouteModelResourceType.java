@@ -20,45 +20,39 @@ package org.nuxeo.ecm.platform.routing.api;
 
 import java.net.URL;
 
+import org.nuxeo.common.xmap.Resource;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @since 5.6
  */
 @XObject("template-resource")
+@XRegistry(compatWarnOnMerge = true)
 public class RouteModelResourceType {
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     @XNode("@path")
-    protected String path;
+    protected Resource path;
 
-    protected URL url;
-
-    public String getPath() {
-        return path;
-    }
+    @XNode("@path")
+    protected String pathh;
 
     public String getId() {
         return id;
     }
 
     public URL getUrl() {
-        return url;
+        return path.toURL();
     }
 
-    public void setUrl(URL url) {
-        this.url = url;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
+    public String getPath() {
+        return pathh;
     }
 
 }

@@ -342,14 +342,6 @@ public interface DocumentRoutingService {
     DocumentRoute importRouteModel(URL templateResource, boolean overwrite, CoreSession session);
 
     /**
-     * Registers a new route model template to be imported at application startup.
-     *
-     * @param resource the resource
-     * @since 5.6
-     */
-    void registerRouteResource(RouteModelResourceType resource, RuntimeContext extensionContext);
-
-    /**
      * Returns all the route models resource templates. Use the <code>routeModelImporter</code> extension point to
      * contribute new resources.
      *
