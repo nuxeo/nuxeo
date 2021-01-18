@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
@@ -69,15 +70,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class IOManagerImpl implements IOManager {
 
-    private static final long serialVersionUID = 5789086884484295921L;
-
     private static final Log log = LogFactory.getLog(IOManagerImpl.class);
 
-    protected final Map<String, IOResourceAdapter> adaptersRegistry;
-
-    public IOManagerImpl() {
-        adaptersRegistry = new HashMap<>();
-    }
+    private static final Map<String, IOResourceAdapter> adaptersRegistry = new ConcurrentHashMap<>();
 
     @Override
     public IOResourceAdapter getAdapter(String name) {
@@ -91,11 +86,6 @@ public class IOManagerImpl implements IOManager {
             return;
         }
         adaptersRegistry.put(name, adapter);
-    }
-
-    @Override
-    public void removeAdapter(String name) {
-        adaptersRegistry.remove(name);
     }
 
     public void exportDocumentsAndResources(OutputStream out, String repo, final String format,
