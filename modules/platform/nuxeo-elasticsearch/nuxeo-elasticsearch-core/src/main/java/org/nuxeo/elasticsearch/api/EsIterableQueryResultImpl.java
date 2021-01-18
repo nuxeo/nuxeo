@@ -70,7 +70,6 @@ public class EsIterableQueryResultImpl implements IterableQueryResult, Iterator<
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean isLife() {
         return mustBeClosed();

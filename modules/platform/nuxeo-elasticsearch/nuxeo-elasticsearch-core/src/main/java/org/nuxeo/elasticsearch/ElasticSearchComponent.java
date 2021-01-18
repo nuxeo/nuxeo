@@ -42,6 +42,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -72,7 +73,6 @@ import org.nuxeo.elasticsearch.work.ScrollingIndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -106,13 +106,7 @@ public class ElasticSearchComponent extends DefaultComponent
     // Indexing commands that where received before the index initialization
     protected final List<IndexingCommand> stackedCommands = Collections.synchronizedList(new ArrayList<>());
 
-    protected final Map<String, ElasticSearchIndexConfig> indexConfig = new HashMap<>();
-
     protected final AtomicInteger runIndexingWorkerCount = new AtomicInteger(0);
-
-    protected ElasticSearchEmbeddedServerConfig embeddedServerConfig;
-
-    protected ElasticSearchClientConfig clientConfig;
 
     protected ElasticSearchAdminImpl esa;
 
@@ -120,60 +114,32 @@ public class ElasticSearchComponent extends DefaultComponent
 
     protected ElasticSearchServiceImpl ess;
 
-    protected JsonESDocumentWriter jsonESDocumentWriter;
-
     protected ListeningExecutorService waiterExecutorService;
 
-    // Nuxeo Component impl ======================================é=============
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case EP_EMBEDDED_SERVER:
-            ElasticSearchEmbeddedServerConfig serverContrib = (ElasticSearchEmbeddedServerConfig) contribution;
-            if (serverContrib.isEnabled()) {
-                embeddedServerConfig = serverContrib;
-                log.info("Registering embedded server configuration: " + embeddedServerConfig + ", loaded from "
-                        + contributor.getName());
-            } else if (embeddedServerConfig != null) {
-                log.info("Disabling previous embedded server configuration, deactivated by " + contributor.getName());
-                embeddedServerConfig = null;
-            }
-            break;
-        case EP_CLIENT_INIT:
-            clientConfig = (ElasticSearchClientConfig) contribution;
-            break;
-        case EP_INDEX:
-            ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
-            ElasticSearchIndexConfig previous = indexConfig.get(idx.getName());
-            if (idx.isEnabled()) {
-                idx.merge(previous);
-                indexConfig.put(idx.getName(), idx);
-                log.info("Registering index configuration: " + idx + ", loaded from " + contributor.getName());
-            } else if (previous != null) {
-                log.info("Disabling index configuration: " + previous + ", deactivated by " + contributor.getName());
-                indexConfig.remove(idx.getName());
-            }
-            break;
-        case EP_DOC_WRITER:
-            ElasticSearchDocWriterDescriptor writerDescriptor = (ElasticSearchDocWriterDescriptor) contribution;
-            try {
-                jsonESDocumentWriter = writerDescriptor.getKlass().getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException e) {
-                log.error("Cannot instantiate jsonESDocumentWriter from " + writerDescriptor.getKlass());
-                throw new NuxeoException(e);
-            }
-            break;
-        default:
-            throw new IllegalStateException("Invalid EP: " + extensionPoint);
-        }
-    }
-
+    // Nuxeo Component impl ====================================================
     @Override
     public void start(ComponentContext context) {
         if (!isElasticsearchEnabled()) {
             log.info("Elasticsearch service is disabled");
             return;
         }
+        ElasticSearchEmbeddedServerConfig embeddedServerConfig = this.<ElasticSearchEmbeddedServerConfig> getRegistryContribution(
+                EP_EMBEDDED_SERVER).orElse(null);
+        ElasticSearchClientConfig clientConfig = this.<ElasticSearchClientConfig> getRegistryContribution(
+                EP_CLIENT_INIT)
+                                                     .orElseThrow(() -> new IllegalArgumentException(
+                                                             "Missing Elasticsearch client contribution"));
+        Map<String, ElasticSearchIndexConfig> indexConfig = this.<MapRegistry> getExtensionPointRegistry(EP_INDEX)
+                                                                .getContributions();
+        JsonESDocumentWriter jsonESDocumentWriter = this.<ElasticSearchDocWriterDescriptor> getRegistryContribution(
+                EP_DOC_WRITER).map(desc -> {
+                    try {
+                        return desc.getKlass().getDeclaredConstructor().newInstance();
+                    } catch (ReflectiveOperationException e) {
+                        log.error("Cannot instantiate jsonESDocumentWriter from " + desc.getKlass());
+                        throw new NuxeoException(e);
+                    }
+                }).orElseThrow();
         esa = new ElasticSearchAdminImpl(embeddedServerConfig, clientConfig, indexConfig,
                 getRegistryContributions(EP_HINTS));
         esi = new ElasticSearchIndexingImpl(esa, jsonESDocumentWriter);
@@ -559,7 +525,6 @@ public class ElasticSearchComponent extends DefaultComponent
     }
 
     protected static class NamedThreadFactory implements ThreadFactory {
-        @SuppressWarnings("NullableProblems")
         @Override
         public Thread newThread(Runnable r) {
             return new Thread(r, "waitForEsIndexing");

@@ -35,6 +35,9 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.elasticsearch.core.IncrementalIndexNameGenerator;
 
 /**
@@ -43,7 +46,9 @@ import org.nuxeo.elasticsearch.core.IncrementalIndexNameGenerator;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @XObject(value = "elasticSearchIndex")
+@XRegistry(enable = false)
 public class ElasticSearchIndexConfig {
+
     public static final String DEFAULT_SETTING_FILE = "default-doc-settings.json";
 
     public static final String DEFAULT_MAPPING_FILE = "default-doc-mapping.json";
@@ -52,10 +57,12 @@ public class ElasticSearchIndexConfig {
 
     protected static final String WRITE_SUFFIX = "-write";
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
     protected boolean isEnabled = true;
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     // @since 9.3
@@ -200,27 +207,6 @@ public class ElasticSearchIndexConfig {
      */
     public boolean isDocumentIndex() {
         return DOC_TYPE.equals(getType());
-    }
-
-    /**
-     * Use {@code other} mapping and settings if not defined.
-     */
-    public void merge(final ElasticSearchIndexConfig other) {
-        if (other == null) {
-            return;
-        }
-        if (mapping == null && other.mapping != null) {
-            mapping = other.mapping;
-        }
-        if (settings == null && other.settings != null) {
-            settings = other.settings;
-        }
-        if (mappingFile == null && other.mappingFile != null) {
-            mappingFile = other.mappingFile;
-        }
-        if (settingsFile == null && other.settingsFile != null) {
-            settingsFile = other.settingsFile;
-        }
     }
 
     // @since 9.3

@@ -25,12 +25,14 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 
 /**
  * @since 9.3
  */
 @XObject(value = "elasticSearchClient")
+@XRegistry(merge = false, compatWarnOnMerge = true)
 public class ElasticSearchClientConfig {
 
     @XNode("@class")

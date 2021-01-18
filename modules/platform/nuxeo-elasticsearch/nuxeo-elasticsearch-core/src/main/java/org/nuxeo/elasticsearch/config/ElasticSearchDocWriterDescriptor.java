@@ -20,12 +20,14 @@ package org.nuxeo.elasticsearch.config;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.elasticsearch.io.JsonESDocumentWriter;
 
 /**
  * @since 7.2
  */
 @XObject("writer")
+@XRegistry
 public class ElasticSearchDocWriterDescriptor {
 
     @XNode("@class")
