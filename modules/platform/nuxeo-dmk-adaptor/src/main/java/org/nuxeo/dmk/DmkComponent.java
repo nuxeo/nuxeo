@@ -20,7 +20,6 @@ package org.nuxeo.dmk;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.management.JMException;
@@ -29,10 +28,10 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.sun.jdmk.comm.AuthInfo;
@@ -42,15 +41,15 @@ import com.sun.jdmk.comm.internal.JDMKServerConnector;
 
 public class DmkComponent extends DefaultComponent {
 
-    protected final Map<String, DmkProtocol> configs = new HashMap<>();
+    private static final Logger log = LogManager.getLogger(DmkComponent.class);
+
+    protected static final String XP = "protocols";
 
     protected HtmlAdaptorServer htmlAdaptor;
 
     protected JDMKServerConnector httpConnector;
 
     protected JDMKServerConnector httpsConnector;
-
-    protected final Log log = LogFactory.getLog(DmkComponent.class);
 
     protected final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 
@@ -116,19 +115,20 @@ public class DmkComponent extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
+        Map<String, DmkProtocol> configs = this.<MapRegistry> getExtensionPointRegistry(XP).getContributions();
         if (configs.containsKey("html")) {
             htmlAdaptor = newAdaptor(configs.get("html"));
             log.info("JMX HTML adaptor available at port 8081 (not active, to be started in JMX console)");
         }
         if (configs.containsKey("http")) {
             httpConnector = newConnector(configs.get("http"));
-            log.info("JMX HTTP connector available at " + httpConnector.getAddress()
-                    + " (not active, to be started in JMX console)");
+            log.info("JMX HTTP connector available at {} (not active, to be started in JMX console)",
+                    httpConnector::getAddress);
         }
         if (configs.containsKey("https")) {
             httpsConnector = newConnector(configs.get("https"));
-            log.info("JMX HTTPS connector available at " + httpConnector.getAddress()
-                    + " (not active, to be started in JMX console)");
+            log.info("JMX HTTPS connector available at {} (not active, to be started in JMX console)",
+                    httpConnector::getAddress);
         }
     }
 
@@ -156,15 +156,6 @@ public class DmkComponent extends DefaultComponent {
             } finally {
                 httpsConnector = null;
             }
-        }
-
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if ("protocols".equals(extensionPoint)) {
-            DmkProtocol protocol = (DmkProtocol) contribution;
-            configs.put(protocol.name, protocol);
         }
     }
 
