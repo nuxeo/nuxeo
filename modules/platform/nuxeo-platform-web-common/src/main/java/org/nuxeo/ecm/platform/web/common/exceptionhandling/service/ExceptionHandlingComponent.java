@@ -15,68 +15,65 @@
  *
  * Contributors:
  *     arussel
+ *     Benjamin JALON
  */
 package org.nuxeo.ecm.platform.web.common.exceptionhandling.service;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandler;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandlerParameters;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandlersDescriptor;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ExceptionHandlerDescriptor;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ListenerDescriptor;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.RequestDumpDescriptor;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @author arussel, Benjamin JALON
+ * Component for exception handling configuration.
  */
 public class ExceptionHandlingComponent extends DefaultComponent implements ExceptionHandlingService {
 
-    protected NuxeoExceptionHandler exceptionHandler;
+    protected static final NuxeoExceptionHandler DEFAULT_EXCEPTION_HANDLER = new DefaultNuxeoExceptionHandler();
 
-    protected final NuxeoExceptionHandlerParameters exceptionHandlerParameters = new NuxeoExceptionHandlerParameters();
+    protected NuxeoExceptionHandler exceptionHandler = DEFAULT_EXCEPTION_HANDLER;
 
     public enum ExtensionPoint {
         exceptionhandler, errorhandlers, requestdump, listener
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        ExtensionPoint ep = Enum.valueOf(ExtensionPoint.class, extensionPoint);
-        switch (ep) {
-        case exceptionhandler:
-            ExceptionHandlerDescriptor ehd = (ExceptionHandlerDescriptor) contribution;
-            exceptionHandler = newInstance(ehd.getKlass());
-            exceptionHandler.setParameters(exceptionHandlerParameters);
-            break;
-        case errorhandlers:
-            ErrorHandlersDescriptor md = (ErrorHandlersDescriptor) contribution;
-            exceptionHandlerParameters.setBundleName(md.getBundle());
-            exceptionHandlerParameters.setHandlers(md.getMessages());
-            exceptionHandlerParameters.setLoggerName(md.getLoggerName());
-            exceptionHandlerParameters.setDefaultErrorPage(md.getDefaultPage());
-            break;
-        case requestdump:
-            RequestDumpDescriptor rdd = (RequestDumpDescriptor) contribution;
-            RequestDumper dumper = newInstance(rdd.getKlass());
-            List<String> attributes = rdd.getAttributes();
-            dumper.setNotListedAttributes(attributes);
-            exceptionHandlerParameters.setRequestDumper(dumper);
-            break;
-        case listener:
-            ListenerDescriptor ld = (ListenerDescriptor) contribution;
-            exceptionHandlerParameters.setListener(newInstance(ld.getKlass()));
-            break;
-        default:
-            throw new RuntimeException("error in exception handling configuration");
-        }
+    public void start(ComponentContext context) {
+        this.<ExceptionHandlerDescriptor> getRegistryContribution(ExtensionPoint.exceptionhandler.name())
+            .ifPresentOrElse(desc -> exceptionHandler = newInstance(desc.getKlass()),
+                    () -> exceptionHandler = new DefaultNuxeoExceptionHandler());
+        NuxeoExceptionHandlerParameters parameters = new NuxeoExceptionHandlerParameters();
+        this.<ErrorHandlersDescriptor> getRegistryContribution(ExtensionPoint.errorhandlers.name()).ifPresent(desc -> {
+            parameters.setBundleName(desc.getBundle());
+            parameters.setHandlers(desc.getMessages());
+            parameters.setLoggerName(desc.getLoggerName());
+            parameters.setDefaultErrorPage(desc.getDefaultPage());
+        });
+        this.<RequestDumpDescriptor> getRegistryContribution(ExtensionPoint.requestdump.name()).ifPresent(desc -> {
+            RequestDumper dumper = newInstance(desc.getKlass());
+            dumper.setNotListedAttributes(desc.getAttributes());
+            parameters.setRequestDumper(dumper);
+        });
+        this.<ListenerDescriptor> getRegistryContribution(ExtensionPoint.listener.name()).ifPresent(desc -> {
+            parameters.setListener(newInstance(desc.getKlass()));
+        });
+        exceptionHandler.setParameters(parameters);
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        exceptionHandler = DEFAULT_EXCEPTION_HANDLER;
     }
 
     protected <T> T newInstance(Class<T> klass) {
