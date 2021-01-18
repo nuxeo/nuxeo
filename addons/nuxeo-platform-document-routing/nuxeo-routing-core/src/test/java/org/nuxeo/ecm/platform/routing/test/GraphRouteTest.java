@@ -339,7 +339,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node3.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
         node3 = session.saveDocument(node3);
 
-        DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
+        DocumentModelList cancelledTasks = session.query(
+                "Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
         assertEquals(0, cancelledTasks.size());
 
         DocumentRoute route = instantiateAndRun(session);
@@ -635,9 +636,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         parallelNode2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users2 = { user2.getName() };
         parallelNode2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users2);
-        setTransitions(
-                parallelNode2,
-                transition("transLoop", "parallelNode2", "NodeVariables[\"button\"] ==\"loop\""),
+        setTransitions(parallelNode2, transition("transLoop", "parallelNode2", "NodeVariables[\"button\"] ==\"loop\""),
                 transition("transToMerge", "mergeNode",
                         "NodeVariables[\"tasks\"].getNumberEndedWithStatus(\"toMerge\") ==1"));
         parallelNode2 = session.saveDocument(parallelNode2);
@@ -925,8 +924,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                node1,
+        setTransitions(node1,
                 transition("trans1", "node2",
                         "NodeVariables[\"button\"] == \"trans1\" && WorkflowFn.timeSinceWorkflowWasStarted()>=0",
                         "testchain_title1"));
@@ -1004,10 +1002,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1,
-                transition("trans1", "node2",
-                        "true",
-                        "test_setGlobalvariable"));
+        setTransitions(node1, transition("trans1", "node2", "true", "test_setGlobalvariable"));
 
         node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
@@ -1409,7 +1404,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         tasks = taskService.getAllTaskInstances(route.getDocument().getId(), session);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
-        DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
+        DocumentModelList cancelledTasks = session.query(
+                "Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
         assertEquals(1, cancelledTasks.size());
     }
 
@@ -1699,7 +1695,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         tasks = taskService.getAllTaskInstances(route.getDocument().getId(), session);
         assertEquals(0, tasks.size());
-        DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
+        DocumentModelList cancelledTasks = session.query(
+                "Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
         assertEquals(2, cancelledTasks.size());
     }
 
@@ -1719,10 +1716,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                node1,
-                transition("trans1", "node2", "NodeVariables[\"tasks\"].getNumberEndedWithStatus(\"trans1\") ==1",
-                        "testchain_title1"));
+        setTransitions(node1, transition("trans1", "node2",
+                "NodeVariables[\"tasks\"].getNumberEndedWithStatus(\"trans1\") ==1", "testchain_title1"));
 
         // task properties
         node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");

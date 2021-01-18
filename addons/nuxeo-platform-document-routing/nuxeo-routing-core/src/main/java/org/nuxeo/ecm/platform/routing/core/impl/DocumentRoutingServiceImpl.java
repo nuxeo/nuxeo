@@ -131,8 +131,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
 
     private static final String ORDERED_CHILDREN_QUERY = "SELECT * FROM Document WHERE"
-            + " ecm:parentId = '%s' AND ecm:isVersion = 0 AND "
-            + "ecm:isTrashed = 0 ORDER BY ecm:pos";
+            + " ecm:parentId = '%s' AND ecm:isVersion = 0 AND " + "ecm:isTrashed = 0 ORDER BY ecm:pos";
 
     public static final String CHAINS_TO_TYPE_XP = "chainsToType";
 
