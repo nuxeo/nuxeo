@@ -21,12 +21,16 @@ package org.nuxeo.dmk;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.runtime.api.Framework;
 
 @XObject("protocol")
+@XRegistry(compatWarnOnMerge = true)
 public class DmkProtocol {
 
     @XNode("@name")
+    @XRegistryId
     public String name = "html";
 
     @XNode("port")
