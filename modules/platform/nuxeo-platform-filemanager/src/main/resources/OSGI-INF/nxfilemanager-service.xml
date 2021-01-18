@@ -76,6 +76,7 @@
       class="org.nuxeo.ecm.platform.filemanager.service.extension.FolderImporterDescriptor" />
     <object
       class="org.nuxeo.ecm.platform.filemanager.service.extension.CreationContainerListProviderDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.filemanager.service.FileManagerRegistry" />
   </extension-point>
 
   <extension-point name="unicity">

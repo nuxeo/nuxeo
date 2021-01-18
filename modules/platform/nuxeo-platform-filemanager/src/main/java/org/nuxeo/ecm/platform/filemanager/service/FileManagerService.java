@@ -15,12 +15,14 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Andreas Kalogeropoulos
  */
 package org.nuxeo.ecm.platform.filemanager.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -62,7 +64,6 @@ import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -70,10 +71,10 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * FileManager registry service.
  * <p>
  * This is the component to request to perform transformations. See API.
- *
- * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas Kalogeropoulos</a>
  */
 public class FileManagerService extends DefaultComponent implements FileManager {
+
+    private static final Logger log = LogManager.getLogger(FileManagerService.class);
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.filemanager.service.FileManagerService");
@@ -95,21 +96,19 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     /** @since 11.1 */
     public static final String VERSIONING_EP = "versioning";
 
-    private static final Logger log = LogManager.getLogger(FileManagerService.class);
+    private Map<String, FileImporter> fileImporters = new HashMap<>();
 
-    private Map<String, FileImporter> fileImporters;
+    private List<FolderImporter> folderImporters = new ArrayList<>();
 
-    private List<FolderImporter> folderImporters;
+    private List<CreationContainerListProvider> creationContainerListProviders = new ArrayList<>();
 
-    private List<CreationContainerListProvider> creationContainerListProviders;
+    private String digestAlgorithm;
+
+    private boolean unicityEnabled;
 
     private List<String> fieldsXPath = new ArrayList<>();
 
-    private boolean unicityEnabled = false;
-
-    private String digestAlgorithm = "sha-256";
-
-    private boolean computeDigest = false;
+    private boolean computeDigest;
 
     public static final VersioningOption DEF_VERSIONING_OPTION = VersioningOption.MINOR;
 
@@ -121,7 +120,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
      *             behaviors from importers
      */
     @Deprecated(since = "9.1")
-    private VersioningOption defaultVersioningOption = DEF_VERSIONING_OPTION;
+    private VersioningOption defaultVersioningOption;
 
     /**
      * @since 5.7
@@ -129,74 +128,70 @@ public class FileManagerService extends DefaultComponent implements FileManager 
      *             behaviors from importers
      */
     @Deprecated(since = "9.1")
-    private boolean versioningAfterAdd = DEF_VERSIONING_AFTER_ADD;
+    private boolean versioningAfterAdd;
 
-    @Override
-    public void registerContribution(Object contribution, String xp, ComponentInstance component) {
-        if (PLUGINS_EP.equals(xp)) {
-            xp = computePluginsExtensionPoint(contribution.getClass());
-        }
-        super.registerContribution(contribution, xp, component);
-    }
+    protected void initConfiguration() {
+        fileImporters = null;
+        folderImporters = null;
+        creationContainerListProviders = null;
 
-    @Override
-    public void unregisterContribution(Object contribution, String xp, ComponentInstance component) {
-        if (PLUGINS_EP.equals(xp)) {
-            xp = computePluginsExtensionPoint(contribution.getClass());
-        }
-        super.unregisterContribution(contribution, xp, component);
+        unicityEnabled = false;
+        digestAlgorithm = "sha-256";
+        fieldsXPath = null;
+        computeDigest = false;
+
+        defaultVersioningOption = DEF_VERSIONING_OPTION;
+        versioningAfterAdd = DEF_VERSIONING_AFTER_ADD;
     }
 
     @Override
     public void start(ComponentContext context) {
-        super.start(context);
-
-        registerFileImporters();
-        registerFolderImporters();
-        registerCreationContainerListProviders();
+        initConfiguration();
+        registerPlugins();
         registerUnicity();
         registerVersioning();
     }
 
-    protected void registerFileImporters() {
-        String xp = computePluginsExtensionPoint(FileImporterDescriptor.class);
-        fileImporters = getDescriptors(xp).stream()
-                                          .map(FileImporterDescriptor.class::cast)
-                                          .map(FileImporterDescriptor::newInstance)
-                                          .collect(Collectors.toMap(FileImporter::getName, Function.identity()));
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        initConfiguration();
     }
 
-    protected void registerFolderImporters() {
-        String xp = computePluginsExtensionPoint(FolderImporterDescriptor.class);
-        folderImporters = getDescriptors(xp).stream()
-                                            .map(FolderImporterDescriptor.class::cast)
-                                            .map(FolderImporterDescriptor::newInstance)
-                                            .collect(Collectors.toList());
-    }
-
-    protected void registerCreationContainerListProviders() {
-        String xp = computePluginsExtensionPoint(CreationContainerListProviderDescriptor.class);
-        creationContainerListProviders = getDescriptors(xp).stream()
-                                                           .map(CreationContainerListProviderDescriptor.class::cast)
-                                                           .map(CreationContainerListProviderDescriptor::newInstance)
-                                                           .collect(Collectors.toList());
+    protected void registerPlugins() {
+        FileManagerRegistry registry = getExtensionPointRegistry(PLUGINS_EP);
+        fileImporters = registry.getContributionValues(FileImporterDescriptor.class)
+                                .stream()
+                                .map(FileImporterDescriptor.class::cast)
+                                .map(FileImporterDescriptor::newInstance)
+                                .collect(Collectors.toMap(FileImporter::getName, Function.identity()));
+        folderImporters = registry.getContributionValues(FolderImporterDescriptor.class)
+                                  .stream()
+                                  .map(FolderImporterDescriptor.class::cast)
+                                  .map(FolderImporterDescriptor::newInstance)
+                                  .collect(Collectors.toList());
+        creationContainerListProviders = registry.getContributionValues(CreationContainerListProviderDescriptor.class)
+                                                 .stream()
+                                                 .map(CreationContainerListProviderDescriptor.class::cast)
+                                                 .map(CreationContainerListProviderDescriptor::newInstance)
+                                                 .collect(Collectors.toList());
     }
 
     protected void registerUnicity() {
-        getDescriptors(UNICITY_EP).stream().map(UnicityExtension.class::cast).forEach(unicityExtension -> {
-            if (unicityExtension.getAlgo() != null) {
-                digestAlgorithm = unicityExtension.getAlgo();
+        fieldsXPath = new ArrayList<>();
+        this.<UnicityExtension> getRegistryContribution(UNICITY_EP).ifPresent(desc -> {
+            if (desc.getAlgo() != null) {
+                digestAlgorithm = desc.getAlgo();
             }
-            if (unicityExtension.getEnabled() != null) {
-                unicityEnabled = unicityExtension.getEnabled();
+            if (desc.getEnabled() != null) {
+                unicityEnabled = desc.getEnabled();
             }
-            if (unicityExtension.getFields() != null) {
-                fieldsXPath = unicityExtension.getFields();
+            if (desc.getFields() != null) {
+                fieldsXPath.addAll(desc.getFields());
             } else {
                 fieldsXPath.add("file:content");
             }
-            if (unicityExtension.getComputeDigest() != null) {
-                computeDigest = unicityExtension.getComputeDigest();
+            if (desc.getComputeDigest() != null) {
+                computeDigest = desc.getComputeDigest();
             }
         });
     }
@@ -206,13 +201,13 @@ public class FileManagerService extends DefaultComponent implements FileManager 
      */
     @Deprecated(since = "9.1")
     protected void registerVersioning() {
-        getDescriptors(VERSIONING_EP).stream().map(VersioningDescriptor.class::cast).forEach(versioningDescriptor -> {
+        this.<VersioningDescriptor> getRegistryContribution(VERSIONING_EP).ifPresent(desc -> {
             String message = "Extension point 'versioning' has been deprecated and corresponding behavior removed from "
                     + "Nuxeo Platform. Please use versioning policy instead.";
             DeprecationLogger.log(message, "9.1");
             addRuntimeMessage(Level.WARNING, message);
 
-            String defver = versioningDescriptor.defaultVersioningOption;
+            String defver = desc.defaultVersioningOption;
             if (!StringUtils.isBlank(defver)) {
                 try {
                     defaultVersioningOption = VersioningOption.valueOf(defver.toUpperCase(Locale.ENGLISH));
@@ -221,8 +216,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                     defaultVersioningOption = DEF_VERSIONING_OPTION;
                 }
             }
-            if (versioningDescriptor.versionAfterAdd != null) {
-                versioningAfterAdd = versioningDescriptor.versionAfterAdd;
+            if (desc.versionAfterAdd != null) {
+                versioningAfterAdd = desc.versionAfterAdd;
             }
         });
     }

@@ -27,13 +27,16 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.runtime.model.Descriptor;
 
 @XObject("creationContainerListProvider")
-public class CreationContainerListProviderDescriptor implements Descriptor {
+@XRegistry(compatWarnOnMerge = true)
+public class CreationContainerListProviderDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     /**
@@ -47,7 +50,7 @@ public class CreationContainerListProviderDescriptor implements Descriptor {
     protected Class<? extends CreationContainerListProvider> klass;
 
     @XNodeList(value = "docType", type = ArrayList.class, componentType = String.class)
-    protected List<String> docTypes = new ArrayList<>();
+    protected List<String> docTypes;
 
     public String getName() {
         return name;
@@ -79,8 +82,4 @@ public class CreationContainerListProviderDescriptor implements Descriptor {
         }
     }
 
-    @Override
-    public String getId() {
-        return name;
-    }
 }

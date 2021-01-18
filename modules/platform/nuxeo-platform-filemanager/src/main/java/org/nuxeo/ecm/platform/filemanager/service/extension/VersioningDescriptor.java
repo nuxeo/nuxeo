@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.filemanager.service.extension;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * @since 5.7
@@ -29,7 +29,8 @@ import org.nuxeo.runtime.model.Descriptor;
  */
 @Deprecated
 @XObject("versioning")
-public class VersioningDescriptor implements Descriptor {
+@XRegistry
+public class VersioningDescriptor {
 
     @XNode("defaultVersioningOption")
     public String defaultVersioningOption;
@@ -37,8 +38,4 @@ public class VersioningDescriptor implements Descriptor {
     @XNode("versionAfterAdd")
     public Boolean versionAfterAdd;
 
-    @Override
-    public String getId() {
-        return toString();
-    }
 }

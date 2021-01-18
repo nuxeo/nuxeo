@@ -23,14 +23,19 @@ package org.nuxeo.ecm.platform.filemanager.service.extension;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
-import org.nuxeo.runtime.model.Descriptor;
 
+/**
+ * Descriptor for folder import.
+ */
 @XObject("folderImporter")
-public class FolderImporterDescriptor implements Descriptor {
+@XRegistry
+public class FolderImporterDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     /**
@@ -68,8 +73,4 @@ public class FolderImporterDescriptor implements Descriptor {
         }
     }
 
-    @Override
-    public String getId() {
-        return name;
-    }
 }
