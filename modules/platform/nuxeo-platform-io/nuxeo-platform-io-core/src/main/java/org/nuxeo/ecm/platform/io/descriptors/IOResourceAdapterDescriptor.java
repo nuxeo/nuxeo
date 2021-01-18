@@ -15,8 +15,6 @@
  *
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id: IOResourceAdapterDescriptor.java 24959 2007-09-14 13:46:47Z atchertchian $
  */
 
 package org.nuxeo.ecm.platform.io.descriptors;
@@ -28,44 +26,38 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
+import org.nuxeo.ecm.platform.io.api.IOResourceAdapter;
 
 /**
- * Resource adapter descriptor
- *
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * Resource adapter descriptor.
  */
 @XObject("adapter")
+@XRegistry
 public class IOResourceAdapterDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     String name;
 
     @XNode("@class")
-    String className;
+    Class<? extends IOResourceAdapter> klass;
 
     // single properties map
-    Map<String, String> properties = new HashMap<>();
+    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
+    Map<String, String> properties;
 
     @XNodeMap(value = "properties", key = "@name", type = HashMap.class, componentType = PropertyListDescriptor.class)
-    Map<String, PropertyListDescriptor> listProperties = new HashMap<>();
-
-    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    public void setProperties(Map<String, String> properties) {
-        Map<String, String> map = new HashMap<>();
-        for (Map.Entry<String, String> entry : properties.entrySet()) {
-            String value = entry.getValue();
-            map.put(entry.getKey(), Framework.getRuntime().expandVars(value));
-        }
-        this.properties = map;
-    }
+    Map<String, PropertyListDescriptor> listProperties;
 
     public String getName() {
         return name;
     }
 
-    public String getClassName() {
-        return className;
+    /** @since 11.5 */
+    public Class<? extends IOResourceAdapter> getKlass() {
+        return klass;
     }
 
     public Map<String, Serializable> getProperties() {

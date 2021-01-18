@@ -21,12 +21,13 @@
 
 package org.nuxeo.ecm.platform.io.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.io.api.IOManager;
 import org.nuxeo.ecm.platform.io.api.IOResourceAdapter;
 import org.nuxeo.ecm.platform.io.descriptors.IOResourceAdapterDescriptor;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -37,60 +38,35 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class IOManagerComponent extends DefaultComponent {
 
+    private static final Logger log = LogManager.getLogger(IOManagerComponent.class);
+
     public static final ComponentName NAME = new ComponentName(IOManagerComponent.class.getName());
 
     public static final String ADAPTERS_EP_NAME = "adapters";
 
-    private static final Log log = LogFactory.getLog(IOManagerComponent.class);
+    private IOManager service;
 
-    private final IOManager service;
-
-    public IOManagerComponent() {
+    @Override
+    public void start(ComponentContext context) {
         service = new IOManagerImpl();
-    }
-
-    public IOManager getIOManager() {
-        return service;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(ADAPTERS_EP_NAME)) {
-            IOResourceAdapterDescriptor desc = (IOResourceAdapterDescriptor) contribution;
+        this.<IOResourceAdapterDescriptor> getRegistryContributions(ADAPTERS_EP_NAME).forEach(desc -> {
             String name = desc.getName();
-            String className = desc.getClassName();
-            IOResourceAdapter adapter;
             try {
-                // Thread context loader is not working in isolated EARs
-                adapter = (IOResourceAdapter) IOManagerComponent.class.getClassLoader()
-                                                                      .loadClass(className)
-                                                                      .getDeclaredConstructor()
-                                                                      .newInstance();
+                IOResourceAdapter adapter = desc.getKlass().getDeclaredConstructor().newInstance();
+                adapter.setProperties(desc.getProperties());
+                service.addAdapter(name, adapter);
+                log.info("IO resource adapter {} registered", name);
             } catch (ReflectiveOperationException e) {
-                log.error("Caught error when instantiating adapter", e);
-                return;
+                String msg = String.format("Error instantiating adapter '%s' (%s)", name, e.getMessage());
+                addRuntimeMessage(Level.ERROR, msg);
+                log.error(e, e);
             }
-            adapter.setProperties(desc.getProperties());
-            IOResourceAdapter existing = service.getAdapter(name);
-            if (existing != null) {
-                log.warn(String.format("Overriding IO Resource adapter definition %s", name));
-                service.removeAdapter(name);
-            }
-            service.addAdapter(name, adapter);
-            log.info(String.format("IO resource adapter %s registered", name));
-        } else {
-            log.error(String.format("Unknown extension point %s, can't register !", extensionPoint));
-        }
+        });
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(ADAPTERS_EP_NAME)) {
-            IOResourceAdapterDescriptor desc = (IOResourceAdapterDescriptor) contribution;
-            service.removeAdapter(desc.getName());
-        } else {
-            log.error(String.format("Unknown extension point %s, can't unregister !", extensionPoint));
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        service = null;
     }
 
     @Override

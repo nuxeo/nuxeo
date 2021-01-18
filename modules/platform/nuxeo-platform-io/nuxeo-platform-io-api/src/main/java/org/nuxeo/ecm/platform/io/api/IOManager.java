@@ -24,7 +24,6 @@ package org.nuxeo.ecm.platform.io.api;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
@@ -36,7 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public interface IOManager extends Serializable {
+public interface IOManager {
 
     String DOCUMENTS_ADAPTER_NAME = "documents";
 
@@ -49,11 +48,6 @@ public interface IOManager extends Serializable {
      * Adds an adapter with given name and definition.
      */
     void addAdapter(String name, IOResourceAdapter adapter);
-
-    /**
-     * Removes adapter with given name.
-     */
-    void removeAdapter(String name);
 
     /**
      * Import document and resources described by given input stream at given document location.
