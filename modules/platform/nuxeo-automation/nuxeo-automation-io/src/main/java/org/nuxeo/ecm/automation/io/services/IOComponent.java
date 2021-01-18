@@ -30,6 +30,7 @@ import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -56,6 +57,12 @@ public class IOComponent extends DefaultComponent {
             return adapter.cast(jsonFactoryManager);
         }
         return super.getAdapter(adapter);
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        // codecs might depend on other components
+        return ComponentStartOrders.DEFAULT + 1;
     }
 
     @Override

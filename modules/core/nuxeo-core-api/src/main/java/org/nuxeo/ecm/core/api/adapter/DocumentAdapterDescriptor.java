@@ -21,18 +21,22 @@
 
 package org.nuxeo.ecm.core.api.adapter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("adapter")
+@XRegistry
+@XRegistryId("@class")
 public class DocumentAdapterDescriptor {
 
-    private static final Log log = LogFactory.getLog(DocumentAdapterDescriptor.class);
+    private static final Logger log = LogManager.getLogger(DocumentAdapterDescriptor.class);
 
     @XNode("@facet")
     private String facet;
@@ -42,13 +46,12 @@ public class DocumentAdapterDescriptor {
 
     private DocumentAdapterFactory factory;
 
-    public DocumentAdapterDescriptor() {
+    public String getFacet() {
+        return facet;
     }
 
-    public DocumentAdapterDescriptor(String facet, Class<?> itf, DocumentAdapterFactory factory) {
-        this.facet = facet;
-        this.itf = itf;
-        this.factory = factory;
+    public Class<?> getInterface() {
+        return itf;
     }
 
     /**
@@ -66,26 +69,6 @@ public class DocumentAdapterDescriptor {
 
     public DocumentAdapterFactory getFactory() {
         return factory;
-    }
-
-    public void setFactory(DocumentAdapterFactory factory) {
-        this.factory = factory;
-    }
-
-    public String getFacet() {
-        return facet;
-    }
-
-    public void setFacet(String facet) {
-        this.facet = facet;
-    }
-
-    public Class<?> getInterface() {
-        return itf;
-    }
-
-    public void setInterface(Class<?> itf) {
-        this.itf = itf;
     }
 
     @Override
