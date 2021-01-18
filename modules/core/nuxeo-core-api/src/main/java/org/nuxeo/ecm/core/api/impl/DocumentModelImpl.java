@@ -910,10 +910,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             DocumentAdapterDescriptor dae = svc.getAdapterDescriptor(itf);
             if (dae != null) {
                 String facet = dae.getFacet();
-                if (facet == null) {
-                    // if no facet is specified, accept the adapter
-                    return (T) dae.getFactory().getAdapter(this, itf);
-                } else if (hasFacet(facet)) {
+                if (facet == null || hasFacet(facet)) {
+                    // accept the adapter
                     return (T) dae.getFactory().getAdapter(this, itf);
                 } else {
                     // TODO: throw an exception

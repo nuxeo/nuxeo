@@ -23,12 +23,10 @@ package org.nuxeo.ecm.core.api.adapter;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -40,12 +38,25 @@ public class DocumentAdapterService extends DefaultComponent {
     public static final ComponentName NAME = new ComponentName(ComponentName.DEFAULT_TYPE,
             "org.nuxeo.ecm.core.api.DocumentAdapterService");
 
-    private static final Log log = LogFactory.getLog(DocumentAdapterService.class);
+    protected static final String XP = "adapters";
 
     /**
      * Document adapters
      */
     protected Map<Class<?>, DocumentAdapterDescriptor> adapters;
+
+    @Override
+    public void start(ComponentContext context) {
+        adapters = this.<DocumentAdapterDescriptor> getRegistryContributions(XP)
+                       .stream()
+                       .collect(Collectors.toConcurrentMap(DocumentAdapterDescriptor::getInterface,
+                               Function.identity()));
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        adapters = null;
+    }
 
     public DocumentAdapterDescriptor getAdapterDescriptor(Class<?> itf) {
         return adapters.get(itf);
@@ -57,45 +68,6 @@ public class DocumentAdapterService extends DefaultComponent {
     public DocumentAdapterDescriptor[] getAdapterDescriptors() {
         Collection<DocumentAdapterDescriptor> values = adapters.values();
         return values.toArray(new DocumentAdapterDescriptor[values.size()]);
-    }
-
-    public void registerAdapterFactory(DocumentAdapterDescriptor dae) {
-        adapters.put(dae.getInterface(), dae);
-        log.info("Registered document adapter factory " + dae);
-    }
-
-    public void unregisterAdapterFactory(Class<?> itf) {
-        DocumentAdapterDescriptor dae = adapters.remove(itf);
-        if (dae != null) {
-            log.info("Unregistered document adapter factory: " + dae);
-        }
-    }
-
-    @Override
-    public void activate(ComponentContext context) {
-        adapters = new ConcurrentHashMap<>();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        adapters.clear();
-        adapters = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("adapters")) {
-            DocumentAdapterDescriptor dae = (DocumentAdapterDescriptor) contribution;
-            registerAdapterFactory(dae);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("adapters")) {
-            DocumentAdapterDescriptor dae = (DocumentAdapterDescriptor) contribution;
-            unregisterAdapterFactory(dae.getInterface());
-        }
     }
 
 }

@@ -21,28 +21,36 @@
 
 package org.nuxeo.ecm.core.api.adapter;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import javax.inject.Inject;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.adapter.MockAdapterFactory.MockAdapter;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.api:OSGI-INF/DocumentAdapterService.xml")
+@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-adapter-contrib.xml")
 public class TestAdapter {
 
-    @SuppressWarnings({ "InterfaceNeverImplemented" })
-    private interface AnInterface {
-    }
+    @Inject
+    protected DocumentAdapterService das;
 
     @Test
     public void test() {
-        DocumentAdapterService das = new DocumentAdapterService();
-        das.activate(null);
-
-        DocumentAdapterDescriptor dad = new DocumentAdapterDescriptor();
-        dad.setInterface(AnInterface.class);
-
-        das.registerAdapterFactory(dad);
-        assertEquals(dad, das.getAdapterDescriptor(AnInterface.class));
-
-        das.unregisterAdapterFactory(AnInterface.class);
-        das.deactivate(null);
+        DocumentAdapterDescriptor desc = das.getAdapterDescriptor(MockInterface.class);
+        assertNotNull(desc);
+        DocumentAdapterFactory factory = desc.getFactory();
+        assertTrue(factory instanceof MockAdapterFactory);
+        Object adapter = factory.getAdapter(null, MockInterface.class);
+        assertTrue(adapter instanceof MockAdapter);
     }
 
 }
