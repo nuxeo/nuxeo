@@ -24,15 +24,19 @@ import java.io.File;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Configuration of an embedded (same JVM as Nuxeo) Elasticsearch server.
  */
 @XObject(value = "elasticSearchEmbeddedServer")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class ElasticSearchEmbeddedServerConfig {
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
     protected boolean isEnabled = true;
 
     @XNode("@clusterName")
