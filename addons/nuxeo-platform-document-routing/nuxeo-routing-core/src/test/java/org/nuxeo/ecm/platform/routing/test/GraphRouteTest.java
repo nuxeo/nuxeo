@@ -70,9 +70,14 @@ import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class GraphRouteTest extends AbstractGraphRouteTest {
+
+    protected static final String DUMMY_WF_VAR = "dummyWFVar";
+
+    protected static final String DUMMY_NODE_VAR = "dummyNodeVar";
 
     protected static final String TYPE_ROUTE_NODE = "RouteNode";
 
@@ -1847,6 +1852,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @SuppressWarnings("unchecked")
+    @Deploy("org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-reassign-delegate-listener.xml")
     @Test
     public void testTasksReassignment() throws Exception {
 
@@ -1877,6 +1883,17 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
         setButtons(node1, button("btn1", "label-btn1", "filterrr", null));
         node1 = session.saveDocument(node1);
+
+        // set Node and WF variables
+        Map<String, Serializable> wfVar = new HashMap<>();
+        wfVar.put("stringfield", DUMMY_WF_VAR);
+        Map<String, Serializable> nodeVar = new HashMap<>();
+        nodeVar.put("stringfield2", DUMMY_NODE_VAR);
+        GraphNode node = node1.getAdapter(GraphNode.class);
+        Map<String, Object> vars = new HashMap<>();
+        vars.put(Constants.VAR_WORKFLOW, wfVar);
+        vars.put(Constants.VAR_WORKFLOW_NODE, nodeVar);
+        node.setAllVariables(vars);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
         node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
@@ -1941,6 +1958,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @SuppressWarnings("unchecked")
+    @Deploy("org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-reassign-delegate-listener.xml")
     @Test
     public void testTasksDelegation() throws Exception {
 
@@ -1970,6 +1988,17 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
         setButtons(node1, button("btn1", "label-btn1", "filterrr", null));
         node1 = session.saveDocument(node1);
+
+        // set Node and WF variables
+        Map<String, Serializable> wfVar = new HashMap<>();
+        wfVar.put("stringfield", DUMMY_WF_VAR);
+        Map<String, Serializable> nodeVar = new HashMap<>();
+        nodeVar.put("stringfield2", DUMMY_NODE_VAR);
+        GraphNode node = node1.getAdapter(GraphNode.class);
+        Map<String, Object> vars = new HashMap<>();
+        vars.put(Constants.VAR_WORKFLOW, wfVar);
+        vars.put(Constants.VAR_WORKFLOW_NODE, nodeVar);
+        node.setAllVariables(vars);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
         node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
