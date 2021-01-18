@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public interface DocumentViewCodecManager extends Serializable {
+public interface DocumentViewCodecManager {
 
     /**
      * Returns the default codec name.

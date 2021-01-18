@@ -21,140 +21,87 @@
 
 package org.nuxeo.ecm.platform.url.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 import org.nuxeo.ecm.platform.url.codec.descriptor.DocumentViewCodecDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class DocumentViewCodecService extends DefaultComponent implements DocumentViewCodecManager {
-
-    private static final long serialVersionUID = -4521897334653742494L;
-
-    private static final Log log = LogFactory.getLog(DocumentViewCodecService.class);
-
-    public static final String NAME = DocumentViewCodecService.class.getName();
 
     public static final String CODECS_EXTENSION_POINT = "codecs";
 
     protected String defaultCodecName;
 
-    protected final Map<String, DocumentViewCodecDescriptor> descriptors;
+    protected DocumentViewCodec defaultCodec;
 
-    protected final Map<String, DocumentViewCodec> codecs;
+    protected Map<String, DocumentViewCodec> codecs;
 
-    public DocumentViewCodecService() {
-        descriptors = new ConcurrentHashMap<>();
-        codecs = new ConcurrentHashMap<>();
+    @Override
+    public void start(ComponentContext context) {
+        codecs = new HashMap<>();
+        this.<DocumentViewCodecDescriptor> getRegistryContributions(CODECS_EXTENSION_POINT)
+            .stream()
+            .sorted(Comparator.comparing(DocumentViewCodecDescriptor::getName))
+            .forEach(desc -> {
+                String codecName = desc.getName();
+                // try to instantiate it
+                String className = desc.getClassName();
+                if (className == null) {
+                    throw new IllegalArgumentException(
+                            String.format("Invalid class for codec '%s': check ERROR logs" + " at startup", codecName));
+                }
+                DocumentViewCodec codec;
+                try {
+                    // Thread context loader is not working in isolated EARs
+                    codec = (DocumentViewCodec) DocumentViewCodecManager.class.getClassLoader()
+                                                                              .loadClass(className)
+                                                                              .getDeclaredConstructor()
+                                                                              .newInstance();
+                } catch (ReflectiveOperationException e) {
+                    String msg = String.format("Caught error when instantiating codec '%s' with " + "class '%s' ",
+                            codecName, className);
+                    throw new IllegalArgumentException(msg, e);
+                }
+                String prefix = desc.getPrefix();
+                if (prefix != null) {
+                    codec.setPrefix(prefix);
+                }
+                if (desc.getDefaultCodec() && defaultCodec == null) {
+                    defaultCodecName = codecName;
+                    defaultCodec = codec;
+                } else {
+                    codecs.put(codecName, codec);
+                }
+            });
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        descriptors.clear();
-        codecs.clear();
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.isAssignableFrom(DocumentViewCodecManager.class)) {
-            return (T) this;
-        }
-        return null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CODECS_EXTENSION_POINT.equals(extensionPoint)) {
-            DocumentViewCodecDescriptor desc = (DocumentViewCodecDescriptor) contribution;
-            String codecName = desc.getName();
-            if (desc.getDefaultCodec()) {
-                defaultCodecName = codecName;
-            }
-            // try to instantiate it
-            String className = desc.getClassName();
-            if (className == null) {
-                throw new IllegalArgumentException(
-                        String.format("Invalid class for codec '%s': check ERROR logs" + " at startup", codecName));
-            }
-            DocumentViewCodec codec;
-            try {
-                // Thread context loader is not working in isolated EARs
-                codec = (DocumentViewCodec) DocumentViewCodecManager.class.getClassLoader()
-                                                                          .loadClass(className)
-                                                                          .getDeclaredConstructor()
-                                                                          .newInstance();
-            } catch (ReflectiveOperationException e) {
-                String msg = String.format("Caught error when instantiating codec '%s' with " + "class '%s' ",
-                        codecName, className);
-                throw new IllegalArgumentException(msg, e);
-            }
-            String prefix = desc.getPrefix();
-            if (prefix != null) {
-                codec.setPrefix(prefix);
-            }
-            if (!descriptors.containsKey(codecName) || desc.getPriority() > descriptors.get(codecName).getPriority()) {
-                descriptors.put(codecName, desc);
-                codecs.put(codecName, codec);
-            }
-            log.debug("Added URL codec: " + codecName);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CODECS_EXTENSION_POINT.equals(extensionPoint)) {
-            DocumentViewCodecDescriptor codecDesc = (DocumentViewCodecDescriptor) contribution;
-            String codecName = codecDesc.getName();
-            descriptors.remove(codecName);
-            codecs.remove(codecName);
-            log.debug("Removed URL codec: " + codecName);
-        }
-    }
-
-    public List<String> getDocumentViewCodecDescriptorNames() {
-        List<String> lst = new ArrayList<>();
-        for (String k : descriptors.keySet()) {
-            if (descriptors.get(k).getEnabled()) {
-                lst.add(k);
-            }
-        }
-        return lst;
+    public void stop(ComponentContext context) throws InterruptedException {
+        defaultCodecName = null;
+        defaultCodec = null;
+        codecs = null;
     }
 
     @Override
     public String getDefaultCodecName() {
-        String name = defaultCodecName;
-        if (name == null) {
-            // take first one
-            List<String> descs = getDocumentViewCodecDescriptorNames();
-            if (descs != null && !descs.isEmpty()) {
-                Collections.sort(descs);
-                name = descs.get(0);
-            }
-        }
-        return name;
+        return defaultCodecName;
     }
 
     public DocumentViewCodec getCodec() {
-        return getCodec(defaultCodecName);
+        return defaultCodec;
     }
 
     @Override
     public DocumentViewCodec getCodec(String codecName) {
-        if (StringUtils.isBlank(codecName)) {
-            return null;
+        if (StringUtils.isBlank(codecName) || codecName.contentEquals(defaultCodecName)) {
+            return defaultCodec;
         }
         return codecs.get(codecName);
     }
@@ -162,19 +109,15 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
     @Override
     public String getUrlFromDocumentView(DocumentView docView, boolean needBaseUrl, String baseUrl) {
         String url = null;
-        DocumentViewCodec codec = getCodec(getDefaultCodecName());
-        if (codec != null && codec.handleDocumentView(docView)) {
-            url = getUrlFromDocumentView(codec, docView, needBaseUrl, baseUrl);
+        if (defaultCodec != null && defaultCodec.handleDocumentView(docView)) {
+            url = getUrlFromDocumentView(defaultCodec, docView, needBaseUrl, baseUrl);
         }
         if (url == null) {
-            for (String codecName : descriptors.keySet()) {
-                if (!codecName.equals(defaultCodecName)) {
-                    codec = getCodec(codecName);
-                    if (codec != null && codec.handleDocumentView(docView)) {
-                        url = getUrlFromDocumentView(codec, docView, needBaseUrl, baseUrl);
-                        if (url != null) {
-                            break;
-                        }
+            for (DocumentViewCodec codec : codecs.values()) {
+                if (codec.handleDocumentView(docView)) {
+                    url = getUrlFromDocumentView(codec, docView, needBaseUrl, baseUrl);
+                    if (url != null) {
+                        break;
                     }
                 }
             }
@@ -211,19 +154,15 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
     public DocumentView getDocumentViewFromUrl(String url, boolean hasBaseUrl, String baseUrl) {
         DocumentView docView = null;
         String finalUrl = getUrlWithoutBase(url, hasBaseUrl, baseUrl);
-        DocumentViewCodec codec = getCodec(getDefaultCodecName());
-        if (codec != null && codec.handleUrl(finalUrl)) {
-            docView = getDocumentViewFromUrl(codec, finalUrl);
+        if (defaultCodec != null && defaultCodec.handleUrl(finalUrl)) {
+            docView = getDocumentViewFromUrl(defaultCodec, finalUrl);
         }
         if (docView == null) {
-            for (String codecName : descriptors.keySet()) {
-                if (!codecName.equals(defaultCodecName)) {
-                    codec = getCodec(codecName);
-                    if (codec != null && codec.handleUrl(finalUrl)) {
-                        docView = getDocumentViewFromUrl(codec, finalUrl);
-                        if (docView != null) {
-                            break;
-                        }
+            for (DocumentViewCodec codec : codecs.values()) {
+                if (codec.handleUrl(finalUrl)) {
+                    docView = getDocumentViewFromUrl(codec, finalUrl);
+                    if (docView != null) {
+                        break;
                     }
                 }
             }
@@ -249,8 +188,7 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
 
     protected DocumentView getDocumentViewFromUrl(DocumentViewCodec codec, String finalUrl) {
         if (codec != null) {
-            DocumentView docView = codec.getDocumentViewFromUrl(finalUrl);
-            return docView;
+            return codec.getDocumentViewFromUrl(finalUrl);
         }
         return null;
     }
