@@ -21,15 +21,14 @@ package org.nuxeo.ecm.core.blob;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
-import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
@@ -44,7 +43,6 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -55,60 +53,33 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class DocumentBlobManagerComponent extends DefaultComponent implements DocumentBlobManager {
 
-    private static final Log log = LogFactory.getLog(DocumentBlobManagerComponent.class);
+    private static final Logger log = LogManager.getLogger(DocumentBlobManagerComponent.class);
 
     protected static final String XP = "configuration";
 
     protected static final BlobDispatcher DEFAULT_BLOB_DISPATCHER = new DefaultBlobDispatcher();
+
+    protected BlobDispatcher blobDispatcher;
 
     protected static final int BINARY_GC_TX_TIMEOUT_SEC = 86_400; // 1 day
 
     // in these low-level APIs we deal with unprefixed xpaths, so not file:content
     protected static final String MAIN_BLOB_XPATH = "content";
 
-    protected Deque<BlobDispatcherDescriptor> blobDispatcherDescriptorsRegistry = new LinkedList<>();
-
     @Override
-    public void deactivate(ComponentContext context) {
-        blobDispatcherDescriptorsRegistry.clear();
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP.equals(extensionPoint)) {
-            if (contribution instanceof BlobDispatcherDescriptor) {
-                registerBlobDispatcher((BlobDispatcherDescriptor) contribution);
-            } else {
-                throw new NuxeoException("Invalid descriptor: " + contribution.getClass());
-            }
-        } else {
-            throw new NuxeoException("Invalid extension point: " + extensionPoint);
-        }
+    public void start(ComponentContext context) {
+        blobDispatcher = this.<BlobDispatcherDescriptor> getRegistryContribution(XP)
+                             .map(BlobDispatcherDescriptor::getBlobDispatcher)
+                             .orElse(DEFAULT_BLOB_DISPATCHER);
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP.equals(extensionPoint)) {
-            if (contribution instanceof BlobDispatcherDescriptor) {
-                unregisterBlobDispatcher((BlobDispatcherDescriptor) contribution);
-            }
-        }
-    }
-
-    protected void registerBlobDispatcher(BlobDispatcherDescriptor descr) {
-        blobDispatcherDescriptorsRegistry.add(descr);
-    }
-
-    protected void unregisterBlobDispatcher(BlobDispatcherDescriptor descr) {
-        blobDispatcherDescriptorsRegistry.remove(descr);
+    public void stop(ComponentContext context) throws InterruptedException {
+        blobDispatcher = null;
     }
 
     protected BlobDispatcher getBlobDispatcher() {
-        BlobDispatcherDescriptor descr = blobDispatcherDescriptorsRegistry.peekLast();
-        if (descr == null) {
-            return DEFAULT_BLOB_DISPATCHER;
-        }
-        return descr.getBlobDispatcher();
+        return blobDispatcher;
     }
 
     protected BlobProvider getBlobProvider(String providerId) {
@@ -190,7 +161,6 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             return null;
         }
 
-        BlobDispatcher blobDispatcher = getBlobDispatcher();
         BlobDispatch dispatch = null;
         if (blob instanceof ManagedBlob) {
             ManagedBlob managedBlob = (ManagedBlob) blob;
@@ -295,7 +265,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         }
         BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blob);
         if (blobProvider == null) {
-            log.error("No blob provider found for blob: " + blob.getKey());
+            log.error("No blob provider found for blob: {}", blob::getKey);
             return;
         }
         try {
@@ -323,7 +293,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         if (blob instanceof ManagedBlob) {
             return (ManagedBlob) blob;
         }
-        log.error("Blob is not managed: " + blob);
+        log.error("Blob is not managed: {}", blob);
         return null;
     }
 
@@ -419,7 +389,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             key = stripBlobKeyPrefix(key);
             gc.mark(key);
         } else {
-            log.error("Unknown binary manager for key: " + key);
+            log.error("Unknown binary manager for key: {}", key);
         }
     }
 

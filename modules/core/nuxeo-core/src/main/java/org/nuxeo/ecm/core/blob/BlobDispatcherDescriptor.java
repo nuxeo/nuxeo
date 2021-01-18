@@ -24,7 +24,9 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
+import org.nuxeo.runtime.RuntimeServiceException;
 
 /**
  * Descriptor for a {@link BlobDispatcher} and its configuration.
@@ -32,10 +34,8 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @since 7.3
  */
 @XObject(value = "blobdispatcher")
+@XRegistry(compatWarnOnMerge = true)
 public class BlobDispatcherDescriptor {
-
-    public BlobDispatcherDescriptor() {
-    }
 
     @XNode("class")
     public Class<? extends BlobDispatcher> klass;
@@ -43,23 +43,18 @@ public class BlobDispatcherDescriptor {
     @XNodeMap(value = "property", key = "@name", type = LinkedHashMap.class, componentType = String.class)
     public Map<String, String> properties = new LinkedHashMap<>();
 
-    private BlobDispatcher instance;
-
-    public synchronized BlobDispatcher getBlobDispatcher() {
-        if (instance == null) {
-            if (klass == null) {
-                throw new NuxeoException("Missing class in blob dispatcher descriptor");
-            }
-            BlobDispatcher blobDispatcher;
-            try {
-                blobDispatcher = klass.getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new NuxeoException(e);
-            }
-            blobDispatcher.initialize(properties);
-            instance = blobDispatcher;
+    public BlobDispatcher getBlobDispatcher() throws RuntimeServiceException {
+        if (klass == null) {
+            throw new RuntimeServiceException("Missing class in blob dispatcher descriptor");
         }
-        return instance;
+        BlobDispatcher blobDispatcher;
+        try {
+            blobDispatcher = klass.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeServiceException(e);
+        }
+        blobDispatcher.initialize(properties);
+        return blobDispatcher;
     }
 
 }
