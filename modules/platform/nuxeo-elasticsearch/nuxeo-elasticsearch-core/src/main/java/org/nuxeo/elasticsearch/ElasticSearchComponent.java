@@ -47,7 +47,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.repository.RepositoryService;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ESClient;
@@ -70,6 +70,7 @@ import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.elasticsearch.work.ScrollingIndexingWorker;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -228,9 +229,8 @@ public class ElasticSearchComponent extends DefaultComponent
 
     @Override
     public int getApplicationStartedOrder() {
-        RepositoryService component = (RepositoryService) Framework.getRuntime()
-                                                                   .getComponent(
-                                                                           "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
+        Component component = (Component) Framework.getRuntime()
+                                                   .getComponent(RepositoryManager.REPOSITORY_COMPONENT_NAME);
         return component.getApplicationStartedOrder() / 2;
     }
 

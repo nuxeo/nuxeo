@@ -34,10 +34,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
+import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.pubsub.AbstractPubSubBroker;
 import org.nuxeo.runtime.pubsub.SerializableMessage;
@@ -171,12 +172,12 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     @Override
     public int getApplicationStartedOrder() {
-        ComponentInstance repositoryComponent = Framework.getRuntime().getComponentInstance(
-                "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
-        if (repositoryComponent == null || repositoryComponent.getInstance() == null) {
+        Component component = (Component) Framework.getRuntime()
+                                                   .getComponent(RepositoryManager.REPOSITORY_COMPONENT_NAME);
+        if (component == null) {
             return super.getApplicationStartedOrder();
         }
-        return ((DefaultComponent) repositoryComponent.getInstance()).getApplicationStartedOrder() - 5;
+        return component.getApplicationStartedOrder() - 5;
     }
 
     @Override

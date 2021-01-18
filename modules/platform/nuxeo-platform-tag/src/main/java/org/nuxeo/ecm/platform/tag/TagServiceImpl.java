@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_FACETS;
 import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_RELATIONS;
 import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STEP_RELATIONS_TO_FACETS;
 
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.migration.MigrationService.MigrationStatus;
@@ -48,9 +49,7 @@ public class TagServiceImpl extends DefaultComponent {
         // should deploy before repository service because the tag service is indirectly used (through a listener) by
         // the repository init handlers
         Component component = (Component) Framework.getRuntime()
-                                                   .getComponentInstance(
-                                                           "org.nuxeo.ecm.core.repository.RepositoryServiceComponent")
-                                                   .getInstance();
+                                                   .getComponent(RepositoryManager.REPOSITORY_COMPONENT_NAME);
         return component.getApplicationStartedOrder() - 1;
     }
 

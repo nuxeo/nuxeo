@@ -28,6 +28,9 @@ import java.util.List;
  */
 public interface RepositoryManager {
 
+    /** @since 11.5 */
+    public static final String REPOSITORY_COMPONENT_NAME = "org.nuxeo.ecm.core.repository.RepositoryServiceComponent";
+
     /**
      * Gets all registered repositories.
      *
