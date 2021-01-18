@@ -24,12 +24,14 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.RequestDumper;
 
 /**
  * @author arussel
  */
 @XObject("requestdump")
+@XRegistry(compatWarnOnMerge = true)
 public class RequestDumpDescriptor {
 
     @XNode("@class")

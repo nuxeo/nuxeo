@@ -24,11 +24,13 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * @author arussel
  */
 @XObject("errorHandlers")
+@XRegistry
 public class ErrorHandlersDescriptor {
 
     @XNode("@bundle")

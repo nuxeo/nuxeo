@@ -20,12 +20,14 @@ package org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingListener;
 
 /**
  * @author arussel
  */
 @XObject("listener")
+@XRegistry
 public class ListenerDescriptor {
 
     @XNode("@class")
