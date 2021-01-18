@@ -1,4 +1,4 @@
-<component name="studio.extensions.grenard-SANDBOX" version="1.0.0">
+<component name="studio.extensions.grenard-SANDBOX">
 
   <require>org.nuxeo.ecm.plateform.task.type</require>
 

@@ -28,7 +28,6 @@ import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOC_RO
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,7 +91,6 @@ import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.audit.RoutingAuditHelper;
 import org.nuxeo.ecm.platform.routing.core.io.NodeAccessRunner;
 import org.nuxeo.ecm.platform.routing.core.listener.RouteModelsInitializator;
-import org.nuxeo.ecm.platform.routing.core.registries.RouteTemplateResourceRegistry;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
@@ -102,9 +100,7 @@ import org.nuxeo.ecm.platform.task.core.service.TaskEventNotificationHelper;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.RuntimeContext;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -143,51 +139,58 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
      */
     public static final String ACTOR_ACE_CREATOR = "Workflow";
 
-    // FIXME: use ContributionFragmentRegistry instances instead to handle hot
-    // reload
-
     public static final String ROUTE_MODELS_IMPORTER_XP = "routeModelImporter";
 
-    protected Map<String, String> typeToChain = new HashMap<>();
+    protected RepositoryInitializationHandler repositoryInitializationHandler = new RouteModelsInitializator();
 
-    protected Map<String, String> undoChainIdFromRunning = new HashMap<>();
-
-    protected Map<String, String> undoChainIdFromDone = new HashMap<>();
+    private Cache<String, String> modelsCache;
 
     protected DocumentRoutingPersister persister;
 
-    protected RouteTemplateResourceRegistry routeResourcesRegistry = new RouteTemplateResourceRegistry();
+    protected List<URL> routeTemplates;
 
-    protected RepositoryInitializationHandler repositoryInitializationHandler;
+    protected Map<String, String> typeToChain;
 
-    private Cache<String, String> modelsChache;
+    protected Map<String, String> undoChainIdFromRunning;
+
+    protected Map<String, String> undoChainIdFromDone;
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CHAINS_TO_TYPE_XP.equals(extensionPoint)) {
-            ChainToTypeMappingDescriptor desc = (ChainToTypeMappingDescriptor) contribution;
-            typeToChain.put(desc.getDocumentType(), desc.getChainId());
-            undoChainIdFromRunning.put(desc.getDocumentType(), desc.getUndoChainIdFromRunning());
-            undoChainIdFromDone.put(desc.getDocumentType(), desc.getUndoChainIdFromDone());
-        } else if (PERSISTER_XP.equals(extensionPoint)) {
-            PersisterDescriptor des = (PersisterDescriptor) contribution;
+    public void start(ComponentContext context) {
+        modelsCache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(10, TimeUnit.MINUTES).build();
+        this.<PersisterDescriptor> getRegistryContribution(PERSISTER_XP).ifPresent(desc -> {
             try {
-                persister = des.getKlass().getDeclaredConstructor().newInstance();
+                persister = desc.getKlass().getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new NuxeoException(e);
             }
-        } else if (ROUTE_MODELS_IMPORTER_XP.equals(extensionPoint)) {
-            RouteModelResourceType res = (RouteModelResourceType) contribution;
-            registerRouteResource(res, contributor.getRuntimeContext());
-        }
+        });
+        routeTemplates = this.<RouteModelResourceType> getRegistryContributions(ROUTE_MODELS_IMPORTER_XP)
+                             .stream()
+                             .map(RouteModelResourceType::getUrl)
+                             .collect(Collectors.toList());
+        typeToChain = new HashMap<>();
+        undoChainIdFromRunning = new HashMap<>();
+        undoChainIdFromDone = new HashMap<>();
+        this.<ChainToTypeMappingDescriptor> getRegistryContributions(CHAINS_TO_TYPE_XP).forEach(desc -> {
+            String id = desc.getDocumentType();
+            typeToChain.put(id, desc.getChainId());
+            undoChainIdFromRunning.put(id, desc.getUndoChainIdFromRunning());
+            undoChainIdFromDone.put(id, desc.getUndoChainIdFromDone());
+        });
+
+        repositoryInitializationHandler.install();
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof RouteModelResourceType) {
-            routeResourcesRegistry.removeContribution((RouteModelResourceType) contribution);
-        }
-        super.unregisterContribution(contribution, extensionPoint, contributor);
+    public void stop(ComponentContext context) throws InterruptedException {
+        routeTemplates = null;
+        typeToChain = null;
+        undoChainIdFromRunning = null;
+        undoChainIdFromDone = null;
+        persister = null;
+
+        repositoryInitializationHandler.uninstall();
     }
 
     protected static void fireEvent(String eventName, Map<String, Serializable> eventProperties, DocumentRoute route,
@@ -688,8 +691,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             throw new NuxeoException("Can not import document " + file);
         }
         // remove model from cache if any model with the same id existed
-        if (modelsChache != null) {
-            modelsChache.invalidate(doc.getName());
+        if (modelsCache != null) {
+            modelsCache.invalidate(doc.getName());
         }
 
         return doc.getAdapter(DocumentRoute.class);
@@ -700,25 +703,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        modelsChache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(10, TimeUnit.MINUTES).build();
-        repositoryInitializationHandler = new RouteModelsInitializator();
-        repositoryInitializationHandler.install();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        super.deactivate(context);
-        if (repositoryInitializationHandler != null) {
-            repositoryInitializationHandler.uninstall();
-        }
-    }
-
-    @Override
     public List<URL> getRouteModelTemplateResources() {
-        // test contrib parsing and deployment
-        return new ArrayList<>(routeResourcesRegistry.getRouteModelTemplateResources());
+        return Collections.unmodifiableList(routeTemplates);
     }
 
     @SuppressWarnings("unchecked")
@@ -746,39 +732,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public void registerRouteResource(RouteModelResourceType res, RuntimeContext context) {
-        if (res.getPath() != null && res.getId() != null) {
-            if (routeResourcesRegistry.getResource(res.getId()) != null) {
-                routeResourcesRegistry.removeContribution(res);
-            }
-            if (res.getUrl() == null) {
-                res.setUrl(getUrlFromPath(res, context));
-            }
-            routeResourcesRegistry.addContribution(res);
-        }
-    }
-
-    protected URL getUrlFromPath(RouteModelResourceType res, RuntimeContext extensionContext) {
-        String path = res.getPath();
-        if (path == null) {
-            return null;
-        }
-        URL url;
-        try {
-            url = new URL(path);
-        } catch (MalformedURLException e) {
-            url = extensionContext.getLocalResource(path);
-            if (url == null) {
-                url = extensionContext.getResource(path);
-            }
-            if (url == null) {
-                url = res.getClass().getResource(path);
-            }
-        }
-        return url;
-    }
-
-    @Override
     public DocumentRoute getRouteModelWithId(CoreSession session, String id) {
         String routeDocModelId = getRouteModelDocIdWithId(session, id);
         DocumentModel routeDoc = session.getDocument(new IdRef(routeDocModelId));
@@ -787,8 +740,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public String getRouteModelDocIdWithId(CoreSession session, String id) {
-        if (modelsChache != null) {
-            String routeDocId = modelsChache.getIfPresent(id);
+        if (modelsCache != null) {
+            String routeDocId = modelsCache.getIfPresent(id);
             if (routeDocId != null) {
                 return routeDocId;
             }
@@ -807,10 +760,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             }
         }
         String routeDocId = routeIds.get(0);
-        if (modelsChache == null) {
-            modelsChache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(10, TimeUnit.MINUTES).build();
+        if (modelsCache == null) {
+            modelsCache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(10, TimeUnit.MINUTES).build();
         }
-        modelsChache.put(id, routeDocId);
+        modelsCache.put(id, routeDocId);
         return routeDocId;
     }
 
@@ -1279,7 +1232,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public void invalidateRouteModelsCache() {
-        modelsChache.invalidateAll();
+        modelsCache.invalidateAll();
     }
 
     /**
