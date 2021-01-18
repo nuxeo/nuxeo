@@ -7,7 +7,7 @@
       <filter>text/xml</filter>
     </plugin>
 
-    <plugin name="pluginWithDocType4merge" class="org.nuxeo.ecm.platform.filemanager.FooPlugin" docType="Picture">
+    <plugin name="pluginWithDocType4merge" class="org.nuxeo.ecm.platform.filemanager.FooPlugin" docType="Picture" merge="false">
       <filter>image/jpeg</filter>
       <filter>image/png</filter>
     </plugin>

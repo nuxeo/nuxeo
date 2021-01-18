@@ -27,10 +27,11 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 @XObject("unicitySettings")
-public class UnicityExtension implements Descriptor {
+@XRegistry
+public class UnicityExtension {
 
     public static final List<String> DEFAULT_FIELDS = new ArrayList<>();
 
@@ -65,8 +66,4 @@ public class UnicityExtension implements Descriptor {
         return computeDigest;
     }
 
-    @Override
-    public String getId() {
-        return toString();
-    }
 }
