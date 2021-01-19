@@ -21,12 +21,10 @@ package org.nuxeo.launcher.config;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.TEMPLATE_SEPARATOR;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -35,7 +33,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
@@ -65,8 +62,6 @@ public class ServerConfigurator {
     /** @since 5.7 */
     public static final String PARAM_HTTP_TOMCAT_ADMIN_PORT = "nuxeo.server.tomcat_admin.port";
 
-    protected static final String DEFAULT_CONTEXT_NAME = "/nuxeo";
-
     /** @since 9.3 */
     public static final String JAVA_OPTS = "JAVA_OPTS";
 
@@ -95,26 +90,6 @@ public class ServerConfigurator {
     public ServerConfigurator(ConfigurationGenerator configurationGenerator, ConfigurationHolder configHolder) {
         this.configHolder = configHolder;
         generator = configurationGenerator;
-    }
-
-    /**
-     * @return true if server configuration files already exist
-     */
-    protected boolean isConfigured() {
-        Path nuxeoContext = Path.of("conf", "Catalina", "localhost", getContextName() + ".xml");
-        return Files.exists(configHolder.getHomePath().resolve(nuxeoContext));
-    }
-
-    /**
-     * @return Configured context name
-     * @since 5.4.2
-     */
-    public String getContextName() {
-        if (contextName == null) {
-            contextName = configHolder.getProperty(ConfigurationGenerator.PARAM_CONTEXT_PATH, DEFAULT_CONTEXT_NAME);
-            contextName = contextName.substring(1);
-        }
-        return contextName;
     }
 
     /**
@@ -175,34 +150,6 @@ public class ServerConfigurator {
     public void setPidDir(String pidDirStr) {
         pidDir = new File(pidDirStr);
         pidDir.mkdirs();
-    }
-
-    /**
-     * Check server paths; warn if existing deprecated paths. Override this method to perform server specific checks.
-     *
-     * @throws ConfigurationException If deprecated paths have been detected
-     * @since 5.4.2
-     */
-    public void checkPaths() throws ConfigurationException {
-        Path badInstanceClid = configHolder.getRuntimeHomePath()
-                                           .resolve(Environment.DEFAULT_DATA_DIR)
-                                           .resolve("instance.clid");
-        Path dataPath = configHolder.getDataPath();
-        if (Files.exists(badInstanceClid) && !badInstanceClid.startsWith(dataPath)) {
-            log.warn("Moving {} to {}.", badInstanceClid, dataPath);
-            try {
-                FileUtils.moveFileToDirectory(badInstanceClid.toFile(), dataPath.toFile(), true);
-            } catch (IOException e) {
-                throw new ConfigurationException("NXP-6722 move failed: " + e.getMessage(), e);
-            }
-        }
-
-        Path oldPackagesPath = dataPath.resolve(Environment.DEFAULT_MP_DIR);
-        Path packagesPath = configHolder.getPackagesPath();
-        if (Files.exists(oldPackagesPath) && !oldPackagesPath.equals(packagesPath)) {
-            log.warn("NXP-8014 Packages cache location changed. You can safely delete {} or move its content to {}",
-                    oldPackagesPath, packagesPath);
-        }
     }
 
     /**
@@ -321,26 +268,6 @@ public class ServerConfigurator {
     }
 
     /**
-     * @since 5.7
-     */
-    public void verifyInstallation() throws ConfigurationException {
-        checkPaths();
-        checkNetwork();
-    }
-
-    /**
-     * Perform server specific checks, not already done by {@link ConfigurationGenerator#checkAddressesAndPorts()}
-     *
-     * @since 5.7
-     * @see ConfigurationGenerator#checkAddressesAndPorts()
-     */
-    protected void checkNetwork() throws ConfigurationException {
-        InetAddress bindAddress = ConfigurationGenerator.getBindAddress(configHolder.getProperty(PARAM_BIND_ADDRESS));
-        ConfigurationGenerator.checkPortAvailable(bindAddress,
-                Integer.parseInt(configHolder.getProperty(PARAM_HTTP_TOMCAT_ADMIN_PORT)));
-    }
-
-    /**
      * @return Marketplace Packages directory
      * @since 5.9.4
      */
@@ -394,7 +321,7 @@ public class ServerConfigurator {
             nxInstance.config.profiles.addAll(Arrays.asList(profiles.split(TEMPLATE_SEPARATOR)));
         }
         // templates
-        nxInstance.config.dbtemplate = generator.extractDatabaseTemplateName();
+        nxInstance.config.dbtemplate = configHolder.getIncludedDBTemplateName();
         List<String> userTemplates = configHolder.getIncludedTemplateNames();
         for (String template : userTemplates) {
             if (template.equals(nxInstance.config.dbtemplate)) {

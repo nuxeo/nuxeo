@@ -18,27 +18,77 @@
  */
 package org.nuxeo.launcher.config.backingservices;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.UnaryOperator;
+
+import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.launcher.config.ConfigurationException;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.config.ConfigurationHolder;
 
 /**
  * A backing checker checks for the availability of a backing service.
  *
  * @since 9.2
+ * @apiNote Reworked in 11.5.
  */
 public interface BackingChecker {
 
     /**
      * Test if the check has to be done for the given configuration.
-     * @param cg The current configuration
-     * @return true if {@link BackingChecker#check(ConfigurationGenerator)} has to be called.
+     *
+     * @param configHolder The current configuration
+     * @return true if {@link BackingChecker#check(ConfigurationHolder)} has to be called.
      */
-    boolean accepts(ConfigurationGenerator cg);
+    boolean accepts(ConfigurationHolder configHolder);
 
     /**
-     * Test the availbilty of the backing service.
-     * @param cg The current configuration
+     * Test the availability of the backing service.
+     *
+     * @param configHolder The current configuration
      * @throws ConfigurationException if backing service is not available.
      */
-    void check(ConfigurationGenerator cg) throws ConfigurationException;
+    void check(ConfigurationHolder configHolder) throws ConfigurationException;
+
+    /**
+     * Creates a descriptor instance for the specified file and descriptor class.
+     */
+    default <T> T getDescriptor(ConfigurationHolder configHolder, String configName, Class<T> klass)
+            throws ConfigurationException {
+        return getDescriptor(configHolder, configName, klass, UnaryOperator.identity());
+    }
+
+    /**
+     * Creates a descriptor instance for the specified file and descriptor class.
+     */
+    @SuppressWarnings("unchecked")
+    default <T> T getDescriptor(ConfigurationHolder configHolder, String configName, Class<T> klass,
+            UnaryOperator<String> replacer) throws ConfigurationException {
+        Path configPath = configHolder.getConfigurationPath().resolve(configName);
+        if (Files.notExists(configPath)) {
+            throw new ConfigurationException(
+                    "Configuration file: " + configPath + " for class: " + klass.getSimpleName() + "doesn't exist");
+        }
+        XMap xmap = new XMap();
+        xmap.register(klass);
+        try {
+            String content = Files.readString(configPath, StandardCharsets.UTF_8);
+            content = replacer.apply(content);
+            Object[] nodes = xmap.loadAll(new ByteArrayInputStream(content.getBytes()));
+            for (Object node : nodes) {
+                if (node != null) {
+                    return (T) node;
+                }
+            }
+            throw new ConfigurationException(
+                    "No configuration found for class: " + klass.getSimpleName() + " in file:" + configPath);
+        } catch (IOException e) {
+            throw new ConfigurationException(
+                    "Unable to load the configuration for class:" + klass.getSimpleName() + " from file:" + configPath,
+                    e);
+        }
+    }
 }

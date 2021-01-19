@@ -21,7 +21,6 @@
 package org.nuxeo.launcher.config;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.launcher.config.ServerConfigurator.PARAM_HTTP_TOMCAT_ADMIN_PORT;
@@ -30,22 +29,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.ServerSocket;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -58,11 +47,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.logging.log4j.Level;
@@ -74,9 +58,6 @@ import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
-import org.nuxeo.common.utils.TextTemplate;
-import org.nuxeo.launcher.commons.DatabaseDriverException;
-import org.nuxeo.launcher.config.JVMVersion.UpTo;
 import org.nuxeo.log4j.Log4JHelper;
 
 /**
@@ -100,13 +81,6 @@ public class ConfigurationGenerator {
      */
     public static final String TEMPLATE_SEPARATOR = ",";
 
-    /**
-     * Accurate but not used internally. NXP-18023: Java 8 update 40+ required
-     *
-     * @since 5.7
-     */
-    public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] { "1.8.0_40", "11" };
-
     /** @since 5.6 */
     protected static final String CONFIGURATION_PROPERTIES = "configuration.properties";
 
@@ -124,15 +98,7 @@ public class ConfigurationGenerator {
      */
     public static final String PARAM_TEMPLATES_NAME = "nuxeo.templates";
 
-    public static final String PARAM_TEMPLATE_DBNAME = "nuxeo.dbtemplate";
-
-    /** @since 9.3 */
-    public static final String PARAM_TEMPLATE_DBSECONDARY_NAME = "nuxeo.dbnosqltemplate";
-
     public static final String PARAM_TEMPLATE_DBTYPE = "nuxeo.db.type";
-
-    /** @since 9.3 */
-    public static final String PARAM_TEMPLATE_DBSECONDARY_TYPE = "nuxeo.dbsecondary.type";
 
     public static final String OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.templates.parsing.extensions";
 
@@ -148,10 +114,6 @@ public class ConfigurationGenerator {
     public static final List<String> DB_LIST = asList("default", "mongodb", "postgresql", "oracle", "mysql", "mariadb",
             "mssql", "db2");
 
-    public static final List<String> DB_SECONDARY_LIST = singletonList("none");
-
-    public static final List<String> DB_EXCLUDE_CHECK_LIST = asList("default", "none", "mongodb");
-
     /**
      * @deprecated since 11.1, Nuxeo Wizard has been removed.
      */
@@ -165,12 +127,6 @@ public class ConfigurationGenerator {
     public static final String PARAM_WIZARD_RESTART_PARAMS = "wizard.restart.params";
 
     public static final String PARAM_LOOPBACK_URL = "nuxeo.loopback.url";
-
-    public static final int MIN_PORT = 1;
-
-    public static final int MAX_PORT = 65535;
-
-    public static final int ADDRESS_PING_TIMEOUT = 1000;
 
     public static final String PARAM_BIND_ADDRESS = "nuxeo.bind.address";
 
@@ -191,20 +147,6 @@ public class ConfigurationGenerator {
     public static final String DISTRIBUTION_MP_DIR = "setupWizardDownloads";
 
     public static final String INSTALL_AFTER_RESTART = "installAfterRestart.log";
-
-    public static final String PARAM_DB_DRIVER = "nuxeo.db.driver";
-
-    public static final String PARAM_DB_JDBC_URL = "nuxeo.db.jdbc.url";
-
-    public static final String PARAM_DB_HOST = "nuxeo.db.host";
-
-    public static final String PARAM_DB_PORT = "nuxeo.db.port";
-
-    public static final String PARAM_DB_NAME = "nuxeo.db.name";
-
-    public static final String PARAM_DB_USER = "nuxeo.db.user";
-
-    public static final String PARAM_DB_PWD = "nuxeo.db.password";
 
     /**
      * @since 8.1
@@ -232,7 +174,7 @@ public class ConfigurationGenerator {
      *
      * @since 8.1
      */
-    public static final List<String> SECRET_KEYS = asList(PARAM_DB_PWD, "mailservice.password",
+    public static final List<String> SECRET_KEYS = asList("mailservice.password",
             "mail.transport.password", "nuxeo.http.proxy.password", "nuxeo.ldap.bindpassword",
             "nuxeo.user.emergency.password");
 
@@ -245,15 +187,6 @@ public class ConfigurationGenerator {
      * @since 5.6
      */
     public static final String NUXEO_DEV_SYSTEM_PROP = "org.nuxeo.dev";
-
-    /** @since 8.4 */
-    public static final String JVMCHECK_PROP = "jvmcheck";
-
-    /** @since 8.4 */
-    public static final String JVMCHECK_FAIL = "fail";
-
-    /** @since 8.4 */
-    public static final String JVMCHECK_NOFAIL = "nofail";
 
     /**
      * Java options configured in {@code bin/nuxeo.conf} and {@code bin/nuxeoctl}.
@@ -290,9 +223,10 @@ public class ConfigurationGenerator {
     /** @since 11.5 */
     private final ConfigurationMarshaller configMarshaller;
 
-    private final ServerConfigurator serverConfigurator;
+    /** @since 11.5 */
+    private final ConfigurationChecker configChecker;
 
-    private final BackingServiceConfigurator backingServicesConfigurator;
+    private final ServerConfigurator serverConfigurator;
 
     private final Level logLevel;
 
@@ -328,8 +262,8 @@ public class ConfigurationGenerator {
         configLoader = new ConfigurationLoader(builder.environment, builder.parametersMigration,
                 builder.hideDeprecationWarnings);
         configMarshaller = new ConfigurationMarshaller(systemProperties);
+        configChecker = new ConfigurationChecker(systemProperties);
         serverConfigurator = new ServerConfigurator(this, configHolder);
-        backingServicesConfigurator = new BackingServiceConfigurator(this);
 
         systemProperties.setProperty(NUXEO_CONF, configHolder.getNuxeoConfPath().toString());
 
@@ -396,7 +330,7 @@ public class ConfigurationGenerator {
      */
     public void run() throws ConfigurationException {
         if (init()) {
-            if (!serverConfigurator.isConfigured()) {
+            if (!configChecker.isConfigured(configHolder)) {
                 log.info("No current configuration, generating files...");
                 generateFiles();
             } else if (configHolder.isForceGeneration()) {
@@ -518,7 +452,7 @@ public class ConfigurationGenerator {
             log.debug("Using configured loop back url: {}", loopbackURL);
             return;
         }
-        InetAddress bindAddress = getBindAddress();
+        InetAddress bindAddress = configChecker.getBindAddress(configHolder);
         String httpPort = configHolder.getProperty(PARAM_HTTP_PORT);
         String contextPath = configHolder.getProperty(PARAM_CONTEXT_PATH);
         // Is IPv6 or IPv4 ?
@@ -620,9 +554,8 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Save changed parameters in {@code nuxeo.conf} calculating templates if changedParameters contains a value for
-     * {@link #PARAM_TEMPLATE_DBNAME}. If a parameter value is empty ("" or null), then the property is unset.
-     * {@link #PARAM_TEMPLATES_NAME} and {@link #PARAM_FORCE_GENERATION} cannot be unset, but their value can be
+     * Save changed parameters in {@code nuxeo.conf}. If a parameter value is empty ("" or null), then the property is
+     * unset. {@link #PARAM_TEMPLATES_NAME} and {@link #PARAM_FORCE_GENERATION} cannot be unset, but their value can be
      * changed.
      * <p>
      * This method does not check values in map: use {@link #saveFilteredConfiguration(Map)} for parameters filtering.
@@ -639,14 +572,6 @@ public class ConfigurationGenerator {
             configHolder.put(PARAM_FORCE_GENERATION, "false");
         } else if (setGenerationFalseToOnce && !configHolder.isForceGeneration()) {
             configHolder.put(PARAM_FORCE_GENERATION, "once");
-        }
-        String newDbTemplate = changedParameters.remove(PARAM_TEMPLATE_DBNAME);
-        if (newDbTemplate != null) {
-            changedParameters.put(PARAM_TEMPLATES_NAME, rebuildTemplatesStr(newDbTemplate));
-        }
-        newDbTemplate = changedParameters.remove(PARAM_TEMPLATE_DBSECONDARY_NAME);
-        if (newDbTemplate != null) {
-            changedParameters.put(PARAM_TEMPLATES_NAME, rebuildTemplatesStr(newDbTemplate));
         }
         if (changedParameters.containsValue(null) || changedParameters.containsValue("")) {
             // There are properties to unset
@@ -708,60 +633,6 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Extract a database template from the current list of templates. Return the last one if there are multiples.
-     *
-     * @see #rebuildTemplatesStr(String)
-     */
-    public String extractDatabaseTemplateName() {
-        return extractDbTemplateName(DB_LIST, PARAM_TEMPLATE_DBTYPE, PARAM_TEMPLATE_DBNAME, "unknown");
-    }
-
-    /**
-     * Extract a NoSQL database template from the current list of templates. Return the last one if there are multiples.
-     *
-     * @see #rebuildTemplatesStr(String)
-     * @since 8.1
-     */
-    public String extractSecondaryDatabaseTemplateName() {
-        return extractDbTemplateName(DB_SECONDARY_LIST, PARAM_TEMPLATE_DBSECONDARY_TYPE,
-                PARAM_TEMPLATE_DBSECONDARY_NAME, null);
-    }
-
-    private String extractDbTemplateName(List<String> knownDbList, String paramTemplateDbType,
-            String paramTemplateDbName, String defaultTemplate) {
-        String dbTemplate = defaultTemplate;
-        boolean found = false;
-        for (var templatePath : configHolder.getIncludedTemplates()) {
-            String template = templatePath.getFileName().toString();
-            if (knownDbList.contains(template)) {
-                dbTemplate = template;
-                found = true;
-            }
-        }
-        String dbType = configHolder.getProperty(paramTemplateDbType);
-        if (!found && dbType != null) {
-            log.warn(String.format("Didn't find a known database template in the list but "
-                    + "some template contributed a value for %s.", paramTemplateDbType));
-            dbTemplate = dbType;
-        }
-        if (dbTemplate != null && !dbTemplate.equals(dbType)) {
-            if (dbType == null) {
-                log.warn(String.format("Missing value for %s, using %s", paramTemplateDbType, dbTemplate));
-                configHolder.put(paramTemplateDbType, dbTemplate);
-            } else {
-                log.debug(String.format("Different values between %s (%s) and %s (%s)", paramTemplateDbName, dbTemplate,
-                        paramTemplateDbType, dbType));
-            }
-        }
-        if (dbTemplate == null) {
-            configHolder.defaultConfig.remove(paramTemplateDbName);
-        } else {
-            configHolder.defaultConfig.setProperty(paramTemplateDbName, dbTemplate);
-        }
-        return dbTemplate;
-    }
-
-    /**
      * @return nuxeo.conf file used
      */
     public File getNuxeoConf() {
@@ -798,18 +669,14 @@ public class ConfigurationGenerator {
      *
      * @throws ConfigurationException If a deprecated directory has been detected.
      * @since 5.4.2
-     * @see ServerConfigurator#verifyInstallation()
      */
     public void verifyInstallation() throws ConfigurationException {
-        checkJavaVersion();
         getLogDir().mkdirs();
         getPidDir().mkdirs();
         getDataDir().mkdirs();
         getTmpDir().mkdirs();
         getPackagesDir().mkdirs();
-        checkAddressesAndPorts();
-        serverConfigurator.verifyInstallation();
-        backingServicesConfigurator.verifyInstallation();
+        configChecker.verify(configHolder);
     }
 
     /**
@@ -818,209 +685,6 @@ public class ConfigurationGenerator {
      */
     private File getPackagesDir() {
         return configHolder.getPackagesPath().toFile();
-    }
-
-    /**
-     * Check that the process is executed with a supported Java version. See
-     * <a href="http://www.oracle.com/technetwork/java/javase/versioning-naming-139433.html">J2SE SDK/JRE Version String
-     * Naming Convention</a>
-     *
-     * @since 5.6
-     */
-    public void checkJavaVersion() throws ConfigurationException {
-        String version = systemProperties.getProperty("java.version");
-        checkJavaVersion(version, COMPLIANT_JAVA_VERSIONS);
-    }
-
-    /**
-     * Check the java version compared to compliant ones.
-     *
-     * @param version the java version
-     * @param compliantVersions the compliant java versions
-     * @since 9.1
-     */
-    protected static void checkJavaVersion(String version, String[] compliantVersions) throws ConfigurationException {
-        // compliantVersions represents the java versions on which Nuxeo runs perfectly, so:
-        // - if we run Nuxeo with a major java version present in compliantVersions and compatible with then this
-        // method exits without error and without logging a warn message about loose compliance
-        // - if we run Nuxeo with a major java version not present in compliantVersions but greater than once then
-        // this method exits without error and logs a warn message about loose compliance
-        // - if we run Nuxeo with a non valid java version then method exits with error
-        // - if we run Nuxeo with a non valid java version and with jvmcheck=nofail property then method exits without
-        // error and logs a warn message about loose compliance
-
-        // try to retrieve the closest compliant java version
-        String lastCompliantVersion = null;
-        for (String compliantVersion : compliantVersions) {
-            if (checkJavaVersion(version, compliantVersion, false, false)) {
-                // current compliant version is valid, go to next one
-                lastCompliantVersion = compliantVersion;
-            } else if (lastCompliantVersion != null) {
-                // current compliant version is not valid, but we found a valid one earlier, 1st case
-                return;
-            } else if (checkJavaVersion(version, compliantVersion, true, true)) {
-                // current compliant version is not valid, try to check java version with jvmcheck=nofail, 4th case
-                // here we will log about loose compliance for the lower compliant java version
-                return;
-            }
-        }
-        // we might have lastCompliantVersion, unless nothing is valid against the current java version
-        if (lastCompliantVersion != null) {
-            // 2nd case: log about loose compliance if current major java version is greater than the greatest
-            // compliant java version
-            checkJavaVersion(version, lastCompliantVersion, false, true);
-            return;
-        }
-
-        // 3th case
-        String message = String.format("Nuxeo requires Java %s (detected %s).", ArrayUtils.toString(compliantVersions),
-                version);
-        throw new ConfigurationException(message + " See '" + JVMCHECK_PROP + "' option to bypass version check.");
-    }
-
-    /**
-     * Checks the java version compared to the required one.
-     * <p>
-     * Loose compliance is assumed if the major version is greater than the required major version or a jvmcheck=nofail
-     * flag is set.
-     *
-     * @param version the java version
-     * @param requiredVersion the required java version
-     * @param allowNoFailFlag if {@code true} then check jvmcheck=nofail flag to always have loose compliance
-     * @param warnIfLooseCompliance if {@code true} then log a WARN if the is loose compliance
-     * @return true if the java version is compliant (maybe loosely) with the required version
-     * @since 8.4
-     */
-    protected static boolean checkJavaVersion(String version, String requiredVersion, boolean allowNoFailFlag,
-            boolean warnIfLooseCompliance) {
-        allowNoFailFlag = allowNoFailFlag
-                && JVMCHECK_NOFAIL.equalsIgnoreCase(System.getProperty(JVMCHECK_PROP, JVMCHECK_FAIL));
-        try {
-            JVMVersion required = JVMVersion.parse(requiredVersion);
-            JVMVersion actual = JVMVersion.parse(version);
-            boolean compliant = actual.compareTo(required) >= 0;
-            if (compliant && actual.compareTo(required, UpTo.MAJOR) == 0) {
-                return true;
-            }
-            if (!compliant && !allowNoFailFlag) {
-                return false;
-            }
-            // greater major version or noFail is present in system property, considered loosely compliant but may warn
-            if (warnIfLooseCompliance) {
-                log.warn(String.format("Nuxeo requires Java %s+ (detected %s).", requiredVersion, version));
-            }
-            return true;
-        } catch (java.text.ParseException cause) {
-            if (allowNoFailFlag) {
-                log.warn("Cannot check java version", cause);
-                return true;
-            }
-            throw new IllegalArgumentException("Cannot check java version", cause);
-        }
-    }
-
-    /**
-     * Checks the java version compared to the required one.
-     * <p>
-     * If major version is same as required major version and minor is greater or equal, it is compliant.
-     * <p>
-     * If major version is greater than required major version, it is compliant.
-     *
-     * @param version the java version
-     * @param requiredVersion the required java version
-     * @return true if the java version is compliant with the required version
-     * @since 8.4
-     */
-    public static boolean checkJavaVersion(String version, String requiredVersion) {
-        return checkJavaVersion(version, requiredVersion, false, false);
-    }
-
-    /**
-     * Will check the configured addresses are reachable and Nuxeo required ports are available on those addresses.
-     * Server specific implementations should override this method in order to check for server specific ports.
-     * {@link #PARAM_BIND_ADDRESS} must be set before.
-     *
-     * @since 5.5
-     * @see ServerConfigurator#verifyInstallation()
-     */
-    public void checkAddressesAndPorts() throws ConfigurationException {
-        InetAddress bindAddress = getBindAddress();
-        // Sanity check
-        if (bindAddress.isMulticastAddress()) {
-            throw new ConfigurationException("Multicast address won't work: " + bindAddress);
-        }
-        checkAddressReachable(bindAddress);
-        checkPortAvailable(bindAddress, Integer.parseInt(configHolder.getProperty(PARAM_HTTP_PORT)));
-    }
-
-    /**
-     * Checks the userConfig bind address is not 0.0.0.0 and replaces it with 127.0.0.1 if needed
-     *
-     * @return the userConfig bind address if not 0.0.0.0 else 127.0.0.1
-     * @since 5.7
-     */
-    public InetAddress getBindAddress() throws ConfigurationException {
-        return getBindAddress(configHolder.getProperty(PARAM_BIND_ADDRESS));
-    }
-
-    /**
-     * Checks hostName bind address is not 0.0.0.0 and replaces it with 127.0.0.1 if needed
-     *
-     * @param hostName the hostname of Nuxeo server (works also with the IP)
-     * @return the bind address matching hostName parameter if not 0.0.0.0 else 127.0.0.1
-     * @since 9.2
-     */
-    public static InetAddress getBindAddress(String hostName) throws ConfigurationException {
-        InetAddress bindAddress;
-        try {
-            bindAddress = InetAddress.getByName(hostName);
-            if (bindAddress.isAnyLocalAddress()) {
-                boolean preferIPv6 = "false".equals(System.getProperty("java.net.preferIPv4Stack"))
-                        && "true".equals(System.getProperty("java.net.preferIPv6Addresses"));
-                bindAddress = preferIPv6 ? InetAddress.getByName("::1") : InetAddress.getByName("127.0.0.1");
-                log.debug("Bind address is \"ANY\", using local address instead: {}", bindAddress);
-            }
-            log.debug("Configured bind address: {}", bindAddress);
-        } catch (UnknownHostException e) {
-            throw new ConfigurationException(e);
-        }
-        return bindAddress;
-    }
-
-    /**
-     * @param address address to check for availability
-     * @since 5.5
-     */
-    public static void checkAddressReachable(InetAddress address) throws ConfigurationException {
-        try {
-            log.debug("Checking availability of " + address);
-            address.isReachable(ADDRESS_PING_TIMEOUT);
-        } catch (IllegalArgumentException | IOException e) {
-            throw new ConfigurationException("Unreachable bind address " + address, e);
-        }
-    }
-
-    /**
-     * Checks if port is available on given address.
-     *
-     * @param port port to check for availability
-     * @throws ConfigurationException Throws an exception if address is unavailable.
-     * @since 5.5
-     */
-    public static void checkPortAvailable(InetAddress address, int port) throws ConfigurationException {
-        if (port == 0 || port == -1) {
-            log.warn("Port is set to {} - assuming it is disabled - skipping availability check", port);
-            return;
-        }
-        if (port < MIN_PORT || port > MAX_PORT) {
-            throw new IllegalArgumentException("Invalid port: " + port);
-        }
-        log.debug("Checking availability of port {} on address {}", port, address);
-        try (ServerSocket socketTCP = new ServerSocket(port, 0, address)) {
-            socketTCP.setReuseAddress(true);
-        } catch (IOException e) {
-            throw new ConfigurationException(e.getMessage() + ": " + address + ":" + port, e);
-        }
     }
 
     /**
@@ -1037,49 +701,6 @@ public class ConfigurationGenerator {
      */
     public List<String> getLogFiles() {
         return Log4JHelper.getFileAppendersFileNames(configHolder.getLogConfigPath().toFile());
-    }
-
-    /**
-     * Rebuild a templates string for use in nuxeo.conf
-     *
-     * @param dbTemplate database template to use instead of current one
-     * @return new templates string using given dbTemplate
-     * @since 5.4.2
-     * @see #extractDatabaseTemplateName()
-     */
-    public String rebuildTemplatesStr(String dbTemplate) {
-        List<String> templatesList = new ArrayList<>(
-                asList(configHolder.getProperty(PARAM_TEMPLATES_NAME).split(TEMPLATE_SEPARATOR)));
-        String currentDBTemplate = null;
-        if (DB_LIST.contains(dbTemplate)) {
-            currentDBTemplate = configHolder.getProperty(PARAM_TEMPLATE_DBNAME);
-            if (currentDBTemplate == null) {
-                currentDBTemplate = extractDatabaseTemplateName();
-            }
-        } else if (DB_SECONDARY_LIST.contains(dbTemplate)) {
-            currentDBTemplate = configHolder.getProperty(PARAM_TEMPLATE_DBSECONDARY_NAME);
-            if (currentDBTemplate == null) {
-                currentDBTemplate = extractSecondaryDatabaseTemplateName();
-            }
-            if ("none".equals(dbTemplate)) {
-                dbTemplate = null;
-            }
-        }
-        int dbIdx = templatesList.indexOf(currentDBTemplate);
-        if (dbIdx < 0) {
-            if (dbTemplate == null) {
-                return configHolder.getProperty(PARAM_TEMPLATES_NAME);
-            }
-            // current db template is implicit => set the new one
-            templatesList.add(dbTemplate);
-        } else if (dbTemplate == null) {
-            // current db template is explicit => remove it
-            templatesList.remove(dbIdx);
-        } else {
-            // current db template is explicit => replace it
-            templatesList.set(dbIdx, dbTemplate);
-        }
-        return configLoader.replaceEnvironmentVariables(String.join(TEMPLATE_SEPARATOR, templatesList));
     }
 
     /**
@@ -1221,76 +842,6 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Check driver availability and database connection
-     *
-     * @param databaseTemplate Nuxeo database template
-     * @param dbName nuxeo.db.name parameter in nuxeo.conf
-     * @param dbUser nuxeo.db.user parameter in nuxeo.conf
-     * @param dbPassword nuxeo.db.password parameter in nuxeo.conf
-     * @param dbHost nuxeo.db.host parameter in nuxeo.conf
-     * @param dbPort nuxeo.db.port parameter in nuxeo.conf
-     * @since 5.6
-     */
-    public void checkDatabaseConnection(String databaseTemplate, String dbName, String dbUser, String dbPassword,
-            String dbHost, String dbPort) throws ConfigurationException, DatabaseDriverException, SQLException {
-        Path databaseTemplateDir = configHolder.getTemplatesPath().resolve(databaseTemplate);
-        String classname = configHolder.getProperty(PARAM_DB_DRIVER);
-        String connectionUrl = configHolder.getProperty(PARAM_DB_JDBC_URL);
-        // Load driver class from template or default lib directory
-        Driver driver = lookupDriver(databaseTemplateDir.toFile(), classname);
-        // Test db connection
-        DriverManager.registerDriver(driver);
-        Properties ttProps = new Properties(configHolder.userConfig);
-        ttProps.put(PARAM_DB_HOST, dbHost);
-        ttProps.put(PARAM_DB_PORT, dbPort);
-        ttProps.put(PARAM_DB_NAME, dbName);
-        ttProps.put(PARAM_DB_USER, dbUser);
-        ttProps.put(PARAM_DB_PWD, dbPassword);
-        TextTemplate tt = new TextTemplate(ttProps);
-        String url = tt.processText(connectionUrl);
-        Properties conProps = new Properties();
-        conProps.put("user", dbUser);
-        conProps.put("password", dbPassword);
-        log.debug("Testing URL " + url + " with " + conProps);
-        Connection con = driver.connect(url, conProps);
-        con.close();
-    }
-
-    /**
-     * Build an {@link URLClassLoader} for the given databaseTemplate looking in the templates directory and in the
-     * server lib directory, then looks for a driver
-     *
-     * @param classname Driver class name, defined by {@link #PARAM_DB_DRIVER}
-     * @return Driver driver if found, else an Exception must have been raised.
-     * @throws DatabaseDriverException If there was an error when trying to instantiate the driver.
-     * @since 5.6
-     */
-    private Driver lookupDriver(File databaseTemplateDir, String classname) throws DatabaseDriverException {
-        File[] files = ArrayUtils.addAll( //
-                new File(databaseTemplateDir, "lib").listFiles(), //
-                configHolder.getHomePath().resolve("lib").toFile().listFiles());
-        List<URL> urlsList = new ArrayList<>();
-        if (files != null) {
-            for (File file : files) {
-                if (file.getName().endsWith("jar")) {
-                    try {
-                        urlsList.add(new URL("jar:file:" + file.getPath() + "!/"));
-                        log.debug("Added " + file.getPath());
-                    } catch (MalformedURLException e) {
-                        log.error(e);
-                    }
-                }
-            }
-        }
-        URLClassLoader ucl = new URLClassLoader(urlsList.toArray(new URL[0]));
-        try {
-            return (Driver) Class.forName(classname, true, ucl).getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new DatabaseDriverException(e);
-        }
-    }
-
-    /**
      * @since 5.6
      * @return an {@link Environment} initialized with a few basics
      */
@@ -1329,80 +880,12 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Build a {@link Hashtable} which contains environment properties to instantiate a {@link InitialDirContext}
-     *
-     * @since 6.0
-     */
-    public Hashtable<Object, Object> getContextEnv(String ldapUrl, String bindDn, String bindPassword,
-            boolean checkAuthentication) {
-        Hashtable<Object, Object> contextEnv = new Hashtable<>();
-        contextEnv.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        contextEnv.put("com.sun.jndi.ldap.connect.timeout", "10000");
-        contextEnv.put(javax.naming.Context.PROVIDER_URL, ldapUrl);
-        if (checkAuthentication) {
-            contextEnv.put(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");
-            contextEnv.put(javax.naming.Context.SECURITY_PRINCIPAL, bindDn);
-            contextEnv.put(javax.naming.Context.SECURITY_CREDENTIALS, bindPassword);
-        }
-        return contextEnv;
-    }
-
-    /**
-     * Check if the LDAP parameters are correct to bind to a LDAP server. if authenticate argument is true, it will also
-     * check if the authentication against the LDAP server succeeds
-     *
-     * @param authenticate Indicates if authentication against LDAP should be checked.
-     * @since 6.0
-     */
-    public void checkLdapConnection(String ldapUrl, String ldapBindDn, String ldapBindPwd, boolean authenticate)
-            throws NamingException {
-        checkLdapConnection(getContextEnv(ldapUrl, ldapBindDn, ldapBindPwd, authenticate));
-    }
-
-    /**
-     * @param contextEnv Environment properties to build a {@link InitialDirContext}
-     * @since 6.0
-     */
-    public void checkLdapConnection(Hashtable<Object, Object> contextEnv) throws NamingException {
-        DirContext dirContext = new InitialDirContext(contextEnv);
-        dirContext.close();
-    }
-
-    /**
      * @return a {@link Crypto} instance initialized with the configuration parameters
      * @since 7.4
      * @see Crypto
      */
     public Crypto getCrypto() {
         return configHolder.userConfig.getCrypto();
-    }
-
-    /**
-     * @param template path to configuration template directory
-     * @return A {@code nuxeo.defaults} file if it exists.
-     * @throws ConfigurationException if the template file is not found.
-     * @since 7.4
-     * @deprecated since 11.1, there's several configuration files, use {@link #getTemplateDirectory(String)} instead
-     */
-    @Deprecated(since = "11.1", forRemoval = true) // not used
-    public File getTemplateConf(String template) throws ConfigurationException {
-        return new File(getTemplateDirectory(template), NUXEO_DEFAULT_CONF);
-    }
-
-    /**
-     * @throws ConfigurationException if the template directory is not valid
-     * @since 11.1
-     */
-    public File getTemplateDirectory(String template) throws ConfigurationException {
-        // look for template declared with a path
-        var templatePath = Path.of(template);
-        if (!templatePath.isAbsolute()) {
-            templatePath = configHolder.getTemplatesPath().resolve(template);
-        }
-        if (Files.notExists(templatePath.resolve(NUXEO_DEFAULT_CONF))) {
-            throw new ConfigurationException("Template not found: " + template);
-        }
-        return templatePath.toFile();
     }
 
     /**
