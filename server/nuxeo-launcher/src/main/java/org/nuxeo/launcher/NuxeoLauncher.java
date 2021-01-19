@@ -102,6 +102,7 @@ import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
 import org.nuxeo.connect.registration.RegistrationException;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.Version;
+import org.nuxeo.launcher.config.ConfigurationChecker;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.connect.ConnectBroker;
@@ -1979,7 +1980,7 @@ public class NuxeoLauncher {
     public void configure() {
         try {
             checkNoRunningServer();
-            configurationGenerator.checkJavaVersion();
+            ConfigurationChecker.checkJavaVersion();
             configurationGenerator.run();
             overrideJavaTmpDir = Boolean.parseBoolean(
                     configurationGenerator.getUserConfig().getProperty(OVERRIDE_JAVA_TMPDIR_PARAM, "true"));

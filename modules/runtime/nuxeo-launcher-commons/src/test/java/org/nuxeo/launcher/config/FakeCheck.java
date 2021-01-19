@@ -20,6 +20,9 @@ package org.nuxeo.launcher.config;
 
 import org.nuxeo.launcher.config.backingservices.BackingChecker;
 
+/**
+ * @since 9.2
+ */
 public class FakeCheck implements BackingChecker {
 
     static private int callCount;
@@ -27,12 +30,12 @@ public class FakeCheck implements BackingChecker {
     private static boolean ready = true;
 
     @Override
-    public boolean accepts(ConfigurationGenerator cg) {
+    public boolean accepts(ConfigurationHolder configHolder) {
         return true;
     }
 
     @Override
-    public void check(ConfigurationGenerator cg) throws ConfigurationException {
+    public void check(ConfigurationHolder configHolder) throws ConfigurationException {
         callCount++;
         if (!ready) {
             throw new ConfigurationException("not ready");

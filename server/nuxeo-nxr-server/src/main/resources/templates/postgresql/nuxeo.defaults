@@ -13,5 +13,5 @@ nuxeo.db.driver=org.postgresql.Driver
 nuxeo.db.xadatasource=org.postgresql.xa.PGXADataSource
 
 ## Startup checks configuration
-postgresql.check.classpath=nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-launcher-commons-*.jar
-postgresql.check.class=org.nuxeo.launcher.config.backingservices.DBCheck
+postgresql.check.classpath=lib:nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-core-storage-sql-*.jar
+postgresql.check.class=org.nuxeo.ecm.core.storage.DBCheck

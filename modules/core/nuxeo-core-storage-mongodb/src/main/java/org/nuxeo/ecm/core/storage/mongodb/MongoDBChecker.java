@@ -20,17 +20,11 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
-import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.launcher.config.ConfigurationException;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.config.ConfigurationHolder;
 import org.nuxeo.launcher.config.backingservices.BackingChecker;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionConfig;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
@@ -39,64 +33,42 @@ import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
+/**
+ * @since 9.2
+ */
 public class MongoDBChecker implements BackingChecker {
 
-    private static final Log log = LogFactory.getLog(MongoDBChecker.class);
+    private static final Logger log = LogManager.getLogger(MongoDBChecker.class);
 
     public static final String TEMPLATE_NAME = "mongodb";
 
     public static final String CONFIG_NAME = "mongodb-connection-config.xml";
 
-    /**
-     * @since 9.3
-     */
+    /** @since 9.3 */
     public static final String PARAM_MONGODB_CHECK_TIMEOUT = "nuxeo.mongodb.check.timeout";
 
-    /**
-     * @since 9.3
-     */
+    /** @since 9.3 */
     public static final int DEFAULT_CHECK_TIMEOUT_IN_SECONDS = 5;
 
     @Override
-    public boolean accepts(ConfigurationGenerator cg) {
-        return cg.getTemplateList().contains(TEMPLATE_NAME);
+    public boolean accepts(ConfigurationHolder configHolder) {
+        return configHolder.getIncludedTemplateNames().contains(TEMPLATE_NAME);
     }
 
     @Override
-    public void check(ConfigurationGenerator cg) throws ConfigurationException {
-        File configFile = new File(cg.getConfigDir(), CONFIG_NAME);
-        if (!configFile.exists()) {
-            log.warn("Unable to find config file " + CONFIG_NAME);
-            return;
-        }
-        MongoDBConnectionConfig config = getDescriptor(configFile, MongoDBConnectionConfig.class);
+    public void check(ConfigurationHolder configHolder) throws ConfigurationException {
+        MongoDBConnectionConfig config = getDescriptor(configHolder, CONFIG_NAME, MongoDBConnectionConfig.class);
         try (MongoClient mongoClient = MongoDBConnectionHelper.newMongoClient(config,
                 builder -> builder.applicationName("Nuxeo DB Check")
-                                  .applyToClusterSettings(
-                                          s -> s.serverSelectionTimeout(getCheckTimeoutInSeconds(cg), SECONDS)))) {
+                                  .applyToClusterSettings(s -> s.serverSelectionTimeout(
+                                          getCheckTimeoutInSeconds(configHolder), SECONDS)))) {
             MongoDatabase database = mongoClient.getDatabase(config.dbname);
             Document ping = new Document("ping", "1");
             database.runCommand(ping);
         } catch (MongoTimeoutException e) {
             throw new ConfigurationException(
-                    String.format("Unable to connect to MongoDB at %s, please check your connection", config.server),
+                    String.format("Unable to connect to MongoDB at: %s, please check your connection", config.server),
                     e);
-        }
-    }
-
-    /**
-     * Creates a descriptor instance for the specified file and descriptor class.
-     *
-     * @since 11.1
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T getDescriptor(File file, Class<T> klass) throws ConfigurationException {
-        XMap xmap = new XMap();
-        xmap.register(klass);
-        try (InputStream inStream = new FileInputStream(file)) {
-            return (T) xmap.load(inStream);
-        } catch (IOException e) {
-            throw new ConfigurationException("Unable to load the configuration for " + klass.getSimpleName(), e);
         }
     }
 
@@ -107,16 +79,12 @@ public class MongoDBChecker implements BackingChecker {
      * @return the timeout check in seconds.
      * @since 9.3
      */
-    private int getCheckTimeoutInSeconds(ConfigurationGenerator cg) {
-        int checkTimeout = DEFAULT_CHECK_TIMEOUT_IN_SECONDS;
+    private int getCheckTimeoutInSeconds(ConfigurationHolder configHolder) {
         try {
-            checkTimeout = Integer.parseInt(
-                    cg.getUserConfig()
-                      .getProperty(PARAM_MONGODB_CHECK_TIMEOUT, String.valueOf(DEFAULT_CHECK_TIMEOUT_IN_SECONDS)));
+            return configHolder.getPropertyAsInteger(PARAM_MONGODB_CHECK_TIMEOUT, DEFAULT_CHECK_TIMEOUT_IN_SECONDS);
         } catch (NumberFormatException e) {
-            log.warn(String.format("Invalid format for %s parameter, using default value instead",
-                    PARAM_MONGODB_CHECK_TIMEOUT), e);
+            log.warn("Invalid format for: {} parameter, using default value instead", PARAM_MONGODB_CHECK_TIMEOUT, e);
+            return DEFAULT_CHECK_TIMEOUT_IN_SECONDS;
         }
-        return checkTimeout;
     }
 }
