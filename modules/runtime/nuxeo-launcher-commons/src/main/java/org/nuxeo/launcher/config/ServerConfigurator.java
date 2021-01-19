@@ -19,31 +19,19 @@
  */
 package org.nuxeo.launcher.config;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static java.nio.file.StandardOpenOption.APPEND;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.WRITE;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.TEMPLATE_SEPARATOR;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -53,16 +41,12 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
-import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.launcher.info.ConfigurationInfo;
 import org.nuxeo.launcher.info.DistributionInfo;
 import org.nuxeo.launcher.info.InstanceInfo;
 import org.nuxeo.launcher.info.KeyValueInfo;
 import org.nuxeo.launcher.info.PackageInfo;
-import org.nuxeo.log4j.Log4JHelper;
-
-import freemarker.template.TemplateException;
 
 /**
  * @author jcarsique
@@ -81,17 +65,10 @@ public class ServerConfigurator {
     /** @since 5.7 */
     public static final String PARAM_HTTP_TOMCAT_ADMIN_PORT = "nuxeo.server.tomcat_admin.port";
 
-    /**
-     * @since 5.4.2
-     */
-    public static final List<String> NUXEO_SYSTEM_PROPERTIES = List.of("nuxeo.conf", "nuxeo.home", "log.id");
-
     protected static final String DEFAULT_CONTEXT_NAME = "/nuxeo";
 
     /** @since 9.3 */
     public static final String JAVA_OPTS = "JAVA_OPTS";
-
-    private static final String NEW_FILES = "files.list";
 
     protected final ConfigurationGenerator generator;
 
@@ -138,105 +115,6 @@ public class ServerConfigurator {
             contextName = contextName.substring(1);
         }
         return contextName;
-    }
-
-    /**
-     * Generate configuration files from templates and given configuration parameters
-     *
-     * @param config Properties with configuration parameters for template replacement
-     */
-    protected void parseAndCopy(Properties config) throws IOException, TemplateException, ConfigurationException {
-        // FilenameFilter for excluding "nuxeo.defaults" files from copy
-        final FilenameFilter filter = (dir, name) -> !ConfigurationGenerator.NUXEO_DEFAULT_CONF.equals(name)
-                // exclude nuxeo.ENVIRONMENT files
-                && !(name.startsWith("nuxeo.")
-                        && Files.exists(dir.toPath().resolve(ConfigurationGenerator.NUXEO_DEFAULT_CONF)));
-        final TextTemplate templateParser = new TextTemplate(config);
-        templateParser.setKeepEncryptedAsVar(true);
-        templateParser.setTrim(true);
-        templateParser.setTextParsingExtensions(
-                config.getProperty(ConfigurationGenerator.PARAM_TEMPLATES_PARSING_EXTENSIONS, "xml,properties,nx"));
-        templateParser.setFreemarkerParsingExtensions(
-                config.getProperty(ConfigurationGenerator.PARAM_TEMPLATES_FREEMARKER_EXTENSIONS, "nxftl"));
-
-        deleteTemplateFiles();
-        // add included templates directories
-        List<String> newFilesList = new ArrayList<>();
-        for (Path includedTemplate : configHolder.getIncludedTemplates()) {
-            File[] listFiles = includedTemplate.toFile().listFiles(filter);
-            if (listFiles != null) {
-                String templateName = includedTemplate.getFileName().toString();
-                log.debug("Parsing {}... {}", () -> templateName, () -> Arrays.toString(listFiles));
-                // Check for deprecation
-                boolean isDeprecated = Boolean.parseBoolean(config.getProperty(templateName + ".deprecated"));
-                if (isDeprecated) {
-                    log.warn("WARNING: Template {} is deprecated.", templateName);
-                    String deprecationMessage = config.getProperty(templateName + ".deprecation");
-                    if (deprecationMessage != null) {
-                        log.warn(deprecationMessage);
-                    }
-                }
-                // Retrieve optional target directory if defined
-                String outputDirectoryStr = config.getProperty(templateName + ".target");
-                Path out = outputDirectoryStr != null ? configHolder.getHomePath().resolve(outputDirectoryStr)
-                        : configHolder.getRuntimeHomePath();
-                for (File in : listFiles) {
-                    // copy template(s) directories parsing properties
-                    newFilesList.addAll(templateParser.processDirectory(in, out.resolve(in.getName()).toFile()));
-                }
-            }
-        }
-        storeNewFilesList(newFilesList);
-    }
-
-    /**
-     * Delete files previously deployed by templates. If a file had been overwritten by a template, it will be restored.
-     * Helps the server returning to the state before any template was applied.
-     */
-    private void deleteTemplateFiles() throws IOException, ConfigurationException {
-        Path newFiles = configHolder.getTemplatesPath().resolve(NEW_FILES);
-        if (Files.notExists(newFiles)) {
-            return;
-        }
-        try (BufferedReader reader = Files.newBufferedReader(newFiles)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.endsWith(".bak")) {
-                    log.debug("Restore {}", line);
-                    String originalName = line.substring(0, line.length() - 4);
-                    try {
-                        Path backup = configHolder.getHomePath().resolve(line);
-                        Path original = configHolder.getHomePath().resolve(originalName);
-                        Files.copy(backup, original, REPLACE_EXISTING, COPY_ATTRIBUTES);
-                        Files.delete(backup);
-                    } catch (IOException e) {
-                        throw new ConfigurationException(
-                                String.format("Failed to restore %s from %s\nEdit or delete %s to bypass that error.",
-                                        originalName, line, newFiles),
-                                e);
-                    }
-                } else {
-                    log.debug("Remove {}", line);
-                    Files.deleteIfExists(configHolder.getHomePath().resolve(line));
-                }
-            }
-        }
-        Files.delete(newFiles);
-    }
-
-    /**
-     * Store into {@link #NEW_FILES} the list of new files deployed by the templates. For later use by
-     * {@link #deleteTemplateFiles()}
-     */
-    private void storeNewFilesList(List<String> newFilesList) throws IOException {
-        Path newFiles = configHolder.getTemplatesPath().resolve(NEW_FILES);
-        try (BufferedWriter writer = Files.newBufferedWriter(newFiles, UTF_8, APPEND, CREATE, WRITE)) {
-            // Store new files listing
-            for (String filepath : newFilesList) {
-                writer.write(configHolder.getHomePath().relativize(Path.of(filepath)).normalize().toString());
-                writer.newLine();
-            }
-        }
     }
 
     /**
@@ -424,40 +302,6 @@ public class ServerConfigurator {
             log.error("Unknown directory key: {}", key);
             return null;
         }
-    }
-
-    /**
-     * @param userConfig Properties to dump into config directory
-     * @since 5.4.2
-     */
-    public void dumpProperties(CryptoProperties userConfig) {
-        Properties dumpedProperties = filterSystemProperties(userConfig);
-        Path dumpedFile = configHolder.getDumpedConfigurationPath();
-        try (var os = Files.newBufferedWriter(dumpedFile, UTF_8)) {
-            dumpedProperties.store(os, "Generated by " + getClass());
-        } catch (IOException e) {
-            log.error("Could not dump properties to {}", dumpedFile, e);
-        }
-    }
-
-    /**
-     * Extract Nuxeo properties from given Properties (System properties are removed, except those set by Nuxeo)
-     *
-     * @param properties Properties to be filtered
-     * @return copy of given properties filtered out of System properties
-     * @since 5.4.2
-     */
-    public Properties filterSystemProperties(CryptoProperties properties) {
-        Properties dumpedProperties = new Properties();
-        for (@SuppressWarnings("unchecked")
-        Enumeration<String> propertyNames = (Enumeration<String>) properties.propertyNames(); propertyNames.hasMoreElements();) {
-            String key = propertyNames.nextElement();
-            // Exclude System properties except Nuxeo's System properties
-            if (!System.getProperties().containsKey(key) || NUXEO_SYSTEM_PROPERTIES.contains(key)) {
-                dumpedProperties.setProperty(key, properties.getRawProperty(key));
-            }
-        }
-        return dumpedProperties;
     }
 
     /**

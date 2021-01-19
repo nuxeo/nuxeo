@@ -21,6 +21,7 @@ package org.nuxeo.launcher.config;
 
 import static java.util.Objects.requireNonNull;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_LIST;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_FORCE_GENERATION;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -42,6 +43,10 @@ import org.nuxeo.common.codec.CryptoProperties;
  * @since 11.5
  */
 public class ConfigurationHolder {
+
+    protected static final Set<String> DIRECTORY_PARAMETERS = Set.of(Environment.NUXEO_CONFIG_DIR,
+            Environment.NUXEO_DATA_DIR, Environment.NUXEO_LOG_DIR, Environment.NUXEO_MP_DIR, Environment.NUXEO_PID_DIR,
+            Environment.NUXEO_TMP_DIR);
 
     protected static final Path LOG4J2_CONF = Path.of("lib", "log4j2.xml");
 
@@ -222,40 +227,60 @@ public class ConfigurationHolder {
         return userConfig.stringPropertyNames();
     }
 
+    public boolean isForceGenerationOnce() {
+        return "once".equals(userConfig.getProperty(PARAM_FORCE_GENERATION));
+    }
+
+    public boolean isForceGeneration() {
+        return isForceGenerationOnce() || "true".equals(userConfig.getProperty(PARAM_FORCE_GENERATION));
+    }
+
     /**
      * Puts the given property into default configuration.
      */
     public String putDefault(String key, String value) {
-        return (String) defaultConfig.put(key, value);
+        return (String) defaultConfig.put(key, makePathAbsolute(key, value));
     }
 
     /**
      * Puts all given {@code properties} into default configuration.
      */
     public void putDefaultAll(Properties properties) {
-        defaultConfig.putAll(properties);
+        defaultConfig.putAll(makePathAbsolute(properties));
     }
 
     /**
      * Puts the given property into user configuration.
      */
     public String put(String key, String value) {
-        return (String) userConfig.put(key, value);
+        return (String) userConfig.put(key, makePathAbsolute(key, value));
     }
 
     /**
      * Puts all given {@code properties} into user configuration.
      */
     public void putAll(Properties properties) {
-        userConfig.putAll(properties);
+        userConfig.putAll(makePathAbsolute(properties));
     }
 
     /**
-     * Put all given {@code properties} into default configuration for the given template.
+     * Puts all given {@code properties} into default configuration for the given template.
      */
     public void putTemplateAll(Path template, Properties properties) {
         templates.add(template);
-        defaultConfig.putAll(properties);
+        defaultConfig.putAll(makePathAbsolute(properties));
+    }
+
+    protected Properties makePathAbsolute(Properties properties) {
+        properties.replaceAll((k, v) -> makePathAbsolute((String) k, (String) v));
+        return properties;
+    }
+
+    protected String makePathAbsolute(String key, String value) {
+        if (DIRECTORY_PARAMETERS.contains(key)) {
+            return home.resolve(value).toString();
+        }
+        return value;
     }
 
     /**

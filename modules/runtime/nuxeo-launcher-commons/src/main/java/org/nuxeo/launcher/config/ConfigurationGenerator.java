@@ -26,15 +26,8 @@ import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.launcher.config.ServerConfigurator.PARAM_HTTP_TOMCAT_ADMIN_PORT;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -44,7 +37,6 @@ import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -60,7 +52,6 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -71,8 +62,6 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -89,9 +78,6 @@ import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.config.JVMVersion.UpTo;
 import org.nuxeo.log4j.Log4JHelper;
-
-import freemarker.core.ParseException;
-import freemarker.template.TemplateException;
 
 /**
  * Builder for server configuration and datasource files from templates and properties.
@@ -158,10 +144,6 @@ public class ConfigurationGenerator {
     protected static final String PARAM_INCLUDED_TEMPLATES = "nuxeo.template.includes";
 
     public static final String PARAM_FORCE_GENERATION = "nuxeo.force.generation";
-
-    public static final String BOUNDARY_BEGIN = "### BEGIN - DO NOT EDIT BETWEEN BEGIN AND END ###";
-
-    public static final String BOUNDARY_END = "### END - DO NOT EDIT BETWEEN BEGIN AND END ###";
 
     public static final List<String> DB_LIST = asList("default", "mongodb", "postgresql", "oracle", "mysql", "mariadb",
             "mssql", "db2");
@@ -305,27 +287,16 @@ public class ConfigurationGenerator {
     /** @since 11.5 */
     private final ConfigurationLoader configLoader;
 
+    /** @since 11.5 */
+    private final ConfigurationMarshaller configMarshaller;
+
     private final ServerConfigurator serverConfigurator;
 
     private final BackingServiceConfigurator backingServicesConfigurator;
 
-    private boolean forceGeneration;
-
-    private boolean onceGeneration = false;
-
-    // if PARAM_FORCE_GENERATION=once, set to false; else keep current value
-    private boolean setOnceToFalse = true;
-
-    // if PARAM_FORCE_GENERATION=false, set to once; else keep the current value
-    private boolean setFalseToOnce = false;
-
     private final Level logLevel;
 
     private Environment env;
-
-    private Properties storedConfig;
-
-    private String currentConfigurationDigest;
 
     /**
      * @deprecated since 11.5, use {@link ConfigurationGenerator#build()} instead.
@@ -356,6 +327,7 @@ public class ConfigurationGenerator {
         configHolder = new ConfigurationHolder(builder.nuxeoHome, builder.nuxeoConf);
         configLoader = new ConfigurationLoader(builder.environment, builder.parametersMigration,
                 builder.hideDeprecationWarnings);
+        configMarshaller = new ConfigurationMarshaller(systemProperties);
         serverConfigurator = new ServerConfigurator(this, configHolder);
         backingServicesConfigurator = new BackingServiceConfigurator(this);
 
@@ -408,39 +380,6 @@ public class ConfigurationGenerator {
         }
     }
 
-    /**
-     * @since 5.7
-     */
-    protected Properties getStoredConfig() {
-        if (storedConfig == null) {
-            updateStoredConfig();
-        }
-        return storedConfig;
-    }
-
-    /**
-     * @since 11.5
-     */
-    protected boolean isGenerationOnce() {
-        return "once".equals(configHolder.getProperty(PARAM_FORCE_GENERATION));
-    }
-
-    /**
-     * @see #PARAM_FORCE_GENERATION
-     */
-    public void setForceGeneration(boolean forceGeneration) {
-        this.forceGeneration = forceGeneration;
-    }
-
-    /**
-     * @see #PARAM_FORCE_GENERATION
-     * @return true if configuration will be generated from templates
-     * @since 5.4.2
-     */
-    public boolean isForceGeneration() {
-        return forceGeneration;
-    }
-
     public CryptoProperties getUserConfig() {
         return configHolder.userConfig;
     }
@@ -460,7 +399,7 @@ public class ConfigurationGenerator {
             if (!serverConfigurator.isConfigured()) {
                 log.info("No current configuration, generating files...");
                 generateFiles();
-            } else if (forceGeneration) {
+            } else if (configHolder.isForceGeneration()) {
                 log.info("Configuration files generation (nuxeo.force.generation={})...",
                         () -> configHolder.getProperty(PARAM_FORCE_GENERATION));
                 generateFiles();
@@ -516,9 +455,6 @@ public class ConfigurationGenerator {
         configHolder.putDefaultAll(systemProperties);
         // Load user configuration
         configHolder.putAll(configLoader.loadProperties(configHolder.getNuxeoConfPath()));
-        forceGeneration = isGenerationOnce()
-                || Boolean.parseBoolean(configHolder.getProperty(PARAM_FORCE_GENERATION, "false"));
-
         // Override default configuration with specific configuration(s) of
         // the chosen template(s) which can be outside of server filesystem
         includeTemplates();
@@ -610,21 +546,12 @@ public class ConfigurationGenerator {
     }
 
     protected void generateFiles() throws ConfigurationException {
-        try {
-            serverConfigurator.parseAndCopy(configHolder.userConfig);
-            serverConfigurator.dumpProperties(configHolder.userConfig);
-            log.info("Configuration files generated.");
-            // keep true or false, switch once to false
-            if (isGenerationOnce()) {
-                setOnceToFalse = true;
-                writeConfiguration();
-            }
-        } catch (FileNotFoundException e) {
-            throw new ConfigurationException("Missing file: " + e.getMessage(), e);
-        } catch (TemplateException | ParseException e) {
-            throw new ConfigurationException("Could not process FreeMarker template: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new ConfigurationException("Configuration failure: " + e.getMessage(), e);
+        configMarshaller.dumpConfiguration(configHolder);
+        log.info("Configuration files generated.");
+        // keep true or false, switch once to false
+        if (configHolder.isForceGenerationOnce()) {
+            configHolder.put(PARAM_FORCE_GENERATION, "false");
+            configMarshaller.persistNuxeoConf(configHolder);
         }
     }
 
@@ -708,9 +635,11 @@ public class ConfigurationGenerator {
      */
     public void saveConfiguration(Map<String, String> changedParameters, boolean setGenerationOnceToFalse,
             boolean setGenerationFalseToOnce) throws ConfigurationException {
-        setOnceToFalse = setGenerationOnceToFalse;
-        setFalseToOnce = setGenerationFalseToOnce;
-        updateStoredConfig();
+        if (setGenerationOnceToFalse && configHolder.isForceGenerationOnce()) {
+            configHolder.put(PARAM_FORCE_GENERATION, "false");
+        } else if (setGenerationFalseToOnce && !configHolder.isForceGeneration()) {
+            configHolder.put(PARAM_FORCE_GENERATION, "once");
+        }
         String newDbTemplate = changedParameters.remove(PARAM_TEMPLATE_DBNAME);
         if (newDbTemplate != null) {
             changedParameters.put(PARAM_TEMPLATES_NAME, rebuildTemplatesStr(newDbTemplate));
@@ -733,17 +662,7 @@ public class ConfigurationGenerator {
             }
         }
         configHolder.userConfig.putAll(changedParameters);
-        writeConfiguration();
-        updateStoredConfig();
-    }
-
-    private void updateStoredConfig() {
-        if (storedConfig == null) {
-            storedConfig = new Properties(configHolder.defaultConfig);
-        } else {
-            storedConfig.clear();
-        }
-        storedConfig.putAll(configHolder.userConfig);
+        configMarshaller.persistNuxeoConf(configHolder);
     }
 
     /**
@@ -771,6 +690,10 @@ public class ConfigurationGenerator {
         Map<String, String> filteredChangedParameters = new HashMap<>();
         for (Entry<String, String> entry : changedParameters.entrySet()) {
             String key = entry.getKey();
+            if (PARAM_FORCE_GENERATION.equals(key)) {
+                // force generation should not be modifiable like this
+                continue;
+            }
             String oldParam = configHolder.getProperty(key);
             String newParam = StringUtils.trim(entry.getValue());
             if (oldParam == null && StringUtils.isNotEmpty(newParam)
@@ -782,141 +705,6 @@ public class ConfigurationGenerator {
             }
         }
         return filteredChangedParameters;
-    }
-
-    private void writeConfiguration() throws ConfigurationException {
-        final MessageDigest newContentDigest = DigestUtils.getMd5Digest();
-        StringWriter newContent = new StringWriter() {
-            @Override
-            public void write(String str) {
-                if (str != null) {
-                    newContentDigest.update(str.getBytes());
-                }
-                super.write(str);
-            }
-        };
-        // Copy back file content
-        newContent.append(readConfiguration());
-        // Write changed parameters
-        newContent.write(BOUNDARY_BEGIN + System.getProperty("line.separator"));
-        for (Object o : new TreeSet<>(configHolder.keySet())) {
-            String key = (String) o;
-            // Ignore parameters already stored in newContent
-            if (PARAM_FORCE_GENERATION.equals(key) || PARAM_TEMPLATES_NAME.equals(key)) {
-                continue;
-            }
-            String oldValue = storedConfig.getProperty(key, "");
-            String newValue = configHolder.userConfig.getRawProperty(key, "");
-            if (!newValue.equals(oldValue)) {
-                newContent.write("#" + key + "=" + oldValue + System.getProperty("line.separator"));
-                newContent.write(key + "=" + newValue + System.getProperty("line.separator"));
-            }
-        }
-        newContent.write(BOUNDARY_END + System.getProperty("line.separator"));
-
-        // Write file only if content has changed
-        if (!Hex.encodeHexString(newContentDigest.digest()).equals(currentConfigurationDigest)) {
-            try (Writer writer = Files.newBufferedWriter(configHolder.getNuxeoConfPath())) {
-                writer.append(newContent.getBuffer());
-            } catch (IOException e) {
-                throw new ConfigurationException("Error writing in: " + configHolder.getNuxeoConfPath(), e);
-            }
-        }
-    }
-
-    private StringBuilder readConfiguration() throws ConfigurationException {
-        // Will change templatesParam value instead of appending it
-        String templatesParam = configHolder.getProperty(PARAM_TEMPLATES_NAME);
-        Integer generationIndex = null, templatesIndex = null;
-        List<String> newLines = new ArrayList<>();
-        try (BufferedReader reader = Files.newBufferedReader(configHolder.getNuxeoConfPath())) {
-            String line;
-            MessageDigest digest = DigestUtils.getMd5Digest();
-            boolean onConfiguratorContent = false;
-            while ((line = reader.readLine()) != null) {
-                digest.update(line.getBytes());
-                if (!onConfiguratorContent) {
-                    if (!line.startsWith(BOUNDARY_BEGIN)) {
-                        if (line.startsWith(PARAM_FORCE_GENERATION)) {
-                            if (setOnceToFalse && isGenerationOnce()) {
-                                line = PARAM_FORCE_GENERATION + "=false";
-                            }
-                            if (setFalseToOnce && !forceGeneration) {
-                                line = PARAM_FORCE_GENERATION + "=once";
-                            }
-                            if (generationIndex == null) {
-                                newLines.add(line);
-                                generationIndex = newLines.size() - 1;
-                            } else {
-                                newLines.set(generationIndex, line);
-                            }
-                        } else if (line.startsWith(PARAM_TEMPLATES_NAME)) {
-                            if (templatesParam != null) {
-                                line = PARAM_TEMPLATES_NAME + "=" + templatesParam;
-                            }
-                            if (templatesIndex == null) {
-                                newLines.add(line);
-                                templatesIndex = newLines.size() - 1;
-                            } else {
-                                newLines.set(templatesIndex, line);
-                            }
-                        } else {
-                            int equalIdx = line.indexOf("=");
-                            if (equalIdx < 1 || line.trim().startsWith("#")) {
-                                newLines.add(line);
-                            } else {
-                                String key = line.substring(0, equalIdx).trim();
-                                if (configHolder.getProperty(key) != null) {
-                                    newLines.add(line);
-                                } else {
-                                    newLines.add("#" + line);
-                                }
-                            }
-                        }
-                    } else {
-                        // What must be written just before the BOUNDARY_BEGIN
-                        if (templatesIndex == null && templatesParam != null) {
-                            newLines.add(PARAM_TEMPLATES_NAME + "=" + templatesParam);
-                            templatesIndex = newLines.size() - 1;
-                        }
-                        onConfiguratorContent = true;
-                    }
-                } else {
-                    if (!line.startsWith(BOUNDARY_END)) {
-                        int equalIdx = line.indexOf("=");
-                        if (line.startsWith("#" + PARAM_TEMPLATES_NAME) || line.startsWith(PARAM_TEMPLATES_NAME)) {
-                            // Backward compliance, it must be ignored
-                            continue;
-                        }
-                        if (equalIdx < 1) { // Ignore non-readable lines
-                            continue;
-                        }
-                        if (line.trim().startsWith("#")) {
-                            String key = line.substring(1, equalIdx).trim();
-                            String value = line.substring(equalIdx + 1).trim();
-                            getStoredConfig().setProperty(key, value);
-                        } else {
-                            String key = line.substring(0, equalIdx).trim();
-                            String value = line.substring(equalIdx + 1).trim();
-                            if (!value.equals(configHolder.getRawProperty(key))) {
-                                getStoredConfig().setProperty(key, value);
-                            }
-                        }
-                    } else {
-                        onConfiguratorContent = false;
-                    }
-                }
-            }
-            reader.close();
-            currentConfigurationDigest = Hex.encodeHexString(digest.digest());
-        } catch (IOException e) {
-            throw new ConfigurationException("Error reading " + configHolder.getNuxeoConfPath(), e);
-        }
-        StringBuilder newContent = new StringBuilder();
-        for (String newLine : newLines) {
-            newContent.append(newLine.trim()).append(System.lineSeparator());
-        }
-        return newContent;
     }
 
     /**
@@ -1415,50 +1203,19 @@ public class ConfigurationGenerator {
      * @since 7.4
      */
     public Map<String, String> setProperties(String template, Map<String, String> newParametersToSave)
-            throws ConfigurationException, IOException {
-        File templateDir = getTemplateDirectory(template);
-        File templateConf;
+            throws ConfigurationException {
+        Path templatePath = Path.of(template);
+        if (!templatePath.isAbsolute()) {
+            templatePath = configHolder.getTemplatesPath().resolve(template);
+        }
+        Path templateConf;
         String nuxeoEnv = environment.get(NUXEO_ENVIRONMENT);
         if (isBlank(nuxeoEnv)) {
-            templateConf = new File(templateDir, NUXEO_DEFAULT_CONF);
+            templateConf = templatePath.resolve(NUXEO_DEFAULT_CONF);
         } else {
-            templateConf = new File(templateDir, String.format(NUXEO_ENVIRONMENT_CONF_FORMAT, nuxeoEnv));
+            templateConf = templatePath.resolve(String.format(NUXEO_ENVIRONMENT_CONF_FORMAT, nuxeoEnv));
         }
-        Map<String, String> oldValues = new HashMap<>();
-        StringBuilder newContent = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(templateConf))) {
-            String line = reader.readLine();
-            if (line != null && line.startsWith("## DO NOT EDIT THIS FILE")) {
-                throw new ConfigurationException("The template states in its header that it must not be modified.");
-            }
-            while (line != null) {
-                int equalIdx = line.indexOf("=");
-                if (equalIdx < 1 || line.trim().startsWith("#")) {
-                    newContent.append(line).append(System.getProperty("line.separator"));
-                } else {
-                    String key = line.substring(0, equalIdx).trim();
-                    if (newParametersToSave.containsKey(key)) {
-                        String value = line.substring(equalIdx + 1).trim();
-                        oldValues.put(key, value);
-                        newContent.append(key)
-                                  .append("=")
-                                  .append(newParametersToSave.get(key))
-                                  .append(System.lineSeparator());
-                    } else {
-                        newContent.append(line).append(System.lineSeparator());
-                    }
-                }
-                line = reader.readLine();
-            }
-        }
-        for (String key : newParametersToSave.keySet()) {
-            if (!oldValues.containsKey(key)) {
-                newContent.append(key).append("=").append(newParametersToSave.get(key)).append(System.lineSeparator());
-            }
-        }
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(templateConf))) {
-            writer.append(newContent.toString());
-        }
+        Map<String, String> oldValues = configMarshaller.persistNuxeoDefaults(templateConf, newParametersToSave);
         loadConfiguration(true);
         return oldValues;
     }
