@@ -21,10 +21,11 @@ package org.nuxeo.launcher.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_FAIL;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_NOFAIL;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_PROP;
+import static org.nuxeo.launcher.config.ConfigurationChecker.JVMCHECK_FAIL;
+import static org.nuxeo.launcher.config.ConfigurationChecker.JVMCHECK_NOFAIL;
+import static org.nuxeo.launcher.config.ConfigurationChecker.JVMCHECK_PROP;
+
+import java.util.Properties;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Logger;
@@ -38,71 +39,63 @@ public class JVMVersionTest {
 
     @Test
     public void testCheckJavaVersionFail() {
-        testCheckJavaVersion(true);
+        var properties = new Properties();
+        properties.setProperty(JVMCHECK_PROP, JVMCHECK_FAIL);
+        var checker = new ConfigurationChecker(properties);
+        assertJavaVersions(checker, false);
     }
 
     @Test
     public void testCheckJavaVersionNoFail() {
-        testCheckJavaVersion(false);
+        var properties = new Properties();
+        properties.setProperty(JVMCHECK_PROP, JVMCHECK_NOFAIL);
+        var checker = new ConfigurationChecker(properties);
+        assertJavaVersions(checker, true);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testWrongJavaVersionFail() {
-        ConfigurationGenerator.checkJavaVersion("1.not-a-version", "1.8.0_40", false, true);
+        new ConfigurationChecker(System.getProperties()).checkJavaVersion("1.not-a-version", "1.8.0_40", false, true);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testWrongPreJdk9VersionFail() {
-        ConfigurationGenerator.checkJavaVersion("1.not-a-version", "1.8.0_40", false, false);
+        new ConfigurationChecker(System.getProperties()).checkJavaVersion("1.not-a-version", "1.8.0_40", false, false);
     }
 
     @Test
     public void testWrongJavaVersionNoFail() {
-        runJVMCheck(false, () -> ConfigurationGenerator.checkJavaVersion("not-a-version", "1.8.0_40", true, true));
+        var properties = new Properties();
+        properties.setProperty(JVMCHECK_PROP, JVMCHECK_NOFAIL);
+        var checker = new ConfigurationChecker(properties);
+        assertTrue(checker.checkJavaVersion("not-a-version", "1.8.0_40", true, true));
     }
 
-    protected void testCheckJavaVersion(boolean fail) {
-        runJVMCheck(fail, () -> checkJavaVersions(!fail));
-    }
-
-    protected void runJVMCheck(boolean fail, Runnable runnable) {
-        String old = System.getProperty(JVMCHECK_PROP);
-        try {
-            System.setProperty(JVMCHECK_PROP, fail ? JVMCHECK_FAIL : JVMCHECK_NOFAIL);
-            runnable.run();
-        } finally {
-            if (old == null) {
-                System.clearProperty(JVMCHECK_PROP);
-            } else {
-                System.setProperty(JVMCHECK_PROP, old);
-            }
-        }
-    }
-
-    protected void checkJavaVersions(boolean compliant) {
+    protected void assertJavaVersions(ConfigurationChecker checker, boolean compliant) {
         // ok
-        checkJavaVersion(true, "1.7.0_10", "1.7.0_1");
-        checkJavaVersion(true, "1.8.0_92", "1.7.0_1");
-        checkJavaVersion(true, "1.8.0_40", "1.8.0_40");
-        checkJavaVersion(true, "1.8.0_45", "1.8.0_40");
-        checkJavaVersion(true, "1.8.0_101", "1.8.0_40");
-        checkJavaVersion(true, "1.8.0_400", "1.8.0_40");
-        checkJavaVersion(true, "1.8.0_72-internal", "1.8.0_40");
-        checkJavaVersion(true, "1.8.0-internal", "1.8.0");
-        checkJavaVersion(true, "1.9.0_1", "1.8.0_40");
+        assertJavaVersion(checker, true, "1.7.0_10", "1.7.0_1");
+        assertJavaVersion(checker, true, "1.8.0_92", "1.7.0_1");
+        assertJavaVersion(checker, true, "1.8.0_40", "1.8.0_40");
+        assertJavaVersion(checker, true, "1.8.0_45", "1.8.0_40");
+        assertJavaVersion(checker, true, "1.8.0_101", "1.8.0_40");
+        assertJavaVersion(checker, true, "1.8.0_400", "1.8.0_40");
+        assertJavaVersion(checker, true, "1.8.0_72-internal", "1.8.0_40");
+        assertJavaVersion(checker, true, "1.8.0-internal", "1.8.0");
+        assertJavaVersion(checker, true, "1.9.0_1", "1.8.0_40");
         // compliant if jvmcheck=nofail
-        checkJavaVersion(compliant, "1.7.0_1", "1.8.0_40");
-        checkJavaVersion(compliant, "1.7.0_40", "1.8.0_40");
-        checkJavaVersion(compliant, "1.7.0_101", "1.8.0_40");
-        checkJavaVersion(compliant, "1.7.0_400", "1.8.0_40");
-        checkJavaVersion(compliant, "1.8.0_1", "1.8.0_40");
-        checkJavaVersion(compliant, "1.8.0_25", "1.8.0_40");
-        checkJavaVersion(compliant, "1.8.0_39", "1.8.0_40");
+        assertJavaVersion(checker, compliant, "1.7.0_1", "1.8.0_40");
+        assertJavaVersion(checker, compliant, "1.7.0_40", "1.8.0_40");
+        assertJavaVersion(checker, compliant, "1.7.0_101", "1.8.0_40");
+        assertJavaVersion(checker, compliant, "1.7.0_400", "1.8.0_40");
+        assertJavaVersion(checker, compliant, "1.8.0_1", "1.8.0_40");
+        assertJavaVersion(checker, compliant, "1.8.0_25", "1.8.0_40");
+        assertJavaVersion(checker, compliant, "1.8.0_39", "1.8.0_40");
     }
 
-    protected void checkJavaVersion(boolean compliant, String version, String requiredVersion) {
+    protected void assertJavaVersion(ConfigurationChecker checker, boolean compliant, String version,
+            String requiredVersion) {
         assertEquals(version + " vs " + requiredVersion, compliant,
-                ConfigurationGenerator.checkJavaVersion(version, requiredVersion, true, false));
+                checker.checkJavaVersion(version, requiredVersion, true, false));
     }
 
     @Test
@@ -126,46 +119,45 @@ public class JVMVersionTest {
 
     @Test
     public void testCheckJavaVersionCompliant() throws Exception {
-        LogCaptureAppender logCaptureAppender = new LogCaptureAppender(Level.WARN, ConfigurationGenerator.class);
+        LogCaptureAppender logCaptureAppender = new LogCaptureAppender(Level.WARN, ConfigurationChecker.class);
         logCaptureAppender.start();
         Logger rootLogger = LoggerContext.getContext(false).getRootLogger();
         rootLogger.addAppender(logCaptureAppender);
+
         try {
+            var checker = new ConfigurationChecker(System.getProperties());
             // Nuxeo 6.0 case
-            ConfigurationGenerator.checkJavaVersion("1.7.0_10", new String[] { "1.7.0_1", "1.8.0_1" });
+            checker.checkJavaVersion("1.7.0_10", new String[] { "1.7.0_1", "1.8.0_1" });
             assertTrue(logCaptureAppender.isEmpty());
-            ConfigurationGenerator.checkJavaVersion("1.8.0_92", new String[] { "1.7.0_1", "1.8.0_1" });
+            checker.checkJavaVersion("1.8.0_92", new String[] { "1.7.0_1", "1.8.0_1" });
             assertTrue(logCaptureAppender.isEmpty());
             // Nuxeo 7.10/8.10 case
-            ConfigurationGenerator.checkJavaVersion("1.8.0_50", new String[] { "1.8.0_40" });
+            checker.checkJavaVersion("1.8.0_50", new String[] { "1.8.0_40" });
             assertTrue(logCaptureAppender.isEmpty());
 
             // may log warn message cases
-            ConfigurationGenerator.checkJavaVersion("1.8.0_92", new String[] { "1.7.0_1" });
+            checker.checkJavaVersion("1.8.0_92", new String[] { "1.7.0_1" });
             assertEquals(1, logCaptureAppender.size());
             assertEquals("Nuxeo requires Java 1.7.0_1+ (detected 1.8.0_92).", logCaptureAppender.get(0));
             logCaptureAppender.clear();
 
-            ConfigurationGenerator.checkJavaVersion("1.8.0_92", new String[] { "1.6.0_1", "1.7.0_1" });
+            checker.checkJavaVersion("1.8.0_92", new String[] { "1.6.0_1", "1.7.0_1" });
             assertEquals(1, logCaptureAppender.size());
             assertEquals("Nuxeo requires Java 1.7.0_1+ (detected 1.8.0_92).", logCaptureAppender.get(0));
             logCaptureAppender.clear();
 
             // jvmcheck=nofail case
-            runJVMCheck(false, () -> {
-                try {
-                    ConfigurationGenerator.checkJavaVersion("1.6.0_1", new String[] { "1.7.0_1" });
-                    assertEquals(1, logCaptureAppender.size());
-                    assertEquals("Nuxeo requires Java 1.7.0_1+ (detected 1.6.0_1).", logCaptureAppender.get(0));
-                    logCaptureAppender.clear();
-                } catch (Exception e) {
-                    fail("Exception thrown " + e.getMessage());
-                }
-            });
+            var properties = new Properties();
+            properties.setProperty(JVMCHECK_PROP, JVMCHECK_NOFAIL);
+            checker = new ConfigurationChecker(properties);
+            checker.checkJavaVersion("1.6.0_1", new String[] { "1.7.0_1" });
+            assertEquals(1, logCaptureAppender.size());
+            assertEquals("Nuxeo requires Java 1.7.0_1+ (detected 1.6.0_1).", logCaptureAppender.get(0));
+            logCaptureAppender.clear();
 
             // fail case
             try {
-                ConfigurationGenerator.checkJavaVersion("1.6.0_1", new String[] { "1.7.0_1" });
+                checker.checkJavaVersion("1.6.0_1", new String[] { "1.7.0_1" });
             } catch (ConfigurationException ce) {
                 assertEquals(
                         "Nuxeo requires Java {1.7.0_1} (detected 1.6.0_1). See 'jvmcheck' option to bypass version check.",

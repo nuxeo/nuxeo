@@ -23,7 +23,7 @@ import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.DE
 import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.NASHORN_JAVA_VERSION;
 import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.NASHORN_WARN_CACHE;
 import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.NASHORN_WARN_CLASS_FILTER;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.checkJavaVersion;
+import static org.nuxeo.launcher.config.ConfigurationChecker.checkJavaVersion;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

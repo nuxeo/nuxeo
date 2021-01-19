@@ -58,10 +58,6 @@
           "key": "nuxeo.db.type"
         },
         {
-          "value": "default",
-          "key": "nuxeo.dbtemplate"
-        },
-        {
           "value": "target/launcher",
           "key": "nuxeo.home"
         },

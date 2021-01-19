@@ -18,29 +18,22 @@
  */
 package org.nuxeo.elasticsearch;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
-import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.client.ESRestClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.launcher.config.ConfigurationException;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.config.ConfigurationHolder;
 import org.nuxeo.launcher.config.backingservices.BackingChecker;
 
 /**
  * @since 11.3
  */
 public class ElasticSearchChecker implements BackingChecker {
+
     private static final Logger log = LogManager.getLogger(ElasticSearchChecker.class);
 
     protected static final String ELASTIC_ENABLED_PROP = "elasticsearch.enabled";
@@ -52,13 +45,13 @@ public class ElasticSearchChecker implements BackingChecker {
     protected static final String CONFIG_NAME = "elasticsearch-config.xml";
 
     @Override
-    public boolean accepts(ConfigurationGenerator cg) {
+    public boolean accepts(ConfigurationHolder configHolder) {
         // not using Boolean.parseValue on purpose, only 'true' must trigger the checker
-        if (!"true".equals(cg.getUserConfig().getProperty(ELASTIC_ENABLED_PROP))) {
+        if (!"true".equals(configHolder.getProperty(ELASTIC_ENABLED_PROP))) {
             log.debug("Checker skipped because elasticsearch is disabled");
             return false;
         }
-        if (!"RestClient".equals(cg.getUserConfig().getProperty(ELASTIC_REST_CLIENT_PROP))) {
+        if (!"RestClient".equals(configHolder.getProperty(ELASTIC_REST_CLIENT_PROP))) {
             log.debug("Checker skipped because not using a rest client");
             return false;
         }
@@ -67,8 +60,10 @@ public class ElasticSearchChecker implements BackingChecker {
     }
 
     @Override
-    public void check(ConfigurationGenerator cg) throws ConfigurationException {
-        ElasticSearchClientConfig config = getConfig(cg);
+    public void check(ConfigurationHolder configHolder) throws ConfigurationException {
+        ElasticSearchClientConfig config = getDescriptor(configHolder, CONFIG_NAME, ElasticSearchClientConfig.class,
+                // avoid XMap to fail when trying to load class value by removing class attribute
+                content -> content.replace("class=", "ignore="));
         String addressList = config.getOption(ADDRESS_LIST_OPT);
         if (addressList == null || addressList.isEmpty()) {
             log.debug("Elasticsearch config check skipped on embedded configuration");
@@ -79,7 +74,7 @@ public class ElasticSearchChecker implements BackingChecker {
         switch (status) {
         case GREEN:
         case YELLOW:
-            log.debug("check is ok, cluster health is {}", status);
+            log.debug("Check is ok, cluster health is {}", status);
             return;
         default:
             throw new ConfigurationException("Elasticsearch cluster is not healthy: " + status);
@@ -90,42 +85,13 @@ public class ElasticSearchChecker implements BackingChecker {
         try (ESClient client = getClient(config)) {
             return client.getHealthStatus(null);
         } catch (Exception e) {
-            throw new ConfigurationException("Unable to connect to Elasticsearch: " + config.getOption(ADDRESS_LIST_OPT),
-                    e);
+            throw new ConfigurationException(
+                    "Unable to connect to Elasticsearch: " + config.getOption(ADDRESS_LIST_OPT), e);
         }
     }
 
     protected ESClient getClient(ElasticSearchClientConfig config) {
         ESClientFactory clientFactory = new ESRestClientFactory();
         return clientFactory.create(null, config);
-    }
-
-    protected ElasticSearchClientConfig getConfig(ConfigurationGenerator cg) throws ConfigurationException {
-        File configFile = new File(cg.getConfigDir(), CONFIG_NAME);
-        if (!configFile.exists()) {
-            throw new ConfigurationException("Cannot find Elasticsearch configuration: " + CONFIG_NAME);
-        }
-        return getDescriptor(configFile);
-    }
-
-    protected ElasticSearchClientConfig getDescriptor(File file) throws ConfigurationException {
-        XMap xmap = new XMap();
-        xmap.register(ElasticSearchClientConfig.class);
-        try {
-            // avoid XMap to fail when trying to load class value by removing class attribute
-            String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-            content = content.replace("class=", "ignore=");
-            InputStream inStream = new ByteArrayInputStream(content.getBytes());
-            Object[] nodes = xmap.loadAll(inStream);
-            for (Object node : nodes) {
-                if (node != null) {
-                    return (ElasticSearchClientConfig) node;
-                }
-            }
-            throw new ConfigurationException("No ElasticSearchClientConfig found in " + file.getAbsolutePath());
-        } catch (IOException e) {
-            throw new ConfigurationException("Failed to load ElasticSearchClientConfig from " + file.getAbsolutePath(),
-                    e);
-        }
     }
 }
