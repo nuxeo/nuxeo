@@ -64,6 +64,8 @@ public class TestBlobHolderAdapterService {
 
         hotDeployer.deploy(Constants.CORE_TEST_TESTS_BUNDLE + ":test-blob-holder-adapters-contrib.xml");
 
+        // retrieve service again after hotreload
+        bhac = (BlobHolderAdapterComponent) Framework.getService(BlobHolderAdapterService.class);
         assertEquals(1, bhac.getFactoryNames().size());
 
         BlobHolderAdapterService bhas = Framework.getService(BlobHolderAdapterService.class);
