@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -41,17 +42,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@LogCaptureFeature.FilterWith(QueryResultsAreAutomaticallyClosedTest.LogFilter.class)
+@LogCaptureFeature.FilterOn(logLevel = "WARN", loggerClass = SessionImpl.class)
 public class QueryResultsAreAutomaticallyClosedTest {
 
     private static final String VCS_CLOSING_WARN = "Closing a query results for you, check stack trace for allocating point";
-
-    public static class LogFilter implements LogCaptureFeature.Filter {
-        @Override
-        public boolean accept(LogEvent event) {
-            return Level.WARN.equals(event.getLevel());
-        }
-    }
 
     @Inject
     protected CoreFeature coreFeature;
@@ -70,7 +64,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
 
     // needs a JCA connection for this to work
     @Test
-    public void testTransactional() throws Exception {
+    public void testTransactional() {
         CoreSession session = coreFeature.getCoreSessionSystem();
         try (IterableQueryResult results = session.queryAndFetch("SELECT * from Document", "NXQL")) {
             TransactionHelper.commitOrRollbackTransaction();
@@ -97,7 +91,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
 
     @SuppressWarnings("resource") // we specifically test indirect close
     @Test
-    public void testNested() throws Exception {
+    public void testNested() {
         IterableQueryResult mainResults;
         CoreSession main = coreFeature.getCoreSessionSystem();
         NestedQueryRunner runner = new NestedQueryRunner(main.getRepositoryName());
