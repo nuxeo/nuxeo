@@ -41,9 +41,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -87,18 +87,18 @@ public class TestNuxeoIdempotentFilter {
     protected static final Map<String, Collection<String>> RESPONSE_HEADERS = new LinkedHashMap<>();
 
     static {
-        RESPONSE_HEADERS.put("Accept", List.of("text/html", "application/xhtml+xml", "*/*;q=0.8"));
-        RESPONSE_HEADERS.put("Connection", List.of("Keep-Alive"));
-        RESPONSE_HEADERS.put("Content-Encoding", List.of("gzip"));
-        RESPONSE_HEADERS.put("Content-Type", List.of("text/html; charset=utf-8"));
-        RESPONSE_HEADERS.put("Set-Cookie", List.of("sessionId=38afes7a8", "id=a3fWa; Max-Age=2592000"));
-        RESPONSE_HEADERS.put("Transfer-Encoding", List.of("chunked")); // should be filtered
+        RESPONSE_HEADERS.put("Accept", Arrays.asList("text/html", "application/xhtml+xml", "*/*;q=0.8"));
+        RESPONSE_HEADERS.put("Connection", Arrays.asList("Keep-Alive"));
+        RESPONSE_HEADERS.put("Content-Encoding", Arrays.asList("gzip"));
+        RESPONSE_HEADERS.put("Content-Type", Arrays.asList("text/html; charset=utf-8"));
+        RESPONSE_HEADERS.put("Set-Cookie", Arrays.asList("sessionId=38afes7a8", "id=a3fWa; Max-Age=2592000"));
+        RESPONSE_HEADERS.put("Transfer-Encoding", Arrays.asList("chunked")); // should be filtered
     }
 
     protected static final Map<String, Collection<String>> KEY_RESPONSE_HEADERS = new LinkedHashMap<>();
 
     static {
-        KEY_RESPONSE_HEADERS.put(NuxeoIdempotentFilter.HEADER_KEY, List.of(KEY));
+        KEY_RESPONSE_HEADERS.put(NuxeoIdempotentFilter.HEADER_KEY, Arrays.asList(KEY));
     }
 
     protected static final Map<String, Collection<String>> FINAL_RESPONSE_HEADERS = new LinkedHashMap<>();
@@ -178,7 +178,7 @@ public class TestNuxeoIdempotentFilter {
             doAnswer(invocation -> headers.get(invocation.getArguments()[0])).when(response).getHeaders(anyString());
             doAnswer(invocation -> {
                 headers.put((String) invocation.getArguments()[0],
-                        new ArrayList<>(List.of((String) invocation.getArguments()[1])));
+                        new ArrayList<>(Arrays.asList((String) invocation.getArguments()[1])));
                 return null;
             }).when(response).setHeader(anyString(), anyString());
             doAnswer(invocation -> {

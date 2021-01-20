@@ -24,6 +24,8 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.FilterChain;
@@ -83,11 +85,11 @@ public class NuxeoIdempotentFilter extends HttpFilter {
 
     protected static final int MAX_CONTENT_SIZE = 1024 * 1024 * 5; // 5 MB
 
-    protected static final Set<String> IDEMPOTENT_METHODS = Set.of(
+    protected static final Set<String> IDEMPOTENT_METHODS = new HashSet<>(Arrays.asList(
             // safe methods according to RFC 7231 4.2.1
             HttpGet.METHOD_NAME, HttpHead.METHOD_NAME, HttpOptions.METHOD_NAME, HttpTrace.METHOD_NAME,
             // idempotent methods according to RFC 7231 4.2.2
-            HttpPut.METHOD_NAME, HttpDelete.METHOD_NAME);
+            HttpPut.METHOD_NAME, HttpDelete.METHOD_NAME));
 
     protected Duration getTTL() {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
@@ -136,7 +138,7 @@ public class NuxeoIdempotentFilter extends HttpFilter {
         byte[] storeContent = store.get(key);
         if (storeStatus == null) {
             log.debug("Handle new request for key: {}", key);
-            long ttl = getTTL().toSeconds();
+            long ttl = getTTL().getSeconds();
             store.put(key + INFO_SUFFIX, INPROGRESS_MARKER, ttl);
             try {
                 try (CopyingResponseWrapper wrapper = new CopyingResponseWrapper(DEFERRED_OUTPUT_STREAM_THRESHOLD,

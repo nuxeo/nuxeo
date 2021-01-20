@@ -32,8 +32,6 @@ import org.junit.Test;
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants;
-import org.nuxeo.functionaltests.RestHelper.NuxeoClientForNuxeo;
 
 /**
  * Tests for idempotent request mechanism.
@@ -44,8 +42,10 @@ public class ITNuxeoIdempotentRequestTest {
 
     private static final String TEST_KEY = "idempotenttestkey" + new Date().getTime();
 
-    private static final NuxeoClient.Builder CLIENT_BUILDER = new NuxeoClientForNuxeo.BuilderForNuxeo().url(
-            NUXEO_URL).authentication(ADMINISTRATOR, ADMINISTRATOR).schemas("*");
+    private static final NuxeoClient.Builder CLIENT_BUILDER = new NuxeoClient.Builder().url(NUXEO_URL)
+                                                                                       .authentication(ADMINISTRATOR,
+                                                                                               ADMINISTRATOR)
+                                                                                       .schemas("*");
 
     private static final NuxeoClient CLIENT = CLIENT_BUILDER.connect();
 
@@ -62,7 +62,7 @@ public class ITNuxeoIdempotentRequestTest {
 
     protected String createDocument(NuxeoClient client) {
         Document document = Document.createWithName(TEST_TITLE, TEST_TYPE);
-        document.setProperties(Map.of(DublinCoreConstants.DUBLINCORE_TITLE_PROPERTY, TEST_TITLE));
+        document.setPropertyValue("dc:title", TEST_TITLE);
         Document created = client.repository().createDocumentByPath(PARENT_PATH, document);
         waitForAsyncWork();
         return created.getId();
