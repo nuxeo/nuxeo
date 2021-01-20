@@ -23,8 +23,10 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.common.Environment.NUXEO_HOME;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,45 +43,43 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.AssumptionViolatedException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
-import org.nuxeo.launcher.config.AbstractConfigurationTest;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.launcher.config.ServerConfigurator;
+import org.nuxeo.launcher.config.ConfigurationRule;
 import org.nuxeo.launcher.info.InstanceInfo;
 import org.nuxeo.launcher.info.PackageInfo;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-public class TestNuxeoLauncher extends AbstractConfigurationTest {
+public class TestNuxeoLauncher {
+
+    protected static final Logger log = LogManager.getLogger(TestNuxeoLauncher.class);
 
     private static final String TEST_INSTANCE_CLID = "/opt/build/hudson/instance.clid";
 
+    /** @since 11.5 */
     @Rule
-    public final ExpectedException thrown = ExpectedException.none();
+    public final ConfigurationRule rule = new ConfigurationRule("launcher");
 
-    @Override
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        System.setProperty(NUXEO_HOME, rule.getNuxeoHome().toString());
+        // re-init default env to allow different nuxeo home path for each test
         Environment.setDefault(null);
-        nuxeoHome = new File("target/launcher");
-        FileUtils.deleteQuietly(nuxeoHome);
-        Files.createDirectories(nuxeoHome.toPath());
-        File nuxeoConf = getResourceFile("config/nuxeo.conf");
-        FileUtils.copyFileToDirectory(nuxeoConf, nuxeoHome);
-        FileUtils.copyDirectory(getResourceFile("templates"), new File(nuxeoHome, "templates"));
-        setSystemProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
-        setSystemProperty(ConfigurationGenerator.NUXEO_CONF, new File(nuxeoHome, nuxeoConf.getName()).getPath());
-        setSystemProperty(ServerConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
+    }
+
+    @After
+    public void tearDown() {
+        System.getProperties().keySet().removeIf(k -> k.toString().startsWith("nuxeo."));
     }
 
     @Test
@@ -113,11 +113,9 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
      */
     @Test
     @Deprecated
-    public void testRegisterTrialIsDeprecated() throws Exception {
-        thrown.expect(NuxeoLauncherException.class);
-        thrown.expectMessage("deprecated");
-        thrown.expectMessage("https://connect.nuxeo.com/register");
-        NuxeoLauncher.createLauncher(new String[] { "register-trial" }).registerTrial();
+    public void testRegisterTrialIsDeprecated() {
+        assertThrows("https://connect.nuxeo.com/register", NuxeoLauncherException.class,
+                () -> NuxeoLauncher.createLauncher(new String[] { "register-trial" }).registerTrial());
     }
 
     /**
@@ -215,7 +213,7 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
             json = cleanupShowconf(json);
 
             Map<String, String> toReplace = new HashMap<>();
-            toReplace.put("NUXEO_HOME", nuxeoHome.getAbsolutePath());
+            toReplace.put("NUXEO_HOME", rule.getNuxeoHome().toString());
 
             checkJSON("json/nuxeoctl-showconf.json", json, toReplace);
         }
