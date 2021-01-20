@@ -1,1 +1,0 @@
-<config-property name="property" type="java.lang.String">URL=jdbc:h2:${nuxeo.data.dir_2}${file.separator}h2${file.separator}${nuxeo.db.name};AUTO_SERVER=true</config-property>
