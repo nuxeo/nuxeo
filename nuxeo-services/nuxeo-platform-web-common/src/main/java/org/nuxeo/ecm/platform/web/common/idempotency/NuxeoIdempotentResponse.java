@@ -19,7 +19,9 @@
 package org.nuxeo.ecm.platform.web.common.idempotency;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +44,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 public class NuxeoIdempotentResponse {
 
-    public static final Set<String> SKIPPED_HEADERS = Set.of("Transfer-Encoding");
+    public static final Set<String> SKIPPED_HEADERS = new HashSet<>(Arrays.asList("Transfer-Encoding"));
 
     protected int status;
 
