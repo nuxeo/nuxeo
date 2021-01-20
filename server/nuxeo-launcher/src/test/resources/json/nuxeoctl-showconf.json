@@ -1,5 +1,5 @@
 {
-  "NUXEO_CONF": "${NUXEO_HOME}/nuxeo.conf",
+  "NUXEO_CONF": "${NUXEO_HOME}/bin/nuxeo.conf",
   "NUXEO_HOME": "${NUXEO_HOME}",
   "distribution": {
     "name": "unknown",
@@ -46,8 +46,12 @@
     "allkeyvals": {
       "allkeyval": [
         {
-          "value": "${NUXEO_HOME}/nuxeo.conf",
+          "value": "${NUXEO_HOME}/bin/nuxeo.conf",
           "key": "nuxeo.conf"
+        },
+        {
+          "value": "${NUXEO_HOME}/nxserver/config",
+          "key": "nuxeo.config.dir"
         },
         {
           "value": "${NUXEO_HOME}/nxserver/data",
@@ -58,7 +62,7 @@
           "key": "nuxeo.db.type"
         },
         {
-          "value": "target/launcher",
+          "value": "${NUXEO_HOME}",
           "key": "nuxeo.home"
         },
         {
@@ -74,7 +78,7 @@
           "key": "nuxeo.mp.dir"
         },
         {
-          "value": "${NUXEO_HOME}/logs",
+          "value": "${NUXEO_HOME}/log",
           "key": "nuxeo.pid.dir"
         },
         {
