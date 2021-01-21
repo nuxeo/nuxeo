@@ -2216,7 +2216,7 @@ public class NuxeoLauncher {
         } catch (NoCLID cause) {
             // optional
         }
-        info = configurationGenerator.getServerConfigurator().getInfo(clid, connectBroker.getPkgList());
+        info = InstanceInfo.from(configurationGenerator.getConfigurationHolder(), clid, connectBroker.getPkgList());
         if (new Version(info.distribution.version).isSnapshot()) {
             connectBroker.setAllowSNAPSHOT(true);
         }
