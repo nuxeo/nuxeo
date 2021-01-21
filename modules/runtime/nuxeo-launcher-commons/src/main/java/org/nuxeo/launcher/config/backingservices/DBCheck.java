@@ -18,8 +18,6 @@
  */
 package org.nuxeo.launcher.config.backingservices;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -51,8 +49,6 @@ public class DBCheck implements BackingChecker {
     public void check(ConfigurationGenerator cg) throws ConfigurationException {
         try {
             checkDatabaseConnection(cg);
-        } catch (IOException e) {
-            throw new ConfigurationException(e);
         } catch (DatabaseDriverException e) {
             log.debug(e, e);
             log.error(e.getMessage());
@@ -68,7 +64,7 @@ public class DBCheck implements BackingChecker {
      * Check driver availability and database connection
      */
     public void checkDatabaseConnection(ConfigurationGenerator cg)
-            throws FileNotFoundException, IOException, DatabaseDriverException, SQLException {
+            throws ConfigurationException, DatabaseDriverException, SQLException {
         CryptoProperties config = cg.getUserConfig();
         String databaseTemplate = config.getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
         String dbName = config.getProperty(ConfigurationGenerator.PARAM_DB_NAME);
