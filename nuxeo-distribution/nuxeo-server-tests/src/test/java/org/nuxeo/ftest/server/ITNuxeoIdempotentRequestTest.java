@@ -49,7 +49,8 @@ public class ITNuxeoIdempotentRequestTest {
 
     private static final NuxeoClient CLIENT = CLIENT_BUILDER.connect();
 
-    private static final NuxeoClient IDEMPOTENT_CLIENT = CLIENT_BUILDER.header(HEADER_KEY, TEST_KEY).connect();
+    // connect before adding the header to avoid handling auth as the idempotent request
+    private static final NuxeoClient IDEMPOTENT_CLIENT = CLIENT_BUILDER.connect().header(HEADER_KEY, TEST_KEY);
 
     private static final String PARENT_PATH = "/default-domain/workspaces/";
 
