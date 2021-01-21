@@ -19,31 +19,11 @@
  */
 package org.nuxeo.launcher.config;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.TEMPLATE_SEPARATOR;
-
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.codec.Crypto;
-import org.nuxeo.common.codec.CryptoProperties;
-import org.nuxeo.connect.update.LocalPackage;
-import org.nuxeo.launcher.info.ConfigurationInfo;
-import org.nuxeo.launcher.info.DistributionInfo;
-import org.nuxeo.launcher.info.InstanceInfo;
-import org.nuxeo.launcher.info.KeyValueInfo;
-import org.nuxeo.launcher.info.PackageInfo;
 
 /**
  * @author jcarsique
@@ -284,79 +264,5 @@ public class ServerConfigurator {
      */
     public String getDefaultPackagesDir() {
         return Environment.DEFAULT_MP_DIR;
-    }
-
-    /**
-     * Introspect the server and builds the instance info
-     *
-     * @since 8.3
-     */
-    public InstanceInfo getInfo(String clid, List<LocalPackage> pkgs) {
-        InstanceInfo nxInstance = new InstanceInfo();
-        nxInstance.NUXEO_CONF = configHolder.getNuxeoConfPath().toString();
-        nxInstance.NUXEO_HOME = configHolder.getHomePath().toString();
-        // distribution
-        Path distFile = configHolder.getConfigurationPath().resolve("distribution.properties");
-        if (Files.notExists(distFile)) {
-            // fallback in the file in templates
-            distFile = configHolder.getTemplatesPath().resolve(Path.of("common", "config", "distribution.properties"));
-        }
-        try {
-            nxInstance.distribution = new DistributionInfo(distFile.toFile());
-        } catch (IOException e) {
-            nxInstance.distribution = new DistributionInfo();
-        }
-        // packages
-        nxInstance.clid = clid;
-        Set<String> pkgTemplates = new HashSet<>();
-        for (LocalPackage pkg : pkgs) {
-            final PackageInfo info = new PackageInfo(pkg);
-            nxInstance.packages.add(info);
-            pkgTemplates.addAll(info.templates);
-        }
-        nxInstance.config = new ConfigurationInfo();
-        // profiles
-        String profiles = System.getenv(NUXEO_PROFILES);
-        if (isNotBlank(profiles)) {
-            nxInstance.config.profiles.addAll(Arrays.asList(profiles.split(TEMPLATE_SEPARATOR)));
-        }
-        // templates
-        nxInstance.config.dbtemplate = configHolder.getIncludedDBTemplateName();
-        List<String> userTemplates = configHolder.getIncludedTemplateNames();
-        for (String template : userTemplates) {
-            if (template.equals(nxInstance.config.dbtemplate)) {
-                continue;
-            }
-            if (pkgTemplates.contains(template)) {
-                nxInstance.config.pkgtemplates.add(template);
-            } else {
-                if (Files.exists(configHolder.getTemplatesPath().resolve(template))) {
-                    nxInstance.config.basetemplates.add(template);
-                } else {
-                    nxInstance.config.usertemplates.add(template);
-                }
-            }
-        }
-        CryptoProperties userConfig = configHolder.userConfig;
-        // Settings from nuxeo.conf
-        computeKeyVals(nxInstance.config.keyvals, userConfig, userConfig.keySet());
-        // Effective configuration for environment and profiles
-        computeKeyVals(nxInstance.config.allkeyvals, userConfig, userConfig.stringPropertyNames());
-        return nxInstance;
-    }
-
-    protected void computeKeyVals(List<KeyValueInfo> keyVals, CryptoProperties userConfig, Set<?> keys) {
-        for (Object item : new TreeSet<>(keys)) {
-            String key = (String) item;
-            String value = userConfig.getRawProperty(key);
-            if (JAVA_OPTS.equals(key)) {
-                value = generator.getJavaOptsString();
-            }
-            if (ConfigurationGenerator.SECRET_KEYS.contains(key) || key.contains("password")
-                    || key.equals(Environment.SERVER_STATUS_KEY) || Crypto.isEncrypted(value)) {
-                value = "********";
-            }
-            keyVals.add(new KeyValueInfo(key, value));
-        }
     }
 }
