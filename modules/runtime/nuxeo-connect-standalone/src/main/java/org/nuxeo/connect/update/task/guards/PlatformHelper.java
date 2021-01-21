@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,10 +34,8 @@ public class PlatformHelper {
 
     protected final String version;
 
-    private ConfigurationGenerator cg;
-
     public PlatformHelper() {
-        cg = new ConfigurationGenerator();
+        var cg = new ConfigurationGenerator();
         cg.init();
         name = cg.getEnv().getProperty(Environment.DISTRIBUTION_NAME);
         version = cg.getEnv().getProperty(Environment.DISTRIBUTION_VERSION);
@@ -81,7 +79,7 @@ public class PlatformHelper {
      */
     @Deprecated
     public boolean isWindows() {
-        return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
+        return SystemUtils.IS_OS_WINDOWS;
     }
 
     /**

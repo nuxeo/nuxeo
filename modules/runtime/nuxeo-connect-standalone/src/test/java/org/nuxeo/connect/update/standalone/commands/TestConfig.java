@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,10 @@
 
 package org.nuxeo.connect.update.standalone.commands;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -31,12 +34,12 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
@@ -46,9 +49,9 @@ import org.nuxeo.runtime.test.TargetResourceLocator;
 public class TestConfig extends AbstractCommandTest {
 
     @Inject
-    TargetResourceLocator locator;
+    protected TargetResourceLocator locator;
 
-    private ConfigurationGenerator configurationGenerator;
+    protected ConfigurationGenerator configurationGenerator;
 
     @Override
     @Before
@@ -57,12 +60,12 @@ public class TestConfig extends AbstractCommandTest {
 
         URL url = locator.getTargetTestResource("config/nuxeo.conf");
         File nuxeoConf = new File(Environment.getDefault().getServerHome(), "nuxeo.conf");
-        FileUtils.copyFile(new File(URLDecoder.decode(url.getPath(), "UTF-8")), nuxeoConf);
+        FileUtils.copyFile(new File(URLDecoder.decode(url.getPath(), UTF_8)), nuxeoConf);
         System.setProperty(ConfigurationGenerator.NUXEO_CONF, nuxeoConf.getPath());
         System.setProperty(ServerConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
         url = locator.getTargetTestResource("templates");
-        FileUtils.copyDirectory(new File(URLDecoder.decode(url.getPath(), "UTF-8")), new File(
-                Environment.getDefault().getServerHome(), "templates"));
+        FileUtils.copyDirectory(new File(URLDecoder.decode(url.getPath(), UTF_8)),
+                new File(Environment.getDefault().getServerHome(), "templates"));
 
         configurationGenerator = new ConfigurationGenerator();
         assertTrue(configurationGenerator.init());
@@ -90,10 +93,11 @@ public class TestConfig extends AbstractCommandTest {
         reader.close();
         log.info("END nuxeo.conf content:");
 
-        String templates = configurationGenerator.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_NAME);
-        assertTrue("newtemplate was not added", templates != null && templates.contains("newtemplate"));
-        assertTrue("oldtemplate was not removed", templates != null && !templates.contains("oldtemplate"));
+        String templates = configurationGenerator.getUserConfig()
+                                                 .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+        assertNotNull(templates);
+        assertTrue("newtemplate was not added", templates.contains("newtemplate"));
+        assertFalse("oldtemplate was not removed", templates.contains("oldtemplate"));
         assertEquals("test.property was not set to some.value", "some.value",
                 configurationGenerator.getUserConfig().getProperty("test.property"));
         assertEquals("alreadyset.property was not set to its new value", "new.value",
@@ -115,11 +119,13 @@ public class TestConfig extends AbstractCommandTest {
         reader.close();
         log.info("END nuxeo.conf content:");
 
-        String templates = configurationGenerator.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_NAME);
-        assertTrue("newtemplate was not removed", templates != null && !templates.contains("newtemplate"));
-        assertTrue("oldtemplate was not reset", templates != null && templates.contains("oldtemplate"));
-        assertNull("test.property was not removed", configurationGenerator.getUserConfig().getProperty("test.property"));
+        String templates = configurationGenerator.getUserConfig()
+                                                 .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+        assertNotNull(templates);
+        assertFalse("newtemplate was not removed", templates.contains("newtemplate"));
+        assertTrue("oldtemplate was not reset", templates.contains("oldtemplate"));
+        assertNull("test.property was not removed",
+                configurationGenerator.getUserConfig().getProperty("test.property"));
         assertEquals("alreadyset.property was not set to its old value", "old.value",
                 configurationGenerator.getUserConfig().getProperty("alreadyset.property"));
     }
