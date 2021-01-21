@@ -1,0 +1,2 @@
+my.prop1=${env:MY_PROP_1:myprop1defaultvalue}
+my.prop2=${env:MY_PROP_2}

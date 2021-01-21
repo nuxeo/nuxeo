@@ -20,23 +20,17 @@
  */
 package org.nuxeo.launcher.config;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static java.nio.charset.StandardCharsets.US_ASCII;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.nuxeo.launcher.config.ServerConfigurator.PARAM_HTTP_TOMCAT_ADMIN_PORT;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.Inet6Address;
@@ -46,12 +40,8 @@ import java.net.ServerSocket;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -59,7 +49,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -73,7 +62,6 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -86,7 +74,6 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -249,14 +236,6 @@ public class ConfigurationGenerator {
     public static final String PARAM_MONGODB_SERVER = "nuxeo.mongodb.server";
 
     /**
-     * Catch values like ${env:PARAM_KEY:defaultValue}
-     *
-     * @since 9.1
-     */
-    private static final Pattern ENV_VALUE_PATTERN = Pattern.compile(
-            "\\$\\{env(?<boolean>\\?\\?)?:(?<envparam>\\w*)(:?(?<defaultvalue>.*?)?)?\\}");
-
-    /**
      * Java options split by spaces followed by an even number of quotes (or zero).
      *
      * @since 9.3
@@ -312,6 +291,9 @@ public class ConfigurationGenerator {
 
     /** @since 11.5 */
     private final ConfigurationHolder configHolder;
+
+    /** @since 11.5 */
+    private final ConfigurationLoader configLoader;
 
     private final ServerConfigurator serverConfigurator;
 
@@ -381,6 +363,8 @@ public class ConfigurationGenerator {
             configHolder = new ConfigurationHolder(nuxeoHome, Path.of(nuxeoConfPath));
         }
         System.setProperty(NUXEO_CONF, configHolder.getNuxeoConfPath().toString());
+
+        configLoader = new ConfigurationLoader(System.getenv(), parametersMigration);
 
         serverConfigurator = new ServerConfigurator(this, configHolder);
         if (LoggerContext.getContext(false).getRootLogger().getAppenders().isEmpty()) {
@@ -528,43 +512,20 @@ public class ConfigurationGenerator {
         if (Files.notExists(templatesPath.resolve(NUXEO_DEFAULT_CONF))) {
             throw new ConfigurationException("Missing nuxeo.defaults configuration in: " + templatesPath);
         }
-        try {
-            // Load default configuration
-            configHolder.putDefaultAll(loadNuxeoDefaults(templatesPath.toFile()));
-            // Load System properties
-            configHolder.putDefaultAll(System.getProperties());
 
-            // If Windows, replace backslashes in paths in nuxeo.conf
-            if (SystemUtils.IS_OS_WINDOWS) {
-                replaceBackslashes();
-            }
-            // Load user configuration
-            configHolder.putAll(loadTrimmedProperties(configHolder.getNuxeoConfPath().toFile()));
-            onceGeneration = "once".equals(configHolder.getProperty(PARAM_FORCE_GENERATION));
-            forceGeneration = onceGeneration
-                    || Boolean.parseBoolean(configHolder.getProperty(PARAM_FORCE_GENERATION, "false"));
-            checkForDeprecatedParameters(configHolder.userConfig);
-
-            // Synchronize directories between serverConfigurator and
-            // userConfig/defaultConfig
-            setDirectoryWithProperty(Environment.NUXEO_DATA_DIR);
-            setDirectoryWithProperty(Environment.NUXEO_LOG_DIR);
-            setDirectoryWithProperty(Environment.NUXEO_PID_DIR);
-            setDirectoryWithProperty(Environment.NUXEO_TMP_DIR);
-            setDirectoryWithProperty(Environment.NUXEO_MP_DIR);
-        } catch (NullPointerException e) {
-            throw new ConfigurationException("Missing file", e);
-        } catch (FileNotFoundException e) {
-            throw new ConfigurationException("Missing file: " + configHolder.getNuxeoConfPath(), e);
-        } catch (IOException e) {
-            throw new ConfigurationException("Error reading " + configHolder.getNuxeoConfPath(), e);
-        }
+        // Load default configuration
+        configHolder.putDefaultAll(configLoader.loadNuxeoDefaults(templatesPath));
+        // Load System properties
+        configHolder.putDefaultAll(System.getProperties());
+        // Load user configuration
+        configHolder.putAll(configLoader.loadProperties(configHolder.getNuxeoConfPath()));
+        forceGeneration = isGenerationOnce()
+                || Boolean.parseBoolean(configHolder.getProperty(PARAM_FORCE_GENERATION, "false"));
 
         // Override default configuration with specific configuration(s) of
         // the chosen template(s) which can be outside of server filesystem
         try {
             includeTemplates();
-            checkForDeprecatedParameters(configHolder.defaultConfig);
             extractDatabaseTemplateName();
             extractSecondaryDatabaseTemplateName();
         } catch (FileNotFoundException e) {
@@ -586,7 +547,7 @@ public class ConfigurationGenerator {
     /**
      * @since 5.7
      */
-    protected void includeTemplates() throws IOException {
+    protected void includeTemplates() throws IOException, ConfigurationException {
         includedTemplates.clear();
         String templates = getUserTemplates();
         String profiles = getEnvironment(NUXEO_PROFILES);
@@ -607,57 +568,9 @@ public class ConfigurationGenerator {
      */
     protected Map<String, String> evalDynamicProperties() throws ConfigurationException {
         Map<String, String> newParametersToSave = new HashMap<>();
-        evalEnvironmentVariables(newParametersToSave);
         evalLoopbackURL();
         evalServerStatusKey(newParametersToSave);
         return newParametersToSave;
-    }
-
-    /**
-     * Expand environment variable for properties values of the form ${env:MY_VAR}.
-     *
-     * @since 9.1
-     */
-    protected void evalEnvironmentVariables(Map<String, String> newParametersToSave) {
-        for (Object keyObject : configHolder.keySet()) {
-            String key = (String) keyObject;
-            String value = configHolder.getProperty(key);
-
-            if (StringUtils.isNotBlank(value)) {
-                String newValue = replaceEnvironmentVariables(value);
-                if (!value.equals(newValue)) {
-                    newParametersToSave.put(key, newValue);
-                }
-            }
-        }
-    }
-
-    private String replaceEnvironmentVariables(String value) {
-        if (StringUtils.isBlank(value)) {
-            return value;
-        }
-
-        Matcher matcher = ENV_VALUE_PATTERN.matcher(value);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            boolean booleanValue = "??".equals(matcher.group("boolean"));
-            String envVarName = matcher.group("envparam");
-            String defaultValue = matcher.group("defaultvalue");
-
-            String envValue = getEnvironment(envVarName);
-
-            String result;
-            if (booleanValue) {
-                result = StringUtils.isBlank(envValue) ? "false" : "true";
-            } else {
-                result = StringUtils.isBlank(envValue) ? defaultValue : envValue;
-            }
-            matcher.appendReplacement(sb, result);
-        }
-        matcher.appendTail(sb);
-
-        return sb.toString();
-
     }
 
     /**
@@ -692,33 +605,6 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Read nuxeo.conf, replace backslashes in paths and write new nuxeo.conf
-     *
-     * @throws ConfigurationException if any error reading or writing nuxeo.conf
-     * @since 5.4.1
-     */
-    protected void replaceBackslashes() throws ConfigurationException {
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(configHolder.getNuxeoConfPath().toFile()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.matches(".*:\\\\.*")) {
-                    line = line.replaceAll("\\\\", "/");
-                }
-                sb.append(line).append(System.lineSeparator());
-            }
-        } catch (IOException e) {
-            throw new ConfigurationException("Error reading " + configHolder.getNuxeoConfPath(), e);
-        }
-        try (FileWriter writer = new FileWriter(configHolder.getNuxeoConfPath().toFile(), false)) {
-            // Copy back file content
-            writer.append(sb.toString());
-        } catch (IOException e) {
-            throw new ConfigurationException("Error writing in " + configHolder.getNuxeoConfPath(), e);
-        }
-    }
-
-    /**
      * @since 5.4.2
      * @param key Directory system key
      * @see Environment
@@ -740,7 +626,7 @@ public class ConfigurationGenerator {
             log.warn("No template found in configuration! Fallback on 'default'.");
             templates = "default";
         }
-        templates = replaceEnvironmentVariables(templates);
+        templates = configLoader.replaceEnvironmentVariables(templates);
         configHolder.put(PARAM_TEMPLATES_NAME, templates);
         return templates;
     }
@@ -764,11 +650,11 @@ public class ConfigurationGenerator {
         }
     }
 
-    private List<File> includeTemplates(String templatesList) throws IOException {
+    private List<File> includeTemplates(String templatesList) throws ConfigurationException {
         List<File> orderedTemplates = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(templatesList, TEMPLATE_SEPARATOR);
         while (st.hasMoreTokens()) {
-            String nextToken = replaceEnvironmentVariables(st.nextToken());
+            String nextToken = st.nextToken();
             Path chosenTemplate = Path.of(nextToken);
             if (!chosenTemplate.isAbsolute() || Files.notExists(chosenTemplate)) {
                 chosenTemplate = configHolder.getTemplatesPath().resolve(nextToken);
@@ -790,10 +676,9 @@ public class ConfigurationGenerator {
                 continue;
             }
 
-            Properties templateProperties = loadNuxeoDefaults(chosenTemplate.toFile());
-            String subTemplatesList = replaceEnvironmentVariables(
-                    templateProperties.getProperty(PARAM_INCLUDED_TEMPLATES));
-            if (StringUtils.isNotEmpty(subTemplatesList)) {
+            Properties templateProperties = configLoader.loadNuxeoDefaults(chosenTemplate);
+            String subTemplatesList = templateProperties.getProperty(PARAM_INCLUDED_TEMPLATES);
+            if (StringUtils.isNotBlank(subTemplatesList)) {
                 orderedTemplates.addAll(includeTemplates(subTemplatesList));
             }
             // Load configuration from chosen templates
@@ -802,29 +687,6 @@ public class ConfigurationGenerator {
             log.log(logLevel, "Include template: {}", chosenTemplate);
         }
         return orderedTemplates;
-    }
-
-    /**
-     * Check for deprecated parameters
-     *
-     * @since 5.6
-     */
-    protected void checkForDeprecatedParameters(Properties properties) {
-        @SuppressWarnings("rawtypes")
-        Enumeration userEnum = properties.propertyNames();
-        while (userEnum.hasMoreElements()) {
-            String key = (String) userEnum.nextElement();
-            if (parametersMigration.containsKey(key)) {
-                String value = properties.getProperty(key);
-                properties.setProperty(parametersMigration.get(key), value);
-                // Don't remove the deprecated key yet - more
-                // warnings but old things should keep working
-                // properties.remove(key);
-                if (!hideDeprecationWarnings) {
-                    log.warn("Parameter {} is deprecated - please use {} instead", key, parametersMigration.get(key));
-                }
-            }
-        }
     }
 
     public File getNuxeoHome() {
@@ -1469,7 +1331,7 @@ public class ConfigurationGenerator {
             // current db template is explicit => replace it
             templatesList.set(dbIdx, dbTemplate);
         }
-        return replaceEnvironmentVariables(String.join(TEMPLATE_SEPARATOR, templatesList));
+        return configLoader.replaceEnvironmentVariables(String.join(TEMPLATE_SEPARATOR, templatesList));
     }
 
     /**
@@ -1540,7 +1402,7 @@ public class ConfigurationGenerator {
     public List<String> getTemplateList() {
         String currentTemplatesStr = configHolder.getProperty(PARAM_TEMPLATES_NAME);
 
-        return Stream.of(replaceEnvironmentVariables(currentTemplatesStr).split(TEMPLATE_SEPARATOR))
+        return Stream.of(configLoader.replaceEnvironmentVariables(currentTemplatesStr).split(TEMPLATE_SEPARATOR))
                      .collect(Collectors.toList());
 
     }
@@ -1617,7 +1479,6 @@ public class ConfigurationGenerator {
         } else {
             templateConf = new File(templateDir, String.format(NUXEO_ENVIRONMENT_CONF_FORMAT, nuxeoEnv));
         }
-        Properties templateProperties = loadTrimmedProperties(templateConf);
         Map<String, String> oldValues = new HashMap<>();
         StringBuilder newContent = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(templateConf))) {
@@ -1741,8 +1602,8 @@ public class ConfigurationGenerator {
             var distribPath = configHolder.getTemplatesPath().resolve("common/config/distribution.properties");
             if (Files.exists(distribPath)) {
                 try {
-                    env.loadProperties(loadTrimmedProperties(distribPath.toFile()));
-                } catch (IOException e) {
+                    env.loadProperties(configLoader.loadProperties(distribPath));
+                } catch (ConfigurationException e) {
                     log.error(e);
                 }
             }
@@ -1755,96 +1616,6 @@ public class ConfigurationGenerator {
             env.setPath(Environment.NUXEO_MP_DIR, getPackagesDir(), env.getServerHome());
         }
         return env;
-    }
-
-    /**
-     * @since 10.2
-     * @param propsFile Properties file
-     * @return String with the charset encoding for this file
-     */
-    public static Charset checkFileCharset(File propsFile) throws IOException {
-        List<Charset> charsetsToBeTested = asList(US_ASCII, UTF_8, ISO_8859_1);
-        for (Charset charsetTest : charsetsToBeTested) {
-            CharsetDecoder decoder = charsetTest.newDecoder();
-            decoder.reset();
-
-            boolean identified = true; // assume the charset is this one, until it is not !
-            try (BufferedInputStream input = new BufferedInputStream(new FileInputStream(propsFile))) {
-                byte[] buffer = new byte[512];
-                while (input.read(buffer) != -1 && identified) {
-                    try {
-                        decoder.decode(ByteBuffer.wrap(buffer));
-                        identified = true;
-                    } catch (CharacterCodingException e) {
-                        identified = false;
-                    }
-                }
-            }
-            if (identified) {
-                return charsetTest;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Loads the {@code nuxeo.defaults} and {@code nuxeo.NUXEO_ENVIRONMENT} files.
-     * <p>
-     * This method assumes {@code nuxeo.defaults} exists and is readable.
-     */
-    protected Properties loadNuxeoDefaults(File directory) throws IOException {
-        // load nuxeo.defaults
-        Properties properties = loadTrimmedProperties(new File(directory, NUXEO_DEFAULT_CONF));
-        // load nuxeo.NUXEO_ENVIRONMENT
-        File nuxeoDefaultsEnv = new File(directory, getNuxeoEnvironmentConfName());
-        if (nuxeoDefaultsEnv.exists()) {
-            loadTrimmedProperties(properties, nuxeoDefaultsEnv);
-        }
-        Properties targetProps = new Properties();
-        properties.stringPropertyNames()
-                  .forEach(p -> targetProps.put(p, replaceEnvironmentVariables(properties.getProperty(p))));
-        return targetProps;
-    }
-
-    /**
-     * @since 5.6
-     * @param propsFile Properties file
-     * @return new Properties containing trimmed keys and values read in {@code propsFile}
-     */
-    public static Properties loadTrimmedProperties(File propsFile) throws IOException {
-        return loadTrimmedProperties(new Properties(), propsFile);
-    }
-
-    protected static Properties loadTrimmedProperties(Properties props, File propsFile) throws IOException {
-        Charset charset = checkFileCharset(propsFile);
-        if (charset == null) {
-            throw new IOException("Can't identify input file charset for " + propsFile.getName());
-        }
-        log.debug("Opening {} in {}", propsFile::getName, charset::name);
-        try (InputStreamReader propsIS = new InputStreamReader(new FileInputStream(propsFile), charset)) {
-            loadTrimmedProperties(props, propsIS);
-        }
-        return props;
-    }
-
-    /**
-     * @since 5.6
-     * @param props Properties object to be filled
-     * @param propsIS Properties InputStream
-     */
-    public static void loadTrimmedProperties(Properties props, InputStreamReader propsIS) throws IOException {
-        if (props == null) {
-            return;
-        }
-        Properties p = new Properties();
-        p.load(propsIS);
-        @SuppressWarnings("unchecked")
-        Enumeration<String> pEnum = (Enumeration<String>) p.propertyNames();
-        while (pEnum.hasMoreElements()) {
-            String key = pEnum.nextElement();
-            String value = p.getProperty(key);
-            props.put(key.trim(), value.trim());
-        }
     }
 
     /**
