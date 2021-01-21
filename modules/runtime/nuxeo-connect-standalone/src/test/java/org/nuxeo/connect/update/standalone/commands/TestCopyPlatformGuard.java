@@ -30,7 +30,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
  * Tests specific command guard based on the platform version.
@@ -43,8 +42,8 @@ public class TestCopyPlatformGuard extends AbstractCommandTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        File distribFile = new File(new File(Environment.getDefault().getHome(), ConfigurationGenerator.TEMPLATES),
-                "common/config/distribution.properties");
+        File distribFile = new File(Environment.getDefault().getHome(),
+                "templates/common/config/distribution.properties");
         FileUtils.writeStringToFile(distribFile, "org.nuxeo.distribution.version=11.1", UTF_8);
     }
 

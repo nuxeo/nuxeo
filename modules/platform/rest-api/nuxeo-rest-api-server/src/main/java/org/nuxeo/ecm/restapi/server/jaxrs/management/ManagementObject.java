@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.management;
 
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_HTTP_PORT;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_HTTP_PORT;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;

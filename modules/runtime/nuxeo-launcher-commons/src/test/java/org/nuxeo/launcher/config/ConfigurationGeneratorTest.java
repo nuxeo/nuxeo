@@ -27,14 +27,14 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.common.Environment.NUXEO_HOME;
+import static org.nuxeo.launcher.config.ConfigurationConstants.ENV_NUXEO_PROFILES;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_BIND_ADDRESS;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_FORCE_GENERATION;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_LOOPBACK_URL;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_NUXEO_CONF;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_NAME;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATE_DBTYPE;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JAVA_OPTS_PROP;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_CONF;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_FORCE_GENERATION;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_LOOPBACK_URL;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATES_NAME;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBTYPE;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,7 +74,7 @@ public class ConfigurationGeneratorTest {
         assertTrue(generator.init());
         assertEquals("true", generator.getUserConfig().getProperty("nuxeo.test.default.home"));
         // check nuxeo.conf has been set by generator
-        assertEquals(rule.getNuxeoConf().toString(), generator.systemProperties.getProperty(NUXEO_CONF));
+        assertEquals(rule.getNuxeoConf().toString(), generator.systemProperties.getProperty(PARAM_NUXEO_CONF));
     }
 
     @Test
@@ -154,7 +154,7 @@ public class ConfigurationGeneratorTest {
 
     /**
      * According to {@link ConfigurationGenerator#saveConfiguration(Map, boolean, boolean)}: <br>
-     * <q>{@link ConfigurationGenerator#PARAM_TEMPLATES_NAME} and {@link ConfigurationGenerator#PARAM_FORCE_GENERATION}
+     * <q>{@link ConfigurationConstants#PARAM_TEMPLATES_NAME} and {@link ConfigurationConstants#PARAM_FORCE_GENERATION}
      * cannot be unset</q>
      *
      * <pre>
@@ -170,7 +170,7 @@ public class ConfigurationGeneratorTest {
         assertEquals("Wrong old value", "default,common", oldValue);
         assertEquals(PARAM_TEMPLATES_NAME + " should be reset", "default",
                 generator.getUserConfig().getProperty(PARAM_TEMPLATES_NAME));
-        generator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, oldValue);
+        generator.setProperty(PARAM_TEMPLATES_NAME, oldValue);
 
         generator.setProperty(PARAM_TEMPLATES_NAME, "");
         assertEquals(PARAM_TEMPLATES_NAME + " should be reset", "default",
@@ -329,7 +329,7 @@ public class ConfigurationGeneratorTest {
         assertNotEquals("true", generator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
 
         // test with NUXEO_PROFILES environment variable
-        generator = generatorBuilder().environment(Map.of(NUXEO_PROFILES, profileToTest)).init(true).build();
+        generator = generatorBuilder().environment(Map.of(ENV_NUXEO_PROFILES, profileToTest)).init(true).build();
         assertTrue("Profile should be included", isTemplateIncluded(generator, profileToTest));
         assertEquals("true", generator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
     }

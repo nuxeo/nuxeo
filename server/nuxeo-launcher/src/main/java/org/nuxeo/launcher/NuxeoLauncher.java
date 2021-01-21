@@ -31,11 +31,11 @@ import static org.nuxeo.common.Environment.NUXEO_HOME;
 import static org.nuxeo.common.Environment.NUXEO_LOG_DIR;
 import static org.nuxeo.common.Environment.NUXEO_MP_DIR;
 import static org.nuxeo.common.Environment.NUXEO_TMP_DIR;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_CONF;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_DEFAULT_CONF;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_ENVIRONMENT;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
-import static org.nuxeo.launcher.config.ServerConfigurator.TOMCAT_STARTUP_CLASS;
+import static org.nuxeo.launcher.config.ConfigurationConstants.ENV_NUXEO_ENVIRONMENT;
+import static org.nuxeo.launcher.config.ConfigurationConstants.ENV_NUXEO_PROFILES;
+import static org.nuxeo.launcher.config.ConfigurationConstants.FILE_NUXEO_CONF;
+import static org.nuxeo.launcher.config.ConfigurationConstants.FILE_NUXEO_DEFAULTS;
+import static org.nuxeo.launcher.config.ConfigurationConstants.TOMCAT_STARTUP_CLASS;
 
 import java.io.Console;
 import java.io.File;
@@ -103,6 +103,7 @@ import org.nuxeo.connect.registration.RegistrationException;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.launcher.config.ConfigurationChecker;
+import org.nuxeo.launcher.config.ConfigurationConstants;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.connect.ConnectBroker;
@@ -271,7 +272,7 @@ public class NuxeoLauncher {
             + "if so, it is then stored in the template's {{%s}} file or {{nuxeo.NUXEO_ENVIRONMENT}} if later is defined in environment.\n"
             + "If the value is empty (''), then the property is unset.\n"
             + "This option is implicit if no '--get' or '--get-regexp' option is used and there are exactly two parameters (key value).",
-            NUXEO_CONF, NUXEO_DEFAULT_CONF);
+            FILE_NUXEO_CONF, FILE_NUXEO_DEFAULTS);
 
     /** @since 7.4 */
     protected static final String OPTION_GET = "get";
@@ -457,11 +458,12 @@ public class NuxeoLauncher {
                     "        java [-D%s=\"JVM options\"] [-D%s=\"/path/to/nuxeo\"] [-D%s=\"/path/to/nuxeo.conf\"]"
                             + " [-Djvmcheck=nofail] -jar \"path/to/nuxeo-launcher.jar\" \\\n"
                             + "        \t[options] <command> [command parameters]\n\n",
-                    JAVA_OPTS_PROPERTY, NUXEO_HOME, NUXEO_CONF)
+                    JAVA_OPTS_PROPERTY, NUXEO_HOME, FILE_NUXEO_CONF)
             + String.format("        %s\tParameters for the server JVM (default are %s).\n", JAVA_OPTS_PROPERTY,
                     JAVA_OPTS_DEFAULT)
             + String.format("        %s\t\tNuxeo server root path (default is parent of called script).\n", NUXEO_HOME)
-            + String.format("        %s\t\tPath to {{%1$s}} file (default is \"$NUXEO_HOME/bin/%1$s\").\n", NUXEO_CONF)
+            + String.format("        %s\t\tPath to {{%1$s}} file (default is \"$NUXEO_HOME/bin/%1$s\").\n",
+                    FILE_NUXEO_CONF)
             + "        jvmcheck\t\tIf set to \"nofail\", ignore JVM version validation errors.\n";
 
     private static final String OPTION_HELP_DESC_COMMANDS = "\nCOMMANDS\n" //
@@ -722,7 +724,8 @@ public class NuxeoLauncher {
     protected Collection<String> getNuxeoProperties() {
         List<String> nuxeoProperties = new ArrayList<>();
         nuxeoProperties.add(formatPropertyToCommandLine(NUXEO_HOME, configurationGenerator.getNuxeoHome().getPath()));
-        nuxeoProperties.add(formatPropertyToCommandLine(NUXEO_CONF, configurationGenerator.getNuxeoConf().getPath()));
+        nuxeoProperties.add(
+                formatPropertyToCommandLine(FILE_NUXEO_CONF, configurationGenerator.getNuxeoConf().getPath()));
         nuxeoProperties.add(formatNuxeoPropertyToCommandLine(NUXEO_LOG_DIR));
         nuxeoProperties.add(formatNuxeoPropertyToCommandLine(NUXEO_DATA_DIR));
         nuxeoProperties.add(formatNuxeoPropertyToCommandLine(NUXEO_TMP_DIR));
@@ -2198,7 +2201,7 @@ public class NuxeoLauncher {
      * @return Server URL
      */
     public String getURL() {
-        return configurationGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_NUXEO_URL);
+        return configurationGenerator.getUserConfig().getProperty(ConfigurationConstants.PARAM_NUXEO_URL);
     }
 
     protected void initConnectBroker() {
@@ -2339,8 +2342,8 @@ public class NuxeoLauncher {
             log.info("{}={}", keyval.key, keyval.value);
         }
         log.info("** Effective configuration for environment: {} and profiles: {}:",
-                () -> defaultString(System.getenv(NUXEO_ENVIRONMENT), "N/A"),
-                () -> defaultString(System.getenv(NUXEO_PROFILES), "N/A"));
+                () -> defaultString(System.getenv(ENV_NUXEO_ENVIRONMENT), "N/A"),
+                () -> defaultString(System.getenv(ENV_NUXEO_PROFILES), "N/A"));
         for (KeyValueInfo keyval : info.config.allkeyvals) {
             log.info("{}={}", keyval.key, keyval.value);
         }
