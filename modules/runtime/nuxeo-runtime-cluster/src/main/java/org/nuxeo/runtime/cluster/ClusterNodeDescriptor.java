@@ -35,7 +35,7 @@ public class ClusterNodeDescriptor {
     @XNode("@id")
     public String name;
 
-    @XNode(value = "@enabled", fallback = XEnable.ENABLE)
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
     @XEnable
     public Boolean enabled;
 

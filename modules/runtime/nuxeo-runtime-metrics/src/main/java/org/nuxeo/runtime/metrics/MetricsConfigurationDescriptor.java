@@ -43,7 +43,7 @@ public class MetricsConfigurationDescriptor implements MetricFilter {
     protected static final String ALL_METRICS = "ALL";
 
     @XEnable
-    @XNode(value = "@enabled", fallback = XEnable.ENABLE)
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
     protected boolean isEnabled = true;
 
     @XObject(value = "instrument")
