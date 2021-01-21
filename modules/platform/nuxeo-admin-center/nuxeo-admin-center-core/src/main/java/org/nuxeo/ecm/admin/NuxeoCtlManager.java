@@ -26,6 +26,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
+import org.nuxeo.launcher.config.ConfigurationConstants;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 
@@ -127,7 +128,7 @@ public class NuxeoCtlManager {
         if (cg == null) {
             cg = ConfigurationGenerator.builder().init(true).build();
         }
-        return cg.getUserConfig().getProperty(ConfigurationGenerator.PARAM_NUXEO_URL);
+        return cg.getUserConfig().getProperty(ConfigurationConstants.PARAM_NUXEO_URL);
     }
 
 }

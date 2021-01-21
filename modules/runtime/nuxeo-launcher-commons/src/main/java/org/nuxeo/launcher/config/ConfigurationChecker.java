@@ -20,9 +20,10 @@
 package org.nuxeo.launcher.config;
 
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_HTTP_PORT;
-import static org.nuxeo.launcher.config.ServerConfigurator.PARAM_HTTP_TOMCAT_ADMIN_PORT;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_BIND_ADDRESS;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_CONTEXT_PATH;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_HTTP_PORT;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_HTTP_TOMCAT_ADMIN_PORT;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -108,7 +109,7 @@ public class ConfigurationChecker {
     }
 
     protected String getContextName(ConfigurationHolder configHolder) {
-        return configHolder.getProperty(ConfigurationGenerator.PARAM_CONTEXT_PATH, DEFAULT_CONTEXT_NAME).substring(1);
+        return configHolder.getProperty(PARAM_CONTEXT_PATH, DEFAULT_CONTEXT_NAME).substring(1);
     }
 
     /**
@@ -231,7 +232,7 @@ public class ConfigurationChecker {
     /**
      * Checks the userConfig bind address is not 0.0.0.0 and replaces it with 127.0.0.1 if needed
      *
-     * @param configHolder The configuration holding the {@link ConfigurationGenerator#PARAM_BIND_ADDRESS}
+     * @param configHolder The configuration holding the {@link ConfigurationConstants#PARAM_BIND_ADDRESS}
      * @return the userConfig bind address if not 0.0.0.0 else 127.0.0.1
      */
     protected InetAddress getBindAddress(ConfigurationHolder configHolder) throws ConfigurationException {

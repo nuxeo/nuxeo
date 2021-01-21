@@ -22,8 +22,8 @@ package org.nuxeo.launcher.config;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_DEFAULT_CONF;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_ENVIRONMENT;
+import static org.nuxeo.launcher.config.ConfigurationConstants.ENV_NUXEO_ENVIRONMENT;
+import static org.nuxeo.launcher.config.ConfigurationConstants.FILE_NUXEO_DEFAULTS;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_ENVIRONMENT_CONF_FORMAT;
 
 import java.io.IOException;
@@ -79,7 +79,7 @@ public class ConfigurationLoader {
      */
     public Properties loadNuxeoDefaults(Path directory) throws ConfigurationException {
         // load nuxeo.defaults
-        Properties properties = loadProperties(directory.resolve(NUXEO_DEFAULT_CONF));
+        Properties properties = loadProperties(directory.resolve(FILE_NUXEO_DEFAULTS));
         // load nuxeo.NUXEO_ENVIRONMENT
         Path nuxeoDefaultsEnv = directory.resolve(getNuxeoEnvironmentConfName());
         if (Files.exists(nuxeoDefaultsEnv)) {
@@ -145,7 +145,7 @@ public class ConfigurationLoader {
      * @return the nuxeo.defaults file for current {@code NUXEO_ENVIRONMENT}
      */
     protected String getNuxeoEnvironmentConfName() {
-        return String.format(NUXEO_ENVIRONMENT_CONF_FORMAT, environment.get(NUXEO_ENVIRONMENT));
+        return String.format(NUXEO_ENVIRONMENT_CONF_FORMAT, environment.get(ENV_NUXEO_ENVIRONMENT));
     }
 
     public String replaceEnvironmentVariables(String value) {

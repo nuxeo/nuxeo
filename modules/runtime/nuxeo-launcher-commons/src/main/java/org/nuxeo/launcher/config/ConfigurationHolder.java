@@ -19,9 +19,8 @@
 
 package org.nuxeo.launcher.config;
 
+import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_LIST;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_FORCE_GENERATION;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -43,6 +42,9 @@ import org.nuxeo.common.codec.CryptoProperties;
  * @since 11.5
  */
 public class ConfigurationHolder {
+
+    protected static final List<String> DB_LIST = asList("default", "mongodb", "postgresql", "oracle", "mysql",
+            "mariadb", "mssql", "db2");
 
     protected static final Set<String> DIRECTORY_PARAMETERS = Set.of(Environment.NUXEO_CONFIG_DIR,
             Environment.NUXEO_DATA_DIR, Environment.NUXEO_LOG_DIR, Environment.NUXEO_MP_DIR, Environment.NUXEO_PID_DIR,
@@ -118,7 +120,7 @@ public class ConfigurationHolder {
     }
 
     public Path getDumpedConfigurationPath() {
-        return getConfigurationPath().resolve(ConfigurationGenerator.CONFIGURATION_PROPERTIES);
+        return getConfigurationPath().resolve(ConfigurationConstants.FILE_CONFIGURATION_PROPERTIES);
     }
 
     public Path getLogPath() {
@@ -228,11 +230,12 @@ public class ConfigurationHolder {
     }
 
     public boolean isForceGenerationOnce() {
-        return "once".equals(userConfig.getProperty(PARAM_FORCE_GENERATION));
+        return "once".equals(userConfig.getProperty(ConfigurationConstants.PARAM_FORCE_GENERATION));
     }
 
     public boolean isForceGeneration() {
-        return isForceGenerationOnce() || "true".equals(userConfig.getProperty(PARAM_FORCE_GENERATION));
+        return isForceGenerationOnce()
+                || "true".equals(userConfig.getProperty(ConfigurationConstants.PARAM_FORCE_GENERATION));
     }
 
     /**

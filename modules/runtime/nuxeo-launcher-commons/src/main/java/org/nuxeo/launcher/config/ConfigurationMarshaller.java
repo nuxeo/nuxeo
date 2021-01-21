@@ -28,8 +28,11 @@ import static java.nio.file.StandardOpenOption.WRITE;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.common.function.ThrowableConsumer.asConsumer;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_FORCE_GENERATION;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATES_NAME;
+import static org.nuxeo.launcher.config.ConfigurationConstants.FILE_NUXEO_DEFAULTS;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_FORCE_GENERATION;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_FREEMARKER_EXTENSIONS;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_NAME;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_PARSING_EXTENSIONS;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -283,10 +286,9 @@ public class ConfigurationMarshaller {
     protected void parseAndCopy(ConfigurationHolder configHolder)
             throws IOException, TemplateException, ConfigurationException {
         // FilenameFilter for excluding "nuxeo.defaults" files from copy
-        FilenameFilter filter = (dir, name) -> !ConfigurationGenerator.NUXEO_DEFAULT_CONF.equals(name)
+        FilenameFilter filter = (dir, name) -> !FILE_NUXEO_DEFAULTS.equals(name)
                 // exclude nuxeo.ENVIRONMENT files
-                && !(name.startsWith("nuxeo.")
-                        && Files.exists(dir.toPath().resolve(ConfigurationGenerator.NUXEO_DEFAULT_CONF)));
+                && !(name.startsWith("nuxeo.") && Files.exists(dir.toPath().resolve(FILE_NUXEO_DEFAULTS)));
         TextTemplate templateParser = instantiateTemplateParser(configHolder);
 
         deleteTemplateFiles(configHolder);
@@ -319,10 +321,10 @@ public class ConfigurationMarshaller {
         TextTemplate templateParser = new TextTemplate(configHolder.userConfig);
         templateParser.setKeepEncryptedAsVar(true);
         templateParser.setTrim(true);
-        templateParser.setTextParsingExtensions(configHolder.getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_PARSING_EXTENSIONS, "xml,properties,nx"));
+        templateParser.setTextParsingExtensions(
+                configHolder.getProperty(PARAM_TEMPLATES_PARSING_EXTENSIONS, "xml,properties,nx"));
         templateParser.setFreemarkerParsingExtensions(
-                configHolder.getProperty(ConfigurationGenerator.PARAM_TEMPLATES_FREEMARKER_EXTENSIONS, "nxftl"));
+                configHolder.getProperty(PARAM_TEMPLATES_FREEMARKER_EXTENSIONS, "nxftl"));
         return templateParser;
     }
 

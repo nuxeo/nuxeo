@@ -42,6 +42,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.launcher.config.ConfigurationConstants;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.ServerConfigurator;
 import org.nuxeo.runtime.test.TargetResourceLocator;
@@ -61,8 +62,8 @@ public class TestConfig extends AbstractCommandTest {
         URL url = locator.getTargetTestResource("config/nuxeo.conf");
         File nuxeoConf = new File(Environment.getDefault().getServerHome(), "nuxeo.conf");
         FileUtils.copyFile(new File(URLDecoder.decode(url.getPath(), UTF_8)), nuxeoConf);
-        System.setProperty(ConfigurationGenerator.NUXEO_CONF, nuxeoConf.getPath());
-        System.setProperty(ServerConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
+        System.setProperty(ConfigurationConstants.PARAM_NUXEO_CONF, nuxeoConf.getPath());
+        System.setProperty(ConfigurationConstants.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
         url = locator.getTargetTestResource("templates");
         FileUtils.copyDirectory(new File(URLDecoder.decode(url.getPath(), UTF_8)),
                 new File(Environment.getDefault().getServerHome(), "templates"));
@@ -94,7 +95,7 @@ public class TestConfig extends AbstractCommandTest {
         log.info("END nuxeo.conf content:");
 
         String templates = configurationGenerator.getUserConfig()
-                                                 .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+                                                 .getProperty(ConfigurationConstants.PARAM_TEMPLATES_NAME);
         assertNotNull(templates);
         assertTrue("newtemplate was not added", templates.contains("newtemplate"));
         assertFalse("oldtemplate was not removed", templates.contains("oldtemplate"));
@@ -120,7 +121,7 @@ public class TestConfig extends AbstractCommandTest {
         log.info("END nuxeo.conf content:");
 
         String templates = configurationGenerator.getUserConfig()
-                                                 .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+                                                 .getProperty(ConfigurationConstants.PARAM_TEMPLATES_NAME);
         assertNotNull(templates);
         assertFalse("newtemplate was not removed", templates.contains("newtemplate"));
         assertTrue("oldtemplate was not reset", templates.contains("oldtemplate"));
@@ -134,9 +135,9 @@ public class TestConfig extends AbstractCommandTest {
     @After
     public void tearDown() throws Exception {
         super.tearDown();
-        System.clearProperty(ConfigurationGenerator.NUXEO_CONF);
+        System.clearProperty(ConfigurationConstants.PARAM_NUXEO_CONF);
         System.clearProperty(Environment.NUXEO_HOME);
-        System.clearProperty(ServerConfigurator.TOMCAT_HOME);
+        System.clearProperty(ConfigurationConstants.TOMCAT_HOME);
         System.clearProperty(Environment.NUXEO_DATA_DIR);
         System.clearProperty(Environment.NUXEO_LOG_DIR);
     }

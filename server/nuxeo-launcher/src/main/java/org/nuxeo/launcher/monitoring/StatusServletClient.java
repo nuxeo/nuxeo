@@ -20,6 +20,8 @@
 
 package org.nuxeo.launcher.monitoring;
 
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_LOOPBACK_URL;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -76,9 +78,7 @@ public class StatusServletClient {
     }
 
     public StatusServletClient(ConfigurationGenerator configurationGenerator) {
-        final String servletURL = configurationGenerator.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_LOOPBACK_URL)
-                + "/" + URL_PATTERN;
+        String servletURL = configurationGenerator.getUserConfig().getProperty(PARAM_LOOPBACK_URL) + "/" + URL_PATTERN;
         try {
             url = new URL(servletURL);
         } catch (MalformedURLException e) {
