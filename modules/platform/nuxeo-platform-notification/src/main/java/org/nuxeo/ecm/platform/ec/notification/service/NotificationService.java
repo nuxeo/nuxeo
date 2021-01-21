@@ -94,9 +94,9 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     protected EmailHelper emailHelper = new EmailHelper();
 
-    protected final Map<String, NotificationListenerHook> hookListeners = new HashMap<>();
+    protected Map<String, NotificationListenerHook> hookListeners;
 
-    protected final List<NotificationListenerVeto> vetos = new ArrayList<>();
+    protected List<NotificationListenerVeto> vetos;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -109,6 +109,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     @Override
     public void start(ComponentContext context) {
+        hookListeners = new HashMap<>();
         List<NotificationListenerHookDescriptor> hooks = getRegistryContributions(NOTIFICATION_HOOK_EP);
         for (NotificationListenerHookDescriptor desc : hooks) {
             try {
@@ -117,6 +118,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
                 log.error(e, e);
             }
         }
+        vetos = new ArrayList<>();
         List<NotificationListenerVetoDescriptor> vetoDescs = getRegistryContributions(NOTIFICATION_VETO_EP);
         for (NotificationListenerVetoDescriptor desc : vetoDescs) {
             try {
@@ -129,8 +131,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     @Override
     public void stop(ComponentContext context) throws InterruptedException {
-        hookListeners.clear();
-        vetos.clear();
+        hookListeners = null;
+        vetos = null;
     }
 
     @Override

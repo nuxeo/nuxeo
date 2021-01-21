@@ -20,8 +20,6 @@ package org.nuxeo.ecm.core.uidgen;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.uidgen.UIDGenerator;
-import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 
 public interface UIDGeneratorService {
 
