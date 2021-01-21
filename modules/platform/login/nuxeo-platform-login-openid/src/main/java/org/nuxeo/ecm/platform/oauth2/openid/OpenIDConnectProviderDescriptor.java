@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.oauth2.openid;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
 import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.DefaultOpenIDUserInfo;
@@ -31,7 +32,8 @@ import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDUserInfo;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.UserResolver;
 
 @XObject("provider")
-@XRegistry
+// Enablement feature disabled: the service expects disabled descriptors to be retrieved from the registry
+@XRegistry(enable = false)
 public class OpenIDConnectProviderDescriptor {
 
     public static final String DEFAULT_ACCESS_TOKEN_KEY = "access_token";
@@ -57,7 +59,8 @@ public class OpenIDConnectProviderDescriptor {
      */
     public static final String DEFAULT_AUTHENTICATION_METHOD = URL_AUTHENTICATION_METHOD;
 
-    @XNode("@enabled")
+    // @XEnable annotation not added here: the service expects disabled descriptors to be retrieved from the registry
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
     protected boolean enabled = true;
 
     @XNode("name")

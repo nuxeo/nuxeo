@@ -40,7 +40,7 @@ public class BulkActionDescriptor {
     protected static final String DEFAULT_BATCH_SIZE = "25";
 
     // @since 11.1
-    @XNode(value = "@enabled", fallback = XEnable.ENABLE)
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
     @XEnable
     protected boolean isEnabled = true;
 

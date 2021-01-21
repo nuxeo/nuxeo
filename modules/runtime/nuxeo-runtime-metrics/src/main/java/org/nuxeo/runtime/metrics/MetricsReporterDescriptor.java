@@ -37,7 +37,7 @@ import org.nuxeo.common.xmap.registry.XRegistryId;
 public class MetricsReporterDescriptor {
 
     @XEnable
-    @XNode(value = "@enabled", fallback = XEnable.ENABLE)
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
     protected boolean isEnabled = true;
 
     @XNode("@name")
