@@ -469,7 +469,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         // Nominal case for boolean env variables
         assertEquals("true", configGenerator.getUserConfig().getProperty("nuxeo.env.prop4"));
 
-        assertEquals("false", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_FAKE_WINDOWS));
+        assertEquals("false", configGenerator.getUserConfig().getProperty("org.nuxeo.fake.vindoz"));
 
         // Case where only part of the value has to be replaced
         assertEquals("jdbc://10.0.0.1", configGenerator.getUserConfig().getProperty("nuxeo.env.prop2"));

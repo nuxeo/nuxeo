@@ -162,9 +162,7 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_TEMPLATES_FREEMARKER_EXTENSIONS = "nuxeo.freemarker_parsing_extensions";
 
-    /**
-     * Absolute or relative PATH to the included templates (comma separated list)
-     */
+    /** Absolute or relative PATH to the included templates (comma separated list). */
     protected static final String PARAM_INCLUDED_TEMPLATES = "nuxeo.template.includes";
 
     public static final String PARAM_FORCE_GENERATION = "nuxeo.force.generation";
@@ -192,8 +190,6 @@ public class ConfigurationGenerator {
     @Deprecated(since = "11.1")
     public static final String PARAM_WIZARD_RESTART_PARAMS = "wizard.restart.params";
 
-    public static final String PARAM_FAKE_WINDOWS = "org.nuxeo.fake.vindoz";
-
     public static final String PARAM_LOOPBACK_URL = "nuxeo.loopback.url";
 
     public static final int MIN_PORT = 1;
@@ -205,12 +201,6 @@ public class ConfigurationGenerator {
     public static final String PARAM_BIND_ADDRESS = "nuxeo.bind.address";
 
     public static final String PARAM_HTTP_PORT = "nuxeo.server.http.port";
-
-    /**
-     * @deprecated Since 7.4. Use {@link Environment#SERVER_STATUS_KEY} instead
-     */
-    @Deprecated
-    public static final String PARAM_STATUS_KEY = Environment.SERVER_STATUS_KEY;
 
     public static final String PARAM_CONTEXT_PATH = "org.nuxeo.ecm.contextPath";
 
@@ -280,18 +270,6 @@ public class ConfigurationGenerator {
             "mail.transport.password", "nuxeo.http.proxy.password", "nuxeo.ldap.bindpassword",
             "nuxeo.user.emergency.password");
 
-    /**
-     * @deprecated Since 7.10. Use {@link Environment#PRODUCT_NAME}
-     */
-    @Deprecated
-    public static final String PARAM_PRODUCT_NAME = Environment.PRODUCT_NAME;
-
-    /**
-     * @deprecated Since 7.10. Use {@link Environment#PRODUCT_VERSION}
-     */
-    @Deprecated
-    public static final String PARAM_PRODUCT_VERSION = Environment.PRODUCT_VERSION;
-
     /** @since 5.6 */
     public static final String PARAM_NUXEO_URL = "nuxeo.url";
 
@@ -301,13 +279,6 @@ public class ConfigurationGenerator {
      * @since 5.6
      */
     public static final String NUXEO_DEV_SYSTEM_PROP = "org.nuxeo.dev";
-
-    /**
-     * Seam hot reload property, also controlled by {@link #NUXEO_DEV_SYSTEM_PROP}
-     *
-     * @since 5.6
-     */
-    public static final String SEAM_DEBUG_SYSTEM_PROP = "org.nuxeo.seam.debug";
 
     /** @since 8.4 */
     public static final String JVMCHECK_PROP = "jvmcheck";
@@ -623,8 +594,10 @@ public class ConfigurationGenerator {
         if (save && newParametersToSave != null && !newParametersToSave.isEmpty()) {
             saveConfiguration(newParametersToSave, false, false);
         }
-
-        logDebugInformation();
+        String devPropValue = userConfig.getProperty(NUXEO_DEV_SYSTEM_PROP);
+        if (Boolean.parseBoolean(devPropValue)) {
+            log.warn("Nuxeo Dev mode is enabled");
+        }
     }
 
     /**
@@ -641,25 +614,6 @@ public class ConfigurationGenerator {
         includedTemplates.clear();
         includedTemplates.addAll(orderedTemplates);
         log.debug(includedTemplates);
-    }
-
-    private void logDebugInformation() {
-        String devPropValue = userConfig.getProperty(NUXEO_DEV_SYSTEM_PROP);
-        if (Boolean.parseBoolean(devPropValue)) {
-            log.debug("Nuxeo Dev mode enabled");
-        } else {
-            log.debug("Nuxeo Dev mode is not enabled");
-        }
-
-        // XXX: cannot init seam debug mode when global debug mode is set, as
-        // it needs to be activated at startup, and requires the seam-debug jar
-        // to be in the classpath anyway
-        String seamDebugPropValue = userConfig.getProperty(SEAM_DEBUG_SYSTEM_PROP);
-        if (Boolean.parseBoolean(seamDebugPropValue)) {
-            log.debug("Nuxeo Seam HotReload is enabled");
-        } else {
-            log.debug("Nuxeo Seam HotReload is not enabled");
-        }
     }
 
     /**
