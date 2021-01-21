@@ -90,8 +90,7 @@ public class ConfigurationRule extends TestWatcher {
             Path nuxeoBin = nuxeoHome.resolve("bin");
             Files.createDirectories(nuxeoBin);
             // move nuxeo conf to the expected location
-            nuxeoConf = Files.move(nuxeoHome.resolve(ConfigurationGenerator.NUXEO_CONF),
-                    nuxeoBin.resolve(ConfigurationGenerator.NUXEO_CONF));
+            nuxeoConf = Files.move(nuxeoHome.resolve("nuxeo.conf"), nuxeoBin.resolve("nuxeo.conf"));
             // create nxserver/config as we may dump the configuration.properties
             Files.createDirectories(nuxeoHome.resolve("nxserver").resolve("config"));
         } catch (IOException e) {

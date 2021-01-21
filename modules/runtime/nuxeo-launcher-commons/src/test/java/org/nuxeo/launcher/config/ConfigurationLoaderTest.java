@@ -25,7 +25,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_ENVIRONMENT;
+import static org.nuxeo.launcher.config.ConfigurationConstants.ENV_NUXEO_ENVIRONMENT;
 
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -55,7 +55,7 @@ public class ConfigurationLoaderTest {
      */
     @Test
     public void testLoadNuxeoDefaultsWithEnvironment() throws Exception {
-        var loader = newConfigurationLoader(Map.of(NUXEO_ENVIRONMENT, "utest"));
+        var loader = newConfigurationLoader(Map.of(ENV_NUXEO_ENVIRONMENT, "utest"));
         var directory = getResourcePath("configuration/loader/testLoadNuxeoDefaults");
 
         var properties = loader.loadNuxeoDefaults(directory);

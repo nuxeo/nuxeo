@@ -33,15 +33,6 @@ public class ServerConfigurator {
 
     private static final Logger log = LogManager.getLogger(ServerConfigurator.class);
 
-    /** @since 5.4.2 */
-    public static final String TOMCAT_STARTUP_CLASS = "org.apache.catalina.startup.Bootstrap";
-
-    /** @since 5.6 */
-    public static final String TOMCAT_HOME = "tomcat.home";
-
-    /** @since 5.7 */
-    public static final String PARAM_HTTP_TOMCAT_ADMIN_PORT = "nuxeo.server.tomcat_admin.port";
-
     /** @since 9.3 */
     public static final String JAVA_OPTS = "JAVA_OPTS";
 

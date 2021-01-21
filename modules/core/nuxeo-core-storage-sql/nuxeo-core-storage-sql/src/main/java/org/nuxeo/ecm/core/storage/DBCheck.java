@@ -41,8 +41,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
+import org.nuxeo.launcher.config.ConfigurationConstants;
 import org.nuxeo.launcher.config.ConfigurationException;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.ConfigurationHolder;
 import org.nuxeo.launcher.config.backingservices.BackingChecker;
 
@@ -72,7 +72,7 @@ public class DBCheck implements BackingChecker {
 
     @Override
     public boolean accepts(ConfigurationHolder configHolder) {
-        return !DB_EXCLUDE_CHECK_LIST.contains(configHolder.getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBTYPE));
+        return !DB_EXCLUDE_CHECK_LIST.contains(configHolder.getProperty(ConfigurationConstants.PARAM_TEMPLATE_DBTYPE));
 
     }
 
