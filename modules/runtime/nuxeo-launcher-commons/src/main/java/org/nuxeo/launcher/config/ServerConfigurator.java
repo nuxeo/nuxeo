@@ -20,19 +20,21 @@
 package org.nuxeo.launcher.config;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.WRITE;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.TEMPLATE_SEPARATOR;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -92,9 +94,12 @@ public class ServerConfigurator {
     /** @since 9.3 */
     public static final String JAVA_OPTS = "JAVA_OPTS";
 
-    private static final String NEW_FILES = ConfigurationGenerator.TEMPLATES + File.separator + "files.list";
+    private static final String NEW_FILES = "files.list";
 
     protected final ConfigurationGenerator generator;
+
+    /** @since 11.5 */
+    protected final ConfigurationHolder configHolder;
 
     protected File dataDir = null;
 
@@ -108,7 +113,13 @@ public class ServerConfigurator {
 
     private String contextName = null;
 
-    public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
+    public ServerConfigurator(ConfigurationHolder configHolder) {
+        this.configHolder = configHolder;
+        generator = null;
+    }
+
+    public ServerConfigurator(ConfigurationGenerator configurationGenerator, ConfigurationHolder configHolder) {
+        this.configHolder = configHolder;
         generator = configurationGenerator;
     }
 
@@ -117,7 +128,7 @@ public class ServerConfigurator {
      */
     protected boolean isConfigured() {
         Path nuxeoContext = Path.of("conf", "Catalina", "localhost", getContextName() + ".xml");
-        return Files.exists(generator.getNuxeoHome().toPath().resolve(nuxeoContext));
+        return Files.exists(configHolder.getHomePath().resolve(nuxeoContext));
     }
 
     /**
@@ -126,12 +137,7 @@ public class ServerConfigurator {
      */
     public String getContextName() {
         if (contextName == null) {
-            Properties userConfig = generator.getUserConfig();
-            if (userConfig != null) {
-                contextName = userConfig.getProperty(ConfigurationGenerator.PARAM_CONTEXT_PATH, DEFAULT_CONTEXT_NAME);
-            } else {
-                contextName = DEFAULT_CONTEXT_NAME;
-            }
+            contextName = configHolder.getProperty(ConfigurationGenerator.PARAM_CONTEXT_PATH, DEFAULT_CONTEXT_NAME);
             contextName = contextName.substring(1);
         }
         return contextName;
@@ -174,12 +180,11 @@ public class ServerConfigurator {
                 }
                 // Retrieve optional target directory if defined
                 String outputDirectoryStr = config.getProperty(templateName + ".target");
-                File outputDirectory = (outputDirectoryStr != null)
-                        ? new File(generator.getNuxeoHome(), outputDirectoryStr)
-                        : getOutputDirectory();
+                Path out = outputDirectoryStr != null ? configHolder.getHomePath().resolve(outputDirectoryStr)
+                        : configHolder.getRuntimeHomePath();
                 for (File in : listFiles) {
                     // copy template(s) directories parsing properties
-                    newFilesList.addAll(templateParser.processDirectory(in, new File(outputDirectory, in.getName())));
+                    newFilesList.addAll(templateParser.processDirectory(in, out.resolve(in.getName()).toFile()));
                 }
             }
         }
@@ -191,21 +196,21 @@ public class ServerConfigurator {
      * Helps the server returning to the state before any template was applied.
      */
     private void deleteTemplateFiles() throws IOException, ConfigurationException {
-        File newFiles = new File(generator.getNuxeoHome(), NEW_FILES);
-        if (!newFiles.exists()) {
+        Path newFiles = configHolder.getTemplatesPath().resolve(NEW_FILES);
+        if (Files.notExists(newFiles)) {
             return;
         }
-        try (BufferedReader reader = new BufferedReader(new FileReader(newFiles))) {
+        try (BufferedReader reader = Files.newBufferedReader(newFiles)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.endsWith(".bak")) {
                     log.debug("Restore {}", line);
                     String originalName = line.substring(0, line.length() - 4);
                     try {
-                        File backup = new File(generator.getNuxeoHome(), line);
-                        File original = new File(generator.getNuxeoHome(), originalName);
-                        FileUtils.copyFile(backup, original);
-                        backup.delete();
+                        Path backup = configHolder.getHomePath().resolve(line);
+                        Path original = configHolder.getHomePath().resolve(originalName);
+                        Files.copy(backup, original, REPLACE_EXISTING, COPY_ATTRIBUTES);
+                        Files.delete(backup);
                     } catch (IOException e) {
                         throw new ConfigurationException(
                                 String.format("Failed to restore %s from %s\nEdit or delete %s to bypass that error.",
@@ -214,11 +219,11 @@ public class ServerConfigurator {
                     }
                 } else {
                     log.debug("Remove {}", line);
-                    new File(generator.getNuxeoHome(), line).delete();
+                    Files.deleteIfExists(configHolder.getHomePath().resolve(line));
                 }
             }
         }
-        newFiles.delete();
+        Files.delete(newFiles);
     }
 
     /**
@@ -226,38 +231,14 @@ public class ServerConfigurator {
      * {@link #deleteTemplateFiles()}
      */
     private void storeNewFilesList(List<String> newFilesList) throws IOException {
-        File newFiles = new File(generator.getNuxeoHome(), NEW_FILES);
-        try (BufferedWriter writer = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(newFiles, false), UTF_8))) {
+        Path newFiles = configHolder.getTemplatesPath().resolve(NEW_FILES);
+        try (BufferedWriter writer = Files.newBufferedWriter(newFiles, UTF_8, APPEND, CREATE, WRITE)) {
             // Store new files listing
-            int index = generator.getNuxeoHome().getCanonicalPath().length() + 1;
             for (String filepath : newFilesList) {
-                writer.write(new File(filepath).getCanonicalPath().substring(index));
+                writer.write(configHolder.getHomePath().relativize(Path.of(filepath)).normalize().toString());
                 writer.newLine();
             }
         }
-    }
-
-    /**
-     * @return output directory for files generation
-     */
-    protected File getOutputDirectory() {
-        return getRuntimeHome();
-    }
-
-    /**
-     * @return Default data directory path relative to Nuxeo Home
-     * @since 5.4.2
-     */
-    protected String getDefaultDataDir() {
-        return "nxserver" + File.separator + Environment.DEFAULT_DATA_DIR;
-    }
-
-    /**
-     * Returns the Home of NuxeoRuntime (same as Framework.getRuntime().getHome().getAbsolutePath())
-     */
-    protected File getRuntimeHome() {
-        return new File(generator.getNuxeoHome(), "nxserver");
     }
 
     /**
@@ -266,7 +247,7 @@ public class ServerConfigurator {
      */
     public File getDataDir() {
         if (dataDir == null) {
-            dataDir = new File(generator.getNuxeoHome(), getDefaultDataDir());
+            dataDir = configHolder.getDataPath().toFile();
         }
         return dataDir;
     }
@@ -277,7 +258,7 @@ public class ServerConfigurator {
      */
     public File getLogDir() {
         if (logDir == null) {
-            logDir = new File(generator.getNuxeoHome(), Environment.DEFAULT_LOG_DIR);
+            logDir = configHolder.getLogPath().toFile();
         }
         return logDir;
     }
@@ -349,21 +330,24 @@ public class ServerConfigurator {
      * @since 5.4.2
      */
     public void checkPaths() throws ConfigurationException {
-        File badInstanceClid = new File(generator.getNuxeoHome(),
-                getDefaultDataDir() + File.separator + "instance.clid");
-        if (badInstanceClid.exists() && !getDataDir().equals(badInstanceClid.getParentFile())) {
-            log.warn("Moving {} to {}.", () -> badInstanceClid, this::getDataDir);
+        Path badInstanceClid = configHolder.getRuntimeHomePath()
+                                           .resolve(Environment.DEFAULT_DATA_DIR)
+                                           .resolve("instance.clid");
+        Path dataPath = configHolder.getDataPath();
+        if (Files.exists(badInstanceClid) && !badInstanceClid.startsWith(dataPath)) {
+            log.warn("Moving {} to {}.", badInstanceClid, dataPath);
             try {
-                FileUtils.moveFileToDirectory(badInstanceClid, getDataDir(), true);
+                FileUtils.moveFileToDirectory(badInstanceClid.toFile(), dataPath.toFile(), true);
             } catch (IOException e) {
                 throw new ConfigurationException("NXP-6722 move failed: " + e.getMessage(), e);
             }
         }
 
-        File oldPackagesPath = new File(getDataDir(), getDefaultPackagesDir());
-        if (oldPackagesPath.exists() && !oldPackagesPath.equals(getPackagesDir())) {
+        Path oldPackagesPath = dataPath.resolve(Environment.DEFAULT_MP_DIR);
+        Path packagesPath = configHolder.getPackagesPath();
+        if (Files.exists(oldPackagesPath) && !oldPackagesPath.equals(packagesPath)) {
             log.warn("NXP-8014 Packages cache location changed. You can safely delete {} or move its content to {}",
-                    () -> oldPackagesPath, this::getPackagesDir);
+                    oldPackagesPath, packagesPath);
         }
     }
 
@@ -373,7 +357,7 @@ public class ServerConfigurator {
      */
     public File getTmpDir() {
         if (tmpDir == null) {
-            tmpDir = new File(generator.getNuxeoHome(), getDefaultTmpDir());
+            tmpDir = configHolder.getTmpPath().toFile();
         }
         return tmpDir;
     }
@@ -437,8 +421,8 @@ public class ServerConfigurator {
      */
     private String setAbsolutePath(String key, String directory) {
         if (!new File(directory).isAbsolute()) {
-            directory = new File(generator.getNuxeoHome(), directory).getPath();
-            generator.getUserConfig().setProperty(key, directory);
+            directory = configHolder.getHomePath().resolve(directory).toString();
+            configHolder.userConfig.setProperty(key, directory);
         }
         return directory;
     }
@@ -467,20 +451,6 @@ public class ServerConfigurator {
     }
 
     /**
-     * Check if oldPath exist; if so, then raise a ConfigurationException with information for fixing issue
-     *
-     * @param oldPath Path that must NOT exist
-     * @param message Error message thrown with exception
-     * @throws ConfigurationException If an old path has been discovered
-     */
-    protected void checkPath(File oldPath, String message) throws ConfigurationException {
-        if (oldPath.exists()) {
-            log.error("Deprecated paths used.");
-            throw new ConfigurationException(message);
-        }
-    }
-
-    /**
      * @return Log4J configuration file
      * @since 5.4.2
      */
@@ -489,24 +459,14 @@ public class ServerConfigurator {
     }
 
     /**
-     * @return Nuxeo config directory
-     * @since 5.4.2
-     */
-    public File getConfigDir() {
-        return new File(getRuntimeHome(), Environment.DEFAULT_CONFIG_DIR);
-    }
-
-    /**
      * @param userConfig Properties to dump into config directory
      * @since 5.4.2
      */
     public void dumpProperties(CryptoProperties userConfig) {
         Properties dumpedProperties = filterSystemProperties(userConfig);
-        File dumpedFile = generator.getDumpedConfig();
-        try (OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(dumpedFile, false), UTF_8)) {
+        Path dumpedFile = configHolder.getDumpedConfigurationPath();
+        try (var os = Files.newBufferedWriter(dumpedFile, UTF_8)) {
             dumpedProperties.store(os, "Generated by " + getClass());
-        } catch (FileNotFoundException e) {
-            log.error(e);
         } catch (IOException e) {
             log.error("Could not dump properties to {}", dumpedFile, e);
         }
@@ -537,7 +497,7 @@ public class ServerConfigurator {
      * @since 5.4.1
      */
     public File getNuxeoLibDir() {
-        return new File(getRuntimeHome(), "lib");
+        return configHolder.getRuntimeHomePath().resolve("lib").toFile();
     }
 
     /**
@@ -545,7 +505,7 @@ public class ServerConfigurator {
      * @since 5.4.1
      */
     public File getServerLibDir() {
-        return new File(generator.getNuxeoHome(), "lib");
+        return configHolder.getHomePath().resolve("lib").toFile();
     }
 
     /**
@@ -563,9 +523,9 @@ public class ServerConfigurator {
      * @see ConfigurationGenerator#checkAddressesAndPorts()
      */
     protected void checkNetwork() throws ConfigurationException {
-        InetAddress bindAddress = generator.getBindAddress();
+        InetAddress bindAddress = ConfigurationGenerator.getBindAddress(configHolder.getProperty(PARAM_BIND_ADDRESS));
         ConfigurationGenerator.checkPortAvailable(bindAddress,
-                Integer.parseInt(generator.getUserConfig().getProperty(PARAM_HTTP_TOMCAT_ADMIN_PORT)));
+                Integer.parseInt(configHolder.getProperty(PARAM_HTTP_TOMCAT_ADMIN_PORT)));
     }
 
     /**
@@ -574,7 +534,7 @@ public class ServerConfigurator {
      */
     public File getPackagesDir() {
         if (packagesDir == null) {
-            packagesDir = new File(generator.getNuxeoHome(), getDefaultPackagesDir());
+            packagesDir = configHolder.getPackagesPath().toFile();
         }
         return packagesDir;
     }
@@ -594,19 +554,16 @@ public class ServerConfigurator {
      */
     public InstanceInfo getInfo(String clid, List<LocalPackage> pkgs) {
         InstanceInfo nxInstance = new InstanceInfo();
-        nxInstance.NUXEO_CONF = generator.getNuxeoConf().getPath();
-        nxInstance.NUXEO_HOME = generator.getNuxeoHome().getPath();
+        nxInstance.NUXEO_CONF = configHolder.getNuxeoConfPath().toString();
+        nxInstance.NUXEO_HOME = configHolder.getHomePath().toString();
         // distribution
-        File distFile = new File(generator.getConfigDir(), "distribution.properties");
-        if (!distFile.exists()) {
+        Path distFile = configHolder.getConfigurationPath().resolve("distribution.properties");
+        if (Files.notExists(distFile)) {
             // fallback in the file in templates
-            distFile = new File(generator.getNuxeoHome(), "templates");
-            distFile = new File(distFile, "common");
-            distFile = new File(distFile, "config");
-            distFile = new File(distFile, "distribution.properties");
+            distFile = configHolder.getTemplatesPath().resolve(Path.of("common", "config", "distribution.properties"));
         }
         try {
-            nxInstance.distribution = new DistributionInfo(distFile);
+            nxInstance.distribution = new DistributionInfo(distFile.toFile());
         } catch (IOException e) {
             nxInstance.distribution = new DistributionInfo();
         }
@@ -636,16 +593,14 @@ public class ServerConfigurator {
             if (pkgTemplates.contains(template)) {
                 nxInstance.config.pkgtemplates.add(template);
             } else {
-                File testBase = new File(generator.getNuxeoHome(),
-                        ConfigurationGenerator.TEMPLATES + File.separator + template);
-                if (testBase.exists()) {
+                if (Files.exists(configHolder.getTemplatesPath().resolve(template))) {
                     nxInstance.config.basetemplates.add(template);
                 } else {
                     nxInstance.config.usertemplates.add(template);
                 }
             }
         }
-        CryptoProperties userConfig = generator.getUserConfig();
+        CryptoProperties userConfig = configHolder.userConfig;
         // Settings from nuxeo.conf
         computeKeyVals(nxInstance.config.keyvals, userConfig, userConfig.keySet());
         // Effective configuration for environment and profiles
