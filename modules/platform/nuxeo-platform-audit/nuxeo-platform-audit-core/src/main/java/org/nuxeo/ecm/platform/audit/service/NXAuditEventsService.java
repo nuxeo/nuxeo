@@ -78,9 +78,9 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
      */
     public static final String DISABLE_AUDIT_LOGGER = "disableAuditLogger";
 
-    protected final Map<String, List<ExtendedInfoDescriptor>> eventExtendedInfoDescriptors = new HashMap<>();
+    protected Map<String, List<ExtendedInfoDescriptor>> eventExtendedInfoDescriptors;
 
-    protected final Set<String> eventNames = new HashSet<>();
+    protected Set<String> eventNames;
 
     protected AuditBackend backend;
 
@@ -98,7 +98,7 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
     @Deprecated(since = "10.10")
     protected AuditBulkerDescriptor bulkerConfig = new AuditBulkerDescriptor();
 
-    protected Map<String, AuditStorage> auditStorages = new HashMap<>();
+    protected Map<String, AuditStorage> auditStorages;
 
     protected AuditBackendDescriptor getAuditBackendDescriptor() {
         return this.<AuditBackendDescriptor> getRegistryContribution(BACKEND_EXT_POINT).orElse(DEFAULT_BACKEND_CONFIG);
@@ -112,7 +112,18 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
     @Override
     @SuppressWarnings("deprecation")
     public void start(ComponentContext context) {
-        this.<EventDescriptor> getRegistryContributions(EVENT_EXT_POINT).forEach(this::doRegisterEvent);
+        eventExtendedInfoDescriptors = new HashMap<>();
+        eventNames = new HashSet<>();
+        this.<EventDescriptor> getRegistryContributions(EVENT_EXT_POINT).forEach(desc -> {
+            String eventName = desc.getName();
+            eventNames.add(eventName);
+            desc.getExtendedInfoDescriptors()
+                .stream()
+                .filter(ExtendedInfoDescriptor::getEnabled)
+                .forEach(extInfoDesc -> eventExtendedInfoDescriptors.computeIfAbsent(eventName, k -> new ArrayList<>())
+                                                                    .add(extInfoDesc));
+            log.debug("Registered event: {}", eventName);
+        });
         backend = getAuditBackendDescriptor().newInstance(this);
         backend.onApplicationStarted();
         if (Framework.isBooleanPropertyFalse(STREAM_AUDIT_ENABLED_PROP)) {
@@ -124,6 +135,7 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
     @Override
     public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
         // init storages after runtime was started (as we don't have start order for storages which are backends)
+        auditStorages = new HashMap<>();
         for (AuditStorageDescriptor descriptor : this.<AuditStorageDescriptor> getRegistryContributions(
                 STORAGE_EXT_POINT)) {
             AuditStorage storage = descriptor.newInstance();
@@ -145,25 +157,15 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
             }
         } finally {
             backend.onApplicationStopped();
+            backend = null;
             // clear storages
             auditStorages.values().forEach(storage -> {
                 if (storage instanceof AuditBackend) {
                     ((AuditBackend) storage).onApplicationStopped();
                 }
             });
-            auditStorages.clear();
+            auditStorages = null;
         }
-    }
-
-    protected void doRegisterEvent(EventDescriptor desc) {
-        String eventName = desc.getName();
-        eventNames.add(eventName);
-        desc.getExtendedInfoDescriptors()
-            .stream()
-            .filter(ExtendedInfoDescriptor::getEnabled)
-            .forEach(extInfoDesc -> eventExtendedInfoDescriptors.computeIfAbsent(eventName, k -> new ArrayList<>())
-                                                                .add(extInfoDesc));
-        log.debug("Registered event: {}", eventName);
     }
 
     @Override

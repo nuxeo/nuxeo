@@ -33,11 +33,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class LocationManagerService extends DefaultComponent {
 
-    private Map<String, RepositoryLocation> locations = new HashMap<>();
+    private Map<String, RepositoryLocation> locations;
 
     @Override
     public void start(ComponentContext context) {
-        locations.clear();
+        locations = new HashMap<>();
         this.<LocationManagerPluginExtension> getRegistryContributions("location").forEach(c -> {
             String name = c.getLocationName();
             locations.put(name, new RepositoryLocation(name));
@@ -46,7 +46,7 @@ public class LocationManagerService extends DefaultComponent {
 
     @Override
     public void stop(ComponentContext context) throws InterruptedException {
-        locations.clear();
+        locations = null;
     }
 
     public Map<String, RepositoryLocation> getAvailableLocations() {

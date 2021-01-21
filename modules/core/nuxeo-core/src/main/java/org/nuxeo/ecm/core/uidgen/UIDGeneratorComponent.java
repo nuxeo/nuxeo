@@ -44,9 +44,9 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
 
     public static final String SEQUENCERS_EXTENSION_POINT = "sequencers";
 
-    protected final Map<String, UIDGenerator> generators = new HashMap<>();
+    protected Map<String, UIDGenerator> generators;
 
-    protected final Map<String, UIDSequencer> sequencers = new HashMap<>();
+    protected Map<String, UIDSequencer> sequencers;
 
     protected String defaultSequencer;
 
@@ -57,6 +57,7 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
     }
 
     protected void initGenerators() {
+        generators = new HashMap<>();
         List<UIDGeneratorDescriptor> contribs = getRegistryContributions(UID_GENERATORS_EXTENSION_POINT);
         for (UIDGeneratorDescriptor generatorDescriptor : contribs) {
             final String generatorName = generatorDescriptor.getName();
@@ -89,6 +90,7 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
     }
 
     protected void initSequencers() {
+        sequencers = new HashMap<>();
         List<UIDSequencerProviderDescriptor> seqs = getRegistryContributions(SEQUENCERS_EXTENSION_POINT);
         String def = null;
         String last = null;
@@ -119,9 +121,9 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
 
     @Override
     public void stop(ComponentContext context) {
-        generators.clear();
+        generators = null;
         sequencers.values().forEach(UIDSequencer::dispose);
-        sequencers.clear();
+        sequencers = null;
         defaultSequencer = null;
     }
 
