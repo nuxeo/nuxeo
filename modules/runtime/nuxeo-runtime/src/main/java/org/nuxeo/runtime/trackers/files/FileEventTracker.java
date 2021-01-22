@@ -26,9 +26,9 @@ import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.runtime.trackers.concurrent.ThreadEventHandler;
@@ -48,6 +48,8 @@ import org.nuxeo.runtime.trackers.concurrent.ThreadEventListener;
 public class FileEventTracker extends DefaultComponent {
 
     protected static final Log log = LogFactory.getLog(FileEventTracker.class);
+
+    protected static final String XP = "configs";
 
     protected static SafeFileDeleteStrategy deleteStrategy = new SafeFileDeleteStrategy();
 
@@ -130,6 +132,7 @@ public class FileEventTracker extends DefaultComponent {
     }
 
     @XObject("enableThreadsTracking")
+    @XRegistry
     public static class EnableThreadsTracking {
 
     }
@@ -170,6 +173,9 @@ public class FileEventTracker extends DefaultComponent {
     @Override
     public void start(ComponentContext context) {
         resetThreadDelegate();
+        if (getRegistryContribution(XP).isPresent()) {
+            threadsListener.install();
+        }
     }
 
     @Override
@@ -181,16 +187,6 @@ public class FileEventTracker extends DefaultComponent {
             filesListener.uninstall();
         }
         super.deactivate(context);
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof EnableThreadsTracking) {
-            threadsListener.install();
-        } else {
-            super.registerContribution(contribution, extensionPoint, contributor);
-        }
-
     }
 
     protected FileEventHandler onContext() {
