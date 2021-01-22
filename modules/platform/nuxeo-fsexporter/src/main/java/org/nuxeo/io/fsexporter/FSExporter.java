@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -40,18 +40,31 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class FSExporter extends DefaultComponent implements FSExporterService {
 
-    protected FSExporterPlugin exporter = new DefaultExporterPlugin();
+    protected static final String XP = "exportLogic";
+
+    protected static final FSExporterPlugin DEFAULT_EXPORTER = new DefaultExporterPlugin();
+
+    protected FSExporterPlugin exporter;
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        ExportLogicDescriptor exportLogicDesc = (ExportLogicDescriptor) contribution;
-        if (exportLogicDesc.plugin != null) {
-            try {
-                exporter = exportLogicDesc.plugin.getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new NuxeoException("Failed to instantiate " + exportLogicDesc.plugin, e);
+    public void start(ComponentContext context) {
+        this.<ExportLogicDescriptor> getRegistryContribution(XP).ifPresent(desc -> {
+            if (desc.plugin != null) {
+                try {
+                    exporter = desc.plugin.getDeclaredConstructor().newInstance();
+                } catch (ReflectiveOperationException e) {
+                    throw new NuxeoException("Failed to instantiate " + desc.plugin, e);
+                }
             }
+        });
+        if (exporter == null) {
+            exporter = DEFAULT_EXPORTER;
         }
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        exporter = null;
     }
 
     @Override

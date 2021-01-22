@@ -1,6 +1,5 @@
 <component name="org.nuxeo.io.fsexporter.ExportStructureToFS">
-	<extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
-		point="operations">
-		<operation class="org.nuxeo.io.fsexporter.ExportStructureToFS" />
-	</extension>
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
+    <operation class="org.nuxeo.io.fsexporter.ExportStructureToFS" />
+  </extension>
 </component>

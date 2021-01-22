@@ -57,7 +57,7 @@ public class TestDriveLikeExporterPlugin {
     FSExporterService service;
 
     @Before
-    public void doBefore() throws Exception {
+    public void doBefore() {
         PathRef defaultDomain = new PathRef("/default-domain");
         if (session.exists(defaultDomain)) {
             session.removeDocument(defaultDomain);
@@ -65,7 +65,7 @@ public class TestDriveLikeExporterPlugin {
     }
 
     @Test
-    public void it_uses_title_to_serialize_folder() throws Exception {
+    public void it_uses_title_to_serialize_folder() throws IOException {
 
         // Given a folder with a title
         DocumentModel folder = folder().at("/").withName("folder1").withTitle("Title of folder 1").create(session);
@@ -96,7 +96,7 @@ public class TestDriveLikeExporterPlugin {
     }
 
     @Test
-    public void it_fallbacks_to_name_when_there_is_no_title() throws Exception {
+    public void it_fallbacks_to_name_when_there_is_no_title() throws IOException {
         // Given a folder with no title
         DocumentModel doc = folder().at("/").withName("folder1").create(session);
         doc.setPropertyValue("dc:title", "");
@@ -117,7 +117,7 @@ public class TestDriveLikeExporterPlugin {
     }
 
     @Test
-    public void it_uses_alternate_names_when_there_are_folder_title_collision() throws Exception {
+    public void it_uses_alternate_names_when_there_are_folder_title_collision() throws IOException {
         // Given two folders with same title
         folder().at("/").withName("folder1").withTitle("Title of folder 1").create(session);
         folder().at("/").withName("folder2").withTitle("Title of folder 1").create(session);
@@ -126,8 +126,10 @@ public class TestDriveLikeExporterPlugin {
         // When I export the repository
         File exportRoot = exportRepository();
 
-        List<String> folderNames = Arrays.asList(exportRoot.listFiles()).stream().map(f -> f.getName()).collect(
-                Collectors.toList());
+        List<String> folderNames = Arrays.asList(exportRoot.listFiles())
+                                         .stream()
+                                         .map(File::getName)
+                                         .collect(Collectors.toList());
 
         // Then folder titles are created to not collide
         assertThat(folderNames).hasSize(2);
@@ -135,7 +137,7 @@ public class TestDriveLikeExporterPlugin {
     }
 
     @Test
-    public void it_uses_alternate_names_when_there_are_file_title_collision_keeping_extensions() throws Exception {
+    public void it_uses_alternate_names_when_there_are_file_title_collision_keeping_extensions() throws IOException {
         // Given two folders with same title
         file().at("/").withName("file1").withTitle("Title of file 1").withContent("file1.txt", "test1").create(session);
         file().at("/").withName("file2").withTitle("Title of file 2").withContent("file1.txt", "test2").create(session);
@@ -144,8 +146,10 @@ public class TestDriveLikeExporterPlugin {
         // When I export the repository
         File exportRoot = exportRepository();
 
-        List<String> folderNames = Arrays.asList(exportRoot.listFiles()).stream().map(f -> f.getName()).collect(
-                Collectors.toList());
+        List<String> folderNames = Arrays.asList(exportRoot.listFiles())
+                                         .stream()
+                                         .map(File::getName)
+                                         .collect(Collectors.toList());
 
         // Then files titles are created to not collide
         assertThat(folderNames).hasSize(2);
@@ -153,7 +157,7 @@ public class TestDriveLikeExporterPlugin {
     }
 
     @Test
-    public void it_exports_only_the_main_blob_of_a_file() throws Exception {
+    public void it_exports_only_the_main_blob_of_a_file() throws IOException {
         // Given a file document with several blobs
         file().at("/")
               .withName("file1")
@@ -165,8 +169,10 @@ public class TestDriveLikeExporterPlugin {
 
         // When I export the repository
         File exportRoot = exportRepository();
-        List<String> fileNames = Arrays.asList(exportRoot.listFiles()).stream().map(f -> f.getName()).collect(
-                Collectors.toList());
+        List<String> fileNames = Arrays.asList(exportRoot.listFiles())
+                                       .stream()
+                                       .map(File::getName)
+                                       .collect(Collectors.toList());
 
         // Then I get only one file
         assertThat(fileNames).hasSize(1);
@@ -175,7 +181,7 @@ public class TestDriveLikeExporterPlugin {
     }
 
     @Test
-    public void title_to_filename_handles_special_chars() throws Exception {
+    public void title_to_filename_handles_special_chars() throws IOException {
         folder().at("/").withName("folder1").withTitle("Title of folder 1 on 10/29/2018 \"|*/:<>?\\").create(session);
         session.save();
 

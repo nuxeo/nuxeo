@@ -21,6 +21,7 @@ package org.nuxeo.io.fsexporter.test;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 import javax.inject.Inject;
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.io.fsexporter.FSExporter;
+import org.nuxeo.io.fsexporter.FSExporterService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -57,10 +59,10 @@ public class TestFSExporterCollection {
     protected CollectionManager collectionManager;
 
     @Inject
-    protected FSExporter service;
+    protected FSExporterService service;
 
     @Test
-    public void shouldExportCollection() throws Exception {
+    public void shouldExportCollection() throws IOException {
 
         String collectionName = "CollectionNameTest";
         String collectionDescription = "dummy";
@@ -82,7 +84,7 @@ public class TestFSExporterCollection {
                 "File");
         Blob blobTestFolderFile = Blobs.createBlob("some content", "text/plain", "UTF-8", "My_File_In_Section.txt");
         testFolderFile.setPropertyValue("file:content", (Serializable) blobTestFolderFile);
-        testFolderFile = session.createDocument(testFolderFile);
+        session.createDocument(testFolderFile);
 
         collectionManager.addToNewCollection(collectionName, collectionDescription, testWorkspace, session);
         String collectionFullPath = collectionManager.getUserDefaultCollections(session).getPathAsString() + "/"

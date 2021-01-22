@@ -20,6 +20,7 @@
 package org.nuxeo.io.fsexporter.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 import javax.inject.Inject;
@@ -35,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.io.fsexporter.FSExporter;
+import org.nuxeo.io.fsexporter.FSExporterService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -48,13 +50,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestFSExporterCase2 {
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     @Inject
-    FSExporter service;
+    protected FSExporterService service;
 
     @Test
-    public void shouldExportFile() throws Exception {
+    public void shouldExportFile() throws IOException {
         // creation of folders
         DocumentModel folder = session.createDocumentModel("/default-domain/", "myfolder1", "Folder");
         folder.setPropertyValue("dc:title", "Mon premier repertoire");
