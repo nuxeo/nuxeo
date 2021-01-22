@@ -18,13 +18,16 @@
  */
 package org.nuxeo.ecm.platform.htmlsanitizer;
 
+import org.nuxeo.common.xmap.Resource;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 @XObject("antisamy")
+@XRegistry
 public class HtmlSanitizerAntiSamyDescriptor {
 
     @XNode("@policy")
-    public String policy;
+    protected Resource policy;
 
 }
