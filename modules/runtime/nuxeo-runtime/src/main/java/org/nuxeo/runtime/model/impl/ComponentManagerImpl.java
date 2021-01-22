@@ -54,6 +54,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.XMapException;
 import org.nuxeo.common.xmap.registry.NullRegistry;
@@ -73,6 +74,8 @@ import org.nuxeo.runtime.model.DescriptorRegistry;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
+import org.nuxeo.runtime.model.registry.MapRuntimeRegistry;
+import org.nuxeo.runtime.model.registry.SingleRuntimeRegistry;
 import org.nuxeo.runtime.util.Watch;
 
 /**
@@ -549,6 +552,17 @@ public class ComponentManagerImpl implements ComponentManager {
         return Optional.empty();
     }
 
+    protected Registry createRegistry(XAnnotatedObject xObject) {
+        if (xObject == null || !xObject.hasRegistry()) {
+            return null;
+        }
+        if (xObject.getRegistryId() != null) {
+            return new MapRuntimeRegistry();
+        } else {
+            return new SingleRuntimeRegistry();
+        }
+    }
+
     protected Registry getOrCreateRegistry(String component, ExtensionPoint xp) {
         Optional<Registry> stored = getExtensionPointRegistry(component, xp.getName());
         if (stored.isPresent()) {
@@ -576,7 +590,7 @@ public class ComponentManagerImpl implements ComponentManager {
                 registry = Arrays.stream(contributions)
                                  .map(xmap::getObject)
                                  .filter(Objects::nonNull)
-                                 .map(xmap::getRegistry)
+                                 .map(this::createRegistry)
                                  .filter(Objects::nonNull)
                                  .findFirst()
                                  .orElse(NULL_REGISTRY);

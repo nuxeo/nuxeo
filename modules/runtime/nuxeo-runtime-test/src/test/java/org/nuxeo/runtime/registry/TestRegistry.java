@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.common.xmap.registry.SingleRegistry;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -213,6 +214,10 @@ public class TestRegistry {
             assertEquals(warnSingle, caughtEvents.get(0));
             assertEquals(warnMap, caughtEvents.get(1));
         }
+        List<String> rwarns = Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING);
+        assertEquals(2, rwarns.size());
+        assertEquals(warnSingle, rwarns.get(0));
+        assertEquals(warnMap, rwarns.get(1));
         hotUndeploy("registry-contrib-2.xml");
         checkInitialSingleRegistry(service.getSingleRegistry());
         checkInitialCompatMapRegistry(service.getCompatWarnMapRegistry());

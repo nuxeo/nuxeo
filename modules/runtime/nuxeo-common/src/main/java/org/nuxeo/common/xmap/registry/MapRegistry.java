@@ -108,11 +108,11 @@ public class MapRegistry extends AbstractRegistry implements Registry {
             XAnnotatedMember merge = xObject.getMerge();
             if (existing != null && xObject.getCompatWarnOnMerge() && !merge.hasValue(ctx, element)
                     && !onlyHandlesEnablement(ctx, xObject, element, true)) {
-                log.warn(
-                        "The contribution with id '{}' on extension '{}' has been implicitly merged: "
-                                + "the compatibility mechanism on its descriptor class '{}' detected it, "
+                logWarn(String.format(
+                        "The contribution with id '%s' on extension '%s' has been implicitly merged: "
+                                + "the compatibility mechanism on its descriptor class '%s' detected it, "
                                 + "and the attribute merge=\"true\" should be added to this definition.",
-                        id, extensionId, existing.getClass().getName());
+                        id, extensionId, existing.getClass().getName()), extensionId, id);
             }
             return true;
         }
@@ -148,6 +148,14 @@ public class MapRegistry extends AbstractRegistry implements Registry {
         }
 
         return (T) contrib;
+    }
+
+    protected void logError(String message, Throwable t, String extensionId, String id) {
+        log.error(message, t);
+    }
+
+    protected void logWarn(String message, String extensionId, String id) {
+        log.warn(message);
     }
 
 }
