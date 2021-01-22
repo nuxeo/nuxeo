@@ -22,6 +22,7 @@
 package org.nuxeo.io.fsexporter.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 import javax.inject.Inject;
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.io.fsexporter.FSExporter;
+import org.nuxeo.io.fsexporter.FSExporterService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -50,13 +52,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestFSExporterAccents {
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     @Inject
-    FSExporter service;
+    protected FSExporterService service;
 
     @Test
-    public void shouldExportFileTest() throws Exception {
+    public void shouldExportFileTest() throws IOException {
         // creation of subfolders in sections, templates and workspaces
         DocumentModel mySection = session.createDocumentModel("/default-domain/sections", "ma premiere Section - 1",
                 "Folder");
