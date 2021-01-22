@@ -73,4 +73,7 @@ public class SampleDescriptor {
     @XNodeMap(value = "aliases/alias", key = "@name", type = HashMap.class, componentType = SampleDescriptorAlias.class)
     public Map<String, SampleDescriptorAlias> aliasMap;
 
+    @XNode("@class")
+    public Class<? extends SampleInterface> classContrib;
+
 }
