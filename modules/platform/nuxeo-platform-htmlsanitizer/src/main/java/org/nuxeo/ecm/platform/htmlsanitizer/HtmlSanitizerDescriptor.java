@@ -24,19 +24,21 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("sanitizer")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class HtmlSanitizerDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     public String name = "";
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
     public boolean enabled = true;
-
-    // unused
-    @XNode("@override")
-    public boolean override = false;
 
     @XNodeList(value = "type", type = ArrayList.class, componentType = String.class)
     public final List<String> types = new ArrayList<>();
