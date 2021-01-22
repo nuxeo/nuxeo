@@ -26,7 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XAnnotatedObject;
-import org.nuxeo.common.xmap.registry.AbstractRegistry;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.w3c.dom.Element;
 
@@ -35,7 +35,7 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class MimetypeDescriptorRegistry extends AbstractRegistry {
+public class MimetypeDescriptorRegistry extends MapRegistry {
 
     private static final Logger log = LogManager.getLogger(MimetypeDescriptorRegistry.class);
 
@@ -53,14 +53,16 @@ public class MimetypeDescriptorRegistry extends AbstractRegistry {
     @Override
     @SuppressWarnings("unchecked")
     protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
-        MimetypeDescriptor mimetypeDescriptor = (MimetypeDescriptor) xObject.newInstance(ctx, element);
-        MimetypeEntry mimetype = mimetypeDescriptor.getMimetype();
-        log.debug("Registering mimetype: {}", mimetype.getNormalized());
-        mimetypeByNormalizedRegistry.put(mimetype.getNormalized(), mimetype);
-        for (String extension : mimetype.getExtensions()) {
-            mimetypeByExtensionRegistry.put(extension, mimetype);
+        MimetypeDescriptor desc = super.doRegister(ctx, xObject, element, extensionId);
+        if (desc != null) {
+            MimetypeEntry mimetype = desc.getMimetype();
+            log.debug("Registering mimetype: {}", mimetype.getNormalized());
+            mimetypeByNormalizedRegistry.put(mimetype.getNormalized(), mimetype);
+            for (String extension : mimetype.getExtensions()) {
+                mimetypeByExtensionRegistry.put(extension, mimetype);
+            }
         }
-        return (T) mimetypeDescriptor;
+        return (T) desc;
     }
 
     public boolean isNormalized(String mimeType) {

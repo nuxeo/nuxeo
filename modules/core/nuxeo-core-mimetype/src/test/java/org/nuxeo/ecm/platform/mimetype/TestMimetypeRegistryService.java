@@ -86,6 +86,16 @@ public class TestMimetypeRegistryService {
                 true);
     }
 
+    protected static MimetypeEntryImpl getMimetypeSampleMerged() {
+        return new MimetypeEntryImpl(SAMPLE_MIMETYPE_NORMALIZED, //
+                List.of(SAMPLE_MIMETYPE_NORMALIZED, "app/whatever-word"), //
+                List.of("doc", "dot", "xml"), //
+                "icons/doc.png", //
+                true, //
+                true, //
+                true);
+    }
+
     protected void check(MimetypeEntry expected, MimetypeEntry actual) {
         assertNotNull(expected);
         assertNotNull(actual);
@@ -108,11 +118,11 @@ public class TestMimetypeRegistryService {
         hotDeployer.deploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml");
 
         // check override
-        check(getMimetypeSample(), mimetypeRegistry.getMimetypeEntryByName(SAMPLE_MIMETYPE_NORMALIZED));
+        check(getMimetypeSampleMerged(), mimetypeRegistry.getMimetypeEntryByName(SAMPLE_MIMETYPE_NORMALIZED));
 
         // Second registration (?)
         hotDeployer.deploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml");
-        check(getMimetypeSample(), mimetypeRegistry.getMimetypeEntryByName(SAMPLE_MIMETYPE_NORMALIZED));
+        check(getMimetypeSampleMerged(), mimetypeRegistry.getMimetypeEntryByName(SAMPLE_MIMETYPE_NORMALIZED));
 
         // check hot undeploy
         hotDeployer.undeploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml");
@@ -122,7 +132,7 @@ public class TestMimetypeRegistryService {
     @Test
     @Deploy("org.nuxeo.ecm.core.mimetype:test-mimetype-contrib.xml")
     public void testGetExtensionsFromMimetype() {
-        MimetypeEntry mimetype = getMimetypeSample();
+        MimetypeEntry mimetype = getMimetypeSampleMerged();
         assertEquals(mimetypeRegistry.getExtensionsFromMimetypeName(mimetype.getNormalized()),
                 mimetype.getExtensions());
     }
