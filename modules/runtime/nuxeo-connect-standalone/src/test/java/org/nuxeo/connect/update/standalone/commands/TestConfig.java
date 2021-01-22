@@ -44,7 +44,6 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.launcher.config.ConfigurationConstants;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.launcher.config.ServerConfigurator;
 import org.nuxeo.runtime.test.TargetResourceLocator;
 
 public class TestConfig extends AbstractCommandTest {
