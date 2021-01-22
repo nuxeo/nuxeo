@@ -21,6 +21,9 @@ package org.nuxeo.ecm.core.api.validation;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Handler for the {@link DocumentValidationService} "activations" extension point.
@@ -28,37 +31,23 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.1
  */
 @XObject("validation")
+@XRegistry(enable = false)
 public class DocumentValidationDescriptor {
 
     @XNode("@context")
+    @XRegistryId
     private String context;
 
-    @XNode("@activated")
+    @XNode(value = XEnable.ENABLE, fallback = "@activated")
+    @XEnable
     private boolean activated;
-
-    public DocumentValidationDescriptor() {
-    }
-
-    public DocumentValidationDescriptor(String context, boolean activated) {
-        super();
-        this.context = context;
-        this.activated = activated;
-    }
 
     public String getContext() {
         return context;
     }
 
-    public void setContext(String context) {
-        this.context = context;
-    }
-
     public boolean isActivated() {
         return activated;
-    }
-
-    public void setActivated(boolean activated) {
-        this.activated = activated;
     }
 
     @Override

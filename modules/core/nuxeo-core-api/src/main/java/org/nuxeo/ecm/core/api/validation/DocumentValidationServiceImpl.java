@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,41 +49,29 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class DocumentValidationServiceImpl extends DefaultComponent implements DocumentValidationService {
 
+    protected static final String XP = "activations";
+
     private SchemaManager schemaManager;
 
-    protected SchemaManager getSchemaManager() {
-        if (schemaManager == null) {
-            schemaManager = Framework.getService(SchemaManager.class);
-        }
-        return schemaManager;
-    }
-
-    private Map<String, Boolean> validationActivations = new HashMap<>();
+    private Map<String, Boolean> validationActivations;
 
     @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
+    public void start(ComponentContext context) {
+        schemaManager = Framework.getService(SchemaManager.class);
+        validationActivations = this.<DocumentValidationDescriptor> getRegistryContributions(XP)
+                                    .stream()
+                                    .collect(Collectors.toMap(DocumentValidationDescriptor::getContext,
+                                            DocumentValidationDescriptor::isActivated));
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("activations")) {
-            DocumentValidationDescriptor dvd = (DocumentValidationDescriptor) contribution;
-            validationActivations.put(dvd.getContext(), dvd.isActivated());
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("activations")) {
-            DocumentValidationDescriptor dvd = (DocumentValidationDescriptor) contribution;
-            validationActivations.remove(dvd.getContext());
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        schemaManager = null;
+        validationActivations = null;
     }
 
     @Override
@@ -120,7 +108,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
         DocumentType docType = document.getDocumentType();
         if (dirtyOnly) {
             for (DataModel dataModel : document.getDataModels().values()) {
-                Schema schemaDef = getSchemaManager().getSchema(dataModel.getSchema());
+                Schema schemaDef = schemaManager.getSchema(dataModel.getSchema());
                 for (String fieldName : dataModel.getDirtyFields()) {
                     Field field = schemaDef.getField(fieldName);
                     Property property = document.getProperty(field.getName().getPrefixedName());
