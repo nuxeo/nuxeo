@@ -21,13 +21,15 @@
 package org.nuxeo.ecm.platform.mimetype.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.mimetype.MimetypeEntryImpl;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 
@@ -37,10 +39,11 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @XObject("mimetype")
-@XRegistry(merge = false, enable = false, remove = false)
+@XRegistry(compatWarnOnMerge = true)
 public class MimetypeDescriptor {
 
     @XNode("@normalized")
+    @XRegistryId
     protected String normalized;
 
     @XNode("@binary")
@@ -55,11 +58,11 @@ public class MimetypeDescriptor {
     @XNode("@iconPath")
     protected String iconPath;
 
-    @XNodeList(value = "mimetypes/mimetype", type = ArrayList.class, componentType = String.class)
-    protected List<String> mimetypes;
+    @XNodeList(value = "mimetypes/mimetype", type = LinkedHashSet.class, componentType = String.class)
+    protected Set<String> mimetypes;
 
-    @XNodeList(value = "extensions/extension", type = ArrayList.class, componentType = String.class)
-    protected List<String> extensions;
+    @XNodeList(value = "extensions/extension", type = LinkedHashSet.class, componentType = String.class)
+    protected Set<String> extensions;
 
     public boolean isBinary() {
         return binary;
@@ -74,7 +77,7 @@ public class MimetypeDescriptor {
     }
 
     public List<String> getExtensions() {
-        return Collections.unmodifiableList(extensions);
+        return new ArrayList<>(extensions);
     }
 
     public String getIconPath() {
@@ -82,7 +85,7 @@ public class MimetypeDescriptor {
     }
 
     public List<String> getMimetypes() {
-        return Collections.unmodifiableList(mimetypes);
+        return new ArrayList<>(mimetypes);
     }
 
     public MimetypeEntry getMimetype() {
