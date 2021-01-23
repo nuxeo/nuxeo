@@ -16,8 +16,8 @@
   </documentation>
 
   <extension-point name="LibrarySelector">
-    <documentation>@author Laurent Doguin (ldoguin@nuxeo.com) This
-      extension point let you choose or add an image processing library.
+    <documentation>
+      This extension point lets you configure an image and metadata processing library.
     </documentation>
     <object class="org.nuxeo.ecm.platform.picture.core.libraryselector.LibrarySelectorServiceDescriptor"/>
   </extension-point>
@@ -25,9 +25,7 @@
   <extension target="org.nuxeo.ecm.platform.picture.core.libraryselector.LibrarySelectorService"
              point="LibrarySelector">
     <LibrarySelector>
-      <ImageUtils
-          class="org.nuxeo.ecm.platform.picture.core.im.IMImageUtils"
-          name="ImageMagick"/>
+      <ImageUtils class="org.nuxeo.ecm.platform.picture.core.im.IMImageUtils" />
     </LibrarySelector>
   </extension>
 </component>

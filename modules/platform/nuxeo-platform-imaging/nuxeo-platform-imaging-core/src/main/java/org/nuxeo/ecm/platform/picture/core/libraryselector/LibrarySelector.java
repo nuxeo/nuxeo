@@ -28,5 +28,6 @@ public interface LibrarySelector {
 
     ImageUtils getImageUtils();
 
+    @Deprecated(since = "11.5")
     MetadataUtils getMetadataUtils();
 }
