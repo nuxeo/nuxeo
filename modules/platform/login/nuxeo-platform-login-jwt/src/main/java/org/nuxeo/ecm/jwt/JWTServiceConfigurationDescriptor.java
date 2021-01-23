@@ -20,6 +20,7 @@ package org.nuxeo.ecm.jwt;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Descriptor for the {@link JWTService}.
@@ -27,6 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 10.3
  */
 @XObject(value = "configuration")
+@XRegistry
 public class JWTServiceConfigurationDescriptor {
 
     public static final int DEFAULT_DEFAULT_TTL = 60 * 60; // 1h
@@ -43,26 +45,6 @@ public class JWTServiceConfigurationDescriptor {
 
     public int getDefaultTTL() {
         return defaultTTL == null ? DEFAULT_DEFAULT_TTL : defaultTTL.intValue();
-    }
-
-    /** Empty constructor, to get defaults. */
-    public JWTServiceConfigurationDescriptor() {
-    }
-
-    /** Copy constructor. */
-    public JWTServiceConfigurationDescriptor(JWTServiceConfigurationDescriptor other) {
-        this.secret = other.secret;
-        this.defaultTTL = other.defaultTTL;
-    }
-
-    /** Merge method. */
-    public void merge(JWTServiceConfigurationDescriptor other) {
-        if (other.secret != null) {
-            secret = other.secret;
-        }
-        if (other.defaultTTL != null) {
-            defaultTTL = other.defaultTTL;
-        }
     }
 
 }
