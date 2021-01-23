@@ -69,7 +69,6 @@ import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -81,20 +80,37 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
     public static final String PICTURE_CONVERSIONS_EP = "pictureConversions";
 
-    protected Map<String, String> configurationParameters = new HashMap<>();
+    protected Map<String, String> configurationParameters;
 
-    protected PictureConversionRegistry pictureConversionRegistry = new PictureConversionRegistry();
+    protected List<PictureConversion> conversions;
 
     protected final PictureMigrationHandler pictureMigrationHandler = new PictureMigrationHandler();
 
     @Override
+    public void start(ComponentContext context) {
+        configurationParameters = this.<ImagingConfigurationDescriptor> getRegistryContribution(
+                CONFIGURATION_PARAMETERS_EP).map(ImagingConfigurationDescriptor::getParameters).orElse(new HashMap<>());
+        conversions = new ArrayList<>(getRegistryContributions(PICTURE_CONVERSIONS_EP));
+        Collections.sort(conversions);
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        configurationParameters = null;
+        conversions = null;
+    }
+
+    @Override
     public List<PictureConversion> getPictureConversions() {
-        return pictureConversionRegistry.getPictureConversions();
+        return Collections.unmodifiableList(conversions);
     }
 
     @Override
     public PictureConversion getPictureConversion(String id) {
-        return pictureConversionRegistry.getPictureConversion(id);
+        if (id == null) {
+            return null;
+        }
+        return this.<PictureConversion> getRegistryContribution(PICTURE_CONVERSIONS_EP, id).orElse(null);
     }
 
     @Override
@@ -173,28 +189,6 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
             log.error("Failed to get ImageInfo for file {}", blob.getFilename(), e);
         }
         return imageInfo;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIGURATION_PARAMETERS_EP.equals(extensionPoint)) {
-            ImagingConfigurationDescriptor desc = (ImagingConfigurationDescriptor) contribution;
-            configurationParameters.putAll(desc.getParameters());
-        } else if (PICTURE_CONVERSIONS_EP.equals(extensionPoint)) {
-            pictureConversionRegistry.addContribution((PictureConversion) contribution);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIGURATION_PARAMETERS_EP.equals(extensionPoint)) {
-            ImagingConfigurationDescriptor desc = (ImagingConfigurationDescriptor) contribution;
-            for (String configuration : desc.getParameters().keySet()) {
-                configurationParameters.remove(configuration);
-            }
-        } else if (PICTURE_CONVERSIONS_EP.equals(extensionPoint)) {
-            pictureConversionRegistry.removeContribution((PictureConversion) contribution);
-        }
     }
 
     @Override
@@ -319,7 +313,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         pictureViewMap.put(PictureView.FIELD_FILENAME, viewFilename);
         pictureViewMap.put(PictureView.FIELD_CONTENT, (Serializable) viewBlob);
         pictureViewMap.put(PictureView.FIELD_INFO, viewBlobImageInfo);
-        if (viewBlobImageInfo != null){
+        if (viewBlobImageInfo != null) {
             pictureViewMap.put(PictureView.FIELD_WIDTH, viewBlobImageInfo.getWidth());
             pictureViewMap.put(PictureView.FIELD_HEIGHT, viewBlobImageInfo.getHeight());
         }

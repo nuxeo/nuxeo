@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface ImagingService {
 
     /**
-     * Returns the registered picture conversions.
+     * Returns the registered picture conversions, sorted by order.
      *
      * @since 7.1
      */

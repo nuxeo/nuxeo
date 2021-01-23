@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Descriptor for configuration information contribution that will be used by the ImagingService.
@@ -33,6 +34,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author btatar
  */
 @XObject(value = "configuration")
+@XRegistry
 public class ImagingConfigurationDescriptor {
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
