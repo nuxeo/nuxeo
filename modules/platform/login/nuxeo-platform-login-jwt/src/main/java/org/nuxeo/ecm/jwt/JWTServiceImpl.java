@@ -35,9 +35,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator.Builder;
@@ -66,61 +65,22 @@ public class JWTServiceImpl extends DefaultComponent implements JWTService {
 
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    protected static final TypeReference<Map<String, Object>> MAP_STRING_OBJECT = new TypeReference<Map<String, Object>>() {
+    protected static final TypeReference<Map<String, Object>> MAP_STRING_OBJECT = new TypeReference<>() {
     };
 
-    protected static class JWTServiceConfigurationRegistry
-            extends SimpleContributionRegistry<JWTServiceConfigurationDescriptor> {
+    protected static final JWTServiceConfigurationDescriptor DEFAULT_CONFIGURATION = new JWTServiceConfigurationDescriptor();
 
-        protected static final String KEY = ""; // value doesn't matter as long as we use a fixed one
-
-        protected static final JWTServiceConfigurationDescriptor DEFAULT_CONTRIBUTION = new JWTServiceConfigurationDescriptor();
-
-        @Override
-        public String getContributionId(JWTServiceConfigurationDescriptor contrib) {
-            return KEY;
-        }
-
-        @Override
-        public boolean isSupportingMerge() {
-            return true;
-        }
-
-        @Override
-        public JWTServiceConfigurationDescriptor clone(JWTServiceConfigurationDescriptor orig) {
-            return new JWTServiceConfigurationDescriptor(orig);
-        }
-
-        @Override
-        public void merge(JWTServiceConfigurationDescriptor src, JWTServiceConfigurationDescriptor dst) {
-            dst.merge(src);
-        }
-
-        public JWTServiceConfigurationDescriptor getContribution() {
-            JWTServiceConfigurationDescriptor contribution = getContribution(KEY);
-            if (contribution == null) {
-                contribution = DEFAULT_CONTRIBUTION;
-            }
-            return contribution;
-        }
-    }
-
-    protected final JWTServiceConfigurationRegistry registry = new JWTServiceConfigurationRegistry();
+    protected JWTServiceConfigurationDescriptor configuration;
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_CONFIGURATION.equals(extensionPoint)) {
-            registry.addContribution((JWTServiceConfigurationDescriptor) contribution);
-        } else {
-            throw new NuxeoException("Unknown extension point: " + extensionPoint);
-        }
+    public void start(ComponentContext context) {
+        configuration = this.<JWTServiceConfigurationDescriptor> getRegistryContribution(XP_CONFIGURATION)
+                            .orElse(DEFAULT_CONFIGURATION);
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_CONFIGURATION.equals(extensionPoint)) {
-            registry.removeContribution((JWTServiceConfigurationDescriptor) contribution);
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        configuration = null;
     }
 
     // -------------------- JWTService API --------------------
@@ -296,11 +256,11 @@ public class JWTServiceImpl extends DefaultComponent implements JWTService {
     }
 
     protected int getDefaultTTL() {
-        return registry.getContribution().getDefaultTTL();
+        return configuration.getDefaultTTL();
     }
 
     protected Algorithm getAlgorithm() {
-        String secret = registry.getContribution().getSecret();
+        String secret = configuration.getSecret();
         if (isBlank(secret)) {
             return null;
         }
