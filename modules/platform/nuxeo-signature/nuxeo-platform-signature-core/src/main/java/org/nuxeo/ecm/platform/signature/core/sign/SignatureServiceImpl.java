@@ -41,8 +41,8 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -62,8 +62,9 @@ import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.lowagie.text.DocumentException;
@@ -84,7 +85,7 @@ import com.lowagie.text.pdf.PdfStamper;
  */
 public class SignatureServiceImpl extends DefaultComponent implements SignatureService {
 
-    private static final Log log = LogFactory.getLog(SignatureServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(SignatureServiceImpl.class);
 
     protected static final int SIGNATURE_FIELD_HEIGHT = 50;
 
@@ -111,32 +112,38 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
 
     protected static final String USER_EMAIL = "user:email";
 
-    protected final Map<String, SignatureDescriptor> signatureRegistryMap;
+    protected SignatureLayout layout;
 
-    public SignatureServiceImpl() {
-        signatureRegistryMap = new HashMap<>();
-    }
+    protected SignatureAppearanceFactory appearanceFactory;
+
+    protected String defaultReason;
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_SIGNATURE.equals(extensionPoint)) {
-            SignatureDescriptor signatureDescriptor = (SignatureDescriptor) contribution;
-            if (!signatureDescriptor.getRemoveExtension()) {
-                signatureRegistryMap.put(signatureDescriptor.getId(), signatureDescriptor);
-            } else {
-                signatureRegistryMap.remove(signatureDescriptor.getId());
+    public void start(ComponentContext context) {
+        this.<SignatureDescriptor> getRegistryContribution(XP_SIGNATURE).ifPresent(desc -> {
+            layout = desc.getSignatureLayout();
+            try {
+                appearanceFactory = desc.getAppearanceFatory();
+            } catch (ReflectiveOperationException e) {
+                String message = String.format("Cannot create signature appearance factory: %s", e.getMessage());
+                log.error(message, e);
+                addRuntimeMessage(Level.ERROR, message);
             }
+            defaultReason = desc.getReason();
+        });
+        if (layout == null) {
+            layout = new SignatureDescriptor.SignatureLayout();
+        }
+        if (appearanceFactory == null) {
+            appearanceFactory = new DefaultSignatureAppearanceFactory();
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_SIGNATURE.equals(extensionPoint)) {
-            SignatureDescriptor signatureDescriptor = (SignatureDescriptor) contribution;
-            if (!signatureDescriptor.getRemoveExtension()) {
-                signatureRegistryMap.remove(signatureDescriptor.getId());
-            }
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        layout = null;
+        appearanceFactory = null;
+        defaultReason = null;
     }
 
     //
@@ -329,19 +336,23 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
             }
 
             PdfSignatureAppearance pdfSignatureAppearance = pdfStamper.getSignatureAppearance();
-            pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), (X509Certificate) certificate, null, PdfSignatureAppearance.SELF_SIGNED);
+            pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), (X509Certificate) certificate, null,
+                    PdfSignatureAppearance.SELF_SIGNED);
             if (StringUtils.isBlank(reason)) {
-                reason = getSigningReason();
+                reason = defaultReason;
+            }
+            if (StringUtils.isBlank(reason)) {
+                throw new SignException("No default signing reason provided in configuration");
             }
             pdfSignatureAppearance.setVisibleSignature(getNextCertificatePosition(pdfReader, pdfCertificates), 1, null);
-            getSignatureAppearanceFactory().format(pdfSignatureAppearance, doc, userID, reason);
+            appearanceFactory.format(pdfSignatureAppearance, doc, userID, reason);
 
             pdfStamper.close(); // closes the file
 
-            log.debug("File " + outputFile.getAbsolutePath() + " created and signed with " + reason);
+            log.debug("File '{}' created and signed with '{}'", outputFile.getAbsolutePath(), reason);
 
             return blob;
-        } catch (IOException | DocumentException | ReflectiveOperationException e) {
+        } catch (IOException | DocumentException e) {
             throw new SignException(e);
         } catch (IllegalArgumentException e) {
             if (String.valueOf(e.getMessage()).contains("PdfReader not opened with owner password")) {
@@ -358,31 +369,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
      */
     @Override
     public SignatureLayout getSignatureLayout() {
-        for (SignatureDescriptor signatureDescriptor : signatureRegistryMap.values()) {
-            SignatureLayout signatureLayout = signatureDescriptor.getSignatureLayout();
-            if (signatureLayout != null) {
-                return signatureLayout;
-            }
-        }
-        return new SignatureDescriptor.SignatureLayout();
-    }
-
-    protected SignatureAppearanceFactory getSignatureAppearanceFactory() throws ReflectiveOperationException {
-        if (!signatureRegistryMap.isEmpty()) {
-            SignatureDescriptor signatureDescriptor = signatureRegistryMap.values().iterator().next();
-            return signatureDescriptor.getAppearanceFatory();
-        }
-        return new DefaultSignatureAppearanceFactory();
-    }
-
-    protected String getSigningReason() throws SignException {
-        for (SignatureDescriptor sd : signatureRegistryMap.values()) {
-            String reason = sd.getReason();
-            if (!StringUtils.isBlank(reason)) {
-                return reason;
-            }
-        }
-        throw new SignException("No default signing reason provided in configuration");
+        return layout;
     }
 
     protected boolean certificatePresentInPDF(Certificate userCert, List<X509Certificate> pdfCertificates)
@@ -443,9 +430,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
         validatePageBounds(pdfReader, 1, topRightX, true);
         validatePageBounds(pdfReader, 1, topRightY, false);
 
-        Rectangle positionRectangle = new Rectangle(bottomLeftX, bottomLeftY, topRightX, topRightY);
-
-        return positionRectangle;
+        return new Rectangle(bottomLeftX, bottomLeftY, topRightX, topRightY);
     }
 
     /**
