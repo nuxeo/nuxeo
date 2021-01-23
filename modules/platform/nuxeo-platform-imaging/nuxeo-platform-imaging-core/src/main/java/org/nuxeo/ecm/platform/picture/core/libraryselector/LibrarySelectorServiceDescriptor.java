@@ -23,22 +23,21 @@ package org.nuxeo.ecm.platform.picture.core.libraryselector;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 
 @XObject("LibrarySelector")
+@XRegistry
 public class LibrarySelectorServiceDescriptor {
 
-    @XNode("ImageUtils")
-    public ImageUtilsDescriptor imageUtils;
+    @XNode("ImageUtils@class")
+    private Class<ImageUtils> imageUtilsClass;
 
-    @XNode("MetadataUtils")
-    public MetadataUtilsDescriptor metadataUtils;
-
-    public ImageUtilsDescriptor getImageUtils() {
-        return imageUtils;
-    }
-
-    public MetadataUtilsDescriptor getMetadataUtils() {
-        return metadataUtils;
+    public ImageUtils getNewInstance() throws ReflectiveOperationException {
+        if (imageUtilsClass == null) {
+            return null;
+        }
+        return imageUtilsClass.getDeclaredConstructor().newInstance();
     }
 
 }

@@ -21,60 +21,39 @@
 
 package org.nuxeo.ecm.platform.picture.core.libraryselector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class LibrarySelectorService extends DefaultComponent implements LibrarySelector {
 
-    public static final String LIBRARY_SELECTOR = "LibrarySelector";
+    private static final Logger log = LogManager.getLogger(LibrarySelectorService.class);
 
-    private static final Log log = LogFactory.getLog(LibrarySelectorService.class);
+    public static final String LIBRARY_SELECTOR = "LibrarySelector";
 
     protected ImageUtils imageUtils;
 
-    protected MetadataUtils metadataUtils;
+    @Override
+    public void start(ComponentContext context) {
+        this.<LibrarySelectorServiceDescriptor> getRegistryContribution(LIBRARY_SELECTOR).ifPresent(desc -> {
+            try {
+                imageUtils = desc.getNewInstance();
+            } catch (ReflectiveOperationException e) {
+                String message = String.format("Cannot create image utils: %s", e.getMessage());
+                log.error(message, e);
+                addRuntimeMessage(Level.ERROR, message);
+            }
+            log.debug("Using '{}' for ImageUtils.", imageUtils::getClass);
+        });
+    }
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public void stop(ComponentContext context) throws InterruptedException {
         imageUtils = null;
-        metadataUtils = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
-        if (extensionPoint.equals(LIBRARY_SELECTOR)) {
-            LibrarySelectorServiceDescriptor libraryDescriptor = (LibrarySelectorServiceDescriptor) contribution;
-            registerLibrarySelector(libraryDescriptor);
-        } else {
-            log.error("Extension point " + extensionPoint + "is unknown");
-        }
-    }
-
-    public void registerLibrarySelector(LibrarySelectorServiceDescriptor libraryDescriptor) {
-        registerImageUtils(libraryDescriptor.getImageUtils());
-        registerMetadataUtils(libraryDescriptor.getMetadataUtils());
-    }
-
-    protected void registerImageUtils(ImageUtilsDescriptor imageUtilsDescriptor) {
-        if (imageUtilsDescriptor == null) {
-            return;
-        }
-        imageUtils = imageUtilsDescriptor.getNewInstance();
-        log.debug("Using " + imageUtils.getClass().getName() + " for ImageUtils.");
-    }
-
-    protected void registerMetadataUtils(MetadataUtilsDescriptor metadataUtilsDescriptor) {
-        if (metadataUtilsDescriptor == null) {
-            return;
-        }
-        metadataUtils = metadataUtilsDescriptor.getNewInstance();
-        log.debug("Using " + metadataUtils.getClass().getName() + " for MetadataUtils.");
     }
 
     @Override
@@ -84,7 +63,7 @@ public class LibrarySelectorService extends DefaultComponent implements LibraryS
 
     @Override
     public MetadataUtils getMetadataUtils() {
-        return metadataUtils;
+        return null;
     }
 
 }
