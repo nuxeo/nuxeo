@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.signature.core.sign;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRemove;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureAppearanceFactory;
 
 /**
@@ -30,10 +32,15 @@ import org.nuxeo.ecm.platform.signature.api.sign.SignatureAppearanceFactory;
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 @XObject("configuration")
+@XRegistry(remove = false, compatWarnOnMerge = true)
 public class SignatureDescriptor {
 
     @XNode("@id")
     protected String id;
+
+    @XNode(value = XRemove.REMOVE, fallback = "removeExtension")
+    @XRemove
+    private boolean remove;
 
     @XNode("reason")
     protected String reason;
@@ -41,18 +48,8 @@ public class SignatureDescriptor {
     @XNode("layout")
     protected SignatureLayout signatureLayout;
 
-    @XNode("appearanceFactory")
-    protected SignatureAppearance signatureAppearance = null;
-
-    @XObject("appearanceFactory")
-    public static class SignatureAppearance {
-        @XNode("@class")
-        protected Class<? extends SignatureAppearanceFactory> appearanceClass;
-
-        public Class<? extends SignatureAppearanceFactory> getAppearanceClass() {
-            return appearanceClass;
-        }
-    }
+    @XNode("appearanceFactory@class")
+    protected Class<? extends SignatureAppearanceFactory> appearanceClass;
 
     /**
      * @since 5.8 Definition of the layout applied on signatures.
@@ -109,15 +106,7 @@ public class SignatureDescriptor {
         return reason;
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
     public SignatureAppearanceFactory getAppearanceFatory() throws ReflectiveOperationException {
-        Class<? extends SignatureAppearanceFactory> appearanceClass = null;
-        if (signatureAppearance != null) {
-            appearanceClass = signatureAppearance.getAppearanceClass();
-        }
         if (appearanceClass == null) {
             return new DefaultSignatureAppearanceFactory();
         }
@@ -127,16 +116,4 @@ public class SignatureDescriptor {
     public String getId() {
         return id;
     }
-
-    private boolean remove;
-
-    @XNode("removeExtension")
-    protected void setRemoveExtension(boolean remove) {
-        this.remove = remove;
-    }
-
-    public boolean getRemoveExtension() {
-        return remove;
-    }
-
 }
