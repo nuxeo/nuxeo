@@ -226,8 +226,24 @@ public abstract class XValueFactory {
 
         @Override
         public String serialize(Context context, Object value) {
-            Class<?> clazz = (Class<?>) value;
-            return clazz.getName();
+            return ((Class<?>) value).getName();
+        }
+    };
+
+    public static final XValueFactory XCLASS = new XValueFactory() {
+
+        @Override
+        public Object deserialize(Context context, String value) {
+            try {
+                return new XClass(context, value);
+            } catch (NoClassDefFoundError | ReflectiveOperationException e) {
+                throw new XMapException("Cannot instantiate class: " + value, e);
+            }
+        }
+
+        @Override
+        public String serialize(Context context, Object value) {
+            return ((XClass) value).getClassName();
         }
     };
 
@@ -275,6 +291,7 @@ public abstract class XValueFactory {
         addFactory(boolean.class, BOOLEAN);
 
         addFactory(Class.class, CLASS);
+        addFactory(XClass.class, XCLASS);
         addFactory(Resource.class, RESOURCE);
 
         addFactory(Duration.class, DURATION);

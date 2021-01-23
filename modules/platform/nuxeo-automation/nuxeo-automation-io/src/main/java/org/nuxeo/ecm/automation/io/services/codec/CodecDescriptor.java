@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.automation.io.services.codec;
 
+import org.nuxeo.common.xmap.XClass;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.common.xmap.registry.XRegistry;
@@ -32,10 +33,6 @@ public class CodecDescriptor {
 
     @XNode("@class")
     @XRegistryId
-    public String klass;
-
-    public String getId() {
-        return klass;
-    }
+    public XClass klass;
 
 }
