@@ -22,12 +22,14 @@ package org.nuxeo.ecm.platform.picture.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Object to store the definition of a picture conversion, to be used when computing views for a given image.
@@ -36,6 +38,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.1
  */
 @XObject("pictureConversion")
+@XRegistry(enable = false)
 public class PictureConversion implements Comparable<PictureConversion> {
 
     private static final int DEFAULT_ORDER = 0;
@@ -46,7 +49,8 @@ public class PictureConversion implements Comparable<PictureConversion> {
 
     private static final boolean DEFAULT_ISRENDITION = true;
 
-    @XNode("@id")
+    @XRegistryId
+    @XNode(value = "@id", defaultAssignment = "")
     protected String id;
 
     @XNode("@order")
@@ -55,7 +59,8 @@ public class PictureConversion implements Comparable<PictureConversion> {
     @XNode("@description")
     protected String description;
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
     protected Boolean enabled;
 
     @XNode("@chainId")
@@ -192,55 +197,6 @@ public class PictureConversion implements Comparable<PictureConversion> {
     @Override
     public int compareTo(PictureConversion other) {
         return Integer.compare(getOrder(), other.getOrder());
-    }
-
-    @Override
-    public PictureConversion clone() {
-        PictureConversion clone = new PictureConversion();
-        clone.id = id;
-        clone.description = description;
-        clone.tag = tag;
-        clone.maxSize = maxSize;
-        clone.order = order;
-        clone.chainId = chainId;
-        clone.enabled = enabled;
-        if (filterIds != null) {
-            clone.filterIds = new ArrayList<>(filterIds);
-        }
-        clone.rendition = rendition;
-        clone.renditionVisible = renditionVisible;
-        return clone;
-    }
-
-    public void merge(PictureConversion other) {
-        if (other.enabled != null) {
-            enabled = other.enabled;
-        }
-        if (!StringUtils.isBlank(other.chainId)) {
-            chainId = other.chainId;
-        }
-        if (!StringUtils.isBlank(other.tag)) {
-            tag = other.tag;
-        }
-        if (!StringUtils.isBlank(other.description)) {
-            description = other.description;
-        }
-        if (other.order != null) {
-            order = other.order;
-        }
-        if (other.maxSize != null) {
-            maxSize = other.maxSize;
-        }
-        List<String> newFilterIds = new ArrayList<>();
-        newFilterIds.addAll(filterIds);
-        newFilterIds.addAll(other.filterIds);
-        filterIds = newFilterIds;
-        if (other.rendition != null) {
-            rendition = other.rendition;
-        }
-        if (other.renditionVisible != null) {
-            renditionVisible = other.renditionVisible;
-        }
     }
 
     @Override
