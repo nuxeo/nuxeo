@@ -24,8 +24,8 @@ import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Locale;
@@ -51,6 +51,7 @@ import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.nuxeo.launcher.NuxeoLauncher;
 import org.nuxeo.launcher.NuxeoLauncherException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.config.ConfigurationHolder;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.logs.LogsHandler;
 import org.nuxeo.launcher.gui.logs.LogsSource;
@@ -130,7 +131,7 @@ public class NuxeoLauncherGUI {
                 updateServerStatus();
                 try {
                     Properties props = new Properties();
-                    try (FileReader reader = new FileReader(getConfigurationGenerator().getDumpedConfig())) {
+                    try (var reader = Files.newBufferedReader(getConfigurationHolder().getDumpedConfigurationPath())) {
                         props.load(reader);
                     }
                     nuxeoFrame.updateLogsTab(props.getProperty("log.id"));
@@ -143,11 +144,11 @@ public class NuxeoLauncherGUI {
             dumpedConfigMonitor.setRecursive(false);
             @SuppressWarnings("resource")
             FileObject dumpedConfig = VFS.getManager().resolveFile(
-                    getConfigurationGenerator().getDumpedConfig().getPath());
+                    getConfigurationHolder().getDumpedConfigurationPath().toString());
             dumpedConfigMonitor.addFile(dumpedConfig);
             dumpedConfigMonitor.start();
         } catch (FileSystemException e) {
-            throw new RuntimeException("Couldn't find " + getConfigurationGenerator().getNuxeoConf(), e);
+            throw new RuntimeException("Couldn't find " + getConfigurationHolder().getNuxeoConfPath(), e);
         }
     }
 
@@ -287,6 +288,13 @@ public class NuxeoLauncherGUI {
      */
     public ConfigurationGenerator getConfigurationGenerator() {
         return launcher.getConfigurationGenerator();
+    }
+
+    /**
+     * @since 11.5
+     */
+    public ConfigurationHolder getConfigurationHolder() {
+        return getConfigurationGenerator().getConfigurationHolder();
     }
 
     /**

@@ -37,7 +37,6 @@ import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_NUXEO_DEV;
 import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_NAME;
 import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_PARSING_EXTENSIONS;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -92,8 +91,6 @@ public class ConfigurationGenerator {
 
     /** Absolute or relative PATH to the included templates (comma separated list). */
     protected static final String PARAM_INCLUDED_TEMPLATES = "nuxeo.template.includes";
-
-    public static final String INSTALL_AFTER_RESTART = "installAfterRestart.log";
 
     /**
      * Java options split by spaces followed by an even number of quotes (or zero).
@@ -419,18 +416,6 @@ public class ConfigurationGenerator {
         return orderedTemplates;
     }
 
-    public File getNuxeoHome() {
-        return configHolder.getHomePath().toFile();
-    }
-
-    public File getNuxeoBinDir() {
-        return configHolder.getHomePath().resolve("bin").toFile();
-    }
-
-    public List<File> getIncludedTemplates() {
-        return configHolder.getIncludedTemplates().stream().map(Path::toFile).collect(Collectors.toUnmodifiableList());
-    }
-
     /**
      * Save changed parameters in {@code nuxeo.conf}. This method does not check values in map. Use
      * {@link #saveFilteredConfiguration(Map)} for parameters filtering.
@@ -523,37 +508,6 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @return nuxeo.conf file used
-     */
-    public File getNuxeoConf() {
-        return configHolder.getNuxeoConfPath().toFile();
-    }
-
-    /**
-     * @return log directory
-     * @since 5.4.2
-     */
-    public File getLogDir() {
-        return configHolder.getLogPath().toFile();
-    }
-
-    /**
-     * @return pid directory
-     * @since 5.4.2
-     */
-    public File getPidDir() {
-        return configHolder.getLogPath().toFile();
-    }
-
-    /**
-     * @return Data directory
-     * @since 5.4.2
-     */
-    public File getDataDir() {
-        return configHolder.getDataPath().toFile();
-    }
-
-    /**
      * Create needed directories. Check existence of old paths. If old paths have been found and they cannot be upgraded
      * automatically, then upgrading message is logged and error thrown.
      *
@@ -561,67 +515,16 @@ public class ConfigurationGenerator {
      * @since 5.4.2
      */
     public void verifyInstallation() throws ConfigurationException {
-        getLogDir().mkdirs();
-        getPidDir().mkdirs();
-        getDataDir().mkdirs();
-        getTmpDir().mkdirs();
-        getPackagesDir().mkdirs();
+        try {
+            Files.createDirectories(configHolder.getLogPath());
+            Files.createDirectories(configHolder.getPidDirPath());
+            Files.createDirectories(configHolder.getDataPath());
+            Files.createDirectories(configHolder.getTmpPath());
+            Files.createDirectories(configHolder.getPackagesPath());
+        } catch (IOException e) {
+            throw new ConfigurationException("Unable to create server directories", e);
+        }
         configChecker.verify(configHolder);
-    }
-
-    /**
-     * @return Marketplace packages directory
-     * @since 5.9.4
-     */
-    private File getPackagesDir() {
-        return configHolder.getPackagesPath().toFile();
-    }
-
-    /**
-     * @return Temporary directory
-     */
-    public File getTmpDir() {
-        return configHolder.getTmpPath().toFile();
-    }
-
-    /**
-     * @return Log files produced by Log4J configuration without loading this configuration instead of current active
-     *         one.
-     * @since 5.4.2
-     */
-    public List<String> getLogFiles() {
-        return Log4JHelper.getFileAppendersFileNames(configHolder.getLogConfigPath().toFile());
-    }
-
-    /**
-     * @return Nuxeo config directory
-     * @since 5.4.2
-     */
-    public File getConfigDir() {
-        return configHolder.getConfigurationPath().toFile();
-    }
-
-    /**
-     * @return Nuxeo runtime home
-     */
-    public File getRuntimeHome() {
-        return configHolder.getRuntimeHomePath().toFile();
-    }
-
-    /**
-     * @since 5.4.2
-     * @return true if there's an install in progress
-     */
-    public boolean isInstallInProgress() {
-        return getInstallFile().exists();
-    }
-
-    /**
-     * @return Install/upgrade file
-     * @since 5.4.1
-     */
-    public File getInstallFile() {
-        return configHolder.getDataPath().resolve(INSTALL_AFTER_RESTART).toFile();
     }
 
     /**
@@ -638,19 +541,6 @@ public class ConfigurationGenerator {
                                        .collect(Collectors.joining(TEMPLATE_SEPARATOR));
         saveFilteredConfiguration(Map.of(PARAM_TEMPLATES_NAME, newTemplatesStr));
         loadConfiguration(false);
-    }
-
-    /**
-     * Return the list of templates declared by {@link ConfigurationConstants#PARAM_TEMPLATES_NAME}.
-     *
-     * @since 9.2
-     */
-    public List<String> getTemplateList() {
-        String currentTemplatesStr = configHolder.getProperty(PARAM_TEMPLATES_NAME);
-
-        return Stream.of(configLoader.replaceEnvironmentVariables(currentTemplatesStr).split(TEMPLATE_SEPARATOR))
-                     .collect(Collectors.toList());
-
     }
 
     /**
@@ -730,7 +620,7 @@ public class ConfigurationGenerator {
          * {@link Environment} is not static.
          */
         if (env == null) {
-            env = new Environment(getRuntimeHome());
+            env = new Environment(configHolder.getRuntimeHomePath().toFile());
             var distribPath = configHolder.getTemplatesPath().resolve(FILE_TEMPLATE_DISTRIBUTION_PROPS);
             if (Files.exists(distribPath)) {
                 try {
@@ -740,22 +630,14 @@ public class ConfigurationGenerator {
                 }
             }
             env.loadProperties(configHolder.userConfig);
-            env.setServerHome(getNuxeoHome());
+            env.setServerHome(configHolder.getHomePath().toFile());
             env.init();
-            env.setData(configHolder.getProperty(Environment.NUXEO_DATA_DIR, "data"));
-            env.setLog(configHolder.getProperty(Environment.NUXEO_LOG_DIR, "logs"));
-            env.setTemp(configHolder.getProperty(Environment.NUXEO_TMP_DIR, "tmp"));
-            env.setPath(Environment.NUXEO_MP_DIR, getPackagesDir(), env.getServerHome());
+            env.setData(configHolder.getDataPath().toFile());
+            env.setLog(configHolder.getLogPath().toFile());
+            env.setTemp(configHolder.getTmpPath().toFile());
+            env.setPath(Environment.NUXEO_MP_DIR, configHolder.getPackagesPath().toFile(), env.getServerHome());
         }
         return env;
-    }
-
-    /**
-     * @return The generated properties file with dumped configuration.
-     * @since 5.6
-     */
-    public File getDumpedConfig() {
-        return configHolder.getDumpedConfigurationPath().toFile();
     }
 
     /**
@@ -765,19 +647,6 @@ public class ConfigurationGenerator {
      */
     public Crypto getCrypto() {
         return configHolder.userConfig.getCrypto();
-    }
-
-    /**
-     * Gets the Java options with 'nuxeo.*' properties substituted. It enables usage of property like ${nuxeo.log.dir}
-     * inside JAVA_OPTS.
-     *
-     * @return the Java options string.
-     * @deprecated Since 9.3. Use {@link #getJavaOptsString()} instead.
-     */
-    @Deprecated
-    @SuppressWarnings("unused")
-    protected String getJavaOpts(String key, String value) {
-        return getJavaOptsString();
     }
 
     /**
@@ -791,15 +660,6 @@ public class ConfigurationGenerator {
                      .map(option -> StringSubstitutor.replace(option, getUserConfig()))
                      .map(mapper)
                      .collect(Collectors.toList());
-    }
-
-    /**
-     * @return the Java options string.
-     * @since 9.3
-     * @see #getJavaOpts(Function)
-     */
-    protected String getJavaOptsString() {
-        return String.join(" ", getJavaOpts(Function.identity()));
     }
 
     /**
