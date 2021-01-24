@@ -135,6 +135,10 @@ public class ConfigurationHolder {
         return getPropertyAsPath(Environment.NUXEO_MP_DIR);
     }
 
+    public Path getPidDirPath() {
+        return getPropertyAsPath(Environment.NUXEO_PID_DIR);
+    }
+
     protected Path getTmpPath() {
         return getPropertyAsPath(Environment.NUXEO_TMP_DIR);
     }
