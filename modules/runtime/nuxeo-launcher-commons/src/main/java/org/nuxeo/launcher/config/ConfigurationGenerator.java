@@ -22,6 +22,7 @@ package org.nuxeo.launcher.config;
 
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.launcher.config.ConfigurationConstants.ENV_NUXEO_ENVIRONMENT;
 import static org.nuxeo.launcher.config.ConfigurationConstants.ENV_NUXEO_PROFILES;
 import static org.nuxeo.launcher.config.ConfigurationConstants.FILE_NUXEO_CONF;
@@ -308,12 +309,24 @@ public class ConfigurationGenerator {
      * @since 5.7
      */
     protected void includeTemplates() throws ConfigurationException {
+        // include nuxeo.templates
         String templates = configHolder.getProperty(PARAM_TEMPLATES_NAME);
         if (isBlank(templates)) {
             log.warn("No template found in configuration! Fallback on 'default'.");
             templates = "default";
             configHolder.put(PARAM_TEMPLATES_NAME, templates);
         }
+        // include nuxeo.append.templates.*
+        String templatesWildcard = configHolder.stringPropertyNames()
+                                               .stream()
+                                               .filter(k -> k.startsWith("nuxeo.append.templates."))
+                                               .sorted()
+                                               .map(configHolder::getProperty)
+                                               .collect(Collectors.joining(TEMPLATE_SEPARATOR));
+        if (isNotBlank(templatesWildcard)) {
+            templates += TEMPLATE_SEPARATOR + templatesWildcard;
+        }
+        // include NUXEO_PROFILES
         String profiles = environment.get(ENV_NUXEO_PROFILES);
         if (StringUtils.isNotBlank(profiles)) {
             templates += TEMPLATE_SEPARATOR + profiles;

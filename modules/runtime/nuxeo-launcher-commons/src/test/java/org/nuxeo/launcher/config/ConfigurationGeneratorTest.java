@@ -34,6 +34,7 @@ import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_NUXEO_CONF;
 import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_NAME;
 import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATE_DBTYPE;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JAVA_OPTS_PROP;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.TEMPLATE_SEPARATOR;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -327,6 +328,17 @@ public class ConfigurationGeneratorTest {
         configHolder = generator.getConfigurationHolder();
         assertTrue("Profile should be included", configHolder.getIncludedTemplateNames().contains(profileToTest));
         assertEquals("true", generator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
+    }
+
+    @Test
+    public void testIncludeTemplatesWildcard() throws Exception {
+        ConfigurationGenerator generator = generatorBuilder().init(true).build();
+        ConfigurationHolder configHolder = generator.getConfigurationHolder();
+        // test templates are all included and the inclusion order
+        assertEquals("common,default,test,cloud-directupload,mongodb",
+                String.join(TEMPLATE_SEPARATOR, configHolder.getIncludedTemplateNames()));
+        assertEquals("nuxeo", configHolder.getProperty("nuxeo.mongodb.dbname"));
+        assertTrue(configHolder.getPropertyAsBoolean("property.for.direct.upload"));
     }
 
     protected ConfigurationGenerator.Builder generatorBuilder() {
