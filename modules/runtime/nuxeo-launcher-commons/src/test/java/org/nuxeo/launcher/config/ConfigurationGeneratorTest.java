@@ -19,7 +19,6 @@
  */
 package org.nuxeo.launcher.config;
 
-import static java.util.function.Predicate.isEqual;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -36,7 +35,6 @@ import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_N
 import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATE_DBTYPE;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JAVA_OPTS_PROP;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -75,12 +73,6 @@ public class ConfigurationGeneratorTest {
         assertEquals("true", generator.getUserConfig().getProperty("nuxeo.test.default.home"));
         // check nuxeo.conf has been set by generator
         assertEquals(rule.getNuxeoConf().toString(), generator.systemProperties.getProperty(PARAM_NUXEO_CONF));
-    }
-
-    @Test
-    public void getJavaOptsStringWithoutConfig() {
-        var generator = generatorBuilder().init(true).build();
-        assertThat(generator.getJavaOptsString()).isEmpty();
     }
 
     @Test
@@ -273,15 +265,16 @@ public class ConfigurationGeneratorTest {
     @Test
     public void testFreemarkerTemplate() throws ConfigurationException, IOException {
         var generator = generatorBuilder().build();
+        var configHolder = generator.getConfigurationHolder();
 
         generator.run();
-        Path out = generator.getNuxeoHome().toPath().resolve("test-freemarker");
+        Path out = configHolder.getHomePath().resolve("test-freemarker");
         assertTrue(Files.exists(out));
         String fileContents = Files.readString(out).trim();
         assertEquals(fileContents, "Success");
 
         var expectedConfiguration = rule.getResourcePath("testFreemarkerTemplate-configuration.properties");
-        var actualConfiguration = generator.getDumpedConfig().toPath();
+        var actualConfiguration = configHolder.getDumpedConfigurationPath();
         List<String> actualLines = Files.readAllLines(actualConfiguration);
         assertFalse("The generated configuration.properties is empty", actualLines.isEmpty());
         // second line is a date - remove it as we don't control the clock
@@ -289,7 +282,7 @@ public class ConfigurationGeneratorTest {
         // remove status key which is random
         assertTrue(actualLines.removeIf(line -> line.startsWith(Environment.SERVER_STATUS_KEY)));
         // paths are absolute to the computer - make them absolute to nuxeo home
-        String toRemove = generator.getNuxeoHome().getParent();
+        String toRemove = configHolder.getHomePath().getParent().toString();
         actualLines.replaceAll(line -> line.replace(toRemove, ""));
 
         String expected = Files.readString(expectedConfiguration);
@@ -324,18 +317,16 @@ public class ConfigurationGeneratorTest {
         String profileToTest = "testprofile";
 
         // test without NUXEO_PROFILES environment variable
-        ConfigurationGenerator generator = generatorBuilder().init(true).build();
-        assertFalse("Profile should not be included", isTemplateIncluded(generator, profileToTest));
+        var generator = generatorBuilder().init(true).build();
+        var configHolder = generator.getConfigurationHolder();
+        assertFalse("Profile should not be included", configHolder.getIncludedTemplateNames().contains(profileToTest));
         assertNotEquals("true", generator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
 
         // test with NUXEO_PROFILES environment variable
         generator = generatorBuilder().environment(Map.of(ENV_NUXEO_PROFILES, profileToTest)).init(true).build();
-        assertTrue("Profile should be included", isTemplateIncluded(generator, profileToTest));
+        configHolder = generator.getConfigurationHolder();
+        assertTrue("Profile should be included", configHolder.getIncludedTemplateNames().contains(profileToTest));
         assertEquals("true", generator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
-    }
-
-    protected boolean isTemplateIncluded(ConfigurationGenerator generator, String template) {
-        return generator.getIncludedTemplates().stream().map(File::getName).anyMatch(isEqual(template));
     }
 
     protected ConfigurationGenerator.Builder generatorBuilder() {

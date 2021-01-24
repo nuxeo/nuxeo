@@ -27,17 +27,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.nuxeo.common.Environment;
@@ -47,6 +48,8 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.test.TargetResourceLocator;
 
 public class TestConfig extends AbstractCommandTest {
+
+    protected static final Logger log = LogManager.getLogger(TestConfig.class);
 
     @Inject
     protected TargetResourceLocator locator;
@@ -83,15 +86,9 @@ public class TestConfig extends AbstractCommandTest {
         super.installDone(task, error);
         configurationGenerator = ConfigurationGenerator.build();
         assertTrue(configurationGenerator.init());
+        var configHolder = configurationGenerator.getConfigurationHolder();
 
-        log.info("Install done. nuxeo.conf content:");
-        BufferedReader reader = new BufferedReader(new FileReader(configurationGenerator.getNuxeoConf()));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            log.info(line);
-        }
-        reader.close();
-        log.info("END nuxeo.conf content:");
+        log.info("Install done. nuxeo.conf content:\n{}", Files.readString(configHolder.getNuxeoConfPath()));
 
         String templates = configurationGenerator.getUserConfig()
                                                  .getProperty(ConfigurationConstants.PARAM_TEMPLATES_NAME);
@@ -109,15 +106,9 @@ public class TestConfig extends AbstractCommandTest {
         super.uninstallDone(task, error);
         configurationGenerator = ConfigurationGenerator.build();
         assertTrue(configurationGenerator.init());
+        var configHolder = configurationGenerator.getConfigurationHolder();
 
-        log.info("Uninstall done. nuxeo.conf content:");
-        BufferedReader reader = new BufferedReader(new FileReader(configurationGenerator.getNuxeoConf()));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            log.info(line);
-        }
-        reader.close();
-        log.info("END nuxeo.conf content:");
+        log.info("Install done. nuxeo.conf content:\n{}", Files.readString(configHolder.getNuxeoConfPath()));
 
         String templates = configurationGenerator.getUserConfig()
                                                  .getProperty(ConfigurationConstants.PARAM_TEMPLATES_NAME);

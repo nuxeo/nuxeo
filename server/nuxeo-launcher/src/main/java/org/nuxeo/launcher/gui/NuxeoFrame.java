@@ -28,6 +28,8 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.List;
 
@@ -38,7 +40,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.nuxeo.common.Environment;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.log4j.Log4JHelper;
 
 /**
@@ -276,12 +277,13 @@ public class NuxeoFrame extends JFrame {
         List<String> logFiles = Log4JHelper.getFileAppendersFileNames(
                 LoggerContext.getContext(false).getConfiguration());
         // Add nuxeoctl log file
-        File nuxeoctlLog = new File(controller.getConfigurationGenerator().getLogDir(), "nuxeoctl.log");
-        if (nuxeoctlLog.exists()) {
-            logFiles.add(nuxeoctlLog.getAbsolutePath());
+        var configHolder = controller.getConfigurationHolder();
+        Path nuxeoctlLog = configHolder.getLogPath().resolve("nuxeoctl.log");
+        if (Files.exists(nuxeoctlLog)) {
+            logFiles.add(nuxeoctlLog.toString());
         }
         // Get server log file(s)
-        logFiles.addAll(controller.getConfigurationGenerator().getLogFiles());
+        logFiles.addAll(Log4JHelper.getFileAppendersFileNames(configHolder.getLogConfigPath().toFile()));
         for (String logFile : logFiles) {
             addFileToLogsTab(logsTabbedPane, logFile);
         }
@@ -351,16 +353,16 @@ public class NuxeoFrame extends JFrame {
         summaryPanel.add(errorMessageLabel);
 
         summaryPanel.add(new JSeparator());
-        ConfigurationGenerator config = controller.launcher.getConfigurationGenerator();
+        var configHolder = controller.launcher.getConfigurationGenerator().getConfigurationHolder();
         summaryPanel.add(
                 new JLabel("<html><font color=#ffffdd>" + NuxeoLauncherGUI.getMessage("summary.homedir.label")));
-        summaryPanel.add(new JLabel("<html><font color=white>" + config.getNuxeoHome().getPath()));
+        summaryPanel.add(new JLabel("<html><font color=white>" + configHolder.getHomePath()));
         summaryPanel.add(
                 new JLabel("<html><font color=#ffffdd>" + NuxeoLauncherGUI.getMessage("summary.nuxeoconf.label")));
-        summaryPanel.add(new JLabel("<html><font color=white>" + config.getNuxeoConf().getPath()));
+        summaryPanel.add(new JLabel("<html><font color=white>" + configHolder.getNuxeoConfPath()));
         summaryPanel.add(
                 new JLabel("<html><font color=#ffffdd>" + NuxeoLauncherGUI.getMessage("summary.datadir.label")));
-        summaryPanel.add(new JLabel("<html><font color=white>" + config.getDataDir().getPath()));
+        summaryPanel.add(new JLabel("<html><font color=white>" + configHolder.getDataPath()));
         return summaryPanel;
     }
 
@@ -467,8 +469,12 @@ public class NuxeoFrame extends JFrame {
      */
     public void updateLogsTab(String consoleLogId) {
         if (consoleLogId != null) {
-            addFileToLogsTab(logsTab, new File(controller.getConfigurationGenerator().getLogDir(),
-                    "console" + consoleLogId + ".log").getPath());
+            addFileToLogsTab(logsTab,
+                    controller.getConfigurationGenerator()
+                              .getConfigurationHolder()
+                              .getLogPath()
+                              .resolve("console" + consoleLogId + ".log")
+                              .toString());
         }
     }
 
