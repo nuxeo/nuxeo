@@ -20,14 +20,16 @@ package org.nuxeo.ecm.core.api.pathsegment;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Descriptor to contribute a {@link PathSegmentService}.
  */
 @XObject("service")
+@XRegistry
 public class PathSegmentServiceDescriptor {
 
     @XNode("@class")
-    protected String className;
+    protected Class<? extends PathSegmentService> className;
 
 }
