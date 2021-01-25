@@ -24,6 +24,7 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 
@@ -34,6 +35,7 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
  * @since 7.3
  */
 @XObject("changeFinder")
+@XRegistry
 public class ChangeFinderDescriptor {
 
     @XNode("@class")
@@ -52,24 +54,12 @@ public class ChangeFinderDescriptor {
         return changeFinderClass;
     }
 
-    public void setChangeFinderClass(Class<? extends FileSystemChangeFinder> changeFinderClass) {
-        this.changeFinderClass = changeFinderClass;
-    }
-
     public Map<String, String> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-    }
-
     public String getparameter(String name) {
         return parameters.get(name);
-    }
-
-    public void setParameter(String name, String value) {
-        parameters.put(name, value);
     }
 
     @Override
