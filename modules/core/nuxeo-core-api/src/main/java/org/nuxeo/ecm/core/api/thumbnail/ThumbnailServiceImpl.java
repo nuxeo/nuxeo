@@ -24,14 +24,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -41,38 +38,39 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ThumbnailServiceImpl extends DefaultComponent implements ThumbnailService {
 
-    private static final Log log = LogFactory.getLog(BlobHolderAdapterComponent.class);
-
     public static final String THUMBNAILFACTORY_EP = "thumbnailFactory";
 
     protected ThumbnailFactory defaultFactory;
 
-    protected final Map<String, ThumbnailFactory> factoriesByDocType = new HashMap<>();
+    protected Map<String, ThumbnailFactory> factoriesByDocType;
 
-    protected final Map<String, ThumbnailFactory> factoriesByFacets = new HashMap<>();
+    protected Map<String, ThumbnailFactory> factoriesByFacets;
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (THUMBNAILFACTORY_EP.equals(extensionPoint)) {
-            ThumbnailFactoryDescriptor desc = (ThumbnailFactoryDescriptor) contribution;
+    public void start(ComponentContext context) {
+        factoriesByDocType = new HashMap<>();
+        factoriesByFacets = new HashMap<>();
+        this.<ThumbnailFactoryDescriptor> getRegistryContributions(THUMBNAILFACTORY_EP).forEach(desc -> {
+            ThumbnailFactory factory = desc.getFactory();
             String docType = desc.getDocType();
             if (docType != null) {
-                factoriesByDocType.put(docType, desc.getFactory());
+                factoriesByDocType.put(docType, factory);
             }
             String facet = desc.getFacet();
             if (facet != null) {
-                factoriesByFacets.put(facet, desc.getFactory());
+                factoriesByFacets.put(facet, factory);
             }
             if (docType == null && facet == null) {
-                defaultFactory = desc.getFactory();
+                defaultFactory = factory;
             }
-        } else {
-            log.error("Unknown extension point " + extensionPoint);
-        }
+        });
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+    public void stop(ComponentContext context) throws InterruptedException {
+        defaultFactory = null;
+        factoriesByDocType = null;
+        factoriesByFacets = null;
     }
 
     public Set<String> getFactoryByDocTypeNames() {

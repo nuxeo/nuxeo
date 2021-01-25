@@ -23,6 +23,8 @@ package org.nuxeo.ecm.core.api.thumbnail;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
@@ -31,9 +33,11 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @since 5.7
  */
 @XObject("thumbnailFactory")
+@XRegistry(compatWarnOnMerge = true)
 public class ThumbnailFactoryDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@docType")
