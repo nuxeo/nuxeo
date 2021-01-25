@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.schema.types.resolver;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Handler for the {@link ObjectResolverService} "resolvers" extension point.
@@ -28,37 +30,22 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.1
  */
 @XObject("resolver")
+@XRegistry
 public class ObjectResolverDescriptor {
 
     @XNode("@type")
+    @XRegistryId
     private String type;
 
     @XNode("@class")
     private Class<? extends ObjectResolver> resolver;
 
-    public ObjectResolverDescriptor() {
-    }
-
-    public ObjectResolverDescriptor(String type, Class<? extends ObjectResolver> resolver) {
-        super();
-        this.type = type;
-        this.resolver = resolver;
-    }
-
     public String getType() {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public Class<? extends ObjectResolver> getResolver() {
         return resolver;
-    }
-
-    public void setResolver(Class<? extends ObjectResolver> resolver) {
-        this.resolver = resolver;
     }
 
     @Override
