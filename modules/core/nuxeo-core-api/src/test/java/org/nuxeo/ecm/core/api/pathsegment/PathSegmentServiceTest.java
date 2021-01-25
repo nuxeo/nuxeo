@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.api.pathsegment;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationHandler;
@@ -69,21 +68,20 @@ public class PathSegmentServiceTest {
     }
 
     @Inject
+    protected PathSegmentService service;
+
+    @Inject
     protected HotDeployer hotDeployer;
 
     @Test
-    public void testDefault() throws Exception {
-        PathSegmentService service = Framework.getService(PathSegmentService.class);
-        assertNotNull(service);
+    public void testDefault() {
         DocumentModel doc = DocumentModelProxy.newDocumentModel("My Document");
         assertEquals("My Document", service.generatePathSegment(doc));
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-pathsegment-contrib.xml")
-    public void testContrib() throws Exception {
-        PathSegmentService service = Framework.getService(PathSegmentService.class);
-        assertNotNull(service);
+    public void testContrib() {
         DocumentModel doc = DocumentModelProxy.newDocumentModel("My Document");
         assertEquals("my-document", service.generatePathSegment(doc));
     }
@@ -91,7 +89,6 @@ public class PathSegmentServiceTest {
     @Test
     @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-pathsegment-contrib.xml")
     public void testContribOverride() throws Exception {
-        PathSegmentService service = Framework.getService(PathSegmentService.class);
         DocumentModel doc = DocumentModelProxy.newDocumentModel("My Document");
         assertEquals("my-document", service.generatePathSegment(doc));
 
@@ -103,9 +100,6 @@ public class PathSegmentServiceTest {
 
     @Test
     public void testGeneratePathSegment() {
-        PathSegmentService service = Framework.getService(PathSegmentService.class);
-        assertNotNull(service);
-
         String s;
         // stupid ids -> random
         for (String id : Arrays.asList("", " ", "  ", "-", "./", ".", "..", " . ", " .. ", "\"", "'", "/", "//")) {
@@ -126,7 +120,6 @@ public class PathSegmentServiceTest {
         // converts slashes
         s = "foo/bar";
         assertEquals("foo-bar", service.generatePathSegment(s));
-
     }
 
 }
