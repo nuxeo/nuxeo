@@ -18,17 +18,6 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.key;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.DefaultComponent;
-import org.opensaml.common.SAMLRuntimeException;
-import org.opensaml.xml.security.CriteriaSet;
-import org.opensaml.xml.security.SecurityException;
-import org.opensaml.xml.security.credential.Credential;
-import org.opensaml.xml.security.credential.KeyStoreCredentialResolver;
-import org.opensaml.xml.security.criteria.EntityIDCriteria;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,6 +31,17 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.DefaultComponent;
+import org.opensaml.common.SAMLRuntimeException;
+import org.opensaml.xml.security.CriteriaSet;
+import org.opensaml.xml.security.SecurityException;
+import org.opensaml.xml.security.credential.Credential;
+import org.opensaml.xml.security.credential.KeyStoreCredentialResolver;
+import org.opensaml.xml.security.criteria.EntityIDCriteria;
+
 /**
  * An implementation of {@link KeyManager} that uses a JKS key store.
  */
@@ -49,9 +49,11 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
 
     private static final Log log = LogFactory.getLog(KeyManagerImpl.class);
 
+    private static final String XP = "configuration";
+
     private static final String KEYSTORE_TYPE = "JKS";
 
-    KeyDescriptor config;
+    private KeyDescriptor config;
 
     private KeyStore keyStore;
 
@@ -60,8 +62,14 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
     private Set<String> availableCredentials;
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        config = (KeyDescriptor) contribution;
+    public void start(ComponentContext context) {
+        config = this.<KeyDescriptor> getRegistryContribution(XP).orElse(null);
+        setup();
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        config = null;
         setup();
     }
 
@@ -85,8 +93,8 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
         try {
             File rootKeystoreFile = new File(path);
             if (!rootKeystoreFile.exists()) {
-                throw new SecurityException("Unable to find keyStore at " + new File(".").getAbsolutePath()
-                        + File.separator + path);
+                throw new SecurityException(
+                        "Unable to find keyStore at " + new File(".").getAbsolutePath() + File.separator + path);
             }
             try (InputStream keystoreIS = new FileInputStream(rootKeystoreFile)) {
                 ks = java.security.KeyStore.getInstance(KEYSTORE_TYPE);
@@ -100,12 +108,6 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
             throw new SecurityException(e);
         }
         return ks;
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        config = null;
-        setup();
     }
 
     @Override
@@ -187,4 +189,5 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
     private boolean hasCredentials() {
         return config != null && credentialResolver != null;
     }
+
 }

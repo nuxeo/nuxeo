@@ -21,11 +21,13 @@ package org.nuxeo.ecm.platform.auth.saml.key;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @XObject("configuration")
+@XRegistry(compatWarnOnMerge = true)
 public class KeyDescriptor {
 
     @XNode("keystoreFilePath")
