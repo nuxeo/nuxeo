@@ -18,16 +18,7 @@
  */
 package org.nuxeo.ecm.core.persistence;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -36,9 +27,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class PersistenceComponent extends DefaultComponent
         implements HibernateConfigurator, PersistenceProviderFactory {
 
-    private static final Log log = LogFactory.getLog(PersistenceComponent.class);
-
-    protected final Map<String, HibernateConfiguration> registry = new HashMap<>();
+    protected static final String XP = "hibernate";
 
     @Override
     public int getApplicationStartedOrder() {
@@ -52,59 +41,23 @@ public class PersistenceComponent extends DefaultComponent
          * the first asynchronous event, which means hibernate init may happen in parallel with the main Nuxeo startup
          * thread which may be doing the hibernate init for someone else (JBPM for instance).
          */
-        for (String name : registry.keySet()) {
-            PersistenceProvider pp = newProvider(name);
+        this.<HibernateConfiguration> getRegistryContributions(XP).forEach(desc -> {
+            PersistenceProvider pp = new PersistenceProvider(desc);
             pp.openPersistenceUnit(); // creates tables etc.
             pp.closePersistenceUnit();
-        }
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if ("hibernate".equals(extensionPoint)) {
-            registerHibernateContribution((HibernateConfiguration) contribution, contributor.getName());
-        }
-    }
-
-    protected void registerHibernateContribution(HibernateConfiguration contribution, ComponentName contributorName) {
-        if (contribution.name == null) {
-            throw new PersistenceError(
-                    contributorName + " should set the 'name' attribute of hibernate configurations");
-        }
-        if (contribution.hibernateProperties != null) {
-            doPatchForTests(contribution.hibernateProperties);
-        }
-        if (!registry.containsKey(contribution.name)) {
-            registry.put(contribution.name, contribution);
-        } else {
-            registry.get(contribution.name).merge(contribution);
-        }
-    }
-
-    protected void doPatchForTests(Properties hibernateProperties) {
-        String url = hibernateProperties.getProperty("hibernate.connection.url");
-        if (url != null) {
-            url = Framework.expandVars(url);
-            hibernateProperties.put("hibernate.connection.url", url);
-        }
+        });
     }
 
     @Override
     public PersistenceProvider newProvider(String name) {
-        EntityManagerFactoryProvider emfProvider = registry.get(name);
-        if (emfProvider == null) {
-            throw new PersistenceError("no hibernate configuration identified by '" + name + "' is available");
-        }
-        return new PersistenceProvider(emfProvider);
+        return new PersistenceProvider(getHibernateConfiguration(name));
     }
 
     @Override
     public HibernateConfiguration getHibernateConfiguration(String name) {
-        HibernateConfiguration config = registry.get(name);
-        if (config == null) {
-            throw new PersistenceError("no hibernate configuration identified by '" + name + "' is available");
-        }
-        return config;
+        return this.<HibernateConfiguration> getRegistryContribution(XP, name)
+                   .orElseThrow(() -> new PersistenceError(
+                           String.format("No hibernate configuration identified by '%s' is available", name)));
     }
 
 }

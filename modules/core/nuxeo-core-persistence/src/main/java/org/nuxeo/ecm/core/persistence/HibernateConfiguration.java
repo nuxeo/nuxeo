@@ -42,6 +42,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.jtajca.NamingContextFactory;
@@ -51,6 +53,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  */
 @XObject("hibernateConfiguration")
+@XRegistry
 public class HibernateConfiguration implements EntityManagerFactoryProvider {
 
     public static final String RESOURCE_LOCAL = PersistenceUnitTransactionType.RESOURCE_LOCAL.name();
@@ -60,6 +63,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     public static final String TXTYPE_PROPERTY_NAME = "org.nuxeo.runtime.txType";
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("datasource")
@@ -89,7 +93,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     public EntityManagerFactory getFactory(String txType) {
         Map<String, Object> properties = new HashMap<>();
         // hibernate properties
-        properties.putAll((Map<String, Object>) (Map) hibernateProperties);
+        properties.putAll((Map) hibernateProperties);
         // annotated classes
         properties.put(AvailableSettings.LOADED_CLASSES, annotedClasses);
         if (txType == null) {
@@ -175,13 +179,6 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         } catch (IOException e) {
             throw new PersistenceError("Cannot load hibernate configuration from " + location, e);
         }
-    }
-
-    public void merge(HibernateConfiguration other) {
-        assert name.equals(other.name) : " cannot merge configuration that do not have the same persistence unit";
-        annotedClasses.addAll(other.annotedClasses);
-        hibernateProperties.clear();
-        hibernateProperties.putAll(other.hibernateProperties);
     }
 
 }
