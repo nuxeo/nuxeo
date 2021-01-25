@@ -31,6 +31,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
  * @since 5.6
  */
 @XObject("configuration")
+@XRegistry(compatWarnOnMerge = true)
 public class MultiTenantConfiguration {
 
     @XNode("tenantDocumentType")

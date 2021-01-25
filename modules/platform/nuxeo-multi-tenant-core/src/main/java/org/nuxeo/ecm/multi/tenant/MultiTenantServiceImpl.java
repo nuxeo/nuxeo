@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -47,9 +45,9 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -59,13 +57,35 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class MultiTenantServiceImpl extends DefaultComponent implements MultiTenantService {
 
-    private static final Log log = LogFactory.getLog(MultiTenantServiceImpl.class);
-
     public static final String CONFIGURATION_EP = "configuration";
 
     private MultiTenantConfiguration configuration;
 
     private Boolean isTenantIsolationEnabled;
+
+    @Override
+    public void start(ComponentContext context) {
+        configuration = this.<MultiTenantConfiguration> getRegistryContribution(CONFIGURATION_EP)
+                            .orElseThrow(() -> new RuntimeServiceException("Missing tenant configuration"));
+        TransactionHelper.runInTransaction(() -> {
+            RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+            for (String repositoryName : repositoryManager.getRepositoryNames()) {
+                new UnrestrictedSessionRunner(repositoryName) {
+                    @Override
+                    public void run() {
+                        if (isTenantIsolationEnabledByDefault() && !isTenantIsolationEnabled(session)) {
+                            enableTenantIsolation(session);
+                        }
+                    }
+                }.runUnrestricted();
+            }
+        });
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        configuration = null;
+    }
 
     @Override
     public boolean isTenantIsolationEnabledByDefault() {
@@ -241,46 +261,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
-        TransactionHelper.runInTransaction(() -> {
-            RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-            for (String repositoryName : repositoryManager.getRepositoryNames()) {
-                new UnrestrictedSessionRunner(repositoryName) {
-                    @Override
-                    public void run() {
-                        if (isTenantIsolationEnabledByDefault() && !isTenantIsolationEnabled(session)) {
-                            enableTenantIsolation(session);
-                        }
-                    }
-                }.runUnrestricted();
-            }
-        });
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIGURATION_EP.equals(extensionPoint)) {
-            if (configuration != null) {
-                log.warn("Overriding existing multi tenant configuration");
-            }
-            configuration = (MultiTenantConfiguration) contribution;
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIGURATION_EP.equals(extensionPoint)) {
-            if (contribution.equals(configuration)) {
-                configuration = null;
-            }
-        }
-    }
-
-    @Override
     public List<String> getProhibitedGroups() {
-        if (configuration != null) {
-            return configuration.getProhibitedGroups();
-        }
-        return null;
+        return configuration.getProhibitedGroups();
     }
 }
