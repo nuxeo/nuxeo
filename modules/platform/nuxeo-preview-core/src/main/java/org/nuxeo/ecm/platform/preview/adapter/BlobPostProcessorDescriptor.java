@@ -20,11 +20,15 @@ package org.nuxeo.ecm.platform.preview.adapter;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 @XObject("blobPostProcessor")
+@XRegistry
+@XRegistryId("@class")
 public class BlobPostProcessorDescriptor {
 
     @XNode("@class")

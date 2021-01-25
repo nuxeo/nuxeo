@@ -18,6 +18,9 @@ package org.nuxeo.ecm.platform.preview.adapter;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor for contributed Preview Adapter factories.
@@ -25,54 +28,33 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author tiry
  */
 @XObject(value = "previewAdapter")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class AdapterFactoryDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
-    @XNode("@enabled")
-    private boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    private boolean enabled;
 
     @XNode("typeName")
     private String typeName;
 
     @XNode("class")
-    private Class<?> adapterClass;
+    private Class<? extends PreviewAdapterFactory> adapterClass;
 
-    public Class<?> getAdapterClass() {
+    public Class<? extends PreviewAdapterFactory> getAdapterClass() {
         return adapterClass;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getTypeName() {
         return typeName;
-    }
-
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
-    }
-
-    public PreviewAdapterFactory getNewInstance() {
-        try {
-            return (PreviewAdapterFactory) adapterClass.getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

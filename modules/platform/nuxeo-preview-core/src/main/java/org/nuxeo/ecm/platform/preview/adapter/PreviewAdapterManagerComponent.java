@@ -29,7 +29,8 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.preview.adapter.factories.BlobHolderPreviewAdapterFactory;
 import org.nuxeo.ecm.platform.preview.adapter.factories.FileBasedPreviewAdapterFactory;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -56,39 +57,47 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements 
     // Component and EP management
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
-        if (ADAPTER_FACTORY_EP.equals(extensionPoint)) {
-            AdapterFactoryDescriptor desc = (AdapterFactoryDescriptor) contribution;
-            if (desc.isEnabled()) {
-                PreviewAdapterFactory factory = desc.getNewInstance();
-                if (factory != null) {
-                    factoryRegistry.put(desc.getTypeName(), factory);
+    public void start(ComponentContext context) {
+        factoryRegistry = new HashMap<>();
+        this.<AdapterFactoryDescriptor> getRegistryContributions(ADAPTER_FACTORY_EP).forEach(desc -> {
+            PreviewAdapterFactory factory = newInstance(desc.getAdapterClass());
+            if (factory != null) {
+                factoryRegistry.put(desc.getTypeName(), factory);
+            }
+        });
+        previewerFactory = new HashMap<>();
+        this.<MimeTypePreviewerDescriptor> getRegistryContributions(PREVIEWED_MIME_TYPE).forEach(desc -> {
+            MimeTypePreviewer previewer = newInstance(desc.getKlass());
+            if (previewer != null) {
+                for (String pattern : desc.getPatterns()) {
+                    previewerFactory.put(pattern, previewer);
                 }
-            } else {
-                factoryRegistry.remove(desc.getTypeName());
             }
-        } else if (PREVIEWED_MIME_TYPE.equals(extensionPoint)) {
-            MimeTypePreviewerDescriptor desc = (MimeTypePreviewerDescriptor) contribution;
-            for (String pattern : desc.getPatterns()) {
-                previewerFactory.put(pattern, newInstance(desc.getKlass()));
+        });
+        blobPostProcessors = new ArrayList<>();
+        this.<BlobPostProcessorDescriptor> getRegistryContributions(BLOB_POST_PROCESSOR_EP).forEach(desc -> {
+            BlobPostProcessor processor = newInstance(desc.getKlass());
+            if (processor != null) {
+                blobPostProcessors.add(processor);
             }
-        } else if (BLOB_POST_PROCESSOR_EP.equals(extensionPoint)) {
-            BlobPostProcessorDescriptor desc = (BlobPostProcessorDescriptor) contribution;
-            blobPostProcessors.add(newInstance(desc.getKlass()));
-        }
+        });
     }
 
     protected <T> T newInstance(Class<T> klass) {
         try {
             return klass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            addRuntimeMessage(Level.ERROR, e.getMessage());
+            log.error(e, e);
+            return null;
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+    public void stop(ComponentContext context) throws InterruptedException {
+        factoryRegistry = null;
+        previewerFactory = null;
+        blobPostProcessors = null;
     }
 
     // service interface impl
