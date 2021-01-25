@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.jdbc.querymaker.contrib.test.override2">
+
+  <extension target="org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService" point="queryMaker">
+    <queryMaker name="A" enable="true">
+      org.nuxeo.ecm.core.storage.sql.TestQueryMakerService$DummyQueryMaker2
+    </queryMaker>
+  </extension>
+
+</component>

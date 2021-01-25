@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.storage.sql.jdbc.querymaker.contrib"
-  version="1.0.0">
+<component name="org.nuxeo.ecm.core.storage.sql.jdbc.querymaker.contrib">
 
-  <extension target="org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService"
-    point="queryMaker">
-    <queryMaker name="NXQL">org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker
+  <extension target="org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService" point="queryMaker">
+    <queryMaker name="NXQL">
+      org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker
     </queryMaker>
   </extension>
 

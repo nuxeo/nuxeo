@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.utils.DurationUtils;
 import org.w3c.dom.Node;
 
@@ -196,6 +197,9 @@ public abstract class XValueFactory {
     public static final XValueFactory CLASS = new XValueFactory() {
         @Override
         public Object deserialize(Context context, String value) {
+            if (StringUtils.isBlank(value)) {
+                return null;
+            }
             try {
                 return context.loadClass(value);
             } catch (ClassNotFoundException e) {
