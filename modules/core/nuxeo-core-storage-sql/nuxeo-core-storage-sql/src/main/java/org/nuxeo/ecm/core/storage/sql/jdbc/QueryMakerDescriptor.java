@@ -20,20 +20,36 @@ package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor for the registration of a QueryMaker.
  */
 @XObject(value = "queryMaker")
+@XRegistry(enable = false)
 public class QueryMakerDescriptor {
 
     @XNode("@name")
-    public String name = "";
+    @XRegistryId
+    protected String name = "";
 
-    @XNode("@enabled")
-    public boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    public boolean enabled;
 
     @XNode(value = "", trim = true)
-    public Class<? extends QueryMaker> queryMaker;
+    protected Class<? extends QueryMaker> queryMaker;
+
+    /** @since 11.5 **/
+    public String getName() {
+        return name;
+    }
+
+    /** @since 11.5 **/
+    public Class<? extends QueryMaker> getQueryMaker() {
+        return queryMaker;
+    }
 
 }

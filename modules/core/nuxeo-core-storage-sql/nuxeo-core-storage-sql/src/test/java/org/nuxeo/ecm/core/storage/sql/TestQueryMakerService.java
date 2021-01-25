@@ -23,26 +23,33 @@ import static org.junit.Assert.assertSame;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
+import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
-import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.core.storage.sql:OSGI-INF/querymaker-service.xml")
+@Deploy("org.nuxeo.ecm.core.storage.sql.tests:test-querymaker-contrib.xml")
 public class TestQueryMakerService {
 
-    protected QueryMakerDescriptor desc;
+    @Inject
+    protected QueryMakerService queryMakerService;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     public static class DummyQueryMaker1 implements QueryMaker {
         @Override
@@ -82,56 +89,31 @@ public class TestQueryMakerService {
 
     @Test
     public void testBasic() throws Exception {
-        QueryMakerService queryMakerService = Framework.getService(QueryMakerService.class);
-        QueryMakerDescriptor d;
         List<Class<? extends QueryMaker>> l;
 
-        // first
-        d = new QueryMakerDescriptor();
-        d.name = "A";
-        d.queryMaker = DummyQueryMaker1.class;
-        queryMakerService.registerQueryMaker(d);
         l = queryMakerService.getQueryMakers();
-        assertEquals(1, l.size());
+        assertEquals(3, l.size());
         assertSame(DummyQueryMaker1.class, l.get(0));
+        assertSame(DummyQueryMaker2.class, l.get(1));
+        assertSame(NXQLQueryMaker.class, l.get(2));
 
-        // second
-        d = new QueryMakerDescriptor();
-        d.name = "B";
-        d.queryMaker = DummyQueryMaker2.class;
-        queryMakerService.registerQueryMaker(d);
+        hotDeployer.deploy("org.nuxeo.ecm.core.storage.sql.tests:test-querymaker-override.xml");
+
+        // disabled first, overridden second
         l = queryMakerService.getQueryMakers();
         assertEquals(2, l.size());
         assertSame(DummyQueryMaker1.class, l.get(0));
-        assertSame(DummyQueryMaker2.class, l.get(1));
+        assertSame(NXQLQueryMaker.class, l.get(1));
 
-        // disable first
-        d = new QueryMakerDescriptor();
-        d.name = "A";
-        d.enabled = false;
-        queryMakerService.registerQueryMaker(d);
-        l = queryMakerService.getQueryMakers();
-        assertEquals(1, l.size());
-        assertSame(DummyQueryMaker2.class, l.get(0));
-
-        // override second
-        d = new QueryMakerDescriptor();
-        d.name = "B";
-        d.queryMaker = DummyQueryMaker1.class;
-        queryMakerService.registerQueryMaker(d);
-        l = queryMakerService.getQueryMakers();
-        assertEquals(1, l.size());
-        assertSame(DummyQueryMaker1.class, l.get(0));
+        hotDeployer.deploy("org.nuxeo.ecm.core.storage.sql.tests:test-querymaker-override2.xml");
 
         // add another of the first
-        d = new QueryMakerDescriptor();
-        d.name = "A";
-        d.queryMaker = DummyQueryMaker2.class;
-        queryMakerService.registerQueryMaker(d);
         l = queryMakerService.getQueryMakers();
-        assertEquals(2, l.size());
-        assertSame(DummyQueryMaker1.class, l.get(0));
-        assertSame(DummyQueryMaker2.class, l.get(1));
+        assertEquals(3, l.size());
+        // A is still the first one
+        assertSame(DummyQueryMaker2.class, l.get(0));
+        assertSame(DummyQueryMaker1.class, l.get(1));
+        assertSame(NXQLQueryMaker.class, l.get(2));
     }
 
 }

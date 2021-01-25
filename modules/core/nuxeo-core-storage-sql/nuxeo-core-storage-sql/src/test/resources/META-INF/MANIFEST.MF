@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Bundle-Name: org.nuxeo.ecm.core.storage.sql.tests
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.tests;singleton:=true
