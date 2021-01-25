@@ -20,37 +20,23 @@ package org.nuxeo.ecm.core.storage.lock;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.lock.LockManager;
 
 /**
  * Descriptor of a {@link LockManager} for the {@link LockManagerService}.
  */
 @XObject(value = "lockmanager")
+@XRegistry
 public class LockManagerDescriptor {
 
-    public LockManagerDescriptor() {
-    }
-
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@class")
     public Class<? extends LockManager> klass;
-
-    /** Copy constructor. */
-    public LockManagerDescriptor(LockManagerDescriptor other) {
-        name = other.name;
-        klass = other.klass;
-    }
-
-    public void merge(LockManagerDescriptor other) {
-        if (other.name != null) {
-            name = other.name;
-        }
-        if (other.klass != null) {
-            klass = other.klass;
-        }
-    }
 
     @Override
     public String toString() {
