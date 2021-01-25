@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.api.propertiesmapping.impl;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -26,14 +27,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingContributionRegistry;
 import org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingDescriptor;
 import org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingService;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -47,24 +46,15 @@ public class PropertiesMappingComponent extends DefaultComponent implements Prop
 
     public static final String MAPPING_EP = "mapping";
 
-    protected PropertiesMappingContributionRegistry mappingsRegistry = new PropertiesMappingContributionRegistry();
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (MAPPING_EP.equals(extensionPoint)) {
-            PropertiesMappingDescriptor desc = (PropertiesMappingDescriptor) contribution;
-            mappingsRegistry.addContribution(desc);
-        }
-    }
-
     @Override
     public Map<String, String> getMapping(String mappingName) {
-        return mappingsRegistry.getMappingProperties(mappingName);
+        return this.<PropertiesMappingDescriptor> getRegistryContribution(MAPPING_EP, mappingName)
+                   .map(PropertiesMappingDescriptor::getProperties)
+                   .orElse(Collections.emptyMap());
     }
 
     @Override
-    public void mapProperties(CoreSession session, DocumentModel sourceDoc, DocumentModel targetDoc, String mapping)
-            {
+    public void mapProperties(CoreSession session, DocumentModel sourceDoc, DocumentModel targetDoc, String mapping) {
         Map<String, String> properties = getMapping(mapping);
         for (String keyProp : properties.keySet()) {
             // verify that mapping can be done
