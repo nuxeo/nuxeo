@@ -22,7 +22,6 @@ import java.util.UUID;
 
 import org.nuxeo.ecm.platform.oauth.consumers.NuxeoOAuthConsumer;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -52,19 +51,13 @@ public class OAuthServerKeyManagerImpl extends DefaultComponent implements OAuth
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
-        if (XP_SERVER_KEY.equals(extensionPoint)) {
-            serverKeyDescriptor = (ServerKeyDescriptor) contribution;
-        }
+    public void start(ComponentContext context) {
+        serverKeyDescriptor = this.<ServerKeyDescriptor> getRegistryContribution(XP_SERVER_KEY).orElse(null);
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
-        if (XP_SERVER_KEY.equals(extensionPoint)) {
-            serverKeyDescriptor = null;
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        serverKeyDescriptor = null;
     }
 
     @Override

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.oauth.keys;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Xmap object used to represent the contribution to {@link OAuthServerKeyManager}. =&gt; contribute a simple RSA Key
@@ -28,6 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author tiry
  */
 @XObject("serverKeyPair")
+@XRegistry(compatWarnOnMerge = true)
 public class ServerKeyDescriptor {
 
     @XNode("privateKey")
