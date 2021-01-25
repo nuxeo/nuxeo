@@ -19,13 +19,10 @@
 
 package org.nuxeo.ecm.core.schema.types.resolver;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -37,33 +34,15 @@ public class ObjectResolverServiceImpl extends DefaultComponent implements Objec
 
     private static final Log log = LogFactory.getLog(ObjectResolverServiceImpl.class);
 
-    private Map<String, Class<? extends ObjectResolver>> resolvers;
-
-    @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        resolvers = new HashMap<>();
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("resolvers")) {
-            ObjectResolverDescriptor erd = (ObjectResolverDescriptor) contribution;
-            resolvers.put(erd.getType(), erd.getResolver());
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("resolvers")) {
-            ObjectResolverDescriptor erd = (ObjectResolverDescriptor) contribution;
-            resolvers.remove(erd.getType());
-        }
-    }
+    private static final String XP = "resolvers";
 
     @Override
     public ObjectResolver getResolver(String type, Map<String, String> parameters) {
-        Class<? extends ObjectResolver> resolverClass = resolvers.get(type);
+        ObjectResolverDescriptor desc = this.<ObjectResolverDescriptor> getRegistryContribution(XP, type).orElse(null);
+        if (desc == null) {
+            return null;
+        }
+        Class<? extends ObjectResolver> resolverClass = desc.getResolver();
         if (resolverClass == null) {
             return null;
         }
