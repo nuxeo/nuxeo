@@ -20,14 +20,12 @@
 
 package org.nuxeo.elasticsearch.http.readonly.service;
 
+import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.elasticsearch.http.readonly.filter.SearchRequestFilter;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -39,25 +37,25 @@ public class RequestFilterService extends DefaultComponent {
     public static final ComponentName NAME = new ComponentName(ComponentName.DEFAULT_TYPE,
             "org.nuxeo.elasticsearch.http.readonly.RequestFilterService");
 
-    private static final Log log = LogFactory.getLog(RequestFilterService.class);
-
     protected static final String FILTER_EXT_POINT = "filters";
 
     protected Map<String, Class<? extends SearchRequestFilter>> requestFilters;
 
     @Override
-    public void activate(ComponentContext context) {
-        requestFilters = new ConcurrentHashMap<>();
+    public void start(ComponentContext context) {
+        requestFilters = this.<RequestFilterDescriptor> getRegistryContributions(FILTER_EXT_POINT)
+                             .stream()
+                             .collect(Collectors.toConcurrentMap(RequestFilterDescriptor::getIndex,
+                                     RequestFilterDescriptor::getFilterClass));
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        requestFilters.clear();
+    public void stop(ComponentContext context) throws InterruptedException {
         requestFilters = null;
     }
 
     public Map<String, Class<? extends SearchRequestFilter>> getRequestFilters() {
-        return requestFilters;
+        return Collections.unmodifiableMap(requestFilters);
 
     }
 
@@ -67,26 +65,6 @@ public class RequestFilterService extends DefaultComponent {
             return null;
         }
         return clazz.getDeclaredConstructor().newInstance();
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (FILTER_EXT_POINT.equals(extensionPoint)) {
-            RequestFilterDescriptor des = (RequestFilterDescriptor) contribution;
-            requestFilters.put(des.getIndex(), des.getFilterClass());
-            log.info("Registered filter: " + des.getFilterClass() + " for index " + des.getIndex());
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (FILTER_EXT_POINT.equals(extensionPoint)) {
-            RequestFilterDescriptor des = (RequestFilterDescriptor) contribution;
-            Class<? extends SearchRequestFilter> filter = requestFilters.remove(des.getIndex());
-            if (filter != null) {
-                log.info("Unregistered filter: " + filter + " for index " + des.getIndex());
-            }
-        }
     }
 
 }

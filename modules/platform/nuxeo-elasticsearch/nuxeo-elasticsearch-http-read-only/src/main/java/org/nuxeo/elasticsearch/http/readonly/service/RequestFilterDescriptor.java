@@ -20,34 +20,25 @@
 
 package org.nuxeo.elasticsearch.http.readonly.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.elasticsearch.http.readonly.filter.SearchRequestFilter;
 
 /**
  * @since 7.4
  */
 @XObject("requestFilter")
+@XRegistry
 public class RequestFilterDescriptor {
 
-    private static final Log log = LogFactory.getLog(RequestFilterDescriptor.class);
-
     @XNode("@index")
+    @XRegistryId
     String index;
 
     @XNode("@filterClass")
     private Class<? extends SearchRequestFilter> filterClass;
-
-    public RequestFilterDescriptor() {
-    }
-
-    public RequestFilterDescriptor(String index, Class<? extends SearchRequestFilter> filterClass) {
-        super();
-        this.index = index;
-        this.filterClass = filterClass;
-    }
 
     public Class<? extends SearchRequestFilter> getFilterClass() {
         return filterClass;
@@ -55,14 +46,6 @@ public class RequestFilterDescriptor {
 
     public String getIndex() {
         return index;
-    }
-
-    public void setFilterClass(Class<? extends SearchRequestFilter> filterClass) {
-        this.filterClass = filterClass;
-    }
-
-    public void setIndex(String index) {
-        this.index = index;
     }
 
 }
