@@ -72,6 +72,8 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
+import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -112,8 +114,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      * key).
      */
     protected Cache collectionSyncRootMemberCache;
-
-    protected ChangeFinderRegistry changeFinderRegistry;
 
     protected FileSystemChangeFinder changeFinder;
 
@@ -509,15 +509,13 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      * @since 5.9.5
      */
     protected String computeSyncRootsQuery(String username) {
-        return String.format(
-                "SELECT ecm:uuid FROM Document" //
-                        + " WHERE %s/*1/username = %s" //
-                        + " AND %s/*1/enabled = 1" //
-                        + " AND ecm:isTrashed = 0" //
-                        + " AND ecm:isVersion = 0" //
-                        + " ORDER BY dc:title, dc:created DESC",
-                DRIVE_SUBSCRIPTIONS_PROPERTY, NXQLQueryBuilder.prepareStringLiteral(username, true, true),
-                DRIVE_SUBSCRIPTIONS_PROPERTY);
+        return String.format("SELECT ecm:uuid FROM Document" //
+                + " WHERE %s/*1/username = %s" //
+                + " AND %s/*1/enabled = 1" //
+                + " AND ecm:isTrashed = 0" //
+                + " AND ecm:isVersion = 0" //
+                + " ORDER BY dc:title, dc:created DESC", DRIVE_SUBSCRIPTIONS_PROPERTY,
+                NXQLQueryBuilder.prepareStringLiteral(username, true, true), DRIVE_SUBSCRIPTIONS_PROPERTY);
     }
 
     @Override
@@ -548,37 +546,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     /*------------------------ DefaultComponent -----------------------------*/
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CHANGE_FINDER_EP.equals(extensionPoint)) {
-            changeFinderRegistry.addContribution((ChangeFinderDescriptor) contribution);
-        } else {
-            log.error("Unknown extension point {}", extensionPoint);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CHANGE_FINDER_EP.equals(extensionPoint)) {
-            changeFinderRegistry.removeContribution((ChangeFinderDescriptor) contribution);
-        } else {
-            log.error("Unknown extension point {}", extensionPoint);
-        }
-    }
-
-    @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        if (changeFinderRegistry == null) {
-            changeFinderRegistry = new ChangeFinderRegistry();
-        }
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        super.deactivate(context);
-        changeFinderRegistry = null;
-    }
 
     @Override
     public int getApplicationStartedOrder() {
@@ -598,7 +565,15 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         syncRootCache = Framework.getService(CacheService.class).getCache(DRIVE_SYNC_ROOT_CACHE);
         collectionSyncRootMemberCache = Framework.getService(CacheService.class)
                                                  .getCache(DRIVE_COLLECTION_SYNC_ROOT_MEMBER_CACHE);
-        changeFinder = changeFinderRegistry.changeFinder;
+        changeFinder = this.<ChangeFinderDescriptor> getRegistryContribution(CHANGE_FINDER_EP).map(desc -> {
+            try {
+                return desc.getChangeFinder();
+            } catch (ReflectiveOperationException e) {
+                addRuntimeMessage(Level.ERROR, e.getMessage());
+                log.error(e, e);
+                throw new RuntimeServiceException(e);
+            }
+        }).orElseThrow(() -> new RuntimeServiceException("Missing change finder configuration"));
     }
 
     @Override
