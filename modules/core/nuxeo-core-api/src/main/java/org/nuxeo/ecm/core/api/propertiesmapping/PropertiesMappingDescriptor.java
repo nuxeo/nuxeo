@@ -24,14 +24,18 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @since 5.6
  */
 @XObject("mapping")
+@XRegistry(compatWarnOnMerge = true)
 public class PropertiesMappingDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNodeMap(value = "property", key = "@path", type = HashMap.class, componentType = String.class)
