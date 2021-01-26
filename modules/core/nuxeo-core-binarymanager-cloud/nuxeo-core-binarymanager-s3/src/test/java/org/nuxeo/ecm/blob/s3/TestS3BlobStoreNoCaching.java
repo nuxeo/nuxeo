@@ -21,6 +21,7 @@ package org.nuxeo.ecm.blob.s3;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.AssumptionViolatedException;
 import org.junit.Test;
 import org.nuxeo.runtime.test.runner.Deploy;
 
@@ -35,6 +36,11 @@ public class TestS3BlobStoreNoCaching extends TestS3BlobStoreAbstract {
         assertFalse(bp.isTransactional());
         assertFalse(bp.isRecordMode());
         assertTrue(bs.getKeyStrategy().useDeDuplication());
+    }
+
+    @Override
+    public void testBlobGetFile() {
+        throw new AssumptionViolatedException("S3BlobStore with no caching has no File");
     }
 
 }

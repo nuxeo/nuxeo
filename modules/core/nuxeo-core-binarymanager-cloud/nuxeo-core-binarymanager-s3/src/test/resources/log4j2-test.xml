@@ -12,6 +12,7 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
+    <Logger name="org.nuxeo.ecm.core.blob.AbstractBlobStore" level="trace" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />

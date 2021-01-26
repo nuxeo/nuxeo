@@ -1,0 +1,7 @@
+@startuml
+participant Nuxeo order 1
+participant S3 order 2
+== Read (no cache, missing) ==
+Nuxeo <-- S3: missing
+                                hnote right: nocache/acbd18db4cc2f85cedef654fccc4a4d8
+@enduml
