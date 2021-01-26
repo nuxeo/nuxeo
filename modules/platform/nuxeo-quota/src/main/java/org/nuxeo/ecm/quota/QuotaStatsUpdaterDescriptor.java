@@ -21,6 +21,9 @@ package org.nuxeo.ecm.quota;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor object for registering {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s.
@@ -29,13 +32,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  */
 @XObject("quotaStatsUpdater")
+@XRegistry(enable = false)
 public class QuotaStatsUpdaterDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
-    @XNode("@enabled")
-    protected boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    protected boolean enabled;
 
     @XNode("@class")
     protected Class<? extends QuotaStatsUpdater> quotaStatsUpdaterClass;
@@ -50,51 +56,16 @@ public class QuotaStatsUpdaterDescriptor {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
     public Class<? extends QuotaStatsUpdater> getQuotaStatsUpdaterClass() {
         return quotaStatsUpdaterClass;
-    }
-
-    public void setQuotaStatsUpdaterClass(Class<? extends QuotaStatsUpdater> quotaStatsUpdaterClass) {
-        this.quotaStatsUpdaterClass = quotaStatsUpdaterClass;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
     public String getDescriptionLabel() {
         return descriptionLabel;
-    }
-
-    public void setDescriptionLabel(String descriptionLabel) {
-        this.descriptionLabel = descriptionLabel;
-    }
-
-    @Override
-    public QuotaStatsUpdaterDescriptor clone() {
-        QuotaStatsUpdaterDescriptor clone = new QuotaStatsUpdaterDescriptor();
-        clone.setName(getName());
-        clone.setEnabled(isEnabled());
-        clone.setQuotaStatsUpdaterClass(getQuotaStatsUpdaterClass());
-        clone.setLabel(getLabel());
-        clone.setDescriptionLabel(getDescriptionLabel());
-        return clone;
     }
 
 }

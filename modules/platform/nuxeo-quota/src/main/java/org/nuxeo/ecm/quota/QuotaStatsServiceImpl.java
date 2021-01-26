@@ -21,11 +21,12 @@ package org.nuxeo.ecm.quota;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
@@ -42,9 +43,10 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaAwareDocumentFactory;
+import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -54,7 +56,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStatsService {
 
-    private static final Log log = LogFactory.getLog(QuotaStatsServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(QuotaStatsServiceImpl.class);
 
     public static final String STATUS_INITIAL_COMPUTATION_QUEUED = "status.quota.initialComputationQueued";
 
@@ -67,35 +69,49 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
 
     public static final String QUOTA_STATS_UPDATERS_EP = "quotaStatsUpdaters";
 
-    protected QuotaStatsUpdaterRegistry quotaStatsUpdaterRegistry;
+    protected static final String USER_WORKSPACES_ROOT = "UserWorkspacesRoot";
+
+    protected Map<String, QuotaStatsUpdater> updaters;
 
     @Override
-    public void activate(ComponentContext context) {
-        quotaStatsUpdaterRegistry = new QuotaStatsUpdaterRegistry();
+    public void start(ComponentContext context) {
+        updaters = new HashMap<>();
+        this.<QuotaStatsUpdaterDescriptor> getRegistryContributions(QUOTA_STATS_UPDATERS_EP).forEach(contrib -> {
+            try {
+                String name = contrib.getName();
+                QuotaStatsUpdater updater = contrib.getQuotaStatsUpdaterClass().getDeclaredConstructor().newInstance();
+                updater.setName(name);
+                updater.setLabel(contrib.getLabel());
+                updater.setDescriptionLabel(contrib.getDescriptionLabel());
+                updaters.put(name, updater);
+            } catch (ReflectiveOperationException e) {
+                addRuntimeMessage(Level.ERROR, e.getMessage());
+                throw new RuntimeServiceException(e);
+            }
+        });
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        updaters = null;
     }
 
     @Override
     public List<QuotaStatsUpdater> getQuotaStatsUpdaters() {
-        return quotaStatsUpdaterRegistry.getQuotaStatsUpdaters();
-    }
-
-    public QuotaStatsUpdater getQuotaStatsUpdaters(String updaterName) {
-        return quotaStatsUpdaterRegistry.getQuotaStatsUpdater(updaterName);
+        return new ArrayList<>(updaters.values());
     }
 
     @Override
     public void updateStatistics(final DocumentEventContext docCtx, final Event event) {
-        // Open via session rather than repo name so that session.save and sync
-        // is done automatically
+        // Open via session rather than repo name so that session.save and sync is done automatically
         new UnrestrictedSessionRunner(docCtx.getCoreSession()) {
             @Override
             public void run() {
-                List<QuotaStatsUpdater> quotaStatsUpdaters = quotaStatsUpdaterRegistry.getQuotaStatsUpdaters();
-                for (QuotaStatsUpdater updater : quotaStatsUpdaters) {
+                for (QuotaStatsUpdater updater : updaters.values()) {
                     if (log.isTraceEnabled()) {
                         DocumentModel doc = docCtx.getSourceDocument();
-                        log.trace("Calling updateStatistics of " + updater.getName() + " for " + event.getName()
-                                + " on " + doc.getId() + " (" + doc.getPathAsString() + ")");
+                        log.trace("Calling updateStatistics of {} for {} on {} ({})", updater::getName, event::getName,
+                                doc::getId, doc::getPathAsString);
                     }
                     updater.updateStatistics(session, docCtx, event);
                 }
@@ -106,7 +122,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     @Override
     public void computeInitialStatistics(String updaterName, CoreSession session, QuotaStatsInitialWork currentWorker,
             String path) {
-        QuotaStatsUpdater updater = quotaStatsUpdaterRegistry.getQuotaStatsUpdater(updaterName);
+        QuotaStatsUpdater updater = updaters.get(updaterName);
         if (updater != null) {
             updater.computeInitialStatistics(session, currentWorker, path);
         }
@@ -139,25 +155,10 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (QUOTA_STATS_UPDATERS_EP.equals(extensionPoint)) {
-            quotaStatsUpdaterRegistry.addContribution((QuotaStatsUpdaterDescriptor) contribution);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (QUOTA_STATS_UPDATERS_EP.equals(extensionPoint)) {
-            quotaStatsUpdaterRegistry.removeContribution((QuotaStatsUpdaterDescriptor) contribution);
-        }
-    }
-
-    @Override
     public long getQuotaFromParent(DocumentModel doc, CoreSession session) {
         List<DocumentModel> parents = getParentsInReverseOrder(doc, session);
-        // if a user workspace, only interested in the qouta on its direct
-        // parent
-        if (parents.size() > 0 && "UserWorkspacesRoot".equals(parents.get(0).getType())) {
+        // if a user workspace, only interested in the qouta on its direct parent
+        if (!parents.isEmpty() && USER_WORKSPACES_ROOT.equals(parents.get(0).getType())) {
             QuotaAware qa = parents.get(0).getAdapter(QuotaAware.class);
             return qa != null ? qa.getMaxQuota() : -1L;
         }
@@ -213,24 +214,22 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
         }.getsQuotaSetOnUserWorkspaces();
     }
 
-    protected List<DocumentModel> getParentsInReverseOrder(DocumentModel doc, CoreSession session)
-            {
+    protected List<DocumentModel> getParentsInReverseOrder(DocumentModel doc, CoreSession session) {
         UnrestrictedParentsFetcher parentsFetcher = new UnrestrictedParentsFetcher(doc, session);
         return parentsFetcher.getParents();
     }
 
     @Override
-    public void launchSetMaxQuotaOnUserWorkspaces(final long maxSize, DocumentModel context, CoreSession session)
-            {
+    public void launchSetMaxQuotaOnUserWorkspaces(final long maxSize, DocumentModel context, CoreSession session) {
         final String userWorkspacesId = getUserWorkspaceRootId(context, session);
         new UnrestrictedSessionRunner(session) {
 
             @Override
             public void run() {
-                try (IterableQueryResult results = session.queryAndFetch(String.format(
-                        "Select ecm:uuid from Workspace where ecm:parentId = '%s'  "
-                                + "AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
-                        userWorkspacesId), "NXQL")) {
+                try (IterableQueryResult results = session.queryAndFetch(
+                        String.format("Select ecm:uuid from Workspace where ecm:parentId = '%s'  "
+                                + "AND ecm:isVersion = 0 AND ecm:isTrashed = 0", userWorkspacesId),
+                        "NXQL")) {
                     int size = 0;
                     List<String> allIds = new ArrayList<>();
                     for (Map<String, Serializable> map : results) {
@@ -248,7 +247,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
                             ids = new ArrayList<>(); // don't reuse list
                         }
                     }
-                    if (ids.size() > 0) {
+                    if (!ids.isEmpty()) {
                         QuotaMaxSizeSetterWork work = new QuotaMaxSizeSetterWork(maxSize, ids,
                                 session.getRepositoryName());
                         workManager.schedule(work, true);
@@ -261,8 +260,9 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     public String getUserWorkspaceRootId(DocumentModel context, CoreSession session) {
         // get only the userworkspaces root under the first domain
         // it should be only one
-        DocumentModel currentUserWorkspace = Framework.getService(UserWorkspaceService.class).getUserPersonalWorkspace(
-                session.getPrincipal().getName(), context);
+        DocumentModel currentUserWorkspace = Framework.getService(UserWorkspaceService.class)
+                                                      .getUserPersonalWorkspace(session.getPrincipal().getName(),
+                                                              context);
 
         return ((IdRef) currentUserWorkspace.getParentRef()).value;
     }
@@ -271,15 +271,13 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     public boolean canSetMaxQuota(long maxQuota, DocumentModel doc, CoreSession session) {
         QuotaAware qa = null;
         DocumentModel parent = null;
-        if ("UserWorkspacesRoot".equals(doc.getType())) {
+        if (USER_WORKSPACES_ROOT.equals(doc.getType())) {
             return true;
         }
         List<DocumentModel> parents = getParentsInReverseOrder(doc, session);
-        if (!parents.isEmpty()) {
-            if ("UserWorkspacesRoot".equals(parents.get(0).getType())) {
-                // checks don't apply to personal user workspaces
-                return true;
-            }
+        if (!parents.isEmpty() && USER_WORKSPACES_ROOT.equals(parents.get(0).getType())) {
+            // checks don't apply to personal user workspaces
+            return true;
         }
         for (DocumentModel p : parents) {
             qa = p.getAdapter(QuotaAware.class);
@@ -403,7 +401,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     class QuotaFilter implements Filter {
         @Override
         public boolean accept(DocumentModel doc) {
-            if ("UserWorkspacesRoot".equals(doc.getType())) {
+            if (USER_WORKSPACES_ROOT.equals(doc.getType())) {
                 return false;
             }
             return true;
