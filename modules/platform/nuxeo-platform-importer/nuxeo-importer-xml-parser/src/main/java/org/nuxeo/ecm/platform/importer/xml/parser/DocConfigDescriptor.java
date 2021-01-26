@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.importer.xml.parser;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor that is used to define how DocumenModel should be created from XML input
@@ -29,12 +31,14 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @XObject("docConfig")
+@XRegistry(compatWarnOnMerge = true)
 public class DocConfigDescriptor {
 
     @XNode("@tagName")
     protected String tagName;
 
     @XNode("docType")
+    @XRegistryId
     protected String docType;
 
     @XNode("parent")
@@ -46,19 +50,8 @@ public class DocConfigDescriptor {
     @XNode("postCreationAutomationChain")
     protected String automationChain;
 
-    @XNode("@updateExistingDocuments")
-    protected boolean update = false;
-
-
-    public DocConfigDescriptor() {
-    }
-
-    public DocConfigDescriptor(String tagName, String docType, String parent, String name) {
-        this.tagName = tagName;
-        this.docType = docType;
-        this.parent = parent;
-        this.name = name;
-    }
+    @XNode(value = "@updateExistingDocuments", defaultAssignment = "false")
+    protected boolean update;
 
     public String getTagName() {
         return tagName;

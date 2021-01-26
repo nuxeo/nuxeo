@@ -23,45 +23,34 @@ package org.nuxeo.ecm.platform.importer.xml.parser;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Main Nuxeo Runtime component managing extension points and exposing {@link XMLImporterService}
+ * Main Nuxeo Runtime component managing extension points and exposing {@link XMLImporterService}.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class XMLImporterComponent extends DefaultComponent implements XMLImporterService {
 
-    protected List<DocConfigDescriptor> docConfigs = new ArrayList<>();
+    protected static final String DOCUMENT_MAPPING_XP = "documentMapping";
 
-    protected List<AttributeConfigDescriptor> attributeConfigs = new ArrayList<>();
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if ("documentMapping".equals(extensionPoint)) {
-            docConfigs.add((DocConfigDescriptor) contribution);
-        } else if ("attributeMapping".equals(extensionPoint)) {
-            attributeConfigs.add((AttributeConfigDescriptor) contribution);
-        }
-    }
+    protected static final String ATTRIBUTE_MAPPING_XP = "attributeMapping";
 
     protected ParserConfigRegistry getConfigRegistry() {
         return new ParserConfigRegistry() {
 
             @Override
             public List<DocConfigDescriptor> getDocCreationConfigs() {
-                return docConfigs;
+                return getRegistryContributions(DOCUMENT_MAPPING_XP);
             }
 
             @Override
             public List<AttributeConfigDescriptor> getAttributConfigs() {
-                return attributeConfigs;
+                return getRegistryContributions(ATTRIBUTE_MAPPING_XP);
             }
         };
     }
@@ -97,8 +86,7 @@ public class XMLImporterComponent extends DefaultComponent implements XMLImporte
 
     @Override
     public List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext,
-            boolean deferSave)
-            throws IOException {
+            boolean deferSave) throws IOException {
         XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getConfigRegistry(), mvelContext, deferSave);
         return importer.parse(source);
     }
