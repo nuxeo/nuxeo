@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Interface to be implemented by asynchronous services' statuses.
  *
@@ -37,4 +39,24 @@ public interface AsyncStatus<K extends Serializable> extends Serializable {
      * Returns true if command is completed.
      */
     boolean isCompleted();
+
+    /**
+     * Gets the error message if any.
+     * 
+     * @return the error message if any, {@code null} otherwise
+     * @since 11.5
+     */
+    default String getError() {
+        return null;
+    }
+
+    /**
+     * Checks if there is any error.
+     *
+     * @return {@code true} if there is any error, {@code false} otherwise
+     * @since 11.5
+     */
+    default boolean hasError() {
+        return StringUtils.isNotEmpty(getError());
+    }
 }

@@ -484,4 +484,8 @@ public class BulkStatus implements AsyncStatus<String> {
         return ToStringBuilder.reflectionToString(this);
     }
 
+    @Override
+    public String getError() {
+        return getErrorMessage();
+    }
 }

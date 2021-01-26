@@ -207,6 +207,14 @@ public class AsyncOperationAdapterTest {
                             .set("rollback", true)
                             .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
         assertEquals("Internal Server Error", error);
+
+        // Use an invalid query to ensure we get a bulk action error, even if it's completed
+        JsonNode jsonNode = async.newRequest(BulkRunAction.ID)
+                .set("action", AutomationBulkAction.ACTION_NAME)
+                .set("query", "SELCT * FROM Folder") // Invalid Query
+                .set("bucketSize", "10")
+                .set("batchSize", "5")
+                .execute(SC_INTERNAL_SERVER_ERROR);
     }
 
     @Test

@@ -42,6 +42,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -64,6 +65,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
@@ -320,7 +323,20 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     public String getError(String executionId) {
-        return (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_ERROR);
+        // Error on the operation/automation call, see #setError()
+        String error = (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_ERROR);
+        if (StringUtils.isNotEmpty(error)) {
+            return error;
+        }
+
+        if (!isAsync(executionId)) {
+            return null;
+        }
+
+        // Error on the bulk action
+        Serializable taskId = getTaskId(executionId);
+        AsyncStatus<Serializable> status = getAsyncService(executionId).getStatus((String) taskId);
+        return status.getError();
     }
 
     protected void setOutput(String executionId, Serializable output) {
