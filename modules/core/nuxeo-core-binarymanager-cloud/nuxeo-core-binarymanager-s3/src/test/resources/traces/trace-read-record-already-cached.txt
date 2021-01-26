@@ -1,0 +1,7 @@
+@startuml
+participant Nuxeo order 1
+participant Cache order 3
+== Read (record, already cached) ==
+Nuxeo <- Cache: read 3 bytes
+                                hnote right: id1@${VERSION1}
+@enduml

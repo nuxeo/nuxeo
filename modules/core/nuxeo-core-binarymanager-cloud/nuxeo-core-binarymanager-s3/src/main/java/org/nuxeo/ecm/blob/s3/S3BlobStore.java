@@ -321,17 +321,17 @@ public class S3BlobStore extends AbstractBlobStore {
 
     protected boolean exists(String bucketKey) {
         try {
-            amazonS3.getObjectMetadata(bucketName, bucketKey);
+            logTrace("-->", "getObjectMetadata");
+            logTrace("hnote right: " + bucketKey);
+            ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, bucketKey);
             if (log.isDebugEnabled()) {
                 log.debug("Blob s3://" + bucketName + "/" + bucketKey + " already exists");
             }
-            logTrace("<--", "exists");
-            logTrace("hnote right: " + bucketKey);
+            logTrace("<--", "exists (" + metadata.getContentLength() + " bytes)");
             return true;
         } catch (AmazonServiceException e) {
             if (isMissingKey(e)) {
                 logTrace("<--", "missing");
-                logTrace("hnote right: " + bucketKey);
                 return false;
             }
             throw e;
@@ -559,11 +559,12 @@ public class S3BlobStore extends AbstractBlobStore {
         }
 
         // copy the blob
-        logTrace("->", "getObjectMetadata");
+        logTrace("-->", "getObjectMetadata");
+        logTrace("hnote right: " + sourceBucketKey);
         ObjectMetadata sourceMetadata = amazonS3.getObjectMetadata(sourceBucketName, sourceBucketKey);
         // don't catch AmazonServiceException if missing, caller will do it
         long length = sourceMetadata.getContentLength();
-        logTrace("<-", length + " bytes");
+        logTrace("<--", "exists (" + length + " bytes)");
         try {
 
             copyBlob(sourceBlobStore.config, sourceBucketKey, config, bucketKey, move);
