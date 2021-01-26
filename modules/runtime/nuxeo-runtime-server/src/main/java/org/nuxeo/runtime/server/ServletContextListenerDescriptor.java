@@ -22,30 +22,28 @@ import javax.servlet.ServletContextListener;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("listener")
+@XRegistry(merge = false)
 public class ServletContextListenerDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     /**
      * @since 10.2
      */
-    @XNode("listener-class")
+    @XNode(value = "listener-class", fallback = "@class")
     protected Class<? extends ServletContextListener> clazz;
 
-    // compat
-    @XNode("@class")
-    public void setClass(Class<? extends ServletContextListener> clazz) {
-        this.clazz = clazz;
-    }
-
-    @XNode("@context")
-    protected String context = "/";
+    @XNode(value = "@context", defaultAssignment = "/")
+    protected String context;
 
     public Class<? extends ServletContextListener> getClazz() {
         return clazz;
@@ -59,7 +57,4 @@ public class ServletContextListenerDescriptor {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 }

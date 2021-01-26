@@ -20,12 +20,11 @@
 package org.nuxeo.runtime.server;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.server.WebApplication;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -38,7 +37,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ServerComponent extends DefaultComponent {
 
-    private static final Log log = LogFactory.getLog(ServerComponent.class);
+    private static final Logger log = LogManager.getLogger(ServerComponent.class);
 
     public static final String XP_WEB_APP = "webapp";
 
@@ -68,7 +67,7 @@ public class ServerComponent extends DefaultComponent {
             try {
                 p = Integer.parseInt(configPort);
             } catch (NumberFormatException e) {
-                log.error("Invalid port for embedded servlet container: " + configPort);
+                log.error("Invalid port for embedded servlet container: {}", configPort);
             }
         }
         configurator.initialize(p);
@@ -77,24 +76,7 @@ public class ServerComponent extends DefaultComponent {
     @Override
     public void deactivate(ComponentContext context) {
         configurator.close();
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_WEB_APP.equals(extensionPoint)) {
-            configurator.addWepApp((WebApplication) contribution);
-        } else if (XP_FILTER.equals(extensionPoint)) {
-            configurator.addFilter((FilterDescriptor) contribution);
-        } else if (XP_SERVLET.equals(extensionPoint)) {
-            configurator.addServlet((ServletDescriptor) contribution);
-        } else if (XP_LISTENER.equals(extensionPoint)) {
-            configurator.addLifecycleListener((ServletContextListenerDescriptor) contribution);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        // we don't do anything special as this is a test component
+        configurator = null;
     }
 
     @Override
@@ -104,6 +86,11 @@ public class ServerComponent extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
+        this.<WebApplication> getRegistryContributions(XP_WEB_APP).forEach(configurator::addWepApp);
+        this.<FilterDescriptor> getRegistryContributions(XP_FILTER).forEach(configurator::addFilter);
+        this.<ServletDescriptor> getRegistryContributions(XP_SERVLET).forEach(configurator::addServlet);
+        this.<ServletContextListenerDescriptor> getRegistryContributions(XP_LISTENER)
+            .forEach(configurator::addLifecycleListener);
         configurator.start();
     }
 

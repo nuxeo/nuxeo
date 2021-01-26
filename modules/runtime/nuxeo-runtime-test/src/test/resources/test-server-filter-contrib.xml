@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.server.test.contrib">
+
+  <extension target="org.nuxeo.runtime.server" point="filter">
+
+    <filter context="/">
+      <filter-name>DummyFilter</filter-name>
+      <filter-class>org.nuxeo.runtime.test.server.DummyFilter</filter-class>
+      <filter-mapping>
+        <url-pattern>/*</url-pattern>
+      </filter-mapping>
+      <init-param>
+        <param-name>fontsize</param-name>
+        <param-value>14</param-value>
+      </init-param>
+      <init-param>
+        <param-name>foo</param-name>
+        <param-value>bar</param-value>
+      </init-param>
+    </filter>
+
+    <filter context="/">
+      <filter-name>DummyFilterWithCompatInitParams</filter-name>
+      <filter-class>org.nuxeo.runtime.test.server.DummyFilter</filter-class>
+      <filter-mapping>
+        <url-pattern>/*</url-pattern>
+      </filter-mapping>
+      <init-params>
+        <param name="fontsize">14</param>
+        <param name="foo">bar</param>
+      </init-params>
+    </filter>
+
+  </extension>
+
+</component>
