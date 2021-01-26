@@ -3,13 +3,9 @@
 
    <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
     <store name="s3DUTransientStoreFail"
-      class="org.nuxeo.ecm.core.storage.sql.MockedKeyValueBlobTransientStore">
-      <property name="blobProvider">s3DUBlobProviderDestination</property> <!-- this is the destination bolb provider -->
+      class="org.nuxeo.ecm.blob.s3.FailingKeyValueBlobTransientStore">
+      <property name="blobProvider">s3DUBlobProviderDestination</property> <!-- this is the destination blob provider -->
       <property name="keyValueStore">s3DUKeyValueStore</property> <!-- not defined there, fallback on default -->
-      <targetMaxSizeMB>100</targetMaxSizeMB>
-      <absoluteMaxSizeMB>-1</absoluteMaxSizeMB>
-      <firstLevelTTL>120</firstLevelTTL>
-      <secondLevelTTL>10</secondLevelTTL>
     </store>
   </extension>
 
