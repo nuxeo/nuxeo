@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.importer.xml.parser.ImporterComponent.adullact.contrib" version="1.0">
+<component name="org.nuxeo.ecm.platform.importer.xml.parser.ImporterComponent.adullact.contrib">
 
  <extension target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent"
     point="documentMapping">
