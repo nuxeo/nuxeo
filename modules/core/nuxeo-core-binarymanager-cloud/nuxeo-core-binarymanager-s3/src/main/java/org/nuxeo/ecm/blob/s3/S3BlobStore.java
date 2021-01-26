@@ -338,8 +338,8 @@ public class S3BlobStore extends AbstractBlobStore {
         }
     }
 
-    // used for tests
-    protected void clearBucket() {
+    @Override
+    public void clear() {
         logTrace("group ClearBucket");
         ObjectListing list = null;
         long n = 0;

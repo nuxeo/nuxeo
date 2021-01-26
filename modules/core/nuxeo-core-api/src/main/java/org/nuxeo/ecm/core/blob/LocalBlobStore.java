@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -210,6 +211,15 @@ public class LocalBlobStore extends AbstractBlobStore {
             Files.deleteIfExists(file);
         } catch (IOException e) {
             log.warn(e, e);
+        }
+    }
+
+    @Override
+    public void clear() {
+        try {
+            FileUtils.cleanDirectory(pathStrategy.dir.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
