@@ -23,13 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.when;
-import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_ID_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SECRET_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SESSION_TOKEN_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_PREFIX_PROPERTY;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -41,7 +35,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.junit.After;
 import org.junit.Before;
@@ -49,6 +42,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.nuxeo.ecm.blob.s3.S3TestHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
@@ -64,7 +58,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.SDKGlobalConfiguration;
 import com.amazonaws.SdkBaseException;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
@@ -94,23 +87,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     @BeforeClass
     public static void beforeClass() {
-
-        String envId = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.ACCESS_KEY_ENV_VAR),
-                System.getenv(SDKGlobalConfiguration.ALTERNATE_ACCESS_KEY_ENV_VAR));
-        String envSecret = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.SECRET_KEY_ENV_VAR),
-                System.getenv(SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR));
-        String envToken = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.AWS_SESSION_TOKEN_ENV_VAR),
-                "");
-
-        assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
-
-        PROPERTIES = new HashMap<>();
-        PROPERTIES.put(AWS_ID_PROPERTY, envId);
-        PROPERTIES.put(AWS_SECRET_PROPERTY, envSecret);
-        PROPERTIES.put(AWS_SESSION_TOKEN_PROPERTY, envToken);
-        PROPERTIES.put(BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload");
-        PROPERTIES.put(BUCKET_PREFIX_PROPERTY, "testfolder/");
-        PROPERTIES.put(S3BinaryManager.BUCKET_REGION_PROPERTY, "eu-west-3");
+        PROPERTIES = S3TestHelper.getProperties();
     }
 
     @Before
