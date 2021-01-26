@@ -25,8 +25,10 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 @XObject("config")
+@XRegistry(compatWarnOnMerge = true)
 public class ShibbolethAuthenticationConfig {
 
     @XNodeMap(value = "uidHeaders/uidHeader", key = "@idpUrl", type = HashMap.class, componentType = String.class)
@@ -88,5 +90,8 @@ public class ShibbolethAuthenticationConfig {
         return idpHeader;
     }
 
-    public String getHeaderEncoding() { return headerEncoding; }
+    public String getHeaderEncoding() {
+        return headerEncoding;
+    }
+
 }

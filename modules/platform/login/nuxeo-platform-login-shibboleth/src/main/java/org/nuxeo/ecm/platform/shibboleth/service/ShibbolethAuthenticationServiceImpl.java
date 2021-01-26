@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.google.common.collect.BiMap;
@@ -43,10 +43,13 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
     protected ShibbolethAuthenticationConfig config;
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIG_EP.equals(extensionPoint)) {
-            config = (ShibbolethAuthenticationConfig) contribution;
-        }
+    public void start(ComponentContext context) {
+        config = this.<ShibbolethAuthenticationConfig> getRegistryContribution(CONFIG_EP).orElse(null);
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        config = null;
     }
 
     public ShibbolethAuthenticationConfig getConfig() {
