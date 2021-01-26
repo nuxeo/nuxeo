@@ -244,6 +244,12 @@ public class InMemoryBlobStore extends AbstractBlobStore {
     }
 
     @Override
+    public void clear() {
+        map.clear();
+        legalHold.clear();
+    }
+
+    @Override
     public BinaryGarbageCollector getBinaryGarbageCollector() {
         return gc;
     }
