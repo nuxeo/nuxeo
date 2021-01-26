@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,7 +150,7 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
                 translated.add(getTranslatedValue(session, vocabulary.getSchema(), lang, value));
             }
         }
-        printer.print(translated.stream().collect(Collectors.joining(LIST_DELIMITER)));
+        printer.print(String.join(LIST_DELIMITER, translated));
     }
 
     protected String getTranslatedValue(Session session, String schema, String lang, String value) {
