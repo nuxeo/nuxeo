@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.runtime.management.tests.ResourcePublisherContrib">
 
-  <require>org.nuxeo.runtime.management.ResourcePublisher</require>
-
-  <extension target="org.nuxeo.runtime.management.ResourcePublisher"
-    point="services">
+  <extension target="org.nuxeo.runtime.management.ResourcePublisher" point="services">
 
     <service class="org.nuxeo.runtime.management.Dummy" />
 
@@ -17,21 +14,17 @@
 
   </extension>
 
-  <extension target="org.nuxeo.runtime.management.ResourcePublisher"
-    point="factories">
+  <extension target="org.nuxeo.runtime.management.ResourcePublisher" point="factories">
 
     <factory name="dummy" class="org.nuxeo.runtime.management.DummyFactory" />
 
   </extension>
 
-  <extension target="org.nuxeo.runtime.management.ResourcePublisher"
-    point="shortcuts">
-    <shortcut name="dummy"
-      qualifiedName="org.nuxeo:type=service,name=rg.nuxeo.runtime.management.Dummy" />
+  <extension target="org.nuxeo.runtime.management.ResourcePublisher" point="shortcuts">
+    <shortcut name="dummy" qualifiedName="org.nuxeo:type=service,name=rg.nuxeo.runtime.management.Dummy" />
   </extension>
 
-  <extension target="org.nuxeo.runtime.management.ServerLocator"
-    point="locators">
-     <locator domainName="DEFAULT_DOMAIN"/>
+  <extension target="org.nuxeo.runtime.management.ServerLocator" point="locators">
+    <locator domainName="DEFAULT_DOMAIN" />
   </extension>
 </component>

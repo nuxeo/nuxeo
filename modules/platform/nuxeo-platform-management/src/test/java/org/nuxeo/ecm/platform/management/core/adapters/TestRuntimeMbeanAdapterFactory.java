@@ -18,6 +18,11 @@
  */
 package org.nuxeo.ecm.platform.management.core.adapters;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -25,9 +30,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.management.adapters.RuntimeInventoryFactory;
-import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
-import org.nuxeo.runtime.management.ResourcePublisherService;
+import org.nuxeo.runtime.management.ResourcePublisher;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -38,16 +41,18 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.runtime.management")
+@Deploy("org.nuxeo.runtime.management:OSGI-INF/platform-management-component.xml")
 public class TestRuntimeMbeanAdapterFactory {
 
     @Inject
-    protected ResourcePublisherService managementService;
+    protected ResourcePublisher service;
 
     @Test
-    public void testRegisterFactories() throws Exception {
-        ResourceFactoryDescriptor factoryDescriptor = new ResourceFactoryDescriptor(RuntimeInventoryFactory.class);
-        managementService.registerContribution(factoryDescriptor, "factories", null);
+    @Deploy("org.nuxeo.runtime.management:platform-management-test.xml")
+    public void testRegisterFactories() {
+        Set<String> shortcuts = service.getShortcutsName();
+        assertNotNull(shortcuts);
+        assertTrue(shortcuts.contains("runtime-inventory"));
     }
 
 }

@@ -1,7 +1,6 @@
 <component
   name="org.nuxeo.ecm.platform.management.adapters">
 
-  <require>org.nuxeo.runtime.management.ResourcePublisher</require>
   <require>org.nuxeo.ecm.platform.audit.service.NXAuditEventsService</require>
 
   <extension target="org.nuxeo.runtime.management.ResourcePublisher"

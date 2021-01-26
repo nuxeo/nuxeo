@@ -20,23 +20,18 @@ package org.nuxeo.runtime.management;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 @XObject("service")
+@XRegistry
 public class ServiceDescriptor {
 
-    protected ServiceDescriptor(String qualifiedName, Class<?> implClass) {
-        name = qualifiedName;
-        resourceClass = implClass;
-        ifaceClass = null;
-    }
-
-    public ServiceDescriptor() {
-    }
-
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     @XNode("@class")
