@@ -16,7 +16,9 @@
  * Contributors:
  *     pierre
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.blob.s3;
+
+import org.nuxeo.ecm.core.storage.sql.S3DirectBatchHandler;
 
 /**
  * Mocked S3 Direct Upload handler to be tested.
@@ -27,7 +29,7 @@ public class MockedS3DirectBatchHandler extends S3DirectBatchHandler {
 
     @Override
     protected long lowerThresholdToUseMultipartCopy() {
-        return TestS3DirectBatchHandler.MULTIPART_THRESHOLD + 1;
+        return TestS3DirectUploadAbstract.MULTIPART_THRESHOLD + 1;
     }
 
 }
