@@ -21,6 +21,7 @@ package org.nuxeo.runtime.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,11 +29,14 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor for a servlet filter. For convenience, we follow the official syntax of web.xml.
  */
 @XObject("filter")
+@XRegistry(merge = false)
 public class FilterDescriptor {
 
     @XNode("@context")
@@ -41,40 +45,23 @@ public class FilterDescriptor {
     /**
      * @since 10.2
      */
-    @XNode("filter-name")
+    @XRegistryId
+    @XNode(value = "filter-name", fallback = "@name")
     protected String name;
 
-    // compat
-    @XNode("@name")
-    public void setName(String name) {
-        this.name = name;
-    }
-
     /**
      * @since 10.2
      */
-    @XNode("filter-class")
+    @XNode(value = "filter-class", fallback = "@class")
     protected Class<?> clazz;
 
-    // compat
-    @XNode("@class")
-    public void setClass(Class<?> clazz) {
-        this.clazz = clazz;
-    }
-
     /**
      * @since 10.2
      */
-    @XNode("display-name")
+    @XNode(value = "display-name", fallback = "description")
     protected String displayName;
 
-    // compat
-    @XNode("description")
-    public void setDisplayName(String description) {
-        this.displayName = description;
-    }
-
-    protected Map<String, String> initParams = new HashMap<>();
+    protected Map<String, String> initParams = new LinkedHashMap<>();
 
     /**
      * @since 10.2

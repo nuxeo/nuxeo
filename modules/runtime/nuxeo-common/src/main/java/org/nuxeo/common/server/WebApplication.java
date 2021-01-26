@@ -14,20 +14,18 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
- *
- * $Id$
+ *     Bogdan Stefanescu
  */
 
 package org.nuxeo.common.server;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- */
 @XObject("webapp")
+@XRegistry(merge = false)
 public class WebApplication {
 
     @XNode("root")
@@ -39,14 +37,9 @@ public class WebApplication {
     /**
      * @since 10.2
      */
-    @XNode("@context")
+    @XNode(value = "@context", fallback = "@path")
+    @XRegistryId
     protected String context;
-
-    // compat
-    @XNode("@path")
-    protected void setPath(String path) {
-        this.context = path;
-    }
 
     public String getWebRoot() {
         return root;

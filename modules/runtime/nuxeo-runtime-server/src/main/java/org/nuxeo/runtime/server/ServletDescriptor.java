@@ -29,11 +29,14 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor for a servlet. For convenience, we follow the official syntax of web.xml.
  */
 @XObject("servlet")
+@XRegistry(merge = false)
 public class ServletDescriptor {
 
     @XNode("@context")
@@ -42,26 +45,15 @@ public class ServletDescriptor {
     /**
      * @since 10.2
      */
-    @XNode("servlet-name")
+    @XNode(value = "servlet-name", fallback = "@name")
+    @XRegistryId
     protected String name;
-
-    // compat
-    @XNode("@name")
-    public void setName(String name) {
-        this.name = name;
-    }
 
     /**
      * @since 10.2
      */
-    @XNode("servlet-class")
+    @XNode(value = "servlet-class", fallback = "@class")
     protected Class<?> clazz;
-
-    // compat
-    @XNode("@class")
-    public void setClass(Class<?> clazz) {
-        this.clazz = clazz;
-    }
 
     /**
      * @since 10.2
@@ -93,14 +85,8 @@ public class ServletDescriptor {
     /**
      * @since 10.2
      */
-    @XNode("display-name")
+    @XNode(value = "display-name", fallback = "description")
     protected String displayName;
-
-    // compat
-    @XNode("description")
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
 
     public String getContext() {
         return context;
