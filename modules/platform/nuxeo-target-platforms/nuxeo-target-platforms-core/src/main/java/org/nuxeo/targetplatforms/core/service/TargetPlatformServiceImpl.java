@@ -29,8 +29,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
@@ -38,7 +38,6 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.targetplatforms.api.TargetInfo;
 import org.nuxeo.targetplatforms.api.TargetPackage;
@@ -65,7 +64,7 @@ import org.nuxeo.targetplatforms.core.descriptors.TargetPlatformDescriptor;
  */
 public class TargetPlatformServiceImpl extends DefaultComponent implements TargetPlatformService {
 
-    private static final Log log = LogFactory.getLog(TargetPlatformServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(TargetPlatformServiceImpl.class);
 
     public static final String XP_CONF = "configuration";
 
@@ -76,60 +75,21 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
     public static final DateTimeFormatter dateParser = DateTimeFormatter.ofPattern("yyyy/MM/dd", Locale.ENGLISH)
                                                                         .withZone(ZoneOffset.UTC);
 
-    protected ServiceConfigurationRegistry conf;
-
-    protected TargetPlatformRegistry platforms;
-
-    protected TargetPackageRegistry packages;
+    protected String overrideDirectory;
 
     // Runtime component API
 
     @Override
-    public void activate(ComponentContext context) {
-        platforms = new TargetPlatformRegistry();
-        packages = new TargetPackageRegistry();
-        conf = new ServiceConfigurationRegistry();
+    public void start(ComponentContext context) {
+        overrideDirectory = this.<ServiceConfigurationDescriptor> getRegistryContribution(XP_CONF)
+                                .map(ServiceConfigurationDescriptor::getOverrideDirectory)
+                                .filter(StringUtils::isNotBlank)
+                                .orElse(DirectoryUpdater.DEFAULT_DIR);
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        platforms = null;
-        packages = null;
-        conf = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_PLATFORMS.equals(extensionPoint)) {
-            TargetPlatformDescriptor desc = (TargetPlatformDescriptor) contribution;
-            log.info(String.format("Register target platform '%s'", desc.getId()));
-            platforms.addContribution(desc);
-        } else if (XP_PACKAGES.equals(extensionPoint)) {
-            TargetPackageDescriptor desc = (TargetPackageDescriptor) contribution;
-            log.info(String.format("Register target package '%s'", desc.getId()));
-            packages.addContribution(desc);
-        } else if (XP_CONF.equals(extensionPoint)) {
-            ServiceConfigurationDescriptor desc = (ServiceConfigurationDescriptor) contribution;
-            log.info("Register TargetPlatformService configuration");
-            conf.addContribution(desc);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_PLATFORMS.equals(extensionPoint)) {
-            TargetPlatformDescriptor desc = (TargetPlatformDescriptor) contribution;
-            log.info(String.format("Unregister target platform '%s'", desc.getId()));
-            platforms.removeContribution(desc);
-        } else if (XP_PACKAGES.equals(extensionPoint)) {
-            TargetPackageDescriptor desc = (TargetPackageDescriptor) contribution;
-            log.info(String.format("Unregister target package '%s'", desc.getId()));
-            packages.removeContribution(desc);
-        } else if (XP_CONF.equals(extensionPoint)) {
-            ServiceConfigurationDescriptor desc = (ServiceConfigurationDescriptor) contribution;
-            log.info("Unregister TargetPlatformService configuration");
-            conf.removeContribution(desc);
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        overrideDirectory = null;
     }
 
     // Service API
@@ -159,16 +119,11 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
 
     @Override
     public String getOverrideDirectory() {
-        String res = DirectoryUpdater.DEFAULT_DIR;
-        ServiceConfigurationDescriptor desc = conf.getConfiguration();
-        if (desc == null) {
-            return res;
-        }
-        String id = desc.getOverrideDirectory();
-        if (!StringUtils.isBlank(id)) {
-            res = id;
-        }
-        return res;
+        return overrideDirectory;
+    }
+
+    protected TargetPlatformDescriptor getTargetPlatformDescriptor(String id) {
+        return this.<TargetPlatformDescriptor> getRegistryContribution(XP_PLATFORMS, id).orElse(null);
     }
 
     @Override
@@ -176,7 +131,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         if (id == null) {
             return null;
         }
-        TargetPlatformDescriptor desc = platforms.getTargetPlatform(id);
+        TargetPlatformDescriptor desc = getTargetPlatformDescriptor(id);
         return getTargetPlatform(desc);
     }
 
@@ -234,12 +189,23 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         return tp;
     }
 
+    protected List<TargetPackageDescriptor> getTargetPackageDescriptors(String targetPlatform) {
+        List<TargetPackageDescriptor> tps = new ArrayList<>();
+        for (TargetPackageDescriptor desc : this.<TargetPackageDescriptor> getRegistryContributions(XP_PACKAGES)) {
+            List<String> tts = desc.getTargetPlatforms();
+            if (tts != null && tts.contains(targetPlatform)) {
+                tps.add(desc);
+            }
+        }
+        return tps;
+    }
+
     /**
      * Lookup all packages referencing this target platform.
      */
     protected Map<String, TargetPackage> getTargetPackages(String targetPlatform) {
         Map<String, TargetPackage> tps = new HashMap<>();
-        List<TargetPackageDescriptor> pkgs = packages.getTargetPackages(targetPlatform);
+        List<TargetPackageDescriptor> pkgs = getTargetPackageDescriptors(targetPlatform);
         if (pkgs != null) {
             for (TargetPackageDescriptor pkg : pkgs) {
                 TargetPackage tp = getTargetPackage(pkg);
@@ -253,7 +219,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
 
     protected Map<String, TargetPackageInfo> getTargetPackagesInfo(String targetPlatform) {
         Map<String, TargetPackageInfo> tps = new HashMap<>();
-        List<TargetPackageDescriptor> pkgs = packages.getTargetPackages(targetPlatform);
+        List<TargetPackageDescriptor> pkgs = getTargetPackageDescriptors(targetPlatform);
         if (pkgs != null) {
             for (TargetPackageDescriptor pkg : pkgs) {
                 TargetPackageInfo tp = getTargetPackageInfo(pkg.getId());
@@ -277,7 +243,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         if (id == null) {
             return null;
         }
-        TargetPlatformDescriptor desc = platforms.getTargetPlatform(id);
+        TargetPlatformDescriptor desc = getTargetPlatformDescriptor(id);
         return getTargetPlatformInfo(desc);
     }
 
@@ -330,12 +296,16 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         return tpi;
     }
 
+    protected TargetPackageDescriptor getTargetPackageDescriptor(String id) {
+        return this.<TargetPackageDescriptor> getRegistryContribution(XP_PACKAGES, id).orElse(null);
+    }
+
     @Override
     public TargetPackage getTargetPackage(String id) {
         if (id == null) {
             return null;
         }
-        return getTargetPackage(packages.getTargetPackage(id));
+        return getTargetPackage(getTargetPackageDescriptor(id));
     }
 
     @Override
@@ -343,7 +313,10 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         if (id == null) {
             return null;
         }
-        TargetPackageDescriptor desc = packages.getTargetPackage(id);
+        TargetPackageDescriptor desc = getTargetPackageDescriptor(id);
+        if (desc == null) {
+            return null;
+        }
         TargetPackageInfoImpl tpi = new TargetPackageInfoImpl(desc.getId(), desc.getName(), desc.getVersion(),
                 desc.getRefVersion(), desc.getLabel());
         tpi.setDescription(desc.getDescription());
@@ -393,7 +366,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
                 if (tpkg != null) {
                     tpi.addEnabledPackage(tpkg);
                 } else {
-                    log.warn(String.format("Referenced target package '%s' not found.", pkg));
+                    log.warn("Referenced target package '{}' not found.", pkg);
                 }
             }
         }
@@ -404,7 +377,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
     @Override
     public List<TargetPlatform> getAvailableTargetPlatforms(TargetPlatformFilter filter) {
         List<TargetPlatform> tps = new ArrayList<>();
-        for (TargetPlatformDescriptor desc : platforms.getTargetPlatforms()) {
+        for (TargetPlatformDescriptor desc : this.<TargetPlatformDescriptor> getRegistryContributions(XP_PLATFORMS)) {
             TargetPlatform tp = getTargetPlatform(desc);
             if (tp == null) {
                 continue;
@@ -422,7 +395,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
     @Override
     public List<TargetPlatformInfo> getAvailableTargetPlatformsInfo(TargetPlatformFilter filter) {
         List<TargetPlatformInfo> tps = new ArrayList<>();
-        for (TargetPlatformDescriptor desc : platforms.getTargetPlatforms()) {
+        for (TargetPlatformDescriptor desc : this.<TargetPlatformDescriptor> getRegistryContributions(XP_PLATFORMS)) {
             TargetPlatformInfo tp = getTargetPlatformInfo(desc);
             if (tp == null) {
                 continue;
@@ -497,7 +470,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
                     doc.setProperty(DirectoryUpdater.SCHEMA, prop, value);
                     session.updateEntry(doc);
                 } else {
-                    DocumentModel entry = BaseSession.createEntryModel(null, DirectoryUpdater.SCHEMA, null, null);
+                    DocumentModel entry = BaseSession.createEntryModel(DirectoryUpdater.SCHEMA, null, null);
                     entry.setProperty(DirectoryUpdater.SCHEMA, prop, value);
                     entry.setProperty(DirectoryUpdater.SCHEMA, "id", id);
                     session.createEntry(entry);
@@ -540,7 +513,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
      * @since 5.9.3-NXP-15602
      */
     protected TargetPlatformInstanceImpl createTargetPlatformInstanceFromId(String id) {
-        TargetPlatformDescriptor desc = platforms.getTargetPlatform(id);
+        TargetPlatformDescriptor desc = getTargetPlatformDescriptor(id);
         if (desc == null) {
             return null;
         }

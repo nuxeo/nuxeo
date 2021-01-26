@@ -24,6 +24,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Descriptor for target platform contributions.
@@ -31,6 +32,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.7.1
  */
 @XObject("platform")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class TargetPlatformDescriptor extends TargetDescriptor {
 
     @XNode("fastTrack")
@@ -71,23 +73,6 @@ public class TargetPlatformDescriptor extends TargetDescriptor {
 
     public List<String> getTestVersions() {
         return testVersions;
-    }
-
-    @Override
-    public TargetPlatformDescriptor clone() {
-        TargetPlatformDescriptor clone = new TargetPlatformDescriptor();
-        doClone(clone);
-        return clone;
-    }
-
-    protected void doClone(TargetPlatformDescriptor clone) {
-        super.doClone(clone);
-        clone.fastTrack = fastTrack;
-        clone.trial = trial;
-        clone.isDefault = isDefault;
-        if (testVersions != null) {
-            clone.testVersions = new ArrayList<>(testVersions);
-        }
     }
 
 }
