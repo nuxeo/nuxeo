@@ -25,12 +25,14 @@ import static org.junit.Assert.assertTrue;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
+import javax.management.modelmbean.InvalidTargetObjectTypeException;
 
-import org.junit.Ignore;
 import org.junit.Test;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 
 public class TestResourcePublisherService extends ManagementTestCase {
@@ -48,17 +50,16 @@ public class TestResourcePublisherService extends ManagementTestCase {
     }
 
     @Test
-    @Ignore
-    public void testRegisterFactory() throws Exception {
-        ResourceFactoryDescriptor descriptor = new ResourceFactoryDescriptor(DummyFactory.class);
-        publisherService.registerContribution(descriptor, "factories", null);
+    @Deploy("org.nuxeo.runtime.test.tests:management-tests-service.xml")
+    @Deploy("org.nuxeo.runtime.test.tests:management-tests-contrib.xml")
+    public void testRegisterFactory() {
         Set<ObjectName> registeredNames = doQuery("org.nuxeo:name=dummy");
         assertNotNull(registeredNames);
         assertEquals(registeredNames.size(), 1);
     }
 
     @Test
-    public void testServerLocator() throws Exception {
+    public void testServerLocator() throws JMException, InvalidTargetObjectTypeException {
         MBeanServer testServer = MBeanServerFactory.createMBeanServer("test");
         ObjectName testName = new ObjectName("test:test=test");
         publisherService.bindForTest(testServer, testName, new DummyService(), DummyMBean.class);

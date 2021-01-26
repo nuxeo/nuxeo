@@ -20,22 +20,18 @@ package org.nuxeo.runtime.management;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author matic
  */
 @XObject("shortcut")
+@XRegistry
 public class ShortcutDescriptor {
 
-    public ShortcutDescriptor() {
-    }
-
-    public ShortcutDescriptor(String shortName, String qualifiedName) {
-        this.shortName = shortName;
-        this.qualifiedName = qualifiedName;
-    }
-
     @XNode("@name")
+    @XRegistryId
     private String shortName;
 
     @XNode("@qualifiedName")

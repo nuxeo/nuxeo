@@ -20,22 +20,19 @@ package org.nuxeo.runtime.management;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author matic
  */
 @XObject("factory")
+@XRegistry
+@XRegistryId("@class")
 public class ResourceFactoryDescriptor {
 
     @XNode("@class")
     private Class<? extends ResourceFactory> factoryClass;
-
-    public ResourceFactoryDescriptor(Class<? extends ResourceFactory> factoryClass) {
-        this.factoryClass = factoryClass;
-    }
-
-    public ResourceFactoryDescriptor() {
-    }
 
     public Class<? extends ResourceFactory> getFactoryClass() {
         return factoryClass;
