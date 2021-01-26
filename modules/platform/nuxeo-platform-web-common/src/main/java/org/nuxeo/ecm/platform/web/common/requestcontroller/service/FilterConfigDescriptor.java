@@ -25,7 +25,8 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor for {@link RequestFilterConfig}
@@ -34,11 +35,13 @@ import org.nuxeo.runtime.api.Framework;
  * @author ldoguin
  */
 @XObject(value = "filterConfig")
+@XRegistry(compatWarnOnMerge = true)
 public class FilterConfigDescriptor {
 
     public static final String DEFAULT_CACHE_DURATION = "3599";
 
-    @XNode("@name")
+    @XNode(value = "@name", fallback = "pattern")
+    @XRegistryId
     protected String name;
 
     @XNode("@synchonize")
@@ -53,7 +56,7 @@ public class FilterConfigDescriptor {
     @XNode("@cached")
     protected boolean cached;
 
-    @XNode("@cacheTime")
+    @XNode(value = "@cacheTime", defaultAssignment = DEFAULT_CACHE_DURATION, trim = true)
     protected String cacheTime;
 
     @XNode("@private")
@@ -62,29 +65,12 @@ public class FilterConfigDescriptor {
     @XNode("@grant")
     protected boolean grant = true;
 
+    @XNode("pattern")
     protected String pattern;
 
     protected Pattern compiledPattern;
 
-    public FilterConfigDescriptor() {
-    }
-
-    public FilterConfigDescriptor(String name, String pattern, boolean grant, boolean useTx, boolean useSync,
-            boolean cached, boolean isPrivate, String cacheTime) {
-        this.name = name;
-        this.pattern = Framework.expandVars(pattern);
-        this.grant = grant;
-        this.useSync = useSync;
-        this.useTx = useTx;
-        this.cached = cached;
-        this.isPrivate = isPrivate;
-        this.cacheTime = cacheTime;
-    }
-
     public String getName() {
-        if (name == null) {
-            return pattern;
-        }
         return name;
     }
 
@@ -113,9 +99,6 @@ public class FilterConfigDescriptor {
     }
 
     public String getCacheTime() {
-        if (cacheTime == null || cacheTime.equals("")) {
-            cacheTime = DEFAULT_CACHE_DURATION;
-        }
         return cacheTime;
     }
 
@@ -128,11 +111,6 @@ public class FilterConfigDescriptor {
             compiledPattern = Pattern.compile(pattern);
         }
         return compiledPattern;
-    }
-
-    @XNode("pattern")
-    public void setPattern(String pattern) {
-        this.pattern = Framework.expandVars(pattern);
     }
 
 }

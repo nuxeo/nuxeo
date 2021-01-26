@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -31,27 +33,31 @@ import javax.servlet.ServletException;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 import com.thetransactioncompany.cors.CORSFilter;
-
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.7.2
  */
 @XObject(value = "corsConfig")
-public class NuxeoCorsFilterDescriptor implements Cloneable {
+@XRegistry(enable = false)
+public class NuxeoCorsFilterDescriptor {
 
     private static final String PROPERTIES_PREFIX = "cors.";
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
-    @XNode("@enabled")
-    protected Boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    protected Boolean enabled;
 
     @XNode("@allowGenericHttpRequests")
     protected Boolean allowGenericHttpRequests = true;
@@ -132,54 +138,6 @@ public class NuxeoCorsFilterDescriptor implements Cloneable {
                 return parameters.keys();
             }
         };
-    }
-
-    @Override
-    public NuxeoCorsFilterDescriptor clone() throws CloneNotSupportedException {
-        NuxeoCorsFilterDescriptor n = new NuxeoCorsFilterDescriptor();
-        n.name = name;
-        n.allowGenericHttpRequests = allowGenericHttpRequests;
-        n.allowOrigin = allowOrigin;
-        n.allowSubdomains = allowSubdomains;
-        n.supportedMethods = supportedMethods;
-        n.supportedHeaders = supportedHeaders;
-        n.exposedHeaders = exposedHeaders;
-        n.supportsCredentials = supportsCredentials;
-        n.maxAge = maxAge;
-        n.pattern = pattern;
-        return n;
-    }
-
-    public void merge(NuxeoCorsFilterDescriptor o) {
-        allowGenericHttpRequests = o.allowGenericHttpRequests;
-        supportsCredentials = o.supportsCredentials;
-        allowSubdomains = o.allowSubdomains;
-
-        if (!StringUtils.isEmpty(o.allowOrigin)) {
-            allowOrigin = o.allowOrigin;
-        }
-
-        if (!StringUtils.isEmpty(o.supportedMethods)) {
-            supportedMethods = o.supportedMethods;
-        }
-
-        if (!StringUtils.isEmpty(o.supportedHeaders)) {
-            supportedHeaders = o.supportedHeaders;
-        }
-
-        if (!StringUtils.isEmpty(o.exposedHeaders)) {
-            exposedHeaders = o.exposedHeaders;
-        }
-
-        if (maxAge == -1) {
-            maxAge = o.maxAge;
-        }
-
-        if (o.pattern != null) {
-            pattern = o.pattern;
-        }
-
-        filter = null; // recomputed on first access
     }
 
     protected Dictionary<String, String> buildDictionary() {

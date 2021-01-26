@@ -22,19 +22,25 @@ package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
  * @since 6.0
  */
 @XObject(value = "header")
-public class NuxeoHeaderDescriptor implements Cloneable {
+@XRegistry(enable = false)
+public class NuxeoHeaderDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
-    @XNode("@enabled")
-    protected Boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    protected boolean enabled;
 
     protected String value;
 
@@ -51,26 +57,6 @@ public class NuxeoHeaderDescriptor implements Cloneable {
 
     public String getName() {
         return name;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Override
-    public NuxeoHeaderDescriptor clone() throws CloneNotSupportedException {
-        NuxeoHeaderDescriptor d = new NuxeoHeaderDescriptor();
-        d.name = name;
-        d.enabled = enabled;
-        d.value = value;
-        return d;
-    }
-
-    public void merge(NuxeoHeaderDescriptor source) {
-        enabled = source.enabled;
-        if (source.value != null) {
-            value = source.value;
-        }
     }
 
 }
