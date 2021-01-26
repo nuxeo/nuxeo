@@ -18,59 +18,32 @@
  */
 package org.nuxeo.runtime.management;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author matic
  */
 @XObject("locator")
+@XRegistry(compatWarnOnMerge = true)
 public class ServerLocatorDescriptor {
 
-    private static final Log log = LogFactory.getLog(ServerLocatorDescriptor.class);
-
-    @XNode("@default")
-    protected boolean isDefault = true;
-
-    protected boolean isExisting = true;
-
-    protected int rmiPort = 1099;
-
-    @XNode("@domain")
+    @XNode(value = "@domain", defaultAssignment = "")
+    @XRegistryId
     protected String domainName;
 
-    @XNode("@remote")
-    protected boolean remote = true;
+    @XNode(value = "@default", defaultAssignment = "true")
+    protected boolean isDefault;
 
-    public ServerLocatorDescriptor() {
-        domainName = "";
-    }
+    @XNode(value = "@exist", defaultAssignment = "true")
+    protected boolean isExisting;
 
-    public ServerLocatorDescriptor(String domainName, boolean isDefaultServer) {
-        this.domainName = domainName;
-        isDefault = isDefaultServer;
-    }
+    @XNode(value = "@rmiPort", defaultAssignment = "1099")
+    protected int rmiPort;
 
-    @XNode("@exist")
-    public void setExisting(String value) {
-        String expandedValue = Framework.expandVars(value);
-        if (expandedValue.startsWith("$")) {
-            log.warn("Cannot expand " + value + " for existing server");
-            return;
-        }
-        isExisting = Boolean.parseBoolean(expandedValue);
-    }
+    @XNode(value = "@remote", defaultAssignment = "true")
+    protected boolean remote;
 
-    @XNode("@rmiPort")
-    public void setRmiPort(String value) {
-        String expandedValue = Framework.expandVars(value);
-        if (expandedValue.startsWith("$")) {
-            log.warn("Cannot expand " + value + " for server locator");
-            return;
-        }
-        rmiPort = Integer.parseInt(expandedValue);
-    }
 }
