@@ -25,13 +25,17 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
- * Descriptor that can be used to define how Nuxeo DocumentModel properties are filled from the input XML
+ * Descriptor that can be used to define how Nuxeo DocumentModel properties are filled from the input XML.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @XObject("attributeConfig")
+@XRegistry(compatWarnOnMerge = true)
+@XRegistryId(value = { "@tagName", "@docProperty" })
 public class AttributeConfigDescriptor {
 
     @XNode("@tagName")
@@ -44,8 +48,7 @@ public class AttributeConfigDescriptor {
     @XNode("@filter")
     protected String filter;
 
-    // mapping between Nuxeo property names and corresponding xpath to extract
-    // values
+    // mapping between Nuxeo property names and corresponding xpath to extract values
     @XNodeMap(value = "mapping", key = "@documentProperty", type = HashMap.class, componentType = String.class)
     protected Map<String, String> mapping;
 
@@ -54,28 +57,6 @@ public class AttributeConfigDescriptor {
 
     @XNode("@overwrite")
     protected boolean overwrite = false;
-
-    public AttributeConfigDescriptor() {
-    }
-
-    public AttributeConfigDescriptor(String tagName, String targetDocProperty, Map<String, String> mapping,
-            String filter) {
-        this.tagName = tagName;
-        this.targetDocProperty = targetDocProperty;
-        if (mapping == null) {
-            this.mapping = new HashMap<>();
-        } else {
-            this.mapping = mapping;
-        }
-        this.filter = filter;
-    }
-
-    public AttributeConfigDescriptor(String tagName, String targetDocProperty, String xmlPath, String filter) {
-        this.tagName = tagName;
-        this.targetDocProperty = targetDocProperty;
-        this.xmlPath = xmlPath;
-        this.filter = filter;
-    }
 
     public String getTagName() {
         return tagName;
@@ -103,22 +84,22 @@ public class AttributeConfigDescriptor {
         return null;
     }
 
-    public boolean getOverwrite(){
-	return overwrite;
+    public boolean getOverwrite() {
+        return overwrite;
     }
 
     @Override
     public String toString() {
+        StringBuilder result = new StringBuilder();
         String msg = "AttributeConfig\n\tTag Name: %s\n\tTarget Doc Property: %s\n\tFilter %s\n\tXML Path: %s\n\tOverwrite if list: %s\n\tMapping:\n";
-        String result = String.format(msg, tagName, targetDocProperty, filter, xmlPath, overwrite);
+        result.append(String.format(msg, tagName, targetDocProperty, filter, xmlPath, overwrite));
         if (mapping != null && !mapping.keySet().isEmpty()) {
             for (String key : mapping.keySet()) {
-                result += "\t\t" + key + ": " + mapping.get(key) + "\n";
+                result.append("\t\t" + key + ": " + mapping.get(key) + "\n");
             }
         } else {
-            result += "\t\tNO MAPPING\n";
+            result.append("\t\tNO MAPPING\n");
         }
-
-        return result;
+        return result.toString();
     }
 }
