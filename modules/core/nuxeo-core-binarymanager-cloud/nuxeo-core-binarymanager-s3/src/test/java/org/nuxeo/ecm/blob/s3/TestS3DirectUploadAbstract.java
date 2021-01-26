@@ -17,7 +17,7 @@
  *     pierre
  *     Mickaël Schoentgen
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.blob.s3;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -38,7 +38,6 @@ import java.util.Random;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
@@ -51,15 +50,14 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.storage.sql.S3BinaryManager;
+import org.nuxeo.ecm.core.storage.sql.S3DirectBatchHandler;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SDKGlobalConfiguration;
-import com.amazonaws.SdkBaseException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -74,6 +72,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.s3.transfer.Upload;
 
 /**
  * Tests S3DirectBatchHandler.
@@ -81,9 +80,9 @@ import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
  * @since 10.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(AutomationServerFeature.class)
+@Features({ TestS3DirectUploadAbstract.SetPropertiesFeature.class, AutomationServerFeature.class })
 @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3")
-public class TestS3DirectBatchHandler {
+public abstract class TestS3DirectUploadAbstract {
 
     public static final int MULTIPART_THRESHOLD = 5 * 1024 * 1024; // 5MB AWS minimum value
 
@@ -98,24 +97,37 @@ public class TestS3DirectBatchHandler {
     @Inject
     public BatchManager batchManager;
 
-    @BeforeClass
-    public static void beforeClass() {
-        envId = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.ACCESS_KEY_ENV_VAR),
-                System.getenv(SDKGlobalConfiguration.ALTERNATE_ACCESS_KEY_ENV_VAR));
-        envSecret = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.SECRET_KEY_ENV_VAR),
-                System.getenv(SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR));
-        envToken = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.AWS_SESSION_TOKEN_ENV_VAR), "");
+    /*
+     * Direct Upload extension points contain variables that need to be set before extension points are read, thus this
+     * local Feature.
+     */
+    public static class SetPropertiesFeature implements RunnerFeature {
+        @Override
+        public void start(FeaturesRunner runner) {
+            setProperties();
+        }
+    }
+
+    public static void setProperties() {
+        Map<String, String> properties = S3TestHelper.getProperties();
+        properties.forEach(S3TestHelper::setProperty);
+
+        envId = properties.get(AWS_ID_PROPERTY);
+        envSecret = properties.get(AWS_SECRET_PROPERTY);
+        envToken = properties.get(AWS_SESSION_TOKEN_PROPERTY);
+        String bucketName2 = "nuxeo-test-changeme-2";
+
         assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
+
+        // BatchHander config
         System.setProperty(S3DIRECT_PREFIX + AWS_ID_PROPERTY, envId);
         System.setProperty(S3DIRECT_PREFIX + AWS_SECRET_PROPERTY, envSecret);
         System.setProperty(S3DIRECT_PREFIX + AWS_SESSION_TOKEN_PROPERTY, envToken);
-        System.setProperty(S3DIRECT_PREFIX + BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload-transient");
-        System.setProperty(SYSTEM_PROPERTY_PREFIX + "." + BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload");
+        System.setProperty(S3DIRECT_PREFIX + BUCKET_NAME_PROPERTY, bucketName2);
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
-    public void testFails() throws SdkBaseException, InterruptedException {
+    public void testFails() {
         // create and initialize batch
         BatchHandler handler = batchManager.getHandler("s3");
         // complete upload with invalid key
@@ -128,9 +140,8 @@ public class TestS3DirectBatchHandler {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
     @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-fail-contrib.xml")
-    public void testFailsOnCopyToTransientStore() throws SdkBaseException, InterruptedException {
+    public void testFailsOnCopyToTransientStore() {
         try {
             test("s3fail", 1024);
             fail("should fail on putBlobs");
@@ -140,36 +151,31 @@ public class TestS3DirectBatchHandler {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
-    public void testWithoutMultipart() throws SdkBaseException, InterruptedException {
+    public void testWithoutMultipart() {
         test("s3", 1024);
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
-    public void testClientSideMultipartUpload() throws SdkBaseException, InterruptedException {
+    public void testClientSideMultipartUpload() {
         // MULTIPART_THRESHOLD is the limit for the client-side multipart upload
         // MULTIPART_THRESHOLD + 1 is the limit for the server-side multipart copy
         test("s3", MULTIPART_THRESHOLD + 1);
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
-    public void testServerSideMultipartCopy() throws SdkBaseException, InterruptedException {
+    public void testServerSideMultipartCopy() {
         // MULTIPART_THRESHOLD is the limit for the client-side multipart upload
         // MULTIPART_THRESHOLD + 1 is the limit for the server-side multipart copy
         test("s3", MULTIPART_THRESHOLD + 2);
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
-    public void test20MB() throws SdkBaseException, InterruptedException {
+    public void test20MB() {
         test("s3", 20 * 1024 * 1024);
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
-    public void testTokenRenewal() throws SdkBaseException, InterruptedException {
+    public void testTokenRenewal() {
         // Test that refreshing tokens actually returns back valid and different tokens.
         S3DirectBatchHandler handler = (S3DirectBatchHandler) batchManager.getHandler("s3");
         Batch newBatch = handler.newBatch(null);
@@ -197,8 +203,7 @@ public class TestS3DirectBatchHandler {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
-    public void testTokenRenewalNullBatchId() throws InterruptedException {
+    public void testTokenRenewalNullBatchId() {
         // Test that refreshing tokens does not work for an invalid batch ID.
         S3DirectBatchHandler handler = (S3DirectBatchHandler) batchManager.getHandler("s3");
         try {
@@ -209,7 +214,7 @@ public class TestS3DirectBatchHandler {
         }
     }
 
-    public void test(String handlerName, int size) throws SdkBaseException, InterruptedException {
+    protected void test(String handlerName, int size) {
         // generate unique key and and random content of give size
         String key = "key" + System.nanoTime();
         String name = "name" + System.nanoTime();
@@ -229,7 +234,7 @@ public class TestS3DirectBatchHandler {
         // client side upload
         clientSideUpload(properties, content, key);
 
-        // create priviledged client
+        // create privileged client
         properties.put(S3DirectBatchHandler.INFO_AWS_SECRET_KEY_ID, envId);
         properties.put(S3DirectBatchHandler.INFO_AWS_SECRET_ACCESS_KEY, envSecret);
         properties.put(S3DirectBatchHandler.INFO_AWS_SESSION_TOKEN, envToken);
@@ -287,15 +292,14 @@ public class TestS3DirectBatchHandler {
         }
     }
 
-    protected void clientSideUpload(Map<String, Object> properties, byte[] content, String key)
-            throws AmazonServiceException, AmazonClientException, InterruptedException {
+    protected void clientSideUpload(Map<String, Object> properties, byte[] content, String key) {
 
         // upload the content with our arbitrary key
         AmazonS3 s3Client = createS3Client(properties);
         TransferManager tm = TransferManagerBuilder.standard()
-                .withMultipartUploadThreshold(MULTIPART_THRESHOLD * 1L)
-                .withS3Client(s3Client)
-                .build();
+                                                   .withMultipartUploadThreshold(MULTIPART_THRESHOLD * 1L)
+                                                   .withS3Client(s3Client)
+                                                   .build();
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType("text/plain");
@@ -304,8 +308,13 @@ public class TestS3DirectBatchHandler {
         String bucket = (String) properties.get(S3DirectBatchHandler.INFO_BUCKET);
         String prefix = (String) properties.get(S3DirectBatchHandler.INFO_BASE_KEY);
 
-        tm.upload(new PutObjectRequest(bucket, prefix + key, new ByteArrayInputStream(content), metadata))
-        .waitForUploadResult();
+        Upload upload = tm.upload(new PutObjectRequest(bucket, prefix + key, new ByteArrayInputStream(content), metadata));
+        try {
+            upload.waitForUploadResult();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
+        }
     }
 
     protected AmazonS3 createS3Client(Map<String, Object> properties) {
