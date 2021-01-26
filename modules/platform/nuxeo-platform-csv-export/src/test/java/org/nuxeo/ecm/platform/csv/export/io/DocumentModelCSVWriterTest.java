@@ -132,4 +132,14 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         values.add(Collections.singletonList("toto, tata, titi"));
         return values;
     }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.csv.export.test:OSGI-INF/doc-type-with-vocabulary-contrib.xml")
+    public void testVocabularyPropertyNotFound() throws Exception {
+        RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
+        renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, Collections.singletonList("coverage"));
+        CSVAssert csv = csvAssert(document, renderingCtx);
+        csv.has("coverage:coverage").isEquals("");
+        csv.has("coverage:coverage[label]").isEquals("");
+    }
 }
