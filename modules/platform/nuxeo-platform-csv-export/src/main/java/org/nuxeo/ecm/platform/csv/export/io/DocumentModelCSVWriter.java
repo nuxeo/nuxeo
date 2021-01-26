@@ -35,6 +35,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
+import org.nuxeo.ecm.core.api.model.impl.PropertyFactory;
 import org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter;
 import org.nuxeo.ecm.core.io.marshallers.csv.OutputStreamWithCSVWriter;
 import org.nuxeo.ecm.core.io.registry.Writer;
@@ -145,11 +147,14 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
 
     protected void writeProperty(DocumentModel entity, String xpath, CSVPrinter printer) throws IOException {
         Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, TEXT_CSV_TYPE);
-        Property property = null;
+        Property property;
         try {
             property = entity.getProperty(xpath);
         } catch (PropertyNotFoundException e) {
-            // ignore
+            // probably mixed content, create a mock
+            Field field = schemaManager.getField(xpath);
+            property = PropertyFactory.createProperty(new DocumentPartImpl(field.getDeclaringType().getSchema()), field,
+                    Property.NONE);
         }
         try (OutputStream out = new OutputStreamWithCSVWriter(printer)) {
             propertyWriter.write(property, Property.class, Property.class, TEXT_CSV_TYPE, out);
