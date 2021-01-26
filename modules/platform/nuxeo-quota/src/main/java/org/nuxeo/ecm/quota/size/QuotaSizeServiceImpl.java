@@ -19,13 +19,12 @@
 package org.nuxeo.ecm.quota.size;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author dmetzler
@@ -33,36 +32,26 @@ import org.slf4j.LoggerFactory;
  */
 public class QuotaSizeServiceImpl extends DefaultComponent implements QuotaSizeService {
 
-    private Set<String> excludedPathList = new HashSet<>();
+    protected static final String XP = "exclusions";
 
-    private static Logger LOG = LoggerFactory.getLogger(QuotaSizeServiceImpl.class);
+    private Set<String> exclusions;
+
+    @Override
+    public void start(ComponentContext context) {
+        exclusions = this.<BlobExcludeDescriptor> getRegistryContributions(XP)
+                         .stream()
+                         .map(BlobExcludeDescriptor::getPathRegexp)
+                         .collect(Collectors.toSet());
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        exclusions = null;
+    }
 
     @Override
     public Collection<String> getExcludedPathList() {
-        return excludedPathList;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if ("exclusions".equals(extensionPoint)) {
-            BlobExcludeDescriptor descriptor = (BlobExcludeDescriptor) contribution;
-            LOG.info(String.format("Adding %s to size quota computation's blacklist", descriptor.getPathRegexp()));
-            excludedPathList.add(descriptor.getPathRegexp());
-        }
-
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if ("exclusions".equals(extensionPoint)) {
-            BlobExcludeDescriptor descriptor = (BlobExcludeDescriptor) contribution;
-            String pathRegexp = descriptor.getPathRegexp();
-            if (excludedPathList.contains(pathRegexp)) {
-                LOG.info(String.format("Removing %s from size quota computation's blacklist", pathRegexp));
-                excludedPathList.remove(pathRegexp);
-
-            }
-        }
+        return Collections.unmodifiableCollection(exclusions);
     }
 
 }

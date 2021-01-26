@@ -20,21 +20,22 @@ package org.nuxeo.ecm.quota.size;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author dmetzler
  */
 @XObject("exclude")
+@XRegistry
 public class BlobExcludeDescriptor {
+
     @XNode("@path")
+    @XRegistryId
     private String pathRegexp;
 
     public String getPathRegexp() {
         return pathRegexp;
-    }
-
-    public void setPathRegexp(String pathRegexp) {
-        this.pathRegexp = pathRegexp;
     }
 
 }

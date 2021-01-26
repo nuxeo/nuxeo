@@ -18,9 +18,9 @@
  */
 package org.nuxeo.ecm.quota.count;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.quota.count.QuotaFeature.assertQuota;
 import static org.nuxeo.ecm.quota.count.QuotaFeature.createFakeBlob;
 
@@ -65,9 +65,9 @@ public class TestExcludedBlob {
     @Test
     public void quotaServiceCanGiveTheListOfXpathPropsExcludedFromQuotaComputation() {
         Collection<String> paths = sus.getExcludedPathList();
-        assertThat(paths, is(notNullValue()));
-        assertThat(paths.size(), is(1));
-        assertThat(paths.contains("files/*/file"), is(true));
+        assertNotNull(paths);
+        assertEquals(1, paths.size());
+        assertTrue(paths.contains("files/*/file"));
     }
 
     @Test
