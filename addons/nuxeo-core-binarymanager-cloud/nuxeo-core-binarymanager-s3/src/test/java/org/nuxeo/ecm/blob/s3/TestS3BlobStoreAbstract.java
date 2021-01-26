@@ -18,29 +18,12 @@
  */
 package org.nuxeo.ecm.blob.s3;
 
-import static com.amazonaws.SDKGlobalConfiguration.ACCESS_KEY_ENV_VAR;
-import static com.amazonaws.SDKGlobalConfiguration.ALTERNATE_ACCESS_KEY_ENV_VAR;
-import static com.amazonaws.SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR;
-import static com.amazonaws.SDKGlobalConfiguration.AWS_REGION_ENV_VAR;
-import static com.amazonaws.SDKGlobalConfiguration.AWS_SESSION_TOKEN_ENV_VAR;
-import static com.amazonaws.SDKGlobalConfiguration.SECRET_KEY_ENV_VAR;
-import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
-import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.AWS_ID_PROPERTY;
-import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.AWS_SECRET_PROPERTY;
-import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.AWS_SESSION_TOKEN_PROPERTY;
-import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.BUCKET_NAME_PROPERTY;
-import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.BUCKET_PREFIX_PROPERTY;
-import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.BUCKET_REGION_PROPERTY;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -59,47 +42,16 @@ public abstract class TestS3BlobStoreAbstract extends TestAbstractBlobStore {
 
     @BeforeClass
     public static void beforeClass() {
-        getProperties().forEach(TestS3BlobStoreAbstract::setProperty);
+        S3TestHelper.getProperties().forEach(S3TestHelper::setProperty);
         propertiesSet = true;
     }
 
     @AfterClass
     public static void afterClass() {
         if (propertiesSet) {
-            getProperties().keySet().forEach(TestS3BlobStoreAbstract::removeProperty);
+            S3TestHelper.getProperties().keySet().forEach(S3TestHelper::removeProperty);
             propertiesSet = false;
         }
-    }
-
-    public static void setProperty(String key, String value) {
-        System.getProperties().put(S3BlobStoreConfiguration.SYSTEM_PROPERTY_PREFIX + '.' + key, value);
-    }
-
-    public static void removeProperty(String key) {
-        System.getProperties().remove(S3BlobStoreConfiguration.SYSTEM_PROPERTY_PREFIX + '.' + key);
-    }
-
-    public static Map<String, String> getProperties() {
-        Map<String, String> properties = new HashMap<>();
-
-        String envId = defaultIfBlank(System.getenv(ACCESS_KEY_ENV_VAR), System.getenv(ALTERNATE_ACCESS_KEY_ENV_VAR));
-        String envSecret = defaultIfBlank(System.getenv(SECRET_KEY_ENV_VAR),
-                System.getenv(ALTERNATE_SECRET_KEY_ENV_VAR));
-        String envSessionToken = defaultIfBlank(System.getenv(AWS_SESSION_TOKEN_ENV_VAR), "");
-        String envRegion = defaultIfBlank(System.getenv(AWS_REGION_ENV_VAR), "");
-
-        String bucketName = "nuxeo-test-changeme";
-        String bucketPrefix = "testfolder/";
-
-        assumeTrue("AWS Credentials not set in the environment variables", isNoneBlank(envId, envSecret));
-
-        properties.put(AWS_ID_PROPERTY, envId);
-        properties.put(AWS_SECRET_PROPERTY, envSecret);
-        properties.put(AWS_SESSION_TOKEN_PROPERTY, envSessionToken);
-        properties.put(BUCKET_REGION_PROPERTY, envRegion);
-        properties.put(BUCKET_NAME_PROPERTY, bucketName);
-        properties.put(BUCKET_PREFIX_PROPERTY, bucketPrefix);
-        return properties;
     }
 
     @After
