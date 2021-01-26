@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.io.Serializable;
  * Interface to be implemented by asynchronous services' statuses.
  *
  * @param <K> type of task id
- *
  * @since 10.3
  */
 public interface AsyncStatus<K extends Serializable> extends Serializable {
