@@ -63,7 +63,6 @@ public class TestResourcePublisherService extends ManagementTestCase {
         ObjectName testName = new ObjectName("test:test=test");
         publisherService.bindForTest(testServer, testName, new DummyService(), DummyMBean.class);
         publisherService.bindResources();
-        locatorService.registerLocator("test", true);
         MBeanServer locatedServer = locatorService.lookupServer(testName);
         assertNotNull(locatedServer);
         assertTrue(locatedServer.isRegistered(testName));

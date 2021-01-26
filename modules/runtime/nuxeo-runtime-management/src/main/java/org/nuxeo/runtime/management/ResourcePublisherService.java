@@ -71,6 +71,11 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
     }
 
     @Override
+    public int getApplicationStartedOrder() {
+        return serverLocatorService.getApplicationStartedOrder() + 1;
+    }
+
+    @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(SERVICES_EXT_KEY)) {
             resourcesRegistry.doRegisterResource((ServiceDescriptor) contribution);
