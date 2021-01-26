@@ -21,6 +21,9 @@
 package org.nuxeo.ecm.platform.rendering.impl;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.rendering.RenderingEngine;
 
 /**
@@ -34,9 +37,12 @@ import org.nuxeo.ecm.platform.rendering.RenderingEngine;
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
+@XObject("engine")
+@XRegistry
 public class RenderingEngineDescriptor {
 
     @XNode("format")
+    @XRegistryId
     private String format;
 
     @XNode("class")
@@ -44,10 +50,6 @@ public class RenderingEngineDescriptor {
 
     public String getFormat() {
         return format;
-    }
-
-    public void setFormat(String name) {
-        format = name;
     }
 
     public Class<?> getEngineClass() {
@@ -67,7 +69,6 @@ public class RenderingEngineDescriptor {
         sb.append(", class=");
         sb.append(klass);
         sb.append(" }");
-
         return sb.toString();
     }
 }

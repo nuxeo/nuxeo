@@ -23,16 +23,18 @@ package org.nuxeo.ecm.platform.rendering.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.rendering.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.RenderingException;
 import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.RenderingService;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -42,37 +44,30 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class RenderingServiceImpl extends DefaultComponent implements RenderingService {
 
-    private static final Log log = LogFactory.getLog(RenderingServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(RenderingServiceImpl.class);
 
     public static final String EP_RENDER_ENGINES = "engines";
 
-    private final ConcurrentHashMap<String, RenderingEngine> engines = new ConcurrentHashMap<>();
+    private Map<String, RenderingEngine> engines;
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
-        if (log.isDebugEnabled()) {
-            log.debug("register: " + contribution + ", ep: " + extensionPoint);
-        }
-
-        if (extensionPoint.equals(EP_RENDER_ENGINES)) {
-            RenderingEngineDescriptor desc = (RenderingEngineDescriptor) contribution;
-
+    public void start(ComponentContext context) {
+        engines = new ConcurrentHashMap<>();
+        this.<RenderingEngineDescriptor> getRegistryContributions(EP_RENDER_ENGINES).forEach(desc -> {
             try {
                 RenderingEngine engine = desc.newInstance();
                 engines.put(desc.getFormat(), engine);
             } catch (ReflectiveOperationException e) {
-                log.error("Cannot register rendering engine for " + desc.getFormat(), e);
+                String message = String.format("Cannot register rendering engine for %s", desc.getFormat());
+                addRuntimeMessage(Level.ERROR, message);
+                log.error(message, e);
             }
-        }
+        });
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(EP_RENDER_ENGINES)) {
-            RenderingEngineDescriptor desc = (RenderingEngineDescriptor) contribution;
-            engines.remove(desc.getFormat());
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        engines = null;
     }
 
     @Override
@@ -90,7 +85,7 @@ public class RenderingServiceImpl extends DefaultComponent implements RenderingS
                 if (result != null) {
                     ret.add(result);
                 } else if (log.isDebugEnabled()) {
-                    log.debug("rendering ignored by the engine " + engine.getFormatName());
+                    log.debug("rendering ignored by the engine {}", engine::getFormatName);
                 }
             }
         }
@@ -101,9 +96,9 @@ public class RenderingServiceImpl extends DefaultComponent implements RenderingS
     public void registerEngine(RenderingEngine engine) {
         RenderingEngine existing = engines.put(engine.getFormatName(), engine);
         if (existing != null) {
-            log.debug("Replaced existing RenderingEngine " + engine.getFormatName());
+            log.debug("Replaced existing RenderingEngine {}", engine::getFormatName);
         } else if (log.isDebugEnabled()) {
-            log.debug("Registered RenderingEngine " + engine.getFormatName());
+            log.debug("Registered RenderingEngine {}", engine::getFormatName);
         }
     }
 
