@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -131,5 +132,15 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         values.add(Arrays.asList("toto"));
         values.add(Arrays.asList("toto, tata, titi"));
         return values;
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.csv.export.test:OSGI-INF/doc-type-with-vocabulary-contrib.xml")
+    public void testVocabularyPropertyNotFound() throws Exception {
+        RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
+        renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, Collections.singletonList("coverage"));
+        CSVAssert csv = csvAssert(document, renderingCtx);
+        csv.has("coverage:coverage").isEquals("");
+        csv.has("coverage:coverage[label]").isEquals("");
     }
 }
