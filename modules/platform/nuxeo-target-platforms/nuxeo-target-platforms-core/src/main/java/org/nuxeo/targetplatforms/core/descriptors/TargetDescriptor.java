@@ -22,13 +22,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.xml.serialize.OutputFormat;
 import org.nuxeo.common.xmap.DOMSerializer;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.w3c.dom.DocumentFragment;
 
 /**
@@ -39,13 +41,15 @@ import org.w3c.dom.DocumentFragment;
 @SuppressWarnings("deprecation")
 public class TargetDescriptor {
 
-    private static final Log log = LogFactory.getLog(TargetDescriptor.class);
+    private static final Logger log = LogManager.getLogger(TargetDescriptor.class);
 
     @XNode("@id")
+    @XRegistryId
     String id;
 
-    @XNode("@enabled")
-    Boolean enabled;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    // registry needs to list enabled descriptors
+    boolean enabled;
 
     @XNode("@restricted")
     Boolean restricted;
@@ -97,17 +101,8 @@ public class TargetDescriptor {
     @XNodeList(value = "types/type", type = ArrayList.class, componentType = String.class)
     List<String> types;
 
-    public boolean isEnableSet() {
-        return enabled != null;
-    }
-
     public boolean isEnabled() {
-        return enabled == null || Boolean.TRUE.equals(enabled);
-    }
-
-    // needed for contributions merge
-    public void setEnabled(boolean enabled) {
-        this.enabled = Boolean.valueOf(enabled);
+        return enabled;
     }
 
     public String getId() {
@@ -173,30 +168,4 @@ public class TargetDescriptor {
         return types.contains(type);
     }
 
-    @Override
-    public TargetDescriptor clone() {
-        TargetDescriptor clone = new TargetDescriptor();
-        doClone(clone);
-        return clone();
-    }
-
-    protected void doClone(TargetDescriptor clone) {
-        clone.id = id;
-        clone.enabled = enabled;
-        clone.restricted = restricted;
-        clone.deprecated = deprecated;
-        clone.parent = parent;
-        clone.name = name;
-        clone.version = version;
-        clone.refVersion = refVersion;
-        clone.label = label;
-        clone.status = status;
-        clone.releaseDate = releaseDate;
-        clone.endOfAvailability = endOfAvailability;
-        clone.downloadLink = downloadLink;
-        clone.description = description;
-        if (types != null) {
-            clone.types = new ArrayList<>(types);
-        }
-    }
 }

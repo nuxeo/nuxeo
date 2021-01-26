@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Descriptor for target package contributions.
@@ -30,6 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.7.1
  */
 @XObject("package")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class TargetPackageDescriptor extends TargetDescriptor {
 
     @XNodeList(value = "targetPlatforms/platform", type = ArrayList.class, componentType = String.class)
@@ -44,23 +46,6 @@ public class TargetPackageDescriptor extends TargetDescriptor {
 
     public List<String> getDependencies() {
         return dependencies;
-    }
-
-    @Override
-    public TargetPackageDescriptor clone() {
-        TargetPackageDescriptor clone = new TargetPackageDescriptor();
-        doClone(clone);
-        return clone;
-    }
-
-    protected void doClone(TargetPackageDescriptor clone) {
-        super.doClone(clone);
-        if (targetPlatforms != null) {
-            clone.targetPlatforms = new ArrayList<>(targetPlatforms);
-        }
-        if (dependencies != null) {
-            clone.dependencies = new ArrayList<>(dependencies);
-        }
     }
 
 }

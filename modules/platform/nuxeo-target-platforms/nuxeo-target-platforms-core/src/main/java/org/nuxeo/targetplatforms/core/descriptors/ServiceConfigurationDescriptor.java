@@ -20,6 +20,7 @@ package org.nuxeo.targetplatforms.core.descriptors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Service configuration descriptor
@@ -27,6 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.7.1
  */
 @XObject("configuration")
+@XRegistry
 public class ServiceConfigurationDescriptor {
 
     @XNode("overrideDirectory")
