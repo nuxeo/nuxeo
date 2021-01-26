@@ -52,7 +52,7 @@ public interface RequestControllerManager {
      * @since 5.7.2
      * @deprecated since 10.1, unused, use {@link #getCorsFilterForRequest(HttpServletRequest)} instead
      */
-    @Deprecated
+    @Deprecated(since = "10.1")
     FilterConfig getCorsConfigForRequest(HttpServletRequest request);
 
     /**

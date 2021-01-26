@@ -21,18 +21,20 @@
 
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.thetransactioncompany.cors.CORSFilter;
@@ -54,71 +56,63 @@ public class RequestControllerService extends DefaultComponent implements Reques
      */
     public static final String HEADERS_CONFIG_EP = "responseHeaders";
 
-    private static final Log log = LogFactory.getLog(RequestControllerService.class);
+    protected Map<String, FilterConfigDescriptor> grantPatterns;
 
-    protected final Map<String, FilterConfigDescriptor> grantPatterns = new LinkedHashMap<>();
+    protected Map<String, FilterConfigDescriptor> denyPatterns;
 
-    protected final Map<String, FilterConfigDescriptor> denyPatterns = new LinkedHashMap<>();
+    protected Map<String, String> headers;
 
     // @GuardedBy("itself")
     protected final Map<String, RequestFilterConfig> configCache = new LRUCachingMap<>(250);
 
-    protected final NuxeoCorsFilterDescriptorRegistry corsFilterRegistry = new NuxeoCorsFilterDescriptorRegistry();
-
-    protected final NuxeoHeaderDescriptorRegistry headersRegistry = new NuxeoHeaderDescriptorRegistry();
-
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (FILTER_CONFIG_EP.equals(extensionPoint)) {
-            FilterConfigDescriptor desc = (FilterConfigDescriptor) contribution;
-            registerFilterConfig(desc);
-        } else if (CORS_CONFIG_EP.equals(extensionPoint)) {
-            corsFilterRegistry.addContribution((NuxeoCorsFilterDescriptor) contribution);
-        } else if (HEADERS_CONFIG_EP.equals(extensionPoint)) {
-            headersRegistry.addContribution((NuxeoHeaderDescriptor) contribution);
-        } else {
-            log.error("Unknown ExtensionPoint " + extensionPoint);
-        }
-    }
-
-    public void registerFilterConfig(String name, String pattern, boolean grant, boolean tx, boolean sync,
-            boolean cached, boolean isPrivate, String cacheTime) {
-        FilterConfigDescriptor desc = new FilterConfigDescriptor(name, pattern, grant, tx, sync, cached, isPrivate,
-                cacheTime);
-        registerFilterConfig(desc);
-    }
-
-    public void registerFilterConfig(FilterConfigDescriptor desc) {
-        if (desc.isGrantRule()) {
-            grantPatterns.put(desc.getName(), desc);
-            log.debug("Registered grant filter config");
-        } else {
-            denyPatterns.put(desc.getName(), desc);
-            log.debug("Registered deny filter config");
-        }
+    public void start(ComponentContext context) {
+        List<FilterConfigDescriptor> filters = getRegistryContributions(FILTER_CONFIG_EP);
+        grantPatterns = filters.stream()
+                               .filter(FilterConfigDescriptor::isGrantRule)
+                               .collect(Collectors.toMap(FilterConfigDescriptor::getName, Function.identity(),
+                                       (e1, e2) -> e1, LinkedHashMap::new));
+        denyPatterns = filters.stream()
+                              .filter(Predicate.not(FilterConfigDescriptor::isGrantRule))
+                              .collect(Collectors.toMap(FilterConfigDescriptor::getName, Function.identity(),
+                                      (e1, e2) -> e1, LinkedHashMap::new));
+        headers = this.<NuxeoHeaderDescriptor> getRegistryContributions(HEADERS_CONFIG_EP)
+                      .stream()
+                      .collect(Collectors.toMap(NuxeoHeaderDescriptor::getName, NuxeoHeaderDescriptor::getValue));
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CORS_CONFIG_EP.equals(extensionPoint)) {
-            corsFilterRegistry.removeContribution((NuxeoCorsFilterDescriptor) contribution);
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        grantPatterns = null;
+        denyPatterns = null;
+        headers = null;
     }
 
     /* Service interface */
 
+    protected NuxeoCorsFilterDescriptor getFirstMatchingDescriptor(String uri) {
+        for (NuxeoCorsFilterDescriptor filterDesc : this.<NuxeoCorsFilterDescriptor> getRegistryContributions(
+                CORS_CONFIG_EP)) {
+            Pattern pattern = filterDesc.pattern;
+            if (pattern == null || pattern.matcher(uri).matches()) {
+                return filterDesc;
+            }
+        }
+        return null;
+    }
+
     @Override
     public CORSFilter getCorsFilterForRequest(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        NuxeoCorsFilterDescriptor descriptor = corsFilterRegistry.getFirstMatchingDescriptor(uri);
+        NuxeoCorsFilterDescriptor descriptor = getFirstMatchingDescriptor(uri);
         return descriptor == null ? null : descriptor.getFilter();
     }
 
     @Override
-    @Deprecated
+    @Deprecated(since = "10.1")
     public FilterConfig getCorsConfigForRequest(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        NuxeoCorsFilterDescriptor descriptor = corsFilterRegistry.getFirstMatchingDescriptor(uri);
+        NuxeoCorsFilterDescriptor descriptor = getFirstMatchingDescriptor(uri);
         return descriptor != null ? descriptor.buildFilterConfig() : null;
     }
 
@@ -169,12 +163,6 @@ public class RequestControllerService extends DefaultComponent implements Reques
 
     @Override
     public Map<String, String> getResponseHeaders() {
-        Map<String, String> headersCache = new HashMap<>();
-        for (NuxeoHeaderDescriptor header : headersRegistry.descs.values()) {
-            if (header.isEnabled()) {
-                headersCache.put(header.name, header.getValue());
-            }
-        }
-        return headersCache;
+        return Collections.unmodifiableMap(headers);
     }
 }
