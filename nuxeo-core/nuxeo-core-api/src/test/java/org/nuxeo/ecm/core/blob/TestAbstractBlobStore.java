@@ -33,7 +33,6 @@ import java.nio.file.Path;
 
 import javax.inject.Inject;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -80,54 +79,14 @@ public abstract class TestAbstractBlobStore {
     public void setUp() throws IOException {
         bp = blobManager.getBlobProvider("test");
         bs = ((BlobStoreBlobProvider) bp).store;
-        clearBlobStore();
+        bs.clear();
         tmpFile = Files.createTempFile("tmp_", ".tmp");
     }
 
     @After
     public void tearDown() throws IOException {
-        closeBlobStore();
+        bs.clear();
         Files.deleteIfExists(tmpFile);
-    }
-
-    public void clearBlobStore() throws IOException {
-        clearBlobStore(bs);
-    }
-
-    protected void clearBlobStore(BlobStore blobStore) throws IOException {
-        if (blobStore instanceof TransactionalBlobStore) {
-            clearBlobStore((TransactionalBlobStore) blobStore);
-        } else if (blobStore instanceof CachingBlobStore) {
-            clearBlobStore((CachingBlobStore) blobStore);
-        } else if (blobStore instanceof LocalBlobStore) {
-            clearBlobStore((LocalBlobStore) blobStore);
-        } else if (blobStore instanceof InMemoryBlobStore) {
-            clearBlobStore((InMemoryBlobStore) blobStore);
-        }
-    }
-
-    protected void clearBlobStore(TransactionalBlobStore blobStore) throws IOException {
-        clearBlobStore(blobStore.store);
-        clearBlobStore(blobStore.transientStore);
-    }
-
-    protected void clearBlobStore(CachingBlobStore blobStore) throws IOException {
-        clearBlobStore(blobStore.store);
-        Path dir = blobStore.cacheDir;
-        FileUtils.cleanDirectory(dir.toFile());
-    }
-
-    protected void clearBlobStore(LocalBlobStore blobStore) throws IOException {
-        Path dir = blobStore.pathStrategy.dir;
-        FileUtils.cleanDirectory(dir.toFile());
-    }
-
-    protected void clearBlobStore(InMemoryBlobStore blobStore) {
-        blobStore.map.clear();
-    }
-
-    public void closeBlobStore() throws IOException {
-        clearBlobStore();
     }
 
     /**

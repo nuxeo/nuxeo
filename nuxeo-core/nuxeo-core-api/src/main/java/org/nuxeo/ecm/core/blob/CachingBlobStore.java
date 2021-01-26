@@ -189,6 +189,12 @@ public class CachingBlobStore extends AbstractBlobStore {
     }
 
     @Override
+    public void clear() {
+        store.clear();
+        tmpStore.clear();
+    }
+
+    @Override
     public BinaryGarbageCollector getBinaryGarbageCollector() {
         return gc;
     }

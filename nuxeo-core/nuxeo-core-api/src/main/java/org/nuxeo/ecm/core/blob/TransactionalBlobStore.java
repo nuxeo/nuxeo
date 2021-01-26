@@ -223,6 +223,14 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
         }
     }
 
+    @Override
+    public void clear() {
+        store.clear();
+        transientStore.clear();
+        transientInfo.remove();
+        keysInActiveTransactions.clear();
+    }
+
     protected Transaction getTransaction() {
         try {
             return NuxeoContainer.getTransactionManager().getTransaction();
