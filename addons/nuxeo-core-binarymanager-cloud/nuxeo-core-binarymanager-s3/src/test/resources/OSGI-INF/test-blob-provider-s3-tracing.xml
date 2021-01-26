@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.blob.s3.test.tracing" version="1.0.0">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+
+    <blobprovider name="s3">
+      <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
+      <property name="bucket_prefix">base/</property>
+    </blobprovider>
+
+    <blobprovider name="s3-other">
+      <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
+      <property name="bucket_prefix">other/</property>
+    </blobprovider>
+
+    <blobprovider name="s3-nocache">
+      <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
+      <property name="bucket_prefix">nocache/</property>
+      <property name="nocache">true</property>
+    </blobprovider>
+
+    <blobprovider name="s3-record">
+      <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
+      <property name="bucket_prefix">record/</property>
+      <property name="record">true</property>
+    </blobprovider>
+
+  </extension>
+</component>

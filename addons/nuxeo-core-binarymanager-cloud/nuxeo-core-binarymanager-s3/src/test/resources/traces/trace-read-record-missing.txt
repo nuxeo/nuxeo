@@ -1,0 +1,11 @@
+@startuml
+participant Nuxeo order 1
+participant tx order 2
+participant Cache order 3
+participant S3 order 4
+== Read (record, missing) ==
+Nuxeo <-- Cache: missing
+                                hnote right: id1
+Nuxeo <-- S3: missing
+                                hnote right: record/id1
+@enduml
