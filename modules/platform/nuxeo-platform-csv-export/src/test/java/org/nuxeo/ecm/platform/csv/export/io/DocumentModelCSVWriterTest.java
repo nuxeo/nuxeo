@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.SCHEMAS_CTX_DATA;
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.XPATHS_CTX_DATA;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -86,7 +86,7 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
     @Test
     public void testDefault() throws Exception {
         RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
-        renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, Arrays.asList("dublincore"));
+        renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, Collections.singletonList("dublincore"));
         CSVAssert csv = csvAssert(document, renderingCtx);
         csv.has("repository").isEquals("test");
         csv.has("uid").isEquals(document.getId());
@@ -108,13 +108,13 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         csv.has("dc:coverage[label]").isEquals("France");
         csv.has("isRecord").isTrue();
         String expectedRetainUntil = ((GregorianCalendar) retainUntil).toZonedDateTime().toString();
-        csv.has("retainUntil").isEquals(expectedRetainUntil );
+        csv.has("retainUntil").isEquals(expectedRetainUntil);
         csv.has("hasLegalHold").isTrue();
         csv.has("isUnderRetentionOrLegalHold").isTrue();
     }
 
     @Test
-    public void testInvalidSchemasAndXpaths() throws IOException {
+    public void testInvalidSchemasAndXpaths() throws Exception {
         for (List<String> value : getValues()) {
             RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
             for (String param : Arrays.asList(SCHEMAS_CTX_DATA, XPATHS_CTX_DATA)) {
@@ -126,10 +126,10 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
 
     protected List<List<String>> getValues() {
         List<List<String>> values = new ArrayList<>();
-        values.add(Arrays.asList((String) null));
-        values.add(Arrays.asList(""));
-        values.add(Arrays.asList("toto"));
-        values.add(Arrays.asList("toto, tata, titi"));
+        values.add(Collections.singletonList(null));
+        values.add(Collections.singletonList(""));
+        values.add(Collections.singletonList("toto"));
+        values.add(Collections.singletonList("toto, tata, titi"));
         return values;
     }
 }
