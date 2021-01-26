@@ -280,4 +280,11 @@ public interface BlobStore {
      */
     BlobStore unwrap();
 
+    /**
+     * INTERNAL (TESTS). Clears the blob store of all its data.
+     *
+     * @since 11.5
+     */
+    void clear();
+
 }

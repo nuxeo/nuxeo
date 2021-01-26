@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -101,16 +102,13 @@ public abstract class TestS3BlobStoreAbstract extends TestAbstractBlobStore {
         return properties;
     }
 
-    // remove all objects, including versions
-    protected void clearBucket() {
-        S3BlobStore s3BlobStore = (S3BlobStore) bs.unwrap();
-        s3BlobStore.clearBucket();
-    }
+    @After
+    public void tearDown() throws IOException {
+        super.tearDown();
 
-    @Override
-    public void clearBlobStore() throws IOException {
-        clearBucket();
-        super.clearBlobStore();
+        BlobProvider otherbp = blobManager.getBlobProvider("other");
+        BlobStore otherbs = ((BlobStoreBlobProvider) otherbp).store;
+        otherbs.clear();
     }
 
     // copy/move from another S3BlobStore has an different, optimized code path
