@@ -22,6 +22,11 @@ RUN mkdir -p /tmp/nuxeo-distribution \
   && DISTDIR=$(/bin/ls /tmp/nuxeo-distribution | head -n 1) \
   && mv /tmp/nuxeo-distribution/$DISTDIR $NUXEO_HOME \
   && sed -i -e "s/^org.nuxeo.distribution.package.*/org.nuxeo.distribution.package=docker/" $NUXEO_HOME/templates/common/config/distribution.properties \
+  # Make sure the packages/* directories belong to nuxeo, to avoid a permission issue with nuxeoctl mp-install
+  # in case they are mounted as a volume (then owned by root:root)
+  && mkdir -p $NUXEO_HOME/packages/backup \
+  && mkdir -p $NUXEO_HOME/packages/store \
+  && mkdir -p $NUXEO_HOME/packages/tmp \
   && rm -rf /tmp/nuxeo-distribution* \
   && chmod +x $NUXEO_HOME/bin/*ctl $NUXEO_HOME/bin/*.sh \
   && chmod -R g+rwX $NUXEO_HOME
