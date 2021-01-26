@@ -87,7 +87,11 @@ if [ ! -f $NUXEO_HOME/configured ]; then
   # Handle NUXEO_PACKAGES
   if [ -n "$NUXEO_PACKAGES" ]; then
     echo "ENTRYPOINT: Install Nuxeo packages: $NUXEO_PACKAGES"
-    nuxeoctl mp-install $NUXEO_PACKAGES --accept=true --relax no
+    installCommand="nuxeoctl mp-install $NUXEO_PACKAGES --accept=true --relax no"
+    if [ "$NUXEO_DEV" = true ]; then
+      installCommand+=" --debug"
+    fi
+    $installCommand
   fi
 
   touch $NUXEO_HOME/configured
