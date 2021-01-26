@@ -79,7 +79,7 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
 
         // main S3 blob store wrapped in a caching store
         BlobStore store = new S3BlobStore("S3", config, keyStrategy);
-        boolean caching = !config.getBooleanProperty("test-nocaching"); // for tests
+        boolean caching = !config.getBooleanProperty("nocache");
         if (caching) {
             store = new CachingBlobStore("Cache", store, config.cachingConfiguration);
         }
