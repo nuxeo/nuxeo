@@ -23,9 +23,11 @@ package org.nuxeo.ecm.platform.userworkspace.core.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 
 @XObject("userWorkspace")
+@XRegistry(compatWarnOnMerge = true)
 public class UserWorkspaceDescriptor {
 
     @XNode("@targetDomainName")
