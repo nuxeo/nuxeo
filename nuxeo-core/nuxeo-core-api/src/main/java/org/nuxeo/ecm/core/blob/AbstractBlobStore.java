@@ -29,8 +29,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.KeyStrategy.WriteObserver;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Basic helper implementations for a {@link BlobStore}.
@@ -102,6 +104,61 @@ public abstract class AbstractBlobStore implements BlobStore {
     }
 
     @Override
+    public String writeBlob(BlobWriteContext blobWriteContext) throws IOException {
+        String returnedKey = writeBlobUsingOptimizedCopy(blobWriteContext);
+        if (returnedKey != null) {
+            return returnedKey;
+        }
+        return writeBlobGeneric(blobWriteContext);
+    }
+
+    /**
+     * Writes the blob without using any store-to-store optimization.
+     *
+     * @since 11.5
+     */
+    protected String writeBlobGeneric(BlobWriteContext blobWriteContext) throws IOException {
+        throw new UnsupportedOperationException("abstract method");
+    }
+
+    protected String writeBlobUsingOptimizedCopy(BlobWriteContext blobWriteContext) throws IOException {
+        Blob blob = blobWriteContext.blobContext.blob;
+        if (!(blob instanceof ManagedBlob)) {
+            return null;
+        }
+        ManagedBlob managedBlob = (ManagedBlob) blob;
+        BlobProvider blobProvider = Framework.getService(BlobManager.class)
+                                             .getBlobProvider(managedBlob.getProviderId());
+        if (!(blobProvider instanceof BlobStoreBlobProvider)) {
+            return null;
+        }
+        BlobStore sourceStore = ((BlobStoreBlobProvider) blobProvider).store;
+        if (!sourceStore.copyBlobIsOptimized(this)) {
+            return null;
+        }
+        // optimized copy is possible
+        // now check what the destination key should be
+        String sourceKey = stripBlobKeyPrefix(managedBlob.getKey());
+        String key = blobWriteContext.getKey();
+        if (key == null) {
+            // key not known or not yet computed
+            // check if we can reuse the original blob key
+            if (keyStrategy.useDeDuplication() && sourceStore.getKeyStrategy().equals(keyStrategy)) {
+                key = stripBlobKeyVersionSuffix(sourceKey);
+            } else {
+                key = randomString();
+            }
+        }
+        boolean asyncDigest = keyStrategy.useDeDuplication() && keyStrategy.getDigestFromKey(key) == null;
+        if (asyncDigest) {
+            // TODO queue to stream
+            // for now do generic write
+            return null;
+        }
+        return copyOrMoveBlob(key, sourceStore, sourceKey, false);
+    }
+
+    @Override
     public void writeBlobProperties(BlobUpdateContext blobUpdateContext) throws IOException {
         // ignore properties updates by default
     }
@@ -123,13 +180,21 @@ public abstract class AbstractBlobStore implements BlobStore {
             throw new UnsupportedOperationException(
                     "Class " + getClass().getName() + " must implement copyBlobIsOptimized");
         }
-        return unwrapped.copyBlobIsOptimized(sourceStore.unwrap());
+        return unwrapped.copyBlobIsOptimized(sourceStore);
     }
 
     protected String stripBlobKeyPrefix(String key) {
         int colon = key.indexOf(':');
         if (colon >= 0) {
             key = key.substring(colon + 1);
+        }
+        return key;
+    }
+
+    protected String stripBlobKeyVersionSuffix(String key) {
+        int seppos = key.indexOf(KeyStrategy.VER_SEP);
+        if (seppos >= 0) {
+            key = key.substring(0, seppos);
         }
         return key;
     }
@@ -158,7 +223,10 @@ public abstract class AbstractBlobStore implements BlobStore {
 
     /** Returns a random string suitable as a key. */
     protected String randomString() {
-        return String.valueOf(randomLong());
+        StringBuilder sb = new StringBuilder(21);
+        sb.append(randomLong());
+        sb.append("-0"); // so that it cannot be confused with a digest
+        return sb.toString();
     }
 
     /** Returns a random positive long. */

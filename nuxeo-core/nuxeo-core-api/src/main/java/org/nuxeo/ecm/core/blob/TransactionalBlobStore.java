@@ -107,8 +107,7 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
     }
 
     @Override
-    public String writeBlob(BlobWriteContext blobWriteContext)
-            throws IOException {
+    protected String writeBlobGeneric(BlobWriteContext blobWriteContext) throws IOException {
         if (TransactionHelper.isTransactionActive()) {
             String transientKey;
             String key;
@@ -138,10 +137,36 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
     }
 
     @Override
-    public boolean copyBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
+    public String copyOrMoveBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
-        // copyBlob only called from commit or during caching
-        throw new UnsupportedOperationException();
+        if (!TransactionHelper.isTransactionActive()) {
+            return store.copyOrMoveBlob(key, sourceStore, sourceKey, atomicMove);
+        }
+        if (atomicMove) {
+            throw new NuxeoException("Transactional move not supported");
+        }
+        logTrace("group tx copy");
+        String transientKey;
+        String returnedKey;
+        if (hasVersioning()) {
+            // with versioning there can be no collisions, and transientStore = store
+            transientKey = transientStore.copyOrMoveBlob(key, sourceStore, sourceKey, false);
+            returnedKey = transientKey;
+        } else {
+            // for the transient write we use a random key
+            transientKey = transientStore.copyOrMoveBlob(randomString(), sourceStore, sourceKey, false);
+            returnedKey = key;
+        }
+        try {
+            putTransientKey(returnedKey, transientKey);
+        } catch (ConcurrentUpdateException e) {
+            // delete transient store file
+            transientStore.deleteBlob(transientKey);
+            throw e;
+        }
+        logTrace("rnote over Nuxeo: " + returnedKey);
+        logTrace("end");
+        return returnedKey;
     }
 
     @Override
@@ -316,10 +341,15 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
                             // without versioning, atomically move to permanent store
                             if (!hasVersioning()) {
                                 try {
-                                    boolean found = store.copyBlob(key, transientStore, transientKey, true);
-                                    if (!found) {
+                                    String returnedKey = store.copyOrMoveBlob(key, transientStore, transientKey, true);
+                                    if (returnedKey == null) {
                                         log.error("Missing blob from transient blob store: " + transientKey
                                                 + ", failed to commit creation of file: " + key);
+                                        continue;
+                                    }
+                                    if (returnedKey != key) {
+                                        log.error("Invalid configuration, copy to key {} actually returned {}", key,
+                                                returnedKey);
                                         continue;
                                     }
                                 } catch (IOException e) {
