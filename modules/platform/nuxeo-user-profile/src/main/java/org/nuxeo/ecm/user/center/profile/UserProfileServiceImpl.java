@@ -26,8 +26,6 @@ import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFIL
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -40,7 +38,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -56,8 +53,6 @@ import com.google.common.cache.CacheBuilder;
  */
 public class UserProfileServiceImpl extends DefaultComponent implements UserProfileService, ComponentManager.Listener {
 
-    private static final Log log = LogFactory.getLog(UserProfileServiceImpl.class);
-
     protected static final Integer CACHE_CONCURRENCY_LEVEL = 10;
 
     protected static final Integer CACHE_TIMEOUT = 10;
@@ -65,8 +60,6 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     protected static final Integer CACHE_MAXIMUM_SIZE = 1000;
 
     public static final String CONFIG_EP = "config";
-
-    private ImporterConfig config;
 
     protected final Cache<String, String> profileUidCache = CacheBuilder.newBuilder()
                                                                         .concurrencyLevel(CACHE_CONCURRENCY_LEVEL)
@@ -175,7 +168,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
 
     @Override
     public ImporterConfig getImporterConfig() {
-        return config;
+        return this.<ImporterConfig> getRegistryContribution(CONFIG_EP).orElse(null);
     }
 
     @Override
@@ -185,6 +178,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
 
     @Override
     public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
+        ImporterConfig config = getImporterConfig();
         if (config == null || config.getDataFileName() == null) {
             return;
         }
@@ -199,22 +193,4 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
         }
     }
 
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIG_EP.equals(extensionPoint)) {
-            if (config != null) {
-                log.warn("Overriding existing user profile importer config");
-            }
-            config = (ImporterConfig) contribution;
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIG_EP.equals(extensionPoint)) {
-            if (config != null && config.equals(contribution)) {
-                config = null;
-            }
-        }
-    }
 }
