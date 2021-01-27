@@ -7,7 +7,7 @@ participant S3 order 4
 Nuxeo <-- Cache: missing
                                 hnote right: id1@${VERSION1}
 Nuxeo <- S3: read 3 bytes
-                                hnote right: record/id1 v=${VERSION1}
+                                hnote right: record/id1@${VERSION1}
 Nuxeo -> Cache: write 3 bytes
                                 hnote right: id1@${VERSION1}
 @enduml

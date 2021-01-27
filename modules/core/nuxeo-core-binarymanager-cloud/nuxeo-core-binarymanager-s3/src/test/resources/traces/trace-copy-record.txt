@@ -1,0 +1,16 @@
+@startuml
+participant Nuxeo order 1
+participant tx order 2
+participant Cache order 3
+participant S3 order 4
+== Copy (record) ==
+group tx copy
+Nuxeo -> S3: copyObject
+                                hnote right: record/id1@${VERSION1} to record/id2
+Nuxeo <-- S3: copied
+                                hnote right: v=${VERSION2}
+                                rnote over Nuxeo: id2@${VERSION2}
+end
+== TX commit ==
+== TX end ==
+@enduml

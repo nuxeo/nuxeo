@@ -131,7 +131,7 @@ public class AESBlobStore extends LocalBlobStore {
     }
 
     @Override
-    public boolean copyBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
+    public String copyOrMoveBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
         throw new UnsupportedOperationException();
     }

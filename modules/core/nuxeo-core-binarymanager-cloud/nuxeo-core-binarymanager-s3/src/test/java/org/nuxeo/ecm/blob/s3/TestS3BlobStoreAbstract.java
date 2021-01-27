@@ -20,6 +20,7 @@ package org.nuxeo.ecm.blob.s3;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
 
@@ -92,9 +93,10 @@ public abstract class TestS3BlobStoreAbstract extends TestAbstractBlobStore {
         BlobStore sourceStore = ((BlobStoreBlobProvider) otherbp).store;
         String key1 = useDeDuplication() ? FOO_MD5 : ID1;
         String key2 = useDeDuplication() ? key1 : ID2;
-        assertFalse(bs.copyBlob(key2, sourceStore, key1, atomicMove));
+        assertNull(bs.copyOrMoveBlob(key2, sourceStore, key1, atomicMove));
         assertEquals(key1, sourceStore.writeBlob(blobContext(ID1, FOO)));
-        assertTrue(bs.copyBlob(key2, sourceStore, key1, atomicMove));
+        String key3 = bs.copyOrMoveBlob(key2, sourceStore, key1, atomicMove);
+        assertEquals(key2, key3);
         assertBlob(bs, key2, FOO);
         if (atomicMove) {
             assertNoBlob(sourceStore, key1);
