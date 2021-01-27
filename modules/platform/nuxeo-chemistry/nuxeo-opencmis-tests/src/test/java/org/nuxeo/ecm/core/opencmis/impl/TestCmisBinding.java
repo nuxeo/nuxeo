@@ -2394,7 +2394,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
-    public void testQueryMultiConainsFollowingSpec() throws Exception {
+    public void testQueryMultiContainsFollowingSpec() throws Exception {
 
         ConfigurationService configService = Framework.getService(ConfigurationService.class);
         assertFalse(configService.getBoolean(NuxeoRepository.RELAX_CMIS_SPEC).orElseThrow(AssertionError::new));

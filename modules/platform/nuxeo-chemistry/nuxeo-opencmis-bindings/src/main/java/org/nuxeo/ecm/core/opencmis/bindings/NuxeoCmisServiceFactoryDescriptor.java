@@ -23,37 +23,23 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Nuxeo CmisServiceFactory Descriptor.
  */
 @XObject(value = "factory")
+@XRegistry
 public class NuxeoCmisServiceFactoryDescriptor {
 
     @XNode("@class")
     public Class<? extends NuxeoCmisServiceFactory> factoryClass;
 
+    @XNodeMap(value = "parameter", key = "@name", type = HashMap.class, componentType = String.class)
+    public Map<String, String> factoryParameters;
+
     public Class<? extends NuxeoCmisServiceFactory> getFactoryClass() {
         return factoryClass == null ? NuxeoCmisServiceFactory.class : factoryClass;
-    }
-
-    @XNodeMap(value = "parameter", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> factoryParameters = new HashMap<>();
-
-    public NuxeoCmisServiceFactoryDescriptor() {
-    }
-
-    /** Copy constructor. */
-    public NuxeoCmisServiceFactoryDescriptor(NuxeoCmisServiceFactoryDescriptor other) {
-        factoryClass = other.factoryClass;
-        factoryParameters = new HashMap<>(other.factoryParameters);
-    }
-
-    public void merge(NuxeoCmisServiceFactoryDescriptor other) {
-        if (other.factoryClass != null) {
-            factoryClass = other.factoryClass;
-        }
-        factoryParameters.putAll(other.factoryParameters);
     }
 
 }

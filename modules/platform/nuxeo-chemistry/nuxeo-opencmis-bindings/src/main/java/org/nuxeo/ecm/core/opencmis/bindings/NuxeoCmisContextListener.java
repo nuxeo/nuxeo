@@ -27,6 +27,7 @@ import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentManager;
 
 /**
  * Servlet context listener that sets up the CMIS service factory in the servlet context as expected by
@@ -59,6 +60,23 @@ public class NuxeoCmisContextListener implements ServletContextListener {
     }
 
     protected void activate(final ServletContextEvent sce) {
+        ComponentManager manager = Framework.getRuntime().getComponentManager();
+        if (manager.isStarted()) {
+            doActivate(sce);
+        } else {
+            manager.addListener(new ComponentManager.Listener() {
+
+                @Override
+                public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
+                    doActivate(sce);
+                    Framework.getRuntime().getComponentManager().removeListener(this);
+                }
+
+            });
+        }
+    }
+
+    protected void doActivate(final ServletContextEvent sce) {
         NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
         CmisServiceFactory factory = manager.getNuxeoCmisServiceFactory();
         sce.getServletContext().setAttribute(CmisRepositoryContextListener.SERVICES_FACTORY, factory);
