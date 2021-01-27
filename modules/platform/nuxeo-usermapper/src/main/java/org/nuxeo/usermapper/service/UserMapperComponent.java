@@ -19,9 +19,7 @@
 package org.nuxeo.usermapper.service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.usermapper.extension.UserMapper;
 
@@ -44,49 +41,28 @@ public class UserMapperComponent extends DefaultComponent implements UserMapperS
 
     protected static final Log log = LogFactory.getLog(UserMapperComponent.class);
 
-    protected Map<String, UserMapper> mappers = new HashMap<>();
-
-    protected List<UserMapperDescriptor> descriptors = new ArrayList<>();
+    protected Map<String, UserMapper> mappers;
 
     public static final String MAPPER_EP = "mapper";
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (MAPPER_EP.equalsIgnoreCase(extensionPoint)) {
-            UserMapperDescriptor desc = (UserMapperDescriptor) contribution;
-            descriptors.add(desc);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (MAPPER_EP.equalsIgnoreCase(extensionPoint)) {
-            UserMapperDescriptor desc = (UserMapperDescriptor) contribution;
-            UserMapper um = mappers.get(desc.name);
-            if (um != null) {
-                um.release();
-                mappers.remove(desc.name);
-            }
-        }
-    }
-
-    @Override
     public void start(ComponentContext context) {
-        for (UserMapperDescriptor desc : descriptors) {
+        mappers = new HashMap<>();
+        this.<UserMapperDescriptor> getRegistryContributions(MAPPER_EP).forEach(desc -> {
             try {
                 mappers.put(desc.name, desc.getInstance());
             } catch (Exception e) {
                 log.error("Unable to register mapper " + desc.name, e);
             }
-        }
+        });
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public void stop(ComponentContext context) throws InterruptedException {
         for (UserMapper um : mappers.values()) {
             um.release();
         }
-        super.deactivate(context);
+        mappers = null;
     }
 
     @Override
