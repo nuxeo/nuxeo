@@ -27,7 +27,7 @@ import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CO
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,10 +42,10 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
 
     @Test
     public void testMultipleConfigurationRegistration() {
-        Map<String, UserRegistrationConfiguration> configurations = ((UserInvitationComponent) userRegistrationService).configurations;
+        Set<String> configurations = userRegistrationService.getConfigurationsName();
         assertEquals(2, configurations.size());
-        assertTrue(configurations.containsKey("test"));
-        assertTrue(configurations.containsKey(DEFAULT_CONFIGURATION_NAME));
+        assertTrue(configurations.contains("test"));
+        assertTrue(configurations.contains(DEFAULT_CONFIGURATION_NAME));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
         assertEquals(0, userManager.searchUsers("testUser").size());
         assertEquals(0, userManager.searchUsers("testUser2").size());
 
-        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(
+        UserRegistrationConfiguration configuration = userRegistrationService.getConfiguration(
                 DEFAULT_CONFIGURATION_NAME);
 
         // User info
@@ -89,8 +89,8 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
         userInfo = session.createDocumentModel(configuration.getRequestDocType());
         userInfo.setPropertyValue("userinfo:login", "testUser2");
         userInfo.setPropertyValue("userinfo:email", "dummy2@test.com");
-        requestId = userRegistrationService.submitRegistrationRequest("test", userInfo,
-                buildAdditionalInfo(), UserInvitationService.ValidationMethod.NONE, true);
+        requestId = userRegistrationService.submitRegistrationRequest("test", userInfo, buildAdditionalInfo(),
+                UserInvitationService.ValidationMethod.NONE, true);
         userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         session.save();
@@ -108,7 +108,7 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
     public void testForceValidationForNonExistingUser() {
         initializeRegistrations();
 
-        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(
+        UserRegistrationConfiguration configuration = userRegistrationService.getConfiguration(
                 DEFAULT_CONFIGURATION_NAME);
         DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
         userInfo.setPropertyValue("userinfo:login", "testUser");

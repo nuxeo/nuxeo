@@ -45,8 +45,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
     @Before
     public void init() {
         initializeRegistrations();
-        configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(
-                DEFAULT_CONFIGURATION_NAME);
+        configuration = userRegistrationService.getConfiguration(DEFAULT_CONFIGURATION_NAME);
         DocumentModel group = userManager.getBareGroupModel();
         group.setPropertyValue(userManager.getGroupIdField(), "samplegroup");
         group.setPropertyValue(userManager.getGroupLabelField(), "Sample Group");
@@ -123,7 +122,8 @@ public class TestUserRegistration extends AbstractUserRegistration {
                 UserInvitationService.ValidationMethod.NONE, true);
     }
 
-    @Test public void tesEventOnRegistrationWithSameEmailAsExistingUser() {
+    @Test
+    public void tesEventOnRegistrationWithSameEmailAsExistingUser() {
         // Set User info
         DocumentModel userInfo = buildSampleUserInfo();
         userInfo.setPropertyValue("userinfo:login", "vdu-" + userInfo.getPropertyValue("userinfo:login"));
@@ -140,11 +140,11 @@ public class TestUserRegistration extends AbstractUserRegistration {
                     UserInvitationService.ValidationMethod.NONE, true);
             fail("submitRegistrationRequest() should have thrown an exception as the email address is already used.");
         } catch (UserAlreadyExistsException e) {
-            DocumentModelList regDocs = session.query("SELECT * FROM TestRegistration WHERE "
-                    + "userinfo:login='" + userInfo.getPropertyValue("userinfo:login") + "'"
-                    );
-            assertTrue("A 'TestRegistration' document should not have been created as the email address is already used. ("
-                    + (!regDocs.isEmpty() ? regDocs.get(0).getProperties("userinfo") + ")" : ""),
+            DocumentModelList regDocs = session.query("SELECT * FROM TestRegistration WHERE " + "userinfo:login='"
+                    + userInfo.getPropertyValue("userinfo:login") + "'");
+            assertTrue(
+                    "A 'TestRegistration' document should not have been created as the email address is already used. ("
+                            + (!regDocs.isEmpty() ? regDocs.get(0).getProperties("userinfo") + ")" : ""),
                     regDocs.isEmpty());
         }
     }
