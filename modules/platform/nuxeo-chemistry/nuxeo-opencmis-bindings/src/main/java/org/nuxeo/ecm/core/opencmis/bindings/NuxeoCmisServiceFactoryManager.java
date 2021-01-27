@@ -20,93 +20,23 @@ package org.nuxeo.ecm.core.opencmis.bindings;
 
 import java.util.Map;
 
-import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Service holding the definition
  */
 public class NuxeoCmisServiceFactoryManager extends DefaultComponent {
 
+    protected static final NuxeoCmisServiceFactoryDescriptor DEFAULT_FACTORY = new NuxeoCmisServiceFactoryDescriptor();
+
     private static final String XP_FACTORY = "factory";
-
-    protected NuxeoCmisServiceFactoryDescriptorRegistry registry = new NuxeoCmisServiceFactoryDescriptorRegistry();
-
-    protected static class NuxeoCmisServiceFactoryDescriptorRegistry extends
-            SimpleContributionRegistry<NuxeoCmisServiceFactoryDescriptor> {
-
-        @Override
-        public String getContributionId(NuxeoCmisServiceFactoryDescriptor contrib) {
-            return XP_FACTORY;
-        }
-
-        @Override
-        public NuxeoCmisServiceFactoryDescriptor clone(NuxeoCmisServiceFactoryDescriptor orig) {
-            return new NuxeoCmisServiceFactoryDescriptor(orig);
-        }
-
-        @Override
-        public void merge(NuxeoCmisServiceFactoryDescriptor src, NuxeoCmisServiceFactoryDescriptor dst) {
-            dst.merge(src);
-        }
-
-        @Override
-        public boolean isSupportingMerge() {
-            return true;
-        }
-
-        public void clear() {
-            currentContribs.clear();
-        }
-
-        public NuxeoCmisServiceFactoryDescriptor getNuxeoCmisServiceFactoryDescriptor() {
-            return getCurrentContribution(XP_FACTORY);
-        }
-    }
-
-    @Override
-    public void activate(ComponentContext context) {
-        registry.clear();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        registry.clear();
-    }
-
-    @Override
-    public void registerContribution(Object contrib, String xpoint, ComponentInstance contributor) {
-        if (XP_FACTORY.equals(xpoint)) {
-            addContribution((NuxeoCmisServiceFactoryDescriptor) contrib);
-        } else {
-            throw new RuntimeException("Unknown extension point: " + xpoint);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contrib, String xpoint, ComponentInstance contributor) {
-        if (XP_FACTORY.equals(xpoint)) {
-            removeContribution((NuxeoCmisServiceFactoryDescriptor) contrib);
-        } else {
-            throw new RuntimeException("Unknown extension point: " + xpoint);
-        }
-    }
-
-    protected void addContribution(NuxeoCmisServiceFactoryDescriptor descriptor) {
-        registry.addContribution(descriptor);
-    }
-
-    protected void removeContribution(NuxeoCmisServiceFactoryDescriptor descriptor) {
-        registry.removeContribution(descriptor);
-    }
 
     /**
      * Gets the {@link NuxeoCmisServiceFactory} based on contributed {@link NuxeoCmisServiceFactoryDescriptor}s.
      */
     public NuxeoCmisServiceFactory getNuxeoCmisServiceFactory() {
-        NuxeoCmisServiceFactoryDescriptor descriptor = registry.getNuxeoCmisServiceFactoryDescriptor();
+        NuxeoCmisServiceFactoryDescriptor descriptor = this.<NuxeoCmisServiceFactoryDescriptor> getRegistryContribution(
+                XP_FACTORY).orElse(DEFAULT_FACTORY);
 
         Class<? extends NuxeoCmisServiceFactory> factoryClass = descriptor.getFactoryClass();
         Map<String, String> factoryParameters = descriptor.factoryParameters;
