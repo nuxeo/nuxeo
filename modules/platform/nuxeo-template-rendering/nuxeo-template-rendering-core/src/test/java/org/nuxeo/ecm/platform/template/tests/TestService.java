@@ -109,7 +109,7 @@ public class TestService {
         assertEquals("TestProcessor", desc.getName());
         assertEquals("Test Processor", desc.getLabel());
         assertEquals(FreeMarkerProcessor.class.getSimpleName(), desc.getProcessor().getClass().getSimpleName());
-        assertTrue(desc.isDefaultProcessor()); // Rest the default flag !
+        assertFalse(desc.isDefaultProcessor());
 
         fakeBlob.setFilename("bidon.docx");
         fakeBlob.setMimeType("");
@@ -182,7 +182,6 @@ public class TestService {
         assertEquals("PDF", pdfDesc.getLabel());
         assertEquals("application/pdf", pdfDesc.getMimeType());
         assertNull(pdfDesc.getChainId());
-        assertTrue(pdfDesc.isEnabled());
     }
 
 }

@@ -2,7 +2,7 @@
 
   <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="processor">
 
-    <templateProcessor name="TestProcessor">
+    <templateProcessor name="TestProcessor" mergeSupportedExtensions="false">
       <supportedMimeType>application/vnd.openxmlformats-officedocument.wordprocessingml.document</supportedMimeType>
       <supportedExtension>docx</supportedExtension>
       <supportedExtension>bidon</supportedExtension>

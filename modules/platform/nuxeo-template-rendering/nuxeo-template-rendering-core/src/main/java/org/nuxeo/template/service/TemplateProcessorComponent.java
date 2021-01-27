@@ -21,13 +21,21 @@ package org.nuxeo.template.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -35,7 +43,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.template.adapters.doc.TemplateBasedDocumentAdapterImpl;
 import org.nuxeo.template.adapters.doc.TemplateBinding;
@@ -70,79 +77,35 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     private static final String FILTER_VERSIONS_PROPERTY = "nuxeo.templating.filterVersions";
 
-    protected ContextFactoryRegistry contextExtensionRegistry;
-
-    protected TemplateProcessorRegistry processorRegistry;
-
-    protected OutputFormatRegistry outputFormatRegistry;
-
     protected volatile Map<String, List<String>> type2Template;
 
     @Override
-    public void activate(ComponentContext context) {
-        processorRegistry = new TemplateProcessorRegistry();
-        contextExtensionRegistry = new ContextFactoryRegistry();
-        outputFormatRegistry = new OutputFormatRegistry();
+    public void start(ComponentContext context) {
+        // force recompute of reserved keywords
+        FreeMarkerVariableExtractor.resetReservedContextKeywords();
     }
 
-    @Override
-    public void deactivate(ComponentContext context) {
-        processorRegistry = null;
-        contextExtensionRegistry = null;
-        outputFormatRegistry = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (PROCESSOR_XP.equals(extensionPoint)) {
-            processorRegistry.addContribution((TemplateProcessorDescriptor) contribution);
-        } else if (CONTEXT_EXTENSION_XP.equals(extensionPoint)) {
-            contextExtensionRegistry.addContribution((ContextExtensionFactoryDescriptor) contribution);
-            // force recompute of reserved keywords
-            FreeMarkerVariableExtractor.resetReservedContextKeywords();
-        } else if (OUTPUT_FORMAT_EXTENSION_XP.equals(extensionPoint)) {
-            outputFormatRegistry.addContribution((OutputFormatDescriptor) contribution);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (PROCESSOR_XP.equals(extensionPoint)) {
-            processorRegistry.removeContribution((TemplateProcessorDescriptor) contribution);
-        } else if (CONTEXT_EXTENSION_XP.equals(extensionPoint)) {
-            contextExtensionRegistry.removeContribution((ContextExtensionFactoryDescriptor) contribution);
-        } else if (OUTPUT_FORMAT_EXTENSION_XP.equals(extensionPoint)) {
-            outputFormatRegistry.removeContribution((OutputFormatDescriptor) contribution);
-        }
+    /**
+     * Force recompute of reserved keywords
+     */
+    protected void recomputeReservedKeywords() {
+        FreeMarkerVariableExtractor.resetReservedContextKeywords();
     }
 
     @Override
     public TemplateProcessor findProcessor(Blob templateBlob) {
-        TemplateProcessorDescriptor desc = findProcessorDescriptor(templateBlob);
-        if (desc != null) {
-            return desc.getProcessor();
-        } else {
-            return null;
-        }
+        return findProcessorDescriptor(templateBlob).map(TemplateProcessorDescriptor::getProcessor).orElse(null);
     }
 
     @Override
     public String findProcessorName(Blob templateBlob) {
-        TemplateProcessorDescriptor desc = findProcessorDescriptor(templateBlob);
-        if (desc != null) {
-            return desc.getName();
-        } else {
-            return null;
-        }
+        return findProcessorDescriptor(templateBlob).map(TemplateProcessorDescriptor::getName).orElse(null);
     }
 
-    public TemplateProcessorDescriptor findProcessorDescriptor(Blob templateBlob) {
-        TemplateProcessorDescriptor processor = null;
-        String mt = templateBlob.getMimeType();
-        if (mt != null) {
-            processor = findProcessorByMimeType(mt);
-        }
-        if (processor == null) {
+    protected Optional<TemplateProcessorDescriptor> findProcessorDescriptor(Blob templateBlob) {
+        Optional<TemplateProcessorDescriptor> processor = Optional.ofNullable(templateBlob.getMimeType())
+                                                                  .flatMap(this::findProcessorByMimeType);
+        if (processor.isEmpty()) {
             String fileName = templateBlob.getFilename();
             if (fileName != null) {
                 String ext = FileUtils.getFileExtension(fileName);
@@ -154,15 +117,15 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     @Override
     public void addContextExtensions(DocumentModel currentDocument, DocumentWrapper wrapper, Map<String, Object> ctx) {
-        Map<String, ContextExtensionFactoryDescriptor> factories = contextExtensionRegistry.getExtensionFactories();
-        for (String name : factories.keySet()) {
-            ContextExtensionFactory factory = factories.get(name).getExtensionFactory();
+        List<ContextExtensionFactoryDescriptor> contribs = getRegistryContributions(CONTEXT_EXTENSION_XP);
+        for (ContextExtensionFactoryDescriptor desc : contribs) {
+            ContextExtensionFactory factory = desc.getExtensionFactory();
             if (factory != null) {
                 Object ob = factory.getExtension(currentDocument, wrapper, ctx);
                 if (ob != null) {
-                    ctx.put(name, ob);
+                    ctx.put(desc.getName(), ob);
                     // also manage aliases
-                    for (String alias : factories.get(name).getAliases()) {
+                    for (String alias : desc.getAliases()) {
                         ctx.put(alias, ob);
                     }
                 }
@@ -173,58 +136,41 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     @Override
     public List<String> getReservedContextKeywords() {
         List<String> keywords = new ArrayList<>();
-        Map<String, ContextExtensionFactoryDescriptor> factories = contextExtensionRegistry.getExtensionFactories();
-        for (String name : factories.keySet()) {
-            keywords.add(name);
-            keywords.addAll(factories.get(name).getAliases());
+        List<ContextExtensionFactoryDescriptor> contribs = getRegistryContributions(CONTEXT_EXTENSION_XP);
+        for (ContextExtensionFactoryDescriptor factoryDesc : contribs) {
+            keywords.add(factoryDesc.getName());
+            keywords.addAll(factoryDesc.getAliases());
         }
-        for (String keyword : AbstractContextBuilder.RESERVED_VAR_NAMES) {
-            keywords.add(keyword);
-        }
+        CollectionUtils.addAll(keywords, AbstractContextBuilder.RESERVED_VAR_NAMES);
         return keywords;
     }
 
     @Override
     public Map<String, ContextExtensionFactoryDescriptor> getRegistredContextExtensions() {
-        return contextExtensionRegistry.getExtensionFactories();
+        Map<String, ContextExtensionFactoryDescriptor> map = this.<MapRegistry> getExtensionPointRegistry(
+                CONTEXT_EXTENSION_XP).getContributions();
+        return Collections.unmodifiableMap(map);
     }
 
-    protected TemplateProcessorDescriptor findProcessorByMimeType(String mt) {
-        List<TemplateProcessorDescriptor> candidates = new ArrayList<>();
-        for (TemplateProcessorDescriptor desc : processorRegistry.getRegistredProcessors()) {
-            if (desc.getSupportedMimeTypes().contains(mt)) {
-                if (desc.isDefaultProcessor()) {
-                    return desc;
-                } else {
-                    candidates.add(desc);
-                }
-            }
-        }
-        if (candidates.size() > 0) {
-            return candidates.get(0);
-        }
-        return null;
+    protected Optional<TemplateProcessorDescriptor> findProcessor(Predicate<TemplateProcessorDescriptor> predicate) {
+        return this.<TemplateProcessorDescriptor> getRegistryContributions(PROCESSOR_XP)
+                   .stream()
+                   .filter(predicate)
+                   // preferably take a default processor first
+                   .sorted(Comparator.comparing(TemplateProcessorDescriptor::isDefaultProcessor).reversed())
+                   .findFirst();
     }
 
-    protected TemplateProcessorDescriptor findProcessorByExtension(String extension) {
-        List<TemplateProcessorDescriptor> candidates = new ArrayList<>();
-        for (TemplateProcessorDescriptor desc : processorRegistry.getRegistredProcessors()) {
-            if (desc.getSupportedExtensions().contains(extension)) {
-                if (desc.isDefaultProcessor()) {
-                    return desc;
-                } else {
-                    candidates.add(desc);
-                }
-            }
-        }
-        if (candidates.size() > 0) {
-            return candidates.get(0);
-        }
-        return null;
+    protected Optional<TemplateProcessorDescriptor> findProcessorByMimeType(String mt) {
+        return findProcessor(desc -> desc.getSupportedMimeTypes().contains(mt));
+    }
+
+    protected Optional<TemplateProcessorDescriptor> findProcessorByExtension(String extension) {
+        return findProcessor(desc -> desc.getSupportedExtensions().contains(extension));
     }
 
     public TemplateProcessorDescriptor getDescriptor(String name) {
-        return processorRegistry.getProcessorByName(name);
+        return this.<TemplateProcessorDescriptor> getRegistryContribution(PROCESSOR_XP, name).orElse(null);
     }
 
     @Override
@@ -233,7 +179,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
             log.info("no defined processor name, using Identity as default");
             name = IdentityProcessor.NAME;
         }
-        TemplateProcessorDescriptor desc = processorRegistry.getProcessorByName(name);
+        TemplateProcessorDescriptor desc = getDescriptor(name);
         if (desc != null) {
             return desc.getProcessor();
         } else {
@@ -254,8 +200,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     }
 
     protected String buildTemplateSearchByNameQuery(String name) {
-        String query = "select * from Document where ecm:mixinType = 'Template' "
-                + "AND tmpl:templateName = " + NXQL.escapeString(name);
+        String query = "select * from Document where ecm:mixinType = 'Template' " + "AND tmpl:templateName = "
+                + NXQL.escapeString(name);
         if (Boolean.parseBoolean(Framework.getProperty(FILTER_VERSIONS_PROPERTY))) {
             query += " AND ecm:isVersion = 0";
         }
@@ -271,18 +217,11 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     public DocumentModel getTemplateDoc(CoreSession session, String name) {
         String query = buildTemplateSearchByNameQuery(name);
         List<DocumentModel> docs = session.query(query);
-        return docs.size() == 0 ? null : docs.get(0);
+        return docs.isEmpty() ? null : docs.get(0);
     }
 
     protected <T> List<T> wrap(List<DocumentModel> docs, Class<T> adapter) {
-        List<T> result = new ArrayList<>();
-        for (DocumentModel doc : docs) {
-            T adapted = doc.getAdapter(adapter);
-            if (adapted != null) {
-                result.add(adapted);
-            }
-        }
-        return result;
+        return docs.stream().map(doc -> doc.getAdapter(adapter)).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     @Override
@@ -294,35 +233,22 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     @Override
     public List<TemplateSourceDocument> getAvailableTemplates(CoreSession session, String targetType) {
-        List<DocumentModel> filtredResult = getAvailableTemplateDocs(session, targetType);
-        return wrap(filtredResult, TemplateSourceDocument.class);
+        List<DocumentModel> docs = getAvailableTemplateDocs(session, targetType);
+        return wrap(docs, TemplateSourceDocument.class);
     }
 
     @Override
     public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) {
-        StringBuilder sb = new StringBuilder()
-                .append("select * from Document where ecm:isVersion = 0 AND ecm:isProxy = 0 AND ")
-                .append(TemplateBindings.BINDING_PROP_NAME)
-                .append("/*/")
-                .append(TemplateBinding.TEMPLATE_ID_KEY)
-                .append(" = '")
-                .append(source.getId())
-                .append("'");
-        DocumentModelList docs = source.getCoreSession().query(sb.toString());
-
-        List<TemplateBasedDocument> result = new ArrayList<>();
-        for (DocumentModel doc : docs) {
-            TemplateBasedDocument templateBasedDocument = doc.getAdapter(TemplateBasedDocument.class);
-            if (templateBasedDocument != null) {
-                result.add(templateBasedDocument);
-            }
-        }
-        return result;
+        String query = String.format(
+                "select * from Document where ecm:isVersion = 0 AND ecm:isProxy = 0 AND %s/*/%s = '%s'",
+                TemplateBindings.BINDING_PROP_NAME, TemplateBinding.TEMPLATE_ID_KEY, source.getId());
+        DocumentModelList docs = source.getCoreSession().query(query);
+        return wrap(docs, TemplateBasedDocument.class);
     }
 
     @Override
     public Collection<TemplateProcessorDescriptor> getRegisteredTemplateProcessors() {
-        return processorRegistry.getRegistredProcessors();
+        return Collections.unmodifiableCollection(getRegistryContributions(PROCESSOR_XP));
     }
 
     @Override
@@ -348,18 +274,16 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
             Map<String, List<String>> mapping = getTypeMapping();
             // check existing mapping for this docId
             List<String> boundTypes = new ArrayList<>();
-            for (String type : mapping.keySet()) {
-                if (mapping.get(type) != null) {
-                    if (mapping.get(type).contains(doc.getId())) {
-                        boundTypes.add(type);
-                    }
+            for (Map.Entry<String, List<String>> entry : mapping.entrySet()) {
+                if (entry.getValue() != null && entry.getValue().contains(doc.getId())) {
+                    boundTypes.add(entry.getKey());
                 }
             }
             // unbind previous mapping for this docId
             for (String type : boundTypes) {
                 List<String> templates = mapping.get(type);
                 templates.remove(doc.getId());
-                if (templates.size() == 0) {
+                if (templates.isEmpty()) {
                     mapping.remove(type);
                 }
             }
@@ -416,11 +340,12 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     @Override
     public Collection<OutputFormatDescriptor> getOutputFormats() {
-        return outputFormatRegistry.getRegistredOutputFormat();
+        return Collections.unmodifiableCollection(getRegistryContributions(OUTPUT_FORMAT_EXTENSION_XP));
     }
 
     @Override
     public OutputFormatDescriptor getOutputFormatDescriptor(String outputFormatId) {
-        return outputFormatRegistry.getOutputFormatById(outputFormatId);
+        return this.<OutputFormatDescriptor> getRegistryContribution(OUTPUT_FORMAT_EXTENSION_XP, outputFormatId)
+                   .orElse(null);
     }
 }

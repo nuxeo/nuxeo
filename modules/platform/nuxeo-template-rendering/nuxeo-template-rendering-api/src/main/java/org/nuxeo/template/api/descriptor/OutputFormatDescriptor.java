@@ -23,20 +23,26 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("outputFormat")
+@XRegistry(enable = false)
 public class OutputFormatDescriptor {
 
     protected static final Log log = LogFactory.getLog(OutputFormatDescriptor.class);
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     @XNode("@label")
     protected String label;
 
-    @XNode("@enabled")
-    protected boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    protected boolean enabled;
 
     @XNode("@chainId")
     protected String chainId;
@@ -52,10 +58,6 @@ public class OutputFormatDescriptor {
         return label;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
     public String getChainId() {
         return chainId;
     }
@@ -64,26 +66,4 @@ public class OutputFormatDescriptor {
         return mimeType;
     }
 
-    @Override
-    public OutputFormatDescriptor clone() {
-        OutputFormatDescriptor clone = new OutputFormatDescriptor();
-        clone.enabled = enabled;
-        clone.chainId = chainId;
-        clone.mimeType = mimeType;
-        clone.label = label;
-        clone.id = id;
-        return clone;
-    }
-
-    public void merge(OutputFormatDescriptor srcOutFormat) {
-        if (srcOutFormat.mimeType != null) {
-            mimeType = srcOutFormat.mimeType;
-        }
-        if (srcOutFormat.chainId != null) {
-            chainId = srcOutFormat.chainId;
-        }
-        if (srcOutFormat.label != null) {
-            label = srcOutFormat.label;
-        }
-    }
 }
