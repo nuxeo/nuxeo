@@ -24,12 +24,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * @since 7.2
  */
 @Experimental(comment="https://jira.nuxeo.com/browse/NXP-12200")
 @XObject("importerConfig")
+@XRegistry(compatWarnOnMerge = true)
 public class ImporterConfig {
 
     public static final String DEFAULT_DATE_FORMAT = "MM/dd/yyyy";
