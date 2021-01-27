@@ -26,6 +26,8 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.usermapper.extension.GroovyUserMapper;
 import org.nuxeo.usermapper.extension.NashornUserMapper;
@@ -38,6 +40,7 @@ import org.nuxeo.usermapper.extension.UserMapper;
  * @since 7.4
  */
 @XObject("mapper")
+@XRegistry(compatWarnOnMerge = true)
 public class UserMapperDescriptor {
 
     public enum Type {
@@ -45,6 +48,7 @@ public class UserMapperDescriptor {
     }
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@type")
