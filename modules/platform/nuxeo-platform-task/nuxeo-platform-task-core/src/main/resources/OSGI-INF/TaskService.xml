@@ -16,7 +16,7 @@
 
   <extension-point name="taskProvider">
     <documentation>
-      This extension can be used to add task providers. a task provider must implement the TaskProvider interface.
+      This extension can be used to add task providers. A task provider must implement the TaskProvider interface.
     </documentation>
     <object class="org.nuxeo.ecm.platform.task.TaskProviderDescriptor"/>
   </extension-point>
@@ -26,5 +26,12 @@
     <taskProvider class="org.nuxeo.ecm.platform.task.core.service.DocumentTaskProvider"
       id="documentTaskProvider"/>
   </extension>
+
+  <extension-point name="taskPersister">
+    <documentation>
+      Allows configuring where tasks documents are persisted.
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.task.TaskPersisterDescriptor" />
+  </extension-point>
 
 </component>

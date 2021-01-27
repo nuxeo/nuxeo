@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.task;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -31,7 +30,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
  * @author Laurent Doguin
  * @since 5.5
  */
-public interface TaskProvider extends Serializable {
+public interface TaskProvider {
 
     /**
      * @return A list of task instances where the current user is an actor. Doesn't take into account tasks that were

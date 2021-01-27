@@ -23,22 +23,28 @@ package org.nuxeo.ecm.platform.task;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  * @since 5.5
  */
 @XObject("taskProvider")
+@XRegistry(enable = false)
 public class TaskProviderDescriptor {
 
     @XNode("@id")
+    @XRegistryId
     private String id;
 
     @XNode("@class")
     private Class<TaskProvider> taskProvider;
 
-    @XNode("@enabled")
-    private Boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    private boolean enabled;
 
     public TaskProvider getNewInstance() {
         try {
@@ -52,7 +58,4 @@ public class TaskProviderDescriptor {
         return id;
     }
 
-    public Boolean isEnabled() {
-        return enabled;
-    }
 }

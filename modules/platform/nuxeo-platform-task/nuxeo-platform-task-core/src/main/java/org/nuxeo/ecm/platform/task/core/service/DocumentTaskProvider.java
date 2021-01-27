@@ -49,8 +49,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentTaskProvider implements TaskProvider {
 
-    private static final long serialVersionUID = 1L;
-
     @Override
     public List<Task> getCurrentTaskInstances(CoreSession coreSession) {
 

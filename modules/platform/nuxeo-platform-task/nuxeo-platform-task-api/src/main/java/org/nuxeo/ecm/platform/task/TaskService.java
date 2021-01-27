@@ -35,12 +35,19 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  * @author Laurent Doguin
  * @since 5.5
  */
-public interface TaskService extends Serializable, TaskProvider {
+public interface TaskService extends TaskProvider {
 
     /**
      * Property used to pass task in the notified events properties
      */
     String TASK_INSTANCE_EVENT_PROPERTIES_KEY = "taskInstance";
+
+    /**
+     * Default task root path.
+     *
+     * @since 11.5
+     */
+    String DEFAULT_PARENT_PATH = "/task-root";
 
     /**
      * The variable used as process instance variables.
@@ -150,7 +157,7 @@ public interface TaskService extends Serializable, TaskProvider {
      *             {@link #createTaskForProcess(CoreSession, NuxeoPrincipal, List, String, String, String, String, String, List, boolean, String, String, Date, Map, String, Map)}
      *             instead
      */
-    @Deprecated
+    @Deprecated(since = "7.4")
     List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
             String taskDocumentType, String taskName, String taskType, String processId, List<String> prefixedActorIds,
             boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
@@ -226,6 +233,7 @@ public interface TaskService extends Serializable, TaskProvider {
 
     /**
      * Remove the documentTask identified by the given taskId if coreSession's principal has the Remove permission.
+     *
      * @since 5.5
      */
     void deleteTask(CoreSession coreSession, String taskId);
