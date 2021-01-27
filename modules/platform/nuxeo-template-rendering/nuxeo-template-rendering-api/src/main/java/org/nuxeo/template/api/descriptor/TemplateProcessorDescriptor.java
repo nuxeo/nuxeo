@@ -26,9 +26,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XMerge;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.template.api.TemplateProcessor;
 
 @XObject("templateProcessor")
+@XRegistry(enable = false)
 public class TemplateProcessorDescriptor {
 
     protected static final Log log = LogFactory.getLog(TemplateProcessorDescriptor.class);
@@ -36,36 +41,36 @@ public class TemplateProcessorDescriptor {
     protected TemplateProcessor processor;
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@label")
     protected String label;
 
-    @SuppressWarnings("rawtypes")
     @XNode("@class")
     protected Class<?> className;
 
     @XNode("@default")
     protected boolean defaultProcessor = true;
 
-    @XNode("@enabled")
-    protected boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    protected boolean enabled;
 
     @XNodeList(value = "supportedMimeType", type = ArrayList.class, componentType = String.class)
+    @XMerge(value = "@mergeSupportedMimeTypes")
     protected List<String> supportedMimeTypes = new ArrayList<>();
 
     @XNodeList(value = "supportedExtension", type = ArrayList.class, componentType = String.class)
+    @XMerge(value = "@mergeSupportedExtensions")
     protected List<String> supportedExtensions = new ArrayList<>();
 
     public boolean init() {
-        if (getProcessor() == null) {
-            return false;
-        }
-        return true;
+        return getProcessor() == null;
     }
 
     public TemplateProcessor getProcessor() {
-        if (processor == null) {
+        if (processor == null && className != null) {
             try {
                 processor = (TemplateProcessor) className.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
@@ -100,39 +105,4 @@ public class TemplateProcessorDescriptor {
         return defaultProcessor;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Override
-    public TemplateProcessorDescriptor clone() {
-
-        TemplateProcessorDescriptor clone = new TemplateProcessorDescriptor();
-        clone.enabled = enabled;
-        clone.supportedExtensions = supportedExtensions;
-        clone.supportedMimeTypes = supportedMimeTypes;
-        clone.className = className;
-        clone.processor = processor;
-        clone.defaultProcessor = defaultProcessor;
-        clone.label = label;
-        clone.name = name;
-
-        return clone;
-    }
-
-    public void merge(TemplateProcessorDescriptor srcTpd) {
-        defaultProcessor = srcTpd.defaultProcessor;
-        if (srcTpd.className != null) {
-            className = srcTpd.className;
-        }
-        if (srcTpd.label != null) {
-            label = srcTpd.label;
-        }
-        if (srcTpd.supportedExtensions != null && srcTpd.supportedExtensions.size() > 0) {
-            supportedExtensions = srcTpd.supportedExtensions;
-        }
-        if (srcTpd.supportedMimeTypes != null && srcTpd.supportedMimeTypes.size() > 0) {
-            supportedMimeTypes = srcTpd.supportedMimeTypes;
-        }
-    }
 }

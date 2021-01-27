@@ -26,30 +26,32 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.template.api.context.ContextExtensionFactory;
 
 @XObject("contextFactory")
+@XRegistry(enable = false)
 public class ContextExtensionFactoryDescriptor {
 
     protected static final Log log = LogFactory.getLog(ContextExtensionFactoryDescriptor.class);
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@class")
     protected Class<? extends ContextExtensionFactory> factoryClass;
 
-    @XNode("@enabled")
-    protected boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    protected boolean enabled;
 
     @XNodeList(value = "aliasName", type = ArrayList.class, componentType = String.class)
     protected List<String> aliasNames = new ArrayList<>();
 
     protected ContextExtensionFactory factory;
-
-    public boolean isEnabled() {
-        return enabled;
-    }
 
     public ContextExtensionFactory getExtensionFactory() {
         if (factory == null) {
@@ -66,26 +68,6 @@ public class ContextExtensionFactoryDescriptor {
 
     public String getName() {
         return name;
-    }
-
-    @Override
-    public ContextExtensionFactoryDescriptor clone() {
-        ContextExtensionFactoryDescriptor copy = new ContextExtensionFactoryDescriptor();
-        copy.name = name;
-        copy.factoryClass = factoryClass;
-        copy.enabled = enabled;
-        copy.aliasNames = aliasNames;
-        return copy;
-    }
-
-    public void merge(ContextExtensionFactoryDescriptor src) {
-        if (src.factoryClass != null) {
-            factoryClass = src.factoryClass;
-        }
-        if (src.aliasNames != null) {
-            aliasNames.addAll(src.aliasNames);
-        }
-        enabled = src.enabled;
     }
 
     public List<String> getAliases() {
