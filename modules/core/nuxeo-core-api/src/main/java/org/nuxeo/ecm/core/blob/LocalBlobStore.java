@@ -58,7 +58,7 @@ public class LocalBlobStore extends AbstractBlobStore {
     }
 
     @Override
-    public String writeBlob(BlobWriteContext blobWriteContext) throws IOException {
+    protected String writeBlobGeneric(BlobWriteContext blobWriteContext) throws IOException {
         Path tmp = pathStrategy.createTempFile();
         try {
             write(blobWriteContext, tmp);
@@ -87,19 +87,21 @@ public class LocalBlobStore extends AbstractBlobStore {
 
     @Override
     public boolean copyBlobIsOptimized(BlobStore sourceStore) {
-        return sourceStore instanceof LocalBlobStore;
+        return sourceStore.unwrap() instanceof LocalBlobStore;
     }
 
     @Override
-    public boolean copyBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
+    public String copyOrMoveBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
         BlobStore unwrappedSourceStore = sourceStore.unwrap();
+        boolean copied;
         if (unwrappedSourceStore instanceof LocalBlobStore) {
             LocalBlobStore sourceLocalBlobStore = (LocalBlobStore) unwrappedSourceStore;
-            return copyBlob(key, sourceLocalBlobStore, sourceKey, atomicMove);
+            copied = copyBlob(key, sourceLocalBlobStore, sourceKey, atomicMove);
         } else {
-            return copyBlobGeneric(key, sourceStore, sourceKey, atomicMove);
+            copied = copyBlobGeneric(key, sourceStore, sourceKey, atomicMove);
         }
+        return copied ? key : null;
     }
 
     /**

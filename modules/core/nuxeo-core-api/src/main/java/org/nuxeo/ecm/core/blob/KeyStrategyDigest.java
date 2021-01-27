@@ -51,7 +51,7 @@ public class KeyStrategyDigest implements KeyStrategy {
 
     @Override
     public String getDigestFromKey(String key) {
-        return key;
+        return key.contains("-") ? null : key;
     }
 
     @Override

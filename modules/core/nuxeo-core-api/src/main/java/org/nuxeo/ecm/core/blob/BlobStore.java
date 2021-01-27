@@ -98,8 +98,30 @@ public interface BlobStore {
      * @param sourceKey the source key
      * @param atomicMove {@code true} for an atomic move, {@code false} for a regular copy
      * @return {@code true} if the file was found in the source store, {@code false} if it was not found
+     * @deprecated since 11.5, use {@link #copyOrMoveBlob} instead
      */
-    boolean copyBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove) throws IOException;
+    @Deprecated
+    default boolean copyBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
+            throws IOException {
+        return copyOrMoveBlob(key, sourceStore, sourceKey, atomicMove) != null;
+    }
+
+    /**
+     * Writes a file based on a key, as a copy/move from a source in another blob store.
+     * <p>
+     * If the copy/move is requested to be atomic, then the destination file is created atomically. In case of atomic
+     * move, in some stores the destination will be created atomically but the source will only be deleted afterwards.
+     * <p>
+     * The returned key may be different than the passed one when versioning is used.
+     *
+     * @param key the key
+     * @param sourceStore the source store
+     * @param sourceKey the source key
+     * @param atomicMove {@code true} for an atomic move, {@code false} for a regular copy
+     * @return the key of the copied/moved file, or {@code null} if copy/move failed
+     * @since 11.5
+     */
+    String copyOrMoveBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove) throws IOException;
 
     /**
      * A class representing an unknown value, a missing value, or a present (non-null) value.

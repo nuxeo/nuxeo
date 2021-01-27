@@ -76,7 +76,7 @@ public class CachingBlobStore extends AbstractBlobStore {
     }
 
     @Override
-    public String writeBlob(BlobWriteContext blobWriteContext) throws IOException {
+    protected String writeBlobGeneric(BlobWriteContext blobWriteContext) throws IOException {
         // write the blob to a temporary file
         String tmpKey = tmpStore.writeBlob(blobWriteContext.copyWithKey(randomString()));
         // get the final key
@@ -110,21 +110,21 @@ public class CachingBlobStore extends AbstractBlobStore {
     }
 
     @Override
-    public boolean copyBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
+    public String copyOrMoveBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
         CachingBlobStore cachingSourceStore = sourceStore instanceof CachingBlobStore ? (CachingBlobStore) sourceStore
                 : null;
         if ((!atomicMove || copyBlobIsOptimized(sourceStore)) && cachingSourceStore != null) {
             // if it's a copy and the original cached file won't be touched
             // else optimized move won't need the cache, so we can move the cache ahead of time
-            tmpStore.copyBlob(key, cachingSourceStore.tmpStore, sourceKey, atomicMove);
+            tmpStore.copyOrMoveBlob(key, cachingSourceStore.tmpStore, sourceKey, atomicMove);
         }
-        boolean found = store.copyBlob(key, sourceStore, sourceKey, atomicMove);
-        if (found && atomicMove && cachingSourceStore != null) {
+        String returnedKey = store.copyOrMoveBlob(key, sourceStore, sourceKey, atomicMove);
+        if (returnedKey != null && atomicMove && cachingSourceStore != null) {
             // clear source cache
             cachingSourceStore.tmpStore.deleteBlob(sourceKey);
         }
-        return found;
+        return returnedKey;
     }
 
     @Override
@@ -150,8 +150,8 @@ public class CachingBlobStore extends AbstractBlobStore {
             // fetch file from storage into the cache
             // go through a tmp file for atomicity
             String tmpKey = randomString();
-            boolean found = tmpStore.copyBlob(tmpKey, store, key, false);
-            if (!found) {
+            String returnedKey = tmpStore.copyOrMoveBlob(tmpKey, store, key, false);
+            if (returnedKey == null) {
                 return OptionalOrUnknown.missing();
             }
             File tmp = tmpPathStrategy.getPathForKey(tmpKey).toFile();

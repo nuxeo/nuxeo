@@ -22,6 +22,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
@@ -284,11 +285,12 @@ public abstract class TestAbstractBlobStore {
     }
 
     protected void testCopyOrMove(BlobStore sourceStore, boolean atomicMove) throws IOException {
-        assertFalse(bs.copyBlob(ID2, sourceStore, ID1, atomicMove));
-        assertFalse(bs.copyBlob(ID2, sourceStore, FOO_MD5, atomicMove));
+        assertNull(bs.copyOrMoveBlob(ID2, sourceStore, ID1, atomicMove));
+        assertNull(bs.copyOrMoveBlob(ID2, sourceStore, FOO_MD5, atomicMove));
         String key1 = sourceStore.writeBlob(blobContext(ID1, FOO));
         assertEquals(FOO_MD5, key1);
-        assertTrue(bs.copyBlob(ID2, sourceStore, key1, atomicMove));
+        String key2 = bs.copyOrMoveBlob(ID2, sourceStore, key1, atomicMove);
+        assertEquals(ID2, key2);
         if (!useDeDuplication()) {
             assertBlob(ID2, FOO);
         }

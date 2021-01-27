@@ -86,7 +86,7 @@ public class LogTracingHelper {
     protected static final Pattern VAR_PATTERN = Pattern.compile("\\$\\{([0-9a-zA-Z_.]+)}");
 
     // the possible values that a captured var is allowed to match
-    protected static final String VAR_MATCHED = "[0-9a-zA-Z_.]+";
+    protected static final String VAR_MATCHED = "[0-9a-zA-Z-_.]+";
 
     protected static void matchAndCaptureVars(String expected, String actual, Map<String, String> context, int line) {
         // extract var names to capture and turn into regex
