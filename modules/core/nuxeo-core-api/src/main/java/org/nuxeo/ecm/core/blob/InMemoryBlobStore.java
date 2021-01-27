@@ -97,7 +97,7 @@ public class InMemoryBlobStore extends AbstractBlobStore {
     }
 
     @Override
-    public String writeBlob(BlobWriteContext blobWriteContext) throws IOException {
+    protected String writeBlobGeneric(BlobWriteContext blobWriteContext) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         transfer(blobWriteContext, baos);
         String key = blobWriteContext.getKey(); // may depend on WriteObserver, for example for digests
@@ -121,17 +121,17 @@ public class InMemoryBlobStore extends AbstractBlobStore {
     @Override
     public boolean copyBlobIsOptimized(BlobStore sourceStore) {
         // this allows us to test "optimized copy" code paths
-        return sourceStore instanceof InMemoryBlobStore;
+        return sourceStore.unwrap() instanceof InMemoryBlobStore;
     }
 
     @Override
-    public boolean copyBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
+    public String copyOrMoveBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
-        boolean found = copyBlob(key, sourceStore, sourceKey);
-        if (found && atomicMove) {
+        boolean copied = copyBlob(key, sourceStore, sourceKey);
+        if (copied && atomicMove) {
             sourceStore.deleteBlob(sourceKey);
         }
-        return found;
+        return copied ? key : null;
     }
 
     protected boolean copyBlob(String key, BlobStore sourceStore, String sourceKey) throws IOException {

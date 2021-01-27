@@ -412,4 +412,27 @@ public class TestS3BlobStoreTracing {
         assertEquals(FOO, blob2.getString());
     }
 
+    @Test
+    public void testCopyRecord() throws IOException {
+        BlobProvider bp = getBlobProvider("s3-record");
+        BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
+        String key1 = bp.writeBlob(blobContext);
+        assertTrue(key1, key1.startsWith(DOCID1 + '@'));
+        Blob blob1 = bp.readBlob(blobInfo(key1));
+        clearCache(bp);
+        clearTrace();
+
+        logTrace("== Copy (record) ==");
+        TransactionHelper.startTransaction();
+        BlobContext blobContext2 = new BlobContext(blob1, DOCID2, XPATH);
+        String key2 = bp.writeBlob(blobContext2);
+        assertTrue(key2, key2.startsWith(DOCID2 + '@'));
+        TransactionHelper.commitOrRollbackTransaction();
+        checkTrace("trace-copy-record.txt");
+
+        // check content
+        Blob blob2 = bp.readBlob(blobInfo(key2));
+        assertEquals(FOO, blob2.getString());
+    }
+
 }
