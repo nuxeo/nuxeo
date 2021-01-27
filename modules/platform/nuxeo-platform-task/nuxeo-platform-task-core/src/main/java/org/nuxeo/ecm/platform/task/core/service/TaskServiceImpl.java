@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.utils.Path;
@@ -54,7 +55,6 @@ import org.nuxeo.ecm.platform.task.TaskProvider;
 import org.nuxeo.ecm.platform.task.TaskProviderDescriptor;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -63,8 +63,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 5.5
  */
 public class TaskServiceImpl extends DefaultComponent implements TaskService {
-
-    private static final long serialVersionUID = 1L;
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.platform.task.core.TaskService");
 
@@ -76,53 +74,23 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     private Map<String, TaskProvider> tasksProviders;
 
-    private String parentPath = "/task-root";
+    private String parentPath;
 
     @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        tasksProviders = new HashMap<>();
+    public void start(ComponentContext context) {
+        tasksProviders = this.<TaskProviderDescriptor> getRegistryContributions(TASK_PROVIDER_XP)
+                             .stream()
+                             .collect(Collectors.toMap(TaskProviderDescriptor::getId,
+                                     TaskProviderDescriptor::getNewInstance));
+        parentPath = this.<TaskPersisterDescriptor> getRegistryContribution(TASK_PERSISTER_XP)
+                         .map(TaskPersisterDescriptor::getPath)
+                         .orElse(DEFAULT_PARENT_PATH);
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        super.deactivate(context);
+    public void stop(ComponentContext context) throws InterruptedException {
         tasksProviders = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(TASK_PROVIDER_XP)) {
-            if (contribution instanceof TaskProviderDescriptor) {
-                TaskProviderDescriptor taskProviderDescriptor = (TaskProviderDescriptor) contribution;
-                String providerId = taskProviderDescriptor.getId();
-                if (taskProviderDescriptor.isEnabled()) {
-                    tasksProviders.put(providerId, taskProviderDescriptor.getNewInstance());
-                } else {
-                    if (tasksProviders.get(providerId) != null) {
-                        tasksProviders.remove(providerId);
-                    }
-                }
-            }
-        } else if (extensionPoint.equals(TASK_PERSISTER_XP)) {
-            if (contribution instanceof TaskPersisterDescriptor) {
-                TaskPersisterDescriptor taskPersisterDescriptor = (TaskPersisterDescriptor) contribution;
-                parentPath = taskPersisterDescriptor.getPath();
-            }
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(TASK_PROVIDER_XP)) {
-            if (contribution instanceof TaskProviderDescriptor) {
-                TaskProviderDescriptor taskProviderDescriptor = (TaskProviderDescriptor) contribution;
-                String providerId = taskProviderDescriptor.getId();
-                if (tasksProviders.get(providerId) != null) {
-                    tasksProviders.remove(providerId);
-                }
-            }
-        }
+        parentPath = null;
     }
 
     @Override
@@ -638,14 +606,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         return tasks;
     }
 
-    /**
-     * @since 5.8
-     * @deprecated since 7.4 use
-     *             {@link #createTaskForProcess(CoreSession, NuxeoPrincipal, List, String, String, String, String, String, List, boolean, String, String, Date, Map, String, Map)}
-     *             instead
-     */
     @Override
-    @Deprecated
+    @Deprecated(since = "7.4")
     public List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
             String taskDocumentType, String taskName, String taskType, String processId, List<String> actorIds,
             boolean createOneTaskPerActor, String directive, String comment, Date dueDate,

@@ -48,7 +48,7 @@ public class TargetDescriptor {
     String id;
 
     @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
-    // registry needs to list enabled descriptors
+    // no @XEnable because the registry needs to know which descriptors are enabled or not
     boolean enabled;
 
     @XNode("@restricted")

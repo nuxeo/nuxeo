@@ -23,12 +23,14 @@ package org.nuxeo.ecm.platform.task;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  * @since 5.5
  */
 @XObject("taskPersister")
+@XRegistry
 public class TaskPersisterDescriptor {
 
     @XNode("@path")
