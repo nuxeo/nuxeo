@@ -22,17 +22,10 @@
 
 package org.nuxeo.ecm.platform.userworkspace.core.service;
 
-import java.util.Deque;
-import java.util.LinkedList;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionLocationService;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -45,63 +38,42 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
 
     public static final String NAME = "org.nuxeo.ecm.platform.userworkspace.UserWorkspaceService";
 
-    private static final Log log = LogFactory.getLog(UserWorkspaceService.class);
-
-    protected Deque<UserWorkspaceDescriptor> descriptors = new LinkedList<>();
+    protected static final String XP = "userWorkspace";
 
     protected UserWorkspaceService userWorkspaceService;
 
     @Override
-    public void activate(ComponentContext context) {
-        log.info("UserWorkspaceService activated");
+    public void start(ComponentContext context) {
+        Class<?> klass = getConfiguration().getUserWorkspaceClass();
+        if (klass == null) {
+            throw new NuxeoException("No class specified for the userWorkspace");
+        }
+        try {
+            userWorkspaceService = (UserWorkspaceService) klass.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException("Failed to instantiate class " + klass, e);
+        }
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        log.info("UserWorkspaceService deactivated");
+    public void stop(ComponentContext context) throws InterruptedException {
+        userWorkspaceService = null;
     }
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter == UserWorkspaceServiceImplComponent.class) {
             return adapter.cast(this);
-        }
-        else if (adapter == UserWorkspaceService.class) {
+        } else if (adapter == UserWorkspaceService.class) {
             return adapter.cast(getUserWorkspaceService());
-        }
-        else if (adapter == CollectionLocationService.class) {
+        } else if (adapter == CollectionLocationService.class) {
             return adapter.cast(getUserWorkspaceService());
         }
         return null;
     }
 
     private UserWorkspaceService getUserWorkspaceService() {
-        if (userWorkspaceService == null) {
-            Class<?> klass = getConfiguration().getUserWorkspaceClass();
-            if (klass == null) {
-                throw new NuxeoException("No class specified for the userWorkspace");
-            }
-            try {
-                userWorkspaceService = (UserWorkspaceService) klass.getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new NuxeoException("Failed to instantiate class " + klass, e);
-            }
-        }
         return userWorkspaceService;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        descriptors.add((UserWorkspaceDescriptor) contribution);
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        descriptors.remove(contribution);
-    }
-
-    protected void recompute() {
-        userWorkspaceService = null;
     }
 
     public String getTargetDomainName() {
@@ -109,13 +81,8 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
     }
 
     public UserWorkspaceDescriptor getConfiguration() {
-        return descriptors.getLast();
-    }
-
-    // for tests only
-    public static void reset() {
-        UserWorkspaceServiceImplComponent s = Framework.getService(UserWorkspaceServiceImplComponent.class);
-        s.userWorkspaceService = null;
+        return this.<UserWorkspaceDescriptor> getRegistryContribution(XP)
+                   .orElseThrow(() -> new IllegalArgumentException("Missing userWorkspace configuration"));
     }
 
 }
