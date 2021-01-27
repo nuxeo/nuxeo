@@ -43,8 +43,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -72,7 +73,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.mail.MailSessionBuilder;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import freemarker.template.Configuration;
@@ -83,7 +83,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     public static final String PARAM_ORIGINATING_USER = "registration:originatingUser";
 
-    protected static Log log = LogFactory.getLog(UserInvitationService.class);
+    private static final Logger log = LogManager.getLogger(UserInvitationComponent.class);
 
     public static final String NUXEO_URL_KEY = "nuxeo.url";
 
@@ -93,8 +93,6 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     protected RenderingHelper rh = new RenderingHelper();
 
-    protected Map<String, UserRegistrationConfiguration> configurations = new HashMap<>();
-
     private static final String INVITATION_SUBMITTED_EVENT = "invitationSubmitted";
 
     private static final String INVITATION_ACCEPTED_EVENT = "invitationAccepted";
@@ -102,6 +100,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     private static final String INVITATION_REJECTED_EVENT = "invitationRejected";
 
     private static final String INVITATION_VALIDATED_EVENT = "invitationValidated";
+
+    private static final String XP = "configuration";
 
     public String getTestedRendering() {
         return testRendering;
@@ -701,27 +701,6 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         return registrationInfo;
     }
 
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if ("configuration".equals(extensionPoint)) {
-            UserRegistrationConfiguration newConfig = (UserRegistrationConfiguration) contribution;
-
-            if (configurations.containsKey(newConfig.getName())) {
-                if (newConfig.isMerge()) {
-                    configurations.get(newConfig.getName()).mergeWith(newConfig);
-                } else if (newConfig.isRemove()) {
-                    configurations.remove(newConfig.getName());
-                } else {
-                    log.warn(
-                            "Trying to register an existing userRegistration configuration without removing or merging it, in: "
-                                    + contributor.getName());
-                }
-            } else {
-                configurations.put(newConfig.getName(), newConfig);
-            }
-        }
-    }
-
     protected InvitationUserFactory getRegistrationUserFactory(UserRegistrationConfiguration configuration) {
         InvitationUserFactory factory = null;
         Class<? extends InvitationUserFactory> factoryClass = configuration.getRegistrationUserFactory();
@@ -782,23 +761,17 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             } else if (requestDoc.hasFacet(FACET_REGISTRATION_CONFIGURATION)) {
                 configurationName = (String) requestDoc.getPropertyValue(FIELD_CONFIGURATION_NAME);
             }
-
-            if (!configurations.containsKey(configurationName)) {
-                throw new NuxeoException("Configuration " + configurationName + " is not registered");
-            }
-            return configurations.get(configurationName);
+            return getConfiguration(configurationName);
         } catch (NuxeoException e) {
-            log.info("Unable to get request parent document: " + e.getMessage());
+            log.info("Unable to get request parent document: {}", e::getMessage);
             throw e;
         }
     }
 
     @Override
     public UserRegistrationConfiguration getConfiguration(String name) {
-        if (!configurations.containsKey(name)) {
-            throw new NuxeoException("Trying to get unknown user registration configuration.");
-        }
-        return configurations.get(name);
+        return this.<UserRegistrationConfiguration> getRegistryContribution(XP, name)
+                   .orElseThrow(() -> new NuxeoException("Configuration " + name + " is not registered"));
     }
 
     @Override
@@ -841,7 +814,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     @Override
     public Set<String> getConfigurationsName() {
-        return configurations.keySet();
+        return this.<MapRegistry> getExtensionPointRegistry(XP).getContributions().keySet();
     }
 
     @Override

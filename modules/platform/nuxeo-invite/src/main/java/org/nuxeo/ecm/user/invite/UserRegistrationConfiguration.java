@@ -23,22 +23,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("configuration")
+@XRegistry(compatWarnOnMerge = true)
 public class UserRegistrationConfiguration {
 
     private static Log log = LogFactory.getLog(UserRegistrationConfiguration.class);
 
     public static final String DEFAULT_CONFIGURATION_NAME = "default_registration";
 
-    @XNode("@merge")
-    private boolean merge = false;
-
-    @XNode("@remove")
-    private boolean remove = false;
-
-    @XNode("@name")
-    private String name = DEFAULT_CONFIGURATION_NAME;
+    @XNode(value = "@name", defaultAssignment = DEFAULT_CONFIGURATION_NAME)
+    @XRegistryId
+    private String name;
 
     @XNode("requestDocType")
     private String requestDocType;
@@ -64,7 +62,7 @@ public class UserRegistrationConfiguration {
     /**
      * @deprecated since 7.3. Not used anymore, the password is not stored.
      */
-    @Deprecated
+    @Deprecated(since = "7.3")
     @XNode("userInfo/passwordField")
     private String userInfoPasswordField = "userinfo:password";
 
@@ -210,6 +208,10 @@ public class UserRegistrationConfiguration {
         return userInfoCompanyField;
     }
 
+    /**
+     * @deprecated since 7.3. Not used anymore, the password is not stored.
+     */
+    @Deprecated(since = "7.3")
     public String getUserInfoPasswordField() {
         return userInfoPasswordField;
     }
@@ -226,141 +228,12 @@ public class UserRegistrationConfiguration {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isMerge() {
-        return merge;
-    }
-
-    public void setMerge(boolean merge) {
-        this.merge = merge;
-    }
-
-    public boolean isRemove() {
-        return remove;
-    }
-
-    public void setRemove(boolean remove) {
-        this.remove = remove;
-    }
-
     public String getInvitationLayout() {
         return invitationLayout;
-    }
-
-    public void setInvitationLayout(String invitationLayout) {
-        this.invitationLayout = invitationLayout;
     }
 
     public String getListingLocalContentView() {
         return listingLocalContentView;
     }
 
-    public void setListingLocalContentView(String listingLocalContentView) {
-        this.listingLocalContentView = listingLocalContentView;
-    }
-
-    public void mergeWith(UserRegistrationConfiguration other) {
-        if (!StringUtils.isEmpty(other.requestDocType)) {
-            this.requestDocType = other.requestDocType;
-        }
-
-        if (!StringUtils.isEmpty(other.containerDocType)) {
-            this.containerDocType = other.containerDocType;
-        }
-
-        if (!StringUtils.isEmpty(other.containerParentPath)) {
-            this.containerParentPath = other.containerParentPath;
-        }
-
-        if (!StringUtils.isEmpty(other.containerName)) {
-            this.containerName = other.containerName;
-        }
-
-        if (!StringUtils.isEmpty(other.containerTitle)) {
-            this.containerTitle = other.containerTitle;
-        }
-
-        if (!StringUtils.isEmpty(other.validationEmailTitle)) {
-            this.validationEmailTitle = other.validationEmailTitle;
-        }
-
-        if (!StringUtils.isEmpty(other.validationEmailTemplate)) {
-            this.validationEmailTemplate = other.validationEmailTemplate;
-        }
-
-        if (!StringUtils.isEmpty(other.successEmailTitle)) {
-            this.successEmailTitle = other.successEmailTitle;
-        }
-
-        if (!StringUtils.isEmpty(other.successEmailTemplate)) {
-            this.successEmailTemplate = other.successEmailTemplate;
-        }
-
-        if (!StringUtils.isEmpty(other.reviveEmailTitle)) {
-            this.reviveEmailTitle = other.reviveEmailTitle;
-        }
-
-        if (!StringUtils.isEmpty(other.reviveEmailTemplate)) {
-            this.reviveEmailTemplate = other.reviveEmailTemplate;
-        }
-
-        if (other.getRegistrationUserFactory() != null) {
-            this.registrationUserFactory = other.registrationUserFactory;
-        }
-
-        if (!StringUtils.isEmpty(other.validationRelUrl)) {
-            this.validationRelUrl = other.validationRelUrl;
-        }
-
-        if (!StringUtils.isEmpty(other.enterPasswordUrl)) {
-            this.enterPasswordUrl = other.enterPasswordUrl;
-        }
-
-        if (!StringUtils.isEmpty(other.invitationLayout)) {
-            this.invitationLayout = other.invitationLayout;
-        }
-
-        if (!StringUtils.isEmpty(other.listingLocalContentView)) {
-            this.listingLocalContentView = other.listingLocalContentView;
-        }
-
-        if (!StringUtils.isEmpty(other.userInfoSchemaName)) {
-            this.userInfoSchemaName = other.userInfoSchemaName;
-        }
-
-        if (!StringUtils.isEmpty(other.userInfoUsernameField)) {
-            this.userInfoUsernameField = other.userInfoUsernameField;
-        }
-
-        if (!StringUtils.isEmpty(other.userInfoFirstnameField)) {
-            this.userInfoFirstnameField = other.userInfoFirstnameField;
-        }
-
-        if (!StringUtils.isEmpty(other.userInfoLastnameField)) {
-            this.userInfoLastnameField = other.userInfoLastnameField;
-        }
-
-        if (!StringUtils.isEmpty(other.userInfoEmailField)) {
-            this.userInfoEmailField = other.userInfoEmailField;
-        }
-
-        if (!StringUtils.isEmpty(other.userInfoPasswordField)) {
-            this.userInfoPasswordField = other.userInfoPasswordField;
-        }
-
-        if (!StringUtils.isEmpty(other.userInfoCompanyField)) {
-            this.userInfoCompanyField = other.userInfoCompanyField;
-        }
-
-        if (!StringUtils.isEmpty(other.userInfoGroupsField)) {
-            this.userInfoGroupsField = other.userInfoGroupsField;
-        }
-
-        if (!StringUtils.isEmpty(other.userInfoTenantIdField)) {
-            this.userInfoTenantIdField = other.userInfoTenantIdField;
-        }
-    }
 }
