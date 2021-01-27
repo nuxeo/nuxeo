@@ -49,17 +49,13 @@ import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.blob.AbstractBlobGarbageCollector;
 import org.nuxeo.ecm.core.blob.AbstractBlobStore;
 import org.nuxeo.ecm.core.blob.BlobContext;
-import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.BlobStore;
 import org.nuxeo.ecm.core.blob.BlobUpdateContext;
 import org.nuxeo.ecm.core.blob.BlobWriteContext;
 import org.nuxeo.ecm.core.blob.ByteRange;
 import org.nuxeo.ecm.core.blob.KeyStrategy;
-import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
-import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkBaseException;
@@ -86,6 +82,7 @@ import com.amazonaws.services.s3.model.VersionListing;
 import com.amazonaws.services.s3.transfer.Copy;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.Upload;
+import com.amazonaws.services.s3.transfer.model.CopyResult;
 import com.amazonaws.services.s3.transfer.model.UploadResult;
 
 /**
@@ -148,20 +145,12 @@ public class S3BlobStore extends AbstractBlobStore {
     }
 
     @Override
-    public String writeBlob(BlobWriteContext blobWriteContext) throws IOException {
-
-        // detect copy from another S3 blob provider, to use direct S3-level copy
-        BlobContext blobContext = blobWriteContext.blobContext;
-        Blob blob = blobContext.blob;
-        String copiedKey = copyBlob(blob);
-        if (copiedKey != null) {
-            return copiedKey;
-        }
-
+    protected String writeBlobGeneric(BlobWriteContext blobWriteContext) throws IOException {
         Path file;
         String fileTraceSource;
         Path tmp = null;
         try {
+            BlobContext blobContext = blobWriteContext.blobContext;
             Path blobWriteContextFile = blobWriteContext.getFile();
             if (blobWriteContextFile != null) {
                 // we have a file, assume that the caller already observed the write
@@ -170,7 +159,7 @@ public class S3BlobStore extends AbstractBlobStore {
             } else {
                 // no transfer to a file was done yet (no caching)
                 // we may be able to use the blob's underlying file, if not pure streaming
-                File blobFile = blob.getFile();
+                File blobFile = blobContext.blob.getFile();
                 if (blobFile != null) {
                     // otherwise use blob file directly
                     if (blobWriteContext.writeObserver != null) {
@@ -404,7 +393,7 @@ public class S3BlobStore extends AbstractBlobStore {
             Download download = config.transferManager.download(getObjectRequest, dest.toFile());
             download.waitForCompletion();
             logTrace("<-", "read " + Files.size(dest) + " bytes");
-            logTrace("hnote right: " + bucketKey + (versionId == null ? "" : " v=" + versionId));
+            logTrace("hnote right: " + bucketKey + (versionId == null ? "" : "@" + versionId));
             if (log.isDebugEnabled()) {
                 long dtms = System.currentTimeMillis() - t0;
                 log.debug("Read s3://" + bucketName + "/" + bucketKey + " in " + dtms + "ms");
@@ -430,7 +419,7 @@ public class S3BlobStore extends AbstractBlobStore {
         } catch (AmazonServiceException e) {
             if (isMissingKey(e)) {
                 logTrace("<--", "missing");
-                logTrace("hnote right: " + bucketKey + (versionId == null ? "" : " v=" + versionId));
+                logTrace("hnote right: " + bucketKey + (versionId == null ? "" : "@" + versionId));
                 if (log.isDebugEnabled()) {
                     log.debug("Blob s3://" + bucketName + "/" + bucketKey + " does not exist");
                 }
@@ -458,80 +447,61 @@ public class S3BlobStore extends AbstractBlobStore {
         }
     }
 
-    /**
-     * Copies the blob as a direct S3 operation, if possible.
-     *
-     * @return the key, or {@code null} if no copy was done
-     */
-    protected String copyBlob(Blob blob) throws IOException {
-        if (!(blob instanceof ManagedBlob)) {
-            // not a managed blob
-            return null;
-        }
-        ManagedBlob managedBlob = (ManagedBlob) blob;
-        BlobProvider blobProvider = Framework.getService(BlobManager.class)
-                                             .getBlobProvider(managedBlob.getProviderId());
-        if (!getKeyStrategy().useDeDuplication()) {
-            // key is not digest-based, so we don't know the destination key
-            return null;
-        }
-        if (!(blobProvider instanceof S3BlobProvider)) {
-            // not an S3 blob
-            return null;
-        }
-        S3BlobStore sourceStore = (S3BlobStore) ((S3BlobProvider) blobProvider).store.unwrap();
-        if (!sourceStore.getKeyStrategy().equals(getKeyStrategy())) {
-            // not the same digest
-            return null;
-        }
-        // use S3-level copy as the source blob provider is also S3
-        String sourceKey = stripBlobKeyPrefix(managedBlob.getKey());
-        String key = sourceKey; // because same key strategy
-        boolean found = copyBlob(key, sourceStore, sourceKey, false);
-        if (!found) {
-            throw new IOException("Cannot find source blob: " + sourceKey);
-        }
-        return key;
-    }
-
     @Override
     public boolean copyBlobIsOptimized(BlobStore sourceStore) {
-        return sourceStore instanceof S3BlobStore;
+        return sourceStore.unwrap() instanceof S3BlobStore;
     }
 
     @Override
-    public boolean copyBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
+    public String copyOrMoveBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
         BlobStore unwrappedSourceStore = sourceStore.unwrap();
         if (unwrappedSourceStore instanceof S3BlobStore) {
             // attempt direct S3-level copy
             S3BlobStore sourceS3BlobStore = (S3BlobStore) unwrappedSourceStore;
             try {
-                boolean copied = copyBlob(key, sourceS3BlobStore, sourceKey, atomicMove);
-                if (copied) {
-                    return true;
+                String returnedKey = copyOrMoveBlob(key, sourceS3BlobStore, sourceKey, atomicMove);
+                if (returnedKey != null) {
+                    return returnedKey;
                 }
             } catch (AmazonServiceException e) {
                 if (isMissingKey(e)) {
                     logTrace("<--", "missing");
                     // source not found
-                    return false;
+                    return null;
                 }
                 throw new IOException(e);
             }
             // fall through if not copied
         }
-        return copyBlobGeneric(key, sourceStore, sourceKey, atomicMove);
+        return copyOrMoveBlobGeneric(key, sourceStore, sourceKey, atomicMove);
+    }
+
+    /** @deprecated since 11.5, use {@link #copyOrMoveBlob(String, S3BlobStore, String, boolean)} instead */
+    @Deprecated
+    protected boolean copyBlob(String key, S3BlobStore sourceBlobStore, String sourceKey, boolean move)
+            throws AmazonServiceException { // NOSONAR
+        return copyOrMoveBlob(key, sourceBlobStore, sourceKey, move) != null;
     }
 
     /**
-     * @return {@code false} if generic copy is needed
+     * @return {@code null} if generic copy is needed
      * @throws AmazonServiceException if the source is missing
      */
-    protected boolean copyBlob(String key, S3BlobStore sourceBlobStore, String sourceKey, boolean move)
+    protected String copyOrMoveBlob(String key, S3BlobStore sourceBlobStore, String sourceKey, boolean move)
             throws AmazonServiceException { // NOSONAR
+        String sourceObjectKey;
+        String sourceVersionId;
+        int seppos = sourceKey.indexOf(VER_SEP);
+        if (seppos < 0) {
+            sourceObjectKey = sourceKey;
+            sourceVersionId = null;
+        } else {
+            sourceObjectKey = sourceKey.substring(0, seppos);
+            sourceVersionId = sourceKey.substring(seppos + 1);
+        }
         String sourceBucketName = sourceBlobStore.bucketName;
-        String sourceBucketKey = sourceBlobStore.bucketPrefix + sourceKey;
+        String sourceBucketKey = sourceBlobStore.bucketPrefix + sourceObjectKey;
         String bucketKey = bucketPrefix + key;
 
         long t0 = 0;
@@ -542,39 +512,46 @@ public class S3BlobStore extends AbstractBlobStore {
         }
 
         if (getKeyStrategy().useDeDuplication() && exists(bucketKey)) {
-            return true;
+            return key;
         }
 
         // copy the blob
-        logTrace("-->", "getObjectMetadata");
-        logTrace("hnote right: " + sourceBucketKey);
-        ObjectMetadata sourceMetadata = amazonS3.getObjectMetadata(sourceBucketName, sourceBucketKey);
-        // don't catch AmazonServiceException if missing, caller will do it
-        long length = sourceMetadata.getContentLength();
-        logTrace("<--", "exists (" + length + " bytes)");
         try {
-
-            copyBlob(sourceBlobStore.config, sourceBucketKey, config, bucketKey, move);
-
+            String versionId = copyOrMoveBlob(sourceBlobStore.config, sourceBucketKey, sourceVersionId, config, bucketKey, move);
             if (log.isDebugEnabled()) {
                 long dtms = System.currentTimeMillis() - t0;
                 log.debug("Copied s3://" + sourceBucketName + "/" + sourceBucketKey + " to s3://" + bucketName + "/"
                         + bucketKey + " in " + dtms + "ms");
             }
-            return true;
+            return versionId == null ? key : key + VER_SEP + versionId;
         } catch (AmazonServiceException e) {
+            if (isMissingKey(e)) {
+                throw e; // dealt with by the caller
+            }
             logTrace("<--", "ERROR");
             String message = "Direct copy failed from s3://" + sourceBucketName + "/" + sourceBucketKey + " to s3://"
-                    + bucketName + "/" + bucketKey + " (" + length + " bytes)";
+                    + bucketName + "/" + bucketKey;
             log.warn(message + ", falling back to slow copy: " + e.getMessage());
             log.debug(message, e);
-            return false;
+            return null;
         }
     }
 
+    /**
+     * @deprecated since 11.5, use
+     *             {@link #copyOrMoveBlob(S3BlobStoreConfiguration, String, String, S3BlobStoreConfiguration, String, boolean)}
+     *             instead
+     */
+    @Deprecated
     protected void copyBlob(S3BlobStoreConfiguration sourceConfig, String sourceKey,
             S3BlobStoreConfiguration destinationConfig, String destinationKey, boolean move) {
-        CopyObjectRequest copyObjectRequest = new CopyObjectRequest(sourceConfig.bucketName, sourceKey,
+        copyOrMoveBlob(sourceConfig, sourceKey, null, destinationConfig, destinationKey, move);
+    }
+
+    /** Returns the version id, or {@code null}. */
+    protected String copyOrMoveBlob(S3BlobStoreConfiguration sourceConfig, String sourceKey, String sourceVersionId,
+            S3BlobStoreConfiguration destinationConfig, String destinationKey, boolean move) {
+        CopyObjectRequest copyObjectRequest = new CopyObjectRequest(sourceConfig.bucketName, sourceKey, sourceVersionId,
                 destinationConfig.bucketName, destinationKey);
         if (destinationConfig.useServerSideEncryption) {
             // server-side encryption
@@ -592,23 +569,38 @@ public class S3BlobStore extends AbstractBlobStore {
             // TODO SSE-C
         }
         logTrace("->", "copyObject");
-        logTrace("hnote right: " + sourceKey + " to " + destinationKey);
+        logTrace("hnote right: " + sourceKey + (sourceVersionId == null ? "" : "@" + sourceVersionId) + " to "
+                + destinationKey);
         Copy copy = destinationConfig.transferManager.copy(copyObjectRequest, sourceConfig.amazonS3, null);
+        CopyResult copyResult;
         try {
-            copy.waitForCompletion();
+            copyResult = copy.waitForCopyResult();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new NuxeoException(e);
         }
+        // if we don't want to use versions, ignore them even though the bucket may be versioned
+        String versionId = useVersion ? copyResult.getVersionId() : null;
         logTrace("<--", "copied");
+        if (versionId != null) {
+            logTrace("hnote right: v=" + versionId);
+        }
         if (move) {
             logTrace("->", "deleteObject");
             logTrace("hnote right: " + sourceKey);
             amazonS3.deleteObject(sourceConfig.bucketName, sourceKey);
         }
+        return versionId;
     }
 
+    /** @deprecated since 11.5, use {@link #copyOrMoveBlobGeneric(String, BlobStore, String, boolean)} instead */
+    @Deprecated
     protected boolean copyBlobGeneric(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
+            throws IOException {
+        return copyOrMoveBlobGeneric(key, sourceStore, sourceKey, atomicMove) != null;
+    }
+
+    protected String copyOrMoveBlobGeneric(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
         Path tmp = null;
         try {
@@ -625,19 +617,16 @@ public class S3BlobStore extends AbstractBlobStore {
                 logTrace("hnote right: " + tmp.getFileName());
                 boolean found = sourceStore.readBlob(sourceKey, tmp);
                 if (!found) {
-                    return false;
+                    return null;
                 }
                 file = tmp;
                 fileTraceSource = "tmp";
             }
             String versionId = writeFile(key, file, null, fileTraceSource); // always atomic
-            if (versionId != null) {
-                throw new NuxeoException("Cannot copy blob if store has versioning");
-            }
             if (atomicMove) {
                 sourceStore.deleteBlob(sourceKey);
             }
-            return true;
+            return versionId == null ? key : key + VER_SEP + versionId;
         } finally {
             if (tmp != null) {
                 try {
@@ -681,7 +670,7 @@ public class S3BlobStore extends AbstractBlobStore {
                        .withVersionId(versionId)
                        .withRetention(retention);
                 logTrace("->", "setObjectRetention");
-                logTrace("hnote right: " + bucketKey + "v=" + versionId);
+                logTrace("hnote right: " + bucketKey + "@" + versionId);
                 logTrace("rnote right: " + (retainUntil == null ? "null" : retainUntil.toInstant().toString()));
                 amazonS3.setObjectRetention(request);
             }
@@ -698,7 +687,7 @@ public class S3BlobStore extends AbstractBlobStore {
                        .withVersionId(versionId)
                        .withLegalHold(legalHold);
                 logTrace("->", "setObjectLegalHold");
-                logTrace("hnote right: " + bucketKey + "v=" + versionId);
+                logTrace("hnote right: " + bucketKey + "@" + versionId);
                 logTrace("rnote right: " + status.toString());
                 amazonS3.setObjectLegalHold(request);
             }
@@ -741,7 +730,7 @@ public class S3BlobStore extends AbstractBlobStore {
                 amazonS3.deleteObject(bucketName, bucketKey);
             } else {
                 logTrace("->", "deleteVersion");
-                logTrace("hnote right: " + bucketKey + " v=" + versionId);
+                logTrace("hnote right: " + bucketKey + "@" + versionId);
                 amazonS3.deleteVersion(bucketName, bucketKey, versionId);
             }
         } catch (AmazonServiceException e) {
