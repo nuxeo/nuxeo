@@ -126,7 +126,7 @@
   </extension>
 
   <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
-    <store name="default" class="org.nuxeo.ecm.core.storage.sql.kv.SQLKeyValueStore">
+    <store name="default" class="org.nuxeo.ecm.core.storage.sql.kv.SQLKeyValueStore" merge="false">
       <property name="datasource">jdbc/keyvaluestore</property>
       <property name="table">kv</property>
     </store>

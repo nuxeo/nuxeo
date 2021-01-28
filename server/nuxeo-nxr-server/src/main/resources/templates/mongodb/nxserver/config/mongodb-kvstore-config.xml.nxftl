@@ -4,7 +4,7 @@
 <#if "${nuxeo.keyvalue.provider}" == "mongodb">
   <require>default-repository-config</require>
   <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
-    <store name="default" class="org.nuxeo.ecm.core.mongodb.kv.MongoDBKeyValueStore">
+    <store name="default" class="org.nuxeo.ecm.core.mongodb.kv.MongoDBKeyValueStore" merge="false">
       <property name="collection">kv</property>
     </store>
   </extension>
