@@ -20,17 +20,16 @@
 package org.nuxeo.runtime.services.event;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.collections.ListenerList;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Extension;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -39,88 +38,79 @@ public class EventService extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.EventService");
 
-    private static final Log log = LogFactory.getLog(EventService.class);
+    private static final Logger log = LogManager.getLogger(EventService.class);
 
-    private final Map<String, ListenerList> topics;
+    protected static final String XP = "listeners";
 
-    private final Map<String, Object[]> contributions;
+    protected Map<String, ListenerList> topics;
 
-    public EventService() {
-        topics = new HashMap<>();
-        contributions = new Hashtable<>();
+    /** map for listeners registered programmatically . */
+    protected Map<String, ListenerList> programmaticTopics;
+
+    @Override
+    public void activate(ComponentContext context) {
+        programmaticTopics = new ConcurrentHashMap<>();
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-        topics.clear();
-        contributions.clear();
+        programmaticTopics = null;
     }
 
     @Override
-    public void registerExtension(Extension extension) {
-        Object[] descriptors = extension.getContributions();
-        if (ArrayUtils.isEmpty(descriptors)) {
-            return;
-        }
-        String name = extension.getId();
-        synchronized (this) {
-            for (Object desc : descriptors) {
-                ListenerDescriptor lDesc = (ListenerDescriptor) desc;
-                for (String topic : lDesc.topics) {
-                    addListener(topic, lDesc.listener);
+    public void start(ComponentContext context) {
+        topics = new HashMap<>();
+        this.<ListenerDescriptor> getRegistryContributions(XP).forEach(desc -> {
+            try {
+                EventListener l = desc.getListener();
+                for (String topic : desc.topics) {
+                    topics.computeIfAbsent(topic, k -> new ListenerList()).add(l);
                 }
+            } catch (ReflectiveOperationException e) {
+                addRuntimeMessage(Level.ERROR, e.getMessage());
+                log.error(e, e);
             }
-            contributions.put(name, descriptors);
-        }
+
+        });
     }
 
     @Override
-    public void unregisterExtension(Extension extension) {
-        String name = extension.getId();
-        synchronized (this) {
-            Object[] descriptors = contributions.remove(name);
-            if (descriptors != null) {
-                for (Object desc : descriptors) {
-                    ListenerDescriptor lDesc = (ListenerDescriptor) desc;
-                    for (String topic : lDesc.topics) {
-                        removeListener(topic, lDesc.listener);
-                    }
-                }
-            }
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        topics = null;
     }
 
     public void sendEvent(Event event) {
-        ListenerList list = topics.get(event.getTopic());
-        if (list == null) {
+        String topic = event.getTopic();
+        ListenerList list = topics == null ? null : topics.get(topic);
+        ListenerList plist = programmaticTopics.get(topic);
+        if (list == null && plist == null) {
             if (log.isTraceEnabled()) {
-                log.trace("Event sent to topic " + event.getTopic() + ". Ingnoring");
+                log.trace("No listener for event topic {}", topic);
             }
         } else {
             sendEvent(list, event);
+            sendEvent(plist, event);
         }
     }
 
-    public synchronized void addListener(String topic, EventListener listener) {
-        ListenerList list = topics.get(topic);
-        if (list == null) {
-            list = new ListenerList();
-            topics.put(topic, list);
-        }
-        list.add(listener);
+    public void addListener(String topic, EventListener listener) {
+        programmaticTopics.computeIfAbsent(topic, k -> new ListenerList()).add(listener);
     }
 
-    public synchronized void removeListener(String topic, EventListener listener) {
-        ListenerList list = topics.get(topic);
+    public void removeListener(String topic, EventListener listener) {
+        ListenerList list = programmaticTopics.get(topic);
         if (list != null) {
             list.remove(listener);
             if (list.isEmpty()) {
-                topics.remove(topic);
+                programmaticTopics.remove(topic);
             }
         }
     }
 
     private static void sendEvent(ListenerList list, Event event) {
+        if (list == null) {
+            return;
+        }
         Object[] listeners = list.getListeners();
         for (Object listener : listeners) {
             ((EventListener) listener).handleEvent(event);
