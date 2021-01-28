@@ -127,7 +127,6 @@
     <event name="documentLocked" />
     <event name="documentUnlocked" />
     <event name="documentSecurityUpdated" />
-    <event name="retentionActiveChanged" />
     <event name="lifecycle_transition_event" />
     <event name="loginSuccess" />
     <event name="loginFailed" />
