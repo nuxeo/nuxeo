@@ -16,7 +16,7 @@
     <documentation>
       Defines the implementations of the Key/Value stores:
       <code>
-        <store name="default" class="org.nuxeo.runtime.kv.MemKeyValueStore"/>
+        <store name="default" class="org.nuxeo.runtime.kv.MemKeyValueStore" />
       </code>
       The class must implement org.nuxeo.runtime.kv.KeyValueStoreProvider.
     </documentation>
@@ -25,8 +25,7 @@
   </extension-point>
 
   <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
-    <store name="default" class="org.nuxeo.runtime.kv.MemKeyValueStore">
-    </store>
+    <store name="default" class="org.nuxeo.runtime.kv.MemKeyValueStore" />
   </extension>
 
 </component>
