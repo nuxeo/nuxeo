@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.publisher.api;
 
-
 import java.io.Serializable;
 import java.util.List;
 

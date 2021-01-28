@@ -58,8 +58,8 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
     protected abstract PublishedDocumentFactory getDefaultFactory();
 
     @Override
-    public void initTree(CoreSession coreSession, Map<String, String> parameters,
-            PublishedDocumentFactory factory, String configName, String title) {
+    public void initTree(CoreSession coreSession, Map<String, String> parameters, PublishedDocumentFactory factory,
+            String configName, String title) {
         this.coreSession = coreSession;
         if (factory != null) {
             this.factory = factory;
@@ -121,8 +121,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params) {
         return factory.publishDocument(doc, targetNode, params);
     }
 

@@ -96,8 +96,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params) {
         SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(doc, targetNode,
                 params);
         PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), this);
@@ -183,8 +182,8 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
     @Override
     public PublicationNode wrapToPublicationNode(DocumentModel documentModel) {
         if (!isPublicationNode(documentModel)) {
-            throw new NuxeoException("Document " + documentModel.getPathAsString()
-                    + " is not a valid publication node.");
+            throw new NuxeoException(
+                    "Document " + documentModel.getPathAsString() + " is not a valid publication node.");
         }
         return new CoreFolderPublicationNode(documentModel, this, factory);
     }

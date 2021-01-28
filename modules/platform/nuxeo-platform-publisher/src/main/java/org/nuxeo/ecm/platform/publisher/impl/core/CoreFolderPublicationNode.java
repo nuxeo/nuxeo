@@ -83,7 +83,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
             clause += String.format(" AND ecm:mixinType NOT IN ('%s', '%s')", FacetNames.PUBLISH_SPACE,
                     FacetNames.HIDDEN_IN_NAVIGATION);
         } else {
-            clause += String.format("AND ecm:mixinType IN ('%s') AND ecm:mixinType NOT IN ('%s')",
+            clause += String.format(" AND ecm:mixinType IN ('%s') AND ecm:mixinType NOT IN ('%s')",
                     FacetNames.PUBLISH_SPACE, FacetNames.HIDDEN_IN_NAVIGATION);
         }
         return clause;
@@ -151,8 +151,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
                 parent = new CoreFolderPublicationNode(getCoreSession().getDocument(folder.getParentRef()), tree,
                         factory);
             } else {
-                parent = new VirtualCoreFolderPublicationNode(getCoreSession(), docRef.toString(), tree,
-                        factory);
+                parent = new VirtualCoreFolderPublicationNode(getCoreSession(), docRef.toString(), tree, factory);
             }
         }
         return parent;
