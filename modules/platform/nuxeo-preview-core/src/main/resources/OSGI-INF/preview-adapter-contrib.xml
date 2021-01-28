@@ -21,8 +21,6 @@
       </previewer>
       <previewer class="org.nuxeo.ecm.platform.preview.adapter.PlainTextPreviewer">
         <pattern>text/plain</pattern>
-      </previewer>
-      <previewer class="org.nuxeo.ecm.platform.preview.adapter.PlainTextPreviewer">
         <pattern>text/partial</pattern>
       </previewer>
       <previewer class="org.nuxeo.ecm.platform.preview.adapter.ZipPreviewer">
