@@ -20,40 +20,37 @@ package org.nuxeo.runtime.services.event;
 
 import java.util.Arrays;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("listener")
+@XRegistry(compatWarnOnMerge = true)
+@XRegistryId("@class")
 public class ListenerDescriptor {
-
-    private static final EventListener NULL_LISTENER = event -> {};
-
-    private static final Log log = LogFactory.getLog(ListenerDescriptor.class);
 
     @XNodeList(value = "topic", type = String[].class, componentType = String.class)
     String[] topics;
 
-    EventListener listener;
-
     @XNode("@class")
-    public void setListener(Class<EventListener> listenerClass) {
-        try {
-            listener = listenerClass.getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            log.error(e);
-            listener = NULL_LISTENER;
-        }
+    Class<? extends EventListener> listenerClass;
+
+    public Class<? extends EventListener> getListenerClass() {
+        return listenerClass;
+    }
+
+    public EventListener getListener() throws ReflectiveOperationException {
+        return listenerClass.getDeclaredConstructor().newInstance();
     }
 
     @Override
     public String toString() {
-        return listener + " { " + Arrays.toString(topics) + " }";
+        return listenerClass + " { " + Arrays.toString(topics) + " }";
     }
 
 }

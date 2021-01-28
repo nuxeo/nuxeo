@@ -90,6 +90,8 @@ public class TestContributionPersistence {
         mgr.uninstallContribution(c1);
         Framework.getRuntime().getComponentManager().refresh();
         mgr = Framework.getService(ContributionPersistenceManager.class);
+        // refresh service
+        es = Framework.getService(EventService.class);
 
         assertTrue(mgr.isPersisted(c1));
         assertFalse(mgr.isInstalled(c1));
