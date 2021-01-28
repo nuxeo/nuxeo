@@ -41,7 +41,7 @@ public abstract class AbstractRegistry implements Registry {
 
     protected List<RegistryContribution> registrations = new CopyOnWriteArrayList<>();
 
-    public AbstractRegistry() {
+    protected AbstractRegistry() {
     }
 
     @Override

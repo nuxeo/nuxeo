@@ -186,27 +186,37 @@ public class TestRegistry {
     }
 
     @Test
-    @LogCaptureFeature.FilterOn(loggerClass = MapRegistry.class, logLevel = "WARN")
-    public void testCompatWarnMapRegistry() throws Exception {
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
+    public void testCompatWarn() throws Exception {
+        checkInitialSingleRegistry(service.getSingleRegistry());
         checkInitialCompatMapRegistry(service.getCompatWarnMapRegistry());
         assertEquals(0, logCaptureResult.getCaughtEventMessages().size());
+
         hotDeploy("registry-contrib-2.xml");
-        if (useHotDeployer()) {
-            assertEquals(1, logCaptureResult.getCaughtEventMessages().size());
-        } else {
-            assertEquals(0, logCaptureResult.getCaughtEventMessages().size());
-        }
+        String warnMap = "The contribution with id 'sample1' on extension 'org.nuxeo.runtime.test.Registry.override#map_compat_warn' has been implicitly merged: "
+                + "the compatibility mechanism on its descriptor class 'org.nuxeo.runtime.registry.SampleWarnOnMergeDescriptor' detected it, "
+                + "and the attribute merge=\"true\" should be added to this definition.";
+        String warnSingle = "A contribution on extension 'org.nuxeo.runtime.test.Registry.override#single' has been implicitly merged: "
+                + "the compatibility mechanism on its descriptor class 'org.nuxeo.runtime.registry.SampleSingleDescriptor' detected it, "
+                + "and the attribute merge=\"true\" should be added to this definition.";
+
+        // ensure init of registries again
+        checkOverriddenSingleRegistry(service.getSingleRegistry());
         checkOverriddenCompatMapRegistry(service.getCompatWarnMapRegistry());
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
-        assertEquals(1, caughtEvents.size());
-        assertEquals(
-                "The contribution with id 'sample1' on extension 'org.nuxeo.runtime.test.Registry.override#map_compat_warn' has been implicitly merged: "
-                        + "the compatibility mechanism on its descriptor class 'org.nuxeo.runtime.registry.SampleWarnOnMergeDescriptor' detected it, "
-                        + "and the attribute merge=\"true\" should be added to this definition.",
-                caughtEvents.get(0));
+        if (useHotDeployer()) {
+            assertEquals(2, caughtEvents.size());
+            assertEquals(warnSingle, caughtEvents.get(0));
+            assertEquals(warnMap, caughtEvents.get(1));
+        } else {
+            assertEquals(2, caughtEvents.size());
+            assertEquals(warnSingle, caughtEvents.get(0));
+            assertEquals(warnMap, caughtEvents.get(1));
+        }
         hotUndeploy("registry-contrib-2.xml");
+        checkInitialSingleRegistry(service.getSingleRegistry());
         checkInitialCompatMapRegistry(service.getCompatWarnMapRegistry());
-        assertEquals(1, logCaptureResult.getCaughtEventMessages().size());
+        assertEquals(2, logCaptureResult.getCaughtEventMessages().size());
     }
 
     @Test

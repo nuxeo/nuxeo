@@ -26,7 +26,7 @@ import org.nuxeo.common.xmap.registry.XRegistry;
  * @since 11.5
  */
 @XObject("descriptor")
-@XRegistry
+@XRegistry(compatWarnOnMerge = true)
 public class SampleSingleDescriptor {
 
     @XNode("@name")
