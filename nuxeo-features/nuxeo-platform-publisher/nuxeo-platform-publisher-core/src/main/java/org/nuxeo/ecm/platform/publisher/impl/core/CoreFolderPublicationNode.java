@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -78,6 +79,10 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
     }
 
     protected String buildChildrenWhereClause(boolean queryDocuments) {
+        return buildChildrenWhereClause(queryDocuments, null);
+    }
+
+    protected String buildChildrenWhereClause(boolean queryDocuments, String docId) {
         String clause = String.format("ecm:parentId = '%s' AND ecm:isTrashed = 0", folder.getId());
         if (queryDocuments) {
             clause += String.format(" AND ecm:mixinType NOT IN ('%s', '%s')", FacetNames.PUBLISH_SPACE,
@@ -85,6 +90,9 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
         } else {
             clause += String.format("AND ecm:mixinType IN ('%s') AND ecm:mixinType NOT IN ('%s')",
                     FacetNames.PUBLISH_SPACE, FacetNames.HIDDEN_IN_NAVIGATION);
+        }
+        if (docId != null) {
+            clause += String.format(" AND ecm:proxyTargetId = '%s'", docId);
         }
         return clause;
     }
@@ -98,6 +106,13 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
         return childrenDocs;
     }
 
+    @Override
+    public List<PublishedDocument> getPublishedDocumentsFor(String docId) {
+        DocumentModelList children = getSortedChildren(true, docId);
+        return children.stream().map(factory::wrapDocumentModel).collect(Collectors.toList());
+    }
+
+    @Override
     public List<PublicationNode> getChildrenNodes() {
         if (childrenNodes == null) {
             DocumentModelList children = getSortedChildren(false);
@@ -121,7 +136,11 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
     }
 
     protected DocumentModelList getSortedChildren(boolean queryDocuments) {
-        String whereClause = buildChildrenWhereClause(queryDocuments);
+        return getSortedChildren(queryDocuments, null);
+    }
+
+    protected DocumentModelList getSortedChildren(boolean queryDocuments, String docId) {
+        String whereClause = buildChildrenWhereClause(queryDocuments, docId);
         DocumentModelList children = getCoreSession().query("SELECT * FROM Document WHERE " + whereClause);
         if (!folder.hasFacet(FacetNames.ORDERABLE)) {
             DefaultDocumentTreeSorter sorter = new DefaultDocumentTreeSorter();
