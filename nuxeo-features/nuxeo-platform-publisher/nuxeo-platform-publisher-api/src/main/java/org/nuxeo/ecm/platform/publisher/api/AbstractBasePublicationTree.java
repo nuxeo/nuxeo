@@ -106,6 +106,12 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return node.getChildrenDocuments();
     }
 
+    @Override
+    public List<PublishedDocument> getPublishedDocumentsFor(String docId) {
+        return rootNode.getPublishedDocumentsFor(docId);
+    }
+
+    @Override
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) {
         return factory.publishDocument(doc, targetNode);
     }

@@ -114,12 +114,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
     }
 
     public void unpublish(DocumentModel doc, PublicationNode targetNode) {
-        List<PublishedDocument> publishedDocs = getPublishedDocumentInNode(targetNode);
-        for (PublishedDocument pubDoc : publishedDocs) {
-            if (pubDoc.getSourceDocumentRef().equals(doc.getRef())) {
-                unpublish(pubDoc);
-            }
-        }
+        targetNode.getPublishedDocumentsFor(doc.getId()).forEach(this::unpublish);
     }
 
     public void unpublish(PublishedDocument publishedDocument) {

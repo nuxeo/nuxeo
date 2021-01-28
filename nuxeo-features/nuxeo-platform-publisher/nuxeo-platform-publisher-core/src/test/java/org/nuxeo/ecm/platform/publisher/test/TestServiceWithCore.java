@@ -247,14 +247,18 @@ public class TestServiceWithCore extends PublisherTestCase {
     }
 
     protected void publishDocAndReopenSession() throws Exception {
+        publishDocAndReopenSession(Populate.self.doc2Publish);
+    }
+
+    protected void publishDocAndReopenSession(DocumentModel doc) {
         RootSectionsManager rootSectionsManager = new RootSectionsManager(session);
         DocumentModel section = session.getDocument(new PathRef("/default-domain/sections/section1"));
         DocumentModel workspace = session.getDocument(new PathRef("/default-domain/workspaces/ws1"));
         rootSectionsManager.addSection(section.getId(), workspace);
         PublisherService srv = Framework.getService(PublisherService.class);
-        PublicationTree tree = srv.getPublicationTreeFor(Populate.self.doc2Publish, session);
+        PublicationTree tree = srv.getPublicationTreeFor(doc, session);
         PublicationNode target = tree.getNodeByPath("/default-domain/sections/section1");
-        srv.publish(Populate.self.doc2Publish, target);
+        srv.publish(doc, target);
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
     }
@@ -273,6 +277,42 @@ public class TestServiceWithCore extends PublisherTestCase {
         DocumentModel publishedDocVersion = session.getSourceDocument(proxyRef);
         tree.unpublish(publishedDocVersion, target);
         assertFalse(session.exists(proxyRef));
+    }
+
+    // NXP-30090
+    @Test
+    public void testUnpublishWithMultipleDocs() {
+        DocumentModel doc1 = session.createDocumentModel("/default-domain/workspaces/ws1", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        DocumentModel doc2 = session.createDocumentModel("/default-domain/workspaces/ws1", "doc2", "File");
+        doc2 = session.createDocument(doc2);
+        PublisherService srv = Framework.getService(PublisherService.class);
+        PublicationTree tree = srv.getPublicationTreeFor(doc1, session);
+        PublicationNode target = tree.getNodeByPath("/default-domain/sections/section1");
+
+        publishDocAndReopenSession(doc1);
+        publishDocAndReopenSession(doc2);
+
+        PathRef doc1Proxy = new PathRef("/default-domain/sections/section1/doc1");
+        DocumentModel doc1Version = session.getSourceDocument(doc1Proxy);
+        PathRef doc2Proxy = new PathRef("/default-domain/sections/section1/doc2");
+        DocumentModel doc2Version = session.getSourceDocument(doc2Proxy);
+        assertTrue(session.exists(doc1Proxy));
+        assertTrue(session.exists(doc2Proxy));
+        // make sure we do not retrieve all section children
+        List<PublishedDocument> publishedDocuments = target.getPublishedDocumentsFor(doc1Version.getId());
+        assertEquals(1, publishedDocuments.size());
+        assertEquals(doc1Proxy.value, publishedDocuments.get(0).getPath());
+        publishedDocuments = target.getPublishedDocumentsFor(doc2Version.getId());
+        assertEquals(1, publishedDocuments.size());
+        assertEquals(doc2Proxy.value, publishedDocuments.get(0).getPath());
+
+        // unpublish only doc1
+        DocumentModel publishedDocVersion = session.getSourceDocument(doc1Proxy);
+        tree.unpublish(publishedDocVersion, target);
+
+        assertFalse(session.exists(doc1Proxy));
+        assertTrue(session.exists(doc2Proxy));
     }
 
 }

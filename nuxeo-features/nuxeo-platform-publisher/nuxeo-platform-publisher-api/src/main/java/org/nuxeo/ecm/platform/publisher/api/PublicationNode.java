@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.publisher.api;
 
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,6 +41,15 @@ public interface PublicationNode extends Serializable {
     List<PublicationNode> getChildrenNodes();
 
     List<PublishedDocument> getChildrenDocuments();
+
+    /**
+     * Returns only the published documents for the given {@code doc}.
+     *
+     * @since 11.5
+     */
+    default List<PublishedDocument> getPublishedDocumentsFor(String docId) {
+        return Collections.emptyList();
+    }
 
     String getNodeType();
 
