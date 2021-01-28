@@ -40,6 +40,15 @@ public interface PublicationNode extends Serializable {
 
     List<PublishedDocument> getChildrenDocuments();
 
+    /**
+     * Returns only the published documents for the given {@code doc}.
+     *
+     * @since 11.5
+     */
+    default List<PublishedDocument> getPublishedDocumentsFor(String docId) {
+        return List.of();
+    }
+
     String getNodeType();
 
     String getType();
