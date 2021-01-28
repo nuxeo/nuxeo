@@ -42,8 +42,11 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
     // volatile for double-checked locking
     protected volatile boolean enabled = true;
 
-    public SingleRegistry() {
-        super();
+    @Override
+    public void initialize() {
+        setContribution(null);
+        enabled = true;
+        super.initialize();
     }
 
     @SuppressWarnings("unchecked")
