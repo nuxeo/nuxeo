@@ -91,6 +91,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase.IdType;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 import org.nuxeo.runtime.mongodb.MongoDBOperators;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoBulkWriteException;
@@ -528,7 +529,8 @@ public class MongoDBConnection extends DBSConnectionBase {
     }
 
     protected NuxeoException newQueryTimeout(MongoExecutionTimeoutException cause, Bson filter) {
-        NuxeoException exc = new NuxeoException("Query timed out after " + mongoDBRepository.maxTimeMS + " ms", cause);
+        NuxeoException exc = new NuxeoException(
+                "Query timed out as a result of the maximum operation time being exceeded", cause);
         if (filter != null) {
             String msg;
             if (filter instanceof Document) {
@@ -1005,8 +1007,13 @@ public class MongoDBConnection extends DBSConnectionBase {
         } else {
             it = coll.find(filter);
         }
-        it.maxTime(mongoDBRepository.maxTimeMS, MILLISECONDS);
+        it.maxTime(getMaxTimeMs(), MILLISECONDS);
         return it;
+    }
+
+    protected long getMaxTimeMs() {
+        long ttl = TransactionHelper.getTransactionTimeToLive();
+        return ttl > 0 ? ttl * 1000 : mongoDBRepository.maxTimeMS;
     }
 
     protected long countDocuments(Bson filter) {
@@ -1014,7 +1021,7 @@ public class MongoDBConnection extends DBSConnectionBase {
     }
 
     protected long countDocuments(Bson filter, CountOptions options) {
-        options.maxTime(mongoDBRepository.maxTimeMS, MILLISECONDS);
+        options.maxTime(getMaxTimeMs(), MILLISECONDS);
         if (transactionStarted) {
             return coll.countDocuments(clientSession, filter, options);
         } else {
