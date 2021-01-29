@@ -155,6 +155,11 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
         } else {
             // for the transient write we use a random key
             transientKey = transientStore.copyOrMoveBlob(randomString(), sourceStore, sourceKey, false);
+            if (key == null) {
+                // fast compute not possible; trigger async digest computation
+                key = randomString();
+                throw new AssertionError("XXX");
+            }
             returnedKey = key;
         }
         try {
@@ -167,6 +172,11 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
         logTrace("rnote over Nuxeo: " + returnedKey);
         logTrace("end");
         return returnedKey;
+    }
+
+    @Override
+    public boolean useAsyncDigest() {
+        return ((AbstractBlobStore) store).useAsyncDigest();
     }
 
     @Override

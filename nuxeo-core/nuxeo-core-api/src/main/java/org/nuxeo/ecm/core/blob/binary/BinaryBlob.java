@@ -53,6 +53,7 @@ public class BinaryBlob extends AbstractBlob implements ManagedBlob, Serializabl
         setMimeType(mimeType);
         setEncoding(encoding);
         setDigest(digest);
+        setDigestAlgorithm(binary.getDigestAlgorithm());
     }
 
     @Override
@@ -73,21 +74,6 @@ public class BinaryBlob extends AbstractBlob implements ManagedBlob, Serializabl
      */
     public Binary getBinary() {
         return binary;
-    }
-
-    @Override
-    public String getDigestAlgorithm() {
-        return Objects.equals(binary.getDigest(), getDigest()) ? binary.getDigestAlgorithm() : null;
-    }
-
-    @Override
-    public String getDigest() {
-        String digest = super.getDigest();
-        if (digest == null) {
-            return binary.getDigest();
-        } else {
-            return digest;
-        }
     }
 
     @Override

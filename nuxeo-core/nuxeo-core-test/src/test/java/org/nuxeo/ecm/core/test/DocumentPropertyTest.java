@@ -39,20 +39,25 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 public class DocumentPropertyTest {
 
+    private static final String TEST = "test";
+
+    private static final String TEST_MD5 = "098f6bcd4621d373cade4e832627b4f6";
+
     @Inject
     public CoreSession session;
 
     @Test
     public void theSessionIsUsable() throws Exception {
         DocumentModel doc = session.createDocumentModel("/default-domain/workspaces", "myfile", "File");
-        Blob blob = Blobs.createBlob("test");
+        Blob blob = Blobs.createBlob(TEST);
         blob.setFilename("myfile");
         blob.setDigest("mydigest");
         doc.setPropertyValue("file:content", (Serializable) blob);
         doc = session.createDocument(doc);
+        assertEquals(TEST_MD5, blob.getDigest());
         doc = session.getDocument(doc.getRef());
         assertEquals("myfile", doc.getPropertyValue("file:content/name"));
-        assertEquals("mydigest", doc.getPropertyValue("file:content/digest"));
+        assertEquals(TEST_MD5, doc.getPropertyValue("file:content/digest"));
     }
 
 }

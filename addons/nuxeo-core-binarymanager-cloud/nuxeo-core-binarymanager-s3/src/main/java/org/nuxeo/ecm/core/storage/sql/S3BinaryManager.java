@@ -45,7 +45,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -82,12 +81,15 @@ import com.amazonaws.services.s3.model.EncryptionMaterials;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.SSEAwsKeyManagementParams;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
+import com.amazonaws.services.s3.model.VersionListing;
 import com.amazonaws.services.s3.transfer.Copy;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
@@ -420,6 +422,46 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
         amazonS3.deleteObject(bucketName, bucketNamePrefix + digest);
     }
 
+    /**
+     * INTERNAL (TESTS). Clears the binary manager of all its data.
+     *
+     * @since 11.5
+     */
+    public void clear() {
+        ObjectListing list = null;
+        do {
+            if (list == null) {
+                // use delimiter to avoid useless listing of objects in "subdirectories"
+                ListObjectsRequest listObjectsRequest = //
+                        new ListObjectsRequest().withBucketName(bucketName)
+                                                .withPrefix(bucketNamePrefix)
+                                                .withDelimiter("/");
+                list = amazonS3.listObjects(listObjectsRequest);
+            } else {
+                list = amazonS3.listNextBatchOfObjects(list);
+            }
+            for (S3ObjectSummary summary : list.getObjectSummaries()) {
+                amazonS3.deleteObject(bucketName, summary.getKey());
+            }
+        } while (list.isTruncated());
+        VersionListing vlist = null;
+        do {
+            if (vlist == null) {
+                ListVersionsRequest listVersionsRequest = //
+                        new ListVersionsRequest().withBucketName(bucketName)
+                                                 .withPrefix(bucketNamePrefix)
+                                                 .withDelimiter("/");
+                vlist = amazonS3.listVersions(listVersionsRequest);
+            } else {
+                vlist = amazonS3.listNextBatchOfVersions(vlist);
+
+            }
+            for (S3VersionSummary vsummary : vlist.getVersionSummaries()) {
+                amazonS3.deleteVersion(bucketName, vsummary.getKey(), vsummary.getVersionId());
+            }
+        } while (vlist.isTruncated());
+    }
+
     @Override
     protected String getSystemPropertyPrefix() {
         return SYSTEM_PROPERTY_PREFIX;
@@ -507,11 +549,20 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
             ManagedBlob managedBlob = (ManagedBlob) blob;
             BlobProvider blobProvider = Framework.getService(BlobManager.class)
                                                  .getBlobProvider(managedBlob.getProviderId());
-            if (blobProvider instanceof S3BinaryManager && blobProvider != this) {
-                // use S3 direct copy as the source blob provider is also S3
-                String key = copyBlob((S3BinaryManager) blobProvider, managedBlob.getKey());
-                if (key != null) {
-                    return key;
+            if (blobProvider instanceof S3BinaryManager) {
+                S3BinaryManager sourceBlobProvider = (S3BinaryManager) blobProvider;
+                if (getDigestAlgorithm().equals(sourceBlobProvider.getDigestAlgorithm())) {
+                    String key = managedBlob.getKey();
+                    int colon = key.indexOf(':');
+                    if (colon >= 0) {
+                        key = key.substring(colon + 1);
+                    }
+                    if (isValidDigest(key)) {
+                        String digest = copyBlob(sourceBlobProvider, key);
+                        if (digest != null) {
+                            return digest;
+                        }
+                    }
                 }
             }
         }
@@ -522,17 +573,12 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
      * Copies a blob. Returns {@code null} if the copy was not possible.
      *
      * @param sourceBlobProvider the source blob provider
-     * @param blobKey the source blob key
+     * @param digest the source blob key
      * @return the copied blob key, or {@code null} if the copy was not possible
      * @throws IOException
      * @since 10.1
      */
-    protected String copyBlob(S3BinaryManager sourceBlobProvider, String blobKey) throws IOException {
-        String digest = blobKey;
-        int colon = digest.indexOf(':');
-        if (colon >= 0) {
-            digest = digest.substring(colon + 1);
-        }
+    protected String copyBlob(S3BinaryManager sourceBlobProvider, String digest) throws IOException {
         String sourceBucketName = sourceBlobProvider.bucketName;
         String sourceKey = sourceBlobProvider.bucketNamePrefix + digest;
         String key = bucketNamePrefix + digest;
@@ -661,22 +707,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
                 Download download = transferManager.download(
                         new GetObjectRequest(bucketName, bucketNamePrefix + digest), file);
                 download.waitForCompletion();
-                if (isEncrypted) {
-                    // can't easily check the decrypted digest
-                    return true;
-                }
-                if (!digest.equals(download.getObjectMetadata().getETag())) {
-                    // if our digest algorithm is not MD5 (so the ETag can never match),
-                    // or in case of a multipart upload (where the ETag may not be the MD5),
-                    // check manually the object integrity
-                    // TODO this is costly and it should possible to deactivate it
-                    String currentDigest = new DigestUtils(getDigestAlgorithm()).digestAsHex(file);
-                    if (!currentDigest.equals(digest)) {
-                        String msg = "Invalid S3 object digest, expected=" + digest + " actual=" + currentDigest;
-                        log.error(msg);
-                        throw new IOException(msg);
-                    }
-                }
                 return true;
             } catch (AmazonClientException e) {
                 if (!isMissingKey(e)) {
