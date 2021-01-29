@@ -92,6 +92,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.mongodb.Block;
 import com.mongodb.DuplicateKeyException;
@@ -210,7 +211,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     protected final CursorService<MongoCursor<Document>, Document, String> cursorService;
 
     /**
-     * Maximum execution time for a query.
+     * Maximum execution time for a query when outside of a transaction.
      *
      * @since 11.1
      */
@@ -602,7 +603,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected NuxeoException newQueryTimeout(MongoExecutionTimeoutException cause, Bson filter) {
-        NuxeoException exc = new NuxeoException("Query timed out after " + maxTimeMS + " ms", cause);
+        NuxeoException exc = new NuxeoException(
+                "Query timed out as a result of the maximum operation time being exceeded", cause);
         if (filter != null) {
             String msg;
             if (filter instanceof Document) {
@@ -1126,7 +1128,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected FindIterable<Document> find(Bson filter) {
-        return coll.find(filter).maxTime(maxTimeMS, MILLISECONDS);
+        return coll.find(filter).maxTime(getMaxTimeMs(), MILLISECONDS);
+    }
+
+    protected long getMaxTimeMs() {
+        long ttl = TransactionHelper.getTransactionTimeToLive();
+        // add some extra millis because 0 maxTime is not taken in account
+        return ttl < 0 ? maxTimeMS : ttl * 1000 + 250;
     }
 
     protected long countDocuments(Bson filter) {
@@ -1134,7 +1142,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected long countDocuments(Bson filter, CountOptions options) {
-        options.maxTime(maxTimeMS, MILLISECONDS);
+        options.maxTime(getMaxTimeMs(), MILLISECONDS);
         return MongoDBCountHelper.countDocuments(databaseID, coll, filter, options);
     }
 
