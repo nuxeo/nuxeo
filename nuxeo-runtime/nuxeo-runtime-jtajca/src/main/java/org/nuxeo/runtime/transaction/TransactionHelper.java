@@ -224,6 +224,35 @@ public class TransactionHelper {
     }
 
     /**
+     * Gets the transaction TTL.
+     *
+     * @return the time to live in second, {@code 0} if the transaction has already timed out, {@code -1} when outside
+     *         of a transaction.
+     * @since 11.5
+     */
+    public static int getTransactionTimeToLive() {
+        TransactionManager tm = NuxeoContainer.getTransactionManager();
+        if (tm == null) {
+            return -1;
+        }
+        try {
+            Transaction tx = tm.getTransaction();
+            if (!(tx instanceof org.apache.geronimo.transaction.manager.TransactionImpl)) {
+                // Only geronimo manager is handled
+                return -1;
+            }
+            int status = tx.getStatus();
+            if (status != Status.STATUS_ACTIVE && status != Status.STATUS_MARKED_ROLLBACK) {
+                return -1;
+            }
+            long ttl = (System.currentTimeMillis() - (Long) GERONIMO_TRANSACTION_TIMEOUT_FIELD.get(tx)) / 1000;
+            return ttl > 0 ? Math.toIntExact(ttl) : 0;
+        } catch (SystemException | ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Checks if the current User Transaction has already timed out, i.e., whether a commit would immediately abort with
      * a timeout exception.
      * <p>
