@@ -25,8 +25,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
@@ -39,9 +41,12 @@ public class KeyStrategyDigest implements KeyStrategy {
 
     public final String digestAlgorithm;
 
+    public final Pattern digestPattern;
+
     public KeyStrategyDigest(String digestAlgorithm) {
         Objects.requireNonNull(digestAlgorithm);
         this.digestAlgorithm = digestAlgorithm;
+        digestPattern = getDigestPattern(digestAlgorithm);
     }
 
     @Override
@@ -51,7 +56,17 @@ public class KeyStrategyDigest implements KeyStrategy {
 
     @Override
     public String getDigestFromKey(String key) {
-        return key.contains("-") ? null : key;
+        return isValidDigest(key) ? key : null;
+    }
+
+    public boolean isValidDigest(String key) {
+        return digestPattern.matcher(key).matches();
+    }
+
+    protected static Pattern getDigestPattern(String digestAlgorithm) {
+        // compute a dummy digest (from 0-length input) to know its length and derive a regexp
+        int len = new DigestUtils(digestAlgorithm).digestAsHex(new byte[0]).length();
+        return Pattern.compile("[0-9a-f]{" + len + "}");
     }
 
     @Override

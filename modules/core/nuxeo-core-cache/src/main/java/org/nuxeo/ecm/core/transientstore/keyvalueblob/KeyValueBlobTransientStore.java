@@ -208,7 +208,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         return Framework.getService(KeyValueService.class).getKeyValueStore(keyValueStoreName);
     }
 
-    protected BlobProvider getBlobProvider() {
+    public BlobProvider getBlobProvider() {
         BlobProvider blobProvider = Framework.getService(BlobManager.class)
                                              .getBlobProviderWithNamespace(blobProviderId, defaultBlobProviderId);
         if (blobProvider == null) {

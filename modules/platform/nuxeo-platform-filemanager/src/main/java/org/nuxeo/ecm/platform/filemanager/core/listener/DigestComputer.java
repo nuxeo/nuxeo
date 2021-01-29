@@ -62,6 +62,7 @@ public class DigestComputer implements EventListener {
                     if (blob != null) {
                         String digest = computeDigest(blob, digestAlgo);
                         if (!digest.equals(blob.getDigest())) {
+                            blob.setDigestAlgorithm(digestAlgo);
                             blob.setDigest(digest);
                         }
                     }

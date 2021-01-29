@@ -1,0 +1,14 @@
+@startuml
+participant Nuxeo order 1
+participant Cache order 2
+participant S3 order 3
+== Copy (async) ==
+Nuxeo --> S3: getObjectMetadata
+                                hnote right: sha256/${TMP}-0
+Nuxeo <-- S3: missing
+Nuxeo -> S3: copyObject
+                                hnote right: base/acbd18db4cc2f85cedef654fccc4a4d8 to sha256/${TMP}-0
+Nuxeo <-- S3: copied
+== Async ==
+TODO
+@enduml

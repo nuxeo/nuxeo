@@ -52,6 +52,8 @@ import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.BlobStore;
 import org.nuxeo.ecm.core.blob.BlobStoreBlobProvider;
 import org.nuxeo.ecm.core.blob.CachingBlobStore;
+import org.nuxeo.ecm.core.blob.KeyStrategy;
+import org.nuxeo.ecm.core.blob.KeyStrategyDocId;
 import org.nuxeo.ecm.core.blob.TransactionalBlobStore;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -79,6 +81,8 @@ public class TestS3BlobStoreTracing {
     protected static final String BAR = "bar";
 
     protected static final String FOO_MD5 = "acbd18db4cc2f85cedef654fccc4a4d8";
+
+    protected static final String FOO_SHA256 = "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae";
 
     protected static final String BAR_MD5 = "37b51d194a7513e45b56f6524f2d51f2";
 
@@ -164,6 +168,17 @@ public class TestS3BlobStoreTracing {
         return blobInfo;
     }
 
+    protected static void assertKey(String expected, String actual) {
+        // allow version to be present if bucket has versioning
+        int seppos = expected.indexOf(KeyStrategy.VER_SEP);
+        if (seppos >= 0) {
+            expected = expected.substring(0, seppos);
+        }
+        if (!actual.startsWith(expected + '@')) {
+            assertEquals(expected, actual);
+        }
+    }
+
     @Test
     public void testWrite() throws IOException {
         BlobProvider bp = getBlobProvider("s3");
@@ -234,7 +249,7 @@ public class TestS3BlobStoreTracing {
         TransactionHelper.startTransaction();
         BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
         String key1 = bp.writeBlob(blobContext);
-        assertTrue(key1, key1.startsWith(DOCID1 + '@'));
+        assertKey(DOCID1, key1);
         TransactionHelper.commitOrRollbackTransaction();
         checkTrace("trace-write-record.txt");
     }
@@ -246,7 +261,7 @@ public class TestS3BlobStoreTracing {
         logTrace("== Write (record, no transaction) ==");
         BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
         String key1 = bp.writeBlob(blobContext);
-        assertTrue(key1, key1.startsWith(DOCID1 + '@'));
+        assertKey(DOCID1, key1);
         checkTrace("trace-write-record-notx.txt");
     }
 
@@ -255,14 +270,14 @@ public class TestS3BlobStoreTracing {
         BlobProvider bp = getBlobProvider("s3-record");
         BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
         String key1 = bp.writeBlob(blobContext);
-        assertTrue(key1, key1.startsWith(DOCID1 + '@'));
+        assertKey(DOCID1, key1);
         clearTrace();
 
         logTrace("== Write (record, overwrite) ==");
         TransactionHelper.startTransaction();
         BlobContext blobContext2 = new BlobContext(new StringBlob(BAR), DOCID1, XPATH);
         String key2 = bp.writeBlob(blobContext2);
-        assertTrue(key2, key2.startsWith(DOCID1 + '@'));
+        assertKey(DOCID1, key2);
         assertNotEquals(key1, key2);
         TransactionHelper.commitOrRollbackTransaction();
         checkTrace("trace-write-record-overwrite.txt");
@@ -276,7 +291,7 @@ public class TestS3BlobStoreTracing {
         TransactionHelper.startTransaction();
         BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
         String key1 = bp.writeBlob(blobContext);
-        assertTrue(key1, key1.startsWith(DOCID1 + '@'));
+        assertKey(DOCID1, key1);
         TransactionHelper.setTransactionRollbackOnly();
         TransactionHelper.commitOrRollbackTransaction();
         checkTrace("trace-write-record-rollback.txt");
@@ -363,7 +378,7 @@ public class TestS3BlobStoreTracing {
         BlobProvider bp = getBlobProvider("s3-record");
         BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
         String key1 = bp.writeBlob(blobContext);
-        assertTrue(key1, key1.startsWith(DOCID1 + '@'));
+        assertKey(DOCID1, key1);
         clearCache(bp);
         clearTrace();
 
@@ -380,7 +395,7 @@ public class TestS3BlobStoreTracing {
         BlobProvider bp = getBlobProvider("s3-record");
         BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
         String key1 = bp.writeBlob(blobContext);
-        assertTrue(key1, key1.startsWith(DOCID1 + '@'));
+        assertKey(DOCID1, key1);
         clearTrace();
 
         logTrace("== Read (record, already cached) ==");
@@ -404,8 +419,59 @@ public class TestS3BlobStoreTracing {
         logTrace("== Copy ==");
         BlobContext blobContext2 = new BlobContext(blob1, DOCID2, XPATH);
         String key2 = bp2.writeBlob(blobContext2);
-        assertEquals(key2, key1);
+        assertEquals(key1, key2);
         checkTrace("trace-copy.txt");
+
+        // check content
+        Blob blob2 = bp2.readBlob(blobInfo(key2));
+        assertEquals(FOO, blob2.getString());
+    }
+
+    @Test
+    public void testCopyToManaged() throws IOException {
+        BlobProvider bp1 = getBlobProvider("s3");
+        BlobStore bs1 = getBlobStore("s3");
+        BlobProvider bp2 = getBlobProvider("s3-managed");
+        BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
+        // we need a blob with a key that's not a digest
+        KeyStrategyDocId ksdocid = new KeyStrategyDocId();
+        String key1 = bs1.writeBlob(ksdocid.getBlobWriteContext(blobContext));
+        assertEquals(DOCID1, key1);
+        Blob blob1 = bp1.readBlob(blobInfo(key1));
+        clearCache(bp1);
+        clearTrace();
+
+        logTrace("== Copy (managed) ==");
+        BlobContext blobContext2 = new BlobContext(blob1, DOCID2, XPATH);
+        String key2 = bp2.writeBlob(blobContext2);
+        assertEquals(key1, key2);
+        checkTrace("trace-copy-managed.txt");
+
+        // check content
+        Blob blob2 = bp2.readBlob(blobInfo(key2));
+        assertEquals(FOO, blob2.getString());
+    }
+
+    @Test
+    public void testCopyAsyncDigest() throws IOException {
+        // destination digest algorithm is not MD5, so async will be triggered
+        BlobProvider bp1 = getBlobProvider("s3");
+        BlobProvider bp2 = getBlobProvider("s3-sha256-async");
+        BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
+        String key1 = bp1.writeBlob(blobContext);
+        assertEquals(FOO_MD5, key1);
+        Blob blob1 = bp1.readBlob(blobInfo(key1));
+        clearCache(bp1);
+        clearTrace();
+
+        logTrace("== Copy (async) ==");
+        BlobContext blobContext2 = new BlobContext(blob1, DOCID2, XPATH);
+        String key2 = bp2.writeBlob(blobContext2);
+        assertNotEquals(FOO_MD5, key2);
+        assertNotEquals(FOO_SHA256, key2);
+        assertTrue(key2, key2.contains("-")); // this is a pseudo-digest
+        logTrace("== Async ==");
+        checkTrace("trace-copy-async.txt");
 
         // check content
         Blob blob2 = bp2.readBlob(blobInfo(key2));
@@ -417,7 +483,7 @@ public class TestS3BlobStoreTracing {
         BlobProvider bp = getBlobProvider("s3-record");
         BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
         String key1 = bp.writeBlob(blobContext);
-        assertTrue(key1, key1.startsWith(DOCID1 + '@'));
+        assertKey(DOCID1, key1);
         Blob blob1 = bp.readBlob(blobInfo(key1));
         clearCache(bp);
         clearTrace();
@@ -426,7 +492,7 @@ public class TestS3BlobStoreTracing {
         TransactionHelper.startTransaction();
         BlobContext blobContext2 = new BlobContext(blob1, DOCID2, XPATH);
         String key2 = bp.writeBlob(blobContext2);
-        assertTrue(key2, key2.startsWith(DOCID2 + '@'));
+        assertKey(DOCID2, key2);
         TransactionHelper.commitOrRollbackTransaction();
         checkTrace("trace-copy-record.txt");
 

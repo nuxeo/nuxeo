@@ -71,6 +71,11 @@ public interface Blob {
 
     void setFilename(String filename);
 
+    /** @since 11.5 */
+    default void setDigestAlgorithm(String digestAlgorithm) {
+        // nothing (compatibility)
+    }
+
     void setDigest(String digest);
 
     byte[] getByteArray() throws IOException;

@@ -144,9 +144,12 @@ public abstract class TestAbstractBlobStore {
 
     protected void assertKey(String expected, String actual) {
         if (!useDeDuplication()) {
-            if (bs.hasVersioning()) {
-                assertTrue(actual + " does not start with " + expected + '@', actual.startsWith(expected + '@'));
-            } else {
+            // allow version to be present if bucket has versioning
+            int seppos = expected.indexOf(KeyStrategy.VER_SEP);
+            if (seppos >= 0) {
+                expected = expected.substring(0, seppos);
+            }
+            if (!actual.startsWith(expected + '@')) {
                 assertEquals(expected, actual);
             }
         }
