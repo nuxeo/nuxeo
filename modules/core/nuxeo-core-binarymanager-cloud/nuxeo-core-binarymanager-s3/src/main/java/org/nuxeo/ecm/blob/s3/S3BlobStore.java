@@ -36,7 +36,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,6 +52,8 @@ import org.nuxeo.ecm.core.blob.BlobUpdateContext;
 import org.nuxeo.ecm.core.blob.BlobWriteContext;
 import org.nuxeo.ecm.core.blob.ByteRange;
 import org.nuxeo.ecm.core.blob.KeyStrategy;
+import org.nuxeo.ecm.core.blob.KeyStrategyDigest;
+import org.nuxeo.ecm.core.blob.KeyStrategyDocId;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 
@@ -74,6 +75,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.RestoreObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
+import com.amazonaws.services.s3.model.SSEAlgorithm;
 import com.amazonaws.services.s3.model.SSEAwsKeyManagementParams;
 import com.amazonaws.services.s3.model.SetObjectLegalHoldRequest;
 import com.amazonaws.services.s3.model.SetObjectRetentionRequest;
@@ -120,7 +122,8 @@ public class S3BlobStore extends AbstractBlobStore {
         bucketName = config.bucketName;
         bucketPrefix = config.bucketPrefix;
         allowByteRange = config.getBooleanProperty(ALLOW_BYTE_RANGE);
-        useVersion = !keyStrategy.useDeDuplication() && isBucketVersioningEnabled();
+        // don't use versions if we use deduplication (including managed case)
+        useVersion = keyStrategy instanceof KeyStrategyDocId && isBucketVersioningEnabled();
         gc = new S3BlobGarbageCollector();
     }
 
@@ -155,6 +158,11 @@ public class S3BlobStore extends AbstractBlobStore {
     @Override
     public boolean hasVersioning() {
         return useVersion;
+    }
+
+    @Override
+    public boolean useAsyncDigest() {
+        return config.digestConfiguration.digestAsync;
     }
 
     @Override
@@ -335,7 +343,12 @@ public class S3BlobStore extends AbstractBlobStore {
         do {
             if (list == null) {
                 logTrace("->", "listObjects");
-                list = amazonS3.listObjects(bucketName);
+                // use delimiter to avoid useless listing of objects in "subdirectories"
+                ListObjectsRequest listObjectsRequest = //
+                        new ListObjectsRequest().withBucketName(bucketName)
+                                                .withPrefix(bucketPrefix)
+                                                .withDelimiter(S3BlobStoreConfiguration.DELIMITER);
+                list = amazonS3.listObjects(listObjectsRequest);
             } else {
                 list = amazonS3.listNextBatchOfObjects(list);
             }
@@ -354,7 +367,11 @@ public class S3BlobStore extends AbstractBlobStore {
         do {
             if (vlist == null) {
                 logTrace("->", "listVersions");
-                vlist = amazonS3.listVersions(new ListVersionsRequest().withBucketName(bucketName));
+                ListVersionsRequest listVersionsRequest = //
+                        new ListVersionsRequest().withBucketName(bucketName)
+                                                 .withPrefix(bucketPrefix)
+                                                 .withDelimiter(S3BlobStoreConfiguration.DELIMITER);
+                vlist = amazonS3.listVersions(listVersionsRequest);
             } else {
                 vlist = amazonS3.listNextBatchOfVersions(vlist);
 
@@ -411,23 +428,6 @@ public class S3BlobStore extends AbstractBlobStore {
                 long dtms = System.currentTimeMillis() - t0;
                 log.debug("Read s3://" + bucketName + "/" + bucketKey + " in " + dtms + "ms");
             }
-            if (config.useClientSideEncryption) {
-                // can't efficiently check the decrypted digest
-                return true;
-            }
-            if (config.useServerSideEncryption && isNotBlank(config.serverSideKMSKeyID)) {
-                // can't get digest from key when using KMS
-                return true;
-            }
-            if (byteRange != null) {
-                // can't check digest if we have a byte range
-                return true;
-            }
-            String expectedDigest = getKeyStrategy().getDigestFromKey(objectKey);
-            if (expectedDigest != null) {
-                checkDigest(expectedDigest, download, dest);
-            }
-            // else nothing to compare to, key is not digest-based
             return true;
         } catch (AmazonServiceException e) {
             if (isMissingKey(e)) {
@@ -442,21 +442,6 @@ public class S3BlobStore extends AbstractBlobStore {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new NuxeoException(e);
-        }
-    }
-
-    protected void checkDigest(String expectedDigest, Download download, Path file) throws IOException {
-        if (!expectedDigest.equals(download.getObjectMetadata().getETag())) {
-            // if our digest algorithm is not MD5 (so the ETag can never match),
-            // or in case of a multipart upload (where the ETag may not be the MD5),
-            // check manually the object integrity
-            // TODO this is costly and it should possible to deactivate it
-            String digest = new DigestUtils(config.digestConfiguration.digestAlgorithm).digestAsHex(file.toFile());
-            if (!digest.equals(expectedDigest)) {
-                String msg = "Invalid S3 object digest, expected=" + expectedDigest + " actual=" + digest;
-                log.warn(msg);
-                throw new IOException(msg);
-            }
         }
     }
 
@@ -515,6 +500,23 @@ public class S3BlobStore extends AbstractBlobStore {
         }
         String sourceBucketName = sourceBlobStore.bucketName;
         String sourceBucketKey = sourceBlobStore.bucketPrefix + sourceObjectKey;
+
+        if (key == null) {
+            // fast digest compute or trigger async digest computation
+            String digest;
+            if (keyStrategy instanceof KeyStrategyDigest
+                    && ((KeyStrategyDigest) keyStrategy).digestAlgorithm.equals("MD5") //
+                    && (digest = sourceBlobStore.getMD5DigestFromETag(sourceBucketKey)) != null) {
+                // we have a usable MD5 digest
+                key = digest;
+            } else {
+                // async: use a random key for now; and do async computation of real digest
+                key = randomString();
+                System.err.println("XXX async digest for " + key);
+                // throw new AssertionError("XXX");
+            }
+        }
+
         String bucketKey = bucketPrefix + key;
 
         long t0 = 0;
@@ -548,6 +550,27 @@ public class S3BlobStore extends AbstractBlobStore {
             log.debug(message, e);
             return null;
         }
+    }
+
+    /**
+     * Gets the MD5 of an object from its ETag, if possible.
+     *
+     * @since 11.5
+     */
+    protected String getMD5DigestFromETag(String bucketKey) {
+        // check if source ETag is applicable
+        ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, bucketKey);
+        String eTag = metadata.getETag();
+        // with multipart uploaded the ETag is not a digest
+        if (eTag.contains("-")) {
+            return null;
+        }
+        // with SSE-KMS the ETag is not the MD5 of the object data
+        if (SSEAlgorithm.KMS.getAlgorithm().equals(metadata.getSSEAlgorithm())) {
+            return null;
+        }
+        // ok the ETag is an MD5 digest
+        return eTag;
     }
 
     /**
@@ -791,7 +814,7 @@ public class S3BlobStore extends AbstractBlobStore {
                 for (S3ObjectSummary summary : list.getObjectSummaries()) {
                     String key = summary.getKey().substring(prefixLength);
                     if (useDeDuplication) {
-                        if (!config.digestConfiguration.isValidDigest(key)) {
+                        if (!((KeyStrategyDigest) keyStrategy).isValidDigest(key)) {
                             // ignore files that cannot be digests, for safety
                             continue;
                         }

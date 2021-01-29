@@ -104,6 +104,14 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
         return key;
     }
 
+    protected String stripBlobKeyVersionSuffix(String key) {
+        int seppos = key.indexOf(KeyStrategy.VER_SEP);
+        if (seppos >= 0) {
+            key = key.substring(0, seppos);
+        }
+        return key;
+    }
+
     @Override
     public String writeBlob(BlobContext blobContext) throws IOException {
         String key = store.writeBlob(blobContext);
@@ -215,8 +223,18 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
      * @since 11.2
      */
     protected void fixupDigest(Blob blob, String key) {
-        if (blob.getDigest() == null && store.getKeyStrategy().useDeDuplication()) {
-            blob.setDigest(key);
+        if (blob.getDigestAlgorithm() == null) {
+            KeyStrategy keyStrategy = store.getKeyStrategy();
+            if (keyStrategy instanceof KeyStrategyManaged) {
+                keyStrategy = ((KeyStrategyManaged) keyStrategy).strategy;
+            }
+            if (keyStrategy instanceof KeyStrategyDigest) {
+                KeyStrategyDigest ksd = (KeyStrategyDigest) keyStrategy;
+                String digest = stripBlobKeyVersionSuffix(stripBlobKeyPrefix(key));
+                String digestAlgorithm = ksd.isValidDigest(digest) ? ksd.digestAlgorithm : null;
+                blob.setDigest(digest);
+                blob.setDigestAlgorithm(digestAlgorithm);
+            }
         }
     }
 

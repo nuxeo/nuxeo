@@ -89,6 +89,11 @@ public class BlobWrapper implements Blob, Serializable {
     }
 
     @Override
+    public void setDigestAlgorithm(String digestAlgorithm) {
+        blob.setDigestAlgorithm(digestAlgorithm);
+    }
+
+    @Override
     public void setDigest(String digest) {
         blob.setDigest(digest);
     }

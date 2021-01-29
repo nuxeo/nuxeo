@@ -107,14 +107,19 @@ public interface BlobStore {
     }
 
     /**
-     * Writes a file based on a key, as a copy/move from a source in another blob store.
+     * Writes a file based on a key, as an optimized copy/move from a source in another compatible blob store.
+     * <p>
+     * The target {@code key} may be {@code null}, which is a signal from the caller that it has determined that
+     * deduplication is enabled and async digest computation is enabled, but the needed digest hasn't been computed, so
+     * this method should either find the digest in an efficient way if it can, or otherwise trigger an async digest
+     * computation.
      * <p>
      * If the copy/move is requested to be atomic, then the destination file is created atomically. In case of atomic
      * move, in some stores the destination will be created atomically but the source will only be deleted afterwards.
      * <p>
      * The returned key may be different than the passed one when versioning is used.
      *
-     * @param key the key
+     * @param key the key; or {@code null} if the store should choose it or trigger async digest computation
      * @param sourceStore the source store
      * @param sourceKey the source key
      * @param atomicMove {@code true} for an atomic move, {@code false} for a regular copy

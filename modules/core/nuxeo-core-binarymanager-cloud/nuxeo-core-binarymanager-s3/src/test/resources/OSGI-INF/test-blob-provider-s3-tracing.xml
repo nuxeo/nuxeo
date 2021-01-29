@@ -12,10 +12,23 @@
       <property name="bucket_prefix">other/</property>
     </blobprovider>
 
+    <blobprovider name="s3-sha256-async">
+      <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
+      <property name="bucket_prefix">sha256/</property>
+      <property name="digest">SHA-256</property>
+      <property name="digestAsync">true</property>
+    </blobprovider>
+
     <blobprovider name="s3-nocache">
       <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
       <property name="bucket_prefix">nocache/</property>
       <property name="nocache">true</property>
+    </blobprovider>
+
+    <blobprovider name="s3-managed">
+      <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
+      <property name="bucket_prefix">managed/</property>
+      <property name="keyStrategy">managed</property>
     </blobprovider>
 
     <blobprovider name="s3-record">
