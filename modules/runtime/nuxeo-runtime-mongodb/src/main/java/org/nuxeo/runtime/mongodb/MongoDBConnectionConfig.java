@@ -75,7 +75,7 @@ public class MongoDBConnectionConfig {
     @XNode("dbname")
     public String dbname;
 
-    /** @since 11.1 */
+    /** @since 11.1 maxTime when outside of a transaction */
     @XNode("maxTime")
     public Duration maxTime;
 
