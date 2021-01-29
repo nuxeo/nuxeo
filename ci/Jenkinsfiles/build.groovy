@@ -679,10 +679,7 @@ pipeline {
           ----------------------------------------"""
           runFunctionalTests('ftests')
         }
-        findText regexp: '.*ERROR.*', fileSet: 'ftests/nuxeo-server-cmis-tests/**/log/server.log'
-        findText regexp: '.*ERROR.*', fileSet: 'ftests/nuxeo-server-hotreload-tests/**/log/server.log'
-        findText regexp: '.*ERROR.*', fileSet: 'ftests/nuxeo-server-tests/**/log/server.log'
-        findText regexp: '.*ERROR.*', fileSet: 'ftests/nuxeo-jsf-to-web-ui-ftests/**/log/server.log'
+        findText regexp: ".*ERROR.*", fileSet: "ftests/**/log/server.log"
       }
       post {
         always {
