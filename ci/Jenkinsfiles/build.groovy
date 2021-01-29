@@ -268,7 +268,7 @@ void archiveKafkaLogs(namespace, logFile) {
 
 pipeline {
   agent {
-    label 'jenkins-nuxeo-platform-11'
+    label 'jenkins-nuxeo-platform-15'
   }
   options {
     timeout(time: 12, unit: 'HOURS')
