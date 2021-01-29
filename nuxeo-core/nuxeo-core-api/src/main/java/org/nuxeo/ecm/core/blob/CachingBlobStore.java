@@ -114,7 +114,7 @@ public class CachingBlobStore extends AbstractBlobStore {
             throws IOException {
         CachingBlobStore cachingSourceStore = sourceStore instanceof CachingBlobStore ? (CachingBlobStore) sourceStore
                 : null;
-        if ((!atomicMove || copyBlobIsOptimized(sourceStore)) && cachingSourceStore != null) {
+        if ((!atomicMove || copyBlobIsOptimized(sourceStore)) && cachingSourceStore != null && key != null) {
             // if it's a copy and the original cached file won't be touched
             // else optimized move won't need the cache, so we can move the cache ahead of time
             tmpStore.copyOrMoveBlob(key, cachingSourceStore.tmpStore, sourceKey, atomicMove);
@@ -125,6 +125,11 @@ public class CachingBlobStore extends AbstractBlobStore {
             cachingSourceStore.tmpStore.deleteBlob(sourceKey);
         }
         return returnedKey;
+    }
+
+    @Override
+    public boolean useAsyncDigest() {
+        return ((AbstractBlobStore) store).useAsyncDigest();
     }
 
     @Override

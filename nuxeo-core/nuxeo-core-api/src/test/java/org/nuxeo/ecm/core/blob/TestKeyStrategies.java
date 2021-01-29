@@ -28,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +50,7 @@ public class TestKeyStrategies {
         KeyStrategy ks = new KeyStrategyDigest("MD5");
 
         assertTrue(ks.useDeDuplication());
-        assertEquals("deadbeef", ks.getDigestFromKey("deadbeef"));
+        assertNull(ks.getDigestFromKey("deadbeef"));
 
         // write observer / key computer
         BlobContext blobContext = new BlobContext(null, "foo", "bar");
@@ -69,6 +70,27 @@ public class TestKeyStrategies {
         assertEquals(ks, ks2);
         assertNotEquals(ks, ks3);
         assertNotEquals(ks, "foobar");
+    }
+
+    @Test
+    public void testKeyStrategyDigestIsValidDigest() {
+        KeyStrategyDigest ks = new KeyStrategyDigest("MD5");
+        assertEquals("MD5", ks.digestAlgorithm);
+        assertEquals("[0-9a-f]{32}", ks.digestPattern.toString());
+        assertFalse(ks.isValidDigest("dead"));
+        assertFalse(ks.isValidDigest("d41d8cd98f00b204e9800998ecf8427e-0"));
+        assertTrue(ks.isValidDigest("d41d8cd98f00b204e9800998ecf8427e"));
+        ks = new KeyStrategyDigest("SHA-256");
+        assertEquals("SHA-256", ks.digestAlgorithm);
+        assertEquals("[0-9a-f]{64}", ks.digestPattern.toString());
+        assertFalse(ks.isValidDigest("dead"));
+        assertTrue(ks.isValidDigest("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"));
+        ks = new KeyStrategyDigest("SHA-512");
+        assertEquals("SHA-512", ks.digestAlgorithm);
+        assertEquals("[0-9a-f]{128}", ks.digestPattern.toString());
+        assertFalse(ks.isValidDigest("dead"));
+        assertTrue(ks.isValidDigest(
+                "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"));
     }
 
     @Test

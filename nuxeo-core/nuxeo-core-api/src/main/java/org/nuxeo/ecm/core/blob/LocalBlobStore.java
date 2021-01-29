@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -94,27 +95,29 @@ public class LocalBlobStore extends AbstractBlobStore {
     public String copyOrMoveBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
         BlobStore unwrappedSourceStore = sourceStore.unwrap();
-        boolean copied;
         if (unwrappedSourceStore instanceof LocalBlobStore) {
             LocalBlobStore sourceLocalBlobStore = (LocalBlobStore) unwrappedSourceStore;
-            copied = copyBlob(key, sourceLocalBlobStore, sourceKey, atomicMove);
-        } else {
-            copied = copyBlobGeneric(key, sourceStore, sourceKey, atomicMove);
+            return copyBlob(key, sourceLocalBlobStore, sourceKey, atomicMove);
         }
-        return copied ? key : null;
+        return copyBlobGeneric(key, sourceStore, sourceKey, atomicMove);
     }
 
     /**
      * Optimized file-to-file copy/move.
      */
-    protected boolean copyBlob(String key, LocalBlobStore sourceStore, String sourceKey, boolean atomicMove)
+    protected String copyBlob(String key, LocalBlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
-        Path dest = pathStrategy.getPathForKey(key);
-        Files.createDirectories(dest.getParent());
         Path source = sourceStore.pathStrategy.getPathForKey(sourceKey);
         if (!Files.exists(source)) { // NOSONAR (squid:S3725)
-            return false;
+            return null;
         }
+        if (key == null) { // fast compute or trigger async digest computation
+            // here we can do a fast compute
+            String digestAlgorithm = ((KeyStrategyDigest) keyStrategy).digestAlgorithm;
+            key = new DigestUtils(digestAlgorithm).digestAsHex(source.toFile());
+        }
+        Path dest = pathStrategy.getPathForKey(key);
+        Files.createDirectories(dest.getParent());
         if (atomicMove) {
             logTrace("hnote right of " + sourceStore.name + ": " + sourceKey);
             logTrace(sourceStore.name, "->", name, "move");
@@ -126,13 +129,13 @@ public class LocalBlobStore extends AbstractBlobStore {
             logTrace("hnote right: " + key);
             Files.copy(source, dest, REPLACE_EXISTING);
         }
-        return true;
+        return key;
     }
 
     /**
      * Generic copy/move to a local file.
      */
-    protected boolean copyBlobGeneric(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
+    protected String copyBlobGeneric(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
         Path dest = pathStrategy.getPathForKey(key);
         Files.createDirectories(dest.getParent());
@@ -150,14 +153,14 @@ public class LocalBlobStore extends AbstractBlobStore {
             } else {
                 boolean found = sourceStore.readBlob(sourceKey, readTo);
                 if (!found) {
-                    return false;
+                    return null;
                 }
             }
             if (atomicMove) {
                 Files.move(readTo, dest, ATOMIC_MOVE);
                 sourceStore.deleteBlob(sourceKey);
             }
-            return true;
+            return key;
         } finally {
             if (tmp != null) {
                 try {

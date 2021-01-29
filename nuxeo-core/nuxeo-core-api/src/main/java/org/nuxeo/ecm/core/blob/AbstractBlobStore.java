@@ -121,14 +121,18 @@ public abstract class AbstractBlobStore implements BlobStore {
         throw new UnsupportedOperationException("abstract method");
     }
 
+    /**
+     * Tries to do an optimize copy to write this blob. Returns {@code null} if that's not possible.
+     *
+     * @since 11.5
+     */
     protected String writeBlobUsingOptimizedCopy(BlobWriteContext blobWriteContext) throws IOException {
         Blob blob = blobWriteContext.blobContext.blob;
         if (!(blob instanceof ManagedBlob)) {
             return null;
         }
         ManagedBlob managedBlob = (ManagedBlob) blob;
-        BlobProvider blobProvider = Framework.getService(BlobManager.class)
-                                             .getBlobProvider(managedBlob.getProviderId());
+        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(managedBlob);
         if (!(blobProvider instanceof BlobStoreBlobProvider)) {
             return null;
         }
@@ -141,21 +145,34 @@ public abstract class AbstractBlobStore implements BlobStore {
         String sourceKey = stripBlobKeyPrefix(managedBlob.getKey());
         String key = blobWriteContext.getKey();
         if (key == null) {
+            if (!keyStrategy.useDeDuplication()) {
+                throw new NuxeoException("Non-deduplication should have a key");
+            }
             // key not known or not yet computed
-            // check if we can reuse the original blob key
-            if (keyStrategy.useDeDuplication() && sourceStore.getKeyStrategy().equals(keyStrategy)) {
-                key = stripBlobKeyVersionSuffix(sourceKey);
+            // check if the original blob key can give us a digest
+            String digest;
+            if (sourceStore.getKeyStrategy().equals(keyStrategy)
+                    && (digest = keyStrategy.getDigestFromKey(stripBlobKeyVersionSuffix(sourceKey))) != null) {
+                key = digest;
             } else {
-                key = randomString();
+                if (!useAsyncDigest()) {
+                    // must do normal write to compute a digest synchronously
+                    // TODO instead of read + write we could do read + compute digest + optimized copy
+                    return null;
+                }
+                key = null; // let the store compute the digest, or trigger async digest computation
             }
         }
-        boolean asyncDigest = keyStrategy.useDeDuplication() && keyStrategy.getDigestFromKey(key) == null;
-        if (asyncDigest) {
-            // TODO queue to stream
-            // for now do generic write
-            return null;
-        }
         return copyOrMoveBlob(key, sourceStore, sourceKey, false);
+    }
+
+    /**
+     * Whether this blob store is configured for async digest computation.
+     *
+     * @since 11.5
+     */
+    public boolean useAsyncDigest() {
+        return false;
     }
 
     @Override
