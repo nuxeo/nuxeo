@@ -55,6 +55,8 @@ public abstract class AbstractBlob implements Blob, Serializable {
 
     protected String digest;
 
+    protected String digestAlgorithm;
+
     @Override
     public String getMimeType() {
         return mimeType;
@@ -72,7 +74,7 @@ public abstract class AbstractBlob implements Blob, Serializable {
 
     @Override
     public String getDigestAlgorithm() {
-        return null;
+        return digestAlgorithm;
     }
 
     @Override
@@ -93,6 +95,11 @@ public abstract class AbstractBlob implements Blob, Serializable {
     @Override
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    @Override
+    public void setDigestAlgorithm(String digestAlgorithm) {
+        this.digestAlgorithm = digestAlgorithm;
     }
 
     @Override

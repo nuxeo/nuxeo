@@ -24,7 +24,6 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.ACCELERATE_MODE_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_ID_PROPERTY;
@@ -55,9 +54,12 @@ import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.BlobStoreBlobProvider;
+import org.nuxeo.ecm.core.blob.KeyStrategy;
+import org.nuxeo.ecm.core.blob.KeyStrategyDigest;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.aws.NuxeoAWSRegionProvider;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
@@ -151,7 +153,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     protected String serverSideKMSKeyID;
 
-    protected String blobProviderId;
+    // public for tests
+    public String blobProviderId;
 
     @Override
     protected void initialize(Map<String, String> properties) {
@@ -252,56 +255,23 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     @Override
     public boolean completeUpload(String batchId, String fileIndex, BatchFileInfo fileInfo) {
         String fileKey = fileInfo.getKey();
+        String key = StringUtils.removeStart(fileKey, bucketPrefix);
         ObjectMetadata metadata = amazonS3.getObjectMetadata(bucket, fileKey);
 
-        String key;
-        String eTag = metadata.getETag();
+        // Deduplicating blob providers have as invariant that if a key looks like a digest then it is one.
+        // (see AbstractBlobStore.writeBlobUsingOptimizedCopy in particular)
+        // The old S3BinaryManager assumes the same thing.
 
-        if (!useDeDuplication()) {
-            key = StringUtils.removeStart(fileKey, bucketPrefix);
-        } else {
-            key = eTag;
-            if (isEmpty(key)) {
-                return false;
+        if (isValidDigest(key)) {
+            // the key looks like a digest, move it to a non-digest key
+            key = metadata.getETag();
+            if (isValidDigest(key)) {
+                key += "-0"; // cannot be confused with a digest
             }
-            String bucketKey = bucketPrefix + key;
-            CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucket, fileKey, bucket, bucketKey);
-            // server-side encryption
-            if (useServerSideEncryption) {
-                if (isNotBlank(serverSideKMSKeyID)) {
-                    // SSE-KMS
-                    SSEAwsKeyManagementParams params = new SSEAwsKeyManagementParams(serverSideKMSKeyID);
-                    copyObjectRequest.setSSEAwsKeyManagementParams(params);
-                } else {
-                    // SSE-S3
-                    ObjectMetadata newObjectMetadata = new ObjectMetadata();
-                    newObjectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-                    copyObjectRequest.setNewObjectMetadata(newObjectMetadata);
-                }
-                // TODO SSE-C
-            }
-
-            eTag = doMove(copyObjectRequest);
-
-            // if we did a multipart upload but can do a non multipart copy we can get back the digest as key
-            boolean isMultipartUpload = key.matches(".+-\\d+$");
-            boolean canDoNonMultipartCopy = metadata.getContentLength() < getTransferManager().getConfiguration()
-                                                                                              .getMultipartCopyThreshold();
-            if (isMultipartUpload && canDoNonMultipartCopy) {
-                key = eTag;
-                String previousBucketKey = bucketKey;
-                bucketKey = bucketPrefix + key;
-                if (amazonS3.doesObjectExist(bucket, bucketKey)) {
-                    // another thread has uploaded the same blob and has done the move
-                    // clean up remaining S3 object if needed
-                    deleteObjectAfterMove(previousBucketKey);
-                } else {
-                    // move S3 object to eTag as key
-                    var renameRequest = new CopyObjectRequest(bucket, previousBucketKey, bucket, bucketKey);
-                    eTag = doMove(renameRequest);
-                }
-            }
+            move(fileKey, bucketPrefix + key);
         }
+
+        // materialize the direct upload blob as a Nuxeo Blob
 
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.mimeType = metadata.getContentType();
@@ -309,22 +279,23 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         blobInfo.filename = fileInfo.getFilename();
         blobInfo.length = metadata.getContentLength();
         blobInfo.key = key;
-        blobInfo.digest = defaultString(metadata.getContentMD5(), eTag);
+        // (no digest needed)
 
         Blob blob;
-
         try {
             blob = getBlobProvider().readBlob(blobInfo);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
 
+        // put the blob in the batch (will copy to new bucket)
+
         Batch batch = getBatch(batchId);
         try {
             batch.addFile(fileIndex, blob, blob.getFilename(), blob.getMimeType());
         } catch (NuxeoException e) {
             try {
-                amazonS3.deleteObject(bucket, fileKey);
+                amazonS3.deleteObject(bucket, bucketPrefix + key);
             } catch (AmazonS3Exception s3E) {
                 e.addSuppressed(s3E);
             }
@@ -334,40 +305,53 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         return true;
     }
 
-    /**
-     * @return the ETag of copied object
-     */
-    protected String doMove(CopyObjectRequest request) {
-        Copy rename = getTransferManager().copy(request);
+    protected void move(String sourceKey, String destinationKey) {
+        CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucket, sourceKey, bucket, destinationKey);
+        // server-side encryption
+        if (useServerSideEncryption) {
+            if (isNotBlank(serverSideKMSKeyID)) {
+                // SSE-KMS
+                SSEAwsKeyManagementParams params = new SSEAwsKeyManagementParams(serverSideKMSKeyID);
+                copyObjectRequest.setSSEAwsKeyManagementParams(params);
+            } else {
+                // SSE-S3
+                ObjectMetadata newObjectMetadata = new ObjectMetadata();
+                newObjectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+                copyObjectRequest.setNewObjectMetadata(newObjectMetadata);
+            }
+            // TODO SSE-C
+        }
+        Copy copy = getTransferManager().copy(copyObjectRequest);
         try {
-            var copyResult = rename.waitForCopyResult();
-            return copyResult.getETag();
+            copy.waitForCompletion();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new NuxeoException(e);
         } finally {
-            deleteObjectAfterMove(request.getSourceKey());
+            try {
+                amazonS3.deleteObject(bucket, sourceKey);
+            } catch (AmazonServiceException e) {
+                log.debug("Unable to cleanup object, move has already been done", e);
+            }
         }
     }
 
-    protected void deleteObjectAfterMove(String key) {
-        try {
-            amazonS3.deleteObject(bucket, key);
-        } catch (AmazonS3Exception e) {
-            log.debug("Unable to cleanup object, move has already been done", e);
+    protected boolean isValidDigest(String key) {
+        BlobProvider blobProvider = getBlobProvider();
+        if (blobProvider instanceof S3BinaryManager) {
+            return ((S3BinaryManager) blobProvider).isValidDigest(key);
         }
+        if (blobProvider instanceof BlobStoreBlobProvider) {
+            KeyStrategy keyStrategy = ((BlobStoreBlobProvider) blobProvider).store.getKeyStrategy();
+            if (keyStrategy instanceof KeyStrategyDigest) {
+                return ((KeyStrategyDigest) keyStrategy).isValidDigest(key);
+            }
+        }
+        return false;
     }
 
     protected BlobProvider getBlobProvider() {
         return Framework.getService(BlobManager.class).getBlobProvider(blobProviderId);
-    }
-
-    protected boolean useDeDuplication() {
-        BlobProvider blobProvider = getBlobProvider();
-        if (blobProvider instanceof BlobStoreBlobProvider) {
-            return ((BlobStoreBlobProvider) blobProvider).getKeyStrategy().useDeDuplication();
-        }
-        return true;
     }
 
     protected TransferManager getTransferManager() {

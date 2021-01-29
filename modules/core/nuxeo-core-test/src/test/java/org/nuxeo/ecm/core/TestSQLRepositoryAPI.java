@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -2900,10 +2901,10 @@ public class TestSQLRepositoryAPI {
 
         session.save();
 
-        byte[] bytes = IOUtils.toByteArray(Blob.class.getResourceAsStream("Blob.class"));
+        byte[] bytes = "hello".getBytes(UTF_8);
         Blob blob = Blobs.createBlob(bytes, "java/class", "UTF8");
         blob.setFilename("blob.txt");
-        blob.setDigest("XXX");
+        blob.setDigest("XYZ");
         long length = blob.getLength();
         byte[] content = blob.getByteArray();
 
@@ -2916,9 +2917,9 @@ public class TestSQLRepositoryAPI {
         childFile = session.getDocument(childFile.getRef());
         blob = (Blob) childFile.getProperty("file", "content");
 
-        // digest algorithm is null for any type of blob other than BinaryBlob
-        assertNull(blob.getDigestAlgorithm());
-        assertEquals("XXX", blob.getDigest());
+        // digest and digest algorithm have been fixed up on save
+        assertEquals("MD5", blob.getDigestAlgorithm());
+        assertEquals("5d41402abc4b2a76b9719d911017c592", blob.getDigest());
         assertEquals("blob.txt", blob.getFilename());
         assertEquals(length, blob.getLength());
         assertEquals("UTF8", blob.getEncoding());
@@ -2934,7 +2935,7 @@ public class TestSQLRepositoryAPI {
         session.saveDocument(childFile);
         childFile = session.getDocument(childFile.getRef());
         blob = (Blob) childFile.getPropertyValue("content");
-        assertEquals("YYY", blob.getDigest());
+        assertNotEquals("YYY", blob.getDigest());
         assertEquals("manifest.mf", blob.getFilename());
         assertNull(blob.getEncoding());
         assertEquals("java/manifest", blob.getMimeType());

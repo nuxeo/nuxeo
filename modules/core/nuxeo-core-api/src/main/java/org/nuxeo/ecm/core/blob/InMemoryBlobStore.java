@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.blob;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.ALLOW_BYTE_RANGE;
+import static org.nuxeo.ecm.core.blob.KeyStrategy.VER_SEP;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,11 +34,13 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.runtime.api.Framework;
 
@@ -102,7 +105,7 @@ public class InMemoryBlobStore extends AbstractBlobStore {
         transfer(blobWriteContext, baos);
         String key = blobWriteContext.getKey(); // may depend on WriteObserver, for example for digests
         if (hasVersioning()) {
-            key += "@" + RANDOM.nextLong();
+            key = key + VER_SEP + RANDOM.nextLong();
         }
         map.put(key, baos.toByteArray());
         return key;
@@ -127,47 +130,44 @@ public class InMemoryBlobStore extends AbstractBlobStore {
     @Override
     public String copyOrMoveBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
-        boolean copied = copyBlob(key, sourceStore, sourceKey);
-        if (copied && atomicMove) {
+        String returnedKey = copyBlob(key, sourceStore, sourceKey);
+        if (returnedKey != null && atomicMove) {
             sourceStore.deleteBlob(sourceKey);
         }
-        return copied ? key : null;
+        return returnedKey;
     }
 
-    protected boolean copyBlob(String key, BlobStore sourceStore, String sourceKey) throws IOException {
+    protected String copyBlob(String key, BlobStore sourceStore, String sourceKey) throws IOException {
         // try with a stream
         OptionalOrUnknown<InputStream> streamOpt = sourceStore.getStream(sourceKey);
         if (streamOpt.isKnown()) {
             if (!streamOpt.isPresent()) {
-                return false;
+                return null;
             }
             byte[] bytes;
             try (InputStream stream = streamOpt.get()) {
                 bytes = IOUtils.toByteArray(stream);
             }
-            map.put(key, bytes);
-            return true;
+            return putBytes(key, bytes);
         }
         // try with a local file
         OptionalOrUnknown<Path> fileOpt = sourceStore.getFile(sourceKey);
         if (fileOpt.isKnown()) {
             if (!fileOpt.isPresent()) {
-                return false;
+                return null;
             }
             byte[] bytes = Files.readAllBytes(fileOpt.get());
-            map.put(key, bytes);
-            return true;
+            return putBytes(key, bytes);
         }
         // else use readBlobTo
         Path tmp = Files.createTempFile("bin_", ".tmp");
         try {
             boolean found = sourceStore.readBlob(sourceKey, tmp);
             if (!found) {
-                return false;
+                return null;
             }
             byte[] bytes = Files.readAllBytes(tmp);
-            map.put(key, bytes);
-            return true;
+            return putBytes(key, bytes);
         } finally {
             try {
                 Files.delete(tmp);
@@ -175,6 +175,16 @@ public class InMemoryBlobStore extends AbstractBlobStore {
                 log.warn(e, e);
             }
         }
+    }
+
+    protected String putBytes(String key, byte[] bytes) {
+        if (key == null) { // fast compute or trigger async digest computation
+            // here we can do a fast compute
+            String digestAlgorithm = ((KeyStrategyDigest) keyStrategy).digestAlgorithm;
+            key = new DigestUtils(digestAlgorithm).digestAsHex(bytes);
+        }
+        map.put(key, bytes);
+        return key;
     }
 
     protected ByteArrayInputStream getStreamInternal(String key) {
@@ -211,7 +221,7 @@ public class InMemoryBlobStore extends AbstractBlobStore {
             FileUtils.copyToFile(stream, tmp.toFile());
             return OptionalOrUnknown.of(tmp);
         } catch (IOException e) {
-            throw new UnsupportedOperationException();
+            throw new NuxeoException(e);
         }
     }
 

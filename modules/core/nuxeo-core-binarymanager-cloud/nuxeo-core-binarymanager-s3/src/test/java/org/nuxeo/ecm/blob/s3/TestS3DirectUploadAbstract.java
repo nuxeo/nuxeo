@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
  * Contributors:
  *     pierre
  *     Mickaël Schoentgen
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.blob.s3;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,12 +34,17 @@ import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERT
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.SYSTEM_PROPERTY_PREFIX;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
@@ -45,14 +52,14 @@ import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
 import org.nuxeo.ecm.automation.test.AutomationServerFeature;
-import org.nuxeo.ecm.blob.s3.S3BlobProvider;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
-import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.BlobStoreBlobProvider;
 import org.nuxeo.ecm.core.storage.sql.S3BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.S3DirectBatchHandler;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -65,11 +72,8 @@ import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
@@ -93,6 +97,9 @@ public abstract class TestS3DirectUploadAbstract {
     protected static String envSecret;
 
     protected static String envToken;
+
+    @Inject
+    public BlobManager blobManager;
 
     @Inject
     public BatchManager batchManager;
@@ -126,6 +133,23 @@ public abstract class TestS3DirectUploadAbstract {
         System.setProperty(S3DIRECT_PREFIX + BUCKET_NAME_PROPERTY, bucketName2);
     }
 
+    @After
+    public void tearDown() {
+        S3DirectBatchHandler handler = (S3DirectBatchHandler) batchManager.getHandler("s3");
+        BlobProvider dubp = blobManager.getBlobProvider(handler.blobProviderId);
+        clearBlobProvider(dubp);
+        KeyValueBlobTransientStore ts = (KeyValueBlobTransientStore) handler.getTransientStore();
+        clearBlobProvider(ts.getBlobProvider());
+    }
+
+    protected void clearBlobProvider(BlobProvider blobProvider) {
+        if (blobProvider instanceof S3BinaryManager) {
+            ((S3BinaryManager) blobProvider).clear();
+        } else {
+            ((BlobStoreBlobProvider) blobProvider).store.clear();
+        }
+    }
+
     @Test
     public void testFails() {
         // create and initialize batch
@@ -151,27 +175,13 @@ public abstract class TestS3DirectUploadAbstract {
     }
 
     @Test
-    public void testWithoutMultipart() {
+    public void testSmall() {
         test("s3", 1024);
     }
 
     @Test
-    public void testClientSideMultipartUpload() {
-        // MULTIPART_THRESHOLD is the limit for the client-side multipart upload
-        // MULTIPART_THRESHOLD + 1 is the limit for the server-side multipart copy
-        test("s3", MULTIPART_THRESHOLD + 1);
-    }
-
-    @Test
-    public void testServerSideMultipartCopy() {
-        // MULTIPART_THRESHOLD is the limit for the client-side multipart upload
-        // MULTIPART_THRESHOLD + 1 is the limit for the server-side multipart copy
-        test("s3", MULTIPART_THRESHOLD + 2);
-    }
-
-    @Test
-    public void test20MB() {
-        test("s3", 20 * 1024 * 1024);
+    public void testMultipart() {
+        test("s3", MULTIPART_THRESHOLD * 2);
     }
 
     @Test
@@ -215,10 +225,22 @@ public abstract class TestS3DirectUploadAbstract {
     }
 
     protected void test(String handlerName, int size) {
+        test(handlerName, size, true);
+        tearDown();
+        test(handlerName, size, false);
+    }
+
+    protected void test(String handlerName, int size, boolean keyLookingLikeADigest) {
+        String key;
+        if (keyLookingLikeADigest) {
+            key = "01234567890123456789012345678901"; // same size as MD5
+        } else {
+            key = "key" + System.nanoTime();
+        }
         // generate unique key and and random content of give size
-        String key = "key" + System.nanoTime();
         String name = "name" + System.nanoTime();
         byte[] content = generateRandomBytes(size);
+        String expectedDigest = DigestUtils.md5Hex(content);
 
         // create and initialize batch
         S3DirectBatchHandler handler = (S3DirectBatchHandler) batchManager.getHandler(handlerName);
@@ -240,55 +262,20 @@ public abstract class TestS3DirectUploadAbstract {
         properties.put(S3DirectBatchHandler.INFO_AWS_SESSION_TOKEN, envToken);
         AmazonS3 priviledgedS3Client = createS3Client(properties);
 
-        // check the initial upload has been succesfull
+        // check the initial upload has been successful
         assertNotNull(priviledgedS3Client.getObject(bucketName, prefixedKey));
         BatchFileInfo info = new BatchFileInfo(prefixedKey, name, "text/plain", content.length, null);
         assertTrue(handler.completeUpload(batch.getKey(), key, info));
 
-        // check the object has been renamed to its etag
-        try {
-            priviledgedS3Client.getObject(bucketName, prefixedKey);
-            fail("should throw 404");
-        } catch (AmazonS3Exception e) {
-            assertTrue(e.getMessage().contains("404"));
-        }
-
-        ManagedBlob managedBlob = (ManagedBlob) handler.getBatch(batch.getKey()).getBlob(key);
-        BlobProvider blobProvider = Framework.getService(BlobManager.class)
-                                             .getBlobProvider(managedBlob.getProviderId());
-
-        // check the s3 object has been renamed to correct etag
-        String managedBucketName;
-        String managedBucketPrefix;
-        if (blobProvider instanceof S3BinaryManager) {
-            S3BinaryManager s3BinaryManager = (S3BinaryManager) blobProvider;
-            managedBucketName = s3BinaryManager.getBucketName();
-            managedBucketPrefix = s3BinaryManager.getBucketPrefix();
-        } else { // S3BlobProvider
-            S3BlobProvider s3BlobProvider = (S3BlobProvider) blobProvider;
-            managedBucketName = s3BlobProvider.config.bucketName;
-            managedBucketPrefix = s3BlobProvider.config.bucketPrefix;
-        }
-        assertNotNull(
-                priviledgedS3Client.getObject(managedBucketName, managedBucketPrefix + managedBlob.getDigest()));
-
-        // cleanup
-        removeAllFiles(priviledgedS3Client, bucketName, bucketPrefix);
-        removeAllFiles(priviledgedS3Client, managedBucketName, managedBucketPrefix);
-    }
-
-    protected void removeAllFiles(AmazonS3 s3, String bucketName, String prefix) {
-        ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(prefix);
-        ObjectListing objectListing = s3.listObjects(listObjectsRequest);
-        while (true) {
-            for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
-                s3.deleteObject(bucketName, objectSummary.getKey());
-            }
-            if (objectListing.isTruncated()) {
-                objectListing = s3.listNextBatchOfObjects(objectListing);
-            } else {
-                break;
-            }
+        // check content
+        Blob blob = handler.getBatch(batch.getKey()).getBlob(key);
+        try (InputStream stream = blob.getStream()) {
+            byte[] bytes = IOUtils.toByteArray(stream);
+            assertArrayEquals(content, bytes);
+            assertEquals(expectedDigest, blob.getDigest());
+            assertEquals("MD5", blob.getDigestAlgorithm());
+        } catch (IOException e) {
+            throw new NuxeoException(e);
         }
     }
 

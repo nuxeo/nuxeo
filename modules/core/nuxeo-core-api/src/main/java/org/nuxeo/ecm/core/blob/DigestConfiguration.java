@@ -33,34 +33,48 @@ public class DigestConfiguration extends PropertyBasedConfiguration {
 
     public static final String DIGEST_ALGORITHM_PROPERTY = "digest";
 
+    /** @since 11.5 */
+    public static final String DIGEST_ASYNC_PROPERTY = "digestAsync";
+
     public static final String DEFAULT_DIGEST_ALGORITHM = "MD5";
 
     public final String digestAlgorithm;
 
+    /** @deprecated since 11.5, use {@link KeyStrategyDigest} instead */
+    @Deprecated
     public final Pattern digestPattern;
+
+    /** @since 11.5 */
+    public final boolean digestAsync;
 
     public DigestConfiguration(String digestAlgorithm) {
         super(null, null);
         this.digestAlgorithm = digestAlgorithm;
         digestPattern = getDigestPattern();
+        digestAsync = false;
     }
 
     public DigestConfiguration(String systemPropertyPrefix, Map<String, String> properties) {
         super(systemPropertyPrefix, properties);
         digestAlgorithm = getDigestAlgorithm();
         digestPattern = getDigestPattern();
+        digestAsync = getBooleanProperty(DIGEST_ASYNC_PROPERTY);
     }
 
     protected String getDigestAlgorithm() {
         return getProperty(DIGEST_ALGORITHM_PROPERTY, DEFAULT_DIGEST_ALGORITHM).toUpperCase(Locale.ENGLISH);
     }
 
+    /** @deprecated since 11.5, use {@link KeyStrategyDigest} instead */
+    @Deprecated
     protected Pattern getDigestPattern() {
         // compute a dummy digest (from 0-length input) to know its length and derive a regexp
         int len = new DigestUtils(digestAlgorithm).digestAsHex(new byte[0]).length();
         return Pattern.compile("[0-9a-f]{" + len + "}");
     }
 
+    /** @deprecated since 11.5, use {@link KeyStrategyDigest} instead */
+    @Deprecated
     public boolean isValidDigest(String digest) {
         return digestPattern.matcher(digest).matches();
     }
