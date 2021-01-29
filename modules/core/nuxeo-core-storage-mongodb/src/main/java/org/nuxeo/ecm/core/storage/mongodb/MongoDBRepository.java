@@ -128,7 +128,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     protected final boolean supportsTransactions;
 
     /**
-     * Maximum execution time for a query.
+     * Maximum execution time for a query when outside of a transaction.
      *
      * @since 11.1
      */
