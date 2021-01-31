@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.blob.CachingBlobStore;
 import org.nuxeo.ecm.core.blob.KeyStrategy;
 import org.nuxeo.ecm.core.blob.KeyStrategyDocId;
 import org.nuxeo.ecm.core.blob.TransactionalBlobStore;
+import org.nuxeo.ecm.core.work.WorkManagerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -64,7 +65,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ BlobManagerFeature.class, TransactionalFeature.class, LogCaptureFeature.class })
+@Features({ BlobManagerFeature.class, WorkManagerFeature.class, TransactionalFeature.class, LogCaptureFeature.class })
 @LogCaptureFeature.FilterOn(logLevel = "TRACE", loggerClass = AbstractBlobStore.class)
 @TransactionalConfig(autoStart = false)
 @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-blob-provider-s3-tracing.xml")
@@ -87,13 +88,22 @@ public class TestS3BlobStoreTracing {
     protected static final String BAR_MD5 = "37b51d194a7513e45b56f6524f2d51f2";
 
     // from test-blob-provider-s3-tracing.xml, for cleanup
-    protected static final List<String> BLOB_PROVIDER_IDS = Arrays.asList("s3", "s3-other", "s3-nocache", "s3-record");
+    protected static final List<String> BLOB_PROVIDER_IDS = Arrays.asList( //
+            "s3", //
+            "s3-other", //
+            "s3-sha256-async", //
+            "s3-nocache", //
+            "s3-managed", //
+            "s3-record");
 
     @Inject
     protected LogCaptureFeature.Result logCaptureResult;
 
     @Inject
     protected BlobManager blobManager;
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     protected Path tmpFile;
 
@@ -156,10 +166,14 @@ public class TestS3BlobStoreTracing {
     protected void checkTrace(String filename) throws IOException {
         List<String> expectedTrace = LogTracingHelper.readTrace("traces/" + filename);
         List<String> actualTrace = logCaptureResult.getCaughtEventMessages();
-        System.err.println(filename); // XXX
-        System.err.println(String.join("\n", actualTrace)); // XXX
         Map<String, String> context = new HashMap<>();
-        LogTracingHelper.assertEqualsLists(expectedTrace, actualTrace, context);
+        try {
+            LogTracingHelper.assertEqualsLists(expectedTrace, actualTrace, context);
+        } catch (AssertionError e) {
+            System.err.println(filename);
+            System.err.println(String.join("\n", actualTrace));
+            throw e;
+        }
     }
 
     protected BlobInfo blobInfo(String key) {
@@ -453,6 +467,7 @@ public class TestS3BlobStoreTracing {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core:OSGI-INF/asyncdigest-listener-contrib.xml")
     public void testCopyAsyncDigest() throws IOException {
         // destination digest algorithm is not MD5, so async will be triggered
         BlobProvider bp1 = getBlobProvider("s3");
@@ -465,16 +480,19 @@ public class TestS3BlobStoreTracing {
         clearTrace();
 
         logTrace("== Copy (async) ==");
+        TransactionHelper.startTransaction();
         BlobContext blobContext2 = new BlobContext(blob1, DOCID2, XPATH);
         String key2 = bp2.writeBlob(blobContext2);
         assertNotEquals(FOO_MD5, key2);
         assertNotEquals(FOO_SHA256, key2);
         assertTrue(key2, key2.contains("-")); // this is a pseudo-digest
         logTrace("== Async ==");
+        txFeature.nextTransaction(); // wait for work manager
+        TransactionHelper.commitOrRollbackTransaction();
         checkTrace("trace-copy-async.txt");
 
         // check content
-        Blob blob2 = bp2.readBlob(blobInfo(key2));
+        Blob blob2 = bp2.readBlob(blobInfo(FOO_SHA256));
         assertEquals(FOO, blob2.getString());
     }
 

@@ -44,7 +44,7 @@ public class InMemoryBlobProvider extends BlobStoreBlobProvider {
             } else {
                 transientStore = new InMemoryBlobStore("mem_tmp", keyStrategy);
             }
-            store = new TransactionalBlobStore(store, transientStore);
+            store = new TransactionalBlobStore(blobProviderId, store, transientStore);
         }
         if (config.getBooleanProperty("test-caching")) { // for tests
             CachingConfiguration cachingConfiguration = new CachingConfiguration(null, properties);
