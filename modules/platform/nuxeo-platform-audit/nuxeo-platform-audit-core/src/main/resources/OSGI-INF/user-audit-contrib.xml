@@ -42,6 +42,14 @@
         <extendedInfo expression="${message.properties.retentionActive}" key="retentionActive" />
       </extendedInfos>
     </event>
+    <event name="blobDigestUpdated">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.oldKey}" key="oldKey" />
+        <extendedInfo expression="${message.properties.oldDigest}" key="oldDigest" />
+        <extendedInfo expression="${message.properties.newKey}" key="newKey" />
+        <extendedInfo expression="${message.properties.newDigest}" key="newDigest" />
+      </extendedInfos>
+    </event>
   </extension>
 
 </component>

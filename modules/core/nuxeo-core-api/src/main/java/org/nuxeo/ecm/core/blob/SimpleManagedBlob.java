@@ -51,6 +51,22 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
         this(blobProviderIdFromKey(blobInfo.key), blobInfo);
     }
 
+    /**
+     * Returns a copy of this blob with a new key and digest.
+     *
+     * @since 11.5
+     */
+    public SimpleManagedBlob withKeyAndDigest(String newKey, String newDigest) {
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = newKey;
+        blobInfo.mimeType = mimeType;
+        blobInfo.encoding = encoding;
+        blobInfo.filename = filename;
+        blobInfo.length = length;
+        blobInfo.digest = newDigest;
+        return new SimpleManagedBlob(blobProviderId, blobInfo);
+    }
+
     @Override
     public String getProviderId() {
         return blobProviderId;

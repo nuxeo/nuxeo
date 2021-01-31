@@ -595,6 +595,11 @@ public class SQLDocumentProxy implements SQLDocument {
         target.visitBlobs(blobVisitor);
     }
 
+    @Override
+    public String replaceBlobDigest(String key, String newKey, String newDigest) {
+        throw new UnsupportedOperationException();
+    }
+
     /*
      * ----- toString/equals/hashcode -----
      */
