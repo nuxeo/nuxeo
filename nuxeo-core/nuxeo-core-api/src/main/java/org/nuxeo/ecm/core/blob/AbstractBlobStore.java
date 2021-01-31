@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.io.IOUtils;
@@ -33,6 +35,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.KeyStrategy.WriteObserver;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.event.Event;
+import org.nuxeo.runtime.services.event.EventService;
 
 /**
  * Basic helper implementations for a {@link BlobStore}.
@@ -50,11 +54,19 @@ public abstract class AbstractBlobStore implements BlobStore {
 
     private static final Logger log = LogManager.getLogger(AbstractBlobStore.class);
 
+    protected final String blobProviderId;
+
     protected final String name;
 
     protected final KeyStrategy keyStrategy;
 
     public AbstractBlobStore(String name, KeyStrategy keyStrategy) {
+        this(null, name, keyStrategy);
+    }
+
+    /** @since 11.5 */
+    public AbstractBlobStore(String blobProviderId, String name, KeyStrategy keyStrategy) {
+        this.blobProviderId = blobProviderId;
         this.name = name;
         this.keyStrategy = keyStrategy;
     }
@@ -299,6 +311,18 @@ public abstract class AbstractBlobStore implements BlobStore {
         if (writeObserver != null) {
             writeObserver.done();
         }
+    }
+
+    protected void notifyAsyncDigest(String key) {
+        // due to dependency issues between nuxeo-core-api and nuxeo-core,
+        // we have to use a "runtime" event instead of a core event for dependency inversion
+        // to trigger code living in nuxeo-core (because it needs to access the repository)
+        EventService eventService = Framework.getService(EventService.class);
+        Map<String, String> data = new HashMap<>();
+        data.put("blobProviderId", blobProviderId);
+        data.put("key", key);
+        Event event = new Event("asyncDigest", null, null, data);
+        eventService.sendEvent(event);
     }
 
 }

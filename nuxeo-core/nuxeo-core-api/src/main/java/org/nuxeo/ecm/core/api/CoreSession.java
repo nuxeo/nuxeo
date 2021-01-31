@@ -1659,4 +1659,16 @@ public interface CoreSession {
      */
     DocumentModel getOrCreateDocument(DocumentModel docModel, Function<DocumentModel, DocumentModel> postCreate);
 
+    /**
+     * Visits the blobs of a document and, for those with a matching key, replace their key and digest with new ones.
+     *
+     * @param docRef the document reference
+     * @param key the bob key to look for
+     * @param newKey the new key
+     * @param newDigest the new digest
+     * @return the old digest if at least one replacement was done, {@code null} otherwise
+     * @since 11.5
+     */
+    String replaceBlobDigest(DocumentRef docRef, String key, String newKey, String newDigest);
+
 }

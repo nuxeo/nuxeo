@@ -116,8 +116,15 @@ public class S3BlobStore extends AbstractBlobStore {
 
     protected final BinaryGarbageCollector gc;
 
+    /** @deprecated since 11.5 */
+    @Deprecated
     public S3BlobStore(String name, S3BlobStoreConfiguration config, KeyStrategy keyStrategy) {
-        super(name, keyStrategy);
+        this(null, name, config, keyStrategy);
+    }
+
+    /** @since 11.5 */
+    public S3BlobStore(String blobProviderId, String name, S3BlobStoreConfiguration config, KeyStrategy keyStrategy) {
+        super(blobProviderId, name, keyStrategy);
         this.config = config;
         amazonS3 = config.amazonS3;
         bucketName = config.bucketName;
@@ -499,8 +506,7 @@ public class S3BlobStore extends AbstractBlobStore {
             } else {
                 // async: use a random key for now; and do async computation of real digest
                 key = randomString();
-                System.err.println("XXX async digest for " + key);
-                // throw new AssertionError("XXX");
+                notifyAsyncDigest(key);
             }
         }
 

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.blob.asyncdigest.listener">
+
+  <extension target="org.nuxeo.runtime.EventService" point="listeners">
+    <listener class="org.nuxeo.ecm.core.blob.AsyncDigestListener">
+      <topic>asyncDigest</topic>
+    </listener>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="computeDigest">
+      <maxThreads>2</maxThreads>
+      <category>computeDigest</category>
+    </queue>
+  </extension>
+
+</component>

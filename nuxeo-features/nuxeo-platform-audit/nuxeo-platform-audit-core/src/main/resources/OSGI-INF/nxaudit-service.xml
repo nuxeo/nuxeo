@@ -150,6 +150,7 @@
     <event name="retentionExpired" />
     <event name="afterSetLegalHold" />
     <event name="afterRemoveLegalHold" />
+    <event name="blobDigestUpdated" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"

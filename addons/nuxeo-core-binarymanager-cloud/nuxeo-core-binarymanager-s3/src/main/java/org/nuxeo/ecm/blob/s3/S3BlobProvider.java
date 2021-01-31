@@ -78,7 +78,7 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
         KeyStrategy keyStrategy = getKeyStrategy();
 
         // main S3 blob store wrapped in a caching store
-        BlobStore store = new S3BlobStore("S3", config, keyStrategy);
+        BlobStore store = new S3BlobStore(blobProviderId, "S3", config, keyStrategy);
         boolean caching = !config.getBooleanProperty("nocache");
         if (caching) {
             store = new CachingBlobStore("Cache", store, config.cachingConfiguration);
@@ -93,13 +93,13 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
             } else {
                 // transient store is another S3 blob store wrapped in a caching store
                 S3BlobStoreConfiguration transientConfig = config.withNamespace("tx");
-                transientStore = new S3BlobStore("S3_tmp", transientConfig, keyStrategy);
+                transientStore = new S3BlobStore(blobProviderId, "S3_tmp", transientConfig, keyStrategy);
                 if (caching) {
                     transientStore = new CachingBlobStore("Cache_tmp", transientStore, config.cachingConfiguration);
                 }
             }
             // transactional store
-            store = new TransactionalBlobStore(store, transientStore);
+            store = new TransactionalBlobStore(blobProviderId, store, transientStore);
         }
         return store;
     }
