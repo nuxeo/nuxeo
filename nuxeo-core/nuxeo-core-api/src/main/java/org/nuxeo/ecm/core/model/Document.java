@@ -162,6 +162,17 @@ public interface Document {
     void visitBlobs(Consumer<BlobAccessor> blobVisitor) throws PropertyException;
 
     /**
+     * Visits the blobs of this document and, for those with a matching key, replace their key and digest with new ones.
+     *
+     * @param key the bob key to look for
+     * @param newKey the new key
+     * @param newDigest the new digest
+     * @return the old digest if at least one replacement was done, {@code null} otherwise
+     * @since 11.5
+     */
+    String replaceBlobDigest(String key, String newKey, String newDigest);
+
+    /**
      * Checks whether this document is a folder.
      *
      * @return {@code true} if the document is a folder, {@code false} otherwise

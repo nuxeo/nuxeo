@@ -268,6 +268,11 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
+    public String replaceBlobDigest(String key, String newKey, String newDigest) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Serializable getPropertyValue(String name) {
         return getNode().getSimpleProperty(name).getValue();
     }

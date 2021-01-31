@@ -82,8 +82,15 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
         return DELETE_MARKER.equals(transientKey);
     }
 
+    /** @deprecated since 11.5 */
+    @Deprecated
     public TransactionalBlobStore(BlobStore store, BlobStore transientStore) {
-        super("tx", store.getKeyStrategy());
+        this(null, store, transientStore);
+    }
+
+    /** @since 11.5 */
+    public TransactionalBlobStore(String blobProviderId, BlobStore store, BlobStore transientStore) {
+        super(blobProviderId, "tx", store.getKeyStrategy());
         this.store = store;
         this.transientStore = transientStore;
         if (store.hasVersioning() && transientStore != store) {
@@ -158,7 +165,7 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
             if (key == null) {
                 // fast compute not possible; trigger async digest computation
                 key = randomString();
-                throw new AssertionError("XXX");
+                notifyAsyncDigest(key);
             }
             returnedKey = key;
         }

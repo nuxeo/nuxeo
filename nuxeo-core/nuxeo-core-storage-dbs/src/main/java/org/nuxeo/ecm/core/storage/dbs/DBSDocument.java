@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.MutableObject;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
@@ -48,6 +50,7 @@ import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.api.model.VersionNotModifiableException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
+import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
@@ -509,6 +512,29 @@ public class DBSDocument extends BaseDocument<State> {
             // fall through for proxy schemas
         }
         visitBlobs(docState.getState(), blobVisitor, docState::markDirty);
+    }
+
+    @Override
+    public String replaceBlobDigest(String key, String newKey, String newDigest) {
+        MutableObject<String> oldDigestHolder = new MutableObject<>();
+        visitBlobs(accessor -> replaceBlobDigest(accessor, key, newKey, newDigest, oldDigestHolder));
+        return oldDigestHolder.getValue();
+    }
+
+    protected void replaceBlobDigest(BlobAccessor accessor, String key, String newKey, String newDigest,
+            MutableObject<String> oldDigestHolder) {
+        Blob blob = accessor.getBlob();
+        if (!(blob instanceof SimpleManagedBlob)) {
+            return;
+        }
+        SimpleManagedBlob managedBlob = (SimpleManagedBlob) blob;
+        if (!managedBlob.getKey().equals(key)) {
+            return;
+        }
+        // if there was no digest, return a non-null value nevertheless
+        // as a real null is a signal that no replacement was done
+        oldDigestHolder.setValue(String.valueOf(blob.getDigest()));
+        accessor.setBlob(managedBlob.withKeyAndDigest(newKey, newDigest));
     }
 
     protected DocumentBlobManager getDocumentBlobManager() {
