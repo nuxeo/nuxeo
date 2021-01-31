@@ -139,6 +139,13 @@ public final class DocumentEventTypes {
     public static final String BINARYTEXT_UPDATED = "binaryTextUpdated";
 
     /**
+     * A blob had its digest updated.
+     *
+     * @since 11.5
+     */
+    public static final String BLOB_DIGEST_UPDATED = "blobDigestUpdated";
+
+    /**
      * The event property containing the system property updated.
      * <p>
      * Available for the event {@link #BINARYTEXT_UPDATED}.

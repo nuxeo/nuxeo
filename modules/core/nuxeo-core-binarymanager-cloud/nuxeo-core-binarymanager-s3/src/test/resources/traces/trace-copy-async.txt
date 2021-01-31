@@ -10,5 +10,16 @@ Nuxeo -> S3: copyObject
                                 hnote right: base/acbd18db4cc2f85cedef654fccc4a4d8 to sha256/${TMP}-0
 Nuxeo <-- S3: copied
 == Async ==
-TODO
+Nuxeo <- S3: read 3 bytes
+                                hnote right: sha256/${TMP}-0
+Nuxeo --> S3: getObjectMetadata
+                                hnote right: sha256/2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae
+Nuxeo <-- S3: missing
+Nuxeo -> S3: copyObject
+                                hnote right: sha256/${TMP}-0 to sha256/2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae
+Nuxeo <-- S3: copied
+Nuxeo -> Cache: delete
+                                hnote right: ${TMP}-0
+Nuxeo -> S3: deleteObject
+                                hnote right: sha256/${TMP}-0
 @enduml

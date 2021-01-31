@@ -146,6 +146,34 @@ public final class CoreEventConstants {
     @Deprecated
     public static final String RETENTION_ACTIVE = "retentionActive";
 
+    /**
+     * Passed with blobDigestUpdated event, old key.
+     *
+     * @since 11.5
+     */
+    public static final String BLOB_DIGEST_UPDATED_OLD_KEY = "oldKey";
+
+    /**
+     * Passed with blobDigestUpdated event, old digest.
+     *
+     * @since 11.5
+     */
+    public static final String BLOB_DIGEST_UPDATED_OLD_DIGEST = "oldDigest";
+
+    /**
+     * Passed with blobDigestUpdated event, new key.
+     *
+     * @since 11.5
+     */
+    public static final String BLOB_DIGEST_UPDATED_NEW_KEY = "newKey";
+
+    /**
+     * Passed with blobDigestUpdated event, new digest.
+     *
+     * @since 11.5
+     */
+    public static final String BLOB_DIGEST_UPDATED_NEW_DIGEST = "newDigest";
+
     // Constant utility class
     private CoreEventConstants() {
     }

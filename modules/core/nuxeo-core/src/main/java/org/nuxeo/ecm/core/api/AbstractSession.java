@@ -2782,4 +2782,23 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         return repositoryName + "-" + parentId + "-" + name;
     }
 
+    @Override
+    public String replaceBlobDigest(DocumentRef docRef, String key, String newKey, String newDigest) {
+        if (!isAdministrator()) {
+            throw new DocumentSecurityException("Only Administrators can replace a blob digest");
+        }
+        Document doc = resolveReference(docRef);
+        String oldDigest = doc.replaceBlobDigest(key, newKey, newDigest);
+        if (oldDigest != null) {
+            DocumentModel docModel = readModel(doc);
+            Map<String, Serializable> options = new HashMap<>();
+            options.put(CoreEventConstants.BLOB_DIGEST_UPDATED_OLD_KEY, key);
+            options.put(CoreEventConstants.BLOB_DIGEST_UPDATED_OLD_DIGEST, oldDigest);
+            options.put(CoreEventConstants.BLOB_DIGEST_UPDATED_NEW_KEY, newKey);
+            options.put(CoreEventConstants.BLOB_DIGEST_UPDATED_NEW_DIGEST, newDigest);
+            notifyEvent(DocumentEventTypes.BLOB_DIGEST_UPDATED, docModel, options, null, null, false, false);
+        }
+        return oldDigest;
+    }
+
 }

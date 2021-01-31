@@ -51,7 +51,7 @@ public class LocalBlobProvider extends BlobStoreBlobProvider {
         if (isTransactional()) {
             PathStrategy transientPathStrategy = new PathStrategyFlat(config.tmpDir);
             BlobStore transientStore = new LocalBlobStore("File_tmp", keyStrategy, transientPathStrategy);
-            store = new TransactionalBlobStore(store, transientStore);
+            store = new TransactionalBlobStore(blobProviderId, store, transientStore);
         }
         return store;
     }
