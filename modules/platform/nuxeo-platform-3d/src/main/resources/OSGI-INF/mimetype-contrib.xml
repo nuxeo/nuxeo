@@ -21,10 +21,7 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="application/octet-stream" binary="true" iconPath="3d.png">
-      <mimetypes>
-        <mimetype>application/octet-stream</mimetype>
-      </mimetypes>
+    <mimetype normalized="application/octet-stream" merge="true">
       <extensions>
         <extension>fbx</extension>
       </extensions>
