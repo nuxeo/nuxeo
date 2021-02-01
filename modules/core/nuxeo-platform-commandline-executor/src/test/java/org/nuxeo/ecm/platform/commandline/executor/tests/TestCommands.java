@@ -91,7 +91,7 @@ public class TestCommands {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-command-test-contrib.xml")
     public void testCmdEnvironment() throws Exception {
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
@@ -107,7 +107,7 @@ public class TestCommands {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-command-test-contrib.xml")
     public void testCmdPipe() throws Exception {
 
         ExecResult result = cles.execCommand("pipe", cles.getDefaultCmdParameters());
