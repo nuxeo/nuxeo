@@ -21,15 +21,14 @@ package org.nuxeo.ecm.platform.oauth2.providers;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -37,7 +36,6 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -45,7 +43,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implements OAuth2ServiceProviderRegistry {
 
-    protected static final Log log = LogFactory.getLog(OAuth2ServiceProviderRegistryImpl.class);
+    private static final Logger log = LogManager.getLogger(OAuth2ServiceProviderRegistryImpl.class);
 
     public static final String PROVIDER_EP = "providers";
 
@@ -53,33 +51,38 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
 
     public static final String SCHEMA = "oauth2ServiceProvider";
 
-    /**
-     * Registry of contributed providers. These providers can extend and/or override the default provider class.
-     */
-    protected OAuth2ServiceProviderContributionRegistry registry = new OAuth2ServiceProviderContributionRegistry();
+    protected static final String SERVICE_NAME_KEY = "serviceName";
 
-    protected DocumentModel getProviderDocModel(String serviceName) {
-        try {
-            if (StringUtils.isBlank(serviceName)) {
-                log.warn("Can not find provider without a serviceName!");
-                return null;
-            }
+    @Override
+    public void start(ComponentContext context) {
+        persistProviders();
+    }
 
-            Map<String, Serializable> filter = new HashMap<>();
-            filter.put("serviceName", serviceName);
-
-            List<DocumentModel> providers = queryProviders(filter, 1);
-            return providers.isEmpty() ? null : providers.get(0);
-        } catch (DirectoryException e) {
-            log.error("Unable to read provider from Directory backend", e);
+    protected DocumentModel getPersistedProvider(String serviceName) {
+        if (StringUtils.isBlank(serviceName)) {
+            log.warn("Cannot fetch provider without a serviceName");
             return null;
         }
+
+        List<DocumentModel> providers = queryProviders(Map.of(SERVICE_NAME_KEY, serviceName), 1);
+        return providers.isEmpty() ? null : providers.get(0);
+    }
+
+    protected void persistProviders() {
+        this.<OAuth2ServiceProviderDescriptor> getRegistryContributions(PROVIDER_EP).forEach(desc -> {
+            String name = desc.getName();
+            if (getPersistedProvider(name) == null) {
+                addProvider(name, desc.getDescription(), desc.getTokenServerURL(), desc.getAuthorizationServerURL(),
+                        desc.getClientId(), desc.getClientSecret(), Arrays.asList(desc.getScopes()));
+            } else {
+                log.info("Provider {} is already in the Database, XML contribution  won't overwrite it", desc::getName);
+            }
+        });
     }
 
     @Override
     public OAuth2ServiceProvider getProvider(String serviceName) {
-        DocumentModel model = getProviderDocModel(serviceName);
-        return model == null ? null : buildProvider(model);
+        return buildProvider(getPersistedProvider(serviceName));
     }
 
     @Override
@@ -92,32 +95,50 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     public OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL,
             String authorizationServerURL, String clientId, String clientSecret, List<String> scopes) {
         return addProvider(serviceName, description, tokenServerURL, authorizationServerURL, null, clientId,
-                           clientSecret, scopes, Boolean.TRUE);
+                clientSecret, scopes, Boolean.TRUE);
+    }
+
+    protected void fillEntryProperties(DocumentModel entry, String serviceName, String description,
+            String tokenServerURL, String authorizationServerURL, String userAuthorizationURL, String clientId,
+            String clientSecret, List<String> scopes, Boolean isEnabled) {
+        entry.setProperty(SCHEMA, SERVICE_NAME_KEY, serviceName);
+        entry.setProperty(SCHEMA, "description", description);
+        entry.setProperty(SCHEMA, "authorizationServerURL", authorizationServerURL);
+        entry.setProperty(SCHEMA, "tokenServerURL", tokenServerURL);
+        entry.setProperty(SCHEMA, "userAuthorizationURL", userAuthorizationURL);
+        entry.setProperty(SCHEMA, "clientId", clientId);
+        entry.setProperty(SCHEMA, "clientSecret", clientSecret);
+        entry.setProperty(SCHEMA, "scopes", String.join(",", scopes));
+        boolean enabled = (clientId != null && clientSecret != null);
+        entry.setProperty(SCHEMA, "enabled", Boolean.valueOf(enabled && Boolean.TRUE.equals(isEnabled)));
+        if (!enabled) {
+            log.info("OAuth2 provider for {} is disabled because clientId and/or clientSecret are empty", serviceName);
+        }
+    }
+
+    protected void fillProviderProperties(OAuth2ServiceProvider provider, DocumentModel entry) {
+        provider.setId((Long) entry.getProperty(SCHEMA, "id"));
+        provider.setDescription((String) entry.getProperty(SCHEMA, "description"));
+        provider.setAuthorizationServerURL((String) entry.getProperty(SCHEMA, "authorizationServerURL"));
+        provider.setTokenServerURL((String) entry.getProperty(SCHEMA, "tokenServerURL"));
+        provider.setUserAuthorizationURL((String) entry.getProperty(SCHEMA, "userAuthorizationURL"));
+        provider.setClientId((String) entry.getProperty(SCHEMA, "clientId"));
+        provider.setClientSecret((String) entry.getProperty(SCHEMA, "clientSecret"));
+        String scopes = (String) entry.getProperty(SCHEMA, "scopes");
+        provider.setScopes(StringUtils.split(scopes, ","));
+        provider.setEnabled((Boolean) entry.getProperty(SCHEMA, "enabled"));
     }
 
     @Override
     public OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL,
             String authorizationServerURL, String userAuthorizationURL, String clientId, String clientSecret,
             List<String> scopes, Boolean isEnabled) {
-
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
-            DocumentModel creationEntry = BaseSession.createEntryModel(null, SCHEMA, null, null);
+            DocumentModel creationEntry = BaseSession.createEntryModel(SCHEMA, null, null);
             DocumentModel entry = Framework.doPrivileged(() -> session.createEntry(creationEntry));
-            entry.setProperty(SCHEMA, "serviceName", serviceName);
-            entry.setProperty(SCHEMA, "description", description);
-            entry.setProperty(SCHEMA, "authorizationServerURL", authorizationServerURL);
-            entry.setProperty(SCHEMA, "tokenServerURL", tokenServerURL);
-            entry.setProperty(SCHEMA, "userAuthorizationURL", userAuthorizationURL);
-            entry.setProperty(SCHEMA, "clientId", clientId);
-            entry.setProperty(SCHEMA, "clientSecret", clientSecret);
-            entry.setProperty(SCHEMA, "scopes", String.join(",", scopes));
-            boolean enabled = (clientId != null && clientSecret != null);
-            entry.setProperty(SCHEMA, "enabled", Boolean.valueOf(enabled && (isEnabled == null ? false : isEnabled)));
-            if (!enabled) {
-                log.info("OAuth2 provider for " + serviceName
-                        + " is disabled because clientId and/or clientSecret are empty");
-            }
+            fillEntryProperties(entry, serviceName, description, tokenServerURL, authorizationServerURL,
+                    userAuthorizationURL, clientId, clientSecret, scopes, isEnabled);
             Framework.doPrivileged(() -> session.updateEntry(entry));
             return getProvider(serviceName);
         }
@@ -127,21 +148,10 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     public OAuth2ServiceProvider updateProvider(String serviceName, OAuth2ServiceProvider provider) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
-            DocumentModel entry = getProviderDocModel(serviceName);
-            entry.setProperty(SCHEMA, "serviceName", provider.getServiceName());
-            entry.setProperty(SCHEMA, "description", provider.getDescription());
-            entry.setProperty(SCHEMA, "authorizationServerURL", provider.getAuthorizationServerURL());
-            entry.setProperty(SCHEMA, "tokenServerURL", provider.getTokenServerURL());
-            entry.setProperty(SCHEMA, "userAuthorizationURL", provider.getUserAuthorizationURL());
-            entry.setProperty(SCHEMA, "clientId", provider.getClientId());
-            entry.setProperty(SCHEMA, "clientSecret", provider.getClientSecret());
-            entry.setProperty(SCHEMA, "scopes", String.join(",", provider.getScopes()));
-            boolean enabled = provider.getClientId() != null && provider.getClientSecret() != null;
-            entry.setProperty(SCHEMA, "enabled", Boolean.valueOf(enabled && provider.isEnabled()));
-            if (!enabled) {
-                log.info("OAuth2 provider for " + serviceName
-                        + " is disabled because clientId and/or clientSecret are empty");
-            }
+            DocumentModel entry = getPersistedProvider(serviceName);
+            fillEntryProperties(entry, serviceName, provider.getDescription(), provider.getTokenServerURL(),
+                    provider.getAuthorizationServerURL(), provider.getUserAuthorizationURL(), provider.getClientId(),
+                    provider.getClientSecret(), provider.getScopes(), provider.isEnabled());
             session.updateEntry(entry);
             return getProvider(serviceName);
         }
@@ -151,7 +161,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     public void deleteProvider(String serviceName) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
-            DocumentModel entry = getProviderDocModel(serviceName);
+            DocumentModel entry = getPersistedProvider(serviceName);
             session.deleteEntry(entry);
         }
     }
@@ -171,54 +181,42 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     }
 
     /**
-     * Instantiates the provider merging the contribution and the directory entry
+     * Instantiates the provider merging the contribution and the directory entry.
      */
     protected OAuth2ServiceProvider buildProvider(DocumentModel entry) {
-        String serviceName = (String) entry.getProperty(SCHEMA, "serviceName");
-        OAuth2ServiceProvider provider = registry.getProvider(serviceName);
+        if (entry == null) {
+            return null;
+        }
+        String serviceName = (String) entry.getProperty(SCHEMA, SERVICE_NAME_KEY);
+        OAuth2ServiceProvider provider = createProviderInstance(serviceName);
         if (provider == null) {
             provider = new NuxeoOAuth2ServiceProvider();
             provider.setServiceName(serviceName);
         }
-        provider.setId((Long) entry.getProperty(SCHEMA, "id"));
-        provider.setDescription((String) entry.getProperty(SCHEMA, "description"));
-        provider.setAuthorizationServerURL((String) entry.getProperty(SCHEMA, "authorizationServerURL"));
-        provider.setTokenServerURL((String) entry.getProperty(SCHEMA, "tokenServerURL"));
-        provider.setUserAuthorizationURL((String) entry.getProperty(SCHEMA, "userAuthorizationURL"));
-        provider.setClientId((String) entry.getProperty(SCHEMA, "clientId"));
-        provider.setClientSecret((String) entry.getProperty(SCHEMA, "clientSecret"));
-        String scopes = (String) entry.getProperty(SCHEMA, "scopes");
-        provider.setScopes(StringUtils.split(scopes, ","));
-        provider.setEnabled((Boolean) entry.getProperty(SCHEMA, "enabled"));
+        fillProviderProperties(provider, entry);
         return provider;
     }
 
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (PROVIDER_EP.equals(extensionPoint)) {
-            OAuth2ServiceProviderDescriptor provider = (OAuth2ServiceProviderDescriptor) contribution;
-            log.info("OAuth2 provider for " + provider.getName() + " will be registered at application startup");
-            // delay registration because data sources may not be available
-            // at this point
-            registry.addContribution(provider);
-        }
-    }
-
-    @Override
-    public void start(ComponentContext context) {
-        registerCustomProviders();
-    }
-
-    protected void registerCustomProviders() {
-        for (OAuth2ServiceProviderDescriptor provider : registry.getContribs()) {
-            if (getProvider(provider.getName()) == null) {
-                addProvider(provider.getName(), provider.getDescription(), provider.getTokenServerURL(),
-                        provider.getAuthorizationServerURL(), provider.getClientId(), provider.getClientSecret(),
-                        Arrays.asList(provider.getScopes()));
-            } else {
-                log.info("Provider " + provider.getName()
-                        + " is already in the Database, XML contribution  won't overwrite it");
+    protected OAuth2ServiceProvider createProviderInstance(String name) {
+        return this.<OAuth2ServiceProviderDescriptor> getRegistryContribution(PROVIDER_EP, name).map(desc -> {
+            OAuth2ServiceProvider provider = null;
+            try {
+                Class<? extends OAuth2ServiceProvider> providerClass = desc.getProviderClass();
+                provider = providerClass.getDeclaredConstructor().newInstance();
+                provider.setDescription(desc.getDescription());
+                provider.setAuthorizationServerURL(desc.getAuthorizationServerURL());
+                provider.setTokenServerURL(desc.getTokenServerURL());
+                provider.setServiceName(desc.getName());
+                provider.setClientId(desc.getClientId());
+                provider.setClientSecret(desc.getClientSecret());
+                provider.setScopes(desc.getScopes());
+                provider.setEnabled(true);
+            } catch (Exception e) {
+                log.error("Failed to instantiate UserResolver", e);
             }
-        }
+            return provider;
+        }).orElse(null);
+
     }
+
 }
