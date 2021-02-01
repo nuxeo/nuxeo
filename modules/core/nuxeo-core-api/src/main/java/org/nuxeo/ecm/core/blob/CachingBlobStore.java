@@ -53,8 +53,15 @@ public class CachingBlobStore extends AbstractBlobStore {
 
     protected final BinaryGarbageCollector gc;
 
+    /** @deprecated since 11.5 */
+    @Deprecated
     public CachingBlobStore(String name, BlobStore store, CachingConfiguration config) {
-        super(name, store.getKeyStrategy());
+        this(null, name, store, config);
+    }
+
+    /** @since 11.5 */
+    public CachingBlobStore(String blobProviderId, String name, BlobStore store, CachingConfiguration config) {
+        super(blobProviderId, name, store.getKeyStrategy());
         this.store = store;
         cacheDir = config.dir;
         fileCache = new LRUFileCache(cacheDir.toFile(), config.maxSize, config.maxCount, config.minAge);

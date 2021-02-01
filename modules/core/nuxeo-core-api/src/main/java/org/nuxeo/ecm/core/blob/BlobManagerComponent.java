@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -61,6 +65,11 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
      * @see BlobProvider#isTransient
      */
     public static final String TRANSIENT_ID_PREFIX = "transient";
+
+    /** @since 11.5 */
+    public static final String BLOB_KEY_REPLACEMENT_KV = "blobKeyReplacement";
+
+    protected static final Duration BLOB_KEY_REPLACEMENT_TTL = Duration.ofHours(1);
 
     protected BlobProviderDescriptorRegistry blobProviderDescriptorsRegistry = new BlobProviderDescriptorRegistry();
 
@@ -276,6 +285,30 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
             }
         }
         return blobProviders;
+    }
+
+    protected KeyValueStore getBlobKeyReplacementKeyValuestore() {
+        KeyValueService kvService = Framework.getService(KeyValueService.class);
+        return kvService == null ? null : kvService.getKeyValueStore(BLOB_KEY_REPLACEMENT_KV);
+    }
+
+    @Override
+    public void setBlobKeyReplacement(String blobProviderId, String key, String newKey) {
+        KeyValueStore kvStore = getBlobKeyReplacementKeyValuestore();
+        if (kvStore == null) {
+            return;
+        }
+        kvStore.put(blobProviderId + ':' + key, newKey, BLOB_KEY_REPLACEMENT_TTL.getSeconds());
+    }
+
+    @Override
+    public String getBlobKeyReplacement(String blobProviderId, String key) {
+        KeyValueStore kvStore = getBlobKeyReplacementKeyValuestore();
+        if (kvStore == null) {
+            return key;
+        }
+        String newKey = kvStore.getString(blobProviderId + ':' + key);
+        return newKey == null ? key : newKey;
     }
 
 }

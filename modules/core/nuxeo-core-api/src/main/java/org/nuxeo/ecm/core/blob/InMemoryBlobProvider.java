@@ -48,7 +48,7 @@ public class InMemoryBlobProvider extends BlobStoreBlobProvider {
         }
         if (config.getBooleanProperty("test-caching")) { // for tests
             CachingConfiguration cachingConfiguration = new CachingConfiguration(null, properties);
-            store = new CachingBlobStore("Cache", store, cachingConfiguration);
+            store = new CachingBlobStore(blobProviderId, "Cache", store, cachingConfiguration);
         }
         return store;
     }
