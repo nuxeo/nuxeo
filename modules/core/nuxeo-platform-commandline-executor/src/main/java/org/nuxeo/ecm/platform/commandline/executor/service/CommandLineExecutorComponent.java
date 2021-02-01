@@ -24,11 +24,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTes
 import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTester;
 import org.nuxeo.ecm.platform.commandline.executor.service.executors.Executor;
 import org.nuxeo.ecm.platform.commandline.executor.service.executors.ShellExecutor;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -50,6 +53,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class CommandLineExecutorComponent extends DefaultComponent implements CommandLineExecutorService {
 
+    private static final Logger log = LogManager.getLogger(CommandLineExecutorComponent.class);
+
     public static final String EP_ENV = "environment";
 
     public static final String EP_CMD = "command";
@@ -60,33 +65,75 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
     public static final String DEFAULT_EXECUTOR = "ShellExecutor";
 
-    protected Map<String, CommandLineDescriptor> commandDescriptors = new HashMap<>();
+    protected static final Executor DEFAULT_EXECUTOR_INSTANCE = new ShellExecutor();
 
     protected EnvironmentDescriptor env = new EnvironmentDescriptor();
 
     protected Map<String, EnvironmentDescriptor> envDescriptors = new HashMap<>();
 
-    protected Map<String, CommandTester> testers = new HashMap<>();
-
-    protected Map<String, Executor> executors = new HashMap<>();
-
-    private static final Log log = LogFactory.getLog(CommandLineExecutorComponent.class);
+    protected Map<String, CommandAvailability> unavailableCommands;
 
     @Override
     public void activate(ComponentContext context) {
-        commandDescriptors = new HashMap<>();
         env = new EnvironmentDescriptor();
-        testers = new HashMap<>();
-        executors = new HashMap<>();
-        executors.put(DEFAULT_EXECUTOR, new ShellExecutor());
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-        commandDescriptors = null;
         env = null;
-        testers = null;
-        executors = null;
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        // compute testers before handling command registrations
+        Map<String, CommandTester> testers = new HashMap<>();
+        this.<CommandTesterDescriptor> getRegistryContributions(EP_CMDTESTER).forEach(desc -> {
+            try {
+                var tester = desc.getTesterClass().getDeclaredConstructor().newInstance();
+                testers.put(desc.getName(), tester);
+            } catch (ReflectiveOperationException e) {
+                log.error(e, e);
+                addRuntimeMessage(Level.ERROR, e.getMessage());
+            }
+        });
+
+        unavailableCommands = new HashMap<>();
+        this.<CommandLineDescriptor> getRegistryContributions(EP_CMD).forEach(desc -> {
+            String name = desc.getName();
+
+            String testerName = desc.getTester();
+            if (testerName == null) {
+                testerName = DEFAULT_TESTER;
+                log.debug("Using default tester for command: {}", name);
+            }
+
+            // check tester exists for executor
+            CommandTester tester = testers.get(testerName);
+            if (tester == null) {
+                String error = String.format("Unable to find tester '%s', command will not be available: '%s'",
+                        testerName, name);
+                addRuntimeMessage(Level.WARNING, error);
+                log.error(error);
+                unavailableCommands.put(name, new CommandAvailability(desc.getInstallationDirective(), error));
+            } else {
+                log.debug("Using tester '{}' for command: {}", testerName, name);
+                CommandTestResult testResult = tester.test(desc);
+                if (testResult.succeed()) {
+                    log.info("Registered command: {}", name);
+                } else {
+                    String error = testResult.getErrorMessage();
+                    String warn = String.format("Command not available: %s (%s. %s)", name, error,
+                            desc.getInstallationDirective());
+                    log.warn(warn);
+                    unavailableCommands.put(name, new CommandAvailability(desc.getInstallationDirective(), error));
+                }
+            }
+        });
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        unavailableCommands = null;
     }
 
     @Override
@@ -105,56 +152,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
                     }
                 }
             }
-        } else if (EP_CMD.equals(extensionPoint)) {
-            CommandLineDescriptor desc = (CommandLineDescriptor) contribution;
-            String name = desc.getName();
-
-            log.debug("Registering command: " + name);
-
-            if (!desc.isEnabled()) {
-                commandDescriptors.remove(name);
-                log.info("Command configured to not be enabled: " + name);
-                return;
-            }
-
-            String testerName = desc.getTester();
-            if (testerName == null) {
-                testerName = DEFAULT_TESTER;
-                log.debug("Using default tester for command: " + name);
-            }
-
-            CommandTester tester = testers.get(testerName);
-            boolean cmdAvailable = false;
-            if (tester == null) {
-                log.error("Unable to find tester '" + testerName + "', command will not be available: " + name);
-            } else {
-                log.debug("Using tester '" + testerName + "' for command: " + name);
-                CommandTestResult testResult = tester.test(desc);
-                cmdAvailable = testResult.succeed();
-                if (cmdAvailable) {
-                    log.info("Registered command: " + name);
-                } else {
-                    desc.setInstallErrorMessage(testResult.getErrorMessage());
-                    log.warn("Command not available: " + name + " (" + desc.getInstallErrorMessage() + ". "
-                            + desc.getInstallationDirective() + ')');
-                }
-            }
-            desc.setAvailable(cmdAvailable);
-            commandDescriptors.put(name, desc);
-        } else if (EP_CMDTESTER.equals(extensionPoint)) {
-            CommandTesterDescriptor desc = (CommandTesterDescriptor) contribution;
-            CommandTester tester;
-            try {
-                tester = (CommandTester) desc.getTesterClass().getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
-            }
-            testers.put(desc.getName(), tester);
         }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
     }
 
     /*
@@ -166,58 +164,47 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
         if (!availability.isAvailable()) {
             throw new CommandNotAvailable(availability);
         }
-
-        CommandLineDescriptor cmdDesc = commandDescriptors.get(commandName);
-        Executor executor = executors.get(cmdDesc.getExecutor());
-        EnvironmentDescriptor environment = new EnvironmentDescriptor().merge(env).merge(
-                envDescriptors.getOrDefault(commandName, envDescriptors.get(cmdDesc.getCommand())));
-        return executor.exec(cmdDesc, params, environment);
+        var cmdDesc = this.<CommandLineDescriptor> getRegistryContribution(EP_CMD, commandName)
+                          // should not happen
+                          .orElseThrow(() -> new RuntimeException("Command " + commandName + " is not available"));
+        EnvironmentDescriptor environment = new EnvironmentDescriptor().merge(
+                env).merge(envDescriptors.getOrDefault(commandName, envDescriptors.get(cmdDesc.getCommand())));
+        return DEFAULT_EXECUTOR_INSTANCE.exec(cmdDesc, params, environment);
     }
 
     @Override
     public CommandAvailability getCommandAvailability(String commandName) {
-        if (!commandDescriptors.containsKey(commandName)) {
-            return new CommandAvailability(commandName + " is not a registered command");
+        CommandAvailability avail = unavailableCommands.get(commandName);
+        if (avail != null) {
+            return avail;
         }
-
-        CommandLineDescriptor desc = commandDescriptors.get(commandName);
-        if (desc.isAvailable()) {
-            return new CommandAvailability();
-        } else {
-            return new CommandAvailability(desc.getInstallationDirective(), desc.getInstallErrorMessage());
-        }
+        return this.<CommandLineDescriptor> getRegistryContribution(EP_CMD, commandName)
+                   .map(desc -> new CommandAvailability())
+                   .orElse(new CommandAvailability(commandName + " is not a registered command"));
     }
 
     @Override
     public List<String> getRegistredCommands() {
-        List<String> cmds = new ArrayList<>();
-        cmds.addAll(commandDescriptors.keySet());
-        return cmds;
+        return new ArrayList<>(this.<MapRegistry> getExtensionPointRegistry(EP_CMD).getContributions().keySet());
     }
 
     @Override
     public List<String> getAvailableCommands() {
-        List<String> cmds = new ArrayList<>();
-
-        for (String cmdName : commandDescriptors.keySet()) {
-            CommandLineDescriptor cmd = commandDescriptors.get(cmdName);
-            if (cmd.isAvailable()) {
-                cmds.add(cmdName);
-            }
-        }
-        return cmds;
+        return getRegistredCommands().stream()
+                                     .filter(Predicate.not(unavailableCommands::containsKey))
+                                     .collect(Collectors.toList());
     }
 
     @Override
     public CommandLineDescriptor getCommandLineDescriptor(String commandName) {
-        return commandDescriptors.get(commandName);
+        return this.<CommandLineDescriptor> getRegistryContribution(EP_CMD, commandName).orElse(null);
     }
 
     // ******************************************
     // for testing
 
     /** @deprecated since 11.4, use instance method {@link #getCommandLineDescriptor} instead */
-    @Deprecated
+    @Deprecated(since = "11.4")
     public static CommandLineDescriptor getCommandDescriptor(String commandName) {
         return Framework.getService(CommandLineExecutorService.class).getCommandLineDescriptor(commandName);
     }

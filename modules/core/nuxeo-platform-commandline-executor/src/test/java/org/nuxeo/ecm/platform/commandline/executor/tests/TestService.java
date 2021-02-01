@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.commandline.executor.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -30,6 +31,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -81,21 +83,25 @@ public class TestService {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-dummy-test-contrib.xml")
     public void testCmdAvailable() {
-        /**
-         * deployContrib("org.nuxeo.ecm.platform.commandline.executor","OSGI-INF/commandline-aspell-test-contribs.xml");
-         * List<String> cmds = cles.getAvailableCommands(); assertNotNull(cmds); assertEquals(1, cmds.size());
-         * assertTrue(cmds.contains("aspell")); deployContrib("org.nuxeo.ecm.platform.commandline.executor",
-         * "OSGI-INF/commandline-imagemagic-test-contrib.xml"); cmds = cles.getAvailableCommands(); assertNotNull(cmds);
-         * assertEquals(2, cmds.size()); assertTrue(cmds.contains("identify"));
-         * deployContrib("org.nuxeo.ecm.platform.commandline.executor","OSGI-INF/commandline-dummy-test-contrib.xml");
-         * cmds = cles.getAvailableCommands(); assertEquals(2, cmds.size());
-         * assertFalse(cmds.contains("cmdThatDoNotExist")); CommandAvailability ca =
-         * cles.getCommandAvailability("cmdThatDoNotExist"); assertFalse(ca.isAvailable());
-         * assertNotNull(ca.getErrorMessage()); System.out.println(ca.getErrorMessage());
-         * assertNotNull(ca.getInstallMessage()); assertTrue(ca.getInstallMessage().contains( "need to install this
-         * command that does not")); System.out.println(ca.getInstallMessage());
-         **/
+        assertEquals(List.of("cmdThatDoNotExist"), cles.getRegistredCommands());
+        assertTrue(cles.getAvailableCommands().isEmpty());
+
+        CommandAvailability ca1 = cles.getCommandAvailability("cmdThatDoNotExist");
+        assertFalse(ca1.isAvailable());
+        assertEquals("command cmdThatDoNotExistAtAllForSure not found in system path "
+                + "(descriptor CommandLineDescriptor[available=false,command=cmdThatDoNotExistAtAllForSure,enabled=true,"
+                + "installErrorMessage=<null>,installationDirective=You need to install this command that does not exist!"
+                + ",name=cmdThatDoNotExist,parameterString=,readOutput=true,testParameterString=,tester=<null>,"
+                + "winCommand=<null>,winParameterString=<null>,winTestParameterString=<null>])", ca1.getErrorMessage());
+        assertEquals("You need to install this command that does not exist!", ca1.getInstallMessage());
+        assertTrue(ca1.getInstallMessage().contains("need to install this command that does not"));
+
+        CommandAvailability ca2 = cles.getCommandAvailability("foo");
+        assertFalse(ca2.isAvailable());
+        assertEquals("foo is not a registered command", ca2.getErrorMessage());
+        assertNull(ca2.getInstallMessage());
     }
 
     @Test

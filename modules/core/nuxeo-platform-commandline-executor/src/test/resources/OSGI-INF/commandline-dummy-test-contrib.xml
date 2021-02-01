@@ -6,7 +6,7 @@
 
     <command name="cmdThatDoNotExist" enabled="true">
       <commandLine>cmdThatDoNotExistAtAllForSure</commandLine>
-      <installationDirective>You need to install this command that does not exist !</installationDirective>
+      <installationDirective>You need to install this command that does not exist!</installationDirective>
     </command>
 
   </extension>
