@@ -20,6 +20,7 @@ package org.nuxeo.ecm.blob.s3;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -54,6 +55,7 @@ import org.nuxeo.ecm.core.blob.BlobStoreBlobProvider;
 import org.nuxeo.ecm.core.blob.CachingBlobStore;
 import org.nuxeo.ecm.core.blob.KeyStrategy;
 import org.nuxeo.ecm.core.blob.KeyStrategyDocId;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.TransactionalBlobStore;
 import org.nuxeo.ecm.core.work.WorkManagerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -481,19 +483,38 @@ public class TestS3BlobStoreTracing {
 
         logTrace("== Copy (async) ==");
         TransactionHelper.startTransaction();
+        // copy blob from blob provider bp1 to bp2
         BlobContext blobContext2 = new BlobContext(blob1, DOCID2, XPATH);
         String key2 = bp2.writeBlob(blobContext2);
         assertNotEquals(FOO_MD5, key2);
         assertNotEquals(FOO_SHA256, key2);
         assertTrue(key2, key2.contains("-")); // this is a pseudo-digest
+        Blob blob2 = bp2.readBlob(blobInfo(key2));
+        assertEquals(key2, ((ManagedBlob) blob2).getKey());
+        assertEquals(key2, blob2.getDigest());
+        assertNull(blob2.getDigestAlgorithm()); // not a real digest
+        // write the new blob again to the same blob provider bp2
+        String key3 = bp2.writeBlob(blob2);
+        assertEquals(key2, key3); // same pseudo-digest is used
+
         logTrace("== Async ==");
         txFeature.nextTransaction(); // wait for work manager
         TransactionHelper.commitOrRollbackTransaction();
         checkTrace("trace-copy-async.txt");
 
         // check content
-        Blob blob2 = bp2.readBlob(blobInfo(FOO_SHA256));
-        assertEquals(FOO, blob2.getString());
+        Blob blob3 = bp2.readBlob(blobInfo(FOO_SHA256));
+        assertEquals(FOO, blob3.getString());
+        assertEquals(FOO_SHA256, blob3.getDigest());
+        assertEquals("SHA-256", blob3.getDigestAlgorithm());
+
+        // check that old blob still resolves (concurrent usage case)
+        Blob blob4 = bp2.readBlob(blobInfo(key2));
+        assertEquals(FOO, blob4.getString());
+
+        // check that writing the old blob immediately uses the new key
+        String key4 = bp2.writeBlob(blob2);
+        assertEquals(FOO_SHA256, key4);
     }
 
     @Test

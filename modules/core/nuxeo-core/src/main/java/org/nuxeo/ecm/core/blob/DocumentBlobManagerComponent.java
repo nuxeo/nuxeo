@@ -170,12 +170,12 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
                 // is it something we don't have to dispatch?
                 if (!blobDispatcher.getBlobProviderIds().contains(currentProviderId)) {
                     // not something we have to dispatch, reuse the key
-                    return managedBlob.getKey();
+                    return getBlobKeyReplacement(managedBlob);
                 }
                 dispatch = blobDispatcher.getBlobProvider(doc, blob, xpath);
                 if (dispatch.providerId.equals(currentProviderId)) {
                     // same provider, just reuse the key
-                    return managedBlob.getKey();
+                    return getBlobKeyReplacement(managedBlob);
                 }
             }
         }
@@ -193,6 +193,23 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         String key = blobProvider.writeBlob(new BlobContext(blob, doc, xpath));
         if (dispatch.addPrefix) {
             key = dispatch.providerId + ':' + key;
+        }
+        return key;
+    }
+
+    /** A key may have been replaced by an async digest computation, use the new one. */
+    protected String getBlobKeyReplacement(ManagedBlob blob) {
+        String key = blob.getKey();
+        String prefix = null;
+        int colon = key.indexOf(':');
+        if (colon >= 0) {
+            prefix = key.substring(0, colon);
+            key = key.substring(colon + 1);
+        }
+        key = Framework.getService(BlobManager.class).getBlobKeyReplacement(blob.getProviderId(), key);
+        // keep dispatch prefix if there was one originally
+        if (prefix != null) {
+            key = prefix + ':' + key;
         }
         return key;
     }
