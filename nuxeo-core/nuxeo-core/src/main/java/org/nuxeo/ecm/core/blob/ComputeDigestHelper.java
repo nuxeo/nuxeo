@@ -60,7 +60,8 @@ public class ComputeDigestHelper {
     }
 
     public void computeAndReplaceDigest() {
-        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blobProviderId);
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        BlobProvider blobProvider = blobManager.getBlobProvider(blobProviderId);
         if (blobProvider == null) {
             throw new NuxeoException("Unknown blob provider");
         }
@@ -85,6 +86,9 @@ public class ComputeDigestHelper {
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
+
+        // set blob key replacement so that concurrent transactions will use the new key
+        blobManager.setBlobKeyReplacement(blobProviderId, key, newKey);
 
         // replace blob key and digest in the repository
         replaceDigestAllRepositories();

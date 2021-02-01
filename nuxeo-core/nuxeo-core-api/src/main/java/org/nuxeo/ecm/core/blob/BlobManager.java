@@ -154,4 +154,26 @@ public interface BlobManager {
      */
     Map<String, BlobProvider> getBlobProviders();
 
+    /**
+     * Records the fact that a blob key has been replaced by another one.
+     *
+     * @param blobProviderId the blob provider id
+     * @param key the old blob key
+     * @param newKey the new blob key
+     * @see #getBlobKeyReplacement(String, String)
+     * @since 11.5
+     */
+    void setBlobKeyReplacement(String blobProviderId, String key, String newKey);
+
+    /**
+     * Gets the replacement (if any) for a blob key.
+     *
+     * @param blobProviderId the blob provider id
+     * @param key the old blob key
+     * @return the new blob key, or the old one if there was no replacement
+     * @see #setBlobKeyReplacement(String, String, String)
+     * @since 11.5
+     */
+    String getBlobKeyReplacement(String blobProviderId, String key);
+
 }

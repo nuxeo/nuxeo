@@ -155,6 +155,7 @@ public abstract class AbstractBlobStore implements BlobStore {
         // optimized copy is possible
         // now check what the destination key should be
         String sourceKey = stripBlobKeyPrefix(managedBlob.getKey());
+        sourceKey = getBlobKeyReplacement(sourceKey);
         String key = blobWriteContext.getKey();
         if (key == null) {
             if (!keyStrategy.useDeDuplication()) {
@@ -163,7 +164,10 @@ public abstract class AbstractBlobStore implements BlobStore {
             // key not known or not yet computed
             // check if the original blob key can give us a digest
             String digest;
-            if (sourceStore.getKeyStrategy().equals(keyStrategy)
+            if (sourceStore == this) {
+                // copy to self, nothing to do (includes temporary pseudo-digest for async)
+                return sourceKey;
+            } else if (sourceStore.getKeyStrategy().equals(keyStrategy)
                     && (digest = keyStrategy.getDigestFromKey(stripBlobKeyVersionSuffix(sourceKey))) != null) {
                 key = digest;
             } else {
@@ -323,6 +327,15 @@ public abstract class AbstractBlobStore implements BlobStore {
         data.put("key", key);
         Event event = new Event("asyncDigest", null, null, data);
         eventService.sendEvent(event);
+    }
+
+    /** A key may have been replaced by an async digest computation, use the new one. */
+    protected String getBlobKeyReplacement(String key) {
+        if (blobProviderId == null) {
+            // old blob store not using new constructor
+            return key;
+        }
+        return Framework.getService(BlobManager.class).getBlobKeyReplacement(blobProviderId, key);
     }
 
 }
