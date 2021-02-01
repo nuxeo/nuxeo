@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedMember;
 import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.w3c.dom.Element;
 
@@ -107,5 +108,38 @@ public abstract class AbstractRegistry implements Registry {
     }
 
     protected abstract <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId);
+
+    protected boolean shouldRemove(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        XAnnotatedMember remove = xObject.getRemove();
+        return remove != null && Boolean.TRUE.equals(remove.getValue(ctx, element));
+    }
+
+    /**
+     * Returns true if contribution should be enabled, false if it should be disabled, and null if the enablement status
+     * should not change.
+     */
+    protected Boolean shouldEnable(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        XAnnotatedMember enable = xObject.getEnable();
+        if (enable != null && enable.hasValue(ctx, element)) {
+            Object enabled = enable.getValue(ctx, element);
+            return enabled == null || Boolean.TRUE.equals(enabled);
+        }
+        return null;
+    }
+
+    protected boolean shouldMerge(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        XAnnotatedMember merge = xObject.getMerge();
+        return merge != null && Boolean.TRUE.equals(merge.getValue(ctx, element));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> T getMergedInstance(Context ctx, XAnnotatedObject xObject, Element element, Object existing) {
+        return (T) xObject.newInstance(ctx, element, existing);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> T getInstance(Context ctx, XAnnotatedObject xObject, Element element) {
+        return (T) xObject.newInstance(ctx, element);
+    }
 
 }

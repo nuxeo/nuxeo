@@ -74,9 +74,9 @@ public class ContributionTest {
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         assertEquals(1, caughtEvents.size());
         assertEquals(
-                "Since version 11.5: Usage of \"disabled\" attribute on RestBinding contribution 'Chain.principals', "
+                "Since version 11.5: Usage of the \"disabled\" attribute on RestBinding contribution 'Chain.principals', "
                         + "in extension 'org.nuxeo.ecm.automation.server.test-bindings#bindings', "
-                        + "is deprecated: use \"enable\" attribute instead.",
+                        + "is deprecated: use the \"enable\" attribute instead.",
                 caughtEvents.get(0));
 
         binding = server.getChainBinding("audit");

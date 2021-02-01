@@ -60,33 +60,40 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
-        XAnnotatedMember remove = xObject.getRemove();
-        if (remove != null && Boolean.TRUE.equals(remove.getValue(ctx, element))) {
-            setContribution(null);
-            return null;
-        }
-        Object contrib;
-        XAnnotatedMember merge = xObject.getMerge();
-        if (merge != null && Boolean.TRUE.equals(merge.getValue(ctx, element))) {
+    protected boolean shouldMerge(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        if (super.shouldMerge(ctx, xObject, element, extensionId)) {
+            XAnnotatedMember merge = xObject.getMerge();
             if (contribution != null && xObject.getCompatWarnOnMerge() && !merge.hasValue(ctx, element)) {
                 log.warn("A contribution on extension '{}' has been implicitly merged: the compatibility "
                         + "mechanism on its descriptor class '{}' detected it, and the attribute merge=\"true\" "
                         + "should be added to this definition.", extensionId, contribution.getClass().getName());
             }
-            contrib = xObject.newInstance(ctx, element, contribution);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        if (shouldRemove(ctx, xObject, element, extensionId)) {
+            setContribution(null);
+            return null;
+        }
+
+        Object contrib;
+        if (shouldMerge(ctx, xObject, element, extensionId)) {
+            contrib = getMergedInstance(ctx, xObject, element, contribution);
         } else {
-            contrib = xObject.newInstance(ctx, element);
+            contrib = getInstance(ctx, xObject, element);
         }
         setContribution(contrib);
-        XAnnotatedMember enable = xObject.getEnable();
+
+        Boolean enable = shouldEnable(ctx, xObject, element, extensionId);
         if (enable != null) {
-            Object enabled = enable.getValue(ctx, element);
-            if (enabled != null) {
-                this.enabled = Boolean.TRUE.equals(enabled);
-            }
+            this.enabled = Boolean.TRUE.equals(enable);
         }
+
         return (T) contrib;
     }
 

@@ -26,9 +26,9 @@ import org.nuxeo.common.xmap.registry.SingleRegistry;
 import org.w3c.dom.Element;
 
 /**
- * Single registry without merge or enablement.
+ * Single registry without merge or enablement, handle two classes of descriptors.
  * <p>
- * Allows setting the contribution programatically for tests.
+ * Allows setting the contribution programmatically for tests.
  *
  * @since 11.5
  */
@@ -38,9 +38,8 @@ public class RedisPoolRegistry extends SingleRegistry {
     protected volatile RedisPoolDescriptor config;
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
-        T contrib = (T) xObject.newInstance(ctx, element);
+        T contrib = getInstance(ctx, xObject, element);
         setContribution(contrib);
         return contrib;
     }

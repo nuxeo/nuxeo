@@ -38,14 +38,13 @@ public class OpenIDDescriptorRegistry extends MapRegistry {
     @SuppressWarnings("unchecked")
     protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
         OpenIDConnectProviderDescriptor provider = super.doRegister(ctx, xObject, element, extensionId);
-        if (provider != null && provider.isEnabled()) {
-            if (provider.getClientId() == null || provider.getClientSecret() == null) {
-                log.info(
-                        "OpenId provider for '{}', contributed by '{}', is disabled because clientId and/or clientSecret are empty",
-                        provider.getName(), extensionId);
-                provider.setEnabled(false);
-                disabled.add(provider.getId());
-            }
+        if (provider != null && provider.isEnabled()
+                && (provider.getClientId() == null || provider.getClientSecret() == null)) {
+            log.info(
+                    "OpenId provider for '{}', contributed by '{}', is disabled because clientId and/or clientSecret are empty",
+                    provider.getName(), extensionId);
+            provider.setEnabled(false);
+            disabled.add(provider.getId());
         }
         return (T) provider;
     }

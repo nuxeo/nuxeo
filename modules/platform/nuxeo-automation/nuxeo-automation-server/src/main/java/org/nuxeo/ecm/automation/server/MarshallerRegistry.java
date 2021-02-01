@@ -28,7 +28,7 @@ import org.nuxeo.common.xmap.registry.AbstractRegistry;
 import org.w3c.dom.Element;
 
 /**
- * Registry without merge, removal or enablement
+ * Registry without merge, removal or enablement.
  *
  * @since 11.5
  */
@@ -50,7 +50,7 @@ public class MarshallerRegistry extends AbstractRegistry {
     @Override
     @SuppressWarnings("unchecked")
     protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
-        MarshallerDescriptor contrib = (MarshallerDescriptor) xObject.newInstance(ctx, element);
+        MarshallerDescriptor contrib = getInstance(ctx, xObject, element);
         if (contrib != null) {
             contributions.add(contrib);
         }
