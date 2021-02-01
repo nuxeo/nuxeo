@@ -26,18 +26,24 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.query.api.PageProviderClassReplacerDefinition;
 
 /**
  * @since 6.0
  */
 @XObject(value = "replacer")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class PageProviderClassReplacerDescriptor implements PageProviderClassReplacerDefinition {
 
     @XNode("@withClass")
+    @XRegistryId
     public String className;
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
     protected boolean enabled = true;
 
     @Override

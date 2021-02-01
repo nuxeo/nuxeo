@@ -21,12 +21,14 @@
 package org.nuxeo.ecm.platform.query.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
@@ -38,19 +40,6 @@ import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
  */
 @XObject(value = "aggregate")
 public class AggregateDescriptor implements AggregateDefinition {
-
-    @XNodeList(value = "dateRanges/dateRange", type = ArrayList.class, componentType = AggregateRangeDateDescriptor.class)
-    protected List<AggregateRangeDateDescriptor> aggregateDateRanges;
-
-    @XNode(value = "properties")
-    protected PropertiesDescriptor aggregateProperties = new PropertiesDescriptor();
-
-    protected Map<String, Integer> aggregateDateRangeDefinitionOrderMap;
-
-    private Map<String, Integer> aggregateRangeDefinitionOrderMap;
-
-    @XNodeList(value = "ranges/range", type = ArrayList.class, componentType = AggregateRangeDescriptor.class)
-    protected List<AggregateRangeDescriptor> aggregateRanges;
 
     @XNode("field")
     protected FieldDescriptor field;
@@ -64,29 +53,20 @@ public class AggregateDescriptor implements AggregateDefinition {
     @XNode("@type")
     protected String type;
 
-    @Override
-    public AggregateDescriptor clone() {
-        AggregateDescriptor clone = new AggregateDescriptor();
-        clone.id = id;
-        clone.parameter = parameter;
-        clone.type = type;
-        if (field != null) {
-            clone.field = field.clone();
-        }
-        if (aggregateProperties != null) {
-            clone.aggregateProperties = new PropertiesDescriptor();
-            clone.aggregateProperties.properties.putAll(aggregateProperties.properties);
-        }
-        if (aggregateRanges != null) {
-            clone.aggregateRanges = new ArrayList<>(aggregateRanges.size());
-            clone.aggregateRanges.addAll(aggregateRanges);
-        }
-        if (aggregateDateRanges != null) {
-            clone.aggregateDateRanges = new ArrayList<>(aggregateDateRanges.size());
-            clone.aggregateDateRanges.addAll(aggregateDateRanges);
-        }
-        return clone;
-    }
+    @XNodeMap(value = "properties/property", key = "@name", type = HashMap.class, componentType = String.class)
+    protected Map<String, String> properties = new HashMap<>();
+
+    @XNodeList(value = "ranges/range", type = ArrayList.class, componentType = AggregateRangeDescriptor.class)
+    protected List<AggregateRangeDefinition> aggregateRanges = new ArrayList<>();
+
+    // cache map
+    private Map<String, Integer> aggregateRangeDefinitionOrderMap;
+
+    @XNodeList(value = "dateRanges/dateRange", type = ArrayList.class, componentType = AggregateRangeDateDescriptor.class)
+    protected List<AggregateRangeDateDefinition> aggregateDateRanges = new ArrayList<>();
+
+    // cache map
+    protected Map<String, Integer> aggregateDateRangeDefinitionOrderMap;
 
     @Override
     public Map<String, Integer> getAggregateDateRangeDefinitionOrderMap() {
@@ -112,9 +92,7 @@ public class AggregateDescriptor implements AggregateDefinition {
 
     @Override
     public List<AggregateRangeDateDefinition> getDateRanges() {
-        @SuppressWarnings("unchecked")
-        List<AggregateRangeDateDefinition> ret = (List<AggregateRangeDateDefinition>) (List<?>) aggregateDateRanges;
-        return ret;
+        return Collections.unmodifiableList(aggregateDateRanges);
     }
 
     @Override
@@ -129,14 +107,12 @@ public class AggregateDescriptor implements AggregateDefinition {
 
     @Override
     public Map<String, String> getProperties() {
-        return aggregateProperties.getProperties();
+        return Collections.unmodifiableMap(properties);
     }
 
     @Override
     public List<AggregateRangeDefinition> getRanges() {
-        @SuppressWarnings("unchecked")
-        List<AggregateRangeDefinition> ret = (List<AggregateRangeDefinition>) (List<?>) aggregateRanges;
-        return ret;
+        return Collections.unmodifiableList(aggregateRanges);
     }
 
     @Override
@@ -150,10 +126,11 @@ public class AggregateDescriptor implements AggregateDefinition {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void setDateRanges(List<AggregateRangeDateDefinition> ranges) {
-        aggregateDateRanges = (List<AggregateRangeDateDescriptor>) (List<?>) ranges;
-        aggregateDateRangeDefinitionOrderMap = null;
+        if (ranges != null) {
+            aggregateDateRanges.addAll(ranges);
+            aggregateDateRangeDefinitionOrderMap = null;
+        }
     }
 
     @Override
@@ -168,14 +145,15 @@ public class AggregateDescriptor implements AggregateDefinition {
 
     @Override
     public void setProperty(String name, String value) {
-        aggregateProperties.properties.put(name, value);
+        properties.put(name, value);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void setRanges(List<AggregateRangeDefinition> ranges) {
-        aggregateRanges = (List<AggregateRangeDescriptor>) (List<?>) ranges;
-        aggregateRangeDefinitionOrderMap = null;
+        if (ranges != null) {
+            aggregateRanges.addAll(ranges);
+            aggregateRangeDefinitionOrderMap = null;
+        }
     }
 
     @Override
@@ -186,6 +164,29 @@ public class AggregateDescriptor implements AggregateDefinition {
     @Override
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public AggregateDescriptor clone() {
+        AggregateDescriptor clone = new AggregateDescriptor();
+        clone.id = id;
+        clone.parameter = parameter;
+        clone.type = type;
+        if (field != null) {
+            clone.field = field.clone();
+        }
+        if (properties != null) {
+            clone.properties = new HashMap<>(properties);
+        }
+        if (aggregateRanges != null) {
+            clone.aggregateRanges = new ArrayList<>(aggregateRanges.size());
+            clone.aggregateRanges.addAll(aggregateRanges);
+        }
+        if (aggregateDateRanges != null) {
+            clone.aggregateDateRanges = new ArrayList<>(aggregateDateRanges.size());
+            clone.aggregateDateRanges.addAll(aggregateDateRanges);
+        }
+        return clone;
     }
 
 }

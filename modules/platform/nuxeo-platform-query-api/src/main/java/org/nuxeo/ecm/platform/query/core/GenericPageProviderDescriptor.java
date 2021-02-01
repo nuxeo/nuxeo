@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.query.core;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 
@@ -31,6 +32,8 @@ import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
  * @since 5.4
  */
 @XObject("genericPageProvider")
+// enablement management on base class
+@XRegistry(enable = false, merge = false)
 public class GenericPageProviderDescriptor extends BasePageProviderDescriptor implements PageProviderDefinition {
 
     @XNode("@class")

@@ -151,6 +151,7 @@ public class TestPageProviderService {
         deployer.deploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-override-contrib2.xml");
         service = Framework.getService(PageProviderService.class);
         def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+        assertNotNull(def);
         assertEquals(CURRENT_DOCUMENT_CHILDREN, def.getName());
         assertEquals(20, def.getPageSize());
     }

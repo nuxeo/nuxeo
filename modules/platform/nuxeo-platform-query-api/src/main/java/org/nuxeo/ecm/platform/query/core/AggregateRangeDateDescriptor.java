@@ -28,24 +28,21 @@ import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
 @XObject("dateRange")
 public class AggregateRangeDateDescriptor extends AggregateRangeDescriptor implements AggregateRangeDateDefinition {
 
-    public AggregateRangeDateDescriptor() {
-    }
-
-    public AggregateRangeDateDescriptor(String key, String from, String to) {
-        this.key = key;
-        fromDate = from;
-        toDate = to;
-    }
-
     @XNode("@fromDate")
     public String fromDate;
 
     @XNode("@toDate")
     public String toDate;
 
-    @Override
-    public String toString() {
-        return String.format("AggregateRangeDateDescriptor(%s, %s, %s)", key, fromDate, toDate);
+    // needed by xmap
+    public AggregateRangeDateDescriptor() {
+    }
+
+    // helper constructor for tests and page providers created on-the-fly
+    public AggregateRangeDateDescriptor(String key, String from, String to) {
+        this.key = key;
+        fromDate = from;
+        toDate = to;
     }
 
     @Override
@@ -75,4 +72,10 @@ public class AggregateRangeDateDescriptor extends AggregateRangeDescriptor imple
         AggregateRangeDateDescriptor clone = new AggregateRangeDateDescriptor(key, fromDate, toDate);
         return clone;
     }
+
+    @Override
+    public String toString() {
+        return String.format("AggregateRangeDateDescriptor(%s, %s, %s)", key, fromDate, toDate);
+    }
+
 }

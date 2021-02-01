@@ -20,8 +20,6 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
-import java.io.Serializable;
-
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**

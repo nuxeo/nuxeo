@@ -19,21 +19,23 @@
  */
 package org.nuxeo.ecm.platform.query.core;
 
-
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
-import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
-import org.nuxeo.ecm.platform.query.api.QuickFilter;
-import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistryId;
+import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
+import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 
 /**
  * Base class for page provider descriptors.
@@ -43,9 +45,11 @@ import java.util.Map;
 public abstract class BasePageProviderDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
     protected boolean enabled = true;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
@@ -67,13 +71,13 @@ public abstract class BasePageProviderDescriptor {
      * @since 7.3
      */
     @XNodeList(value = "pageSizeOptions/option", type = ArrayList.class, componentType = Long.class)
-    protected List<Long> pageSizeOptions;
+    protected List<Long> pageSizeOptions = new ArrayList<>();
 
     @XNode("sortable")
     protected boolean sortable = true;
 
     @XNodeList(value = "sort", type = ArrayList.class, componentType = SortInfoDescriptor.class)
-    protected List<SortInfoDescriptor> sortInfos;
+    protected List<SortInfoDescriptor> sortInfos = new ArrayList<>();
 
     @XNode("sortInfosBinding")
     protected String sortInfosBinding;
@@ -92,14 +96,14 @@ public abstract class BasePageProviderDescriptor {
     /**
      * @since 6.0
      */
-    @XNode("searchDocumentType")
+    @XNode(value = "searchDocumentType", fallback = "whereClause@docType")
     protected String searchDocumentType;
 
     /**
      * @since 8.4
      */
     @XNodeList(value = "quickFilters/quickFilter", componentType = QuickFilterDescriptor.class, type = ArrayList.class)
-    protected List<QuickFilterDescriptor> quickFilters;
+    protected List<QuickFilterDescriptor> quickFilters = new ArrayList<>();
 
     @XNode("pattern")
     public void setPattern(String pattern) {
@@ -113,7 +117,7 @@ public abstract class BasePageProviderDescriptor {
      * @since 6.0
      */
     @XNodeList(value = "aggregates/aggregate", type = ArrayList.class, componentType = AggregateDescriptor.class)
-    protected List<AggregateDescriptor> aggregates;
+    protected List<AggregateDescriptor> aggregates = new ArrayList<>();
 
     /**
      * @since 7.4
@@ -137,6 +141,7 @@ public abstract class BasePageProviderDescriptor {
     }
 
     public Map<String, String> getProperties() {
+        // return modifiable map for compatibility, assuming the descriptor will be cloned before being modified
         return properties;
     }
 
@@ -156,7 +161,7 @@ public abstract class BasePageProviderDescriptor {
      * @since 8.4
      */
     public List<QuickFilter> getQuickFilters() {
-        return (List<QuickFilter>) (List<?>) quickFilters;
+        return Collections.unmodifiableList(quickFilters);
     }
 
     public boolean isSortable() {
@@ -164,13 +169,7 @@ public abstract class BasePageProviderDescriptor {
     }
 
     public List<SortInfo> getSortInfos() {
-        List<SortInfo> res = new ArrayList<>();
-        if (sortInfos != null) {
-            for (SortInfoDescriptor sortInfo : sortInfos) {
-                res.add(sortInfo.getSortInfo());
-            }
-        }
-        return res;
+        return sortInfos.stream().map(SortInfoDescriptor::getSortInfo).collect(Collectors.toList());
     }
 
     public long getPageSize() {
@@ -237,9 +236,8 @@ public abstract class BasePageProviderDescriptor {
     /**
      * @since 6.0
      */
-    @SuppressWarnings("unchecked")
     public List<AggregateDefinition> getAggregates() {
-        return (List<AggregateDefinition>) (List<?>) aggregates;
+        return Collections.unmodifiableList(aggregates);
     }
 
     /**
@@ -248,13 +246,6 @@ public abstract class BasePageProviderDescriptor {
      * @since 6.0
      */
     public String getSearchDocumentType() {
-        if (searchDocumentType == null) {
-            // BBB
-            WhereClauseDefinition wc = getWhereClause();
-            if (wc != null) {
-                return wc.getDocType();
-            }
-        }
         return searchDocumentType;
     }
 

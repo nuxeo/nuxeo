@@ -43,14 +43,17 @@ public class FieldDescriptor implements PredicateFieldDefinition {
     @XNode("@xpath")
     protected String xpath;
 
+    // needed by xmap
     public FieldDescriptor() {
     }
 
+    // helper constructor for tests and page providers created on-the-fly
     public FieldDescriptor(String schema, String name) {
         this.name = name;
         this.schema = schema;
     }
 
+    // helper constructor for tests and page providers created on-the-fly
     public FieldDescriptor(String xpath) {
         this.xpath = xpath;
     }
