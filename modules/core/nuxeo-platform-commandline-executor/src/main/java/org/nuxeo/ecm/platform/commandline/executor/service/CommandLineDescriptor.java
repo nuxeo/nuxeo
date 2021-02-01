@@ -20,12 +20,14 @@
 
 package org.nuxeo.ecm.platform.commandline.executor.service;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.commons.lang3.SystemUtils;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * XMap descriptor for a CommandLine.
@@ -33,36 +35,37 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author tiry
  */
 @XObject("command")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class CommandLineDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
     protected boolean enabled;
-
-    protected boolean available;
 
     @XNode("commandLine")
     protected String command;
 
-    @XNode("parameterString")
-    protected String parameterString = "";
+    @XNode(value = "parameterString", defaultAssignment = "")
+    protected String parameterString;
 
     /*
      * @since 8.4
      */
-    @XNode("testParameterString")
-    protected String testParameterString = "";
+    @XNode(value = "testParameterString", defaultAssignment = "")
+    protected String testParameterString;
 
-    @XNode("winParameterString")
+    @XNode(value = "winParameterString")
     protected String winParameterString;
 
     /*
      * @since 8.4
      */
-    @XNode("winTestParameterString")
-    protected String winTestParameterString = "";
+    @XNode(value = "winTestParameterString")
+    protected String winTestParameterString;
 
     @XNode("winCommand")
     protected String winCommand;
@@ -70,31 +73,17 @@ public class CommandLineDescriptor {
     @XNode("tester")
     protected String tester;
 
-    @XNode("readOutput")
-    protected boolean readOutput = true;
+    @XNode(value = "readOutput", defaultAssignment = "true")
+    protected boolean readOutput;
 
     @XNode("installationDirective")
     protected String installationDirective;
-
-    protected String installErrorMessage;
-
-    public String getInstallErrorMessage() {
-        return installErrorMessage;
-    }
-
-    public void setInstallErrorMessage(String installErrorMessage) {
-        this.installErrorMessage = installErrorMessage;
-    }
 
     public String getName() {
         if (name == null) {
             return getCommand();
         }
         return name;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
     }
 
     public String getCommand() {
@@ -110,14 +99,6 @@ public class CommandLineDescriptor {
 
     public String getTester() {
         return tester;
-    }
-
-    public boolean isAvailable() {
-        return available;
-    }
-
-    public void setAvailable(boolean available) {
-        this.available = available;
     }
 
     public boolean getReadOutput() {
@@ -141,6 +122,10 @@ public class CommandLineDescriptor {
         return testParameterString;
     }
 
+    /**
+     * @deprecated since 11.5: useless, there is only one executor anyway.
+     */
+    @Deprecated(since = "11.5")
     public String getExecutor() {
         return CommandLineExecutorComponent.DEFAULT_EXECUTOR;
     }
@@ -148,6 +133,52 @@ public class CommandLineDescriptor {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    // command status management
+
+    /**
+     * @deprecated since 11.5: checks done by service and not stored on descriptor anymore.
+     */
+    @Deprecated(since = "11.5")
+    protected boolean available;
+
+    /**
+     * @deprecated since 11.5: checks done by service and not stored on descriptor anymore.
+     */
+    @Deprecated(since = "11.5")
+    protected String installErrorMessage;
+
+    /**
+     * @deprecated since 11.5: checks done by service and not stored on descriptor anymore.
+     */
+    @Deprecated(since = "11.5")
+    public boolean isAvailable() {
+        return available;
+    }
+
+    /**
+     * @deprecated since 11.5: checks done by service and not stored on descriptor anymore.
+     */
+    @Deprecated(since = "11.5")
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
+    /**
+     * @deprecated since 11.5: checks done by service and not stored on descriptor anymore.
+     */
+    @Deprecated(since = "11.5")
+    public String getInstallErrorMessage() {
+        return installErrorMessage;
+    }
+
+    /**
+     * @deprecated since 11.5: checks done by service and not stored on descriptor anymore.
+     */
+    @Deprecated(since = "11.5")
+    public void setInstallErrorMessage(String installErrorMessage) {
+        this.installErrorMessage = installErrorMessage;
     }
 
 }

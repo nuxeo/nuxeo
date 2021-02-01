@@ -24,6 +24,8 @@ package org.nuxeo.ecm.platform.commandline.executor.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTester;
 
 /**
@@ -32,18 +34,17 @@ import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTes
  * @author tiry
  */
 @XObject("commandTester")
+@XRegistry
 public class CommandTesterDescriptor {
 
-    @XNode("@name")
+    @XNode(value = "@name", fallback = "@class")
+    @XRegistryId
     protected String name;
 
     @XNode("@class")
     protected Class<CommandTester> className;
 
     public String getName() {
-        if (name == null) {
-            return getTesterClass().getName();
-        }
         return name;
     }
 
