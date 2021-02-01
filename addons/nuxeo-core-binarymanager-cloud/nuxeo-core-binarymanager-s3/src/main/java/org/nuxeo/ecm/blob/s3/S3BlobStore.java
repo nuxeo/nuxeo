@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.blob.AbstractBlobGarbageCollector;
 import org.nuxeo.ecm.core.blob.AbstractBlobStore;
 import org.nuxeo.ecm.core.blob.BlobContext;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobStore;
 import org.nuxeo.ecm.core.blob.BlobUpdateContext;
 import org.nuxeo.ecm.core.blob.BlobWriteContext;
@@ -57,6 +58,7 @@ import org.nuxeo.ecm.core.blob.KeyStrategyDigest;
 import org.nuxeo.ecm.core.blob.KeyStrategyDocId;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
+import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkBaseException;
@@ -393,6 +395,7 @@ public class S3BlobStore extends AbstractBlobStore {
         } else {
             byteRange = null;
         }
+        key = getBlobKeyReplacement(key);
         String objectKey;
         String versionId;
         int seppos;
@@ -482,6 +485,7 @@ public class S3BlobStore extends AbstractBlobStore {
      */
     protected String copyOrMoveBlob(String key, S3BlobStore sourceBlobStore, String sourceKey, boolean move)
             throws AmazonServiceException { // NOSONAR
+        sourceKey = getBlobKeyReplacement(sourceKey);
         String sourceObjectKey;
         String sourceVersionId;
         int seppos = sourceKey.indexOf(VER_SEP);
@@ -672,6 +676,7 @@ public class S3BlobStore extends AbstractBlobStore {
     @Override
     public void writeBlobProperties(BlobUpdateContext blobUpdateContext) throws IOException {
         String key = blobUpdateContext.key;
+        key = getBlobKeyReplacement(key);
         String objectKey;
         String versionId;
         int seppos = key.indexOf(VER_SEP);
