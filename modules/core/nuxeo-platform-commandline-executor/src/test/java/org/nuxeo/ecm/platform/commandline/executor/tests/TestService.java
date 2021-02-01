@@ -34,6 +34,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -113,6 +115,16 @@ public class TestService {
             String msg = e.getErrorMessage();
             assertNotNull(msg);
         }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml")
+    public void testEnvContributions() {
+        String error = "Since version 11.5, contributions to extension point 'org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--environment'"
+                + " do not accept comma-separated names to match multiple commands or command lines anymore: "
+                + "contribution with name 'old,multiple,name' should be duplicated";
+        List<String> errors = Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR);
+        assertEquals(List.of(error), errors);
     }
 
 }
