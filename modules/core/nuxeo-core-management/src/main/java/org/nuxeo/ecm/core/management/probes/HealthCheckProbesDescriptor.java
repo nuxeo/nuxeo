@@ -20,27 +20,29 @@ package org.nuxeo.ecm.core.management.probes;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
- *
  * Probes to be evaluated at a health check
  *
  * @since 9.3
  */
 @XObject("probe")
+@XRegistry(enable = false)
 public class HealthCheckProbesDescriptor {
+
     @XNode("@name")
+    @XRegistryId
     private String name;
 
-    @XNode("@enabled")
-    private boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    private boolean enabled;
 
     public String getName() {
         return name;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
     }
 
 }

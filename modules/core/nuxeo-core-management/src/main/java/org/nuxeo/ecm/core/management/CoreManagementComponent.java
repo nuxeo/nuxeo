@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -56,20 +55,65 @@ public class CoreManagementComponent extends DefaultComponent {
 
     public static final String HEALTH_CHECK_EP = "healthCheck";
 
-    protected final GlobalAdministrativeStatusManager globalManager = new GlobalAdministrativeStatusManagerImpl();
-
     protected final EventStats eventStats = new EventStatsImpl();
 
-    protected final ProbeManagerImpl probeRunner = new ProbeManagerImpl();
+    protected GlobalAdministrativeStatusManager globalManager;
 
-    protected final DocumentStoreManager storageManager = new DocumentStoreManager();
+    protected ProbeManagerImpl probeRunner;
+
+    protected DocumentStoreManager storageManager;
 
     public CoreManagementComponent() {
         super(); // enables breaking
     }
 
-    public AdministrativeStatusManagerImpl getLocalManager() {
-        return (AdministrativeStatusManagerImpl) globalManager.getStatusManager(globalManager.getLocalNuxeoInstanceIdentifier());
+    @Override
+    public void activate(ComponentContext context) {
+        EventStatsHolder.clearStats();
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) {
+        EventStatsHolder.clearStats();
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        globalManager = new GlobalAdministrativeStatusManagerImpl();
+        this.<AdministrableServiceDescriptor> getRegistryContributions(SERVICE_DEF_EP)
+            .forEach(globalManager::registerService);
+
+        probeRunner = new ProbeManagerImpl();
+        this.<ProbeDescriptor> getRegistryContributions(PROBES_EP).forEach(probeRunner::registerProbe);
+        // health check needs corresponding probe to be registered first
+        this.<HealthCheckProbesDescriptor> getRegistryContributions(HEALTH_CHECK_EP)
+            .forEach(probeRunner::registerProbeForHealthCheck);
+
+        storageManager = new DocumentStoreManager();
+        storageManager.install();
+        this.<DocumentStoreHandlerDescriptor> getRegistryContributions(STORAGE_HANDLERS_EP)
+            .forEach(storageManager::registerHandler);
+        this.<DocumentStoreConfigurationDescriptor> getRegistryContribution(STORAGE_CONFIG_EP)
+            .ifPresent(storageManager::registerConfig);
+
+    }
+
+    protected AdministrativeStatusManagerImpl getLocalManager() {
+        return (AdministrativeStatusManagerImpl) globalManager.getStatusManager(
+                globalManager.getLocalNuxeoInstanceIdentifier());
+    }
+
+    public void onNuxeoServerStartup() {
+        getLocalManager().onNuxeoServerStartup();
+    }
+
+    @Override
+    public void stop(ComponentContext context) {
+        getLocalManager().onNuxeoServerShutdown();
+        globalManager = null;
+        probeRunner = null;
+        storageManager.uninstall();
+        storageManager = null;
     }
 
     @Override
@@ -89,55 +133,10 @@ public class CoreManagementComponent extends DefaultComponent {
         return super.getAdapter(adapter);
     }
 
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(PROBES_EP)) {
-            probeRunner.registerProbe((ProbeDescriptor) contribution);
-        } else if (extensionPoint.equals(SERVICE_DEF_EP)) {
-            globalManager.registerService((AdministrableServiceDescriptor) contribution);
-        } else if (extensionPoint.equals(STORAGE_HANDLERS_EP)) {
-            storageManager.registerHandler((DocumentStoreHandlerDescriptor) contribution);
-        } else if (extensionPoint.equals(STORAGE_CONFIG_EP)) {
-            storageManager.registerConfig((DocumentStoreConfigurationDescriptor) contribution);
-        } else if (extensionPoint.equals(HEALTH_CHECK_EP)) {
-            probeRunner.registerProbeForHealthCheck((HealthCheckProbesDescriptor) contribution);
-        } else {
-            super.registerContribution(contribution, extensionPoint, contributor);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("probes")) {
-            probeRunner.unregisterProbe((ProbeDescriptor) contribution);
-        }
-    }
-
     /** @deprecated since 11.4, use {@code Framework.getService(CoreManagementComponent.class)} instead */
     @Deprecated
     public static CoreManagementComponent getDefault() {
         return Framework.getService(CoreManagementComponent.class);
-    }
-
-    @Override
-    public void activate(ComponentContext context) {
-        storageManager.install();
-        EventStatsHolder.clearStats();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        storageManager.uninstall();
-        EventStatsHolder.clearStats();
-    }
-
-    @Override
-    public void stop(ComponentContext context) {
-        getLocalManager().onNuxeoServerShutdown();
-    }
-
-    public void onNuxeoServerStartup() {
-        getLocalManager().onNuxeoServerStartup();
     }
 
 }
