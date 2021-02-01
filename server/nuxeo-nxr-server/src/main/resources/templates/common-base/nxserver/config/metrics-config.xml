@@ -24,12 +24,12 @@
           <prefix>org.apache.logging.log4j.core.Appender.trace</prefix>
           <prefix>org.nuxeo.ecm.core.management.standby.StandbyComponent</prefix>
           <!-- Timer expansion to remove -->
-          <expansion>sum</expansion>
+          <expansion>stddev</expansion>
+          <expansion>p75</expansion>
+          <expansion>p98</expansion>
           <expansion>p999</expansion>
-          <expansion>p99</expansion>
-          <expansion>p95</expansion>
-          <expansion>m15_rate</expansion>
           <expansion>m5_rate</expansion>
+          <expansion>m15_rate</expansion>
           <expansion>mean_rate</expansion>
         </deny>
       </filter>
