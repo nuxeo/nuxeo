@@ -39,7 +39,6 @@ import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.common.xmap.registry.Registry;
-import org.nuxeo.common.xmap.registry.XMerge;
 import org.nuxeo.runtime.api.Framework;
 import org.w3c.dom.Element;
 
@@ -141,7 +140,7 @@ public class ActionRegistry extends MapRegistry {
     @Override
     public void register(Context ctx, XAnnotatedObject xObject, Element element, String tag) {
         super.register(ctx, xObject, element, tag);
-        ActionDescriptor action = (ActionDescriptor) xObject.newInstance(ctx, element);
+        ActionDescriptor action = getInstance(ctx, xObject, element);
         if (action != null) {
             List<Element> innerFilters = action.getFilterElements();
             if (!innerFilters.isEmpty()) {

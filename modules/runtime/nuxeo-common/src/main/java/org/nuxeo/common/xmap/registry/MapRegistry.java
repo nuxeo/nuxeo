@@ -92,40 +92,50 @@ public class MapRegistry extends AbstractRegistry implements Registry {
         return id;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
-        String id = computeId(ctx, xObject, element);
-        XAnnotatedMember remove = xObject.getRemove();
-        if (remove != null && Boolean.TRUE.equals(remove.getValue(ctx, element))) {
-            contributions.remove(id);
-            return null;
-        }
-        Object contrib;
-        XAnnotatedMember merge = xObject.getMerge();
-        if (merge != null && Boolean.TRUE.equals(merge.getValue(ctx, element))) {
-            Object contribution = contributions.get(id);
-            if (contribution != null && xObject.getCompatWarnOnMerge() && !merge.hasValue(ctx, element)) {
+    protected boolean shouldMerge(Context ctx, XAnnotatedObject xObject, Element element, String extensionId, String id,
+            Object existing) {
+        if (super.shouldMerge(ctx, xObject, element, extensionId)) {
+            XAnnotatedMember merge = xObject.getMerge();
+            if (existing != null && xObject.getCompatWarnOnMerge() && !merge.hasValue(ctx, element)) {
                 log.warn(
                         "The contribution with id '{}' on extension '{}' has been implicitly merged: "
                                 + "the compatibility mechanism on its descriptor class '{}' detected it, "
                                 + "and the attribute merge=\"true\" should be added to this definition.",
-                        id, extensionId, contribution.getClass().getName());
+                        id, extensionId, existing.getClass().getName());
             }
-            contrib = xObject.newInstance(ctx, element, contribution);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        String id = computeId(ctx, xObject, element);
+
+        if (shouldRemove(ctx, xObject, element, extensionId)) {
+            contributions.remove(id);
+            return null;
+        }
+
+        Object contrib;
+        Object existing = contributions.get(id);
+        if (shouldMerge(ctx, xObject, element, extensionId, id, existing)) {
+            contrib = getMergedInstance(ctx, xObject, element, existing);
         } else {
-            contrib = xObject.newInstance(ctx, element);
+            contrib = getInstance(ctx, xObject, element);
         }
         contributions.put(id, contrib);
-        XAnnotatedMember enable = xObject.getEnable();
-        if (enable != null && enable.hasValue(ctx, element)) {
-            Object enabled = enable.getValue(ctx, element);
-            if (enabled != null && Boolean.FALSE.equals(enabled)) {
-                disabled.add(id);
-            } else {
+
+        Boolean enable = shouldEnable(ctx, xObject, element, extensionId);
+        if (enable != null) {
+            if (Boolean.TRUE.equals(enable)) {
                 disabled.remove(id);
+            } else {
+                disabled.add(id);
             }
         }
+
         return (T) contrib;
     }
 
