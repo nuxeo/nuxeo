@@ -21,21 +21,27 @@ package org.nuxeo.ecm.platform.oauth2.providers;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @since 7.3
  */
 @XObject("provider")
+@XRegistry(enable = false)
 public class OAuth2ServiceProviderDescriptor {
 
     public static final String DEFAULT_ACCESS_TOKEN_KEY = "access_token";
 
     public static final Class<? extends OAuth2ServiceProvider> DEFAULT_PROVIDER_CLASS = NuxeoOAuth2ServiceProvider.class;
 
-    @XNode("@enabled")
-    protected boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
+    protected boolean enabled;
 
     @XNode("name")
+    @XRegistryId
     protected String name;
 
     @XNode("tokenServerURL")
@@ -97,14 +103,6 @@ public class OAuth2ServiceProviderDescriptor {
 
     public String getIcon() {
         return icon;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public String getLabel() {
