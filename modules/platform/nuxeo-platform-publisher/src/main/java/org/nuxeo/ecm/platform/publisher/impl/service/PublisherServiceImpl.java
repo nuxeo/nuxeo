@@ -49,6 +49,7 @@ import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRuleDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -57,7 +58,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @author tiry
  */
-public class PublisherServiceImpl extends DefaultComponent implements PublisherService {
+public class PublisherServiceImpl extends DefaultComponent implements PublisherService, ComponentManager.Listener {
 
     private final Log log = LogFactory.getLog(PublisherServiceImpl.class);
 
@@ -88,7 +89,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     protected static final String RELATIVE_ROOT_PATH_KEY = "RelativeRootPath";
 
     @Override
-    public void start(ComponentContext context) {
+    public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         if (repositoryService == null) {
             // RepositoryService failed to start, no need to go further
