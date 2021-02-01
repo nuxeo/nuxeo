@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.core.management.storage;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -56,13 +56,14 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         return new PathRef(sb.toString());
     }
 
-    protected final Map<String, DocumentStoreHandlerDescriptor> handlers = new HashMap<>();
+    protected final List<DocumentStoreHandler> handlers = new ArrayList<>();
 
     public void registerHandler(DocumentStoreHandlerDescriptor desc) {
-        if (desc.handler == null) {
-            throw new RuntimeException("Class wasn't resolved or new instance failed, check logs");
+        try {
+            handlers.add(desc.clazz.getDeclaredConstructor().newInstance());
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Cannot instantiate " + desc.clazz, e);
         }
-        handlers.put(desc.id, desc);
     }
 
     protected DocumentStoreConfigurationDescriptor config = new DocumentStoreConfigurationDescriptor();
@@ -94,8 +95,8 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         if (repositoryName.equals(DocumentStoreSessionRunner.repositoryName)) {
             mgmtInitialized = true;
             rootletRef = setupRootlet(session);
-            for (DocumentStoreHandlerDescriptor desc : handlers.values()) {
-                desc.handler.onStorageInitialization(session, rootletRef);
+            for (DocumentStoreHandler handler : handlers) {
+                handler.onStorageInitialization(session, rootletRef);
             }
         }
 

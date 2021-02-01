@@ -20,15 +20,19 @@ package org.nuxeo.ecm.core.management.probes;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.runtime.management.api.Probe;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 @XObject("probe")
+@XRegistry(compatWarnOnMerge = true)
 public class ProbeDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String shortcutName;
 
     @XNode("@qualifiedName")

@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.management.storage;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * For registering a document store handler
@@ -27,20 +29,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Stephane Lacoin [aka matic]
  */
 @XObject("handler")
+@XRegistry
+@XRegistryId("@class")
 public class DocumentStoreHandlerDescriptor {
 
-    @XNode("@id")
-    protected String id = "[id]";
-
-    protected DocumentStoreHandler handler;
-
     @XNode("@class")
-    public void setClass(Class<? extends DocumentStoreHandler> clazz) {
-        try {
-            handler = clazz.newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Cannot instantiate " + clazz.getCanonicalName(), e);
-        }
-    }
+    protected Class<? extends DocumentStoreHandler> clazz;
 
 }

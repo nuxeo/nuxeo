@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.management.storage;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Configure the repository to be used
@@ -27,6 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Stephane Lacoin [aka matic]
  */
 @XObject("configuration")
+@XRegistry(compatWarnOnMerge = true)
 public class DocumentStoreConfigurationDescriptor {
 
     @XNode("@repository")

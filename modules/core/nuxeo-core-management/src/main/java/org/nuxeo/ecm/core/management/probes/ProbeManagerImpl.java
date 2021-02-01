@@ -164,6 +164,11 @@ public class ProbeManagerImpl implements ProbeManager {
         probesByShortcuts.put(descriptor.getShortcut(), probe);
     }
 
+    /**
+     * @deprecated since 11.5: probe manager instance should be recreated at start, so no need to handle configuration
+     *             removal.
+     */
+    @Deprecated(since = "11.5")
     public void unregisterProbe(ProbeDescriptor descriptor) {
         Class<? extends Probe> probeClass = descriptor.getProbeClass();
         infosByTypes.remove(probeClass);
@@ -235,9 +240,7 @@ public class ProbeManagerImpl implements ProbeManager {
     @Override
     public void registerProbeForHealthCheck(HealthCheckProbesDescriptor descriptor) {
         String name = descriptor.getName();
-        if (!descriptor.isEnabled()) {
-            probesForHealthCheck.remove(name);
-        } else if (infosByShortcuts.containsKey(name)) {
+        if (infosByShortcuts.containsKey(name)) {
             probesForHealthCheck.put(name, getProbeInfo(name));
         }
     }
@@ -265,7 +268,8 @@ public class ProbeManagerImpl implements ProbeManager {
     public HealthCheckResult getOrRunHealthCheck(String name) throws IllegalArgumentException {
 
         if (!probesForHealthCheck.containsKey(name)) {
-            throw new IllegalArgumentException("Probe:" + name + " does not exist, or not registed for the healthCheck");
+            throw new IllegalArgumentException(
+                    "Probe:" + name + " does not exist, or not registed for the healthCheck");
         }
         ProbeInfo probe = probesForHealthCheck.get(name);
         getStatusOrRunProbe(probe, getDefaultCheckInterval());
@@ -275,8 +279,9 @@ public class ProbeManagerImpl implements ProbeManager {
     protected void getStatusOrRunProbe(ProbeInfo probe, int refreshSeconds) {
         LocalDateTime now = LocalDateTime.now();
         Date lastRunDate = probe.getLastRunnedDate();
-        LocalDateTime lastRunDateTime = lastRunDate != null ? LocalDateTime.ofInstant(lastRunDate.toInstant(),
-                ZoneId.systemDefault()) : LocalDateTime.MIN;
+        LocalDateTime lastRunDateTime = lastRunDate != null
+                ? LocalDateTime.ofInstant(lastRunDate.toInstant(), ZoneId.systemDefault())
+                : LocalDateTime.MIN;
         if (ChronoUnit.SECONDS.between(lastRunDateTime, now) > refreshSeconds) {
             doRunProbe(probe);
         }

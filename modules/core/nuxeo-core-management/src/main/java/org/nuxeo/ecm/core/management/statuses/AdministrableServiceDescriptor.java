@@ -21,15 +21,19 @@ package org.nuxeo.ecm.core.management.statuses;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 
 @XObject("administrableService")
+@XRegistry(compatWarnOnMerge = true)
 public class AdministrableServiceDescriptor {
 
     @XNode("@id")
+    @XRegistryId
     private String id;
 
-    @XNode("@name")
+    @XNode(value = "@name", fallback = "@id")
     private String name;
 
     @XNode("description")
@@ -38,8 +42,8 @@ public class AdministrableServiceDescriptor {
     @XNode("label")
     private String label;
 
-    @XNode("initialState")
-    private String initialState = AdministrativeStatus.ACTIVE;
+    @XNode(value = "initialState", defaultAssignment = AdministrativeStatus.ACTIVE)
+    private String initialState;
 
     public String getInitialState() {
         return initialState;
@@ -64,9 +68,7 @@ public class AdministrableServiceDescriptor {
     }
 
     public String getName() {
-        if (name == null) {
-            return id;
-        }
         return name;
     }
+
 }
