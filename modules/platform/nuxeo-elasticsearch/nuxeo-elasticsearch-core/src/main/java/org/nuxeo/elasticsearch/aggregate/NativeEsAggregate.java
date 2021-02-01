@@ -26,7 +26,6 @@ import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.Bucket;
-import org.nuxeo.ecm.platform.query.core.AggregateDescriptor;
 
 /**
  * This class is intended for internal/advanced use. It supports any ElasticSearch aggregate builder as a constructor
@@ -46,22 +45,6 @@ public class NativeEsAggregate extends AggregateEsBase<Aggregation, Bucket> {
         super(definition, null);
         this.nativeAggregation = nativeAggregation;
         this.parser = parser;
-    }
-
-    /**
-     * Construct the aggregate using an ElasticSearch aggregate builder and a parser that will consume the response.
-     */
-    public NativeEsAggregate(AggregationBuilder nativeAggregation, Consumer<Aggregation> parser) {
-        this(makeDefinition(nativeAggregation), nativeAggregation, parser);
-    }
-
-    /**
-     * For backwards compatibility make an AggregateDefinition.
-     */
-    protected static AggregateDefinition makeDefinition(AggregationBuilder nativeAggregation) {
-        AggregateDescriptor descriptor = new AggregateDescriptor();
-        descriptor.setId(nativeAggregation.getName());
-        return descriptor;
     }
 
     @Override

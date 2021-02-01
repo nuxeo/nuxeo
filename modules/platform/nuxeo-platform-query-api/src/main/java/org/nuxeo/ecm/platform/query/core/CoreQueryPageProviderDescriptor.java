@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.query.core;
 
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 
 /**
@@ -28,6 +29,8 @@ import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
  * @since 5.4
  */
 @XObject("coreQueryPageProvider")
+// enablement management on base class
+@XRegistry(enable = false, merge = false)
 public class CoreQueryPageProviderDescriptor extends BasePageProviderDescriptor implements PageProviderDefinition {
 
     @Override

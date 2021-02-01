@@ -91,7 +91,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class RestESDocumentsTest extends BaseTest {
 
-    public static final String QUERY = "select * from Document where " + "ecm:isTrashed = 0";
+    public static final String QUERY = "select * from Document where ecm:isTrashed = 0";
 
     public static final String TEST_MIME_TYPE = "text/plain";
 

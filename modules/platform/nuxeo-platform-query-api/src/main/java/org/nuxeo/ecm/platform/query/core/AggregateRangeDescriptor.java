@@ -31,15 +31,17 @@ public class AggregateRangeDescriptor implements AggregateRangeDefinition {
     @XNode("@key")
     public String key;
 
-    public AggregateRangeDescriptor() {
-    }
-
     @XNode("@from")
     public Double from;
 
     @XNode("@to")
     public Double to;
 
+    // needed by xmap
+    public AggregateRangeDescriptor() {
+    }
+
+    // helper constructor for tests and page providers created on-the-fly
     public AggregateRangeDescriptor(String key, Double from, Double to) {
         this.key = key;
         this.from = from;

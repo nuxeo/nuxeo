@@ -224,14 +224,13 @@ public class AuditPageProviderOperation {
 
             DocumentModel searchDoc = null;
             if (namedQueryParams != null && namedQueryParams.size() > 0) {
-                String docType = ppService.getPageProviderDefinition(providerName).getWhereClause().getDocType();
+                String docType = ppService.getPageProviderDefinition(providerName).getSearchDocumentType();
                 searchDoc = session.createDocumentModel(docType);
                 DocumentHelper.setProperties(session, searchDoc, namedQueryParams);
             }
 
             PageProvider<LogEntry> pp = (PageProvider<LogEntry>) ppService.getPageProvider(providerName, searchDoc,
                     sortInfos, targetPageSize, targetPage, props, parameters);
-            // return new PaginablePageProvider<LogEntry>(pp);
             return new LogEntryList(pp);
         }
 

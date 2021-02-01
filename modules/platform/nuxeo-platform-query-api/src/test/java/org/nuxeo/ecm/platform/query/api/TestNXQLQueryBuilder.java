@@ -308,11 +308,8 @@ public class TestNXQLQueryBuilder {
     public void shouldSupportNotLikeOperator() {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
 
         PageProviderDefinition pp = pps.getPageProviderDefinition("DUMMY_NOT_LIKE_PP");
-        WhereClauseDefinition wcd = pp.getWhereClause();
-        String omit = NXQLQueryBuilder.getQuery(model, wcd,null);
         PredicateDefinition[] predicates = pp.getWhereClause().getPredicates();
         assertEquals(1, predicates.length);
         PredicateDefinition predicate = predicates[0];
@@ -323,11 +320,8 @@ public class TestNXQLQueryBuilder {
     public void shouldSupportNotILikeOperator() {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
 
         PageProviderDefinition pp = pps.getPageProviderDefinition("DUMMY_NOT_ILIKE_PP");
-        WhereClauseDefinition wcd = pp.getWhereClause();
-        String omit = NXQLQueryBuilder.getQuery(model, wcd,null);
         PredicateDefinition[] predicates = pp.getWhereClause().getPredicates();
         assertEquals(1, predicates.length);
         PredicateDefinition predicate = predicates[0];
