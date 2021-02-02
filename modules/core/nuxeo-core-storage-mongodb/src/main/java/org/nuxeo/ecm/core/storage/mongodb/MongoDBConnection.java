@@ -1013,7 +1013,8 @@ public class MongoDBConnection extends DBSConnectionBase {
 
     protected long getMaxTimeMs() {
         long ttl = TransactionHelper.getTransactionTimeToLive();
-        return ttl > 0 ? ttl * 1000 : mongoDBRepository.maxTimeMS;
+        // add some extra millis because 0 maxTime is not taken in account
+        return ttl < 0 ? mongoDBRepository.maxTimeMS : ttl * 1000 + 250;
     }
 
     protected long countDocuments(Bson filter) {
