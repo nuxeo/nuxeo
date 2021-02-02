@@ -68,8 +68,10 @@ public class RenderDocumentFeed {
     @OperationMethod
     public Blob run(DocumentModelList docs) throws OperationException, RenderingException, TemplateException,
             IOException {
-        String content = RenderingService.getInstance().render(type, template, ctx);
-        return Blobs.createBlob(content, mimeType, charset, name);
+        try (OperationContext subCtx = ctx.getSubContext(true, docs)) {
+            String content = RenderingService.getInstance().render(type, template, subCtx);
+            return Blobs.createBlob(content, mimeType, charset, name);
+        }
     }
 
 }

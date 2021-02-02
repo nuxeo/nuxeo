@@ -65,8 +65,10 @@ public class RenderDocument {
 
     @OperationMethod(collector = BlobCollector.class)
     public Blob run(DocumentModel doc) throws OperationException, RenderingException, TemplateException, IOException {
-        String content = RenderingService.getInstance().render(type, template, ctx);
-        return Blobs.createBlob(content, mimeType, null, name);
+        try (OperationContext subCtx = ctx.getSubContext(true, doc)) {
+            String content = RenderingService.getInstance().render(type, template, subCtx);
+            return Blobs.createBlob(content, mimeType, null, name);
+        }
     }
 
 }
