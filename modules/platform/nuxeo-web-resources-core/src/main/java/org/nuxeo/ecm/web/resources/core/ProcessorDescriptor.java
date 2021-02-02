@@ -24,19 +24,25 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.web.resources.api.Processor;
 
 /**
  * @since 7.3
  */
 @XObject("processor")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class ProcessorDescriptor implements Processor {
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
-    @XNode("@enabled")
-    protected Boolean enabled;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    protected boolean enabled;
 
     @XNode("class")
     Class<?> klass;
@@ -56,18 +62,6 @@ public class ProcessorDescriptor implements Processor {
     @Override
     public String getName() {
         return name;
-    }
-
-    /**
-     * Returns true if the enabled element was set on the descriptor, useful for merging.
-     */
-    public boolean isEnableSet() {
-        return enabled != null;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled == null || Boolean.TRUE.equals(enabled);
     }
 
     @Override
@@ -98,30 +92,6 @@ public class ProcessorDescriptor implements Processor {
             cmp = name.compareTo(o.getName());
         }
         return cmp;
-    }
-
-    @Override
-    public ProcessorDescriptor clone() {
-        ProcessorDescriptor clone = new ProcessorDescriptor();
-        clone.name = name;
-        clone.enabled = enabled;
-        clone.klass = klass;
-        clone.order = order;
-        clone.type = type;
-        clone.appendTypes = appendTypes;
-        if (types != null) {
-            clone.types = new ArrayList<>(types);
-        }
-        return clone;
-    }
-
-    public void merge(ProcessorDescriptor other) {
-        if (other == null) {
-            return;
-        }
-        if (other.isEnableSet()) {
-            enabled = other.enabled;
-        }
     }
 
 }

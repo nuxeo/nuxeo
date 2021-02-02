@@ -18,15 +18,14 @@
  */
 package org.nuxeo.ecm.web.resources.core.service;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.nuxeo.ecm.web.resources.api.Processor;
@@ -36,9 +35,8 @@ import org.nuxeo.ecm.web.resources.api.ResourceContext;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.ecm.web.resources.core.ProcessorDescriptor;
+import org.nuxeo.ecm.web.resources.core.ResourceBundleDescriptor;
 import org.nuxeo.ecm.web.resources.core.ResourceDescriptor;
-import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -46,132 +44,57 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class WebResourceManagerImpl extends DefaultComponent implements WebResourceManager {
 
-    private static final Log log = LogFactory.getLog(WebResourceManagerImpl.class);
+    private static final Logger log = LogManager.getLogger(WebResourceManagerImpl.class);
 
-    protected static final String RESOURCES_ENDPOINT = "resources";
+    /** @since 11.5 */
+    public static final String COMPONENT_NAME = "org.nuxeo.ecm.platform.WebResources";
 
-    protected ResourceRegistry resources;
+    /** @since 11.5 */
+    public static final String RESOURCES_ENDPOINT = "resources";
 
     protected static final String RESOURCE_BUNDLES_ENDPOINT = "bundles";
 
-    protected ResourceBundleRegistry resourceBundles;
-
     protected static final String PROCESSORS_ENDPOINT = "processors";
-
-    protected ProcessorRegistry processors;
-
-    // Runtime Component API
-
-    @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        resources = new ResourceRegistry();
-        resourceBundles = new ResourceBundleRegistry();
-        processors = new ProcessorRegistry();
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (RESOURCES_ENDPOINT.equals(extensionPoint)) {
-            ResourceDescriptor resource = (ResourceDescriptor) contribution;
-            computeResourceUri(resource, contributor);
-            registerResource(resource);
-        } else if (RESOURCE_BUNDLES_ENDPOINT.equals(extensionPoint)) {
-            ResourceBundle bundle = (ResourceBundle) contribution;
-            registerResourceBundle(bundle);
-        } else if (PROCESSORS_ENDPOINT.equals(extensionPoint)) {
-            ProcessorDescriptor p = (ProcessorDescriptor) contribution;
-            log.info(String.format("Register processor '%s'", p.getName()));
-            processors.addContribution(p);
-            log.info(String.format("Done registering processor '%s'", p.getName()));
-        } else {
-            log.error(String.format("Unknown contribution to the service, extension point '%s': '%s", extensionPoint,
-                    contribution));
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (RESOURCES_ENDPOINT.equals(extensionPoint)) {
-            Resource resource = (Resource) contribution;
-            unregisterResource(resource);
-        } else if (RESOURCE_BUNDLES_ENDPOINT.equals(extensionPoint)) {
-            ResourceBundle bundle = (ResourceBundle) contribution;
-            unregisterResourceBundle(bundle);
-        } else if (PROCESSORS_ENDPOINT.equals(extensionPoint)) {
-            ProcessorDescriptor p = (ProcessorDescriptor) contribution;
-            log.info(String.format("Removing processor '%s'", p.getName()));
-            processors.removeContribution(p);
-            log.info(String.format("Done removing processor '%s'", p.getName()));
-        } else {
-            log.error(String.format("Unknown contribution to the service, extension point '%s': '%s", extensionPoint,
-                    contribution));
-        }
-    }
 
     // service API
 
-    protected void computeResourceUri(ResourceDescriptor resource, ComponentInstance contributor) {
-        String uri = resource.getURI();
-        if (uri == null) {
-            // build it from local classpath
-            // XXX: hacky wildcard support
-            String path = resource.getPath();
-            if (path != null) {
-                boolean hasWildcard = false;
-                if (path.endsWith("*")) {
-                    hasWildcard = true;
-                    path = path.substring(0, path.length() - 1);
-                }
-                URL url = contributor.getContext().getLocalResource(path);
-                if (url == null) {
-                    log.error("Cannot resolve local URL for resource '" + resource.getName() + "' with path '"
-                            + resource.getPath() + "'");
-                } else {
-                    String builtUri = url.toString();
-                    if (hasWildcard) {
-                        builtUri += "*";
-                    }
-                    resource.setURI(builtUri);
-                }
-            }
-        }
-    }
-
     @Override
     public Resource getResource(String name) {
-        return resources.getResource(name);
+        return this.<ResourceDescriptor> getRegistryContribution(RESOURCES_ENDPOINT, name).orElse(null);
     }
 
     @Override
     public ResourceBundle getResourceBundle(String name) {
-        return resourceBundles.getResourceBundle(name);
+        return this.<ResourceBundleDescriptor> getRegistryContribution(RESOURCE_BUNDLES_ENDPOINT, name).orElse(null);
     }
 
     @Override
     public List<ResourceBundle> getResourceBundles() {
-        return resourceBundles.getResourceBundles();
+        return getRegistryContributions(RESOURCE_BUNDLES_ENDPOINT);
     }
 
     @Override
     public Processor getProcessor(String name) {
-        return processors.getProcessor(name);
+        return this.<ProcessorDescriptor> getRegistryContribution(PROCESSORS_ENDPOINT, name).orElse(null);
     }
 
     @Override
     public List<Processor> getProcessors() {
-        return processors.getProcessors();
+        return getRegistryContributions(PROCESSORS_ENDPOINT);
     }
 
     @Override
     public List<Processor> getProcessors(String type) {
-        return processors.getProcessors(type);
+        return getProcessors().stream()
+                              .filter(p -> type == null || p.getTypes().contains(type))
+                              .sorted()
+                              .collect(Collectors.toList());
     }
 
     @Override
     public List<Resource> getResources(ResourceContext context, String bundleName, String type) {
         List<Resource> res = new ArrayList<>();
-        ResourceBundle rb = resourceBundles.getResourceBundle(bundleName);
+        ResourceBundle rb = getResourceBundle(bundleName);
         if (rb == null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Unknown bundle named '%s'", bundleName));
@@ -185,7 +108,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
         for (String rn : rb.getResources()) {
             Resource r = getResource(rn);
             if (r == null) {
-                log.error(String.format("Could not resolve resource '%s' on bundle '%s'", rn, bundleName));
+                log.error("Could not resolve resource '{}' on bundle '{}'", rn, bundleName);
                 continue;
             }
             // resolve sub resources of given type before filtering
@@ -215,7 +138,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
             for (String dn : deps) {
                 Resource d = getResource(dn);
                 if (d == null) {
-                    log.error("Unknown resource dependency named '" + dn + "'");
+                    log.error("Unknown resource dependency named '{}'", dn);
                     continue;
                 }
                 if (!ResourceType.matches(type, d)) {
@@ -234,43 +157,6 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
             }
         }
         return res;
-    }
-
-    @Override
-    public void registerResourceBundle(ResourceBundle bundle) {
-        log.info(String.format("Register resource bundle '%s'", bundle.getName()));
-        if (bundle.getResources().removeIf(StringUtils::isBlank)) {
-            log.error("Some resources references were null or blank while setting " + bundle.getName()
-                    + " and have been supressed. This probably happened because some <resource> tags were empty in "
-                    + "the xml declaration. The correct form is <resource>resource name</resource>.");
-        }
-        resourceBundles.addContribution(bundle);
-        log.info(String.format("Done registering resource bundle '%s'", bundle.getName()));
-        setModifiedNow();
-    }
-
-    @Override
-    public void unregisterResourceBundle(ResourceBundle bundle) {
-        log.info(String.format("Removing resource bundle '%s'", bundle.getName()));
-        resourceBundles.removeContribution(bundle);
-        log.info(String.format("Done removing resource bundle '%s'", bundle.getName()));
-        setModifiedNow();
-    }
-
-    @Override
-    public void registerResource(Resource resource) {
-        log.info(String.format("Register resource '%s'", resource.getName()));
-        resources.addContribution(resource);
-        log.info(String.format("Done registering resource '%s'", resource.getName()));
-        setModifiedNow();
-    }
-
-    @Override
-    public void unregisterResource(Resource resource) {
-        log.info(String.format("Removing resource '%s'", resource.getName()));
-        resources.removeContribution(resource);
-        log.info(String.format("Done removing resource '%s'", resource.getName()));
-        setModifiedNow();
     }
 
 }

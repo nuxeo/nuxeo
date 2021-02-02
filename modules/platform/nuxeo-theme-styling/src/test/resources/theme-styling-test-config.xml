@@ -9,9 +9,6 @@
         <flavor>dark</flavor>
         <flavor>subDark</flavor>
       </flavors>
-      <styles>
-        <style>nuxeo_dm_default</style>
-      </styles>
       <resources>
         <resource>jquery.fancybox.js</resource>
       </resources>
@@ -20,16 +17,13 @@
       </resourceBundles>
     </page>
 
-    <themePage name="testStyling/print">
+    <page name="testStyling/print">
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
         <flavor>dark</flavor>
       </flavors>
-      <styles>
-        <style>print_default</style>
-      </styles>
-    </themePage>
+    </page>
 
   </extension>
 
@@ -69,9 +63,6 @@
           <color>#cfecff</color>
         </colors>
       </palettePreview>
-      <sass>
-        <import src="themes/sass/default_variables.scss" />
-      </sass>
     </flavor>
 
     <!-- register it before and to check registration order has no impact on final
@@ -104,17 +95,6 @@
       </presetsList>
     </flavor>
 
-  </extension>
-
-  <!-- Register style resources (contain indirect references to flavor names, i.e.
-    "__FLAVOR__") -->
-  <extension target="org.nuxeo.theme.styling.service" point="styles">
-    <style name="nuxeo_dm_default">
-      <src>themes/css/nuxeo_dm_default.css</src>
-    </style>
-    <style name="print_default">
-      <src>themes/css/print_default.css</src>
-    </style>
   </extension>
 
   <extension target="org.nuxeo.theme.styling.service" point="resources">

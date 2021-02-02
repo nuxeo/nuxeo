@@ -21,7 +21,6 @@ package org.nuxeo.ecm.web.resources.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -134,22 +133,6 @@ public class TestWebResourceService {
         assertEquals("foldable-box.js", r.getResources().get(1));
         assertEquals("foldable-box.css", r.getResources().get(2));
         assertEquals("my.css", r.getResources().get(3));
-    }
-
-    @Test
-    public void testFaultyResourcesBundleDeclaration() throws Exception {
-
-        deployer.deploy(BUNDLE + ":webresources-test-faulty-declaration.xml");
-        ResourceBundle r = service.getResourceBundle("myFaultyApp");
-        assertNotNull(r);
-        assertTrue(r.getResources().isEmpty());
-        assertEquals("myFaultyApp", r.getName());
-        logCaptureResult.assertHasEvent();
-        List<String> events = logCaptureResult.getCaughtEventMessages();
-        assertEquals(1, events.size());
-        assertEquals("Some resources references were null or blank while setting myFaultyApp and have been supressed. "
-                + "This probably happened because some <resource> tags were empty in the xml declaration. "
-                + "The correct form is <resource>resource name</resource>.", events.get(0));
     }
 
     @Test

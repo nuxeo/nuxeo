@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -31,13 +31,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.web.resources.api.Resource;
-import org.nuxeo.ecm.web.resources.api.ResourceType;
-import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.ecm.web.resources.core.ResourceDescriptor;
 import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeMessage.Source;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -72,7 +68,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     protected static final String WR_EX = "org.nuxeo.ecm.platform.WebResources";
 
-    protected PageRegistry pageReg;
+    protected static final String PAGE_EP = "pages";
 
     protected FlavorRegistry flavorReg;
 
@@ -83,7 +79,6 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        pageReg = new PageRegistry();
         flavorReg = new FlavorRegistry();
         negReg = new NegotiationRegistry();
     }
@@ -97,46 +92,21 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             log.info(String.format("Done registering flavor '%s'", flavor.getName()));
         } else if (contribution instanceof SimpleStyle) {
             SimpleStyle style = (SimpleStyle) contribution;
-            log.info(String.format("Register style '%s'", style.getName()));
             ComponentName compName = contributor.getName();
             String message = String.format(
-                    "Style '%s' on component %s should now be contributed to extension "
-                            + "point '%s': a compatibility registration was performed but it may not be "
-                            + "accurate. Note that the 'flavor' processor should be used with this resource.",
+                    "Style '%s' on component %s should now be contributed to extension point '%s'. "
+                            + "Note that the 'flavor' processor should be used with this resource.",
                     style.getName(), compName, WR_EX);
             DeprecationLogger.log(message, "7.4");
-            addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
-            ResourceDescriptor resource = getResourceFromStyle(style);
-            registerResource(resource, contributor.getContext());
-            log.info(String.format("Done registering style '%s'", style.getName()));
-        } else if (contribution instanceof PageDescriptor) {
-            PageDescriptor page = (PageDescriptor) contribution;
-            log.info(String.format("Register page '%s'", page.getName()));
-            if (page.hasResources()) {
-                // automatically register a bundle for page resources
-                WebResourceManager wrm = Framework.getService(WebResourceManager.class);
-                wrm.registerResourceBundle(page.getComputedResourceBundle());
-            }
-            pageReg.addContribution(page);
-            log.info(String.format("Done registering page '%s'", page.getName()));
+            addRuntimeMessage(Level.ERROR, message, Source.EXTENSION, compName.getName());
         } else if (contribution instanceof ResourceDescriptor) {
             ResourceDescriptor resource = (ResourceDescriptor) contribution;
-            log.info(String.format("Register resource '%s'", resource.getName()));
             ComponentName compName = contributor.getName();
             String message = String.format(
-                    "Resource '%s' on component %s should now be contributed to extension "
-                            + "point '%s': a compatibility registration was performed but it may not be accurate.",
+                    "Resource '%s' on component %s should now be contributed to extension point '%s'.",
                     resource.getName(), compName, WR_EX);
             DeprecationLogger.log(message, "7.4");
-            addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
-            // ensure path is absolute, consider that resource is in the war, and if not, user will have to declare it
-            // directly to the WRM endpoint
-            String path = resource.getPath();
-            if (path != null && !path.startsWith("/")) {
-                resource.setUri("/" + path);
-            }
-            registerResource(resource, contributor.getContext());
-            log.info(String.format("Done registering resource '%s'", resource.getName()));
+            addRuntimeMessage(Level.ERROR, message, Source.EXTENSION, compName.getName());
         } else if (contribution instanceof NegotiationDescriptor) {
             NegotiationDescriptor neg = (NegotiationDescriptor) contribution;
             log.info(String.format("Register negotiation for '%s'", neg.getTarget()));
@@ -153,19 +123,6 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         if (contribution instanceof FlavorDescriptor) {
             FlavorDescriptor flavor = (FlavorDescriptor) contribution;
             flavorReg.removeContribution(flavor);
-        } else if (contribution instanceof Resource) {
-            Resource resource = (Resource) contribution;
-            unregisterResource(resource);
-        } else if (contribution instanceof SimpleStyle) {
-            SimpleStyle style = (SimpleStyle) contribution;
-            unregisterResource(getResourceFromStyle(style));
-        } else if (contribution instanceof PageDescriptor) {
-            PageDescriptor page = (PageDescriptor) contribution;
-            if (page.hasResources()) {
-                WebResourceManager wrm = Framework.getService(WebResourceManager.class);
-                wrm.unregisterResourceBundle(page.getComputedResourceBundle());
-            }
-            pageReg.removeContribution(page);
         } else if (contribution instanceof NegotiationDescriptor) {
             NegotiationDescriptor neg = (NegotiationDescriptor) contribution;
             negReg.removeContribution(neg);
@@ -250,31 +207,6 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         return presets;
     }
 
-    protected void registerResource(Resource resource, RuntimeContext extensionContext) {
-        WebResourceManager wrm = Framework.getService(WebResourceManager.class);
-        wrm.registerResource(resource);
-    }
-
-    protected void unregisterResource(Resource resource) {
-        // unregister directly to the WebResourceManager service
-        WebResourceManager wrm = Framework.getService(WebResourceManager.class);
-        wrm.unregisterResource(resource);
-    }
-
-    protected ResourceDescriptor getResourceFromStyle(SimpleStyle style) {
-        // turn style into a resource
-        ResourceDescriptor resource = new ResourceDescriptor();
-        resource.setPath(style.getSrc());
-        String name = style.getName();
-        if (name.endsWith(ResourceType.css.name())) {
-            resource.setName(name);
-        } else {
-            resource.setName(name + "." + ResourceType.css.name());
-        }
-        resource.setProcessors(Collections.singletonList("flavor"));
-        return resource;
-    }
-
     protected URL getUrlFromPath(String path, RuntimeContext extensionContext) {
         if (path == null) {
             return null;
@@ -293,15 +225,16 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     // service API
 
+    protected PageRegistry getPageRegistry() {
+        return getExtensionPointRegistry(PAGE_EP);
+    }
+
     @Override
     public String getDefaultFlavorName(String themePageName) {
-        if (pageReg != null) {
-            PageDescriptor themePage = pageReg.getPage(themePageName);
-            if (themePage != null) {
-                return themePage.getDefaultFlavor();
-            }
-        }
-        return null;
+        return getPageRegistry().getContribution(themePageName)
+                                .map(PageDescriptor.class::cast)
+                                .map(PageDescriptor::getDefaultFlavor)
+                                .orElse(null);
     }
 
     @Override
@@ -411,33 +344,31 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     @Override
     public List<String> getFlavorNames(String themePageName) {
-        if (pageReg != null) {
-            PageDescriptor themePage = pageReg.getPage(themePageName);
-            if (themePage != null) {
-                List<String> flavors = new ArrayList<>();
-                List<String> localFlavors = themePage.getFlavors();
+        PageRegistry pageReg = getPageRegistry();
+        PageDescriptor themePage = pageReg.getPage(themePageName);
+        String defaultFlavor = null;
+        LinkedHashSet<String> flavors = new LinkedHashSet<>();
+        if (themePage != null) {
+            List<String> localFlavors = themePage.getFlavors();
+            if (localFlavors != null) {
+                flavors.addAll(localFlavors);
+            }
+            // add flavors from theme for all pages
+            PageDescriptor forAllPage = pageReg.getConfigurationApplyingToAll();
+            if (forAllPage != null) {
+                localFlavors = forAllPage.getFlavors();
                 if (localFlavors != null) {
                     flavors.addAll(localFlavors);
                 }
-                // add flavors from theme for all pages
-                PageDescriptor forAllPage = pageReg.getConfigurationApplyingToAll();
-                if (forAllPage != null) {
-                    localFlavors = forAllPage.getFlavors();
-                    if (localFlavors != null) {
-                        flavors.addAll(localFlavors);
-                    }
-                }
-                // add default flavor if it's not listed there
-                String defaultFlavor = themePage.getDefaultFlavor();
-                if (defaultFlavor != null) {
-                    if (!flavors.contains(defaultFlavor)) {
-                        flavors.add(0, defaultFlavor);
-                    }
-                }
-                return flavors;
             }
+            defaultFlavor = themePage.getDefaultFlavor();
         }
-        return null;
+        List<String> res = new ArrayList<>(flavors);
+        // add default flavor if it's not listed there
+        if (defaultFlavor != null && !flavors.contains(defaultFlavor)) {
+            res.add(0, defaultFlavor);
+        }
+        return res;
     }
 
     @Override
@@ -515,43 +446,12 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     @Override
     public PageDescriptor getPage(String name) {
-        PageDescriptor page = pageReg.getPage(name);
-        if (page != null) {
-            // merge with global resources
-            PageDescriptor globalPage = pageReg.getPage("*");
-            mergePage(page, globalPage);
-        }
-        return page;
+        return (PageDescriptor) getPageRegistry().getContribution(name).orElse(null);
     }
 
     @Override
     public List<PageDescriptor> getPages() {
-        List<PageDescriptor> pages = new ArrayList<>();
-        List<String> names = pageReg.getPageNames();
-        PageDescriptor globalPage = pageReg.getPage("*");
-        for (String name : names) {
-            if ("*".equals(name)) {
-                continue;
-            }
-            PageDescriptor page = pageReg.getPage(name);
-            if (page != null) {
-                // merge with global resources
-                mergePage(page, globalPage);
-            }
-            pages.add(page);
-        }
-        return pages;
-    }
-
-    protected void mergePage(PageDescriptor page, PageDescriptor globalPage) {
-        if (page != null && globalPage != null) {
-            // merge with global resources
-            PageDescriptor clone = globalPage.clone();
-            clone.setAppendFlavors(true);
-            clone.setAppendResources(true);
-            clone.setAppendStyles(true);
-            page.merge(clone);
-        }
+        return getPageRegistry().getContributionValues();
     }
 
     @Override
