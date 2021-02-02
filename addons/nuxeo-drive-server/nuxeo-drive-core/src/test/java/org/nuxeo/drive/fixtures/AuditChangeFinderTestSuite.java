@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
+import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
 import org.nuxeo.drive.service.FileSystemItemChange;
@@ -54,8 +56,10 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * Tests the {@link FileSystemChangeFinder}.
@@ -1558,6 +1562,51 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
                     new SimpleFileSystemItemChange(doc.getId(), "documentUnlocked", "test",
                             "defaultFileSystemItemFactory#test#" + doc.getId(), "doc"),
                     toSimpleFileSystemItemChange(changes.get(0)));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test:OSGI-INF/test-storage-blobstore-contrib.xml")
+    public void testReplaceBlobDigest() throws Exception {
+        assumeTrue("Blob digest replacement only on DBS", coreFeature.getStorageConfiguration().isDBS());
+
+        DocumentModel doc;
+        List<FileSystemItemChange> changes;
+        String key;
+        try {
+            log.trace("Register a sync root and create a document inside it");
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder1, session);
+            doc = session.createDocumentModel("/folder1", "doc", "File");
+            doc.setPropertyValue("file:content", new StringBlob("The file content"));
+            doc = session.createDocument(doc);
+            key = ((ManagedBlob) doc.getPropertyValue("file:content")).getKey();
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            getChanges(); // ignored, not the point of this test
+
+            log.trace("Replace blob digest");
+            assertEquals(key, session.replaceBlobDigest(doc.getRef(), key, "newkey", "newkey"));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Check changes, expecting 1:
+            // - blobDigestUpdated for doc
+            changes = getChanges();
+            assertEquals(1, changes.size());
+            FileSystemItemChange change = changes.get(0);
+            assertEquals(
+                    new SimpleFileSystemItemChange(doc.getId(), "blobDigestUpdated", "test",
+                            "defaultFileSystemItemFactory#test#" + doc.getId(), "doc"),
+                    toSimpleFileSystemItemChange(change));
+            assertEquals("newkey", ((FileItem) change.getFileSystemItem()).getDigest());
+            assertEquals(key, ((FileItem) change.getFileSystemItem()).getOldDigest());
         } finally {
             commitAndWaitForAsyncCompletion();
         }

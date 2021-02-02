@@ -47,6 +47,8 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
 
     protected String digest;
 
+    protected String oldDigest;
+
     protected boolean canUpdate;
 
     protected FileSystemItemFactory factory;
@@ -190,6 +192,11 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     }
 
     @Override
+    public String getOldDigest() {
+        return oldDigest;
+    }
+
+    @Override
     public boolean getCanUpdate() {
         return canUpdate;
     }
@@ -249,9 +256,6 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         folder = false;
         updateDownloadURL();
         updateDigest(blob);
-        if (digest == null) {
-            digestAlgorithm = null;
-        }
         canUpdate = canRename;
     }
 
@@ -328,6 +332,10 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
 
     protected void setDigest(String digest) {
         this.digest = digest;
+    }
+
+    public void setOldDigest(String oldDigest) {
+        this.oldDigest = oldDigest;
     }
 
     protected void setCanUpdate(boolean canUpdate) {
