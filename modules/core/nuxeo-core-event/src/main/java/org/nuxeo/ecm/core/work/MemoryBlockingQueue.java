@@ -91,9 +91,7 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
             }
             // turn non-blocking offer into a blocking put
             try {
-                if (Thread.currentThread()
-                        .getName()
-                        .startsWith(WorkManagerImpl.THREAD_PREFIX)) {
+                if (Thread.currentThread().getName().startsWith(WorkManagerImpl.THREAD_PREFIX)) {
                     // use the full queue capacity for reentrant call
                     put(e);
                 } else {
@@ -117,8 +115,11 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
     protected final Set<String> runningWorks = new HashSet<>();
 
     long scheduledCount;
+
     long runningCount;
+
     long completedCount;
+
     long cancelledCount;
 
     /**
@@ -213,13 +214,12 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
     synchronized WorkQueueMetrics workCanceled(Work work) {
         String id = work.getId();
         for (Iterator<Runnable> it = queue.iterator(); it.hasNext();) {
-            if (id.equals(WorkHolder.getWork(it.next())
-                    .getId())) {
+            if (id.equals(WorkHolder.getWork(it.next()).getId())) {
                 it.remove();
                 scheduledWorks.remove(id);
                 works.remove(id);
                 scheduledCount -= 1;
-                cancelledCount +=1 ;
+                cancelledCount += 1;
                 break;
             }
         }
@@ -259,9 +259,7 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
     }
 
     synchronized List<Work> listScheduled() {
-        return scheduledWorks.stream()
-                .map(works::get)
-                .collect(Collectors.toList());
+        return scheduledWorks.stream().map(works::get).collect(Collectors.toList());
     }
 
     synchronized List<String> scheduledKeys() {
@@ -269,9 +267,7 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
     }
 
     synchronized List<Work> listRunning() {
-        return runningWorks.stream()
-                .map(works::get)
-                .collect(Collectors.toList());
+        return runningWorks.stream().map(works::get).collect(Collectors.toList());
     }
 
     synchronized List<String> runningKeys() {

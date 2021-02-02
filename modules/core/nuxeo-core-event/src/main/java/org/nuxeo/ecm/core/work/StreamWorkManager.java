@@ -364,8 +364,9 @@ public class StreamWorkManager extends WorkManagerImpl {
         List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
         // create the single topology with one root per work pool
         Topology.Builder builder = Topology.builder();
-        descriptors.stream().filter(WorkQueueDescriptor::isProcessingEnabled).forEach(d -> builder.addComputation(
-                           () -> new WorkComputation(NAMESPACE_PREFIX + d.getId()),
+        descriptors.stream()
+                   .filter(WorkQueueDescriptor::isProcessingEnabled)
+                   .forEach(d -> builder.addComputation(() -> new WorkComputation(NAMESPACE_PREFIX + d.getId()),
                            Collections.singletonList(INPUT_1 + ":" + NAMESPACE_PREFIX + d.getId())));
         topology = builder.build();
         // create a topology for the disabled work pools in order to init their input streams
@@ -444,7 +445,8 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     @Override
     protected void activateQueueMetrics(String queueId) {
-        NuxeoMetricSet queueMetrics = new NuxeoMetricSet(MetricName.build("nuxeo.works.global.queue").tagged("queue", queueId));
+        NuxeoMetricSet queueMetrics = new NuxeoMetricSet(
+                MetricName.build("nuxeo.works.global.queue").tagged("queue", queueId));
         queueMetrics.putGauge(() -> getMetricsWithNuxeoClassLoader(queueId).scheduled, "scheduled");
         queueMetrics.putGauge(() -> getMetricsWithNuxeoClassLoader(queueId).running, "running");
         queueMetrics.putGauge(() -> getMetricsWithNuxeoClassLoader(queueId).completed, "completed");
@@ -483,12 +485,12 @@ public class StreamWorkManager extends WorkManagerImpl {
     @Override
     public int getQueueSize(String queueId, Work.State state) {
         switch (state) {
-            case SCHEDULED:
-                return getMetrics(queueId).getScheduled().intValue();
-            case RUNNING:
-                return getMetrics(queueId).getRunning().intValue();
-            default:
-                return 0;
+        case SCHEDULED:
+            return getMetrics(queueId).getScheduled().intValue();
+        case RUNNING:
+            return getMetrics(queueId).getRunning().intValue();
+        default:
+            return 0;
         }
     }
 

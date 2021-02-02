@@ -119,7 +119,7 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable> impleme
         if (!active) {
             return null;
         }
-        Runnable runnable =  pollElement();
+        Runnable runnable = pollElement();
         if (runnable == null) {
             return null;
         }

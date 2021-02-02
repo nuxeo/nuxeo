@@ -38,7 +38,7 @@ public class SimpleEventBundlePipeDispatcher implements EventBundleDispatcher {
     protected Map<String, String> parameters;
 
     @Override
-    public void init(List<EventPipeDescriptor> pipeDescriptors,  Map<String, String> parameters) {
+    public void init(List<EventPipeDescriptor> pipeDescriptors, Map<String, String> parameters) {
 
         this.parameters = parameters;
 

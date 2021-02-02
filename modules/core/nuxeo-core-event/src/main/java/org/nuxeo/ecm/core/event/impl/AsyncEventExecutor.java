@@ -93,7 +93,7 @@ public class AsyncEventExecutor {
             TransactionHelper.runInTransaction(() -> {
                 EventBundle connectedBundle = new EventBundleImpl();
 
-                List<Event> events = ((ReconnectedEventBundleImpl)tmpBundle).getReconnectedEvents();
+                List<Event> events = ((ReconnectedEventBundleImpl) tmpBundle).getReconnectedEvents();
                 for (Event event : events) {
                     connectedBundle.push(event);
                 }

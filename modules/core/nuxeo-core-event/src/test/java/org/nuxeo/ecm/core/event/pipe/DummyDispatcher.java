@@ -26,10 +26,9 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.dispatch.SimpleEventBundlePipeDispatcher;
 
 /**
- *
  * @since TODO
  */
-public class DummyDispatcher extends SimpleEventBundlePipeDispatcher  {
+public class DummyDispatcher extends SimpleEventBundlePipeDispatcher {
 
     protected static List<EventPipeDescriptor> pipeDescriptors;
 

@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.event;
 
-
 /**
  * An event listener receives notifications from core components.
  * <p>

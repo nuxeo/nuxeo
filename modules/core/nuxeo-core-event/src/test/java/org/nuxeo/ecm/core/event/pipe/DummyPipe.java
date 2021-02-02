@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 
 /**
- *
  * @since TODO
  */
 public class DummyPipe implements EventBundlePipe {
@@ -40,7 +39,7 @@ public class DummyPipe implements EventBundlePipe {
 
     @Override
     public void sendEventBundle(EventBundle events) {
-        for ( Event event : events) {
+        for (Event event : events) {
             receivedEvents.add(event);
         }
     }
@@ -53,6 +52,5 @@ public class DummyPipe implements EventBundlePipe {
     @Override
     public void shutdown() throws InterruptedException {
     }
-
 
 }

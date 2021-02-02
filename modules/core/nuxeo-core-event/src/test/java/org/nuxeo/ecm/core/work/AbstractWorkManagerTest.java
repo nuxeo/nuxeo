@@ -688,8 +688,7 @@ public abstract class AbstractWorkManagerTest {
 
     @Test
     public void testWorkFailOnInterruptedIO() throws InterruptedException {
-        SleepAndThrowWork work = new SleepAndThrowWork(100,
-                new InterruptedIOException("Interrupted for test purpose"));
+        SleepAndThrowWork work = new SleepAndThrowWork(100, new InterruptedIOException("Interrupted for test purpose"));
         service.schedule(work);
         assertTrue(service.awaitCompletion(2000, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);

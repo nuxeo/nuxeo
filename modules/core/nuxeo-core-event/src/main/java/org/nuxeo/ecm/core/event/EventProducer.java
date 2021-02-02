@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.event;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
