@@ -219,7 +219,8 @@ public class TransactionHelper {
     /**
      * Gets the transaction TTL.
      *
-     * @return the time to live in second or {@code -1} when outside of a transaction.
+     * @return the time to live in second, {@code 0} if the transaction has already timed out, {@code -1} when outside
+     *         of a transaction.
      * @since 11.5
      */
     public static int getTransactionTimeToLive() {
