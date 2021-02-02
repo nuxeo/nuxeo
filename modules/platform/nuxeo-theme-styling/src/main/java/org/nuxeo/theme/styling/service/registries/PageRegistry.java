@@ -19,75 +19,164 @@
 package org.nuxeo.theme.styling.service.registries;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.apache.xerces.dom.DocumentImpl;
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedMember;
+import org.nuxeo.common.xmap.XAnnotatedObject;
+import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.common.xmap.registry.MapRegistry;
+import org.nuxeo.common.xmap.registry.Registry;
+import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
+import org.nuxeo.ecm.web.resources.core.ResourceBundleDescriptor;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.styling.service.descriptors.PageDescriptor;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
- * Registry for theme page resources, handling merge of registered {@link PageDescriptor} elements.
+ * Registry for theme page resources.
+ * <p>
+ * Merges pages declaration with global page with name "*".
+ * <p>
+ * Forwards to {@link WebResourceManager} dedicated bundle registry for automated resource bundle declaration.
  *
  * @since 5.5
  */
-public class PageRegistry extends ContributionFragmentRegistry<PageDescriptor> {
+public class PageRegistry extends MapRegistry {
 
-    protected Map<String, PageDescriptor> pageResources = new HashMap<>();
+    protected static final String GLOBAL_CONFIG_NAME = "*";
 
-    @Override
-    public String getContributionId(PageDescriptor contrib) {
-        return contrib.getName();
+    protected PageDescriptor globalPage;
+
+    protected Map<String, PageDescriptor> mergedPages;
+
+    protected static XAnnotatedObject xBundle;
+
+    static {
+        XMap fxmap = new XMap();
+        fxmap.register(ResourceBundleDescriptor.class);
+        xBundle = fxmap.getObject(ResourceBundleDescriptor.class);
     }
 
     @Override
-    public void contributionUpdated(String id, PageDescriptor contrib, PageDescriptor newOrigContrib) {
-        pageResources.put(id, contrib);
-    }
-
-    @Override
-    public synchronized void removeContribution(PageDescriptor contrib) {
-        removeContribution(contrib, true);
-    }
-
-    @Override
-    public void contributionRemoved(String id, PageDescriptor origContrib) {
-        pageResources.remove(id);
-    }
-
-    @Override
-    public PageDescriptor clone(PageDescriptor orig) {
-        if (orig == null) {
-            return null;
+    public void initialize() {
+        super.initialize();
+        mergedPages = Collections.synchronizedMap(new LinkedHashMap<>());
+        globalPage = null;
+        if (!disabled.contains(GLOBAL_CONFIG_NAME)) {
+            globalPage = (PageDescriptor) contributions.get(GLOBAL_CONFIG_NAME);
         }
-        return orig.clone();
+
+        if (globalPage == null) {
+            mergedPages.putAll(super.getContributions());
+        } else {
+            super.getContributions().forEach((k, v) -> {
+                if (GLOBAL_CONFIG_NAME.equals(k)) {
+                    mergedPages.put(k, (PageDescriptor) v);
+                } else {
+                    // merge with global resources
+                    mergedPages.put(k, mergePage((PageDescriptor) v, globalPage));
+                }
+            });
+        }
     }
 
     @Override
-    public void merge(PageDescriptor src, PageDescriptor dst) {
-        dst.merge(src);
+    @SuppressWarnings("unchecked")
+    public <T> Map<String, T> getContributions() {
+        checkInitialized();
+        return (Map<String, T>) Collections.unmodifiableMap(mergedPages);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getContributionValues() {
+        checkInitialized();
+        return (List<T>) new ArrayList<>(mergedPages.values());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> getContribution(String id) {
+        checkInitialized();
+        if (GLOBAL_CONFIG_NAME.contentEquals(id)) {
+            return Optional.ofNullable((T) globalPage);
+        }
+        if (disabled.contains(id)) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable((T) mergedPages.get(id));
+    }
+
+    public Registry getTargetRegistry() {
+        return Framework.getRuntime()
+                        .getComponentManager()
+                        .getExtensionPointRegistry("org.nuxeo.ecm.platform.WebResources", "bundles")
+                        .orElseThrow(() -> new IllegalArgumentException("Unknown target registry"));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        PageDescriptor page = (PageDescriptor) super.doRegister(ctx, xObject, element, extensionId);
+        if (page != null) {
+            // forward bundle to WebResourceManager bundle registry, build DOM element from scratch
+            Document xmlDoc = new DocumentImpl();
+            Element root = xmlDoc.createElement("bundle");
+            root.setAttribute("name", page.getComputedResourceBundleName());
+            String doMerge = "false";
+            XAnnotatedMember merge = xObject.getMerge();
+            if (merge != null && Boolean.TRUE.equals(merge.getValue(ctx, element))) {
+                doMerge = "true";
+            }
+            root.setAttribute("merge", doMerge);
+            if (page.hasResources()) {
+                Element resources = xmlDoc.createElement("resources");
+                root.appendChild(resources);
+                page.getResources().forEach(r -> {
+                    Element resource = xmlDoc.createElement("resource");
+                    resource.appendChild(xmlDoc.createTextNode(r));
+                    resources.appendChild(resource);
+                });
+            }
+            getTargetRegistry().register(ctx, xBundle, root, extensionId);
+        }
+        return (T) page;
+    }
+
+    protected PageDescriptor mergePage(PageDescriptor page, PageDescriptor globalPage) {
+        if (globalPage == null) {
+            return page;
+        }
+        String charset = page.getCharset() != null ? page.getCharset() : globalPage.getCharset();
+        String defaultFlavor = page.getDefaultFlavor() != null ? page.getDefaultFlavor()
+                : globalPage.getDefaultFlavor();
+        List<String> flavors = Stream.of(page.getFlavors(), globalPage.getFlavors())
+                                     .flatMap(List::stream)
+                                     .collect(Collectors.toList());
+        List<String> resources = Stream.of(page.getResources(), globalPage.getResources())
+                                       .flatMap(List::stream)
+                                       .collect(Collectors.toList());
+        List<String> bundles = Stream.of(page.getDeclaredResourceBundles(), globalPage.getDeclaredResourceBundles())
+                                     .flatMap(List::stream)
+                                     .collect(Collectors.toList());
+        return new PageDescriptor(page.getName(), charset, defaultFlavor, flavors, resources, bundles);
     }
 
     public PageDescriptor getPage(String id) {
-        return pageResources.get(id);
-    }
-
-    /**
-     * @deprecated since 7.4: use {@link #getPage(String)} instead.
-     */
-    @Deprecated
-    public PageDescriptor getThemePage(String id) {
-        return getPage(id);
+        return (PageDescriptor) getContribution(id).orElse(null);
     }
 
     public List<PageDescriptor> getPages() {
-        List<PageDescriptor> res = new ArrayList<>();
-        for (PageDescriptor page : pageResources.values()) {
-            if (page != null) {
-                res.add(page);
-            }
-        }
-        return res;
+        return getContributionValues();
     }
 
     /**
@@ -96,27 +185,11 @@ public class PageRegistry extends ContributionFragmentRegistry<PageDescriptor> {
      * @since 7.10
      */
     public List<String> getPageNames() {
-        return new ArrayList<>(pageResources.keySet());
-    }
-
-    /**
-     * @deprecated since 7.4: use {@link #getPages()} instead.
-     */
-    @Deprecated
-    public List<PageDescriptor> getThemePages() {
-        return getPages();
+        return new ArrayList<>(getContributions().keySet());
     }
 
     public PageDescriptor getConfigurationApplyingToAll() {
-        return pageResources.get("*");
-    }
-
-    /**
-     * @deprecated since 7.4: use {@link #getConfigurationApplyingToAll()} instead.
-     */
-    @Deprecated
-    public PageDescriptor getConfigurationApplyingToAllThemes() {
-        return getConfigurationApplyingToAll();
+        return getPage(GLOBAL_CONFIG_NAME);
     }
 
 }

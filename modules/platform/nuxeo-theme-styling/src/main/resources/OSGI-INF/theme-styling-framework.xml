@@ -52,18 +52,18 @@
       Attribute "charset" is available only since 7.4 (it was previously
       defined by the Theme extension point layout configuration).
 
-      Deprecation note: since 7.4, the 'themePage' element is deprecated: just
-      change it to use the 'page' element instead.
+      Deprecation note: since 7.4, the 'themePage' element is deprecated, and has 
+      been removed as of 11.5: just change it to use the 'page' element instead.
     </documentation>
-    <object class="org.nuxeo.theme.styling.service.descriptors.ThemePage" />
     <object class="org.nuxeo.theme.styling.service.descriptors.PageDescriptor" />
+    <registry class="org.nuxeo.theme.styling.service.registries.PageRegistry" />
   </extension-point>
 
   <extension-point name="styles">
     <documentation>
       The styles extension point is deprecated since 7.4.
 
-      It used to allow defining CSS files holding flavor variables, that can
+      It used to allow defining CSS files holding flavor variables, that should
       be defined as standard resources on the
       org.nuxeo.ecm.platform.WebResources extension point.
     </documentation>
@@ -153,7 +153,7 @@
     <documentation>
       The resources extension point is deprecated since 7.4.
 
-      Resources can now be defined directly on the
+      Resources should now be defined directly on the
       org.nuxeo.ecm.platform.WebResources extension point.
     </documentation>
     <object class="org.nuxeo.ecm.web.resources.core.ResourceDescriptor" />

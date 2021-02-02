@@ -71,32 +71,4 @@ public interface WebResourceManager extends TimestampedService {
      */
     List<Resource> getResources(ResourceContext context, String bundleName, String type);
 
-    /**
-     * Allows to dynamically register a bundle.
-     *
-     * @since 7.4
-     */
-    void registerResourceBundle(ResourceBundle bundle);
-
-    /**
-     * Allows to dynamically unregister a bundle.
-     *
-     * @since 7.4
-     */
-    void unregisterResourceBundle(ResourceBundle bundle);
-
-    /**
-     * Allows to dynamically register a resource.
-     *
-     * @since 7.4
-     */
-    void registerResource(Resource resource);
-
-    /**
-     * Allows to dynamically unregister a resource.
-     *
-     * @since 7.4
-     */
-    void unregisterResource(Resource resource);
-
 }

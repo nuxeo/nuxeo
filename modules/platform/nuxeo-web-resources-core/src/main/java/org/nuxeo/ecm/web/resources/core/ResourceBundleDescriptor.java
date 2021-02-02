@@ -19,28 +19,32 @@
 package org.nuxeo.ecm.web.resources.core;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XMerge;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.web.resources.api.ResourceBundle;
 
 /**
  * @since 7.3
  */
 @XObject("bundle")
+@XRegistry(compatWarnOnMerge = true)
 public class ResourceBundleDescriptor implements ResourceBundle {
 
     @XNode("@name")
-    public String name;
+    @XRegistryId
+    protected String name;
 
-    @XNode("resources@append")
-    boolean append;
-
-    @XNodeList(value = "resources/resource", type = ArrayList.class, componentType = String.class)
-    List<String> resources;
+    @XNodeList(value = "resources/resource", type = LinkedHashSet.class, componentType = String.class)
+    @XMerge(value = XMerge.MERGE, fallback = "resources@append")
+    protected Set<String> resources;
 
     @Override
     public String getName() {
@@ -49,72 +53,7 @@ public class ResourceBundleDescriptor implements ResourceBundle {
 
     @Override
     public List<String> getResources() {
-        return resources;
-    }
-
-    public boolean isAppend() {
-        return append;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setAppend(boolean append) {
-        this.append = append;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setResources(List<String> resources) {
-        this.resources = resources;
-    }
-
-    @Override
-    public ResourceBundleDescriptor clone() {
-        ResourceBundleDescriptor c = new ResourceBundleDescriptor();
-        c.name = name;
-        c.append = append;
-        if (resources != null) {
-            c.resources = new ArrayList<>(resources);
-        }
-        return c;
-    }
-
-    @Override
-    public ResourceBundle merge(ResourceBundle other) {
-        if (other instanceof ResourceBundleDescriptor) {
-            boolean append = ((ResourceBundleDescriptor) other).isAppend();
-            List<String> res = other.getResources();
-            List<String> merged = new ArrayList<>();
-            if (append && resources != null) {
-                merged.addAll(resources);
-            }
-            if (res != null) {
-                merged.addAll(res);
-            }
-            resources = merged;
-        }
-        return this;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof ResourceBundleDescriptor)) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        ResourceBundleDescriptor b = (ResourceBundleDescriptor) obj;
-        return new EqualsBuilder().append(name, b.name).append(append, b.append).append(resources, b.resources).isEquals();
+        return new ArrayList<>(resources);
     }
 
 }

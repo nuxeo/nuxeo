@@ -19,15 +19,17 @@
 package org.nuxeo.theme.styling.service.descriptors;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.web.resources.api.ResourceBundle;
-import org.nuxeo.ecm.web.resources.api.ResourceType;
-import org.nuxeo.ecm.web.resources.core.ResourceBundleDescriptor;
+import org.nuxeo.common.xmap.registry.XMerge;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor to associate resources and flavors to a page.
@@ -35,53 +37,58 @@ import org.nuxeo.ecm.web.resources.core.ResourceBundleDescriptor;
  * @since 7.4
  */
 @XObject("page")
+@XRegistry
 public class PageDescriptor {
 
     public static final String RESOURCE_BUNDLE_PREFIX = "pageResourceBundle_";
 
     @XNode("@name")
-    String name;
+    @XRegistryId
+    protected String name;
 
     /**
      * @since 7.4
      */
     @XNode("@charset")
-    String charset;
+    protected String charset;
 
     @XNode("defaultFlavor")
-    String defaultFlavor;
-
-    /**
-     * @deprecated since 7.4: use resources instead
-     */
-    @Deprecated
-    @XNode("styles@append")
-    boolean appendStyles;
-
-    /**
-     * @deprecated since 7.4: use resources instead
-     */
-    @Deprecated
-    @XNodeList(value = "styles/style", type = ArrayList.class, componentType = String.class)
-    List<String> styles;
-
-    @XNode("flavors@append")
-    boolean appendFlavors;
+    protected String defaultFlavor;
 
     @XNodeList(value = "flavors/flavor", type = ArrayList.class, componentType = String.class)
-    List<String> flavors;
-
-    @XNode("resources@append")
-    boolean appendResources;
+    @XMerge(value = XMerge.MERGE, fallback = "flavors@append", defaultAssignment = false)
+    protected List<String> flavors = new ArrayList<>();
 
     @XNodeList(value = "resources/resource", type = ArrayList.class, componentType = String.class)
-    List<String> resources;
+    @XMerge(value = XMerge.MERGE, fallback = "resources@append", defaultAssignment = false)
+    protected List<String> resources = new ArrayList<>();
 
     /**
      * @since 7.4
      */
     @XNodeList(value = "resources/bundle", type = ArrayList.class, componentType = String.class)
-    List<String> bundles;
+    List<String> bundles = new ArrayList<>();
+
+    // needed by XMap
+    public PageDescriptor() {
+    }
+
+    // needed by service when building a page holding global resources too
+    public PageDescriptor(String name, String charset, String defaultFlavor, List<String> flavors,
+            List<String> resources, List<String> bundles) {
+        this.name = name;
+        this.charset = charset;
+        this.defaultFlavor = defaultFlavor;
+        if (flavors != null) {
+            this.flavors.addAll(flavors);
+        }
+        if (resources != null) {
+            this.resources.addAll(resources);
+        }
+        if (bundles != null) {
+            this.bundles.addAll(bundles);
+        }
+    }
 
     public String getName() {
         return name;
@@ -91,48 +98,8 @@ public class PageDescriptor {
         return defaultFlavor;
     }
 
-    public void setDefaultFlavor(String defaultFlavor) {
-        this.defaultFlavor = defaultFlavor;
-    }
-
-    /**
-     * @deprecated since 7.4: use resources instead
-     */
-    @Deprecated
-    public boolean getAppendStyles() {
-        return appendStyles;
-    }
-
-    /**
-     * @deprecated since 7.4: use resources instead
-     */
-    @Deprecated
-    public List<String> getStyles() {
-        return styles;
-    }
-
-    public boolean getAppendFlavors() {
-        return appendFlavors;
-    }
-
     public List<String> getFlavors() {
         return flavors;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setStyles(List<String> styles) {
-        this.styles = styles;
-    }
-
-    public void setFlavors(List<String> flavors) {
-        this.flavors = flavors;
-    }
-
-    public boolean getAppendResources() {
-        return appendResources;
     }
 
     public boolean hasResources() {
@@ -140,28 +107,7 @@ public class PageDescriptor {
     }
 
     public List<String> getResources() {
-        List<String> res = new ArrayList<>();
-        // BBB
-        if (styles != null) {
-            for (String style : styles) {
-                if (style == null) {
-                    continue;
-                }
-                if (style.endsWith(ResourceType.css.name())) {
-                    res.add(style);
-                } else {
-                    res.add(style + "." + ResourceType.css.name());
-                }
-            }
-        }
-        if (resources != null) {
-            res.addAll(resources);
-        }
-        return res;
-    }
-
-    public void setResources(List<String> resources) {
-        this.resources = resources;
+        return Collections.unmodifiableList(resources);
     }
 
     public String getComputedResourceBundleName() {
@@ -171,48 +117,25 @@ public class PageDescriptor {
         return RESOURCE_BUNDLE_PREFIX + getName().replaceAll("[^a-zA-Z]+", "_");
     }
 
-    public ResourceBundle getComputedResourceBundle() {
-        if (hasResources()) {
-            ResourceBundleDescriptor bundle = new ResourceBundleDescriptor();
-            bundle.setName(getComputedResourceBundleName());
-            bundle.setResources(getResources());
-            bundle.setAppend(getAppendResources());
-            return bundle;
-        }
-        return null;
+    /**
+     * @since 11.5
+     */
+    public List<String> getDeclaredResourceBundles() {
+        return Collections.unmodifiableList(bundles);
     }
 
     /**
      * @since 7.4
      */
     public List<String> getResourceBundles() {
-        List<String> all = new ArrayList<>();
+        Set<String> all = new LinkedHashSet<>();
         if (bundles != null) {
             all.addAll(bundles);
         }
         if (hasResources()) {
             all.add(getComputedResourceBundleName());
         }
-        return all;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setResourceBundles(List<String> bundles) {
-        this.bundles = bundles;
-    }
-
-    public void setAppendStyles(boolean appendStyles) {
-        this.appendStyles = appendStyles;
-    }
-
-    public void setAppendFlavors(boolean appendFlavors) {
-        this.appendFlavors = appendFlavors;
-    }
-
-    public void setAppendResources(boolean appendResources) {
-        this.appendResources = appendResources;
+        return new ArrayList<>(all);
     }
 
     /**
@@ -220,126 +143,6 @@ public class PageDescriptor {
      */
     public String getCharset() {
         return charset;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setCharset(String charset) {
-        this.charset = charset;
-    }
-
-    public void merge(PageDescriptor src) {
-        String newFlavor = src.getDefaultFlavor();
-        if (newFlavor != null) {
-            setDefaultFlavor(newFlavor);
-        }
-
-        String newCharset = src.getCharset();
-        if (newCharset != null) {
-            setCharset(newCharset);
-        }
-
-        List<String> newStyles = src.getStyles();
-        if (newStyles != null) {
-            List<String> merged = new ArrayList<>();
-            merged.addAll(newStyles);
-            boolean keepOld = src.getAppendStyles() || (newStyles.isEmpty() && !src.getAppendStyles());
-            if (keepOld) {
-                // add back old contributions
-                List<String> oldStyles = getStyles();
-                if (oldStyles != null) {
-                    merged.addAll(0, oldStyles);
-                }
-            }
-            setStyles(merged);
-        }
-
-        List<String> newFlavors = src.getFlavors();
-        if (newFlavors != null) {
-            List<String> merged = new ArrayList<>();
-            merged.addAll(newFlavors);
-            boolean keepOld = src.getAppendFlavors() || (newFlavors.isEmpty() && !src.getAppendFlavors());
-            if (keepOld) {
-                // add back old contributions
-                List<String> oldFlavors = getFlavors();
-                if (oldFlavors != null) {
-                    merged.addAll(0, oldFlavors);
-                }
-            }
-            setFlavors(merged);
-        }
-
-        List<String> newResources = src.resources;
-        if (newResources != null) {
-            List<String> merged = new ArrayList<>();
-            merged.addAll(newResources);
-            boolean keepOld = src.getAppendResources() || (newResources.isEmpty() && !src.getAppendResources());
-            if (keepOld) {
-                // add back old contributions
-                List<String> oldResources = resources;
-                if (oldResources != null) {
-                    merged.addAll(0, oldResources);
-                }
-            }
-            setResources(merged);
-        }
-
-        List<String> newBundles = src.bundles;
-        if (newBundles != null) {
-            List<String> merged = new ArrayList<>();
-            merged.addAll(newBundles);
-            boolean keepOld = src.getAppendResources() || (newBundles.isEmpty() && !src.getAppendResources());
-            if (keepOld) {
-                // add back old contributions
-                List<String> oldBundles = bundles;
-                if (oldBundles != null) {
-                    merged.addAll(0, oldBundles);
-                }
-            }
-            setResourceBundles(merged);
-        }
-    }
-
-    @Override
-    public PageDescriptor clone() {
-        PageDescriptor clone = new PageDescriptor();
-        clone.setName(getName());
-        clone.setCharset(getCharset());
-        clone.setDefaultFlavor(getDefaultFlavor());
-        clone.setAppendStyles(getAppendStyles());
-        List<String> styles = getStyles();
-        if (styles != null) {
-            clone.setStyles(new ArrayList<>(styles));
-        }
-        clone.setAppendFlavors(getAppendFlavors());
-        List<String> flavors = getFlavors();
-        if (flavors != null) {
-            clone.setFlavors(new ArrayList<>(flavors));
-        }
-        clone.setAppendResources(getAppendResources());
-        if (resources != null) {
-            clone.setResources(new ArrayList<>(resources));
-        }
-        if (bundles != null) {
-            clone.setResourceBundles(new ArrayList<>(bundles));
-        }
-        return clone;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof PageDescriptor)) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        PageDescriptor p = (PageDescriptor) obj;
-        return new EqualsBuilder().append(name, p.name).append(charset, p.charset).append(defaultFlavor,
-                p.defaultFlavor).append(appendStyles, p.appendStyles).append(styles, p.styles).append(appendFlavors,
-                p.appendFlavors).append(flavors, p.flavors).append(appendResources, p.appendResources).append(
-                resources, p.resources).append(bundles, p.bundles).isEquals();
     }
 
 }

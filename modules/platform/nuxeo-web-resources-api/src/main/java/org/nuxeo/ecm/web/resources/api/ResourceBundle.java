@@ -29,8 +29,4 @@ public interface ResourceBundle {
 
     List<String> getResources();
 
-    ResourceBundle clone();
-
-    ResourceBundle merge(ResourceBundle other);
-
 }

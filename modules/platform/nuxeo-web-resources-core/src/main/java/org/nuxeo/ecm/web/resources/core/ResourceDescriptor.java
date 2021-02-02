@@ -26,15 +26,19 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.web.resources.api.Resource;
 
 /**
  * @since 7.3
  */
 @XObject("resource")
+@XRegistry(compatWarnOnMerge = true)
 public class ResourceDescriptor implements Resource {
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@type")
@@ -109,67 +113,11 @@ public class ResourceDescriptor implements Resource {
     }
 
     /**
-     * @since 7.4
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setDependencies(List<String> dependencies) {
-        this.dependencies = dependencies;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setProcessors(List<String> processors) {
-        this.processors = processors;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setShrinkable(boolean shrinkable) {
-        this.shrinkable = shrinkable;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    /**
      * @since 7.10
      */
     @Override
     public String getTarget() {
         return target;
-    }
-
-    /**
-     * @since 7.10
-     */
-    public void setTarget(String target) {
-        this.target = target;
     }
 
 }

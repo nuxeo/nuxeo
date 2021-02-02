@@ -4,25 +4,25 @@
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
     <!-- check no append behaviour + override default flavor -->
-    <themePage name="testStyling/default">
+    <page name="testStyling/default">
       <defaultFlavor>dark</defaultFlavor>
       <flavors>
         <flavor>dark</flavor>
       </flavors>
-    </themePage>
+    </page>
 
     <!-- check multiple append behaviour -->
-    <themePage name="testStyling/print">
+    <page name="testStyling/print">
       <flavors append="true">
         <flavor>subDark</flavor>
       </flavors>
-    </themePage>
-    <themePage name="testStyling/print">
+    </page>
+    <page name="testStyling/print">
       <defaultFlavor>default</defaultFlavor>
       <flavors append="true">
         <flavor>nonExistingFlavor</flavor>
       </flavors>
-    </themePage>
+    </page>
 
   </extension>
 

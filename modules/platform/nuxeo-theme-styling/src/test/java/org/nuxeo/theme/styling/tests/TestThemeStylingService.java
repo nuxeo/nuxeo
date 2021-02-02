@@ -21,6 +21,7 @@ package org.nuxeo.theme.styling.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
@@ -81,17 +82,14 @@ public class TestThemeStylingService {
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
         ResourceBundle bundle = wrm.getResourceBundle(PageDescriptor.RESOURCE_BUNDLE_PREFIX + "testStyling_default");
         assertNotNull(bundle);
-        assertEquals(4, bundle.getResources().size());
-        assertEquals("nuxeo_dm_default.css", bundle.getResources().get(0));
-        assertEquals("jquery.fancybox.js", bundle.getResources().get(1));
-        assertEquals("nuxeo_dm_default2.css", bundle.getResources().get(2));
-        assertEquals("jquery.fancybox.style.css", bundle.getResources().get(3));
+        assertEquals(2, bundle.getResources().size());
+        assertEquals("jquery.fancybox.js", bundle.getResources().get(0));
+        assertEquals("jquery.fancybox.style.css", bundle.getResources().get(1));
 
         ResourceBundle globalBundle = wrm.getResourceBundle(PageDescriptor.RESOURCE_BUNDLE_PREFIX + "*");
         assertNotNull(globalBundle);
-        assertEquals(2, globalBundle.getResources().size());
-        assertEquals("addon_style.css", globalBundle.getResources().get(0));
-        assertEquals("jquery.addon.js", globalBundle.getResources().get(1));
+        assertEquals(1, globalBundle.getResources().size());
+        assertEquals("jquery.addon.js", globalBundle.getResources().get(0));
 
         hotDeployer.undeploy("org.nuxeo.theme.styling.tests:theme-styling-test-config2.xml");
 
@@ -222,11 +220,9 @@ public class TestThemeStylingService {
         assertEquals("addon_flavor", page.getFlavors().get(3));
         assertEquals(1, page.getResourceBundles().size());
         assertEquals("pageResourceBundle_testStyling_default", page.getResourceBundles().get(0));
-        assertEquals(4, page.getResources().size());
-        assertEquals("nuxeo_dm_default.css", page.getResources().get(0));
-        assertEquals("addon_style.css", page.getResources().get(1));
-        assertEquals("jquery.fancybox.js", page.getResources().get(2));
-        assertEquals("jquery.addon.js", page.getResources().get(3));
+        assertEquals(2, page.getResources().size());
+        assertEquals("jquery.fancybox.js", page.getResources().get(0));
+        assertEquals("jquery.addon.js", page.getResources().get(1));
     }
 
     @Test
@@ -247,12 +243,12 @@ public class TestThemeStylingService {
         hotDeployer.undeploy("org.nuxeo.theme.styling.tests:theme-styling-test-config.xml");
 
         assertNull(service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
-        assertNull(service.getFlavorNames(DEFAULT_PAGE_NAME));
-        assertNull(service.getFlavors(DEFAULT_PAGE_NAME));
+        assertTrue(service.getFlavorNames(DEFAULT_PAGE_NAME).isEmpty());
+        assertTrue(service.getFlavors(DEFAULT_PAGE_NAME).isEmpty());
 
         assertNull(service.getDefaultFlavorName(PRINT_PAGE_NAME));
-        assertNull(service.getFlavorNames(PRINT_PAGE_NAME));
-        assertNull(service.getFlavors(PRINT_PAGE_NAME));
+        assertTrue(service.getFlavorNames(PRINT_PAGE_NAME).isEmpty());
+        assertTrue(service.getFlavors(PRINT_PAGE_NAME).isEmpty());
 
         // check page is null
         assertNull(service.getPage(DEFAULT_PAGE_NAME));
@@ -267,9 +263,8 @@ public class TestThemeStylingService {
         // check global resources from addon are still there
         ResourceBundle global = wrm.getResourceBundle(PageDescriptor.RESOURCE_BUNDLE_PREFIX + "*");
         assertNotNull(global);
-        assertEquals(2, global.getResources().size());
-        assertEquals("addon_style.css", global.getResources().get(0));
-        assertEquals("jquery.addon.js", global.getResources().get(1));
+        assertEquals(1, global.getResources().size());
+        assertEquals("jquery.addon.js", global.getResources().get(0));
 
         // check presets are not registered on service anymore
         Map<String, String> presets = service.getPresetVariables("default");
@@ -368,10 +363,8 @@ public class TestThemeStylingService {
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
         ResourceBundle bundle = wrm.getResourceBundle(PageDescriptor.RESOURCE_BUNDLE_PREFIX + "testStyling_default");
         assertNotNull(bundle);
-        assertEquals(2, bundle.getResources().size());
-        assertEquals("nuxeo_dm_default.css", bundle.getResources().get(0));
-        assertEquals("jquery.fancybox.js", bundle.getResources().get(1));
-
+        assertEquals(1, bundle.getResources().size());
+        assertEquals("jquery.fancybox.js", bundle.getResources().get(0));
     }
 
 }

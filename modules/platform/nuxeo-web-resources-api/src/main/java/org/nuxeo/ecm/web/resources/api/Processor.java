@@ -33,11 +33,6 @@ public interface Processor extends Comparable<Processor> {
     String getName();
 
     /**
-     * Boolean flag controlling enablement of a processor.
-     */
-    boolean isEnabled();
-
-    /**
      * Flag type markers for processors filtering depending on use cases.
      */
     List<String> getTypes();

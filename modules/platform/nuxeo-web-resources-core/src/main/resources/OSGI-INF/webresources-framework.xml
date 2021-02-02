@@ -101,6 +101,7 @@
 
     </documentation>
     <object class="org.nuxeo.ecm.web.resources.core.ResourceDescriptor" />
+    <registry class="org.nuxeo.ecm.web.resources.core.ResourceRegistry" />
   </extension-point>
 
   <extension-point name="bundles">
