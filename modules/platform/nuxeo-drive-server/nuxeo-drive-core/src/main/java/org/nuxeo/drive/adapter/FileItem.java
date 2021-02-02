@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Representation of a file, ie. a downloadable {@link FileSystemItem}.
@@ -47,6 +48,9 @@ public interface FileItem extends FileSystemItem {
 
     /** @since 11.1 */
     long getSize();
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    String getOldDigest();
 
     boolean getCanUpdate();
 
