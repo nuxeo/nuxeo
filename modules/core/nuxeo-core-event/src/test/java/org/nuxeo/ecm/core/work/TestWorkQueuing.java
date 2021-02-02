@@ -29,8 +29,7 @@ public class TestWorkQueuing extends MemoryWorkQueuing {
 
     @Override
     public MemoryBlockingQueue init(WorkQueueDescriptor config) {
-        MemoryBlockingQueue queue =
-         new MemoryBlockingQueue(config.id, this, config.getCapacity()) {
+        MemoryBlockingQueue queue = new MemoryBlockingQueue(config.id, this, config.getCapacity()) {
             @Override
             public void putElement(Runnable r) throws InterruptedException {
                 super.putElement(clone(r));

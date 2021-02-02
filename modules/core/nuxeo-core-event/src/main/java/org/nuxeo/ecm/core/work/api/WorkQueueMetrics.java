@@ -21,7 +21,6 @@ import java.io.Serializable;
  * Provides coherent queue metrics
  *
  * @since 8.3
- *
  */
 public class WorkQueueMetrics implements Serializable {
 
@@ -49,11 +48,11 @@ public class WorkQueueMetrics implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result +  queueId.hashCode();
-        result = prime * result +  scheduled.hashCode();
-        result = prime * result +  running.hashCode();
-        result = prime * result +  completed.hashCode();
-        result = prime * result +  canceled.hashCode();
+        result = prime * result + queueId.hashCode();
+        result = prime * result + scheduled.hashCode();
+        result = prime * result + running.hashCode();
+        result = prime * result + completed.hashCode();
+        result = prime * result + canceled.hashCode();
         return result;
     }
 
@@ -91,16 +90,16 @@ public class WorkQueueMetrics implements Serializable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("[")
-                .append(queueId)
-                .append(", ")
-                .append(scheduled)
-                .append(", ")
-                .append(running)
-                .append(", ")
-                .append(completed)
-                .append(", ")
-                .append(canceled)
-                .append("]");
+               .append(queueId)
+               .append(", ")
+               .append(scheduled)
+               .append(", ")
+               .append(running)
+               .append(", ")
+               .append(completed)
+               .append(", ")
+               .append(canceled)
+               .append("]");
         return builder.toString();
     }
 

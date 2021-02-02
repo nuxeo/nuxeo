@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 
 /**
  * An event listener that counts failed work.
+ *
  * @since 10.1
  */
 public class WorkFailureEventListener implements EventListener {

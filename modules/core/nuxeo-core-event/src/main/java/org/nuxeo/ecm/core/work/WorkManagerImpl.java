@@ -322,7 +322,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected boolean isProcessingDisabled() {
         if (Boolean.parseBoolean(Framework.getProperty(WORKMANAGER_PROCESSING_DISABLE, "false"))) {
-            log.warn("nuxeo.work.processing.disable=true is now deprecated, use nuxeo.work.processing.enabled=false instead");
+            log.warn(
+                    "nuxeo.work.processing.disable=true is now deprecated, use nuxeo.work.processing.enabled=false instead");
             return true;
         }
         if (Framework.isBooleanPropertyFalse(WORKMANAGER_PROCESSING_ENABLED)) {
@@ -665,12 +666,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             queueId = queue.queueId;
             running = new ConcurrentLinkedQueue<>();
             // init metrics
-            scheduledCount = registry.counter(
-                    MetricName.build("nuxeo.works.queue.scheduled").tagged("queue", queueId));
-            runningCount = registry.counter(
-                    MetricName.build("nuxeo.works.queue.running").tagged("queue", queueId));
-            completedCount = registry.counter(
-                    MetricName.build("nuxeo.works.queue.completed").tagged("queue", queueId));
+            scheduledCount = registry.counter(MetricName.build("nuxeo.works.queue.scheduled").tagged("queue", queueId));
+            runningCount = registry.counter(MetricName.build("nuxeo.works.queue.running").tagged("queue", queueId));
+            completedCount = registry.counter(MetricName.build("nuxeo.works.queue.completed").tagged("queue", queueId));
             workTimer = registry.timer(MetricName.build("nuxeo.works.queue.timer").tagged("queue", queueId));
         }
 
