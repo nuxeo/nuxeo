@@ -66,8 +66,8 @@ public class RenderDocumentFeed {
     protected String charset = "UTF-8";
 
     @OperationMethod
-    public Blob run(DocumentModelList docs) throws OperationException, RenderingException, TemplateException,
-            IOException {
+    public Blob run(DocumentModelList docs)
+            throws OperationException, RenderingException, TemplateException, IOException {
         String content = RenderingService.getInstance().render(type, template, ctx);
         return Blobs.createBlob(content, mimeType, charset, name);
     }
