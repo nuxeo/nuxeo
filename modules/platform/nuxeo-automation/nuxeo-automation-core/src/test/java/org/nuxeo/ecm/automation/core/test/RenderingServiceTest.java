@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -41,7 +42,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRefList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -160,4 +163,71 @@ public class RenderingServiceTest {
 
     }
 
+    // NXP-28512
+    @Test
+    public void testRenderDocumentWithStringInput() throws OperationException, IOException {
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(src.getId());
+            OperationChain chain = new OperationChain("testRenderDocument");
+            chain.add(RenderDocument.ID).set("template", "Hello ${This.title}");
+            Blob blob = (Blob) service.run(ctx, chain);
+            assertEquals("Hello Source", blob.getString());
+        }
+    }
+
+    // NXP-28512
+    @Test
+    public void testRenderDocumentWithRefInput() throws OperationException, IOException {
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(src.getRef());
+            OperationChain chain = new OperationChain("testRenderDocument");
+            chain.add(RenderDocument.ID).set("template", "Hello ${This.title}");
+            Blob blob = (Blob) service.run(ctx, chain);
+            assertEquals("Hello Source", blob.getString());
+        }
+
+        try (OperationContext ctx = new OperationContext(session)) {
+            DocumentRefList refList = new DocumentRefListImpl(List.of(src.getRef(), dst.getRef()));
+            ctx.setInput(refList);
+            OperationChain chain = new OperationChain("testRenderDocument");
+            chain.add(RenderDocument.ID).set("template", "Hello ${This.title}");
+            BlobList blobs = (BlobList) service.run(ctx, chain);
+            assertEquals(2, blobs.size());
+            assertEquals("Hello Source", blobs.get(0).getString());
+            assertEquals("Hello Destination", blobs.get(1).getString());
+        }
+    }
+
+    // NXP-28512
+    @Test
+    public void testRenderDocumentFeedWithStringInput() throws OperationException, IOException {
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(String.join(",", src.getId(), dst.getId()));
+            OperationChain chain = new OperationChain("testRenderDocumentFeed");
+            chain.add(RenderDocumentFeed.ID)
+                 .set("template", Renderer.TEMPLATE_PREFIX + "render.mvel")
+                 .set("type", "mvel");
+            Blob blob = (Blob) service.run(ctx, chain);
+            String r = blob.getString();
+            r = r.replaceAll("\\s+", "");
+            assertEquals("SourceDestination", r);
+        }
+    }
+
+    // NXP-28512
+    @Test
+    public void testRenderDocumentFeedWithRefsInput() throws OperationException, IOException {
+        try (OperationContext ctx = new OperationContext(session)) {
+            DocumentRefList refList = new DocumentRefListImpl(List.of(src.getRef(), dst.getRef()));
+            ctx.setInput(refList);
+            OperationChain chain = new OperationChain("testRenderDocumentFeed");
+            chain.add(RenderDocumentFeed.ID)
+                 .set("template", Renderer.TEMPLATE_PREFIX + "render.mvel")
+                 .set("type", "mvel");
+            Blob blob = (Blob) service.run(ctx, chain);
+            String r = blob.getString();
+            r = r.replaceAll("\\s+", "");
+            assertEquals("SourceDestination", r);
+        }
+    }
 }
