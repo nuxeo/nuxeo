@@ -29,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
+import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemChange;
@@ -40,6 +41,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -119,7 +122,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             log.debug("Handling log entry {}", entry);
             FileSystemItemChange change = null;
             DocumentRef docRef = new IdRef(entry.getDocUUID());
-            ExtendedInfo fsIdInfo = entry.getExtendedInfos().get("fileSystemItemId");
+            Map<String, ExtendedInfo> extendedInfos = entry.getExtendedInfos();
+            ExtendedInfo fsIdInfo = extendedInfos.get("fileSystemItemId");
             if (fsIdInfo != null) {
                 // This document has been deleted, moved, is an unregistered synchronization root or its security has
                 // been updated, we just know the FileSystemItem id and name.
@@ -191,6 +195,19 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                             "Document {} ({}) is not adaptable as a FileSystemItem, not adding any entry to the change summary.",
                             entry::getDocPath, () -> docRef);
                 } else {
+                    if (DocumentEventTypes.BLOB_DIGEST_UPDATED.equals(entry.getEventId())) {
+                        ExtendedInfo oldDigestInfo = extendedInfos.get(CoreEventConstants.BLOB_DIGEST_UPDATED_OLD_DIGEST);
+                        if (oldDigestInfo != null) {
+                            String oldDigest = oldDigestInfo.getValue(String.class);
+                            if (oldDigest != null) {
+                                FileSystemItem fsItem = change.getFileSystemItem();
+                                if (fsItem instanceof DocumentBackedFileItem) {
+                                    DocumentBackedFileItem dbfi = (DocumentBackedFileItem) fsItem;
+                                    dbfi.setOldDigest(oldDigest);
+                                }
+                            }
+                        }
+                    }
                     log.debug("Adding FileSystemItemChange entry to the change summary: {}", change);
                     changes.add(change);
                 }
@@ -238,7 +255,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             auditQuerySb.append("log.category = 'eventDocumentCategory'");
             // TODO: don't hardcode event ids (contribute them?)
             auditQuerySb.append(
-                    " and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved' or log.eventId = 'documentCreatedByCopy' or log.eventId = 'documentRestored' or log.eventId = 'addedToCollection' or log.eventId = 'documentProxyPublished' or log.eventId = 'documentLocked' or log.eventId = 'documentUnlocked' or log.eventId = 'documentUntrashed')");
+                    " and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved' or log.eventId = 'documentCreatedByCopy' or log.eventId = 'documentRestored' or log.eventId = 'addedToCollection' or log.eventId = 'documentProxyPublished' or log.eventId = 'documentLocked' or log.eventId = 'documentUnlocked' or log.eventId = 'documentUntrashed' or log.eventId = 'blobDigestUpdated')");
             auditQuerySb.append(" or ");
             auditQuerySb.append("log.category = 'eventLifeCycleCategory'");
             auditQuerySb.append(" and log.eventId = 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' ");

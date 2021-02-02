@@ -86,7 +86,7 @@ public class MongoDBAuditChangeFinder extends AuditChangeFinder {
         Bson documentEvent = and(eq("category", "eventDocumentCategory"),
                 in("eventId", "documentCreated", "documentModified", "documentMoved", "documentCreatedByCopy",
                         "documentRestored", "addedToCollection", "documentProxyPublished", "documentLocked",
-                        "documentUnlocked", "documentUntrashed"));
+                        "documentUnlocked", "documentUntrashed", "blobDigestUpdated"));
         Bson sessionRepository = eq("repositoryId", session.getRepositoryName());
         Bson driveCategory = eq("category", "NuxeoDrive");
         Bson notRootUnregistered = ne("eventId", "rootUnregistered");
