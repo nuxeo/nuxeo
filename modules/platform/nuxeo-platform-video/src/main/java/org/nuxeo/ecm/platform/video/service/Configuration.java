@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.video.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Configuration of the {@link VideoService}.
@@ -29,6 +30,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.4
  */
 @XObject("configuration")
+@XRegistry(compatWarnOnMerge = true)
 public class Configuration {
 
     public static final Configuration DEFAULT_CONFIGURATION = new Configuration();

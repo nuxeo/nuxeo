@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.video.service;
 import static org.nuxeo.ecm.platform.video.service.Configuration.DEFAULT_CONFIGURATION;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,7 +47,6 @@ import org.nuxeo.ecm.platform.video.VideoHelper;
 import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -69,19 +67,19 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
      */
     public static final String CONFIGURATION_EP = "configuration";
 
-    protected VideoConversionContributionHandler videoConversions;
-
-    protected AutomaticVideoConversionContributionHandler automaticVideoConversions;
-
     /**
      * @since 7.4
      */
-    protected Configuration configuration = DEFAULT_CONFIGURATION;
+    protected Configuration configuration;
 
     @Override
-    public void activate(ComponentContext context) {
-        videoConversions = new VideoConversionContributionHandler();
-        automaticVideoConversions = new AutomaticVideoConversionContributionHandler();
+    public void start(ComponentContext context) {
+        configuration = this.<Configuration> getRegistryContribution(CONFIGURATION_EP).orElse(DEFAULT_CONFIGURATION);
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        configuration = null;
     }
 
     @Override
@@ -96,47 +94,11 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
                 throw new NuxeoException(e);
             }
         }
-        videoConversions = null;
-        automaticVideoConversions = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case VIDEO_CONVERSIONS_EP:
-            videoConversions.addContribution((VideoConversion) contribution);
-            break;
-        case DEFAULT_VIDEO_CONVERSIONS_EP:
-            automaticVideoConversions.addContribution((AutomaticVideoConversion) contribution);
-            break;
-        case CONFIGURATION_EP:
-            configuration = (Configuration) contribution;
-            break;
-        default:
-            break;
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case VIDEO_CONVERSIONS_EP:
-            videoConversions.removeContribution((VideoConversion) contribution);
-            break;
-        case DEFAULT_VIDEO_CONVERSIONS_EP:
-            automaticVideoConversions.removeContribution((AutomaticVideoConversion) contribution);
-            break;
-        case CONFIGURATION_EP:
-            configuration = DEFAULT_CONFIGURATION;
-            break;
-        default:
-            break;
-        }
     }
 
     @Override
     public Collection<VideoConversion> getAvailableVideoConversions() {
-        return videoConversions.registry.values();
+        return getRegistryContributions(VIDEO_CONVERSIONS_EP);
     }
 
     @Override
@@ -149,7 +111,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public void launchAutomaticConversions(DocumentModel doc, boolean onlyMissing) {
-        List<AutomaticVideoConversion> conversions = new ArrayList<>(automaticVideoConversions.registry.values());
+        List<AutomaticVideoConversion> conversions = getRegistryContributions(DEFAULT_VIDEO_CONVERSIONS_EP);
         Collections.sort(conversions);
         VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
         for (AutomaticVideoConversion conversion : conversions) {
@@ -161,11 +123,10 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public TranscodedVideo convert(Video originalVideo, String conversionName) {
-        if (!videoConversions.registry.containsKey(conversionName)) {
-            throw new NuxeoException(String.format("'%s' is not a registered video conversion.", conversionName));
-        }
+        var conversion = this.<VideoConversion> getRegistryContribution(VIDEO_CONVERSIONS_EP, conversionName)
+                             .orElseThrow(() -> new NuxeoException(
+                                     String.format("'%s' is not a registered video conversion.", conversionName)));
         BlobHolder blobHolder = new SimpleBlobHolder(originalVideo.getBlob());
-        VideoConversion conversion = videoConversions.registry.get(conversionName);
         Map<String, Serializable> parameters = new HashMap<>();
         parameters.put("height", conversion.getHeight());
         parameters.put("videoInfo", originalVideo.getVideoInfo());
@@ -193,7 +154,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public VideoConversion getVideoConversion(String conversionName) {
-        return videoConversions.registry.get(conversionName);
+        return this.<VideoConversion> getRegistryContribution(VIDEO_CONVERSIONS_EP, conversionName).orElse(null);
     }
 
     @Override
