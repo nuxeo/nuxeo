@@ -441,9 +441,13 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
                 // calling wakeup enable to terminate consumer blocking on poll call
                 consumer.close();
             } catch (ConcurrentModificationException e) {
-                // closing from another thread raise this exception, try to wakeup the owner
-                log.info("Closing tailer from another thread, send wakeup");
-                consumer.wakeup();
+                // closing from another thread raises this exception
+                // it is possible that the consumer is already closed
+                if (consumer != null) {
+                    // if not try to wakeup the owner
+                    log.info("Closing tailer from another thread, send wakeup");
+                    consumer.wakeup();
+                }
                 return;
             } catch (InterruptException | IllegalStateException e) {
                 // this happens if the consumer has already been closed or if it is closed from another
