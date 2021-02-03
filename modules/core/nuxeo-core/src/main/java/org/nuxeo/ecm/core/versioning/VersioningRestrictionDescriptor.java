@@ -24,6 +24,8 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 
@@ -36,13 +38,15 @@ import org.nuxeo.ecm.core.api.VersioningOption;
  * @since 9.1
  */
 @XObject("restriction")
+@XRegistry(compatWarnOnMerge = true)
 public class VersioningRestrictionDescriptor {
 
     @XNode("@type")
+    @XRegistryId
     protected String type;
 
     @XNodeMap(value = "options", key = "@lifeCycleState", type = HashMap.class, componentType = VersioningRestrictionOptionsDescriptor.class)
-    protected Map<String, VersioningRestrictionOptionsDescriptor> options = new HashMap<>();
+    protected Map<String, VersioningRestrictionOptionsDescriptor> options;
 
     public String getType() {
         return type;
@@ -50,13 +54,6 @@ public class VersioningRestrictionDescriptor {
 
     public VersioningRestrictionOptionsDescriptor getRestrictionOption(String key) {
         return options.get(key);
-    }
-
-    public void merge(VersioningRestrictionDescriptor other) {
-        if (other.type != null) {
-            type = other.type;
-        }
-        options.putAll(other.options); // always merge options
     }
 
 }

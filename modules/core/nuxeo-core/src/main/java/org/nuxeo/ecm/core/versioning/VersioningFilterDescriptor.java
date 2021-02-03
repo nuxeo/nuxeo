@@ -27,16 +27,20 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @since 9.1
  */
 @XObject("filter")
+@XRegistry
 public class VersioningFilterDescriptor {
 
     private static final Log log = LogFactory.getLog(VersioningFilterDescriptor.class);
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     @XNode("@class")

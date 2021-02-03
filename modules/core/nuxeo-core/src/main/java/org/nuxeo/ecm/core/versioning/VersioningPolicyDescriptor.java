@@ -25,15 +25,19 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.VersioningOption;
 
 /**
  * @since 9.1
  */
 @XObject("policy")
+@XRegistry(compatWarnOnMerge = true)
 public class VersioningPolicyDescriptor implements Comparable<VersioningPolicyDescriptor> {
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     @XNode("@order")
@@ -73,20 +77,6 @@ public class VersioningPolicyDescriptor implements Comparable<VersioningPolicyDe
 
     public List<String> getFilterIds() {
         return filterIds;
-    }
-
-    public void merge(VersioningPolicyDescriptor other) {
-        if (other.id != null) {
-            id = other.id;
-        }
-        order = other.order;
-        if (other.increment != null) {
-            increment = other.increment;
-        }
-        if (other.initialState != null) {
-            initialState = other.initialState;
-        }
-        filterIds.addAll(other.filterIds);
     }
 
     @Override
