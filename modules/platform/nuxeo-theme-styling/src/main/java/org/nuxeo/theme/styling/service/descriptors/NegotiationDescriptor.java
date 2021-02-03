@@ -22,10 +22,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XMerge;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor for contributed negotiators.
@@ -33,31 +35,19 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.4
  */
 @XObject("negotiation")
+@XRegistry
 public class NegotiationDescriptor {
 
     @XNode("@target")
+    @XRegistryId
     protected String target;
 
-    @XNode("@append")
-    protected boolean append = false;
-
     @XNodeList(value = "negotiator", type = ArrayList.class, componentType = NegotiatorDescriptor.class)
-    List<NegotiatorDescriptor> negotiators;
+    @XMerge(value = XMerge.MERGE, fallback = "@append", defaultAssignment = false)
+    protected List<NegotiatorDescriptor> negotiators;
 
     public String getTarget() {
         return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
-    }
-
-    public boolean isAppend() {
-        return append;
-    }
-
-    public void setAppend(boolean append) {
-        this.append = append;
     }
 
     public List<NegotiatorDescriptor> getNegotiators() {
@@ -69,52 +59,4 @@ public class NegotiationDescriptor {
         return res;
     }
 
-    public void setNegotiators(List<NegotiatorDescriptor> negotiators) {
-        this.negotiators = negotiators;
-    }
-
-    public void merge(NegotiationDescriptor src) {
-        List<NegotiatorDescriptor> negotiators = src.negotiators;
-        if (negotiators != null) {
-            List<NegotiatorDescriptor> merged = new ArrayList<>();
-            merged.addAll(negotiators);
-            boolean keepOld = src.isAppend() || (negotiators.isEmpty() && !src.isAppend());
-            if (keepOld) {
-                // add back old contributions
-                List<NegotiatorDescriptor> oldNegotiators = this.negotiators;
-                if (oldNegotiators != null) {
-                    merged.addAll(0, oldNegotiators);
-                }
-            }
-            setNegotiators(merged);
-        }
-    }
-
-    @Override
-    public NegotiationDescriptor clone() {
-        NegotiationDescriptor clone = new NegotiationDescriptor();
-        clone.setTarget(getTarget());
-        clone.setAppend(isAppend());
-        List<NegotiatorDescriptor> negotiators = this.negotiators;
-        if (negotiators != null) {
-            List<NegotiatorDescriptor> cnegociators = new ArrayList<>();
-            for (NegotiatorDescriptor neg : negotiators) {
-                cnegociators.add(neg.clone());
-            }
-            clone.setNegotiators(cnegociators);
-        }
-        return clone;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof NegotiationDescriptor)) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        NegotiationDescriptor p = (NegotiationDescriptor) obj;
-        return new EqualsBuilder().append(target, p.target).append(append, p.append).append(negotiators, p.negotiators).isEquals();
-    }
 }

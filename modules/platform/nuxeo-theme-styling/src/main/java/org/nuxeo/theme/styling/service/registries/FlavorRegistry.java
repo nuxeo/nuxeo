@@ -18,72 +18,77 @@
  */
 package org.nuxeo.theme.styling.service.registries;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.Resource;
+import org.nuxeo.common.xmap.XAnnotatedObject;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
+import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
+import org.nuxeo.theme.styling.service.descriptors.SassImport;
+import org.w3c.dom.Element;
 
 /**
  * Registry for theme flavors, handling merge of registered {@link FlavorDescriptor} elements.
  *
  * @since 5.5
  */
-public class FlavorRegistry extends ContributionFragmentRegistry<FlavorDescriptor> {
+public class FlavorRegistry extends MapRegistry {
 
-    protected Map<String, FlavorDescriptor> themePageFlavors = new HashMap<>();
+    private static final Logger log = LogManager.getLogger(FlavorRegistry.class);
 
     @Override
-    public String getContributionId(FlavorDescriptor contrib) {
-        return contrib.getName();
+    @SuppressWarnings("unchecked")
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        FlavorDescriptor flavor = super.doRegister(ctx, xObject, element, extensionId);
+        updateFlavor(flavor, ctx);
+        return (T) flavor;
     }
 
-    @Override
-    public void contributionUpdated(String id, FlavorDescriptor contrib, FlavorDescriptor newOrigContrib) {
-        themePageFlavors.put(id, contrib);
-    }
-
-    @Override
-    public synchronized void removeContribution(FlavorDescriptor contrib) {
-        removeContribution(contrib, true);
-    }
-
-    @Override
-    public void contributionRemoved(String id, FlavorDescriptor origContrib) {
-        themePageFlavors.remove(id);
-    }
-
-    @Override
-    public FlavorDescriptor clone(FlavorDescriptor orig) {
-        if (orig == null) {
-            return null;
+    protected void updateFlavor(FlavorDescriptor flavor, Context ctx) {
+        // set flavor presets files content
+        List<FlavorPresets> presets = flavor.getPresets();
+        for (FlavorPresets myPreset : presets) {
+            if (myPreset.getContent() != null) {
+                continue;
+            }
+            Resource resource = myPreset.getResource();
+            try {
+                myPreset.setContent(new String(IOUtils.toByteArray(resource.toURL())));
+            } catch (IOException e) {
+                log.error("Could not find resource at '{}'", resource);
+                myPreset.setContent("");
+            }
         }
-        return orig.clone();
-    }
 
-    @Override
-    public void merge(FlavorDescriptor src, FlavorDescriptor dst) {
-        dst.merge(src);
-    }
-
-    public FlavorDescriptor getFlavor(String id) {
-        return themePageFlavors.get(id);
+        // set flavor sass variables
+        List<SassImport> sassVars = flavor.getSassImports();
+        for (SassImport var : sassVars) {
+            if (var.getContent() != null) {
+                continue;
+            }
+            Resource resource = var.getResource();
+            try {
+                var.setContent(new String(IOUtils.toByteArray(resource.toURL())));
+            } catch (IOException e) {
+                log.error("Could not find resource at '{}'", resource);
+                var.setContent("");
+            }
+        }
     }
 
     public List<FlavorDescriptor> getFlavorsExtending(String flavor) {
-        List<FlavorDescriptor> res = new ArrayList<>();
-        for (FlavorDescriptor f : themePageFlavors.values()) {
-            if (f != null) {
-                String extendsFlavor = f.getExtendsFlavor();
-                if (!StringUtils.isBlank(extendsFlavor) && extendsFlavor.equals(flavor)) {
-                    res.add(f);
-                }
-            }
-        }
-        return res;
+        return this.<FlavorDescriptor> getContributionValues().stream().filter(f -> {
+            String extendsFlavor = f.getExtendsFlavor();
+            return !StringUtils.isBlank(extendsFlavor) && extendsFlavor.equals(flavor);
+        }).collect(Collectors.toList());
     }
 
 }

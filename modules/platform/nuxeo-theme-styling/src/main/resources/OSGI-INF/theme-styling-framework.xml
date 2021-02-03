@@ -147,6 +147,7 @@
       extension point layout configuration).
     </documentation>
     <object class="org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor" />
+    <registry class="org.nuxeo.theme.styling.service.registries.FlavorRegistry" />
   </extension-point>
 
   <extension-point name="resources">
