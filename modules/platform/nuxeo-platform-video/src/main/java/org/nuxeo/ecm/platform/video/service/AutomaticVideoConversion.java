@@ -21,6 +21,9 @@ package org.nuxeo.ecm.platform.video.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Object representing a registered automatic video conversion on the {@link VideoService}.
@@ -31,13 +34,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  */
 @XObject("automaticVideoConversion")
-public class AutomaticVideoConversion implements Cloneable, Comparable<AutomaticVideoConversion> {
+@XRegistry(enable = false)
+public class AutomaticVideoConversion implements Comparable<AutomaticVideoConversion> {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
-    @XNode("@enabled")
-    private boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    private boolean enabled;
 
     @XNode("@order")
     private int order = 0;
@@ -46,21 +52,8 @@ public class AutomaticVideoConversion implements Cloneable, Comparable<Automatic
         return name;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
     public int getOrder() {
         return order;
-    }
-
-    @Override
-    public AutomaticVideoConversion clone() throws CloneNotSupportedException {
-        return (AutomaticVideoConversion) super.clone();
     }
 
     @Override

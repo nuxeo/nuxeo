@@ -21,6 +21,9 @@ package org.nuxeo.ecm.platform.video.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Object representing a registered video conversion on the {@link VideoService} .
@@ -29,9 +32,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  */
 @XObject("videoConversion")
-public class VideoConversion implements Cloneable {
+@XRegistry(enable = false)
+public class VideoConversion {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     @XNode("@converter")
@@ -40,20 +45,21 @@ public class VideoConversion implements Cloneable {
     @XNode("@height")
     private long height;
 
-    @XNode("@enabled")
-    private boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    private boolean enabled;
 
     /**
      * @since 7.2
      */
-    @XNode("@rendition")
-    private Boolean rendition;
+    @XNode(value = "@rendition", defaultAssignment = "true")
+    private boolean rendition;
 
     /**
      * @since 7.2
      */
-    @XNode("@renditionVisible")
-    private Boolean renditionVisible;
+    @XNode(value = "@renditionVisible", defaultAssignment = "true")
+    private boolean renditionVisible;
 
     public String getName() {
         return name;
@@ -67,49 +73,12 @@ public class VideoConversion implements Cloneable {
         return height;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setConverter(String converter) {
-        this.converter = converter;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setHeight(long height) {
-        this.height = height;
-    }
-
     public boolean isRenditionVisible() {
-        return renditionVisible == null || renditionVisible;
-    }
-
-    public boolean isRenditionVisibleSet() {
-        return renditionVisible != null;
+        return renditionVisible;
     }
 
     public boolean isRendition() {
-        return rendition == null || rendition;
-    }
-
-    public boolean isRenditionSet() {
-        return rendition != null;
-    }
-
-    public void setRendition(Boolean rendition) {
-        this.rendition = rendition;
-    }
-
-    public void setRenditionVisible(Boolean renditionVisible) {
-        this.renditionVisible = renditionVisible;
-    }
-
-    @Override
-    public VideoConversion clone() throws CloneNotSupportedException {
-        return (VideoConversion) super.clone();
+        return rendition;
     }
 
 }
