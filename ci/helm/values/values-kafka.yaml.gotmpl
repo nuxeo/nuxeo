@@ -1,8 +1,6 @@
 image:
   tag: "2.6.0"
 replicaCount: 1
-persistence:
-  enabled: $PERSISTENCE
 serviceAccount:
   create: false
 resources:
@@ -27,10 +25,9 @@ extraEnvVars:
   - name: KAFKA_CFG_STATE_LOG_REPLICATION_FACTOR
     value: "1"
 podLabels:
-  branch: "$BRANCH_NAME"
+  branch: {{ requiredEnv "BRANCH_NAME" | quote }}
   resource: pod
   team: platform
-  usage: "$USAGE"
 tolerations:
   - key: team
     operator: Equal
@@ -42,13 +39,10 @@ zookeeper:
   image:
     tag: "3.6.2"
   replicaCount: 1
-  persistence:
-    enabled: $PERSISTENCE
   podLabels:
-    branch: "$BRANCH_NAME"
+    branch: {{ requiredEnv "BRANCH_NAME" | quote }}
     resource: pod
     team: platform
-    usage: "$USAGE"
   tolerations:
     - key: team
       operator: Equal

@@ -4,8 +4,6 @@ cluster:
   enabled: false
 usePassword: false
 master:
-  persistence:
-    enabled: $PERSISTENCE
   resources:
     requests:
       cpu: "100m"
@@ -14,16 +12,14 @@ master:
       cpu: "200m"
       memory: "64Mi"
   podLabels:
-    branch: "$BRANCH_NAME"
+    branch: {{ requiredEnv "BRANCH_NAME" | quote }}
     resource: pod
     team: platform
-    usage: "$USAGE"
   service:
     labels:
-      branch: "$BRANCH_NAME"
+      branch: {{ requiredEnv "BRANCH_NAME" | quote }}
       resource: service
       team: platform
-      usage: "$USAGE"
   tolerations:
     - key: team
       operator: Equal

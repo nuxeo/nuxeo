@@ -36,3 +36,7 @@ chromedriver.log
 addons/nuxeo-shell/
 nuxeo-jsf-ui/
 marketplace/
+
+# Helm charts
+**/*.tgz
+**/*.lock

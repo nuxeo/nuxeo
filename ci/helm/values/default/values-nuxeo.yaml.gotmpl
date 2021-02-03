@@ -1,0 +1,52 @@
+image:
+  repository: {{ printf "%s/nuxeo/nuxeo" (requiredEnv "DOCKER_REGISTRY") }}
+  tag: {{ requiredEnv "VERSION" | quote }}
+  pullSecrets:
+  - name: kubernetes-docker-cfg
+podLabels:
+  branch: {{ requiredEnv "BRANCH_NAME" | quote }}
+  team: platform
+  resource: pod
+  usage: preview
+  scm-ref: {{ requiredEnv "GIT_COMMIT" | quote }}
+service:
+  labels:
+    branch: {{ requiredEnv "BRANCH_NAME" | quote }}
+    team: platform
+    resource: service
+    usage: preview
+mongodb:
+  enabled: true
+  host: {{ printf "mongodb.%s.svc.cluster.local" (requiredEnv "NAMESPACE") }}
+elasticsearch:
+  enabled: true
+  host: {{ printf "elasticsearch-master.%s.svc.cluster.local" (requiredEnv "NAMESPACE") }}
+kafka:
+  enabled: true
+  host: {{ printf "kafka.%s.svc.cluster.local" (requiredEnv "NAMESPACE") }}
+persistentVolumeStorage:
+  enabled: true
+  size: "100Mi"
+logs:
+  persistence:
+    enabled: true
+    size: "100Mi"
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/server-snippet: ignore_invalid_headers off;
+  hostname: {{ printf "%s.platform.dev.nuxeo.com" (requiredEnv "NAMESPACE") }}
+  tls:
+  - hosts:
+    - {{ printf "%s.platform.dev.nuxeo.com" (requiredEnv "NAMESPACE") }}
+    secretName: platform-cluster-tls
+nodeSelector:
+  team: platform
+tolerations:
+- effect: NoSchedule
+  key: team
+  operator: Equal
+  value: platform

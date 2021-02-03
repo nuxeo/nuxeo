@@ -4,8 +4,6 @@ initdbScripts:
   db-init.sql: |
     CREATE ROLE nuxeo WITH PASSWORD 'nuxeo' LOGIN;
     CREATE DATABASE nuxeo ENCODING 'UTF8' OWNER nuxeo;
-persistence:
-  enabled: $PERSISTENCE
 resources:
   requests:
     cpu: "1"
@@ -15,15 +13,13 @@ resources:
     memory: "2Gi"
 master:
   labels:
-    branch: "$BRANCH_NAME"
+    branch: {{ requiredEnv "BRANCH_NAME" | quote }}
     resource: statefulset
     team: platform
-    usage: "$USAGE"
   podLabels:
-    branch: "$BRANCH_NAME"
+    branch: {{ requiredEnv "BRANCH_NAME" | quote }}
     resource: pod
     team: platform
-    usage: "$USAGE"
   tolerations:
     - key: team
       operator: Equal

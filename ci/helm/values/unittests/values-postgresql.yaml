@@ -1,0 +1,7 @@
+persistence:
+  enabled: false
+master:
+  labels:
+    usage: utests
+  podLabels:
+    usage: utests
