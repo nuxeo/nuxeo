@@ -31,9 +31,7 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="types">
-    <types>
-      <type name="File">newDefault</type>
-    </types>
+    <type name="File" merge="false">newDefault</type>
   </extension>
 
 </component>
