@@ -41,6 +41,7 @@
     </documentation>
 
     <object class="org.nuxeo.ecm.core.work.api.WorkQueueDescriptor" />
+    <registry class="org.nuxeo.ecm.core.work.api.WorkQueueRegistry" />
   </extension-point>
 
   <extension-point name="implementation">
