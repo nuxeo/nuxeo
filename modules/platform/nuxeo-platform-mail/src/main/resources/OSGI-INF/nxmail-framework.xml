@@ -96,8 +96,8 @@
       </p>
 
     </documentation>
-    <object
-      class="org.nuxeo.ecm.platform.mail.action.MessageActionPipeDescriptor" />
+    <object class="org.nuxeo.ecm.platform.mail.action.MessageActionPipeDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.mail.action.MessageActionPipeRegistry" />
   </extension-point>
 
 </component>

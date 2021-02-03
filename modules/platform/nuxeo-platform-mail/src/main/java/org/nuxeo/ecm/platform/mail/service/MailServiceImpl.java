@@ -43,9 +43,9 @@ import org.nuxeo.ecm.platform.mail.action.MessageActionPipeDescriptor;
 import org.nuxeo.ecm.platform.mail.fetcher.PropertiesFetcher;
 import org.nuxeo.ecm.platform.mail.fetcher.PropertiesFetcherDescriptor;
 import org.nuxeo.mail.MailSessionBuilder;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -60,23 +60,11 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     private static final String ACTION_PIPES = "actionPipes";
 
     /**
-     * Fetchers aggregated by name.
-     */
-    private final Map<String, Class<? extends PropertiesFetcher>> fetchers = new HashMap<>();
-
-    /**
-     * Session factories aggregated by name.
-     */
-    private final Map<String, SessionFactoryDescriptor> sessionFactories = new HashMap<>();
-
-    /**
      * Fetchers aggregated by session factory name.
      */
-    private final Map<String, PropertiesFetcher> configuredFetchers = new HashMap<>();
+    private Map<String, PropertiesFetcher> configuredFetchers;
 
-    private final Map<String, MessageActionPipe> actionPipesRegistry = new HashMap<>();
-
-    private final Map<String, MessageActionPipeDescriptor> actionPipeDescriptorsRegistry = new HashMap<>();
+    private Map<String, MessageActionPipe> pipes;
 
     protected final Map<String, Session> sessions = new ConcurrentHashMap<>();
 
@@ -85,46 +73,36 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     }
 
     @Override
-    public void stop(ComponentContext context) {
-        sessions.clear();
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(SESSION_FACTORY)) {
-            SessionFactoryDescriptor descriptor = (SessionFactoryDescriptor) contribution;
-            registerSessionFactory(descriptor);
-        } else if (extensionPoint.equals(PROPERTIES_FETCHER)) {
-            PropertiesFetcherDescriptor descriptor = (PropertiesFetcherDescriptor) contribution;
-            fetchers.put(descriptor.getName(), descriptor.getFetcher());
-        } else if (extensionPoint.equals(ACTION_PIPES)) {
-            MessageActionPipeDescriptor descriptor = (MessageActionPipeDescriptor) contribution;
-            registerActionPipe(descriptor);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        // TODO deal with other extension points
-        if (extensionPoint.equals(ACTION_PIPES)) {
-            MessageActionPipeDescriptor descriptor = (MessageActionPipeDescriptor) contribution;
-            actionPipesRegistry.remove(descriptor.getName());
-        }
-    }
-
-    private void registerSessionFactory(SessionFactoryDescriptor descriptor) {
-        sessionFactories.put(descriptor.getName(), descriptor);
-    }
-
-    private void registerActionPipe(MessageActionPipeDescriptor descriptor) {
-        if (!descriptor.getOverride()) {
-            MessageActionPipeDescriptor existingDescriptor = actionPipeDescriptorsRegistry.get(descriptor.getName());
-            if (existingDescriptor != null) {
-                descriptor.merge(existingDescriptor);
+    public void start(ComponentContext context) {
+        configuredFetchers = new HashMap<>();
+        this.<SessionFactoryDescriptor> getRegistryContributions(SESSION_FACTORY).forEach(descriptor -> {
+            String fetcherName = descriptor.getFetcherName();
+            Class<? extends PropertiesFetcher> clazz = this.<PropertiesFetcherDescriptor> getRegistryContribution(
+                    PROPERTIES_FETCHER, fetcherName).map(PropertiesFetcherDescriptor::getFetcher).orElse(null);
+            if (clazz == null) {
+                addRuntimeMessage(Level.ERROR, String.format("Unknown properties fetcher: %s", fetcherName));
+                return;
             }
-        }
-        actionPipeDescriptorsRegistry.put(descriptor.getName(), descriptor);
-        actionPipesRegistry.put(descriptor.getName(), descriptor.getPipe());
+            try {
+                PropertiesFetcher fetcher = clazz.getDeclaredConstructor().newInstance();
+                fetcher.configureFetcher(descriptor.getProperties());
+                configuredFetchers.put(descriptor.getName(), fetcher);
+            } catch (ReflectiveOperationException e) {
+                addRuntimeMessage(Level.ERROR,
+                        String.format("Unable to init properties fetcher: %s (%s)", name, e.getMessage()));
+            }
+        });
+        pipes = this.<MessageActionPipeDescriptor> getRegistryContributions(ACTION_PIPES)
+                    .stream()
+                    .collect(Collectors.toMap(MessageActionPipeDescriptor::getName,
+                            MessageActionPipeDescriptor::getPipe));
+    }
+
+    @Override
+    public void stop(ComponentContext context) {
+        configuredFetchers = null;
+        pipes = null;
+        sessions.clear();
     }
 
     private static void setDecodeUTFFileNamesSystemProperty() {
@@ -202,7 +180,8 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     }
 
     @Override
-    public void sendMail(String text, String subject, String factory, Address[] recipients, Map<String, Object> context) {
+    public void sendMail(String text, String subject, String factory, Address[] recipients,
+            Map<String, Object> context) {
         Session session = getSession(factory, context);
         Message message = new MimeMessage(session);
         try {
@@ -218,25 +197,12 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
 
     @Override
     public PropertiesFetcher getFetcher(String name) {
-        PropertiesFetcher fetcher = configuredFetchers.get(name);
-        if (fetcher == null) {
-            String fetcherName = sessionFactories.get(name).getFetcherName();
-            Class<? extends PropertiesFetcher> clazz = fetchers.get(fetcherName);
-            SessionFactoryDescriptor descriptor = sessionFactories.get(name);
-            try {
-                fetcher = clazz.getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new NuxeoException("Unable to init properties fetcher: " + name, e);
-            }
-            fetcher.configureFetcher(descriptor.getProperties());
-            configuredFetchers.put(name, fetcher);
-        }
-        return fetcher;
+        return configuredFetchers.get(name);
     }
 
     @Override
     public MessageActionPipe getPipe(String name) {
-        return actionPipesRegistry.get(name);
+        return pipes.get(name);
     }
 
     protected Session newSession(Properties props) {
