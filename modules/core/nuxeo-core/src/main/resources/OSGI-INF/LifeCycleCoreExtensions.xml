@@ -68,20 +68,18 @@
       Nuxeo core default document types to life cycles mapping
     </documentation>
 
-    <types>
-      <type name="File">default</type>
-      <type name="Note">default</type>
-      <type name="Calendar">default</type>
-      <type name="Folder">default</type>
-      <type name="OrderedFolder">default</type>
-      <type name="Workspace">default</type>
-      <type name="Domain">default</type>
-      <type name="Root">default</type>
-      <type name="Section">default</type>
-      <type name="WorkspaceRoot">default</type>
-      <type name="SectionRoot">default</type>
-      <type name="TemplateRoot">default</type>
-    </types>
+    <type name="File">default</type>
+    <type name="Note">default</type>
+    <type name="Calendar">default</type>
+    <type name="Folder">default</type>
+    <type name="OrderedFolder">default</type>
+    <type name="Workspace">default</type>
+    <type name="Domain">default</type>
+    <type name="Root">default</type>
+    <type name="Section">default</type>
+    <type name="WorkspaceRoot">default</type>
+    <type name="SectionRoot">default</type>
+    <type name="TemplateRoot">default</type>
   </extension>
 
 </component>
