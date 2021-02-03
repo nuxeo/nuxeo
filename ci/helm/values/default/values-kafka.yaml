@@ -1,0 +1,9 @@
+persistence:
+  enabled: true
+podLabels:
+  usage: preview
+zookeeper:
+  persistence:
+    enabled: true
+  podLabels:
+    usage: preview

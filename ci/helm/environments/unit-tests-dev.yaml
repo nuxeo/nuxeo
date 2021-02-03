@@ -1,0 +1,12 @@
+nuxeo:
+  enabled: false
+mongodb:
+  enabled: false
+postgresql:
+  enabled: false
+elasticsearch:
+  enabled: false
+kafka:
+  enabled: false
+redis:
+  enabled: true

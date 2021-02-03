@@ -1,0 +1,7 @@
+persistence:
+  enabled: false
+labels:
+  usage: utests
+service:
+  labels:
+    usage: utests
