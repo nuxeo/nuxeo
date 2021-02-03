@@ -161,8 +161,14 @@ public class TestXMapRegistry {
         assertFalse(mreg.getContribution("sample1").isPresent());
         // sample 2 removed
         assertFalse(mreg.getContribution("sample2").isPresent());
+        // sample 3 overridden
+        checkSample(mreg, "sample3", "Sample 3 Overridden Explicitly", true,
+                List.of("sample3 - item1 overridden explicitly"),
+                List.of("sample3 - annotated item1 overridden explicitly"),
+                Map.of("item1", "sample3 - item1 overridden explicitly"),
+                Map.of("item1", "sample3 - annotated item1 overridden explicitly"));
         // no change for others
-        checkSomeMergeStatus(mreg, 4, true);
+        checkSomeMergeStatus(mreg, 4, false);
 
         // check merge again
         xmap.register(registry, ctx, load("sample-4.xml"), "sample-4");
@@ -187,14 +193,12 @@ public class TestXMapRegistry {
         // check sample 3 enablement again
         xmap.register(registry, ctx, load("sample-6.xml"), "sample-6");
         assertEquals(6, mreg.getContributions().size());
-        // annotated list and map overridden, others merged
+        // re-enabled with description overridden
         checkSample(mreg, "sample3", "Sample 3 Disabled Overridden", true,
-                List.of("sample3 - item1", "sample3 - item2", "sample3 - item1 overridden"),
-                List.of("sample3 - annotated item1 overridden"),
-                Map.of("item1", "sample3 - item1 overridden", "item2", "sample3 - item2", "item3",
-                        "sample3 - item3 overridden"),
-                Map.of("item1", "sample3 - annotated item1 overridden", "item3",
-                        "sample3 - annotated item3 overridden"));
+                List.of("sample3 - item1 overridden explicitly"),
+                List.of("sample3 - annotated item1 overridden explicitly"),
+                Map.of("item1", "sample3 - item1 overridden explicitly"),
+                Map.of("item1", "sample3 - annotated item1 overridden explicitly"));
     }
 
     protected void checkSampleEnable(MapRegistry mreg, String name, String value, Boolean bool, Boolean activated) {

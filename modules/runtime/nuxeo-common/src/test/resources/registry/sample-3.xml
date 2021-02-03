@@ -5,4 +5,20 @@
 
   <descriptor name="sample2" remove="true" />
 
+  <descriptor name="sample3" merge="false">
+    <value>Sample 3 Overridden Explicitly</value>
+    <stringList merge="false">
+      <item>sample3 - item1 overridden explicitly</item>
+    </stringList>
+    <stringListAnnotated>
+      <item>sample3 - annotated item1 overridden explicitly</item>
+    </stringListAnnotated>
+    <stringMap>
+      <item id="item1">sample3 - item1 overridden explicitly</item>
+    </stringMap>
+    <stringMapAnnotated>
+      <item id="item1">sample3 - annotated item1 overridden explicitly</item>
+    </stringMapAnnotated>
+  </descriptor>
+
 </document>
