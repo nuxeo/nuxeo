@@ -19,7 +19,6 @@
  */
 
 dockerNamespace = 'nuxeo'
-kubernetesNamespace = 'platform'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo'
 testEnvironments = [
   'dev',
