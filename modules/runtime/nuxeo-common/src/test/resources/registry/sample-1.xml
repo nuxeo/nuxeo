@@ -24,6 +24,20 @@
       <item id="item1">sample2 - annotated item1</item>
       <item id="item2">sample2 - annotated item2</item>
     </stringMapAnnotated>
+    <alias name="sample2">
+      <description>item1</description>
+      <stringList>
+        <item>alias2</item>
+      </stringList>
+    </alias>
+    <aliases>
+      <alias name="sample2">
+        <description>item1</description>
+        <stringList>
+          <item>alias2</item>
+        </stringList>
+      </alias>
+    </aliases>
   </descriptor>
 
   <descriptor name="sample3">
@@ -44,6 +58,20 @@
       <item id="item1">sample3 - annotated item1</item>
       <item id="item2">sample3 - annotated item2</item>
     </stringMapAnnotated>
+    <alias name="sample3">
+      <description>item1</description>
+      <stringList>
+        <item>alias3</item>
+      </stringList>
+    </alias>
+    <aliases>
+      <alias name="sample3">
+        <description>item1</description>
+        <stringList>
+          <item>alias3</item>
+        </stringList>
+      </alias>
+    </aliases>
   </descriptor>
 
   <descriptor name="sample4">
