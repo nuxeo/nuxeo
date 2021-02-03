@@ -1,0 +1,79 @@
+{{- $valuesDir := ternary "default" "unittests" (eq .Environment.Name "default") -}}
+repositories:
+- name: bitnami
+  url: https://charts.bitnami.com/bitnami
+- name: elastic
+  url: https://helm.elastic.co/
+- name: nuxeo
+  url: https://chartmuseum.platform.dev.nuxeo.com/
+
+helmDefaults:
+  timeout: 300
+  wait: true
+
+releases:
+- name: nuxeo
+  chart: nuxeo/nuxeo
+  version: ~2.0.0
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  condition: nuxeo.enabled
+  values:
+  - values/{{ $valuesDir }}/values-nuxeo.yaml.gotmpl
+- name: mongodb
+  chart: bitnami/mongodb
+  version: 7.14.2
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  condition: mongodb.enabled
+  values:
+  - values/values-mongodb.yaml.gotmpl
+  - values/{{ $valuesDir }}/values-mongodb.yaml
+- name: postgresql
+  chart: bitnami/postgresql
+  version: 9.8.4
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  condition: postgresql.enabled
+  values:
+  - values/values-postgresql.yaml.gotmpl
+  - values/{{ $valuesDir }}/values-postgresql.yaml
+- name: elasticsearch
+  chart: elastic/elasticsearch
+  version: 7.9.2
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  condition: elasticsearch.enabled
+  values:
+  - values/values-elasticsearch.yaml.gotmpl
+  - values/{{ $valuesDir }}/values-mongodb.yaml
+- name: kafka
+  chart: bitnami/kafka
+  version: 11.8.8
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  condition: kafka.enabled
+  values:
+  - values/values-kafka.yaml.gotmpl
+  - values/{{ $valuesDir }}/values-kafka.yaml
+- name: redis
+  chart: bitnami/redis
+  version: 11.2.1
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  condition: redis.enabled
+  values:
+  - values/values-redis.yaml.gotmpl
+  - values/{{ $valuesDir }}/values-redis.yaml
+
+environments:
+  # The default environment is used for preview, enabling Nuxeo, MongoDB, Elasticsearch and Kafka.
+  default:
+    values:
+    - environments/default.yaml
+  runtimeUnitTests:
+    values:
+    - environments/unit-tests-runtime.yaml
+  devUnitTests:
+    values:
+    - environments/unit-tests-dev.yaml
+  mongodbUnitTests:
+    values:
+    - environments/unit-tests-mongodb.yaml
+  postgresqlUnitTests:
+    values:
+    - environments/unit-tests-postgresql.yaml

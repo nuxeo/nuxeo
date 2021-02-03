@@ -1,0 +1,7 @@
+persistence:
+  enabled: false
+useStatefulSet: false
+labels:
+  usage: utests
+podLabels:
+  usage: utests

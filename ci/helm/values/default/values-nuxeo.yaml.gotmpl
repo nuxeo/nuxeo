@@ -1,0 +1,60 @@
+{{- $localDomain := printf "%s.svc.cluster.local" (requiredEnv "NAMESPACE") -}}
+{{- $publicDomain := printf "%s.platform.dev.nuxeo.com" (requiredEnv "NAMESPACE") -}}
+image:
+  repository: {{ printf "%s/nuxeo/nuxeo" (requiredEnv "DOCKER_REGISTRY") }}
+  tag: {{ requiredEnv "VERSION" | quote }}
+  pullSecrets:
+  - name: kubernetes-docker-cfg
+podLabels:
+  {{- if (env "BRANCH_NAME") }}
+  branch: {{ env "BRANCH_NAME" | quote }}
+  {{- end }}
+  team: platform
+  resource: pod
+  usage: preview
+  {{- if (env "GIT_COMMIT") }}
+  scm-ref: {{ env "GIT_COMMIT" | quote }}
+  {{- end }}
+service:
+  labels:
+    {{- if (env "BRANCH_NAME") }}
+    branch: {{ env "BRANCH_NAME" | quote }}
+    {{- end }}
+    team: platform
+    resource: service
+    usage: preview
+mongodb:
+  enabled: true
+  host: {{ printf "mongodb.%s" $localDomain }}
+elasticsearch:
+  enabled: true
+  host: {{ printf "elasticsearch-master.%s" $localDomain }}
+kafka:
+  enabled: true
+  host: {{ printf "kafka.%s" $localDomain }}
+persistentVolumeStorage:
+  enabled: true
+  size: "100Mi"
+logs:
+  persistence:
+    enabled: true
+    size: "100Mi"
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/server-snippet: ignore_invalid_headers off;
+  hostname: {{ $publicDomain }}
+  tls:
+  - hosts:
+    - {{ $publicDomain }}
+    secretName: platform-cluster-tls
+nodeSelector:
+  team: platform
+tolerations:
+- effect: NoSchedule
+  key: team
+  operator: Equal
+  value: platform

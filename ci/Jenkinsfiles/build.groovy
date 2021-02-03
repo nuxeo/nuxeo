@@ -151,115 +151,37 @@ void dockerDeploy(String dockerRegistry, String imageName) {
   dockerPush(latestPublicImage)
 }
 
-def helmAddRepository(name, url) {
-  sh "helm3 repo add ${name} ${url}"
+void helmfileTemplate(namespace, environment, outputDir) {
+  withEnv(["NAMESPACE=${namespace}"]) {
+    sh """
+      ${HELMFILE_COMMAND} deps
+      ${HELMFILE_COMMAND} --environment ${environment} template --output-dir ${outputDir}
+    """
+  }
 }
 
-def helmAddBitnamiRepository() {
-  helmAddRepository("${BITNAMI_CHART_REPOSITORY_NAME}", "${BITNAMI_CHART_REPOSITORY_URL}")
+void helmfileSync(namespace, environment) {
+  withEnv(["NAMESPACE=${namespace}"]) {
+    sh """
+      ${HELMFILE_COMMAND} deps
+      ${HELMFILE_COMMAND} --environment ${environment} sync
+    """
+  }
 }
 
-def helmAddElasticRepository() {
-  helmAddRepository("${ELASTIC_CHART_REPOSITORY_NAME}", "${ELASTIC_CHART_REPOSITORY_URL}")
-}
-
-def helmAddNuxeoRepository() {
-  helmAddRepository("${NUXEO_CHART_REPOSITORY_NAME}", "${NUXEO_CHART_REPOSITORY_URL}")
-}
-
-def helmUpgrade(release, repository, chart, version, namespace, values) {
-  sh """
-    helm3 upgrade ${release} ${repository}/${chart} \
-      --install \
-      --version=${version} \
-      --namespace=${namespace} \
-      --values=${values}
-  """
-}
-
-def helmUpgradeRedis(namespace) {
-  helmUpgrade("${REDIS_CHART_NAME}", "${BITNAMI_CHART_REPOSITORY_NAME}", "${REDIS_CHART_NAME}", "${REDIS_CHART_VERSION}", namespace, "${HELM_VALUES_DIR}/values-redis.yaml~gen")
-}
-
-def helmUpgradeMongoDB(namespace) {
-  helmUpgrade("${MONGODB_CHART_NAME}", "${BITNAMI_CHART_REPOSITORY_NAME}", "${MONGODB_CHART_NAME}", "${MONGODB_CHART_VERSION}", namespace, "${HELM_VALUES_DIR}/values-mongodb.yaml~gen")
-}
-
-def helmUpgradePostgreSQL(namespace) {
-  helmUpgrade("${POSTGRESQL_CHART_NAME}", "${BITNAMI_CHART_REPOSITORY_NAME}", "${POSTGRESQL_CHART_NAME}", "${POSTGRESQL_CHART_VERSION}", namespace, "${HELM_VALUES_DIR}/values-postgresql.yaml~gen")
-}
-
-def helmUpgradeElasticsearch(namespace) {
-  helmUpgrade("${ELASTICSEARCH_CHART_NAME}", "${ELASTIC_CHART_REPOSITORY_NAME}", "${ELASTICSEARCH_CHART_NAME}", "${ELASTICSEARCH_CHART_VERSION}", namespace, "${HELM_VALUES_DIR}/values-elasticsearch.yaml~gen")
-}
-
-def helmUpgradeKafka(namespace) {
-  helmUpgrade("${KAFKA_CHART_NAME}", "${BITNAMI_CHART_REPOSITORY_NAME}", "${KAFKA_CHART_NAME}", "${KAFKA_CHART_VERSION}", namespace, "${HELM_VALUES_DIR}/values-kafka.yaml~gen")
-}
-
-def helmUninstall(release, namespace) {
-  sh "helm3 uninstall ${release} --namespace=${namespace}"
-}
-
-def helmUninstallRedis(namespace) {
-  helmUninstall("${REDIS_CHART_NAME}", namespace)
-}
-
-def helmUninstallMongoDB(namespace) {
-  helmUninstall("${MONGODB_CHART_NAME}", namespace)
-}
-
-def helmUninstallPostgreSQL(namespace) {
-  helmUninstall("${POSTGRESQL_CHART_NAME}", namespace)
-}
-
-def helmUninstallElasticsearch(namespace) {
-  helmUninstall("${ELASTICSEARCH_CHART_NAME}", namespace)
-}
-
-def helmUninstallKafka(namespace) {
-  helmUninstall("${KAFKA_CHART_NAME}", namespace)
-}
-
-def helmGenerateValues(directory, persistence, usage) {
-  sh """
-    for valuesFile in ${directory}/*.yaml; do
-      PERSISTENCE=${persistence} USAGE=${usage} envsubst < \$valuesFile > \$valuesFile~gen
-    done
-  """
-}
-
-def rolloutStatus(kind, name, timeout, namespace) {
-  sh """
-    kubectl rollout status ${kind} ${name} \
-      --timeout=${timeout} \
-      --namespace=${namespace}
-  """
-}
-
-def rolloutStatusRedis(namespace) {
-  rolloutStatus('statefulset', "${TEST_REDIS_K8S_OBJECT}", "${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}", namespace)
-}
-
-def rolloutStatusMongoDB(namespace) {
-  rolloutStatus('deployment', "${TEST_MONGODB_K8S_OBJECT}", "${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}", namespace)
-}
-
-def rolloutStatusPostgreSQL(namespace) {
-  rolloutStatus('statefulset', "${TEST_POSTGRESQL_K8S_OBJECT}", "${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}", namespace)
-}
-
-def rolloutStatusElasticsearch(namespace) {
-  rolloutStatus('statefulset', "${TEST_ELASTICSEARCH_K8S_OBJECT}", "${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}", namespace)
-}
-
-def rolloutStatusKafka(namespace) {
-  rolloutStatus('statefulset', "${TEST_KAFKA_K8S_OBJECT}", "${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}", namespace)
+void helmfileDestroy(namespace, environment) {
+  withEnv(["NAMESPACE=${namespace}"]) {
+    sh """
+      ${HELMFILE_COMMAND} --environment ${environment} destroy
+    """
+  }
 }
 
 def buildUnitTestStage(env) {
   def isDev = env == 'dev'
   def testNamespace = "${TEST_NAMESPACE_PREFIX}-${env}"
+  // Helmfile environment
+  def environment = "${env}UnitTests"
   def redisHost = "${TEST_REDIS_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
   def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
   return {
@@ -276,33 +198,7 @@ def buildUnitTestStage(env) {
               ----------------------------------------"""
 
               echo "${env} unit tests: install external services"
-              // add chart repositories
-              helmAddBitnamiRepository()
-              helmAddElasticRepository()
-              // substitute environment variables in chart values
-              helmGenerateValues("${HELM_VALUES_DIR}", false, 'utests')
-              // install external service charts
-              helmUpgradeRedis(testNamespace)
-              if (!isDev) {
-                if (env == 'mongodb') {
-                  helmUpgradeMongoDB(testNamespace)
-                } else if (env == 'postgresql'){
-                  helmUpgradePostgreSQL(testNamespace)
-                }
-                helmUpgradeElasticsearch(testNamespace)
-                helmUpgradeKafka(testNamespace)
-              }
-              // wait for external services to be ready
-              rolloutStatusRedis(testNamespace)
-              if (!isDev) {
-                if (env == 'mongodb') {
-                  rolloutStatusMongoDB(testNamespace)
-                } else {
-                  rolloutStatusPostgreSQL(testNamespace)
-                }
-                rolloutStatusElasticsearch(testNamespace)
-                rolloutStatusKafka(testNamespace)
-              }
+              helmfileSync("${testNamespace}", "${environment}")
 
               echo "${env} unit tests: run Maven"
               if (isDev) {
@@ -353,17 +249,7 @@ def buildUnitTestStage(env) {
               } finally {
                 echo "${env} unit tests: clean up test namespace"
                 try {
-                  // uninstall external service charts
-                  if (!isDev) {
-                    helmUninstallKafka(testNamespace)
-                    helmUninstallElasticsearch(testNamespace)
-                    if (env == 'mongodb') {
-                      helmUninstallMongoDB(testNamespace)
-                    } else {
-                      helmUninstallPostgreSQL(testNamespace)
-                    }
-                  }
-                  helmUninstallRedis(testNamespace)
+                  helmfileDestroy("${testNamespace}", "${environment}")
                 } finally {
                   // clean up test namespace
                   sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
@@ -397,38 +283,13 @@ pipeline {
   environment {
     // force ${HOME}=/root - for an unexplained reason, ${HOME} is resolved as /home/jenkins though sh 'env' shows HOME=/root
     HOME = '/root'
-    HELM_VALUES_DIR = 'ci/helm/values'
-    BITNAMI_CHART_REPOSITORY_NAME = 'bitnami'
-    BITNAMI_CHART_REPOSITORY_URL = 'https://charts.bitnami.com/bitnami'
-    ELASTIC_CHART_REPOSITORY_NAME = 'elastic'
-    ELASTIC_CHART_REPOSITORY_URL = 'https://helm.elastic.co/'
-    NUXEO_CHART_REPOSITORY_NAME = 'nuxeo'
-    NUXEO_CHART_REPOSITORY_URL = 'https://chartmuseum.platform.dev.nuxeo.com/'
-    REDIS_CHART_NAME = 'redis'
-    REDIS_CHART_VERSION = '11.2.1'
-    MONGODB_CHART_NAME = 'mongodb'
-    MONGODB_CHART_VERSION = '7.14.2'
-    POSTGRESQL_CHART_NAME = 'postgresql'
-    POSTGRESQL_CHART_VERSION = '9.8.4'
-    ELASTICSEARCH_CHART_NAME = 'elasticsearch'
-    ELASTICSEARCH_CHART_VERSION = '7.9.2'
-    KAFKA_CHART_NAME = 'kafka'
-    KAFKA_CHART_VERSION = '11.8.8'
-    NUXEO_CHART_NAME = 'nuxeo'
-    NUXEO_CHART_VERSION = '2.0.2'
-    USAGE = 'utests'
+    HELMFILE_COMMAND = "helmfile --file ci/helm/helmfile.yaml --helm-binary /usr/bin/helm3"
     TEST_NAMESPACE_PREFIX = "nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
-    TEST_REDIS_K8S_OBJECT = "${REDIS_CHART_NAME}-master"
-    TEST_MONGODB_K8S_OBJECT = "${MONGODB_CHART_NAME}"
-    TEST_POSTGRESQL_K8S_OBJECT = "${POSTGRESQL_CHART_NAME}-${POSTGRESQL_CHART_NAME}"
-    TEST_ELASTICSEARCH_K8S_OBJECT = "${ELASTICSEARCH_CHART_NAME}-master"
-    TEST_KAFKA_K8S_OBJECT = "${KAFKA_CHART_NAME}"
+    TEST_REDIS_K8S_OBJECT = 'redis-master'
+    TEST_KAFKA_K8S_OBJECT = 'kafka'
     TEST_KAFKA_PORT = '9092'
     TEST_KAFKA_POD_NAME = "${TEST_KAFKA_K8S_OBJECT}-0"
-    TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT = '3m'
-    // Elasticsearch and Kafka might take longer
-    TEST_LONG_ROLLOUT_STATUS_TIMEOUT = '5m'
     NUXEO_IMAGE_NAME = 'nuxeo'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     MAVEN_ARGS = getMavenArgs()
@@ -439,9 +300,6 @@ pipeline {
     CHANGE_BRANCH = "${env.CHANGE_BRANCH != null ? env.CHANGE_BRANCH : BRANCH_NAME}"
     CHANGE_TARGET = "${env.CHANGE_TARGET != null ? env.CHANGE_TARGET : BRANCH_NAME}"
     CONNECT_PREPROD_URL = 'https://nos-preprod-connect.nuxeocloud.com/nuxeo'
-    // used as a Helm release name and Kubernetes namespace, requires lower case alphanumeric characters
-    PREVIEW_NAMESPACE = "nuxeo-preview-${BRANCH_NAME.toLowerCase()}"
-    PREVIEW_HELM_RELEASE = 'nuxeo-preview'
     SLACK_CHANNEL = 'platform-notifs'
   }
 
@@ -543,6 +401,8 @@ pipeline {
           script {
             setGitHubBuildStatus('utests/runtime', 'Unit tests - runtime', 'PENDING')
             def testNamespace = "${TEST_NAMESPACE_PREFIX}-runtime"
+            // Helmfile environment
+            def environment = 'runtimeUnitTests'
             def redisHost = "${TEST_REDIS_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
             def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
             sh "kubectl create namespace ${testNamespace}"
@@ -553,16 +413,7 @@ pipeline {
               ----------------------------------------"""
 
               echo 'runtime unit tests: install external services'
-              // add chart repository
-              helmAddBitnamiRepository()
-              // substitute environment variables in chart values
-              helmGenerateValues("${HELM_VALUES_DIR}", false, 'utests')
-              // install external service charts
-              helmUpgradeRedis(testNamespace)
-              helmUpgradeKafka(testNamespace)
-              // wait for external services to be ready
-              rolloutStatusRedis(testNamespace)
-              rolloutStatusKafka(testNamespace)
+              helmfileSync("${testNamespace}", "${environment}")
 
               echo 'runtime unit tests: run Maven'
               dir('modules/runtime') {
@@ -588,9 +439,7 @@ pipeline {
               } finally {
                 echo 'runtime unit tests: clean up test namespace'
                 try {
-                  // uninstall external service charts
-                  helmUninstallKafka(testNamespace)
-                  helmUninstallRedis(testNamespace)
+                  helmfileDestroy("${testNamespace}", "${environment}")
                 } finally {
                   // clean up test namespace
                   sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
@@ -937,68 +786,57 @@ pipeline {
             ----------------------------------------
             Deploy Preview environment
             ----------------------------------------"""
-            boolean nsExists = sh(returnStatus: true, script: "kubectl get namespace ${PREVIEW_NAMESPACE}") == 0
+            // Kubernetes namespace, requires lower case alphanumeric characters
+            def previewNamespace = "nuxeo-preview-${BRANCH_NAME.toLowerCase()}"
+            def previewEnvironment = 'default'
+            def previewHelmRelease = 'nuxeo'
+            boolean nsExists = sh(returnStatus: true, script: "kubectl get namespace ${previewNamespace}") == 0
             if (!nsExists) {
               echo 'Create preview namespace'
-              sh "kubectl create namespace ${PREVIEW_NAMESPACE}"
+              sh "kubectl create namespace ${previewNamespace}"
 
               echo 'Deploy TLS secret replicator to preview namespace'
               sh """
                 kubectl apply -f ci/helm/templates/empty-tls-secret-for-kubernetes-replicator.yaml \
-                  --namespace=${PREVIEW_NAMESPACE}
+                  --namespace=${previewNamespace}
               """
 
               echo 'Copy image pull secret to preview namespace'
               sh "kubectl --namespace=platform get secret kubernetes-docker-cfg -ojsonpath='{.data.\\.dockerconfigjson}' | base64 --decode > /tmp/config.json"
               sh """kubectl create secret generic kubernetes-docker-cfg \
-                  --namespace=${PREVIEW_NAMESPACE} \
+                  --namespace=${previewNamespace} \
                   --from-file=.dockerconfigjson=/tmp/config.json \
                   --type=kubernetes.io/dockerconfigjson --dry-run -o yaml | kubectl apply -f -"""
             }
-
-            echo 'Add chart repositories'
-            helmAddBitnamiRepository()
-            helmAddElasticRepository()
-            helmAddNuxeoRepository()
-
-            echo 'Substitute environment variables in chart values'
-            helmGenerateValues("${HELM_VALUES_DIR}", true, 'preview')
-
-            echo 'Upgrade external service releases'
-            helmUpgradeMongoDB("${PREVIEW_NAMESPACE}")
-            helmUpgradeElasticsearch("${PREVIEW_NAMESPACE}")
 
             if (nsExists) {
               // scale down nuxeo preview deployment, otherwise K8s won't be able to mount the binaries volume for the pods
               // TODO: rely on a statefulset in the nuxeo Helm chart, as in mongodb
               echo 'Scale down nuxeo preview deployment before release upgrade'
               sh """
-                kubectl scale deployment ${PREVIEW_HELM_RELEASE} \
-                  --namespace=${PREVIEW_NAMESPACE} \
+                kubectl scale deployment ${previewHelmRelease} \
+                  --namespace=${previewNamespace} \
                   --replicas=0
               """
             }
 
-            echo 'Upgrade nuxeo preview release'
-            sh """
-              helm3 template ${NUXEO_CHART_REPOSITORY_NAME}/${NUXEO_CHART_NAME} \
-                --version=${NUXEO_CHART_VERSION} \
-                --values=${HELM_VALUES_DIR}/values-nuxeo.yaml~gen \
-                --output-dir=target
-            """
-            helmUpgrade(
-              "${PREVIEW_HELM_RELEASE}",
-              "${NUXEO_CHART_REPOSITORY_NAME}",
-              "${NUXEO_CHART_NAME}",
-              "${NUXEO_CHART_VERSION}",
-              "${PREVIEW_NAMESPACE}",
-              "${HELM_VALUES_DIR}/values-nuxeo.yaml~gen"
-            )
-            rolloutStatus('deployment', "${PREVIEW_HELM_RELEASE}", "${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}", "${PREVIEW_NAMESPACE}")
+            echo 'Upgrade external service and nuxeo preview releases'
+            helmfileTemplate("${previewNamespace}", "${previewEnvironment}", 'target')
+            try {
+              helmfileSync("${previewNamespace}", "${previewEnvironment}")
+            } catch (e) {
+              sh """
+                kubectl --namespace=${previewNamespace} get event --sort-by .lastTimestamp
+                kubectl --namespace=${previewNamespace} get all,configmaps,secrets
+                kubectl --namespace=${previewNamespace} describe pod --selector=app=${previewHelmRelease}
+                kubectl --namespace=${previewNamespace} logs --selector=app=${previewHelmRelease} --tail=1000
+              """
+              throw e
+            }
 
             host = sh(returnStdout: true, script: """
-              kubectl get ingress ${PREVIEW_HELM_RELEASE} \
-                --namespace=${PREVIEW_NAMESPACE} \
+              kubectl get ingress ${previewHelmRelease} \
+                --namespace=${previewNamespace} \
                 -ojsonpath='{.spec.rules[*].host}'
             """)
             echo """
