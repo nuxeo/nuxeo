@@ -11,6 +11,7 @@
 
   <extension-point name="queues">
     <object class="org.nuxeo.ecm.core.work.api.WorkQueueDescriptor" />
+    <registry class="org.nuxeo.ecm.core.work.api.WorkQueueRegistry" />
   </extension-point>
 
   <!--  this enables the state storage in StreamWorkManager so tests are run in the most complete way -->

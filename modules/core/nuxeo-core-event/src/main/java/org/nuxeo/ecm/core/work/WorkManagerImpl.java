@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -50,6 +49,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventServiceComponent;
 import org.nuxeo.ecm.core.work.WorkQueuing.Listener;
@@ -68,10 +68,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.metrics.NuxeoMetricSet;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Descriptor;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -81,7 +79,6 @@ import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
-
 import io.opencensus.common.Scope;
 import io.opencensus.trace.Tracer;
 import io.opencensus.trace.Tracing;
@@ -190,33 +187,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected WorkCompletionSynchronizer completionSynchronizer;
 
-    @Override
-    public void registerContribution(Object contribution, String xp, ComponentInstance component) {
-        if (QUEUES_EP.equals(xp)) {
-            WorkQueueDescriptor descriptor = (WorkQueueDescriptor) contribution;
-            if (ALL_QUEUES.equals(descriptor.getId())) {
-                Boolean processing = descriptor.processing;
-                if (processing == null) {
-                    log.error("Ignoring work queue descriptor {} with no processing/queuing", ALL_QUEUES);
-                    return;
-                }
-                log.info("Setting on all work queues:{}",
-                        () -> " processing=" + processing + (queuing == null ? "" : " queuing=" + queuing));
-                // activate/deactivate processing on all queues
-                getDescriptors(QUEUES_EP).forEach(d -> {
-                    WorkQueueDescriptor wqd = new WorkQueueDescriptor();
-                    wqd.id = d.getId();
-                    wqd.processing = processing;
-                    register(QUEUES_EP, wqd);
-                });
-            } else {
-                register(QUEUES_EP, descriptor);
-            }
-        } else {
-            super.registerContribution(contribution, xp, component);
-        }
-    }
-
     void initializeQueue(WorkQueueDescriptor config) {
         if (ALL_QUEUES.equals(config.id)) {
             throw new IllegalArgumentException("cannot initialize all queues");
@@ -286,15 +256,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public void enableProcessing(boolean value) {
-        getDescriptors(QUEUES_EP).forEach(d -> enableProcessing(d.getId(), value));
+        this.<WorkQueueDescriptor> getRegistryContributions(QUEUES_EP).forEach(d -> enableProcessing(d.getId(), value));
     }
 
     @Override
     public void enableProcessing(String queueId, boolean value) {
-        WorkQueueDescriptor config = getDescriptor(QUEUES_EP, queueId);
-        if (config == null) {
-            throw new IllegalArgumentException("no such queue " + queueId);
-        }
+        WorkQueueDescriptor config = this.<WorkQueueDescriptor> getRegistryContribution(QUEUES_EP, queueId)
+                                         .orElseThrow(() -> new IllegalArgumentException("no such queue " + queueId));
         if (!value) {
             if (!queuing.supportsProcessingDisabling()) {
                 log.error("Attempting to disable works processing on a WorkQueuing instance that does not support it. "
@@ -312,7 +280,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         if (isProcessingDisabled()) {
             return false;
         }
-        for (Descriptor d : getDescriptors(QUEUES_EP)) {
+        for (WorkQueueDescriptor d : this.<WorkQueueDescriptor> getRegistryContributions(QUEUES_EP)) {
             if (queuing.getQueue(d.getId()).active) {
                 return true;
             }
@@ -347,16 +315,12 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public List<String> getWorkQueueIds() {
-        synchronized (getRegistry()) {
-            return getDescriptors(QUEUES_EP).stream().map(Descriptor::getId).collect(Collectors.toList());
-        }
+        return new ArrayList<>(this.<MapRegistry> getExtensionPointRegistry(QUEUES_EP).getContributions().keySet());
     }
 
     @Override
     public WorkQueueDescriptor getWorkQueueDescriptor(String queueId) {
-        synchronized (getRegistry()) {
-            return getDescriptor(QUEUES_EP, queueId);
-        }
+        return this.<WorkQueueDescriptor> getRegistryContribution(QUEUES_EP, queueId).orElse(null);
     }
 
     @Override
@@ -378,7 +342,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public void start(ComponentContext context) {
-        super.start(context);
         initDeadLetterQueueStream();
         init();
     }
@@ -414,7 +377,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             if (started) {
                 return;
             }
-            WorkQueuingDescriptor d = getDescriptor(IMPL_EP, Descriptor.UNIQUE_DESCRIPTOR_ID);
+            WorkQueuingDescriptor d = this.<WorkQueuingDescriptor> getRegistryContribution(
+                    IMPL_EP).orElseThrow(() -> new IllegalArgumentException("Missing work queuing implementation"));
             try {
                 queuing = d.klass.getDeclaredConstructor(Listener.class).newInstance(Listener.lookupListener());
             } catch (ReflectiveOperationException | SecurityException e) {
@@ -423,15 +387,16 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             completionSynchronizer = new WorkCompletionSynchronizer();
             started = true;
             index();
-            List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
+            List<WorkQueueDescriptor> descriptors = getRegistryContributions(QUEUES_EP);
             for (WorkQueueDescriptor descriptor : descriptors) {
                 initializeQueue(descriptor);
             }
 
+            // keep listener registration here because subclass StreamWorkManager will register its own listener
             Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
                 @Override
-                public void beforeStop(ComponentManager mgr, boolean isStandby) {
-                    List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
+                public void beforeRuntimeStop(ComponentManager mgr, boolean isStandby) {
+                    List<WorkQueueDescriptor> descriptors = getRegistryContributions(QUEUES_EP);
                     for (WorkQueueDescriptor descriptor : descriptors) {
                         deactivateQueue(descriptor);
                     }
@@ -446,19 +411,19 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 }
 
                 @Override
-                public void afterStart(ComponentManager mgr, boolean isResume) {
+                public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
                     if (isProcessingDisabled()) {
                         log.warn("WorkManager processing has been disabled on this node");
                         return;
                     }
-                    List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
+                    List<WorkQueueDescriptor> descriptors = getRegistryContributions(QUEUES_EP);
                     for (WorkQueueDescriptor descriptor : descriptors) {
                         activateQueue(descriptor);
                     }
                 }
 
                 @Override
-                public void afterStop(ComponentManager mgr, boolean isStandby) {
+                public void afterRuntimeStop(ComponentManager mgr, boolean isStandby) {
                     Framework.getRuntime().getComponentManager().removeListener(this);
                 }
             });
@@ -466,7 +431,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     protected void index() {
-        List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
+        List<WorkQueueDescriptor> descriptors = getRegistryContributions(QUEUES_EP);
         descriptors.forEach(d -> d.categories.forEach(c -> {
             categoryToQueueId.computeIfPresent(c, (k, v) -> {
                 if (!v.equals(d.getId())) {
@@ -488,14 +453,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 throw new IllegalStateException("Work manager not started, could not access to executors");
             }
         }
-        WorkQueueDescriptor workQueueDescriptor;
-        synchronized (getRegistry()) {
-            workQueueDescriptor = getDescriptor(QUEUES_EP, queueId);
-        }
-        if (workQueueDescriptor == null) {
+        if (getRegistryContribution(QUEUES_EP, queueId).isEmpty()) {
             throw new IllegalArgumentException("No such work queue: " + queueId);
         }
-
         return executors.get(queueId);
     }
 

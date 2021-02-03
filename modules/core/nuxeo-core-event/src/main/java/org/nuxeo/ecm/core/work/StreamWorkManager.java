@@ -69,7 +69,6 @@ import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.metrics.NuxeoMetricSet;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
-import org.nuxeo.runtime.model.Descriptor;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -105,7 +104,7 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     protected long lastMetricTime;
 
-    protected long CACHE_LAST_METRIC_DURATION_MS = 1000;
+    protected static final long CACHE_LAST_METRIC_DURATION_MS = 1000;
 
     // @since 11.1
     public static final String NAMESPACE_PREFIX = "work/";
@@ -296,7 +295,7 @@ public class StreamWorkManager extends WorkManagerImpl {
             if (started) {
                 return;
             }
-            getDescriptors(QUEUES_EP).forEach(d -> categoryToQueueId.put(d.getId(), d.getId()));
+            getWorkQueueIds().forEach(id -> categoryToQueueId.put(id, id));
             index();
             initTopology();
             logManager = getLogManager();
@@ -304,37 +303,34 @@ public class StreamWorkManager extends WorkManagerImpl {
             streamManager.register("StreamWorkManagerDisable", topologyDisabled, settings);
             streamProcessor = streamManager.registerAndCreateProcessor("StreamWorkManager", topology, settings);
             started = true;
-            new ComponentListener().install();
+
+            // keep listener registration here because parent class WorkManagerImpl will register its own listener
+            Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
+                @Override
+                public void beforeRuntimeStop(ComponentManager mgr, boolean isStandby) {
+                    if (!shutdown(10, TimeUnit.SECONDS)) {
+                        log.error("Some processors are still active");
+                    }
+                }
+
+                @Override
+                public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
+                    if (isProcessingDisabled()) {
+                        log.warn("WorkManager processing has been disabled on this node");
+                        return;
+                    }
+                    streamProcessor.start();
+                    getWorkQueueIds().forEach(id -> activateQueueMetrics(id));
+                }
+
+                @Override
+                public void afterRuntimeStop(ComponentManager mgr, boolean isStandby) {
+                    Framework.getRuntime().getComponentManager().removeListener(this);
+                    getWorkQueueIds().forEach(id -> deactivateQueueMetrics(id));
+                }
+            });
+
             log.info("Initialized");
-        }
-    }
-
-    class ComponentListener implements ComponentManager.Listener {
-        @Override
-        public void beforeStop(ComponentManager mgr, boolean isStandby) {
-            if (!shutdown(10, TimeUnit.SECONDS)) {
-                log.error("Some processors are still active");
-            }
-        }
-
-        @Override
-        public void afterStart(ComponentManager mgr, boolean isResume) {
-            if (isProcessingDisabled()) {
-                log.warn("WorkManager processing has been disabled on this node");
-                return;
-            }
-            streamProcessor.start();
-            for (Descriptor d : getDescriptors(QUEUES_EP)) {
-                activateQueueMetrics(d.getId());
-            }
-        }
-
-        @Override
-        public void afterStop(ComponentManager mgr, boolean isStandby) {
-            Framework.getRuntime().getComponentManager().removeListener(this);
-            for (Descriptor d : getDescriptors(QUEUES_EP)) {
-                deactivateQueueMetrics(d.getId());
-            }
         }
     }
 
@@ -361,7 +357,7 @@ public class StreamWorkManager extends WorkManagerImpl {
     }
 
     protected void initTopology() {
-        List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
+        List<WorkQueueDescriptor> descriptors = getRegistryContributions(QUEUES_EP);
         // create the single topology with one root per work pool
         Topology.Builder builder = Topology.builder();
         descriptors.stream()
@@ -529,8 +525,8 @@ public class StreamWorkManager extends WorkManagerImpl {
         if (queueId != null) {
             return awaitCompletionOnQueue(queueId, duration, unit);
         }
-        for (Descriptor item : getDescriptors(QUEUES_EP)) {
-            if (!awaitCompletionOnQueue(item.getId(), duration, unit)) {
+        for (String id : getWorkQueueIds()) {
+            if (!awaitCompletionOnQueue(id, duration, unit)) {
                 return false;
             }
         }

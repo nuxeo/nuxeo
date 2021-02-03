@@ -44,6 +44,7 @@
   <implementation class="org.nuxeo.ecm.core.work.StreamWorkManager" />
   <extension-point name="queues">
     <object class="org.nuxeo.ecm.core.work.api.WorkQueueDescriptor" />
+    <registry class="org.nuxeo.ecm.core.work.api.WorkQueueRegistry" />
   </extension-point>
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
   <#if "${kafka.enabled}" == "true">

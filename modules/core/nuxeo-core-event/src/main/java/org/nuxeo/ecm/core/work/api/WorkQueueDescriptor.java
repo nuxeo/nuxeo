@@ -25,7 +25,8 @@ import java.util.Set;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor for a {@link WorkManager} queue configuration.
@@ -33,7 +34,8 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 5.6
  */
 @XObject("queue")
-public class WorkQueueDescriptor implements Descriptor {
+@XRegistry
+public class WorkQueueDescriptor {
 
     public static final String ALL_QUEUES = "*";
 
@@ -44,42 +46,20 @@ public class WorkQueueDescriptor implements Descriptor {
     public static final int DEFAULT_CAPACITY = -1;
 
     @XNode("@id")
+    @XRegistryId
     public String id;
 
     @XNode("@queueing")
     public Boolean queuing;
 
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * Whether queuing of work instances to this queue is enabled for this Nuxeo instance.
-     */
-    public boolean isQueuingEnabled() {
-        return !Boolean.FALSE.equals(queuing);
-    }
-
     @XNode("@processing")
     public Boolean processing;
-
-    /**
-     * Whether processing of work instances from this queue is enabled for this Nuxeo instance.
-     */
-    public boolean isProcessingEnabled() {
-        return !Boolean.FALSE.equals(processing);
-    }
 
     @XNode("name")
     public String name;
 
     @XNode("maxThreads")
     public Integer maxThreads;
-
-    public int getMaxThreads() {
-        return maxThreads == null ? DEFAULT_MAX_THREADS : maxThreads.intValue();
-    }
 
     @XNodeList(value = "category", type = HashSet.class, componentType = String.class)
     public Set<String> categories = Collections.emptySet();
@@ -93,23 +73,30 @@ public class WorkQueueDescriptor implements Descriptor {
     @XNode("capacity")
     public Integer capacity;
 
-    public int getCapacity() {
-        return capacity == null ? DEFAULT_CAPACITY : capacity.intValue();
+    public String getId() {
+        return id;
     }
 
-    @Override
-    public Descriptor merge(Descriptor o) {
-        WorkQueueDescriptor other = (WorkQueueDescriptor) o;
-        WorkQueueDescriptor merged = new WorkQueueDescriptor();
-        merged.id = id;
-        merged.name = other.name != null ? other.name : name;
-        merged.queuing = other.queuing != null ? other.queuing : queuing;
-        merged.capacity = other.capacity != null ? other.capacity : capacity;
-        merged.processing = other.processing != null ? other.processing : processing;
-        merged.maxThreads = other.maxThreads != null ? other.maxThreads : maxThreads;
-        merged.categories = new HashSet<>(categories);
-        merged.categories.addAll(other.categories);
-        return merged;
+    /**
+     * Whether queuing of work instances to this queue is enabled for this Nuxeo instance.
+     */
+    public boolean isQueuingEnabled() {
+        return !Boolean.FALSE.equals(queuing);
+    }
+
+    /**
+     * Whether processing of work instances from this queue is enabled for this Nuxeo instance.
+     */
+    public boolean isProcessingEnabled() {
+        return !Boolean.FALSE.equals(processing);
+    }
+
+    public int getMaxThreads() {
+        return maxThreads == null ? DEFAULT_MAX_THREADS : maxThreads.intValue();
+    }
+
+    public int getCapacity() {
+        return capacity == null ? DEFAULT_CAPACITY : capacity.intValue();
     }
 
     @Override
