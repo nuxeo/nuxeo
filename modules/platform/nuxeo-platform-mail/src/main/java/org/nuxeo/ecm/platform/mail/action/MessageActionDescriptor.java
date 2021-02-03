@@ -15,8 +15,6 @@
  *
  * Contributors:
  *     Laurent Doguin
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.mail.action;

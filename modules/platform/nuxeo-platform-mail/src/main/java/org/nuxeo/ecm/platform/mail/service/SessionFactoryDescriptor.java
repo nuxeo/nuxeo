@@ -15,56 +15,47 @@
  *
  * Contributors:
  *     Alexandre Russel
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.mail.service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author Alexandre Russel
  */
 @XObject("sessionFactory")
+@XRegistry(compatWarnOnMerge = true)
 public class SessionFactoryDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     @XNode("@fetcherName")
     private String fetcherName;
 
     @XNodeMap(value = "properties/property", key = "@name", type = HashMap.class, componentType = String.class)
-    private Map<String, String> properties = new HashMap<>();
+    private Map<String, String> properties;
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getFetcherName() {
         return fetcherName;
     }
 
-    public void setFetcherName(String fetcherName) {
-        this.fetcherName = fetcherName;
-    }
-
     public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
+        return Collections.unmodifiableMap(properties);
     }
 
 }

@@ -15,41 +15,35 @@
  *
  * Contributors:
  *     Alexandre Russel
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.mail.fetcher;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author Alexandre Russel
  */
 @XObject(value = "propertiesFetcher")
+@XRegistry
 public class PropertiesFetcherDescriptor {
 
     @XNode("@class")
     private Class<? extends PropertiesFetcher> fetcher;
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     public Class<? extends PropertiesFetcher> getFetcher() {
         return fetcher;
     }
 
-    public void setFetcher(Class<? extends PropertiesFetcher> fetcher) {
-        this.fetcher = fetcher;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
 }

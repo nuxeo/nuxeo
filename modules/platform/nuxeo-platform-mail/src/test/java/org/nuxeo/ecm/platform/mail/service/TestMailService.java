@@ -64,7 +64,6 @@ public class TestMailService {
         assertEquals(pipe.get(1).getClass().getSimpleName(), "ExtractMessageInformationAction");
         assertEquals(pipe.get(2).getClass().getSimpleName(), "CheckMailUnicity");
         assertEquals(pipe.get(3).getClass().getSimpleName(), "CreateDocumentsAction");
-        // assertEquals(pipe.get(4).getClass().getSimpleName(), "EndAction");
         // test contribution merge
         hotDeployer.deploy("org.nuxeo.ecm.platform.mail.test:OSGI-INF/mailService-test-contrib.xml");
 
@@ -75,7 +74,6 @@ public class TestMailService {
         assertEquals(pipe.get(1).getClass().getSimpleName(), "ExtractMessageInformationAction");
         assertEquals(pipe.get(2).getClass().getSimpleName(), "CreateDocumentsAction");
         assertEquals(pipe.get(3).getClass().getSimpleName(), "CreateDocumentsAction");
-        // assertEquals(pipe.get(4).getClass().getSimpleName(), "EndAction");
         // test contribution override
         hotDeployer.deploy("org.nuxeo.ecm.platform.mail.test:OSGI-INF/mailService-override-test-contrib.xml");
 
