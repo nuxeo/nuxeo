@@ -3,9 +3,6 @@ image:
 usePassword: false
 serviceAccount:
   create: false
-persistence:
-  enabled: $PERSISTENCE
-useStatefulSet: $PERSISTENCE
 resources:
   requests:
     cpu: "1"
@@ -14,15 +11,17 @@ resources:
     cpu: "2"
     memory: "2Gi"
 labels:
-  branch: "$BRANCH_NAME"
+  {{- if (env "BRANCH_NAME") }}
+  branch: {{ env "BRANCH_NAME" | quote }}
+  {{- end }}
   resource: statefulset
   team: platform
-  usage: "$USAGE"
 podLabels:
-  branch: "$BRANCH_NAME"
+  {{- if (env "BRANCH_NAME") }}
+  branch: {{ env "BRANCH_NAME" | quote }}
+  {{- end }}
   resource: pod
   team: platform
-  usage: "$USAGE"
 tolerations:
   - key: team
     operator: Equal

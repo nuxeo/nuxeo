@@ -1,0 +1,9 @@
+persistence:
+  enabled: false
+podLabels:
+  usage: utests
+zookeeper:
+  persistence:
+    enabled: false
+  podLabels:
+    usage: utests

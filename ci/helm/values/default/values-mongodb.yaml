@@ -1,0 +1,7 @@
+persistence:
+  enabled: true
+useStatefulSet: true
+labels:
+  usage: preview
+podLabels:
+  usage: preview

@@ -1,0 +1,8 @@
+master:
+  persistence:
+    enabled: true
+  podLabels:
+    usage: preview
+  service:
+    labels:
+      usage: preview
