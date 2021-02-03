@@ -44,10 +44,8 @@
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="types">
-    <types>
-      <type name="File" noRecursionForTransitions="toDelete,toFoo,toBar">default</type>
-      <type name="Folder">default</type>
-    </types>
+    <type name="File" noRecursionForTransitions="toDelete,toFoo,toBar">default</type>
+    <type name="Folder">default</type>
   </extension>
 
 </component>
