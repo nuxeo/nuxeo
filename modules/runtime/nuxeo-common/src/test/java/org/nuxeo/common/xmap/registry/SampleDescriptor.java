@@ -64,4 +64,13 @@ public class SampleDescriptor {
     @XRemove("stringMapAnnotated@empty")
     public Map<String, String> stringMapAnnotated;
 
+    @XNode("alias")
+    public SampleDescriptorAlias alias;
+
+    @XNodeList(value = "aliases/alias", type = ArrayList.class, componentType = SampleDescriptorAlias.class)
+    public List<SampleDescriptorAlias> aliasList;
+
+    @XNodeMap(value = "aliases/alias", key = "@name", type = HashMap.class, componentType = SampleDescriptorAlias.class)
+    public Map<String, SampleDescriptorAlias> aliasMap;
+
 }
