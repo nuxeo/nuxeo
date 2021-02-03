@@ -19,9 +19,9 @@
 package org.nuxeo.theme.styling.service.descriptors;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -32,37 +32,10 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class PalettePreview {
 
     @XNodeList(value = "colors/color", type = ArrayList.class, componentType = String.class)
-    List<String> colors;
+    protected List<String> colors = new ArrayList<>();
 
     public List<String> getColors() {
-        return colors;
-    }
-
-    public void setColors(List<String> colors) {
-        this.colors = colors;
-    }
-
-    @Override
-    public PalettePreview clone() {
-        PalettePreview clone = new PalettePreview();
-        if (colors != null) {
-            List<String> newColors = new ArrayList<>();
-            newColors.addAll(colors);
-            clone.setColors(newColors);
-        }
-        return clone;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof PalettePreview)) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        PalettePreview p = (PalettePreview) obj;
-        return new EqualsBuilder().append(colors, p.colors).isEquals();
+        return Collections.unmodifiableList(colors);
     }
 
 }

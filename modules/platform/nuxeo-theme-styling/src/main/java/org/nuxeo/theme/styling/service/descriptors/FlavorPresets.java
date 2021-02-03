@@ -18,7 +18,7 @@
  */
 package org.nuxeo.theme.styling.service.descriptors;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.nuxeo.common.xmap.Resource;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -29,15 +29,18 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class FlavorPresets {
 
     @XNode("@category")
-    String category;
+    protected String category;
 
     @XNode("@src")
-    String src;
+    protected String src;
+
+    @XNode("@src")
+    protected Resource resource;
 
     /**
      * Resolved source content
      */
-    String content;
+    protected String content;
 
     public String getCategory() {
         return category;
@@ -47,12 +50,9 @@ public class FlavorPresets {
         return src;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public void setSrc(String src) {
-        this.src = src;
+    /** @since 11.5 */
+    public Resource getResource() {
+        return resource;
     }
 
     public String getContent() {
@@ -61,28 +61,6 @@ public class FlavorPresets {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    @Override
-    public FlavorPresets clone() {
-        FlavorPresets clone = new FlavorPresets();
-        clone.setSrc(src);
-        clone.setCategory(category);
-        clone.setContent(content);
-        return clone;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof FlavorPresets)) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        FlavorPresets f = (FlavorPresets) obj;
-        // do not take content into account for overrides
-        return new EqualsBuilder().append(category, f.category).append(src, f.src).isEquals();
     }
 
 }

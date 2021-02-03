@@ -20,6 +20,7 @@
 
 package org.nuxeo.theme.styling.service.descriptors;
 
+import org.nuxeo.common.xmap.Resource;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -30,37 +31,15 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class SassImport {
 
     @XNode("@src")
-    String src;
+    protected String src;
+
+    @XNode("@src")
+    protected Resource resource;
 
     /**
      * Resolved source content
      */
-    String content;
-
-    @Override
-    public SassImport clone() {
-        SassImport clone = new SassImport();
-        clone.setSrc(src);
-        clone.setContent(content);
-        return clone;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        SassImport other = (SassImport) obj;
-        if (src == null) {
-            if (other.src != null)
-                return false;
-        } else if (!src.equals(other.src))
-            return false;
-        return true;
-    }
+    protected String content;
 
     public String getContent() {
         return content;
@@ -70,19 +49,13 @@ public class SassImport {
         return src;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((src == null) ? 0 : src.hashCode());
-        return result;
+    /** @since 11.5 */
+    public Resource getResource() {
+        return resource;
     }
 
     public void setContent(String content) {
         this.content = content;
     }
 
-    public void setSrc(String src) {
-        this.src = src;
-    }
 }

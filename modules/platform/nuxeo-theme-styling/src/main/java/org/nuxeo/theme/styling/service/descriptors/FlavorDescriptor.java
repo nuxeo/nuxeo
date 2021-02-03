@@ -19,12 +19,15 @@
 package org.nuxeo.theme.styling.service.descriptors;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XMerge;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * A flavor represents the set of information that can be used to switch the theme styling on a given page.
@@ -38,114 +41,64 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  */
 @XObject("flavor")
+@XRegistry
 public class FlavorDescriptor {
 
     @XNode("@name")
-    String name;
+    @XRegistryId
+    protected String name;
 
     @XNode("label")
-    String label;
+    protected String label;
 
     @XNode("@extends")
-    String extendsFlavor;
+    protected String extendsFlavor;
 
     @XNode("logo")
-    LogoDescriptor logo;
+    protected LogoDescriptor logo;
 
     @XNode("palettePreview")
-    PalettePreview palettePreview;
-
-    /**
-     * @since 7.4
-     */
-    @XNode("sass@append")
-    boolean appendSass;
-
-    @XNode("presetsList@append")
-    boolean appendPresets;
+    protected PalettePreview palettePreview;
 
     /**
      * @since 7.4
      */
     @XNodeList(value = "sass/import", type = ArrayList.class, componentType = SassImport.class)
-    List<SassImport> sassImports;
+    @XMerge(value = XMerge.MERGE, fallback = "sass@append")
+    protected List<SassImport> sassImports = new ArrayList<>();
 
     @XNodeList(value = "presetsList/presets", type = ArrayList.class, componentType = FlavorPresets.class)
-    List<FlavorPresets> presets;
+    @XMerge(value = XMerge.MERGE, fallback = "presetsList@append")
+    protected List<FlavorPresets> presets = new ArrayList<>();
 
     /**
      * @since 7.4
      */
     @XNodeList(value = "links/icon", type = ArrayList.class, componentType = IconDescriptor.class)
-    List<IconDescriptor> favicons;
+    protected List<IconDescriptor> favicons = new ArrayList<>();
 
-    @Override
-    public FlavorDescriptor clone() {
-        FlavorDescriptor clone = new FlavorDescriptor();
-        clone.setName(getName());
-        clone.setLabel(getLabel());
-        LogoDescriptor logo = getLogo();
-        if (logo != null) {
-            clone.setLogo(logo.clone());
+    // needed by xmap
+    public FlavorDescriptor() {
+    }
+
+    // needed by service API
+    public FlavorDescriptor(String name, String label, String extendsFlavor, LogoDescriptor logo,
+            PalettePreview palettePreview, List<SassImport> sassImports, List<FlavorPresets> presets,
+            List<IconDescriptor> favicons) {
+        this.name = name;
+        this.label = label;
+        this.extendsFlavor = extendsFlavor;
+        this.logo = logo;
+        this.palettePreview = palettePreview;
+        if (sassImports != null) {
+            this.sassImports.addAll(sassImports);
         }
-        PalettePreview pp = getPalettePreview();
-        if (pp != null) {
-            clone.setPalettePreview(pp.clone());
-        }
-        clone.setExtendsFlavor(getExtendsFlavor());
-        clone.setAppendPresets(getAppendPresets());
-        List<FlavorPresets> presets = getPresets();
         if (presets != null) {
-            List<FlavorPresets> newPresets = new ArrayList<>();
-            for (FlavorPresets item : presets) {
-                newPresets.add(item.clone());
-            }
-            clone.setPresets(newPresets);
+            this.presets = presets;
         }
-        clone.setAppendSass(getAppendSass());
-        List<SassImport> sassVariables = getSassImports();
-        if (sassVariables != null) {
-            List<SassImport> cSassVariables = new ArrayList<>();
-            for (SassImport var : sassVariables) {
-                cSassVariables.add(var.clone());
-            }
-            clone.setSassImports(cSassVariables);
-        }
-        List<IconDescriptor> favicons = getFavicons();
         if (favicons != null) {
-            List<IconDescriptor> icons = new ArrayList<>();
-            for (IconDescriptor icon : favicons) {
-                icons.add(icon.clone());
-            }
-            clone.setFavicons(icons);
+            this.favicons = favicons;
         }
-        return clone;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof FlavorDescriptor)) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        FlavorDescriptor f = (FlavorDescriptor) obj;
-        return new EqualsBuilder().append(name, f.name).append(label, f.label).append(extendsFlavor,
-                f.extendsFlavor).append(logo, f.logo).append(palettePreview, f.palettePreview).append(appendPresets,
-                        f.appendPresets).append(presets, f.presets).append(appendSass, f.appendSass).append(sassImports,
-                                f.sassImports).append(favicons, f.favicons).isEquals();
-    }
-
-    public boolean getAppendPresets() {
-        return appendPresets;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public boolean getAppendSass() {
-        return appendSass;
     }
 
     public String getExtendsFlavor() {
@@ -176,153 +129,14 @@ public class FlavorDescriptor {
     }
 
     public List<FlavorPresets> getPresets() {
-        return presets;
+        return Collections.unmodifiableList(presets);
     }
 
     /**
      * @since 7.4
      */
     public List<SassImport> getSassImports() {
-        return sassImports;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (appendPresets ? 1231 : 1237);
-        result = prime * result + (appendSass ? 1231 : 1237);
-        result = prime * result + ((extendsFlavor == null) ? 0 : extendsFlavor.hashCode());
-        result = prime * result + ((favicons == null) ? 0 : favicons.hashCode());
-        result = prime * result + ((label == null) ? 0 : label.hashCode());
-        result = prime * result + ((logo == null) ? 0 : logo.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((palettePreview == null) ? 0 : palettePreview.hashCode());
-        result = prime * result + ((presets == null) ? 0 : presets.hashCode());
-        result = prime * result + ((sassImports == null) ? 0 : sassImports.hashCode());
-        return result;
-    }
-
-    public void merge(FlavorDescriptor src) {
-        String newExtend = src.getExtendsFlavor();
-        if (newExtend != null) {
-            setExtendsFlavor(newExtend);
-        }
-        String newLabel = src.getLabel();
-        if (newLabel != null) {
-            setLabel(newLabel);
-        }
-        LogoDescriptor logo = src.getLogo();
-        if (logo != null) {
-            LogoDescriptor newLogo = getLogo();
-            if (newLogo == null) {
-                newLogo = logo.clone();
-            } else {
-                // merge logo info
-                if (logo.getHeight() != null) {
-                    newLogo.setHeight(logo.getHeight());
-                }
-                if (logo.getWidth() != null) {
-                    newLogo.setWidth(logo.getWidth());
-                }
-                if (logo.getTitle() != null) {
-                    newLogo.setTitle(logo.getTitle());
-                }
-                if (logo.getPath() != null) {
-                    newLogo.setPath(logo.getPath());
-                }
-            }
-            setLogo(newLogo);
-        }
-        PalettePreview pp = src.getPalettePreview();
-        if (pp != null) {
-            setPalettePreview(pp);
-        }
-
-        List<FlavorPresets> newPresets = src.getPresets();
-        if (newPresets != null) {
-            List<FlavorPresets> merged = new ArrayList<>();
-            merged.addAll(newPresets);
-            boolean keepOld = src.getAppendPresets() || (newPresets.isEmpty() && !src.getAppendPresets());
-            if (keepOld) {
-                // add back old contributions
-                List<FlavorPresets> oldPresets = getPresets();
-                if (oldPresets != null) {
-                    merged.addAll(0, oldPresets);
-                }
-            }
-            setPresets(merged);
-        }
-
-        List<SassImport> newSassImports = src.getSassImports();
-        if (newSassImports != null) {
-            List<SassImport> merged = new ArrayList<>();
-            merged.addAll(newSassImports);
-            boolean keepOld = src.getAppendSass() || (newSassImports.isEmpty() && !src.getAppendSass());
-            if (keepOld) {
-                // add back old contributions
-                List<SassImport> oldSassImports = getSassImports();
-                if (oldSassImports != null) {
-                    merged.addAll(0, oldSassImports);
-                }
-            }
-            setSassImports(merged);
-        }
-
-        List<IconDescriptor> newFavicons = src.getFavicons();
-        if (newFavicons != null && !newFavicons.isEmpty()) {
-            setFavicons(newFavicons);
-        }
-
-    }
-
-    public void setAppendPresets(boolean appendPresets) {
-        this.appendPresets = appendPresets;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setAppendSass(boolean appendSass) {
-        this.appendSass = appendSass;
-    }
-
-    public void setExtendsFlavor(String extendsFlavor) {
-        this.extendsFlavor = extendsFlavor;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setFavicons(List<IconDescriptor> favicons) {
-        this.favicons = favicons;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public void setLogo(LogoDescriptor logo) {
-        this.logo = logo;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPalettePreview(PalettePreview palettePreview) {
-        this.palettePreview = palettePreview;
-    }
-
-    public void setPresets(List<FlavorPresets> presets) {
-        this.presets = presets;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setSassImports(List<SassImport> sassImports) {
-        this.sassImports = sassImports;
+        return Collections.unmodifiableList(sassImports);
     }
 
 }
