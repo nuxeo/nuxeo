@@ -19,12 +19,14 @@
 
 package org.nuxeo.ecm.platform.publisher.descriptors;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor for a PublicationTree configuration.
@@ -32,9 +34,11 @@ import java.util.Map;
  * @author tiry
  */
 @XObject("publicationTreeConfig")
+@XRegistry(compatWarnOnMerge = true)
 public class PublicationTreeConfigDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     @XNode("@tree")
@@ -52,32 +56,27 @@ public class PublicationTreeConfigDescriptor {
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> parameters = new HashMap<>();
 
+    // needed by xmap
     public PublicationTreeConfigDescriptor() {
     }
 
-    public PublicationTreeConfigDescriptor(PublicationTreeConfigDescriptor other) {
-        name = other.name;
+    // needed by service API
+    /** @since 11.5 */
+    public PublicationTreeConfigDescriptor(String name, PublicationTreeConfigDescriptor other) {
+        this.name = name;
         tree = other.tree;
         title = other.title;
         validatorsRule = other.validatorsRule;
         factory = other.factory;
-        parameters = new HashMap<>(other.parameters);
+        parameters.putAll(other.parameters);
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getTree() {
         return tree;
-    }
-
-    public void setTree(String tree) {
-        this.tree = tree;
     }
 
     public String getValidatorsRule() {
@@ -88,16 +87,8 @@ public class PublicationTreeConfigDescriptor {
         return factory;
     }
 
-    public void setFactory(String factory) {
-        this.factory = factory;
-    }
-
     public Map<String, String> getParameters() {
         return parameters;
-    }
-
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
     }
 
     public String getTitle() {

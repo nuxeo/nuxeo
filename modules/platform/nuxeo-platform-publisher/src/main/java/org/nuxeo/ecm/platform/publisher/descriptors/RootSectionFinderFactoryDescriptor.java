@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.publisher.descriptors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinderFactory;
 
@@ -29,6 +30,7 @@ import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinderFactory;
  * @author tiry
  */
 @XObject("rootSectionFinderFactory")
+@XRegistry
 public class RootSectionFinderFactoryDescriptor {
 
     @XNode("@class")

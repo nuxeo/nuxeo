@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.publisher.rules;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Validators rule descriptor.
@@ -33,12 +35,14 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @XObject("validatorsRule")
+@XRegistry
 public class ValidatorsRuleDescriptor {
 
     @XNode("@class")
     protected Class<ValidatorsRule> klass;
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     public Class<ValidatorsRule> getKlass() {

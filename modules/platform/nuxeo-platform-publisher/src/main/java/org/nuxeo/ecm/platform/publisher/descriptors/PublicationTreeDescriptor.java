@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.publisher.descriptors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 
 /**
@@ -29,9 +31,11 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
  * @author tiry
  */
 @XObject("publicationTree")
+@XRegistry(compatWarnOnMerge = true)
 public class PublicationTreeDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     @XNode("@factory")
@@ -44,24 +48,12 @@ public class PublicationTreeDescriptor {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getFactory() {
         return factory;
     }
 
-    public void setFactory(String factory) {
-        this.factory = factory;
-    }
-
     public Class<? extends PublicationTree> getKlass() {
         return klass;
-    }
-
-    public void setKlass(Class<? extends PublicationTree> klass) {
-        this.klass = klass;
     }
 
 }
