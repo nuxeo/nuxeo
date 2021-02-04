@@ -29,6 +29,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 
 /**
@@ -38,6 +39,8 @@ import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
  * @author matic
  */
 @XObject(value = "userManager")
+// merge handled by custom registry
+@XRegistry(enable = false, remove = false)
 public class UserManagerDescriptor {
 
     @XNode("@class")
@@ -67,14 +70,8 @@ public class UserManagerDescriptor {
     @XNode("users/emailField")
     public String userEmailField;
 
-    @XNode("users/listingMode")
+    @XNode(value = "users/listingMode", fallback = "userListingMode")
     public String userListingMode;
-
-    // BBB old syntax
-    @XNode("userListingMode")
-    public void setUserListingMode(String userListingMode) {
-        this.userListingMode = userListingMode;
-    }
 
     public boolean userSearchFieldsPresent = false;
 
