@@ -18,13 +18,18 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XMerge;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 
 /**
@@ -33,32 +38,33 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
  *
  * @author Antoine Taillefer
  */
-@XObject("activeFileSystemItemFactories")
-public class ActiveFileSystemItemFactoriesDescriptor implements Serializable {
+@XObject(ActiveItemFactoryRegistry.FILE_SYSTEM_NODE_NAME)
+@XRegistry(merge = false)
+public class ActiveFileSystemItemFactoriesDescriptor {
 
-    private static final long serialVersionUID = 1L;
-
-    @XNode("@merge")
+    @XNode(XMerge.MERGE)
+    @XMerge(defaultAssignment = false) // compat
     protected boolean merge = false;
 
     @XNodeList(value = "factories/factory", type = ArrayList.class, componentType = ActiveFileSystemItemFactoryDescriptor.class)
-    protected List<ActiveFileSystemItemFactoryDescriptor> factories; // NOSONAR, serialization is actually performed by
-                                                                     // SerializationUtils#clone during merge/clone
-
-    public boolean isMerge() {
-        return merge;
-    }
-
-    public void setMerge(boolean merge) {
-        this.merge = merge;
-    }
+    protected List<ActiveFileSystemItemFactoryDescriptor> factories;
 
     public List<ActiveFileSystemItemFactoryDescriptor> getFactories() {
-        return factories;
+        return Collections.unmodifiableList(factories);
     }
 
-    public void setFactories(List<ActiveFileSystemItemFactoryDescriptor> factories) {
-        this.factories = factories;
+    /** @since 11.5 */
+    public Set<String> getActiveFactories() {
+        Set<String> res = new HashSet<>();
+        factories.forEach(desc -> {
+            String name = desc.getName();
+            if (desc.isEnabled()) {
+                res.add(name);
+            } else {
+                res.remove(name);
+            }
+        });
+        return res;
     }
 
     @Override

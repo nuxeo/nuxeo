@@ -102,7 +102,8 @@
       <code>
         <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
           point="activeFileSystemItemFactories">
-          <activeTopLevelFolderItemFactory>org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory
+          <activeTopLevelFolderItemFactory>
+            org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory
           </activeTopLevelFolderItemFactory>
           <activeFileSystemItemFactories>
             <factories>
@@ -117,7 +118,8 @@
       <code>
         <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
           point="activeFileSystemItemFactories">
-          <activeTopLevelFolderItemFactory>org.nuxeo.drive.hierarchy.userworkspace.factory.UserWorkspaceTopLevelFactory
+          <activeTopLevelFolderItemFactory>
+            org.nuxeo.drive.hierarchy.userworkspace.factory.UserWorkspaceTopLevelFactory
           </activeTopLevelFolderItemFactory>
           <activeFileSystemItemFactories merge="true">
             <factories>
@@ -133,6 +135,7 @@
 
     <object class="org.nuxeo.drive.service.impl.ActiveFileSystemItemFactoriesDescriptor" />
     <object class="org.nuxeo.drive.service.impl.ActiveTopLevelFolderItemFactoryDescriptor" />
+    <registry class="org.nuxeo.drive.service.impl.ActiveItemFactoryRegistry" />
 
   </extension-point>
 
