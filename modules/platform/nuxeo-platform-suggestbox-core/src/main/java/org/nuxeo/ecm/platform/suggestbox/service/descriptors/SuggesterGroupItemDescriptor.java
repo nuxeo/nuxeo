@@ -27,9 +27,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author ataillefer
  */
 @XObject("suggesterName")
-public class SuggesterGroupItemDescriptor implements Cloneable {
+public class SuggesterGroupItemDescriptor {
 
-    @XNode("")
+    @XNode
     protected String name;
 
     @XNode("@appendBefore")
@@ -63,14 +63,6 @@ public class SuggesterGroupItemDescriptor implements Cloneable {
 
     public boolean isRemove() {
         return remove;
-    }
-
-    /*
-     * Override the Object.clone to make it public
-     */
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 
     @Override

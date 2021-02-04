@@ -18,54 +18,31 @@
  */
 package org.nuxeo.ecm.platform.suggestbox.service.registries;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.platform.suggestbox.service.ComponentInitializationException;
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterGroupDescriptor;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.w3c.dom.Element;
 
-public class SuggesterGroupRegistry extends ContributionFragmentRegistry<SuggesterGroupDescriptor> {
+/**
+ * Handles custom merge for {@link SuggesterGroupDescriptor} contributions.
+ */
+public class SuggesterGroupRegistry extends MapRegistry {
 
-    protected final Map<String, SuggesterGroupDescriptor> suggesterGroupDescriptors = new HashMap<>();
+    @Override
+    @SuppressWarnings("unchecked")
+    protected <T> T getMergedInstance(Context ctx, XAnnotatedObject xObject, Element element, Object existing) {
+        SuggesterGroupDescriptor contrib = getInstance(ctx, xObject, element);
+        if (existing != null) {
+            ((SuggesterGroupDescriptor) existing).mergeFrom(contrib);
+            return (T) existing;
+        } else {
+            return (T) contrib;
+        }
+    }
 
     public SuggesterGroupDescriptor getSuggesterGroupDescriptor(String name) {
-        return suggesterGroupDescriptors.get(name);
-    }
-
-    @Override
-    public SuggesterGroupDescriptor clone(SuggesterGroupDescriptor suggestGroup) {
-        try {
-            return (SuggesterGroupDescriptor) suggestGroup.clone();
-        } catch (CloneNotSupportedException e) {
-            // this should never occur since clone implements Cloneable
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void contributionRemoved(String id, SuggesterGroupDescriptor arg1) {
-        suggesterGroupDescriptors.remove(id);
-    }
-
-    @Override
-    public void contributionUpdated(String id, SuggesterGroupDescriptor contrib, SuggesterGroupDescriptor newOrigContrib) {
-        suggesterGroupDescriptors.put(id, contrib);
-    }
-
-    @Override
-    public String getContributionId(SuggesterGroupDescriptor suggestGroup) {
-        return suggestGroup.getName();
-    }
-
-    @Override
-    public void merge(SuggesterGroupDescriptor src, SuggesterGroupDescriptor dst) {
-        try {
-            dst.mergeFrom(src);
-        } catch (ComponentInitializationException e) {
-            throw new NuxeoException(e);
-        }
+        return this.<SuggesterGroupDescriptor> getContribution(name).orElse(null);
     }
 
 }

@@ -2,12 +2,10 @@
 <component name="org.nuxeo.ecm.platform.suggestbox.service.SuggestionService">
   <require>org.nuxeo.ecm.core.api.repository.RepositoryManager</require>
 
-  <implementation
-    class="org.nuxeo.ecm.platform.suggestbox.service.SuggestionServiceImpl" />
+  <implementation class="org.nuxeo.ecm.platform.suggestbox.service.SuggestionServiceImpl" />
 
   <service>
-    <provide
-      interface="org.nuxeo.ecm.platform.suggestbox.service.SuggestionService" />
+    <provide interface="org.nuxeo.ecm.platform.suggestbox.service.SuggestionService" />
   </service>
 
   <documentation>
@@ -34,8 +32,7 @@
       "org.nuxeo.ecm.platform.suggestbox.service.Suggester" interface.
     </documentation>
 
-    <object
-      class="org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor" />
+    <object class="org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor" />
 
   </extension-point>
 
@@ -49,8 +46,8 @@
       global search-centric SuggesterGroup.
     </documentation>
 
-    <object
-      class="org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterGroupDescriptor" />
+    <object class="org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterGroupDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.suggestbox.service.registries.SuggesterGroupRegistry" />
   </extension-point>
 
 </component>
