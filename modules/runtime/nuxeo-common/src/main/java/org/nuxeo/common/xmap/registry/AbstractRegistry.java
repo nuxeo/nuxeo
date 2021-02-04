@@ -127,6 +127,21 @@ public abstract class AbstractRegistry implements Registry {
         return null;
     }
 
+    protected boolean onlyHandlesEnablement(Context ctx, XAnnotatedObject xObject, Element element, boolean hasId) {
+        // checks no children
+        if (element.getChildNodes().getLength() > 0) {
+            return false;
+        }
+        // checks no attribute other than enablement
+        int nbAttr = element.getAttributes().getLength();
+        int maxNbAttr = hasId ? 2 : 1;
+        if (nbAttr > maxNbAttr) {
+            return false;
+        }
+        XAnnotatedMember enable = xObject.getEnable();
+        return enable != null && enable.hasValue(ctx, element);
+    }
+
     protected boolean shouldMerge(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
         XAnnotatedMember merge = xObject.getMerge();
         return merge != null && Boolean.TRUE.equals(merge.getValue(ctx, element));
