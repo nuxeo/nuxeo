@@ -22,9 +22,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -46,9 +47,9 @@ import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinderFactory;
 import org.nuxeo.ecm.platform.publisher.impl.finder.DefaultRootSectionsFinder;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRuleDescriptor;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -60,19 +61,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class PublisherServiceImpl extends DefaultComponent implements PublisherService, ComponentManager.Listener {
 
-    private final Log log = LogFactory.getLog(PublisherServiceImpl.class);
-
-    protected Map<String, PublicationTreeDescriptor> treeDescriptors = new HashMap<>();
-
-    protected Map<String, PublishedDocumentFactoryDescriptor> factoryDescriptors = new HashMap<>();
-
-    protected Map<String, PublicationTreeConfigDescriptor> treeConfigDescriptors = new HashMap<>();
-
-    protected Map<String, ValidatorsRuleDescriptor> validatorsRuleDescriptors = new HashMap<>();
-
-    protected Map<String, PublicationTreeConfigDescriptor> pendingDescriptors = new HashMap<>();
-
-    protected RootSectionFinderFactory rootSectionFinderFactory = null;
+    private static final Logger log = LogManager.getLogger(PublisherServiceImpl.class);
 
     public static final String TREE_EP = "tree";
 
@@ -88,6 +77,44 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
 
     protected static final String RELATIVE_ROOT_PATH_KEY = "RelativeRootPath";
 
+    protected Map<String, PublicationTreeConfigDescriptor> treeConfigDescriptors;
+
+    protected Map<String, PublicationTreeConfigDescriptor> pendingDescriptors;
+
+    protected RootSectionFinderFactory rootSectionFinderFactory;
+
+    @Override
+    public void start(ComponentContext context) {
+        treeConfigDescriptors = new ConcurrentHashMap<>();
+        pendingDescriptors = new ConcurrentHashMap<>();
+        this.<PublicationTreeConfigDescriptor> getRegistryContributions(TREE_CONFIG_EP).forEach(desc -> {
+            if (desc.getParameters().get(RELATIVE_ROOT_PATH_KEY) != null) {
+                pendingDescriptors.put(desc.getName(), desc);
+            } else {
+                treeConfigDescriptors.put(desc.getName(), desc);
+            }
+        });
+
+        this.<RootSectionFinderFactoryDescriptor> getRegistryContribution(ROOT_SECTION_FINDER_FACTORY_EP)
+            .ifPresent(desc -> {
+                try {
+                    rootSectionFinderFactory = desc.getFactory().getDeclaredConstructor().newInstance();
+                } catch (ReflectiveOperationException e) {
+                    String message = String.format("Unable to load custom RootSectionFinderFactory (%s)",
+                            e.getMessage());
+                    addRuntimeMessage(Level.ERROR, message);
+                    log.error(message, e);
+                }
+            });
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        treeConfigDescriptors = null;
+        pendingDescriptors = null;
+        rootSectionFinderFactory = null;
+    }
+
     @Override
     public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
@@ -95,8 +122,8 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
             // RepositoryService failed to start, no need to go further
             return;
         }
-        boolean txWasStartedOutsideComponent = TransactionHelper.isTransactionActiveOrMarkedRollback();
 
+        boolean txWasStartedOutsideComponent = TransactionHelper.isTransactionActiveOrMarkedRollback();
         if (txWasStartedOutsideComponent || TransactionHelper.startTransaction()) {
             boolean completedAbruptly = true;
             try {
@@ -125,65 +152,6 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         } finally {
             Thread.currentThread().setContextClassLoader(jbossCL);
             log.debug("JBoss ClassLoader restored");
-        }
-    }
-
-    @Override
-    public void activate(ComponentContext context) {
-        treeDescriptors = new HashMap<>();
-        factoryDescriptors = new HashMap<>();
-        treeConfigDescriptors = new HashMap<>();
-        validatorsRuleDescriptors = new HashMap<>();
-        pendingDescriptors = new HashMap<>();
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
-        log.debug("Registry contribution for EP " + extensionPoint);
-
-        if (TREE_EP.equals(extensionPoint)) {
-            PublicationTreeDescriptor desc = (PublicationTreeDescriptor) contribution;
-            treeDescriptors.put(desc.getName(), desc);
-        } else if (TREE_CONFIG_EP.equals(extensionPoint)) {
-            PublicationTreeConfigDescriptor desc = (PublicationTreeConfigDescriptor) contribution;
-            registerTreeConfig(desc);
-        } else if (FACTORY_EP.equals(extensionPoint)) {
-            PublishedDocumentFactoryDescriptor desc = (PublishedDocumentFactoryDescriptor) contribution;
-            factoryDescriptors.put(desc.getName(), desc);
-        } else if (VALIDATORS_RULE_EP.equals(extensionPoint)) {
-            ValidatorsRuleDescriptor desc = (ValidatorsRuleDescriptor) contribution;
-            validatorsRuleDescriptors.put(desc.getName(), desc);
-        } else if (ROOT_SECTION_FINDER_FACTORY_EP.equals(extensionPoint)) {
-            RootSectionFinderFactoryDescriptor desc = (RootSectionFinderFactoryDescriptor) contribution;
-            try {
-                rootSectionFinderFactory = desc.getFactory().getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException t) {
-                log.error("Unable to load custom RootSectionFinderFactory", t);
-            }
-        }
-    }
-
-    protected void registerTreeConfig(PublicationTreeConfigDescriptor desc) {
-        if (desc.getParameters().get("RelativeRootPath") != null) {
-            pendingDescriptors.put(desc.getName(), desc);
-        } else {
-            treeConfigDescriptors.put(desc.getName(), desc);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof PublicationTreeDescriptor) {
-            treeDescriptors.remove(((PublicationTreeDescriptor) contribution).getName());
-        } else if (contribution instanceof PublicationTreeConfigDescriptor) {
-            String name = ((PublicationTreeConfigDescriptor) contribution).getName();
-            pendingDescriptors.remove(name);
-            treeConfigDescriptors.remove(name);
-        } else if (contribution instanceof ValidatorsRuleDescriptor) {
-            validatorsRuleDescriptors.remove(((ValidatorsRuleDescriptor) contribution).getName());
-        } else if (contribution instanceof RootSectionFinderFactoryDescriptor) {
-            rootSectionFinderFactory = null;
         }
     }
 
@@ -257,20 +225,18 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     }
 
     protected ValidatorsRule getValidatorsRule(PublishedDocumentFactoryDescriptor factoryDesc) {
-        String validatorsRuleName = factoryDesc.getValidatorsRuleName();
-        ValidatorsRule validatorsRule = null;
-        if (validatorsRuleName != null) {
-            ValidatorsRuleDescriptor validatorsRuleDesc = validatorsRuleDescriptors.get(validatorsRuleName);
-            if (validatorsRuleDesc == null) {
-                throw new NuxeoException("Unable to find validatorsRule" + validatorsRuleName);
-            }
+        String ruleName = factoryDesc.getValidatorsRuleName();
+        ValidatorsRule rule = null;
+        if (ruleName != null) {
+            ValidatorsRuleDescriptor desc = this.<ValidatorsRuleDescriptor> getRegistryContribution(VALIDATORS_RULE_EP,
+                    ruleName).orElseThrow(() -> new NuxeoException("Unable to find validatorsRule" + ruleName));
             try {
-                validatorsRule = validatorsRuleDesc.getKlass().getDeclaredConstructor().newInstance();
+                rule = desc.getKlass().getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                throw new NuxeoException("Error while creating validatorsRule " + validatorsRuleName, e);
+                throw new NuxeoException("Error while creating validatorsRule " + ruleName, e);
             }
         }
-        return validatorsRule;
+        return rule;
     }
 
     protected PublishedDocumentFactoryDescriptor getPublishedDocumentFactoryDescriptor(
@@ -279,12 +245,13 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (factoryName == null) {
             factoryName = treeDescriptor.getFactory();
         }
-
-        PublishedDocumentFactoryDescriptor factoryDesc = factoryDescriptors.get(factoryName);
-        if (factoryDesc == null) {
-            throw new NuxeoException("Unable to find factory" + factoryName);
+        if (factoryName == null) {
+            throw new NuxeoException(
+                    String.format("No factory for descriptors %s and %s", config.getName(), treeDescriptor.getName()));
         }
-        return factoryDesc;
+        final String name = factoryName;
+        return this.<PublishedDocumentFactoryDescriptor> getRegistryContribution(FACTORY_EP, name)
+                   .orElseThrow(() -> new NuxeoException("Unable to find factory " + name));
     }
 
     protected PublicationTreeConfigDescriptor getPublicationTreeConfigDescriptor(String treeConfigName) {
@@ -296,10 +263,8 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
 
     protected PublicationTreeDescriptor getPublicationTreeDescriptor(PublicationTreeConfigDescriptor config) {
         String treeImplName = config.getTree();
-        if (!treeDescriptors.containsKey(treeImplName)) {
-            throw new NuxeoException("Unknow treeImplementation :" + treeImplName);
-        }
-        return treeDescriptors.get(treeImplName);
+        return this.<PublicationTreeDescriptor> getRegistryContribution(TREE_EP, treeImplName)
+                   .orElseThrow(() -> new NuxeoException("Unknow treeImplementation:" + treeImplName));
     }
 
     protected PublicationTree getPublicationTree(PublicationTreeDescriptor treeDescriptor, CoreSession coreSession,
@@ -341,8 +306,9 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
             tree = PublicationRelationHelper.getPublicationTreeUsedForPublishing(doc, coreSession);
         } catch (NuxeoException e) {
             // TODO catch proper exception
-            log.error("Unable to get PublicationTree for " + doc.getPathAsString()
-                    + ". Fallback on first PublicationTree accepting this document.", e);
+            log.error(
+                    "Unable to get PublicationTree for {}. Fallback on first PublicationTree accepting this document.",
+                    doc.getPathAsString(), e);
             for (String treeName : treeConfigDescriptors.keySet()) {
                 tree = getPublicationTree(treeName, coreSession, null);
                 if (tree.isPublicationNode(doc)) {
@@ -365,7 +331,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     }
 
     protected void registerPendingDescriptors() {
-        // TODO what to do with multiple repositories?
+        // TODO what if there are multiple repositories?
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         String repositoryName = repositoryManager.getDefaultRepositoryName();
         List<DocumentModel> domains = new DomainsFinder(repositoryName).getDomains();
@@ -374,11 +340,14 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         }
     }
 
+    protected String getPendingTreeConfigName(PublicationTreeConfigDescriptor desc, String domainName) {
+        return desc.getName() + "-" + domainName;
+    }
+
     public void registerTreeConfigFor(DocumentModel domain) {
         for (PublicationTreeConfigDescriptor desc : pendingDescriptors.values()) {
-            PublicationTreeConfigDescriptor newDesc = new PublicationTreeConfigDescriptor(desc);
-            String newTreeName = desc.getName() + "-" + domain.getName();
-            newDesc.setName(newTreeName);
+            String newTreeName = getPendingTreeConfigName(desc, domain.getName());
+            PublicationTreeConfigDescriptor newDesc = new PublicationTreeConfigDescriptor(newTreeName, desc);
             Path newPath = domain.getPath();
             Map<String, String> parameters = newDesc.getParameters();
             newPath = newPath.append(parameters.remove(RELATIVE_ROOT_PATH_KEY));
@@ -397,7 +366,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
      */
     public void unRegisterTreeConfigFor(String domainName) {
         for (PublicationTreeConfigDescriptor desc : pendingDescriptors.values()) {
-            String treeName = desc.getName() + "-" + domainName;
+            String treeName = getPendingTreeConfigName(desc, domainName);
             treeConfigDescriptors.remove(treeName);
         }
     }

@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.publisher.descriptors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 
 /**
@@ -29,9 +31,11 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
  * @author tiry
  */
 @XObject("publishedDocumentFactory")
+@XRegistry(compatWarnOnMerge = true)
 public class PublishedDocumentFactoryDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     @XNode("@class")
@@ -44,16 +48,8 @@ public class PublishedDocumentFactoryDescriptor {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Class<? extends PublishedDocumentFactory> getKlass() {
         return klass;
-    }
-
-    public void setKlass(Class<? extends PublishedDocumentFactory> klass) {
-        this.klass = klass;
     }
 
     public String getValidatorsRuleName() {
