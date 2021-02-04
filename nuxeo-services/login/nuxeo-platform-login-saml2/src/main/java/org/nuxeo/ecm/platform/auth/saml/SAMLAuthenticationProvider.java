@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
@@ -95,6 +96,8 @@ import org.opensaml.xml.encryption.ChainingEncryptedKeyResolver;
 import org.opensaml.xml.encryption.InlineEncryptedKeyResolver;
 import org.opensaml.xml.encryption.SimpleRetrievalMethodEncryptedKeyResolver;
 import org.opensaml.xml.parse.BasicParserPool;
+import org.opensaml.xml.security.BasicSecurityConfiguration;
+import org.opensaml.xml.security.SecurityHelper;
 import org.opensaml.xml.security.credential.Credential;
 import org.opensaml.xml.security.keyinfo.KeyInfoCredentialResolver;
 import org.opensaml.xml.security.keyinfo.StaticKeyInfoCredentialResolver;
@@ -190,6 +193,7 @@ public class SAMLAuthenticationProvider
         } catch (ConfigurationException e) {
             log.error("Failed to bootstrap OpenSAML", e);
         }
+        initializeSecurity(parameters);
 
         // Read the IdP metadata and initialize the supported profiles
         try {
@@ -252,6 +256,27 @@ public class SAMLAuthenticationProvider
         profile.setTrustEngine(trustEngine);
         profile.setDecrypter(decrypter);
         profiles.put(profile.getProfileIdentifier(), profile);
+    }
+
+    private static final String SIGNATURE_ALGORITHM = "SignatureAlgorithm";
+
+    private static final String DIGEST_ALGORITHM = "DigestAlgorithm";
+
+    private void initializeSecurity(Map<String, String> parameters) {
+        BasicSecurityConfiguration config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
+        for (Entry<String, String> es : parameters.entrySet()) {
+            String key = es.getKey();
+            String value = es.getValue();
+            if (key.startsWith(SIGNATURE_ALGORITHM)) {
+                String keyAlgorithm = SecurityHelper.getKeyAlgorithmFromURI(value);
+                if (keyAlgorithm == null && key.contains(".")) {
+                    keyAlgorithm = key.substring(key.lastIndexOf('.') + 1);
+                }
+                config.registerSignatureAlgorithmURI(keyAlgorithm, value);
+            } else if (DIGEST_ALGORITHM.equals(key)) {
+                config.setSignatureReferenceDigestMethod(value);
+            }
+        }
     }
 
     private void initializeMetadataProvider(Map<String, String> parameters) throws MetadataProviderException {
