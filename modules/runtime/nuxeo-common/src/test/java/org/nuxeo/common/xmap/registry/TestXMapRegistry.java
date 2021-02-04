@@ -112,6 +112,8 @@ public class TestXMapRegistry {
             SampleDescriptorAlias alias3 = new SampleDescriptorAlias("sample3", "item1", List.of("alias3"));
             SampleDescriptorAlias alias3Overridden = new SampleDescriptorAlias("sample3", "item1 merged",
                     List.of("alias3 merged"));
+            SampleDescriptorAlias alias3Merged = new SampleDescriptorAlias("sample3", "item1 merged",
+                    List.of("alias3", "alias3 merged"));
             checkSample(mreg, "sample3", "Sample 3 Overridden", true,
                     List.of("sample3 - item1", "sample3 - item2", "sample3 - item1 overridden"),
                     List.of("sample3 - annotated item1 overridden"),
@@ -119,7 +121,7 @@ public class TestXMapRegistry {
                             "sample3 - item3 overridden"),
                     Map.of("item1", "sample3 - annotated item1 overridden", "item3",
                             "sample3 - annotated item3 overridden"),
-                    alias3Overridden, List.of(alias3, alias3Overridden), Map.of("sample3", alias3Overridden));
+                    alias3Merged, List.of(alias3, alias3Overridden), Map.of("sample3", alias3Merged));
         }
         // all merged
         SampleDescriptorAlias alias4 = new SampleDescriptorAlias("sample4", "item1 merged", List.of("alias4 merged"));
