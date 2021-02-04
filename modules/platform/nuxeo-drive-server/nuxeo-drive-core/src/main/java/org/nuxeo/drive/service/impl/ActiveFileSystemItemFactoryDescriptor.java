@@ -18,10 +18,10 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * XMap descriptor for the {@code factory} elements of the {@code activeFileSystemItemFactories} contributions.
@@ -29,30 +29,21 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Antoine Taillefer
  */
 @XObject("factory")
-public class ActiveFileSystemItemFactoryDescriptor implements Serializable {
+public class ActiveFileSystemItemFactoryDescriptor {
 
-    private static final long serialVersionUID = 1L;
-
-    @XNode("")
+    @XNode
+    @XRegistryId
     protected String name;
 
-    @XNode("@enabled")
-    protected boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    protected boolean enabled;
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public boolean isEnabled() {
         return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     @Override
@@ -62,22 +53,6 @@ public class ActiveFileSystemItemFactoryDescriptor implements Serializable {
         sb.append(enabled);
         sb.append(")");
         return sb.toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof ActiveFileSystemItemFactoryDescriptor)) {
-            return false;
-        }
-        return this.name.equals(((ActiveFileSystemItemFactoryDescriptor) obj).getName());
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
     }
 
 }

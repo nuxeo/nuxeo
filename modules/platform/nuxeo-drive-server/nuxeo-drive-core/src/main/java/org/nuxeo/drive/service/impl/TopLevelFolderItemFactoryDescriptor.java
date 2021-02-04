@@ -18,12 +18,15 @@
  */
 package org.nuxeo.drive.service.impl;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 
@@ -34,6 +37,8 @@ import org.nuxeo.drive.service.TopLevelFolderItemFactory;
  * @author Antoine Taillefer
  */
 @XObject("topLevelFolderItemFactory")
+@XRegistry
+@XRegistryId("@class")
 public class TopLevelFolderItemFactoryDescriptor {
 
     @XNode("@class")
@@ -44,7 +49,7 @@ public class TopLevelFolderItemFactoryDescriptor {
 
     public TopLevelFolderItemFactory getFactory() throws ReflectiveOperationException {
         TopLevelFolderItemFactory factory = factoryClass.getDeclaredConstructor().newInstance();
-        factory.setName(factory.getClass().getName());
+        factory.setName(factoryClass.getName());
         factory.handleParameters(parameters);
         return factory;
     }
@@ -53,44 +58,17 @@ public class TopLevelFolderItemFactoryDescriptor {
         return factoryClass;
     }
 
-    public void setFactoryClass(Class<? extends TopLevelFolderItemFactory> factoryClass) {
-        this.factoryClass = factoryClass;
-    }
-
     public Map<String, String> getParameters() {
-        return parameters;
+        return Collections.unmodifiableMap(parameters);
     }
 
+    @Deprecated(since = "11.5")
     public String getparameter(String name) {
         return parameters.get(name);
     }
 
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-    }
-
-    public void setParameter(String name, String value) {
-        parameters.put(name, value);
-    }
-
     public String getName() {
         return factoryClass.getName();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof TopLevelFolderItemFactoryDescriptor)) {
-            return false;
-        }
-        return factoryClass == ((TopLevelFolderItemFactoryDescriptor) obj).factoryClass;
-    }
-
-    @Override
-    public int hashCode() {
-        return factoryClass.getName().hashCode();
     }
 
 }

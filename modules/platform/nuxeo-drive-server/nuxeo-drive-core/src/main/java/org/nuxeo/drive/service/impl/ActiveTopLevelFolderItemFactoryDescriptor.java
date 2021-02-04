@@ -20,6 +20,7 @@ package org.nuxeo.drive.service.impl;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 
 /**
@@ -28,18 +29,15 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
  *
  * @author Antoine Taillefer
  */
-@XObject("activeTopLevelFolderItemFactory")
+@XObject(ActiveItemFactoryRegistry.TOP_LEVEL_NODE_NAME)
+@XRegistry
 public class ActiveTopLevelFolderItemFactoryDescriptor {
 
-    @XNode("")
+    @XNode
     protected String name;
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override

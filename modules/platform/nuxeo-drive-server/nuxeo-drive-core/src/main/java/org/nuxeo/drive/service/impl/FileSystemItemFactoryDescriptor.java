@@ -18,14 +18,15 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -37,11 +38,11 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @author Antoine Taillefer
  */
 @XObject("fileSystemItemFactory")
-public class FileSystemItemFactoryDescriptor implements Serializable, Comparable<FileSystemItemFactoryDescriptor> {
-
-    private static final long serialVersionUID = 1L;
+@XRegistry
+public class FileSystemItemFactoryDescriptor implements Comparable<FileSystemItemFactoryDescriptor> {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@order")
@@ -57,8 +58,7 @@ public class FileSystemItemFactoryDescriptor implements Serializable, Comparable
     protected Class<? extends FileSystemItemFactory> factoryClass;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> parameters = new HashMap<>(); // NOSONAR, serialization is actually performed by
-                                                                // SerializationUtils#clone during merge/clone
+    protected Map<String, String> parameters;
 
     public String getName() {
         return name;
@@ -68,48 +68,24 @@ public class FileSystemItemFactoryDescriptor implements Serializable, Comparable
         return order;
     }
 
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
     public String getDocType() {
         return docType;
-    }
-
-    public void setDocType(String docType) {
-        this.docType = docType;
     }
 
     public String getFacet() {
         return facet;
     }
 
-    public void setFacet(String facet) {
-        this.facet = facet;
-    }
-
     public Class<? extends FileSystemItemFactory> getFactoryClass() {
         return factoryClass;
     }
 
-    public void setFactoryClass(Class<? extends FileSystemItemFactory> factoryClass) {
-        this.factoryClass = factoryClass;
-    }
-
     public Map<String, String> getParameters() {
-        return parameters;
+        return Collections.unmodifiableMap(parameters);
     }
 
     public String getParameter(String name) {
         return parameters.get(name);
-    }
-
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-    }
-
-    public void setParameter(String name, String value) {
-        parameters.put(name, value);
     }
 
     public FileSystemItemFactory getFactory() {
@@ -132,16 +108,6 @@ public class FileSystemItemFactoryDescriptor implements Serializable, Comparable
         sb.append(getOrder());
         sb.append(")");
         return sb.toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return Objects.equals(this, obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(this);
     }
 
     @Override
