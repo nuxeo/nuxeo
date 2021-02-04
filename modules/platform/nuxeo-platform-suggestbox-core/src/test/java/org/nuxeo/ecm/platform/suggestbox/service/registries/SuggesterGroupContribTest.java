@@ -50,7 +50,6 @@ public class SuggesterGroupContribTest {
      * Tests the 'searchbox' suggesterGroup contribution.
      */
     @Test
-    // TODO change the test when the redirection to the new search tab will be handled
     public void testSuggesterGroupContrib() {
 
         // check service implementation
@@ -60,10 +59,6 @@ public class SuggesterGroupContribTest {
         SuggesterGroupRegistry suggesterGroups = ((SuggestionServiceImpl) suggestionService).getSuggesterGroups();
         assertNotNull(suggesterGroups);
 
-        // check suggesterGroup count
-        assertNotNull(suggesterGroups.getFragments());
-        assertEquals(1, suggesterGroups.getFragments().length);
-
         // check 'searchbox' suggesterGroup
         SuggesterGroupDescriptor sgd = suggesterGroups.getSuggesterGroupDescriptor("searchbox");
         assertNotNull(sgd);
@@ -71,13 +66,8 @@ public class SuggesterGroupContribTest {
         // check 'searchbox' suggesterGroup's suggesters
         List<SuggesterGroupItemDescriptor> suggesters = sgd.getSuggesters();
         List<SuggesterGroupItemDescriptor> expectedSuggesters = new ArrayList<>();
-        /*
-         * expectedSuggesters.add(new SuggesterGroupItemDescriptor( "searchByKeywords"));
-         */
         expectedSuggesters.add(new SuggesterGroupItemDescriptor("documentLookupByTitle"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor("searchByUsersAndGroups"));
-        /* expectedSuggesters.add(new SuggesterGroupItemDescriptor("searchByDate")); */
         assertEquals(expectedSuggesters, suggesters);
-
     }
 }

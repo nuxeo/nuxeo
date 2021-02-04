@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.suggestbox.service.descriptors;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,28 +28,31 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.platform.suggestbox.service.ComponentInitializationException;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("suggesterGroup")
-public class SuggesterGroupDescriptor implements Cloneable {
+@XRegistry
+public class SuggesterGroupDescriptor {
 
     private static final Log log = LogFactory.getLog(SuggesterGroupDescriptor.class);
 
     @XNode("@name")
+    @XRegistryId
     protected String name = "default";
 
     @XNodeList(value = "suggesters/suggesterName", type = ArrayList.class, componentType = SuggesterGroupItemDescriptor.class)
-    List<SuggesterGroupItemDescriptor> suggesters;
+    protected List<SuggesterGroupItemDescriptor> suggesters;
 
     public String getName() {
         return name;
     }
 
     public List<SuggesterGroupItemDescriptor> getSuggesters() {
-        return suggesters;
+        return Collections.unmodifiableList(suggesters);
     }
 
-    public void mergeFrom(SuggesterGroupDescriptor newDescriptor) throws ComponentInitializationException {
+    public void mergeFrom(SuggesterGroupDescriptor newDescriptor) {
         if (name == null || !name.equals(newDescriptor.name)) {
             throw new RuntimeException("Cannot merge descriptor with name '" + name
                     + "' with another descriptor with different name " + newDescriptor.getName() + "'");
@@ -92,7 +96,7 @@ public class SuggesterGroupDescriptor implements Cloneable {
                 }
                 // manage the case of no particular attributes => append
                 // suggester at the end of the list
-                else if (appendBeforeSuggesterName == null && appendAfterSuggesterName == null) {
+                else {
                     boolean isSuggesterAppended = appendAfter(null, newSuggesterName);
                     if (!isSuggesterAppended) {
                         logExistingSuggesterName(newSuggesterName);
@@ -100,14 +104,6 @@ public class SuggesterGroupDescriptor implements Cloneable {
                 }
             }
         }
-    }
-
-    /*
-     * Override the Object.clone to make it public
-     */
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 
     /**
