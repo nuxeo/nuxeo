@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.Inflater;
@@ -87,6 +88,7 @@ import org.opensaml.xml.io.Unmarshaller;
 import org.opensaml.xml.io.UnmarshallingException;
 import org.opensaml.xml.parse.BasicParserPool;
 import org.opensaml.xml.parse.XMLParserException;
+import org.opensaml.xml.security.BasicSecurityConfiguration;
 import org.opensaml.xml.util.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -122,6 +124,42 @@ public class SAMLAuthenticatorTest {
             user.setPropertyValue(userManager.getUserEmailField(), "user@dummy");
             user = userManager.createUser(user);
         }
+    }
+
+    private static final String RSA_SHA1 = "http://www.w3.org/2000/09/xmldsig#rsa-sha1";
+
+    private static final String RSA_SHA256 = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+
+    private static final String RSA_WHIRLPOOL = "http://www.w3.org/2007/05/xmldsig-more#rsa-whirlpool";
+
+    private static final String SHA1 = "http://www.w3.org/2000/09/xmldsig#sha1";
+
+    private static final String SHA256 = "http://www.w3.org/2001/04/xmlenc#sha256";
+
+    @Test
+    public void testInitSignatureAlgorithm() {
+        // default config
+        BasicSecurityConfiguration config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
+        assertEquals(RSA_SHA1, config.getSignatureAlgorithmURI("RSA"));
+        // contribute SHA-256
+        samlAuth.initPlugin(Collections.singletonMap("SignatureAlgorithm", RSA_SHA256));
+        config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
+        assertEquals(RSA_SHA256, config.getSignatureAlgorithmURI("RSA"));
+        // contribute Whirlpool, not known to OpenSAML 2
+        samlAuth.initPlugin(Collections.singletonMap("SignatureAlgorithm.RSA", RSA_WHIRLPOOL));
+        config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
+        assertEquals(RSA_WHIRLPOOL, config.getSignatureAlgorithmURI("RSA"));
+    }
+
+    @Test
+    public void testInitDigestAlgorithm() {
+        // default config
+        BasicSecurityConfiguration config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
+        assertEquals(SHA1, config.getSignatureReferenceDigestMethod());
+        // contribute SHA-256
+        samlAuth.initPlugin(Collections.singletonMap("DigestAlgorithm", SHA256));
+        config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
+        assertEquals(SHA256, config.getSignatureReferenceDigestMethod());
     }
 
     @Test
