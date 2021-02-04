@@ -245,7 +245,7 @@ public class TransactionHelper {
             if (status != Status.STATUS_ACTIVE && status != Status.STATUS_MARKED_ROLLBACK) {
                 return -1;
             }
-            long ttl = (System.currentTimeMillis() - (Long) GERONIMO_TRANSACTION_TIMEOUT_FIELD.get(tx)) / 1000;
+            long ttl = ((Long) GERONIMO_TRANSACTION_TIMEOUT_FIELD.get(tx) - System.currentTimeMillis()) / 1000;
             return ttl > 0 ? Math.toIntExact(ttl) : 0;
         } catch (SystemException | ReflectiveOperationException e) {
             throw new RuntimeException(e);
