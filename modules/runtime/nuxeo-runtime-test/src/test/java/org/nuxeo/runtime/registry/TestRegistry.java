@@ -219,6 +219,34 @@ public class TestRegistry {
         assertEquals(2, logCaptureResult.getCaughtEventMessages().size());
     }
 
+    /**
+     * Checks compat warns are not issued if it's only for enablement.
+     */
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
+    public void testCompatWarnOnEnablement() throws Exception {
+        checkInitialSingleRegistry(service.getSingleRegistry());
+        checkInitialCompatMapRegistry(service.getCompatWarnMapRegistry());
+        assertEquals(0, logCaptureResult.getCaughtEventMessages().size());
+
+        hotDeploy("registry-contrib-3.xml");
+        // ensure init of registries again
+        service.getSingleRegistry();
+        service.getCompatWarnMapRegistry();
+
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
+        if (useHotDeployer()) {
+            assertEquals(0, caughtEvents.size());
+        } else {
+            assertEquals(0, caughtEvents.size());
+        }
+
+        hotUndeploy("registry-contrib-3.xml");
+        service.getSingleRegistry();
+        service.getCompatWarnMapRegistry();
+        assertEquals(0, logCaptureResult.getCaughtEventMessages().size());
+    }
+
     @Test
     public void testCustomRegistry() throws Exception {
         checkInitialMapRegistry(service.getCustomRegistry());
