@@ -40,6 +40,8 @@ public class CSVImporterOptions implements Serializable {
 
     public static final CSVImporterOptions DEFAULT_OPTIONS = new Builder().build();
 
+    private static final long COMPUTE_TOTAL_TRESHOLD_SIZE_DEFAULT = 1_000_000;
+
     public static class Builder {
 
         private CSVImporterDocumentFactory CSVImporterDocumentFactory = new DefaultCSVImporterDocumentFactory();
@@ -59,6 +61,8 @@ public class CSVImporterOptions implements Serializable {
         private boolean sendEmail;
 
         private int batchSize = 50;
+
+        private long computeTotalThresholdSize = COMPUTE_TOTAL_TRESHOLD_SIZE_DEFAULT;
 
         private ImportMode importMode = ImportMode.CREATE;
 
@@ -112,9 +116,16 @@ public class CSVImporterOptions implements Serializable {
             return this;
         }
 
+        /** @since 11.5 */
+        public Builder computeTotalThresholdSize(long computeTotalThresholdSize) {
+            this.computeTotalThresholdSize = computeTotalThresholdSize;
+            return this;
+        }
+
         public CSVImporterOptions build() {
             return new CSVImporterOptions(CSVImporterDocumentFactory, dateFormat, listSeparatorRegex, commentMarker,
-                    escapeCharacter, updateExisting, checkAllowedSubTypes, sendEmail, batchSize, importMode);
+                    escapeCharacter, updateExisting, checkAllowedSubTypes, sendEmail, batchSize, importMode,
+                    computeTotalThresholdSize);
         }
     }
 
@@ -142,21 +153,25 @@ public class CSVImporterOptions implements Serializable {
 
     protected final int batchSize;
 
+    protected final long computeTotalThresholdSize;
+
+    /** @deprecated since 11.5, use builder instead */
     protected CSVImporterOptions(CSVImporterDocumentFactory CSVImporterDocumentFactory, String dateFormat,
             String listSeparatorRegex, boolean updateExisting, boolean checkAllowedSubTypes, boolean sendEmail,
             int batchSize, ImportMode importMode) {
-        this(CSVImporterDocumentFactory, dateFormat, listSeparatorRegex, '\\', updateExisting, checkAllowedSubTypes,
-                sendEmail, batchSize, importMode);
+        this(CSVImporterDocumentFactory, dateFormat, listSeparatorRegex, null, '\\', updateExisting,
+                checkAllowedSubTypes, sendEmail, batchSize, importMode, COMPUTE_TOTAL_TRESHOLD_SIZE_DEFAULT);
     }
 
     /**
      * @since 7.2
+     * @deprecated since 11.5, use builder instead
      */
     protected CSVImporterOptions(CSVImporterDocumentFactory CSVImporterDocumentFactory, String dateFormat,
             String listSeparatorRegex, Character escapeCharacter, boolean updateExisting, boolean checkAllowedSubTypes,
             boolean sendEmail, int batchSize, ImportMode importMode) {
         this(CSVImporterDocumentFactory, dateFormat, listSeparatorRegex, null, escapeCharacter, updateExisting,
-                checkAllowedSubTypes, sendEmail, batchSize, importMode);
+                checkAllowedSubTypes, sendEmail, batchSize, importMode, COMPUTE_TOTAL_TRESHOLD_SIZE_DEFAULT);
     }
 
     /**
@@ -164,7 +179,8 @@ public class CSVImporterOptions implements Serializable {
      */
     protected CSVImporterOptions(CSVImporterDocumentFactory CSVImporterDocumentFactory, String dateFormat,
             String listSeparatorRegex, Character commentMarker, Character escapeCharacter, boolean updateExisting,
-            boolean checkAllowedSubTypes, boolean sendEmail, int batchSize, ImportMode importMode) {
+            boolean checkAllowedSubTypes, boolean sendEmail, int batchSize, ImportMode importMode,
+            long computeTotalThresholdSize) {
         this.CSVImporterDocumentFactory = CSVImporterDocumentFactory;
         CSVImporterDocumentFactory.setImporterOptions(this);
         this.dateFormat = computeDateFormat(dateFormat);
@@ -176,6 +192,7 @@ public class CSVImporterOptions implements Serializable {
         this.sendEmail = sendEmail;
         this.batchSize = batchSize;
         this.importMode = importMode;
+        this.computeTotalThresholdSize = computeTotalThresholdSize;
     }
 
     protected DateFormat computeDateFormat(String dateFormat) {
@@ -222,6 +239,11 @@ public class CSVImporterOptions implements Serializable {
 
     public int getBatchSize() {
         return batchSize;
+    }
+
+    /** @since 11.5 */
+    public long getComputeTotalThresholdSize() {
+        return computeTotalThresholdSize;
     }
 
     public ImportMode getImportMode() {

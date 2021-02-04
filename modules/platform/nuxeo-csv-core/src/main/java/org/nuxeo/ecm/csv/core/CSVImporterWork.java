@@ -157,8 +157,6 @@ public class CSVImporterWork extends TransientStoreWork {
 
     public static final String CONTENT_FILED_TYPE_NAME = "content";
 
-    private static final long COMPUTE_TOTAL_THRESHOLD_KB = 1000;
-
     /**
      * CSV headers that won't be checked if the field exists on the document type.
      *
@@ -199,7 +197,7 @@ public class CSVImporterWork extends TransientStoreWork {
         setOriginatingUsername(username);
         this.parentPath = parentPath;
         this.username = username;
-        if (csvBlob.getLength() >= 0 && csvBlob.getLength() / 1024 < COMPUTE_TOTAL_THRESHOLD_KB) {
+        if (csvBlob.getLength() >= 0 && csvBlob.getLength() < options.getComputeTotalThresholdSize()) {
             computeTotal = true;
         }
         this.options = options;

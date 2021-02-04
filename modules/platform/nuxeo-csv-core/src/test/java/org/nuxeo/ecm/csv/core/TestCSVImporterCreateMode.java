@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -50,11 +51,9 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
-import org.nuxeo.ecm.core.storage.sql.IgnorePostgreSQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -67,6 +66,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
 
     private static final String DOCS_OK_CSV = "docs_ok.csv";
+
+    private static final String DOCS_OK_BIG_CSV = "docs_ok_big.csv";
 
     private static final String DOCS_WITH_FOLDERS_OK_CSV = "docs_with_folders_ok.csv";
 
@@ -91,12 +92,6 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
     private static final String DOCS_WITH_LEGACY_DATE_FORMAT_CSV = "docs_with_legacy_date_format.csv";
 
     private static final String DOCS_WITH_CUSTOM_DATE_FORMAT_CSV = "docs_with_custom_date_format.csv";
-
-    /** @since 11.1 **/
-    public static final String FILE_GREATER_THAN_THE_LENGTH_THRESHOLD = "file_greater_than_threshold.csv";
-
-    /** @since 11.1 **/
-    public static final String FILE_BELOW_THE_LENGTH_THRESHOLD = "file_below_the_threshold.csv";
 
     @Inject
     protected CoreFeature coreFeature;
@@ -656,46 +651,36 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
     /**
      * @since 11.1
      */
-    @ConditionalIgnoreRule.Ignore(condition = IgnorePostgreSQL.class, cause = "NXP-28859")
     @Test
-    public void whenFileIsGreaterThanThresholdTotalDocsShouldBeAvailableWhenImportIsCompleted()
-            throws IOException, InterruptedException {
-        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
-        String importId = csvImporter.launchImport(session, "/", getCSVBlob(FILE_GREATER_THAN_THE_LENGTH_THRESHOLD),
-                options);
-        workManager.awaitCompletion(1, TimeUnit.SECONDS);
-        TransactionHelper.startTransaction();
-
-        CSVImportStatus importStatus = csvImporter.getImportStatus(importId);
-        assertNotNull(importStatus);
-        assertFalse(importStatus.isComplete());
-        assertEquals(-1, importStatus.getTotalNumberOfDocument());
-
-        workManager.awaitCompletion(10000, TimeUnit.SECONDS);
-        TransactionHelper.startTransaction();
-
-        importStatus = csvImporter.getImportStatus(importId);
-        assertTrue(importStatus.isComplete());
-        assertEquals(10999, importStatus.getTotalNumberOfDocument());
-        assertEquals(10999, importStatus.getNumberOfProcessedDocument());
+    public void shouldComputeTotalAtEndIfBiggerThanThreshold() throws IOException, InterruptedException {
+        File csv = new File(FileUtils.getResourcePathFromContext(DOCS_OK_BIG_CSV));
+        long threshold = csv.length() - 10; // make sure we don't compute total initially
+        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE)
+                                                                     .computeTotalThresholdSize(threshold)
+                                                                     .build();
+        testImportTotals(options);
     }
 
     /**
      * @since 11.1
      */
-    @ConditionalIgnoreRule.Ignore(condition = IgnorePostgreSQL.class, cause = "NXP-28859")
     @Test
-    public void whenFileIsSmallerThanThresholdTotalDocsShouldBeAvailableWhenImportIsRunningOrScheduled()
-            throws IOException, InterruptedException {
+    public void shouldComputeTotalAtEndIfSmallerThanThreshold() throws IOException, InterruptedException {
         CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
-        String importId = csvImporter.launchImport(session, "/", getCSVBlob(FILE_BELOW_THE_LENGTH_THRESHOLD), options);
-        workManager.awaitCompletion(1, TimeUnit.SECONDS);
+        testImportTotals(options);
+    }
+
+    protected void testImportTotals(CSVImporterOptions options) throws IOException, InterruptedException {
+        TransactionHelper.commitOrRollbackTransaction();
+        String importId = csvImporter.launchImport(session, "/", getCSVBlob(DOCS_OK_BIG_CSV),
+                options);
+        workManager.awaitCompletion(10000, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();
 
         CSVImportStatus importStatus = csvImporter.getImportStatus(importId);
-        assertNotNull(importStatus);
-        assertFalse(importStatus.isComplete());
-        assertEquals(999, importStatus.getTotalNumberOfDocument());
+        assertTrue(importStatus.isComplete());
+        assertEquals(336, importStatus.getTotalNumberOfDocument());
+        assertEquals(336, importStatus.getNumberOfProcessedDocument());
     }
 
     public CoreSession openSessionAs(String username) {
