@@ -127,7 +127,12 @@ public class XAnnotatedMember {
      */
     public void process(Context ctx, Element element, Object existing) {
         if (existing == null || hasValue(ctx, element)) {
-            Object value = getValue(ctx, element);
+            Object value;
+            if (existing == null) {
+                value = getValue(ctx, element);
+            } else {
+                value = getValue(ctx, element, accessor.getValue(existing));
+            }
             if (value != null) {
                 setValue(ctx.getObject(), value);
             }
@@ -157,12 +162,21 @@ public class XAnnotatedMember {
      * @since 11.5
      */
     public Object getValue(Context ctx, Element base) {
+        return getValue(ctx, base, null);
+    }
+
+    /**
+     * Returns the resolved value for given element and existing object.
+     *
+     * @since 11.5
+     */
+    public Object getValue(Context ctx, Element base, Object existing) {
         if (xao != null) {
             Element el = getElement(base);
             if (el == null) {
                 return null;
             } else {
-                return xao.newInstance(ctx, el);
+                return xao.newInstance(ctx, el, existing);
             }
         }
         // scalar field

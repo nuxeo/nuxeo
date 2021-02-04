@@ -147,7 +147,7 @@ class ElementMapVisitor implements DOMHelper.NodeMapVisitor {
 
     @Override
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
-        result.put(key, xam.xao.newInstance(ctx, (Element) node));
+        result.put(key, xam.xao.newInstance(ctx, (Element) node, result.get(key)));
     }
 }
 
