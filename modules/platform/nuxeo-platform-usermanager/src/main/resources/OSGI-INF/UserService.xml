@@ -111,6 +111,7 @@
     </documentation>
 
     <object class="org.nuxeo.ecm.platform.usermanager.UserManagerDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.usermanager.UserManagerRegistry" />
 
   </extension-point>
 

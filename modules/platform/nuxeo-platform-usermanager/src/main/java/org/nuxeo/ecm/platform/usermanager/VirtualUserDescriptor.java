@@ -55,12 +55,11 @@ public class VirtualUserDescriptor implements VirtualUser {
     @XNode("password")
     public String password;
 
-    // XXX for now only dealing with String properties
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties;
 
     @XNodeMap(value = "propertyList", key = "@name", type = HashMap.class, componentType = PropertyListDescriptor.class)
-    public Map<String, PropertyListDescriptor> listProperties = new HashMap<>();
+    public Map<String, PropertyListDescriptor> listProperties;
 
     @XNodeList(value = "group", type = ArrayList.class, componentType = String.class)
     public List<String> groups;
