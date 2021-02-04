@@ -53,16 +53,4 @@
       class="org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterGroupDescriptor" />
   </extension-point>
 
-  <extension-point name="suggestionHandlers">
-
-    <documentation>
-      Extension point for registering Content Automation
-      Operations or Chains as handler for the suggestion selected by the
-      user (for a given group and suggestion type).
-    </documentation>
-
-    <object
-      class="org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggestionHandlerDescriptor" />
-  </extension-point>
-
 </component>
