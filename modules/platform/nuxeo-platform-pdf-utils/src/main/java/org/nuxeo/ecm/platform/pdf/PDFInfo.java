@@ -325,7 +325,6 @@ public class PDFInfo {
     /**
      * The <code>inMapping</code> map is an HashMap where the key is the xpath of the destination field, and the value
      * is the exact label of a PDF info as returned by <code>toHashMap()</code>. For example:
-     * <p>
      * <pre><code>
      * pdfinfo:title=Title
      * pdfinfo:producer=PDF Producer

@@ -61,10 +61,8 @@ import org.osgi.framework.Bundle;
  * <p>
  * This map posed problems with the registry snapshot approaches since it was not kept in sync with the registry.
  * <p>
- * <p>
  * If unregistering components will be removed completely don't forget to remove
  * {@link ComponentManager#unregisterByLocation(String)} and the {@link ComponentRegistry#deployedFiles}.
- * <p>
  * <p>
  * Features like studio or IDE which needs unregistering components must use their own mechanism.
  *
