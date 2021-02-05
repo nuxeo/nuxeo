@@ -18,7 +18,6 @@ Eclipse-RegisterBuddy: org.nuxeo.common
 Nuxeo-Component: OSGI-INF/querymaker-service.xml,
   OSGI-INF/querymaker-contrib.xml,
   OSGI-INF/repo-softdelete-contrib.xml,
-  OSGI-INF/repository-compat-service.xml,
   OSGI-INF/repository-service.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.resource,
