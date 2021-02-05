@@ -62,7 +62,7 @@ public class TestRenditionProvider {
     protected RenditionService renditionService;
 
     /** Sort by name. */
-    public static final Comparator<RenditionDefinition> RENDITION_DEFINITION_CMP = new Comparator<RenditionDefinition>() {
+    public static final Comparator<RenditionDefinition> RENDITION_DEFINITION_CMP = new Comparator<>() {
         @Override
         public int compare(RenditionDefinition a, RenditionDefinition b) {
             return a.getName().compareTo(b.getName());

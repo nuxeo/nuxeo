@@ -25,9 +25,7 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIO
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,7 +60,6 @@ import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.impl.LiveRendition;
 import org.nuxeo.ecm.platform.rendition.impl.StoredRendition;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -73,6 +70,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 5.4.1
  */
 public class RenditionServiceImpl extends DefaultComponent implements RenditionService {
+
+    private static final Logger log = LogManager.getLogger(RenditionServiceImpl.class);
 
     public static final String RENDITION_DEFINITIONS_EP = "renditionDefinitions";
 
@@ -85,50 +84,25 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
      */
     public static final String STORED_RENDITION_MANAGERS_EP = "storedRenditionManagers";
 
-    private static final Logger log = LogManager.getLogger(RenditionServiceImpl.class);
-
-    /**
-     * @since 7.3.
-     */
-    protected RenditionDefinitionRegistry renditionDefinitionRegistry;
-
-    protected RenditionDefinitionProviderRegistry renditionDefinitionProviderRegistry;
-
-    protected List<DefaultRenditionDescriptor> defaultRenditionDescriptors = new ArrayList<>();
-
     protected static final StoredRenditionManager DEFAULT_STORED_RENDITION_MANAGER = new DefaultStoredRenditionManager();
 
-    /**
-     * @since 8.1
-     */
-    protected Deque<StoredRenditionManagerDescriptor> storedRenditionManagerDescriptors = new LinkedList<>();
+    protected StoredRenditionManager storedRenditionManager;
 
-    protected final ScriptEngineManager scriptEngineManager;
+    protected ScriptEngineManager scriptEngineManager;
 
-    public RenditionServiceImpl() {
+    @Override
+    public void start(ComponentContext context) {
+        storedRenditionManager = this.<StoredRenditionManagerDescriptor> getRegistryContribution(
+                STORED_RENDITION_MANAGERS_EP)
+                                     .map(StoredRenditionManagerDescriptor::getStoredRenditionManager)
+                                     .orElse(DEFAULT_STORED_RENDITION_MANAGER);
         scriptEngineManager = new ScriptEngineManager();
     }
 
-    /**
-     * @since 8.1
-     */
-    public StoredRenditionManager getStoredRenditionManager() {
-        StoredRenditionManagerDescriptor descr = storedRenditionManagerDescriptors.peekLast();
-        return descr == null ? DEFAULT_STORED_RENDITION_MANAGER : descr.getStoredRenditionManager();
-    }
-
     @Override
-    public void activate(ComponentContext context) {
-        renditionDefinitionRegistry = new RenditionDefinitionRegistry();
-        renditionDefinitionProviderRegistry = new RenditionDefinitionProviderRegistry();
-        super.activate(context);
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        renditionDefinitionRegistry = null;
-        renditionDefinitionProviderRegistry = null;
-        super.deactivate(context);
+    public void stop(ComponentContext context) throws InterruptedException {
+        storedRenditionManager = null;
+        scriptEngineManager = null;
     }
 
     /**
@@ -139,12 +113,12 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
      */
     @Deprecated(since = "10.10")
     public RenditionDefinition getRenditionDefinition(String name) {
-        return renditionDefinitionRegistry.getRenditionDefinition(name);
+        return this.<RenditionDefinition> getRegistryContribution(RENDITION_DEFINITIONS_EP, name).orElse(null);
     }
 
     @Override
     public List<RenditionDefinition> getDeclaredRenditionDefinitions() {
-        return new ArrayList<>(renditionDefinitionRegistry.descriptors.values());
+        return getRegistryContributions(RENDITION_DEFINITIONS_EP);
     }
 
     /**
@@ -164,11 +138,11 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     @Override
     public List<RenditionDefinition> getAvailableRenditionDefinitions(DocumentModel doc) {
-
         List<RenditionDefinition> defs = new ArrayList<>();
-        defs.addAll(renditionDefinitionRegistry.getRenditionDefinitions(doc));
-        defs.addAll(renditionDefinitionProviderRegistry.getRenditionDefinitions(doc));
-
+        defs.addAll(this.<RenditionDefinitionRegistry> getExtensionPointRegistry(RENDITION_DEFINITIONS_EP)
+                        .getRenditionDefinitions(doc));
+        defs.addAll(this.<RenditionDefinitionProviderRegistry> getExtensionPointRegistry(RENDITON_DEFINION_PROVIDERS_EP)
+                        .getRenditionDefinitions(doc));
         // XXX what about "lost renditions" ?
         return defs;
     }
@@ -232,8 +206,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         }
 
         log.debug("Creating stored rendition for source document {}.", sourceDocument);
-        return getStoredRenditionManager().createStoredRendition(sourceDocument, version, renderedBlob,
-                renditionDefinition);
+        return storedRenditionManager.createStoredRendition(sourceDocument, version, renderedBlob, renditionDefinition);
     }
 
     protected DocumentRef createVersionIfNeeded(DocumentModel source, CoreSession session) {
@@ -249,50 +222,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             }
         }
         return null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (RENDITION_DEFINITIONS_EP.equals(extensionPoint)) {
-            RenditionDefinition renditionDefinition = (RenditionDefinition) contribution;
-            renditionDefinitionRegistry.addContribution(renditionDefinition);
-        } else if (RENDITON_DEFINION_PROVIDERS_EP.equals(extensionPoint)) {
-            renditionDefinitionProviderRegistry.addContribution((RenditionDefinitionProviderDescriptor) contribution);
-        } else if (STORED_RENDITION_MANAGERS_EP.equals(extensionPoint)) {
-            storedRenditionManagerDescriptors.add(((StoredRenditionManagerDescriptor) contribution));
-        } else if (DEFAULT_RENDITION_EP.equals(extensionPoint)) {
-            // Save contribution
-            defaultRenditionDescriptors.add((DefaultRenditionDescriptor) contribution);
-        }
-    }
-
-    protected RenditionDefinition mergeRenditions(RenditionDefinition oldRenditionDefinition,
-            RenditionDefinition newRenditionDefinition) {
-        String label = newRenditionDefinition.getLabel();
-        if (label != null) {
-            oldRenditionDefinition.label = label;
-        }
-
-        String operationChain = newRenditionDefinition.getOperationChain();
-        if (operationChain != null) {
-            oldRenditionDefinition.operationChain = operationChain;
-        }
-
-        return oldRenditionDefinition;
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (RENDITION_DEFINITIONS_EP.equals(extensionPoint)) {
-            renditionDefinitionRegistry.removeContribution((RenditionDefinition) contribution);
-        } else if (RENDITON_DEFINION_PROVIDERS_EP.equals(extensionPoint)) {
-            renditionDefinitionProviderRegistry.removeContribution(
-                    (RenditionDefinitionProviderDescriptor) contribution);
-        } else if (STORED_RENDITION_MANAGERS_EP.equals(extensionPoint)) {
-            storedRenditionManagerDescriptors.remove((contribution));
-        } else if (DEFAULT_RENDITION_EP.equals(extensionPoint)) {
-            defaultRenditionDescriptors.remove(contribution);
-        }
     }
 
     @Override
@@ -327,7 +256,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             log.debug("Document {} is not versionable nor checked out, trying to find a stored rendition.", doc);
             // stored renditions are only done against a non-versionable doc
             // or a versionable doc that is not checkedout
-            rendition = getStoredRenditionManager().findStoredRendition(doc, renditionDefinition);
+            rendition = storedRenditionManager.findStoredRendition(doc, renditionDefinition);
             if (rendition != null) {
                 log.debug("Found and returning a stored rendition for document {}.", doc);
                 return rendition;
@@ -356,9 +285,12 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     @Override
     public RenditionDefinition getAvailableRenditionDefinition(DocumentModel doc, String renditionName) {
-        RenditionDefinition renditionDefinition = renditionDefinitionRegistry.getRenditionDefinition(renditionName);
+        var renditionDefinitionRegistry = this.<RenditionDefinitionRegistry> getExtensionPointRegistry(
+                RENDITION_DEFINITIONS_EP);
+        var renditionDefinition = renditionDefinitionRegistry.getRenditionDefinition(renditionName);
         if (renditionDefinition == null) {
-            renditionDefinition = renditionDefinitionProviderRegistry.getRenditionDefinition(renditionName, doc);
+            renditionDefinition = this.<RenditionDefinitionProviderRegistry> getExtensionPointRegistry(
+                    RENDITON_DEFINION_PROVIDERS_EP).getRenditionDefinition(renditionName, doc);
             if (renditionDefinition == null) {
                 String message = "The rendition definition '%s' is not registered";
                 throw new NuxeoException(String.format(message, renditionName));
@@ -505,10 +437,11 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         context.put("Infos", ei);
         context.put("CurrentUser", currentUser);
         ScriptEngine engine = null;
-        for (int i = defaultRenditionDescriptors.size() - 1; i >= 0; i--) {
-            DefaultRenditionDescriptor desc = defaultRenditionDescriptors.get(i);
-            if ((StringUtils.isEmpty(reason) && StringUtils.isEmpty(desc.reason))
-                    || (reason != null && reason.equals(desc.reason))) {
+        var defaultRenditions = this.<DefaultRenditionRegistry> getExtensionPointRegistry(DEFAULT_RENDITION_EP)
+                                    .getContributionValues();
+        for (DefaultRenditionDescriptor desc : defaultRenditions) {
+            if ((StringUtils.isEmpty(reason) && StringUtils.isEmpty(desc.getReason()))
+                    || (reason != null && reason.equals(desc.getReason()))) {
                 String scriptLanguage = desc.getScriptLanguage();
                 if (engine == null || !engine.getFactory().getNames().contains(scriptLanguage)) {
                     // Instantiating an engine may be costly, let's keep previous one if same language

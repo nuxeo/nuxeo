@@ -19,57 +19,31 @@
 
 package org.nuxeo.ecm.platform.rendition.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * Registry for {@link RenditionDefinitionProviderDescriptor} objects.
  *
  * @since 7.2
  */
-public class RenditionDefinitionProviderRegistry extends
-        ContributionFragmentRegistry<RenditionDefinitionProviderDescriptor> {
+public class RenditionDefinitionProviderRegistry extends MapRegistry {
 
-    protected Map<String, RenditionDefinitionProviderDescriptor> descriptors = new HashMap<>();
-
-    public List<RenditionDefinition> getRenditionDefinitions(DocumentModel doc) {
-        List<RenditionDefinition> renditionDefinitions = new ArrayList<>();
-
-        for (RenditionDefinitionProviderDescriptor descriptor : descriptors.values()) {
-            if (canUseRenditionDefinitionProvider(descriptor, doc)) {
-                RenditionDefinitionProvider provider = descriptor.getProvider();
-                renditionDefinitions.addAll(provider.getRenditionDefinitions(doc));
-            }
-        }
-
-        return renditionDefinitions;
-    }
-
-    public RenditionDefinition getRenditionDefinition(String name, DocumentModel doc) {
-        List<RenditionDefinition> renditionDefinitions = getRenditionDefinitions(doc);
-        for (RenditionDefinition renditionDefinition : renditionDefinitions) {
-            if (renditionDefinition.getName().equals(name)) {
-                return renditionDefinition;
-            }
-        }
-        return null;
-    }
-
-    protected boolean canUseRenditionDefinitionProvider(
-            RenditionDefinitionProviderDescriptor renditionDefinitionProviderDescriptor, DocumentModel doc) {
-        ActionManager actionService = Framework.getService(ActionManager.class);
-        return actionService.checkFilters(renditionDefinitionProviderDescriptor.getFilterIds(),
-                createActionContext(doc));
+    @Override
+    public void initialize() {
+        super.initialize();
+        this.<RenditionDefinitionProviderDescriptor> getContributionValues()
+            .forEach(RenditionDefinitionProviderDescriptor::initProvider);
     }
 
     protected ActionContext createActionContext(DocumentModel doc) {
@@ -83,45 +57,33 @@ public class RenditionDefinitionProviderRegistry extends
         return actionContext;
     }
 
-    @Override
-    public String getContributionId(RenditionDefinitionProviderDescriptor contrib) {
-        return contrib.getName();
+    protected boolean canUseRenditionDefinitionProvider(
+            RenditionDefinitionProviderDescriptor renditionDefinitionProviderDescriptor, DocumentModel doc) {
+        ActionManager actionService = Framework.getService(ActionManager.class);
+        return actionService.checkFilters(renditionDefinitionProviderDescriptor.getFilterIds(),
+                createActionContext(doc));
     }
 
-    @Override
-    public void contributionUpdated(String id, RenditionDefinitionProviderDescriptor contrib,
-            RenditionDefinitionProviderDescriptor newOrigContrib) {
-        if (contrib.isEnabled()) {
-            descriptors.put(id, contrib);
-        } else {
-            descriptors.remove(id);
+    protected Stream<RenditionDefinition> streamRenditionDefinitions(DocumentModel doc) {
+        return this.<RenditionDefinitionProviderDescriptor> getContributions()
+                   .values()
+                   .stream()
+                   .filter(desc -> canUseRenditionDefinitionProvider(desc, doc))
+                   .map(RenditionDefinitionProviderDescriptor::getProvider)
+                   .filter(Objects::nonNull)
+                   .map(provider -> provider.getRenditionDefinitions(doc))
+                   .flatMap(List::stream);
+    }
+
+    public List<RenditionDefinition> getRenditionDefinitions(DocumentModel doc) {
+        return streamRenditionDefinitions(doc).collect(Collectors.toList());
+    }
+
+    public RenditionDefinition getRenditionDefinition(String name, DocumentModel doc) {
+        if (name == null) {
+            return null;
         }
+        return streamRenditionDefinitions(doc).filter(rd -> name.equals(rd.getName())).findFirst().orElse(null);
     }
 
-    @Override
-    public void contributionRemoved(String id, RenditionDefinitionProviderDescriptor contrib) {
-        descriptors.remove(id);
-    }
-
-    @Override
-    public RenditionDefinitionProviderDescriptor clone(RenditionDefinitionProviderDescriptor contrib) {
-        return contrib.clone();
-    }
-
-    @Override
-    public void merge(RenditionDefinitionProviderDescriptor source, RenditionDefinitionProviderDescriptor dest) {
-        if (source.isEnabledSet() && source.isEnabled() != dest.isEnabled()) {
-            dest.setEnabled(source.isEnabled());
-        }
-
-        Class<? extends RenditionDefinitionProvider> providerClass = source.getProviderClass();
-        if (providerClass != null) {
-            dest.setProviderClass(providerClass);
-        }
-
-        List<String> newFilterIds = new ArrayList<>();
-        newFilterIds.addAll(dest.getFilterIds());
-        newFilterIds.addAll(source.getFilterIds());
-        dest.setFilterIds(newFilterIds);
-    }
 }
