@@ -24,9 +24,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,10 +31,8 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.codec.binary.Base64;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -45,18 +40,19 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
-import org.nuxeo.ecm.platform.signature.api.pki.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.ecm.platform.signature.core.SignatureCoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(SignatureCoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.signature.core.test:test-files/root-contrib-override.xml")
 public class TypeTest {
 
     @Inject
@@ -65,32 +61,9 @@ public class TypeTest {
     @Inject
     private DirectoryService directoryService;
 
-    private static final String ROOT_KEY_PASSWORD = "abc";
-
-    private static final String ROOT_KEYSTORE_PASSWORD = "abc";
-
-    private static final String ROOT_USER_ID = "PDFCA";
-
     private static final String USER_KEY_PASSWORD = "abc";
 
     private static final String USER_KEYSTORE_PASSWORD = "abc";
-
-    private static final String KEYSTORE_PATH = "test-files/keystore.jks";
-
-    @Before
-    public void setUp() throws Exception {
-        File keystoreFile = FileUtils.getResourceFileFromContext(KEYSTORE_PATH);
-        InputStream keystoreIS = new FileInputStream(keystoreFile);
-        KeyStore rootKeystore = certService.getKeyStore(keystoreIS, ROOT_KEYSTORE_PASSWORD);
-        RootService rootService = new RootServiceImpl();
-        AliasWrapper alias = new AliasWrapper(ROOT_USER_ID);
-        rootService.setRootKeyAlias(alias.getId(AliasType.KEY));
-        rootService.setRootCertificateAlias(alias.getId(AliasType.CERT));
-        rootService.setRootKeyPassword(ROOT_KEY_PASSWORD);
-        rootService.setRootKeyStore(rootKeystore);
-        rootService.setRootKeystorePassword(ROOT_KEYSTORE_PASSWORD);
-        certService.setRootService(rootService);
-    }
 
     @Test
     public void savePropertiesToDirectory() throws Exception {
@@ -126,8 +99,7 @@ public class TypeTest {
     }
 
     public UserInfo getUserInfo(String userID) {
-        Map<CNField, String> userFields;
-        userFields = new HashMap<>();
+        Map<CNField, String> userFields = new HashMap<>();
         userFields.put(CNField.CN, "Wojciech Sulejman");
         userFields.put(CNField.C, "US");
         userFields.put(CNField.OU, "IT");
