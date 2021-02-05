@@ -14,7 +14,7 @@ helmDefaults:
 releases:
 - name: nuxeo
   chart: nuxeo/nuxeo
-  version: ~2.0.0
+  version: 3.0.1
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: nuxeo.enabled
   values:
