@@ -28,9 +28,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 
 /**
@@ -39,7 +44,10 @@ import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
  * @since 5.4.1
  */
 @XObject("renditionDefinition")
+@XRegistry(enable = false)
 public class RenditionDefinition {
+
+    private static final Logger log = LogManager.getLogger(RenditionDefinition.class);
 
     public static final String DEFAULT_SOURCE_DOCUMENT_MODIFICATION_DATE_PROPERTY_NAME = "dc:modified";
 
@@ -54,6 +62,7 @@ public class RenditionDefinition {
     }
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     public String getName() {
@@ -78,7 +87,8 @@ public class RenditionDefinition {
         this.cmisName = cmisName;
     }
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled", defaultAssignment = "true")
+    @XEnable
     protected Boolean enabled;
 
     public boolean isEnabled() {
@@ -178,8 +188,22 @@ public class RenditionDefinition {
     // computed from providerClass
     protected RenditionProvider provider;
 
+    protected RenditionProvider createProvider() {
+        if (providerClass != null) {
+            try {
+                return providerClass.getDeclaredConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
+                log.error("Unable to create RenditionProvider for '{}'", getName(), e);
+            }
+        }
+        return null;
+    }
+
     public RenditionProvider getProvider() {
-        return provider;
+        if (provider != null) {
+            return provider;
+        }
+        return createProvider();
     }
 
     public String getProviderType() {
@@ -273,77 +297,10 @@ public class RenditionDefinition {
         return variantPolicy;
     }
 
-    /** Empty constructor. */
-    public RenditionDefinition() {
-    }
-
-    /**
-     * Copy constructor.
-     *
-     * @since 7.10
-     */
-    public RenditionDefinition(RenditionDefinition other) {
-        name = other.name;
-        cmisName = other.cmisName;
-        enabled = other.enabled;
-        label = other.label;
-        icon = other.icon;
-        kind = other.kind;
-        operationChain = other.operationChain;
-        allowEmptyBlob = other.allowEmptyBlob;
-        visible = other.visible;
-        providerClass = other.providerClass;
-        contentType = other.contentType;
-        filterIds = other.filterIds == null ? null : new ArrayList<>(other.filterIds);
-        sourceDocumentModificationDatePropertyName = other.sourceDocumentModificationDatePropertyName;
-        storeByDefault = other.storeByDefault;
-        variantPolicy = other.variantPolicy;
-    }
-
-    /** @since 7.10 */
-    public void merge(RenditionDefinition other) {
-        if (other.cmisName != null) {
-            cmisName = other.cmisName;
-        }
-        if (other.enabled != null) {
-            enabled = other.enabled;
-        }
-        if (other.label != null) {
-            label = other.label;
-        }
-        if (other.icon != null) {
-            icon = other.icon;
-        }
-        if (other.operationChain != null) {
-            operationChain = other.operationChain;
-        }
-        if (other.allowEmptyBlob != null) {
-            allowEmptyBlob = other.allowEmptyBlob;
-        }
-        if (other.visible != null) {
-            visible = other.visible;
-        }
-        if (other.providerClass != null) {
-            providerClass = other.providerClass;
-        }
-        if (other.contentType != null) {
-            contentType = other.contentType;
-        }
-        if (other.filterIds != null) {
-            if (filterIds == null) {
-                filterIds = new ArrayList<>();
-            }
-            filterIds.addAll(other.filterIds);
-        }
-        if (other.sourceDocumentModificationDatePropertyName != null) {
-            sourceDocumentModificationDatePropertyName = other.sourceDocumentModificationDatePropertyName;
-        }
-        if (other.storeByDefault != null) {
-            storeByDefault = other.storeByDefault;
-        }
-        if (other.variantPolicy != null) {
-            variantPolicy = other.variantPolicy;
-        }
+    /** @since 11.5 */
+    public RenditionProvider initProvider() {
+        provider = createProvider();
+        return provider;
     }
 
 }

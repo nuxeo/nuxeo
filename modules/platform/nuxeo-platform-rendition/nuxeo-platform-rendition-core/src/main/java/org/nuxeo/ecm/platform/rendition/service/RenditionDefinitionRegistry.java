@@ -19,14 +19,10 @@
 
 package org.nuxeo.ecm.platform.rendition.service;
 
-import static org.apache.commons.logging.LogFactory.getLog;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.ActionContext;
@@ -35,48 +31,25 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * Registry for {@link RenditionDefinition} objects.
  *
  * @since 7.3
  */
-public class RenditionDefinitionRegistry extends ContributionFragmentRegistry<RenditionDefinition> {
+public class RenditionDefinitionRegistry extends MapRegistry {
 
-    private static final Log log = getLog(RenditionDefinitionRegistry.class);
+    protected static final RenditionProvider DEFAULT_PROVIDER = new DefaultAutomationRenditionProvider();
 
-    protected Map<String, RenditionDefinition> descriptors = new HashMap<>();
-
-    public RenditionDefinition getRenditionDefinition(String name) {
-        RenditionDefinition renditionDefinition = descriptors.get(name);
-        if (renditionDefinition == null) {
-            // could be the CMIS name
-            for (RenditionDefinition rd : descriptors.values()) {
-                if (name.equals(rd.getCmisName())) {
-                    renditionDefinition = rd;
-                    break;
-                }
+    @Override
+    public void initialize() {
+        super.initialize();
+        this.<RenditionDefinition> getContributionValues().forEach(desc -> {
+            RenditionProvider p = desc.initProvider();
+            if (p == null) {
+                desc.setProvider(DEFAULT_PROVIDER);
             }
-        }
-        return renditionDefinition;
-    }
-
-    public List<RenditionDefinition> getRenditionDefinitions(DocumentModel doc) {
-        List<RenditionDefinition> renditionDefinitions = new ArrayList<>();
-
-        for (RenditionDefinition descriptor : descriptors.values()) {
-            if (canUseRenditionDefinition(descriptor, doc) && descriptor.getProvider().isAvailable(doc, descriptor)) {
-                renditionDefinitions.add(descriptor);
-            }
-        }
-
-        return renditionDefinitions;
-    }
-
-    protected boolean canUseRenditionDefinition(RenditionDefinition renditionDefinition, DocumentModel doc) {
-        ActionManager actionService = Framework.getService(ActionManager.class);
-        return actionService.checkFilters(renditionDefinition.getFilterIds(), createActionContext(doc));
+        });
     }
 
     protected ActionContext createActionContext(DocumentModel doc) {
@@ -90,47 +63,29 @@ public class RenditionDefinitionRegistry extends ContributionFragmentRegistry<Re
         return actionContext;
     }
 
-    @Override
-    public String getContributionId(RenditionDefinition renditionDefinition) {
-        return renditionDefinition.getName();
+    protected boolean canUseRenditionDefinition(RenditionDefinition renditionDefinition, DocumentModel doc) {
+        ActionManager actionService = Framework.getService(ActionManager.class);
+        return actionService.checkFilters(renditionDefinition.getFilterIds(), createActionContext(doc));
     }
 
-    @Override
-    public void contributionUpdated(String id, RenditionDefinition contrib, RenditionDefinition newOrigContrib) {
-        if (contrib.isEnabled()) {
-            descriptors.put(id, contrib);
-            setupProvider(contrib);
-        } else {
-            descriptors.remove(id);
+    public RenditionDefinition getRenditionDefinition(String name) {
+        if (name == null) {
+            return null;
         }
+        return this.<RenditionDefinition> getContribution(name)
+                   // could be the CMIS name
+                   .or(() -> this.<RenditionDefinition> getContributionValues()
+                                 .stream()
+                                 .filter(desc -> name.equals(desc.getCmisName()))
+                                 .findFirst())
+                   .orElse(null);
     }
 
-    protected void setupProvider(RenditionDefinition definition) {
-        if (definition.getProviderClass() == null) {
-            definition.setProvider(new DefaultAutomationRenditionProvider());
-        } else {
-            try {
-                RenditionProvider provider = definition.getProviderClass().getDeclaredConstructor().newInstance();
-                definition.setProvider(provider);
-            } catch (Exception e) {
-                log.error("Unable to create RenditionProvider", e);
-            }
-        }
-    }
-
-    @Override
-    public void contributionRemoved(String id, RenditionDefinition contrib) {
-        descriptors.remove(id);
-    }
-
-    @Override
-    public RenditionDefinition clone(RenditionDefinition contrib) {
-        return new RenditionDefinition(contrib);
-    }
-
-    @Override
-    public void merge(RenditionDefinition source, RenditionDefinition dest) {
-        dest.merge(source);
+    public List<RenditionDefinition> getRenditionDefinitions(DocumentModel doc) {
+        return this.<RenditionDefinition> getContributionValues()
+                   .stream()
+                   .filter(desc -> canUseRenditionDefinition(desc, doc) && desc.getProvider().isAvailable(doc, desc))
+                   .collect(Collectors.toList());
     }
 
 }

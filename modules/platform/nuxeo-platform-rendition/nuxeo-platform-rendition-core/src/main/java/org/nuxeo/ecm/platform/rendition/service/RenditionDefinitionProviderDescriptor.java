@@ -22,12 +22,16 @@ package org.nuxeo.ecm.platform.rendition.service;
 import static org.apache.commons.logging.LogFactory.getLog;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor contribution {@link RenditionDefinitionProvider}s.
@@ -35,19 +39,23 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.2
  */
 @XObject("renditionDefinitionProvider")
+@XRegistry(enable = false)
 public class RenditionDefinitionProviderDescriptor {
 
     private static final Log log = getLog(RenditionDefinitionProviderDescriptor.class);
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
-    @XNode("@enabled")
-    Boolean enabled;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    protected Boolean enabled;
 
     @XNode("@class")
     protected Class<? extends RenditionDefinitionProvider> providerClass;
 
+    // @since 11.5: provider instance cache
     protected RenditionDefinitionProvider provider;
 
     @XNodeList(value = "filters/filter-id", type = ArrayList.class, componentType = String.class)
@@ -57,59 +65,36 @@ public class RenditionDefinitionProviderDescriptor {
         return name;
     }
 
-    public boolean isEnabled() {
-        return enabled == null || enabled;
-    }
-
-    public boolean isEnabledSet() {
-        return enabled != null;
-    }
-
     public Class<? extends RenditionDefinitionProvider> getProviderClass() {
         return providerClass;
     }
 
-    public RenditionDefinitionProvider getProvider() {
-        if (provider == null && providerClass != null) {
+    protected RenditionDefinitionProvider createProvider() {
+        if (providerClass != null) {
             try {
-                provider = providerClass.getDeclaredConstructor().newInstance();
+                return providerClass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 log.error(String.format("Unable to instantiate RenditionDefinitionProvider for '%s'", getName()), e);
             }
         }
-        return provider;
+        return null;
+    }
+
+    public RenditionDefinitionProvider getProvider() {
+        if (provider != null) {
+            return provider;
+        }
+        return createProvider();
     }
 
     public List<String> getFilterIds() {
-        return filterIds;
+        return Collections.unmodifiableList(filterIds);
     }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
+    /** @since 11.5 */
+    public RenditionDefinitionProvider initProvider() {
+        provider = createProvider();
+        return provider;
     }
 
-    public void setProviderClass(Class<? extends RenditionDefinitionProvider> providerClass) {
-        this.providerClass = providerClass;
-    }
-
-    public void setProvider(RenditionDefinitionProvider provider) {
-        this.provider = provider;
-    }
-
-    public void setFilterIds(List<String> filterIds) {
-        this.filterIds = filterIds;
-    }
-
-    @Override
-    public RenditionDefinitionProviderDescriptor clone() {
-        RenditionDefinitionProviderDescriptor clone = new RenditionDefinitionProviderDescriptor();
-        clone.name = name;
-        clone.enabled = enabled;
-        clone.providerClass = providerClass;
-        if (filterIds != null) {
-            clone.filterIds = new ArrayList<>();
-            clone.filterIds.addAll(filterIds);
-        }
-        return clone;
-    }
 }

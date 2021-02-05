@@ -35,13 +35,12 @@
 
     </documentation>
     <object class="org.nuxeo.ecm.platform.rendition.service.RenditionDefinition" />
+    <registry class="org.nuxeo.ecm.platform.rendition.service.RenditionDefinitionRegistry" />
   </extension-point>
 
   <extension-point name="renditionDefinitionProviders">
-    <documentation>
-
-    </documentation>
     <object class="org.nuxeo.ecm.platform.rendition.service.RenditionDefinitionProviderDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.rendition.service.RenditionDefinitionProviderRegistry" />
   </extension-point>
 
   <extension-point name="storedRenditionManagers">
@@ -82,6 +81,7 @@
       Document (DocumentModel) CurrentUser (NuxeoPrincipal), Infos (Map).
     </documentation>
     <object class="org.nuxeo.ecm.platform.rendition.service.DefaultRenditionDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.rendition.service.DefaultRenditionRegistry" />
   </extension-point>
 
 </component>

@@ -35,6 +35,9 @@ public class DefaultRenditionDescriptor {
     @XNode("script")
     protected String script;
 
+    @XNode(value = "script@language", defaultAssignment = DEFAULT_SCRIPT_LANGUAGE)
+    protected String scriptLanguage;
+
     /**
      * @since 10.3
      */
@@ -47,40 +50,20 @@ public class DefaultRenditionDescriptor {
     @XNode("@override")
     protected boolean override;
 
-    @XNode("script@language")
-    protected String scriptLanguage;
-
     public String getScript() {
         return script;
     }
 
     public String getScriptLanguage() {
-        return scriptLanguage == null ? DEFAULT_SCRIPT_LANGUAGE : scriptLanguage;
+        return scriptLanguage;
     }
 
-    // empty constructor
-    public DefaultRenditionDescriptor() {
+    public static String getDefaultScriptLanguage() {
+        return DEFAULT_SCRIPT_LANGUAGE;
     }
 
-    // copy constructor
-    public DefaultRenditionDescriptor(DefaultRenditionDescriptor other) {
-        script = other.script;
-        scriptLanguage = other.scriptLanguage;
-        reason = other.reason;
-        override = other.override;
-    }
-
-    public void merge(DefaultRenditionDescriptor other) {
-        if (other.script != null) {
-            script = other.script;
-        }
-        if (other.scriptLanguage != null) {
-            scriptLanguage = other.scriptLanguage;
-        }
-        if (other.reason != null) {
-            reason = other.reason;
-        }
-        override = other.override;
+    public String getReason() {
+        return reason;
     }
 
 }

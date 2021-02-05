@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.rendition.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Descriptor for a stored rendition manager.
@@ -26,22 +27,18 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 8.1
  */
 @XObject("storedRenditionManager")
+@XRegistry
 public class StoredRenditionManagerDescriptor {
 
     @XNode("@class")
     protected Class<StoredRenditionManager> clazz;
 
-    protected StoredRenditionManager instance;
-
-    protected synchronized StoredRenditionManager getStoredRenditionManager() {
-        if (instance == null) {
-            try {
-                instance = clazz.getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException("Cannot create StoredRenditionManager", e);
-            }
+    protected StoredRenditionManager getStoredRenditionManager() {
+        try {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Cannot create StoredRenditionManager", e);
         }
-        return instance;
     }
 
 }
