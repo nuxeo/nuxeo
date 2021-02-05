@@ -25,11 +25,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -42,35 +40,6 @@ public class RepositoryManagerImpl extends DefaultComponent implements Repositor
 
     private Map<String, Repository> repositories = Collections.synchronizedMap(new LinkedHashMap<String, Repository>());
 
-    // compat from old extension point
-    private Map<String, Repository> compatRepositories = new ConcurrentHashMap<>();
-
-    // compat
-    private static final String XP_REPOSITORIES = "repositories";
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_REPOSITORIES.equals(extensionPoint)) {
-            Repository repo = (Repository) contribution;
-            log.warn("Using old-style extension point" + " org.nuxeo.ecm.core.api.repository.RepositoryManager"
-                    + " for repository \"" + repo.getName()
-                    + "\", use org.nuxeo.ecm.core.storage.sql.RepositoryService instead");
-            compatRepositories.put(repo.getName(), repo);
-        } else {
-            throw new RuntimeException("Unknown extension point: " + extensionPoint);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_REPOSITORIES.equals(extensionPoint)) {
-            Repository repo = (Repository) contribution;
-            compatRepositories.remove(repo.getName());
-        } else {
-            throw new RuntimeException("Unknown extension point: " + extensionPoint);
-        }
-    }
-
     // called by low-level repository service
     @Override
     public void addRepository(Repository repository) {
@@ -79,15 +48,6 @@ public class RepositoryManagerImpl extends DefaultComponent implements Repositor
             log.info("Overriding repository: " + name);
         } else {
             log.info("Registering repository: " + name);
-        }
-        Repository compat = compatRepositories.get(name);
-        if (compat != null) {
-            if (repository.getLabel() == null) {
-                repository.setLabel(compat.getLabel());
-            }
-            if (repository.getDefault() != null) {
-                repository.setDefault(compat.getDefault());
-            }
         }
         repositories.put(name, repository);
     }
