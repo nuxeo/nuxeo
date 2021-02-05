@@ -23,8 +23,11 @@ package org.nuxeo.ecm.platform.relations.descriptors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
+import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 
 /**
  * Adapter to transform a {@link DocumentModel} into a {@link QNameResource} and reverse. This is done using criteria
@@ -33,20 +36,23 @@ import org.nuxeo.ecm.platform.relations.api.QNameResource;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("adapter")
+@XRegistry
 public class ResourceAdapterDescriptor {
 
     @XNode("@namespace")
-    String namespace;
+    @XRegistryId
+    protected String namespace;
 
     @XNode("@class")
-    String className;
+    protected Class<? extends ResourceAdapter> adapterClass;
 
     public String getNamespace() {
         return namespace;
     }
 
-    public String getClassName() {
-        return className;
+    /** @since 11.5 */
+    public Class<? extends ResourceAdapter> getAdapterClass() {
+        return adapterClass;
     }
 
 }

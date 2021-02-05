@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 /**
  * RelationService common interface.
  */
-public interface RelationManager extends Serializable {
+public interface RelationManager {
 
     /**
      * Gets a registered graph by name.

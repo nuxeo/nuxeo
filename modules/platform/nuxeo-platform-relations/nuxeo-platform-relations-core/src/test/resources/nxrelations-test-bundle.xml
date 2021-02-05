@@ -18,9 +18,6 @@
     <!-- Another one for tests of multiple resources for one obj -->
     <adapter namespace="http://nuxeo.org/nxrelations/test2/"
       class="org.nuxeo.ecm.platform.relations.DummyResourceAdapter" />
-    <!-- Resource adapter example with no implementation for tests -->
-    <adapter namespace="http://nuxeo.org/nxrelations/unexistent/"
-      class="org.nuxeo.ecm.platform.relations.UnexistentResourceAdapter" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"

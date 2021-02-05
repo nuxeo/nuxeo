@@ -28,7 +28,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +42,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.xmap.XMapException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
@@ -47,6 +50,7 @@ import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.services.RelationService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -156,6 +160,22 @@ public class TestRelationService {
         Serializable resourceLike = new DummyResourceLike("test");
         Resource resource = service.getResource("http://nuxeo.org/nxrelations/unexistent/", resourceLike, null);
         assertNull(resource);
+    }
+
+    @Test
+    public void testGetResourceUnexistentInvalid() throws IOException {
+        URL url = Thread.currentThread().getContextClassLoader().getResource("nxrelations-test-invalid.xml");
+        Framework.getRuntime().getContext().deploy(url);
+        Framework.getRuntime().getComponentManager().unstash();
+
+        try {
+            Serializable resourceLike = new DummyResourceLike("test");
+            service.getResource("http://nuxeo.org/nxrelations/unexistent/", resourceLike, null);
+            fail("should have thrown an exception");
+        } catch (XMapException e) {
+            assertEquals("Cannot load class: org.nuxeo.ecm.platform.relations.UnexistentResourceAdapter",
+                    e.getMessage());
+        }
     }
 
     @Test

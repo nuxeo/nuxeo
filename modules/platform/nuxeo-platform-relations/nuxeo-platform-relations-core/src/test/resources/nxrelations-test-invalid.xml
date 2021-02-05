@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.relations.services.RelationServiceTests.invalid">
+
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService" point="resourceadapters">
+    <!-- Resource adapter example with no implementation for tests -->
+    <adapter namespace="http://nuxeo.org/nxrelations/unexistent/"
+      class="org.nuxeo.ecm.platform.relations.UnexistentResourceAdapter" />
+  </extension>
+
+</component>
