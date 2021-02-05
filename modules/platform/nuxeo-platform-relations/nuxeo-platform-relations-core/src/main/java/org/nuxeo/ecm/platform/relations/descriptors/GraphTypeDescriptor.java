@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.relations.descriptors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Graph type extension defined by its name and implementation class.
@@ -29,9 +31,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("graphtype")
+@XRegistry(compatWarnOnMerge = true)
 public class GraphTypeDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     String name;
 
     @XNode("@class")

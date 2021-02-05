@@ -22,14 +22,19 @@ package org.nuxeo.ecm.platform.relations.services;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.platform.relations.api.DocumentRelationManager;
@@ -39,11 +44,11 @@ import org.nuxeo.ecm.platform.relations.api.GraphFactory;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
+import org.nuxeo.ecm.platform.relations.descriptors.GraphDescriptor;
 import org.nuxeo.ecm.platform.relations.descriptors.GraphTypeDescriptor;
 import org.nuxeo.ecm.platform.relations.descriptors.ResourceAdapterDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -55,59 +60,75 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class RelationService extends DefaultComponent implements RelationManager {
 
+    private static final Logger log = LogManager.getLogger(RelationService.class);
+
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.relations.services.RelationService");
 
-    private static final long serialVersionUID = -4778456059717447736L;
+    protected static final String TYPES_EP = "graphtypes";
 
-    private static final Log log = LogFactory.getLog(RelationService.class);
+    protected static final String GRAPHS_EP = "graphs";
+
+    protected static final String ADAPTERS_EP = "resourceadapters";
+
+    protected static final Collector<GraphDescription, ?, Map<String, GraphDescription>> COLLECTOR_TO_NAME_DESC_MAP = Collectors.toMap(
+            GraphDescription::getName, Function.identity());
 
     /** Graph type -&gt; class. */
-    protected final Map<String, Class<?>> graphTypes;
+    protected Map<String, Class<?>> graphTypes;
 
     /** Graph name -&gt; description */
-    protected final Map<String, GraphDescription> graphDescriptions;
+    protected Map<String, GraphDescription> graphDescriptions;
 
     /** Graph name -&gt; factory. */
-    public final Map<String, GraphFactory> graphFactories;
+    protected Map<String, GraphFactory> graphFactories;
 
     /** Graph name -&gt; graph instance. */
-    public final Map<String, Graph> graphRegistry;
+    protected Map<String, Graph> graphRegistry;
 
-    protected final Map<String, String> resourceAdapterRegistry;
-
-    public RelationService() {
+    @Override
+    public void start(ComponentContext context) {
+        graphTypes = new HashMap<>();
+        graphDescriptions = this.<GraphDescriptor> getRegistryContributions(GRAPHS_EP)
+                                .stream()
+                                .collect(COLLECTOR_TO_NAME_DESC_MAP);
+        this.<GraphTypeDescriptor> getRegistryContributions(TYPES_EP).forEach(this::registerGraphType);
         // Hashtable to get implicit synchronization
-        graphTypes = new Hashtable<>();
-        graphDescriptions = new Hashtable<>();
         graphRegistry = new Hashtable<>();
         graphFactories = new Hashtable<>();
-        resourceAdapterRegistry = new Hashtable<>();
+        initGraphs();
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("graphtypes")) {
-            registerGraphType(contribution);
-        } else if (extensionPoint.equals("graphs")) {
-            registerGraph(contribution);
-        } else if (extensionPoint.equals("resourceadapters")) {
-            registerResourceAdapter(contribution);
-        } else {
-            log.error(String.format("Unknown extension point %s, can't register !", extensionPoint));
+    public void stop(ComponentContext context) throws InterruptedException {
+        graphTypes = null;
+        graphDescriptions = null;
+        graphRegistry = null;
+        graphFactories = null;
+    }
+
+    protected void initGraphs() {
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        if (repositoryService == null) {
+            // RepositoryService failed to start, no need to go further
+            return;
         }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("graphtypes")) {
-            unregisterGraphType(contribution);
-        } else if (extensionPoint.equals("graphs")) {
-            unregisterGraph(contribution);
-        } else if (extensionPoint.equals("resourceadapters")) {
-            unregisterResourceAdapter(contribution);
-        } else {
-            log.error(String.format("Unknown extension point %s, can't unregister !", extensionPoint));
+        log.info("Relation Service initialization");
+        for (GraphDescription desc : graphDescriptions.values()) {
+            String graphName = desc.getName();
+            log.info("Create Graph {}", graphName);
+            if (desc.getGraphType().equalsIgnoreCase("jena")) {
+                // init jena Graph outside of Tx
+                TransactionHelper.runWithoutTransaction(() -> {
+                    Graph graph = getGraphByName(graphName);
+                    graph.size();
+                });
+            } else {
+                TransactionHelper.runInTransaction(() -> {
+                    Graph graph = getGraphByName(graphName);
+                    graph.size();
+                });
+            }
         }
     }
 
@@ -129,15 +150,9 @@ public class RelationService extends DefaultComponent implements RelationManager
      * <p>
      * The name will be used when registering graphs.
      */
-    private void registerGraphType(Object contribution) {
-        GraphTypeDescriptor graphTypeDescriptor = (GraphTypeDescriptor) contribution;
+    private void registerGraphType(GraphTypeDescriptor graphTypeDescriptor) {
         String graphType = graphTypeDescriptor.getName();
         String className = graphTypeDescriptor.getClassName();
-
-        if (graphTypes.containsKey(graphType)) {
-            log.error(String.format("Graph type %s already registered using %s", graphType, graphTypes.get(graphType)));
-            return;
-        }
         Class<?> klass;
         try {
             klass = getClass().getClassLoader().loadClass(className);
@@ -152,111 +167,23 @@ public class RelationService extends DefaultComponent implements RelationManager
         log.info(String.format("Registered graph type: %s (%s)", graphType, className));
     }
 
-    /**
-     * Unregisters a graph type.
-     */
-    private void unregisterGraphType(Object contrib) {
-        GraphTypeDescriptor graphTypeExtension = (GraphTypeDescriptor) contrib;
-        String graphType = graphTypeExtension.getName();
-        List<GraphDescription> list = new ArrayList<>(graphDescriptions.values()); // copy
-        for (GraphDescription graphDescription : list) {
-            if (graphType.equals(graphDescription.getGraphType())) {
-                String name = graphDescription.getName();
-                graphFactories.remove(name);
-                graphRegistry.remove(name);
-                graphDescriptions.remove(name);
-                log.info("Unregistered graph: " + name);
-            }
-        }
-        graphTypes.remove(graphType);
-        log.info("Unregistered graph type: " + graphType);
-    }
-
     public List<String> getGraphTypes() {
         return new ArrayList<>(graphTypes.keySet());
     }
 
-    /**
-     * Registers a graph instance.
-     * <p>
-     * The graph has to be declared as using a type already registered in the graph type registry.
-     */
-    protected void registerGraph(Object contribution) {
-        GraphDescription graphDescription = (GraphDescription) contribution;
-        String name = graphDescription.getName();
-        if (graphDescriptions.containsKey(name)) {
-            log.info(String.format("Overriding graph %s definition", name));
-            graphDescriptions.remove(name);
-        }
-        graphDescriptions.put(name, graphDescription);
-        log.info("Registered graph: " + name);
-
-        // remove any existing graph instance in case its definition changed
-        graphRegistry.remove(name);
-    }
-
-    /**
-     * Unregisters a graph.
-     */
-    protected void unregisterGraph(Object contribution) {
-        GraphDescription graphDescription = (GraphDescription) contribution;
-        String name = graphDescription.getName();
-        if (graphDescriptions.containsKey(name)) {
-            graphFactories.remove(name);
-            graphRegistry.remove(name);
-            graphDescriptions.remove(name);
-            log.info("Unregistered graph: " + name);
-        }
-    }
-
     // Resource adapters
 
-    private void registerResourceAdapter(Object contribution) {
-        ResourceAdapterDescriptor adapter = (ResourceAdapterDescriptor) contribution;
-        String ns = adapter.getNamespace();
-        String adapterClassName = adapter.getClassName();
-        if (resourceAdapterRegistry.containsKey(ns)) {
-            log.info("Overriding resource adapter config for namespace " + ns);
-        }
-        resourceAdapterRegistry.put(ns, adapterClassName);
-        log.info(String.format("%s namespace registered using adapter %s", ns, adapterClassName));
-    }
-
-    private void unregisterResourceAdapter(Object contribution) {
-        ResourceAdapterDescriptor adapter = (ResourceAdapterDescriptor) contribution;
-        String ns = adapter.getNamespace();
-        String adapterClassName = adapter.getClassName();
-        String registered = resourceAdapterRegistry.get(ns);
-        if (registered == null) {
-            log.error(String.format("Namespace %s not found", ns));
-        } else if (!registered.equals(adapterClassName)) {
-            log.error(String.format("Namespace %s: wrong class %s", ns, registered));
-        } else {
-            resourceAdapterRegistry.remove(ns);
-            log.info(String.format("%s unregistered, was using %s", ns, adapterClassName));
-        }
-    }
-
     private ResourceAdapter getResourceAdapterForNamespace(String namespace) {
-        String adapterClassName = resourceAdapterRegistry.get(namespace);
-        if (adapterClassName == null) {
-            log.error(String.format("Cannot find adapter for namespace: %s", namespace));
-            return null;
-        } else {
+        return this.<ResourceAdapterDescriptor> getRegistryContribution(ADAPTERS_EP, namespace).map(desc -> {
             try {
-                // Thread context loader is not working in isolated EARs
-                ResourceAdapter adapter = (ResourceAdapter) RelationService.class.getClassLoader()
-                                                                                 .loadClass(adapterClassName)
-                                                                                 .getDeclaredConstructor()
-                                                                                 .newInstance();
+                ResourceAdapter adapter = desc.getAdapterClass().getDeclaredConstructor().newInstance();
                 adapter.setNamespace(namespace);
                 return adapter;
             } catch (ReflectiveOperationException e) {
-                String msg = String.format("Cannot instantiate generator with namespace '%s': %s", namespace, e);
-                log.error(msg);
+                log.error("Cannot instantiate generator with namespace '%s': %s", namespace, e);
                 return null;
             }
-        }
+        }).orElse(null);
     }
 
     // RelationManager interface
@@ -347,7 +274,6 @@ public class RelationService extends DefaultComponent implements RelationManager
     public Resource getResource(String namespace, Serializable object, Map<String, Object> context) {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
-            log.error("Cannot find adapter for namespace: " + namespace);
             return null;
         } else {
             return adapter.getResource(object, context);
@@ -356,9 +282,9 @@ public class RelationService extends DefaultComponent implements RelationManager
 
     @Override
     public Set<Resource> getAllResources(Serializable object, Map<String, Object> context) {
-        // TODO OPTIM implement reverse map in registerContribution
         Set<Resource> res = new HashSet<>();
-        for (String ns : resourceAdapterRegistry.keySet()) {
+        Set<String> namespaces = this.<MapRegistry> getExtensionPointRegistry(ADAPTERS_EP).getContributions().keySet();
+        for (String ns : namespaces) {
             ResourceAdapter adapter = getResourceAdapterForNamespace(ns);
             if (adapter == null) {
                 continue;
@@ -378,7 +304,6 @@ public class RelationService extends DefaultComponent implements RelationManager
     public Serializable getResourceRepresentation(String namespace, Resource resource, Map<String, Object> context) {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
-            log.error("Cannot find adapter for namespace: " + namespace);
             return null;
         } else {
             return adapter.getResourceRepresentation(resource, context);
@@ -388,32 +313,6 @@ public class RelationService extends DefaultComponent implements RelationManager
     @Override
     public List<String> getGraphNames() {
         return new ArrayList<>(graphDescriptions.keySet());
-    }
-
-    @Override
-    public void start(ComponentContext context) {
-        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
-        if (repositoryService == null) {
-            // RepositoryService failed to start, no need to go further
-            return;
-        }
-        log.info("Relation Service initialization");
-        for (String graphName : graphDescriptions.keySet()) {
-            GraphDescription desc = graphDescriptions.get(graphName);
-            log.info("create RDF Graph " + graphName);
-            if (desc.getGraphType().equalsIgnoreCase("jena")) {
-                // init jena Graph outside of Tx
-                TransactionHelper.runWithoutTransaction(() -> {
-                    Graph graph = getGraphByName(graphName);
-                    graph.size();
-                });
-            } else {
-                TransactionHelper.runInTransaction(() -> {
-                    Graph graph = getGraphByName(graphName);
-                    graph.size();
-                });
-            }
-        }
     }
 
 }

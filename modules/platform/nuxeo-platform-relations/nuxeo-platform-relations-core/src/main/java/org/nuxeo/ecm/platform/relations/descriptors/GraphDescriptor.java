@@ -19,28 +19,33 @@
  */
 package org.nuxeo.ecm.platform.relations.descriptors;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.relations.api.GraphDescription;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Graph descriptor.
  */
 @XObject("graph")
+@XRegistry(compatWarnOnMerge = true)
 public class GraphDescriptor implements GraphDescription {
 
     @XNode("@name")
-    public String name;
+    @XRegistryId
+    protected String name;
 
     @XNode("@type")
-    public String graphType;
+    protected String graphType;
 
-    public Map<String, String> options = new HashMap<>();
+    @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
+    protected Map<String, String> options = new HashMap<>();
 
     @XNodeMap(value = "namespaces/namespace", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> namespaces = new HashMap<>();
@@ -57,23 +62,12 @@ public class GraphDescriptor implements GraphDescription {
 
     @Override
     public Map<String, String> getOptions() {
-        return options;
-    }
-
-    @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
-    public void setOptions(Map<String, String> options) {
-        // expand vars on the options
-        Map<String, String> map = new HashMap<>();
-        for (Map.Entry<String, String> entry : options.entrySet()) {
-            String value = entry.getValue();
-            map.put(entry.getKey(), Framework.getRuntime().expandVars(value));
-        }
-        this.options = map;
+        return Collections.unmodifiableMap(options);
     }
 
     @Override
     public Map<String, String> getNamespaces() {
-        return namespaces;
+        return Collections.unmodifiableMap(namespaces);
     }
 
 }
