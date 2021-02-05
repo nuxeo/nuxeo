@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.management">
 
-  <require>org.nuxeo.ecm.core.repository.RepositoryService</require>
+  <require>org.nuxeo.ecm.core.repository.RepositoryServiceComponent</require>
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.management.statuses.ProbeScheduler"/>

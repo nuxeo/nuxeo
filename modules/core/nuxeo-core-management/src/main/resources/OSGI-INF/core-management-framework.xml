@@ -3,10 +3,7 @@
 
   <implementation class="org.nuxeo.ecm.core.management.CoreManagementComponent" />
 
-  <require>org.nuxeo.ecm.core.repository.RepositoryService</require>
-  <!-- TODO: Cannot use this ince content template is not in the core .. find another solution.
-  <require>org.nuxeo.ecm.platform.content.template.service.ContentTemplateService</require>
-  -->
+  <require>org.nuxeo.ecm.core.repository.RepositoryServiceComponent</require>
 
   <service>
     <provide interface="org.nuxeo.ecm.core.management.CoreManagementComponent" />
