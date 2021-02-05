@@ -32,6 +32,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.repository.PoolConfiguration;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor.FulltextIndexDescriptor;
@@ -40,6 +42,8 @@ import org.nuxeo.ecm.core.storage.FulltextDescriptor.FulltextIndexDescriptor;
  * Low-level VCS Repository Descriptor.
  */
 @XObject(value = "repository", order = { "@name" })
+@XRegistry
+@XRegistryId("@name")
 public class RepositoryDescriptor {
 
     private static final Log log = LogFactory.getLog(RepositoryDescriptor.class);

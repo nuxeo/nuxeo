@@ -28,15 +28,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManagerComponent;
 import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
 import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -69,13 +71,17 @@ public abstract class SQLBackendTestCase {
     }
 
     protected RepositoryImpl newRepository(String name) {
-        RepositoryDescriptor descriptor = newDescriptor(name);
-        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
-        sqlRepositoryService.registerContribution(descriptor, "repository", null);
+        RepositoryDescriptor desc = newDescriptor(name);
+
+        RepositoryFactory repositoryFactory = () -> new RepositoryImpl(desc);
+        Repository repo = new Repository(desc.name, desc.label, desc.isDefault(), desc.isHeadless(), repositoryFactory,
+                desc.pool);
+        Framework.getService(RepositoryManager.class).addRepository(repo);
+
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         repositoryService.start(null);
-        newBlobProvider(descriptor.name);
-        return sqlRepositoryService.getRepositoryImpl(descriptor.name);
+        newBlobProvider(desc.name);
+        return (RepositoryImpl) repositoryService.getRepository(desc.name);
     }
 
     protected RepositoryDescriptor newDescriptor(String name) {
