@@ -33,22 +33,22 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
-import org.nuxeo.ecm.platform.signature.api.pki.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.ecm.platform.signature.core.SignatureCoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(SignatureCoreFeature.class)
+@Deploy("org.nuxeo.ecm.platform.signature.core.test:test-files/root-contrib-override.xml")
 public class CertServiceTest {
 
     @Inject
@@ -56,33 +56,11 @@ public class CertServiceTest {
 
     private static final int EXPECTED_MIN_ENCODED_CERT_LENGTH = 100;
 
-    private static final String ROOT_KEY_PASSWORD = "abc";
-
-    private static final String ROOT_KEYSTORE_PASSWORD = "abc";
-
-    private static final String ROOT_USER_ID = "PDFCA";
-
     private static final String USER_KEY_PASSWORD = "abc";
 
     private static final String USER_KEYSTORE_PASSWORD = "abc";
 
     private static final String KEYSTORE_PATH = "test-files/keystore.jks";
-
-    /**
-     * Replace root keystore from the config file with a custom one loaded from a test resource file
-     */
-    @Before
-    public void setUp() throws Exception {
-        KeyStore rootKeystore = certService.getKeyStore(getKeystoreIS(KEYSTORE_PATH), ROOT_KEYSTORE_PASSWORD);
-        RootService rootService = new RootServiceImpl();
-        AliasWrapper alias = new AliasWrapper(ROOT_USER_ID);
-        rootService.setRootKeyAlias(alias.getId(AliasType.KEY));
-        rootService.setRootCertificateAlias(alias.getId(AliasType.CERT));
-        rootService.setRootKeyPassword(ROOT_KEY_PASSWORD);
-        rootService.setRootKeyStore(rootKeystore);
-        rootService.setRootKeystorePassword(ROOT_KEYSTORE_PASSWORD);
-        certService.setRootService(rootService);
-    }
 
     protected InputStream getKeystoreIS(String keystoreFilePath) throws Exception {
         File keystoreFile = FileUtils.getResourceFileFromContext(keystoreFilePath);

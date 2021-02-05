@@ -42,21 +42,6 @@ public interface RootService {
 
     String getRootCertificateAlias();
 
-    boolean isRootSetup();
-
     byte[] getRootPublicCertificate() throws CertException;
 
-    InputStream getRootKeystoreIS() throws CertException;
-
-    void setRootKeyStore(KeyStore rootKeyStore);
-
-    void setRootKeystoreFilePath(String rootKeystoreFilePath);
-
-    void setRootKeystorePassword(String rootKeystorePassword);
-
-    void setRootKeyAlias(String rootKeyAlias);
-
-    void setRootKeyPassword(String rootKeyPassword);
-
-    void setRootCertificateAlias(String rootCertificateAlias);
 }

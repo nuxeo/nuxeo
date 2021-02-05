@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.signature.core.pki;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Provides configuration information for root certificate generation services.
@@ -34,6 +35,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 
 @XObject("configuration")
+@XRegistry
 public class RootDescriptor {
 
     @XNode("rootKeystoreFilePath")
@@ -55,50 +57,20 @@ public class RootDescriptor {
         return rootKeyAlias;
     }
 
-    public void setRootKeyAlias(String rootKeyAlias) {
-        this.rootKeyAlias = rootKeyAlias;
-    }
-
     public String getRootKeyPassword() {
         return rootKeyPassword;
-    }
-
-    public void setRootKeyPassword(String rootKeyPassword) {
-        this.rootKeyPassword = rootKeyPassword;
     }
 
     public String getRootKeystorePassword() {
         return rootKeystorePassword;
     }
 
-    public void setRootKeystorePassword(String rootKeystorePassword) {
-        this.rootKeystorePassword = rootKeystorePassword;
-    }
-
     public String getRootCertificateAlias() {
         return rootCertificateAlias;
-    }
-
-    public void setRootCertificateAlias(String rootCertificateAlias) {
-        this.rootCertificateAlias = rootCertificateAlias;
     }
 
     public String getRootKeystoreFilePath() {
         return rootKeystoreFilePath;
     }
 
-    public void setRootKeystoreFilePath(String rootKeystoreFilePath) {
-        this.rootKeystoreFilePath = rootKeystoreFilePath;
-    }
-
-    private boolean remove;
-
-    @XNode("removeExtension")
-    protected void setRemoveExtension(boolean remove) {
-        this.remove = remove;
-    }
-
-    public boolean getRemoveExtension() {
-        return remove;
-    }
 }
