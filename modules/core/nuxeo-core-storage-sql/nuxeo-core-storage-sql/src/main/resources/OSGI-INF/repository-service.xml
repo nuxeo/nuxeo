@@ -22,6 +22,7 @@
       See http://doc.nuxeo.com/x/hwQz for documentation.
     </documentation>
     <object class="org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor" />
+    <registry class="org.nuxeo.ecm.core.storage.sql.RepositoryDescriptorRegistry" />
   </extension-point>
 
 </component>

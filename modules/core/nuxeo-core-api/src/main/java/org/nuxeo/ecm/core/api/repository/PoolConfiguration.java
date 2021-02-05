@@ -36,13 +36,13 @@ public class PoolConfiguration {
 
     public static final int DEFAULT_BLOCKING_TIMEOUT_MILLIS = 100;
 
-    @XNode("@maxPoolSize")
+    @XNode(value = "@maxPoolSize", fallback = "@maxActive")
     private Integer maxPoolSize;
 
-    @XNode("@minPoolSize")
+    @XNode(value = "@minPoolSize", fallback = "@maxIdle")
     private Integer minPoolSize;
 
-    @XNode("@blockingTimeoutMillis")
+    @XNode(value = "@blockingTimeoutMillis", fallback = "@maxWait")
     private Integer blockingTimeoutMillis;
 
     public PoolConfiguration() {
@@ -93,21 +93,6 @@ public class PoolConfiguration {
 
     public void setBlockingTimeoutMillis(int blockingTimeoutMillis) {
         this.blockingTimeoutMillis = Integer.valueOf(blockingTimeoutMillis);
-    }
-
-    @XNode("@maxActive")
-    public void setMaxActive(int num) {
-        maxPoolSize = num;
-    }
-
-    @XNode("@maxIdle")
-    public void setMaxIdle(int num) {
-        minPoolSize = num;
-    }
-
-    @XNode("@maxWait")
-    public void setMaxWait(int num) {
-        blockingTimeoutMillis = num;
     }
 
 }

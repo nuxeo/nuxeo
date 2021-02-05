@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -32,9 +33,8 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.VCSRepositoryFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Service holding the configuration for VCS repositories.
@@ -45,102 +45,27 @@ public class SQLRepositoryService extends DefaultComponent {
 
     private static final String XP_REPOSITORY = "repository";
 
-    protected RepositoryDescriptorRegistry registry = new RepositoryDescriptorRegistry();
-
-    protected static class RepositoryDescriptorRegistry extends SimpleContributionRegistry<RepositoryDescriptor> {
-
-        @Override
-        public String getContributionId(RepositoryDescriptor contrib) {
-            return contrib.name;
-        }
-
-        @Override
-        public RepositoryDescriptor clone(RepositoryDescriptor orig) {
-            return new RepositoryDescriptor(orig);
-        }
-
-        @Override
-        public void merge(RepositoryDescriptor src, RepositoryDescriptor dst) {
-            dst.merge(src);
-        }
-
-        @Override
-        public boolean isSupportingMerge() {
-            return true;
-        }
-
-        public void clear() {
-            currentContribs.clear();
-        }
-
-        public RepositoryDescriptor getRepositoryDescriptor(String id) {
-            return getCurrentContribution(id);
-        }
-
-        public List<String> getRepositoryIds() {
-            return new ArrayList<>(currentContribs.keySet());
-        }
+    @Override
+    public int getApplicationStartedOrder() {
+        return ComponentStartOrders.REPOSITORY - 1;
     }
 
     @Override
-    public void activate(ComponentContext context) {
-        registry.clear();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        registry.clear();
-    }
-
-    @Override
-    public void registerContribution(Object contrib, String xpoint, ComponentInstance contributor) {
-        if (XP_REPOSITORY.equals(xpoint)) {
-            addContribution((RepositoryDescriptor) contrib);
-        } else {
-            throw new RuntimeException("Unknown extension point: " + xpoint);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contrib, String xpoint, ComponentInstance contributor) {
-        if (XP_REPOSITORY.equals(xpoint)) {
-            removeContribution((RepositoryDescriptor) contrib);
-        } else {
-            throw new RuntimeException("Unknown extension point: " + xpoint);
-        }
-    }
-
-    protected void addContribution(RepositoryDescriptor descriptor) {
-        registry.addContribution(descriptor);
-        updateRegistration(descriptor.name);
-    }
-
-    protected void removeContribution(RepositoryDescriptor descriptor) {
-        registry.removeContribution(descriptor);
-        updateRegistration(descriptor.name);
-    }
-
-    /**
-     * Update repository registration in high-level repository service.
-     */
-    protected void updateRegistration(String repositoryName) {
+    public void start(ComponentContext context) {
+        // update repository registrations in high-level repository service
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-        RepositoryDescriptor descriptor = registry.getRepositoryDescriptor(repositoryName);
-        if (descriptor == null) {
-            // last contribution removed
-            repositoryManager.removeRepository(repositoryName);
-            return;
-        }
-        // extract label, isDefault
-        // and pass it to high-level registry
-        RepositoryFactory repositoryFactory = new VCSRepositoryFactory(repositoryName);
-        Repository repository = new Repository(repositoryName, descriptor.label, descriptor.isDefault(),
-                descriptor.isHeadless(), repositoryFactory, descriptor.pool);
-        repositoryManager.addRepository(repository);
+        this.<RepositoryDescriptor> getRegistryContributions(XP_REPOSITORY).forEach(desc -> {
+            // extract name label, isDefault, and pass it to high-level registry
+            String name = desc.name;
+            RepositoryFactory repositoryFactory = new VCSRepositoryFactory(name);
+            Repository repository = new Repository(name, desc.label, desc.isDefault(), desc.isHeadless(),
+                    repositoryFactory, desc.pool);
+            repositoryManager.addRepository(repository);
+        });
     }
 
     public RepositoryDescriptor getRepositoryDescriptor(String name) {
-        return registry.getRepositoryDescriptor(name);
+        return this.<RepositoryDescriptor> getRegistryContribution(XP_REPOSITORY, name).orElse(null);
     }
 
     /**
@@ -150,7 +75,7 @@ public class SQLRepositoryService extends DefaultComponent {
      * @since 5.9.5
      */
     public List<String> getRepositoryNames() {
-        return registry.getRepositoryIds();
+        return new ArrayList<>(this.<MapRegistry> getExtensionPointRegistry(XP_REPOSITORY).getContributions().keySet());
     }
 
     /**
