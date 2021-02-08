@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.ecm.platform.types;
@@ -40,7 +39,6 @@ import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -52,13 +50,15 @@ public class TypeService extends DefaultComponent implements TypeManager {
 
     public static final String HIDDEN_IN_CREATION = "create";
 
+    protected static final String XP = "types";
+
     private TypeRegistry typeRegistry;
 
     private Runnable recomputeCallback;
 
     @Override
     public void activate(ComponentContext context) {
-        typeRegistry = new TypeRegistry();
+        typeRegistry = getExtensionPointRegistry(XP);
         recomputeCallback = typeRegistry::recomputeTypes;
         SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
         schemaManager.registerRecomputeCallback(recomputeCallback);
@@ -66,23 +66,9 @@ public class TypeService extends DefaultComponent implements TypeManager {
 
     @Override
     public void deactivate(ComponentContext context) {
-        SchemaManagerImpl schemaManager = (SchemaManagerImpl)Framework.getService(SchemaManager.class);
+        SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
         schemaManager.unregisterRecomputeCallback(recomputeCallback);
         typeRegistry = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("types")) {
-            typeRegistry.addContribution((Type) contribution);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("types")) {
-            typeRegistry.removeContribution((Type) contribution);
-        }
     }
 
     public TypeRegistry getTypeRegistry() {
@@ -96,7 +82,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
         SchemaManager schemaMgr = Framework.getService(SchemaManager.class);
         DocumentType type = schemaMgr.getDocumentType(typeName);
         if (type == null) {
-            return null;
+            return new String[0];
         }
         type = (DocumentType) type.getSuperType();
         List<String> superTypes = new ArrayList<>();
@@ -170,7 +156,8 @@ public class TypeService extends DefaultComponent implements TypeManager {
         alreadyProcessedTypes.add(typeName);
         for (Type subType : allowedSubTypes) {
             if (!alreadyProcessedTypes.contains(subType.getId())) {
-                allAllowedSubTypes.addAll(findAllAllowedSubTypesFrom(subType.getId(), currentDoc, alreadyProcessedTypes));
+                allAllowedSubTypes.addAll(
+                        findAllAllowedSubTypesFrom(subType.getId(), currentDoc, alreadyProcessedTypes));
             }
         }
 
@@ -198,10 +185,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
                         if (key == null) {
                             key = DEFAULT_CATEGORY;
                         }
-                        if (!docTypesMap.containsKey(key)) {
-                            docTypesMap.put(key, new ArrayList<Type>());
-                        }
-                        docTypesMap.get(key).add(subType);
+                        docTypesMap.computeIfAbsent(key, k -> new ArrayList<>()).add(subType);
                     }
                 }
             }

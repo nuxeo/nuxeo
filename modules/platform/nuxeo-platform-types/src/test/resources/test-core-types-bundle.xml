@@ -26,6 +26,8 @@
         <type>MyDocType</type>
       </subtypes>
     </doctype>
+    <doctype name="MyDocType3" extends="Document">
+    </doctype>
   </extension>
 
 </component>

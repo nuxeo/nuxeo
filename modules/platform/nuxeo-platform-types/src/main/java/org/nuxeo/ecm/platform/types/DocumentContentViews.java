@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,31 +21,24 @@ package org.nuxeo.ecm.platform.types;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XMerge;
 
 /**
  * Content view descriptor put on document types.
  *
- * @author Anahide Tchertchian
  * @since 5.4
  */
 @XObject("contentViews")
 public class DocumentContentViews {
 
-    @XNode("@append")
-    boolean append = false;
-
     @XNodeList(value = "contentView", type = DocumentContentView[].class, componentType = DocumentContentView.class)
-    DocumentContentView[] contentViews = new DocumentContentView[0];
+    @XMerge(value = "@append", defaultAssignment = false) // compat
+    protected DocumentContentView[] contentViews = new DocumentContentView[0];
 
     public DocumentContentView[] getContentViews() {
         return contentViews;
-    }
-
-    public boolean getAppend() {
-        return append;
     }
 
     public String[] getContentViewNames() {
@@ -56,7 +49,7 @@ public class DocumentContentViews {
             }
             return res;
         }
-        return null;
+        return new String[0];
     }
 
     public String[] getContentViewNamesForExport() {
@@ -69,26 +62,6 @@ public class DocumentContentViews {
             }
         }
         return res.toArray(new String[] {});
-    }
-
-    /**
-     * Clone to handle hot reload
-     *
-     * @since 5.6
-     */
-    @Override
-    public DocumentContentViews clone() {
-        DocumentContentViews clone = new DocumentContentViews();
-        clone.append = getAppend();
-        DocumentContentView[] cvs = getContentViews();
-        if (cvs != null) {
-            DocumentContentView[] ccvs = new DocumentContentView[cvs.length];
-            for (int i = 0; i < cvs.length; i++) {
-                ccvs[i] = cvs[i].clone();
-            }
-            clone.contentViews = ccvs;
-        }
-        return clone;
     }
 
 }

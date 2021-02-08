@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.ecm.platform.types;
@@ -26,8 +25,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * Type view to display a given document type view.
- *
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("view")
 public class TypeView {
@@ -42,28 +39,8 @@ public class TypeView {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getValue() {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    /**
-     * Clone to handle hot reload
-     *
-     * @since 5.6
-     */
-    @Override
-    protected TypeView clone() {
-        TypeView clone = new TypeView();
-        clone.setId(getId());
-        clone.setValue(getValue());
-        return clone;
-    }
 }

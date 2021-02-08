@@ -121,6 +121,7 @@
     </documentation>
 
     <object class="org.nuxeo.ecm.platform.types.Type" />
+    <registry class="org.nuxeo.ecm.platform.types.TypeRegistry" />
   </extension-point>
 
 </component>

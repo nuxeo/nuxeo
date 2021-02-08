@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,243 +15,75 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.ecm.platform.types;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.schema.DocumentTypeDescriptor;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.w3c.dom.Element;
 
-public class TypeRegistry extends ContributionFragmentRegistry<Type> {
+public class TypeRegistry extends MapRegistry {
 
-    protected Map<String, Type> types = new HashMap<>();
-
-    protected Map<String, DocumentTypeDescriptor> dtds = new HashMap<>();
+    protected Map<String, DocumentTypeDescriptor> dtds = new ConcurrentHashMap<>();
 
     @Override
-    public String getContributionId(Type contrib) {
-        return contrib.getId();
+    @SuppressWarnings("unchecked")
+    protected <T> T getMergedInstance(Context ctx, XAnnotatedObject xObject, Element element, Object existing) {
+        Type merged = super.getMergedInstance(ctx, xObject, element, existing);
+        // delete denied subtypes from allowed subtypes
+        Set<String> denied = Set.of(merged.getDeniedSubTypes());
+        merged.getAllowedSubTypes().keySet().removeIf(Predicate.not(denied::contains));
+        return (T) merged;
     }
 
     @Override
-    public void contributionUpdated(String id, Type contrib, Type newOrigContrib) {
-        if (contrib.getRemove()) {
-            types.remove(id);
-            removeCoreContribution(id);
+    @SuppressWarnings("unchecked")
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        Type type = super.doRegister(ctx, xObject, element, extensionId);
+        if (type == null) {
+            removeCoreContribution(computeId(ctx, xObject, element));
         } else {
-            types.put(id, contrib);
-            updateCoreContribution(id, contrib);
+            updateCoreContribution(type.getId(), type);
         }
-    }
-
-    @Override
-    public void contributionRemoved(String id, Type origContrib) {
-        types.remove(id);
-        removeCoreContribution(id);
-    }
-
-    @Override
-    public Type clone(Type orig) {
-        if (orig != null) {
-            return orig.clone();
-        }
-        return null;
-    }
-
-    @Override
-    public void merge(Type newType, Type oldType) {
-        boolean remove = newType.getRemove();
-        // keep old remove info: if old type was removed, new type should
-        // replace the old one completely
-        boolean wasRemoved = oldType.getRemove();
-        oldType.setRemove(remove);
-        if (remove) {
-            // don't bother merging
-            return;
-        }
-
-        String icon = newType.getIcon();
-        if (icon != null || wasRemoved) {
-            oldType.setIcon(icon);
-        }
-        String iconExpanded = newType.getIconExpanded();
-        if (iconExpanded != null || wasRemoved) {
-            oldType.setIconExpanded(iconExpanded);
-        }
-        String bigIcon = newType.getBigIcon();
-        if (bigIcon != null || wasRemoved) {
-            oldType.setBigIcon(bigIcon);
-        }
-        String bigIconExpanded = newType.getBigIconExpanded();
-        if (bigIconExpanded != null || wasRemoved) {
-            oldType.setBigIconExpanded(bigIconExpanded);
-        }
-        String label = newType.getLabel();
-        if (label != null || wasRemoved) {
-            oldType.setLabel(label);
-        }
-        String description = newType.getDescription();
-        if (description != null || wasRemoved) {
-            oldType.setDescription(description);
-        }
-        String category = newType.getCategory();
-        if (category != null || wasRemoved) {
-            oldType.setCategory(category);
-        }
-
-        Map<String, SubType> newTypeAllowedSubTypes = newType.getAllowedSubTypes();
-        if (wasRemoved) {
-            oldType.setAllowedSubTypes(newTypeAllowedSubTypes);
-        } else {
-            if (newTypeAllowedSubTypes != null) {
-                Set<String> newTypeKeySet = newTypeAllowedSubTypes.keySet();
-                Map<String, SubType> oldTypeAllowedSubTypes = oldType.getAllowedSubTypes();
-                for (String newTypeKey : newTypeKeySet) {
-                    oldTypeAllowedSubTypes.put(newTypeKey, newTypeAllowedSubTypes.get(newTypeKey));
-                }
-
-            }
-
-            // Code added to delete the denied SubType from allowed subtypes
-
-            List<String> result = new ArrayList<>();
-            String[] deniedSubTypes = newType.getDeniedSubTypes();
-            Map<String, SubType> oldTypeAllowedSubTypes = oldType.getAllowedSubTypes();
-            boolean toAdd = true;
-
-            if (oldTypeAllowedSubTypes != null) {
-                Set<String> oldTypeKeySet = oldTypeAllowedSubTypes.keySet();
-                for (String allowedSubType : oldTypeKeySet) {
-                    for (String deniedSubType : deniedSubTypes) {
-                        if (deniedSubType.equals(allowedSubType)) {
-                            toAdd = false;
-                            break;
-                        }
-                    }
-                    if (toAdd) {
-                        result.add(allowedSubType);
-                    }
-                    toAdd = true;
-                }
-            }
-
-            Map<String, SubType> mapResult = new HashMap<>();
-            for (String resultTypeName : result) {
-                mapResult.put(resultTypeName, oldTypeAllowedSubTypes.get(resultTypeName));
-            }
-
-            oldType.setAllowedSubTypes(mapResult);
-
-            // end of added code
-        }
-
-        String defaultView = newType.getDefaultView();
-        if (defaultView != null || wasRemoved) {
-            oldType.setDefaultView(defaultView);
-        }
-        String createView = newType.getCreateView();
-        if (createView != null || wasRemoved) {
-            oldType.setCreateView(createView);
-        }
-        String editView = newType.getEditView();
-        if (editView != null || wasRemoved) {
-            oldType.setEditView(editView);
-        }
-
-        for (TypeView view : newType.getViews()) {
-            oldType.setView(view);
-        }
-
-        Map<String, Layouts> layouts = newType.getLayouts();
-        if (wasRemoved) {
-            oldType.setLayouts(layouts);
-        } else {
-            if (layouts != null) {
-                Map<String, Layouts> layoutsMerged = new HashMap<>(oldType.getLayouts());
-                for (Map.Entry<String, Layouts> entry : layouts.entrySet()) {
-                    String key = entry.getKey();
-                    Layouts newLayouts = entry.getValue();
-                    if (layoutsMerged.containsKey(key) && newLayouts.getAppend()) {
-                        List<String> allLayouts = new ArrayList<>();
-                        for (String layoutName : layoutsMerged.get(key).getLayouts()) {
-                            allLayouts.add(layoutName);
-                        }
-                        for (String layoutName : newLayouts.getLayouts()) {
-                            allLayouts.add(layoutName);
-                        }
-                        Layouts mergedLayouts = new Layouts();
-                        mergedLayouts.layouts = allLayouts.toArray(new String[allLayouts.size()]);
-                        layoutsMerged.put(key, mergedLayouts);
-                    } else {
-                        layoutsMerged.put(key, newLayouts);
-                    }
-                }
-                oldType.setLayouts(layoutsMerged);
-            }
-        }
-
-        Map<String, DocumentContentViews> contentViews = newType.getContentViews();
-        if (wasRemoved) {
-            oldType.setContentViews(contentViews);
-        } else {
-            if (contentViews != null) {
-                Map<String, DocumentContentViews> cvMerged = new HashMap<>(
-                        oldType.getContentViews());
-                for (Map.Entry<String, DocumentContentViews> entry : contentViews.entrySet()) {
-                    String key = entry.getKey();
-                    DocumentContentViews newContentViews = entry.getValue();
-                    if (cvMerged.containsKey(key) && newContentViews.getAppend()) {
-                        List<DocumentContentView> allContentViews = new ArrayList<>();
-                        for (DocumentContentView cv : cvMerged.get(key).getContentViews()) {
-                            allContentViews.add(cv);
-                        }
-                        for (DocumentContentView cv : newContentViews.getContentViews()) {
-                            allContentViews.add(cv);
-                        }
-                        DocumentContentViews mergedContentViews = new DocumentContentViews();
-                        mergedContentViews.contentViews = allContentViews.toArray(new DocumentContentView[allContentViews.size()]);
-                        cvMerged.put(key, mergedContentViews);
-                    } else {
-                        cvMerged.put(key, newContentViews);
-                    }
-                }
-                oldType.setContentViews(cvMerged);
-            }
-        }
+        return (T) type;
     }
 
     public boolean hasType(String id) {
-        return types.containsKey(id);
+        return getContribution(id).isPresent();
     }
 
     public Collection<Type> getTypes() {
-        return Collections.unmodifiableCollection(types.values());
+        return getContributionValues();
     }
 
     public Type getType(String id) {
-        return types.get(id);
+        return this.<Type> getContribution(id).orElse(null);
     }
 
     /**
      * @since 8.10
      */
     protected void recomputeTypes() {
-        for (Type type : types.values()) {
+        List<Type> types = getContributionValues();
+        for (Type type : types) {
             type.setAllowedSubTypes(getCoreAllowedSubtypes(type));
-            //  do not need to add denied subtypes because allowed subtypes already come filtered from core
+            // do not need to add denied subtypes because allowed subtypes already come filtered from core
             type.setDeniedSubTypes(new String[0]);
         }
     }
@@ -267,20 +99,18 @@ public class TypeRegistry extends ContributionFragmentRegistry<Type> {
             return Collections.emptyMap();
         }
 
-        Map<String, SubType> ecmSubTypes = type.getAllowedSubTypes();
-        Map<String, SubType> allowedSubTypes = new HashMap<>();
-        SubType subtype;
+        Map<String, SubType> res = new HashMap<>();
+        Map<String, SubType> subTypes = type.getAllowedSubTypes();
         for (String name : coreAllowedSubtypes) {
-            if (ecmSubTypes.containsKey(name)) {
-                subtype = ecmSubTypes.get(name);
+            SubType subtype = subTypes.get(name);
+            if (subtype == null) {
+                res.put(name, new SubType(name, null));
             } else {
-                subtype = new SubType();
-                subtype.setName(name);
+                res.put(name, subtype);
             }
-            allowedSubTypes.put(name, subtype);
         }
 
-        return allowedSubTypes;
+        return res;
     }
 
     /**
@@ -289,7 +119,7 @@ public class TypeRegistry extends ContributionFragmentRegistry<Type> {
     protected void updateCoreContribution(String id, Type contrib) {
         SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
 
-        // if there's already a core contribution, unregiser it and register a new one
+        // if there's already a core contribution, unregister it and register a new one
         if (dtds.containsKey(id)) {
             schemaManager.unregisterDocumentType(dtds.get(id));
             dtds.remove(id);
