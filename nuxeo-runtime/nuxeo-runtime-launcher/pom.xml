@@ -12,4 +12,12 @@
   <name>Nuxeo Runtime Launcher</name>
   <description>A Java Application Launcher that enables the target application to change it's root class loader</description>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
 </project>

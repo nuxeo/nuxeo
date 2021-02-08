@@ -214,6 +214,8 @@
                     <exclude>META-INF/*.RSA</exclude>
                     <!-- this is included by mistake in some OSGi JARs, contains the complete source code -->
                     <exclude>OSGI-OPT/**</exclude>
+                    <!-- this excludes our log4j2 plugin which messes the regular log4j2 initialization -->
+                    <exclude>**/Log4j2Plugins.dat</exclude>
                   </excludes>
                 </filter>
               </filters>
