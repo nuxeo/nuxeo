@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -60,7 +61,7 @@ import org.quartz.impl.matchers.GroupMatcher;
  * Due the fact that all jobs are removed when service starts on a node it may be a short period with no schedules in
  * quartz table even other node is running.
  */
-public class SchedulerServiceImpl extends DefaultComponent implements SchedulerService {
+public class SchedulerServiceImpl extends DefaultComponent implements SchedulerService, ComponentManager.Listener {
 
     private static final Log log = LogFactory.getLog(SchedulerServiceImpl.class);
 
@@ -139,7 +140,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     }
 
     @Override
-    public void start(ComponentContext context) {
+    public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
         startScheduler();
     }
 
@@ -159,6 +160,9 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
 
     @Override
     public void stop(ComponentContext context) {
+        if (scheduler == null) {
+            return;
+        }
         try {
             scheduler.standby();
         } catch (SchedulerException cause) {
