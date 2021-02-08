@@ -217,7 +217,7 @@ public abstract class XValueFactory {
     public static final XValueFactory RESOURCE = new XValueFactory() {
         @Override
         public Object deserialize(Context context, String value) {
-            return new Resource(context.getResource(value));
+            return new Resource(context, value);
         }
 
         @Override

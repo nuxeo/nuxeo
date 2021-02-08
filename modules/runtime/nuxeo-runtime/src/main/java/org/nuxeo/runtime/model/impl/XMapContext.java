@@ -49,7 +49,11 @@ public class XMapContext extends Context {
 
     @Override
     public URL getResource(String name) {
-        return ctx.getResource(name);
+        URL url = ctx.getLocalResource(name);
+        if (url == null) {
+            url = ctx.getResource(name);
+        }
+        return url;
     }
 
 }

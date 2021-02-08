@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<document>
+  <resource name="ok">
+    <src>test-data/hello.odt</src>
+  </resource>
+</document>

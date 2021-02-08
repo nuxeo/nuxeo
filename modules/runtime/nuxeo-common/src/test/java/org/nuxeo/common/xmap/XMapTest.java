@@ -36,23 +36,23 @@ import org.nuxeo.common.xmap.Author.Gender;
 
 public class XMapTest {
 
+    protected Object load(XMap xmap, String src) throws IOException {
+        URL url = Thread.currentThread().getContextClassLoader().getResource(src);
+        return xmap.load(url);
+    }
+
     @Test
     public void testMapping() throws IOException {
         XMap xmap = new XMap();
         xmap.register(Author.class);
-
-        URL url = Thread.currentThread().getContextClassLoader().getResource("test-xmap.xml");
-
-        checkAuthor((Author) xmap.load(url));
+        checkAuthor((Author) load(xmap, "test-xmap.xml"));
     }
 
     @Test
     public void testInheritedMapping() throws IOException {
         XMap xmap = new XMap();
         xmap.register(InheritedAuthor.class);
-
-        URL url = Thread.currentThread().getContextClassLoader().getResource("second-test-xmap.xml");
-        InheritedAuthor inheritedAuthor = (InheritedAuthor) xmap.load(url);
+        InheritedAuthor inheritedAuthor = (InheritedAuthor) load(xmap, "second-test-xmap.xml");
         checkAuthor(inheritedAuthor);
         assertEquals("dummyContent", inheritedAuthor.notInherited);
         assertEquals("test1", inheritedAuthor.inheritedId);
@@ -133,10 +133,8 @@ public class XMapTest {
     public void testInvalidClass() throws IOException {
         XMap xmap = new XMap();
         xmap.register(Author.class);
-
-        URL url = Thread.currentThread().getContextClassLoader().getResource("test-xmap-invalid-class.xml");
         try {
-            xmap.load(url);
+            load(xmap, "test-xmap-invalid-class.xml");
             fail("Should not allow loading with invalid class");
         } catch (XMapException e) {
             assertEquals("Cannot load class: this-is-not-a-class", e.getMessage());
@@ -148,10 +146,7 @@ public class XMapTest {
     public void testDOMElementMapping() throws IOException {
         XMap xmap = new XMap();
         xmap.register(Author.class);
-
-        URL url = Thread.currentThread().getContextClassLoader().getResource("test-xmap.xml");
-
-        Author author = (Author) xmap.load(url);
+        Author author = (Author) load(xmap, "test-xmap.xml");
 
         assertNotNull(author.metadata);
         assertEquals(13, author.metadata.getChildNodes().getLength());
@@ -159,6 +154,29 @@ public class XMapTest {
         assertNotNull(author.personElements);
         assertEquals(2, author.personElements.size());
         assertEquals(5, author.personElements.get(0).getChildNodes().getLength());
+    }
+
+    /** @since 11.5 **/
+    @Test
+    public void testResourceMapping() throws IOException {
+        XMap xmap = new XMap();
+        xmap.register(ResourceReference.class);
+
+        ResourceReference res = (ResourceReference) load(xmap, "test-resource-1.xml");
+        assertNotNull(res);
+        assertEquals("ok", res.getName());
+        assertNotNull(res.getSrc());
+        assertEquals("test-data/hello.odt", res.getSrc().getPath());
+        assertNotNull(res.getSrc().getContext());
+        assertNotNull(res.getSrc().toURL());
+
+        res = (ResourceReference) load(xmap, "test-resource-2.xml");
+        assertNotNull(res);
+        assertEquals("ko", res.getName());
+        assertNotNull(res.getSrc());
+        assertEquals("does-not-exist.txt", res.getSrc().getPath());
+        assertNotNull(res.getSrc().getContext());
+        assertNull(res.getSrc().toURL());
     }
 
 }
