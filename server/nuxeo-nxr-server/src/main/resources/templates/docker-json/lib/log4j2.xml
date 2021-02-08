@@ -5,9 +5,14 @@
     <!-- ============================== -->
     <!-- Append messages to the console -->
     <!-- ============================== -->
-    <Console name="ConsoleJSONAppender" target="SYSTEM_OUT">
+    <Console name="ConsoleJSONAppender-ORIGINAL" target="SYSTEM_OUT">
       <JsonLayout eventEol="true" compact="true"/>
     </Console>
+
+    <Rewrite name="ConsoleJSONAppender">
+      <AppenderRef ref="ConsoleJSONAppender-ORIGINAL"/>
+      <MaskSensitiveData />
+    </Rewrite>
 
     <!-- Clustering logging -->
     <!-- Uncomment the following to redirect the org.jgroups and org.jboss.ha categories to a cluster.log file.
