@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.test.type-inheritance">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <!-- Check that registering a child type before the parent works -->
+    <doctype name="Child" extends="Parent" />
+    <doctype name="Parent" extends="Document" />
+    <doctype name="TopLevel" extends="Document" />
+
+  </extension>
+
+</component>

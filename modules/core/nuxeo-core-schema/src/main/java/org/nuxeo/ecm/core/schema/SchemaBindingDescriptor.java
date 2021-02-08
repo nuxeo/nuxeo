@@ -23,28 +23,33 @@ package org.nuxeo.ecm.core.schema;
 
 import java.io.File;
 
+import org.nuxeo.common.xmap.Resource;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("schema")
+@XRegistry(enable = false, merge = false)
 public class SchemaBindingDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@src")
-    public String src;
+    public Resource src;
 
     public File file;
 
     @XNode("@prefix")
     public String prefix = "";
 
-    @XNode("@override")
+    @XNode(value = "@override")
     public boolean override = false;
 
     @XNode("@isVersionWritable")
@@ -53,20 +58,9 @@ public class SchemaBindingDescriptor {
     @XNode("@xsdRootElement")
     public String xsdRootElement;
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
     public Boolean enabled;
-
-    // this is set by the type service to the context that knows how to locate
-    // the schema file
-    public RuntimeContext context;
-
-    public SchemaBindingDescriptor() {
-    }
-
-    public SchemaBindingDescriptor(String name, String prefix) {
-        this.name = name;
-        this.prefix = prefix;
-    }
 
     @Override
     public String toString() {

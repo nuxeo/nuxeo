@@ -21,7 +21,8 @@ package org.nuxeo.ecm.core.schema;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.Descriptor;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Descriptor representing a Nuxeo Property.
@@ -35,7 +36,9 @@ import org.nuxeo.runtime.model.Descriptor;
  * @since 11.1
  */
 @XObject("property")
-public class PropertyDescriptor implements Descriptor {
+@XRegistry(compatWarnOnMerge = true)
+@XRegistryId(value = { "@schema", "@name" })
+public class PropertyDescriptor {
 
     public static final String DEPRECATED = "deprecated";
 
@@ -56,10 +59,6 @@ public class PropertyDescriptor implements Descriptor {
     @XNode("@fallback")
     protected String fallback;
 
-    @XNode("@remove")
-    public boolean remove;
-
-    @Override
     public String getId() {
         return schema + ':' + name;
     }
@@ -93,23 +92,6 @@ public class PropertyDescriptor implements Descriptor {
 
     public String getFallback() {
         return fallback;
-    }
-
-    @Override
-    public Descriptor merge(Descriptor o) {
-        PropertyDescriptor other = (PropertyDescriptor) o;
-        PropertyDescriptor merged = new PropertyDescriptor();
-        merged.schema = schema;
-        merged.name = name;
-        merged.secured = other.secured != null ? other.secured : secured;
-        merged.deprecation = other.deprecation != null ? other.deprecation : deprecation;
-        merged.fallback = other.fallback != null ? other.fallback : fallback;
-        return merged;
-    }
-
-    @Override
-    public boolean doesRemove() {
-        return remove;
     }
 
     @Override

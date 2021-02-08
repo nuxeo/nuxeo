@@ -59,12 +59,12 @@ public class TestSchemaManager {
     public void testTrivialTypeManager() {
         Collection<Type> types = ((SchemaManagerImpl) schemaManager).getTypes();
         assertNotNull(types);
-        assertTrue(types.size() > 0);
+        assertFalse(types.isEmpty());
 
         DocumentType[] documentTypes = schemaManager.getDocumentTypes();
         assertNotNull(documentTypes);
         assertEquals(1, documentTypes.length);
-        assertEquals("Document", documentTypes[0].getName());
+        assertEquals(TypeConstants.DOCUMENT, documentTypes[0].getName());
         assertEquals(1, schemaManager.getDocumentTypesCount());
 
         Schema[] schemas = schemaManager.getSchemas();
@@ -73,18 +73,8 @@ public class TestSchemaManager {
     }
 
     @Test
-    public void testFacetsCache() {
-        // avoid WARN, register facets
-        SchemaManagerImpl schemaManagerImpl = (SchemaManagerImpl) schemaManager;
-        schemaManagerImpl.registerFacet(new FacetDescriptor("parent1", null));
-        schemaManagerImpl.registerFacet(new FacetDescriptor("parent2", null));
-        schemaManagerImpl.registerFacet(new FacetDescriptor("child", null));
-
-        String[] facets = { "parent1", "parent2" };
-        SchemaDescriptor[] schemas = new SchemaDescriptor[0];
-        DocumentTypeDescriptor dtd = new DocumentTypeDescriptor("Document", "Parent", schemas, facets);
-        schemaManagerImpl.registerDocumentType(dtd);
-
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet.xml")
+    public void testFacetsCache() throws Exception {
         assertNotNull(schemaManager.getDocumentType("Parent"));
         assertEquals(2, schemaManager.getDocumentTypes().length);
 
@@ -95,10 +85,7 @@ public class TestSchemaManager {
         assertTrue(tff.contains("Parent"));
 
         // Now adding a derived type
-        facets = new String[1];
-        facets[0] = "child";
-        dtd = new DocumentTypeDescriptor("Parent", "Child", schemas, facets);
-        schemaManagerImpl.registerDocumentType(dtd);
+        hotDeployer.deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-derived.xml");
         assertEquals(3, schemaManager.getDocumentTypes().length);
 
         tff = schemaManager.getDocumentTypeNamesForFacet("parent1");
@@ -115,7 +102,7 @@ public class TestSchemaManager {
         assertTrue(tff.contains("Child"));
 
         // Unregister child
-        schemaManagerImpl.unregisterDocumentType(dtd);
+        hotDeployer.undeploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-derived.xml");
         assertNull(schemaManager.getDocumentType("Child"));
         assertNull(schemaManager.getDocumentTypeNamesForFacet("child"));
         assertEquals(2, schemaManager.getDocumentTypes().length);
@@ -127,16 +114,8 @@ public class TestSchemaManager {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-type-inheritance.xml")
     public void testInheritanceCache() {
-        SchemaManagerImpl schemaManagerImpl = (SchemaManagerImpl) schemaManager;
-        SchemaDescriptor[] schemas = new SchemaDescriptor[0];
-        DocumentTypeDescriptor dtd;
-        dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT, "Parent", schemas, new String[0]);
-        schemaManagerImpl.registerDocumentType(dtd);
-        dtd = new DocumentTypeDescriptor("Parent", "Child", schemas, new String[0]);
-        schemaManagerImpl.registerDocumentType(dtd);
-        dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT, "TopLevel", schemas, new String[0]);
-        schemaManagerImpl.registerDocumentType(dtd);
         checkInheritanceCache();
     }
 
@@ -149,7 +128,7 @@ public class TestSchemaManager {
         assertTrue(types.contains("Parent"));
         assertTrue(types.contains("Child"));
 
-        types = schemaManager.getDocumentTypeNamesExtending("Document");
+        types = schemaManager.getDocumentTypeNamesExtending(TypeConstants.DOCUMENT);
         assertNotNull(types);
         assertEquals(4, types.size());
 
@@ -171,26 +150,8 @@ public class TestSchemaManager {
      * Check that registering a child type before the parent works.
      */
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-reversed.xml")
     public void testFacetsCacheReversedRegistration() {
-        // avoid WARN, register facets
-        SchemaManagerImpl schemaManagerImpl = (SchemaManagerImpl) schemaManager;
-        schemaManagerImpl.registerFacet(new FacetDescriptor("parent1", null));
-        schemaManagerImpl.registerFacet(new FacetDescriptor("parent2", null));
-        schemaManagerImpl.registerFacet(new FacetDescriptor("child", null));
-
-        DocumentTypeDescriptor dtd;
-        SchemaDescriptor[] schemas = new SchemaDescriptor[0];
-        String[] facets = new String[1];
-        facets[0] = "child";
-        dtd = new DocumentTypeDescriptor("Parent", "Child", schemas, facets);
-        schemaManagerImpl.registerDocumentType(dtd);
-
-        facets = new String[2];
-        facets[0] = "parent1";
-        facets[1] = "parent2";
-        dtd = new DocumentTypeDescriptor("Document", "Parent", schemas, facets);
-        schemaManagerImpl.registerDocumentType(dtd);
-
         Set<String> tff = schemaManager.getDocumentTypeNamesForFacet("parent1");
         assertNotNull(tff);
         assertEquals(2, tff.size());
@@ -206,20 +167,8 @@ public class TestSchemaManager {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-type-inheritance-reversed.xml")
     public void testInheritanceCacheReversedRegistration() {
-        SchemaManagerImpl schemaManagerImpl = (SchemaManagerImpl) schemaManager;
-        SchemaDescriptor[] schemas = new SchemaDescriptor[0];
-        DocumentTypeDescriptor dtd;
-
-        dtd = new DocumentTypeDescriptor("Parent", "Child", schemas, new String[0]);
-        schemaManagerImpl.registerDocumentType(dtd);
-
-        dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT, "Parent", schemas, new String[0]);
-        schemaManagerImpl.registerDocumentType(dtd);
-
-        dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT, "TopLevel", schemas, new String[0]);
-        schemaManagerImpl.registerDocumentType(dtd);
-
         checkInheritanceCache();
     }
 
@@ -377,12 +326,12 @@ public class TestSchemaManager {
     @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml")
     public void testHasSuperType() {
 
-        assertTrue(schemaManager.hasSuperType("Document", "Document"));
-        assertTrue(schemaManager.hasSuperType("myDoc", "Document"));
+        assertTrue(schemaManager.hasSuperType(TypeConstants.DOCUMENT, TypeConstants.DOCUMENT));
+        assertTrue(schemaManager.hasSuperType("myDoc", TypeConstants.DOCUMENT));
         assertTrue(schemaManager.hasSuperType("myDoc3", "myDoc2"));
 
         assertFalse(schemaManager.hasSuperType("myDoc", null));
-        assertFalse(schemaManager.hasSuperType(null, "Document"));
+        assertFalse(schemaManager.hasSuperType(null, TypeConstants.DOCUMENT));
         assertFalse(schemaManager.hasSuperType("myDoc4", "myDoc2"));
     }
 

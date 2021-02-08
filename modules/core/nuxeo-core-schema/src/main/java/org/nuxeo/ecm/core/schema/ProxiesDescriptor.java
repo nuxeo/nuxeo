@@ -18,31 +18,33 @@
  */
 package org.nuxeo.ecm.core.schema;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Repository proxies configuration descriptor.
  */
 @XObject("proxies")
+@XRegistry
 public class ProxiesDescriptor {
 
-    @XNode("@type")
+    protected static final String DEFAULT_TYPE = "*";
+
+    @XNode(value = "@type", defaultAssignment = DEFAULT_TYPE)
+    @XRegistryId
     private String type;
 
-    @XNodeList(value = "schema@name", type = HashSet.class, componentType = String.class)
-    private Set<String> schemas = new HashSet<>(0);
-
-    /* empty constructor needed by XMap */
-    public ProxiesDescriptor() {
-    }
+    @XNodeList(value = "schema@name", type = LinkedHashSet.class, componentType = String.class)
+    private Set<String> schemas = new LinkedHashSet<>(0);
 
     public String getType() {
-        return type == null ? "*" : type;
+        return type;
     }
 
     public Set<String> getSchemas() {

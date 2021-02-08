@@ -19,14 +19,12 @@
 
 package org.nuxeo.ecm.core.schema;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XMerge;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Document Type Descriptor.
@@ -40,9 +38,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("doctype")
+@XRegistry(merge = false)
 public class DocumentTypeDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNodeList(value = "schema", type = SchemaDescriptor[].class, componentType = SchemaDescriptor.class)
@@ -57,7 +57,8 @@ public class DocumentTypeDescriptor {
     @XNode("prefetch")
     public String prefetch;
 
-    @XNode("@append")
+    @XNode(value = XMerge.MERGE, fallback = "@append")
+    @XMerge(defaultAssignment = false) // compat
     public boolean append = false;
 
     /**
@@ -74,95 +75,9 @@ public class DocumentTypeDescriptor {
     @XNodeList(value = "subtypes-forbidden/type", type = String[].class, componentType = String.class)
     public String[] forbiddenSubtypes = new String[0];
 
-    public DocumentTypeDescriptor() {
-    }
-
-    public DocumentTypeDescriptor(String superTypeName, String name, SchemaDescriptor[] schemas, String[] facets) {
-        this.name = name;
-        this.superTypeName = superTypeName;
-        this.schemas = schemas;
-        this.facets = facets;
-    }
-
-    public DocumentTypeDescriptor(String superTypeName, String name, SchemaDescriptor[] schemas, String[] facets,
-            String[] subtypes, String[] forbiddenSubtypes) {
-        this(superTypeName, name, schemas, facets);
-        this.subtypes = subtypes;
-        this.forbiddenSubtypes = forbiddenSubtypes;
-    }
-
     @Override
     public String toString() {
         return "DocType: " + name;
     }
 
-    @Override
-    public DocumentTypeDescriptor clone() {
-        DocumentTypeDescriptor clone = new DocumentTypeDescriptor();
-        clone.name = name;
-        clone.schemas = schemas;
-        clone.superTypeName = superTypeName;
-        clone.facets = facets;
-        clone.prefetch = prefetch;
-        clone.append = append;
-        clone.special = special;
-        clone.subtypes = subtypes;
-        clone.forbiddenSubtypes = forbiddenSubtypes;
-        return clone;
-    }
-
-    public DocumentTypeDescriptor merge(DocumentTypeDescriptor other) {
-        // only merge schemas, facets and prefetch
-        if (schemas == null) {
-            schemas = other.schemas;
-        } else {
-            if (other.schemas != null) {
-                List<SchemaDescriptor> mergedSchemas = new ArrayList<>(Arrays.asList(schemas));
-                mergedSchemas.addAll(Arrays.asList(other.schemas));
-                schemas = mergedSchemas.toArray(new SchemaDescriptor[mergedSchemas.size()]);
-            }
-        }
-        if (facets == null) {
-            facets = other.facets;
-        } else {
-            if (other.facets != null) {
-                List<String> mergedFacets = new ArrayList<>(Arrays.asList(facets));
-                mergedFacets.addAll(Arrays.asList(other.facets));
-                facets = mergedFacets.toArray(new String[mergedFacets.size()]);
-            }
-        }
-        if (prefetch == null) {
-            prefetch = other.prefetch;
-        } else {
-            if (other.prefetch != null) {
-                prefetch = prefetch + " " + other.prefetch;
-            }
-        }
-
-        // update supertype
-        if (StringUtils.isEmpty(superTypeName) && StringUtils.isNotEmpty(other.superTypeName)) {
-            superTypeName = other.superTypeName;
-        }
-
-        // inherit the exclusion from copy
-        special = special == null ? other.special : special;
-
-        // merge subtypes
-        if (subtypes == null) {
-            subtypes = other.subtypes;
-        } else if (other.subtypes != null) {
-            List<String> mergedTypes = new ArrayList<>(Arrays.asList(subtypes));
-            mergedTypes.addAll(Arrays.asList(other.subtypes));
-            subtypes = mergedTypes.toArray(new String[mergedTypes.size()]);
-        }
-        if (forbiddenSubtypes == null) {
-            forbiddenSubtypes = other.forbiddenSubtypes;
-        } else if (other.forbiddenSubtypes != null) {
-            List<String> mergedTypes = new ArrayList<>(Arrays.asList(forbiddenSubtypes));
-            mergedTypes.addAll(Arrays.asList(other.forbiddenSubtypes));
-            forbiddenSubtypes = mergedTypes.toArray(new String[mergedTypes.size()]);
-        }
-
-        return this;
-    }
 }

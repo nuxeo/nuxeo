@@ -57,6 +57,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -66,6 +67,9 @@ public class TestExportImportZipArchive {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     DocumentModel rootDocument;
 
@@ -142,12 +146,8 @@ public class TestExportImportZipArchive {
         session.save();
         assertEquals(0, session.getChildren(session.getRootDocument().getRef()).size());
 
-        //NXP-14218: do not fail if a facet becomes unknown
-        SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
-        FacetDescriptor fd = schemaManager.getFacetDescriptor("Invoice");
-        schemaManager.unregisterFacet(fd);
-        // Recompute available facets
-        schemaManager.recomputeDynamicFacets();
+        // NXP-14218: do not fail if a facet becomes unknown
+        hotDeployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/import-facet-remove.xml");
 
         // reimport
         reader = new NuxeoArchiveReader(archive);

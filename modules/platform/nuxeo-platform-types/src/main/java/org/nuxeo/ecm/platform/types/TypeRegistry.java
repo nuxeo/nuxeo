@@ -26,21 +26,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
+import org.apache.xerces.dom.DocumentImpl;
 import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.DOMHelper;
 import org.nuxeo.common.xmap.XAnnotatedObject;
+import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.registry.MapRegistry;
+import org.nuxeo.ecm.core.schema.DocTypeRegistry;
 import org.nuxeo.ecm.core.schema.DocumentTypeDescriptor;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
+import org.nuxeo.ecm.core.schema.TypeService;
 import org.nuxeo.runtime.api.Framework;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class TypeRegistry extends MapRegistry {
 
-    protected Map<String, DocumentTypeDescriptor> dtds = new ConcurrentHashMap<>();
+    protected static XAnnotatedObject xCoreType;
+
+    static {
+        XMap xmap = new XMap();
+        xmap.register(DocumentTypeDescriptor.class);
+        xCoreType = xmap.getObject(DocumentTypeDescriptor.class);
+    }
+
+    @Override
+    public void register(Context ctx, XAnnotatedObject xObject, Element element, String tag) {
+        super.register(ctx, xObject, element, tag);
+        registerCoreContribution(ctx, element, tag);
+    }
+
+    @Override
+    public void unregister(String tag) {
+        super.unregister(tag);
+        getCoreRegistry().unregister(tag);
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -52,17 +76,7 @@ public class TypeRegistry extends MapRegistry {
         return (T) merged;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
-        Type type = super.doRegister(ctx, xObject, element, extensionId);
-        if (type == null) {
-            removeCoreContribution(computeId(ctx, xObject, element));
-        } else {
-            updateCoreContribution(type.getId(), type);
-        }
-        return (T) type;
-    }
+    // custom API
 
     public boolean hasType(String id) {
         return getContribution(id).isPresent();
@@ -113,40 +127,63 @@ public class TypeRegistry extends MapRegistry {
         return res;
     }
 
-    /**
-     * @since 8.4
-     */
-    protected void updateCoreContribution(String id, Type contrib) {
-        SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
-
-        // if there's already a core contribution, unregister it and register a new one
-        if (dtds.containsKey(id)) {
-            schemaManager.unregisterDocumentType(dtds.get(id));
-            dtds.remove(id);
-        }
-
-        DocumentTypeDescriptor dtd = new DocumentTypeDescriptor();
-        dtd.name = contrib.getId();
-        dtd.subtypes = contrib.getAllowedSubTypes().keySet().toArray(new String[contrib.getAllowedSubTypes().size()]);
-        dtd.forbiddenSubtypes = contrib.getDeniedSubTypes();
-        dtd.append = true;
-
-        // only make a core contrib if there are changes on subtypes
-        if (dtd.subtypes.length > 0 || dtd.forbiddenSubtypes.length > 0) {
-            dtds.put(id, dtd);
-            schemaManager.registerDocumentType(dtd);
-        }
+    protected DocTypeRegistry getCoreRegistry() {
+        return (DocTypeRegistry) Framework.getRuntime()
+                                          .getComponentManager()
+                                          .getExtensionPointRegistry(TypeService.COMPONENT_NAME, TypeService.XP_DOCTYPE)
+                                          .orElseThrow(() -> new IllegalArgumentException(
+                                                  String.format("Unknown registry for extension point '%s--%s'",
+                                                          TypeService.COMPONENT_NAME, TypeService.XP_DOCTYPE)));
     }
 
     /**
      * @since 8.4
      */
-    protected void removeCoreContribution(String id) {
-        if (dtds.containsKey(id)) {
-            SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
-            schemaManager.unregisterDocumentType(dtds.get(id));
-            dtds.remove(id);
+    protected void registerCoreContribution(Context ctx, Element element, String tag) {
+        Node st = DOMHelper.getElementNode(element, "subtypes");
+        Node dst = DOMHelper.getElementNode(element, "deniedSubtypes");
+        if (!element.hasAttribute("id")) {
+            return;
         }
+        // forward contribution to core registry, build DOM element from scratch
+        Document xmlDoc = new DocumentImpl();
+        Element root = xmlDoc.createElement("doctype");
+        root.setAttribute("name", element.getAttribute("id"));
+        maybeCopyAttribute(element, root, "remove");
+        maybeCopyAttribute(element, root, "merge");
+        maybeCopyAttribute(element, root, "enable");
+        if (st != null) {
+            copyChildNode(xmlDoc, st, root, "subtypes", "type");
+        }
+        if (dst != null) {
+            copyChildNode(xmlDoc, dst, root, "subtypes-forbidden", "type");
+        }
+        getCoreRegistry().registerDocumentType(ctx, xCoreType, root, tag);
+    }
+
+    protected void maybeCopyAttribute(Element orig, Element target, String name) {
+        if (orig.hasAttribute(name)) {
+            target.setAttribute(name, orig.getAttribute(name));
+        }
+    }
+
+    protected void copyChildNode(Document xmlDoc, Node origChild, Element targetParent, String copyNodeName,
+            String subNodeName) {
+        Element copy = xmlDoc.createElement(copyNodeName);
+        targetParent.appendChild(copy);
+        NodeList origChildren = origChild.getChildNodes();
+        for (int i = 0; i < origChildren.getLength(); i++) {
+            Node childNode = origChildren.item(i);
+            if (subNodeName.equals(childNode.getNodeName())) {
+                cloneChildNode(xmlDoc, childNode, copy);
+            }
+        }
+    }
+
+    protected void cloneChildNode(Document xmlDoc, Node origNode, Element targetParent) {
+        Element clone = xmlDoc.createElement(origNode.getNodeName());
+        targetParent.appendChild(clone);
+        clone.appendChild(xmlDoc.createTextNode(origNode.getTextContent()));
     }
 
 }

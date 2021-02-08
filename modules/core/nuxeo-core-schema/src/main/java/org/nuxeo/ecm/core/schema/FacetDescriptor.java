@@ -23,20 +23,26 @@ import static java.lang.Boolean.FALSE;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Facet Descriptor.
  */
 @XObject("facet")
+@XRegistry(enable = false)
 public class FacetDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@perDocumentQuery")
     public Boolean perDocumentQuery;
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
     public Boolean enabled;
 
     @XNodeList(value = "schema", type = SchemaDescriptor[].class, componentType = SchemaDescriptor.class)

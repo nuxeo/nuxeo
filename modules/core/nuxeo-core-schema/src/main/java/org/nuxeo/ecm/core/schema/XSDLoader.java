@@ -35,6 +35,7 @@ import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.xmap.Context;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -178,13 +180,10 @@ public class XSDLoader {
 
             File xsd = new File(schemaManager.getSchemasDir(), importXSDSubPath);
             if (!xsd.exists()) {
-                int idx = sd.src.lastIndexOf("/");
-                importXSDSubPath = sd.src.substring(0, idx + 1) + importXSDSubPath;
-                URL url = sd.context.getLocalResource(importXSDSubPath);
-                if (url == null) {
-                    // try asking the class loader
-                    url = sd.context.getResource(importXSDSubPath);
-                }
+                var path = Path.of(sd.src.getPath());
+                importXSDSubPath = path.getParent().resolve(importXSDSubPath).toString();
+                Context ctx = sd.src.getContext();
+                URL url = ctx.getResource(importXSDSubPath);
                 if (url != null) {
                     return new InputSource(url.openStream());
                 }

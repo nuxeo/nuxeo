@@ -88,6 +88,11 @@ public class MapRegistry extends AbstractRegistry implements Registry {
         return Optional.ofNullable((T) contributions.get(id));
     }
 
+    public Set<String> getDisabledContributions() {
+        checkInitialized();
+        return Collections.unmodifiableSet(disabled);
+    }
+
     protected String computeId(Context ctx, XAnnotatedObject xObject, Element element) {
         String id = (String) xObject.getRegistryId().getValue(ctx, element);
         if (id == null) {
