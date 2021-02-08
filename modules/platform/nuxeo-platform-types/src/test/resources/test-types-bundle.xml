@@ -50,6 +50,22 @@
       </subtypes>
     </type>
 
+    <type id="MyDocType3">
+      <label>Original doctype3</label>
+      <icon>type icon</icon>
+      <default-view>default_view</default-view>
+      <subtypes>
+        <type>MyOtherDocType</type>
+      </subtypes>
+      <views>
+        <view id="edit_detail" value="edit_detail_view" />
+        <view id="metadata" value="metadata_view" />
+      </views>
+      <layouts mode="any">
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
+
     <type id="MyOtherDocType">
       <label>initial alternative doc type</label>
       <icon>initial icon</icon>

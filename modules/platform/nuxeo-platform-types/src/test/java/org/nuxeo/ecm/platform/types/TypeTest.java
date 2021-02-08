@@ -66,7 +66,7 @@ public class TypeTest {
     @Test
     public void testTypesExtensionPoint() {
         Collection<Type> types = getTypeService().getTypeRegistry().getTypes();
-        assertEquals(6, types.size());
+        assertEquals(7, types.size());
 
         Type type = getTypeService().getTypeRegistry().getType("MyDocType");
         assertEquals("MyDocType", type.getId());
@@ -97,7 +97,7 @@ public class TypeTest {
         assertEquals(1, cv.length);
         assertEquals("cv_3", cv[0]);
         cv = type.getContentViews("foo");
-        assertNull(cv);
+        assertEquals(0, cv.length);
     }
 
     @Test
@@ -127,15 +127,15 @@ public class TypeTest {
     }
 
     @Test
-    public void testDeploymentOverride() throws Exception {
+    public void testDeploymentMerge() throws Exception {
         Collection<Type> types = getTypeService().getTypeRegistry().getTypes();
-        assertEquals(6, types.size());
+        assertEquals(7, types.size());
+        assertNotNull(getTypeService().getTypeRegistry().getType("MyOtherDocType"));
 
         hotDeployer.deploy("org.nuxeo.ecm.platform.types:test-types-override-bundle.xml");
 
         // One removed
-        types = getTypeService().getTypeRegistry().getTypes();
-        assertEquals(6, types.size());
+        assertNull(getTypeService().getTypeRegistry().getType("MyOtherDocType"));
 
         // The Other changed
         Type type = getTypeService().getTypeRegistry().getType("MyDocType");
@@ -183,7 +183,7 @@ public class TypeTest {
         assertEquals("cv_4", cv[0]);
         assertEquals("cv_5", cv[1]);
         cv = type.getContentViews("foo");
-        assertNull(cv);
+        assertEquals(0, cv.length);
 
         Map<String, DocumentContentViews> allCvs = type.getContentViews();
         assertEquals(2, allCvs.size());
@@ -197,6 +197,30 @@ public class TypeTest {
         assertTrue(cvs[1].getShowInExportView());
         assertEquals("cv_3", cvs[2].getContentViewName());
         assertTrue(cvs[2].getShowInExportView());
+    }
+
+    @Test
+    public void testDeploymentOverride() throws Exception {
+        Type type = getTypeService().getTypeRegistry().getType("MyDocType3");
+        assertNotNull(type);
+        assertEquals("Original doctype3", type.getLabel());
+        assertEquals("type icon", type.getIcon());
+        assertEquals("default_view", type.getDefaultView());
+        assertEquals(Set.of("MyOtherDocType"), type.getAllowedSubTypes().keySet());
+        assertEquals("edit_detail_view", type.getView("edit_detail").getValue());
+        assertEquals("metadata_view", type.getView("metadata").getValue());
+        assertEquals("dublincore", type.getLayouts(BuiltinModes.ANY).clone()[0]);
+
+        hotDeployer.deploy("org.nuxeo.ecm.platform.types:test-types-override-bundle.xml");
+
+        type = getTypeService().getTypeRegistry().getType("MyDocType3");
+        assertNotNull(type);
+        assertEquals("Overridden doctype3", type.getLabel());
+        assertNull(type.getIcon());
+        assertNull(type.getDefaultView());
+        assertEquals(0, type.getAllowedSubTypes().size());
+        assertEquals(0, type.getViews().length);
+        assertEquals(0, type.getLayouts().size());
     }
 
     @Test

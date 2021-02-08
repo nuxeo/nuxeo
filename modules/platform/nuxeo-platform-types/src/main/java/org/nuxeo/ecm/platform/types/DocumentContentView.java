@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.types;
 
-import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -28,10 +27,10 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("contentView")
 public class DocumentContentView {
 
-    @XNode("@showInExportView")
-    protected boolean showInExportView = true;
+    @XNode(value = "@showInExportView", defaultAssignment = "true")
+    protected boolean showInExportView;
 
-    @XContent
+    @XNode
     protected String contentView;
 
     public boolean getShowInExportView() {
@@ -39,23 +38,7 @@ public class DocumentContentView {
     }
 
     public String getContentViewName() {
-        if (contentView != null) {
-            return contentView.trim();
-        }
-        return null;
-    }
-
-    /**
-     * Clone to handle hot reload
-     *
-     * @since 5.6
-     */
-    @Override
-    public DocumentContentView clone() {
-        DocumentContentView clone = new DocumentContentView();
-        clone.showInExportView = getShowInExportView();
-        clone.contentView = getContentViewName();
-        return clone;
+        return contentView;
     }
 
 }

@@ -31,6 +31,10 @@
       </contentViews>
     </type>
 
+    <type id="MyDocType3" merge="false">
+      <label>Overridden doctype3</label>
+    </type>
+
     <type id="MyOtherDocType" remove="true">
       <label>removed alternative doc type</label>
     </type>
