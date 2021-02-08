@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.keycloak.adapters.AdapterDeploymentContext;
 import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.KeycloakDeployment;
+import org.keycloak.adapters.KeycloakDeploymentBuilder;
 import org.keycloak.representations.AccessToken;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
@@ -84,7 +85,7 @@ public class KeycloakAuthenticationPlugin implements NuxeoAuthenticationPlugin,
 
         KeycloakDeployment kd;
         try (InputStream is = loadKeycloakConfigFile()) {
-            kd = KeycloakNuxeoDeployment.build(is);
+            kd = KeycloakDeploymentBuilder.build(is);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
