@@ -5,12 +5,17 @@
     <!-- ================================= -->
     <!-- Preserve messages in a local file -->
     <!-- ================================= -->
-    <RollingFile name="FILE" fileName="${sys:nuxeo.log.dir}/server.log"
+    <RollingFile name="FILE-ORIGINAL" fileName="${sys:nuxeo.log.dir}/server.log"
                  filePattern="${sys:nuxeo.log.dir}/server-%d{yyyy-MM-dd}.log.gz" append="true">
       <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />
       <CronTriggeringPolicy schedule="0 0 0 * * ?" evaluateOnStartup="true" /> <!-- Rollover at midnight every day -->
       <DefaultRolloverStrategy />
     </RollingFile>
+
+    <Rewrite name="FILE">
+      <AppenderRef ref="FILE-ORIGINAL"/>
+      <MaskSensitiveData />
+    </Rewrite>
 
     <!-- ============================= -->
     <!-- Gather errors in a local file -->
@@ -35,10 +40,15 @@
     <!-- ============================== -->
     <!-- Append messages to the console -->
     <!-- ============================== -->
-    <Console name="CONSOLE" target="SYSTEM_OUT">
+    <Console name="CONSOLE-ORIGINAL" target="SYSTEM_OUT">
       <ThresholdFilter level="INFO" onMatch="ACCEPT" />
       <PatternLayout pattern="%d{ISO8601} %-5p [%c{1}] %m%n" />
     </Console>
+
+    <Rewrite name="CONSOLE">
+      <AppenderRef ref="CONSOLE-ORIGINAL"/>
+      <MaskSensitiveData />
+    </Rewrite>
 
     <File name="CLASSLOADER" fileName="${sys:nuxeo.log.dir}/classloader.log" append="false">
       <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />

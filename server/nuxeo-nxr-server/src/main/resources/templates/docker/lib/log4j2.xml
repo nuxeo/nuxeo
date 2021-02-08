@@ -5,10 +5,15 @@
     <!-- ============================== -->
     <!-- Append messages to the console -->
     <!-- ============================== -->
-    <Console name="CONSOLE" target="SYSTEM_OUT">
+    <Console name="CONSOLE-ORIGINAL" target="SYSTEM_OUT">
       <ThresholdFilter level="INFO" onMatch="ACCEPT" />
       <PatternLayout pattern="%d{ISO8601} %-5p [%c{1}] %m%n" />
     </Console>
+
+    <Rewrite name="CONSOLE">
+      <AppenderRef ref="CONSOLE-ORIGINAL"/>
+      <MaskSensitiveData />
+    </Rewrite>
 
     <!-- Clustering logging -->
     <!-- Uncomment the following to redirect the org.jgroups and org.jboss.ha categories to a cluster.log file.
