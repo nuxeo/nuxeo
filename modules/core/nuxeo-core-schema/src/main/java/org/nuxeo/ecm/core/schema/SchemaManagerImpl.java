@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Anahide Tchertchian
  */
 package org.nuxeo.ecm.core.schema;
 
@@ -51,6 +52,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.xmap.registry.SingleRegistry;
 import org.nuxeo.ecm.core.schema.types.AnyType;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
@@ -73,30 +75,7 @@ public class SchemaManagerImpl implements SchemaManager {
 
     private static final Logger log = LogManager.getLogger(SchemaManagerImpl.class);
 
-    /**
-     * Whether there have been changes to the registered schemas, facets or document types that require recomputation of
-     * the effective ones.
-     */
-    // volatile to use double-check idiom
-    protected volatile boolean dirty = true;
-
-    /** Basic type registry. */
-    protected Map<String, Type> types = new HashMap<>();
-
-    /** All the registered configurations (prefetch). */
-    protected List<TypeConfiguration> allConfigurations = new ArrayList<>();
-
-    /** All the registered schemas. */
-    protected List<SchemaBindingDescriptor> allSchemas = new ArrayList<>();
-
-    /** All the registered facets. */
-    protected List<FacetDescriptor> allFacets = new ArrayList<>();
-
-    /** All the registered document types. */
-    protected List<DocumentTypeDescriptor> allDocumentTypes = new ArrayList<>();
-
-    /** All the registered proxy descriptors. */
-    protected List<ProxiesDescriptor> allProxies = new ArrayList<>();
+    protected static final TypeConfiguration DEFAULT_CONFIGURATION = new TypeConfiguration();
 
     /** Effective prefetch info. */
     protected PrefetchInfo prefetchInfo;
@@ -110,8 +89,11 @@ public class SchemaManagerImpl implements SchemaManager {
      */
     protected boolean allowVersionWriteForDublinCore;
 
+    /** Basic type registry. */
+    protected Map<String, Type> types = new LinkedHashMap<>();
+
     /** Effective schemas. */
-    protected Map<String, Schema> schemas = new HashMap<>();
+    protected Map<String, Schema> schemas = new LinkedHashMap<>();
 
     protected Set<String> disabledSchemas = new HashSet<>();
 
@@ -119,14 +101,14 @@ public class SchemaManagerImpl implements SchemaManager {
 
     /** Effective facets. */
     // public for tests
-    public Map<String, CompositeType> facets = new HashMap<>();
+    public Map<String, CompositeType> facets = new LinkedHashMap<>();
 
     protected Set<String> noPerDocumentQueryFacets = new HashSet<>();
 
     protected Set<String> disabledFacets = new HashSet<>();
 
     /** Effective document types. */
-    protected Map<String, DocumentTypeImpl> documentTypes = new HashMap<>();
+    protected Map<String, DocumentTypeImpl> documentTypes = new LinkedHashMap<>();
 
     protected Set<String> specialDocumentTypes = new HashSet<>();
 
@@ -138,7 +120,7 @@ public class SchemaManagerImpl implements SchemaManager {
     protected List<Schema> proxySchemas = new ArrayList<>();
 
     /** Effective proxy schema names. */
-    protected Set<String> proxySchemaNames = new HashSet<>();
+    protected Set<String> proxySchemaNames = new LinkedHashSet<>();
 
     /** Fields computed lazily. */
     private Map<String, Field> fields = new ConcurrentHashMap<>();
@@ -146,15 +128,6 @@ public class SchemaManagerImpl implements SchemaManager {
     private File schemaDir;
 
     public static final String SCHEMAS_DIR_NAME = "schemas";
-
-    /**
-     * Default used for clearComplexPropertyBeforeSet if there is no XML configuration found.
-     *
-     * @since 9.3
-     */
-    public static final boolean CLEAR_COMPLEX_PROP_BEFORE_SET_DEFAULT = true;
-
-    protected List<Runnable> recomputeCallbacks;
 
     /**
      * @since 9.2
@@ -177,14 +150,23 @@ public class SchemaManagerImpl implements SchemaManager {
      */
     protected Map<String, Map<String, PropertyDescriptor>> propertyCharacteristics = Map.of();
 
-    public SchemaManagerImpl() {
-        recomputeCallbacks = new ArrayList<>();
+    public SchemaManagerImpl(SingleRegistry configRegistry, SchemaRegistry schemaRegistry,
+            DocTypeRegistry doctypeRegistry) {
         schemaDir = new File(Environment.getDefault().getTemp(), SCHEMAS_DIR_NAME);
         if (!schemaDir.mkdirs() && !schemaDir.exists()) {
             throw new RuntimeServiceException("Unable to create schemas directory");
         }
         clearSchemaDir();
         registerBuiltinTypes();
+
+        computeConfiguration((TypeConfiguration) configRegistry.getContribution().orElse(DEFAULT_CONFIGURATION));
+        this.disabledSchemas = schemaRegistry.getDisabledSchemas();
+        computeSchemas(schemaRegistry.getSchemas());
+        this.disabledFacets = doctypeRegistry.getDisabledFacets();
+        computeFacets(doctypeRegistry.getFacets()); // depends on schemas
+        computeDocumentTypes(doctypeRegistry.getDocumentTypes()); // depends on schemas and facets
+        computeProxies(doctypeRegistry.getProxies()); // depends on schemas
+        computePropertyCharacteristics(schemaRegistry.getProperties());
     }
 
     protected void clearSchemaDir() {
@@ -220,205 +202,26 @@ public class SchemaManagerImpl implements SchemaManager {
         return types.values();
     }
 
-    public synchronized void registerConfiguration(TypeConfiguration config) {
-        allConfigurations.add(config);
-        dirty = true;
+    protected void computeConfiguration(TypeConfiguration config) {
+        log.info("Using global prefetch: {}", config.prefetchInfo);
         if (isNotBlank(config.prefetchInfo)) {
-            log.info("Registered global prefetch: {}", config.prefetchInfo);
+            prefetchInfo = new PrefetchInfo(config.prefetchInfo);
         }
-        if (config.clearComplexPropertyBeforeSet != null) {
-            log.info("Registered clearComplexPropertyBeforeSet: {}", config.clearComplexPropertyBeforeSet);
-        }
-        if (config.allowVersionWriteForDublinCore != null) {
-            log.info("Registered allowVersionWriteForDublinCore: {}", config.allowVersionWriteForDublinCore);
-        }
-    }
-
-    public synchronized void unregisterConfiguration(TypeConfiguration config) {
-        if (allConfigurations.remove(config)) {
-            dirty = true;
-            if (isNotBlank(config.prefetchInfo)) {
-                log.info("Unregistered global prefetch: {}", config.prefetchInfo);
-            }
-            if (config.clearComplexPropertyBeforeSet != null) {
-                log.info("Unregistered clearComplexPropertyBeforeSet: {}", config.clearComplexPropertyBeforeSet);
-            }
-            if (config.allowVersionWriteForDublinCore != null) {
-                log.info("Unregistered allowVersionWriteForDublinCore: {}", config.allowVersionWriteForDublinCore);
-            }
-        } else {
-            log.error("Unregistering unknown configuration: {}", config);
-        }
-    }
-
-    public synchronized void registerSchema(SchemaBindingDescriptor sd) {
-        allSchemas.add(sd);
-        dirty = true;
-        log.info("Registered schema: {}", sd.name);
-    }
-
-    public synchronized void unregisterSchema(SchemaBindingDescriptor sd) {
-        if (allSchemas.remove(sd)) {
-            dirty = true;
-            log.info("Unregistered schema: {}", sd.name);
-        } else {
-            log.error("Unregistering unknown schema: {}", sd.name);
-        }
-    }
-
-    public synchronized void registerFacet(FacetDescriptor fd) {
-        allFacets.removeIf(f -> f.getName().equals(fd.getName()));
-        allFacets.add(fd);
-        dirty = true;
-        log.info("Registered facet: {}", fd.name);
-    }
-
-    public synchronized void unregisterFacet(FacetDescriptor fd) {
-        if (allFacets.remove(fd)) {
-            dirty = true;
-            log.info("Unregistered facet: {}", fd.name);
-        } else {
-            log.error("Unregistering unknown facet: {}", fd.name);
-        }
-    }
-
-    public synchronized void registerDocumentType(DocumentTypeDescriptor dtd) {
-        allDocumentTypes.add(dtd);
-        dirty = true;
-        log.info("Registered document type: {}", dtd.name);
-    }
-
-    public synchronized void unregisterDocumentType(DocumentTypeDescriptor dtd) {
-        if (allDocumentTypes.remove(dtd)) {
-            dirty = true;
-            log.info("Unregistered document type: {}", dtd.name);
-        } else {
-            log.error("Unregistering unknown document type: {}", dtd.name);
-        }
-    }
-
-    // for tests
-    public DocumentTypeDescriptor getDocumentTypeDescriptor(String name) {
-        DocumentTypeDescriptor last = null;
-        for (DocumentTypeDescriptor dtd : allDocumentTypes) {
-            if (dtd.name.equals(name)) {
-                last = dtd;
-            }
-        }
-        return last;
-    }
-
-    // NXP-14218: used for tests, to be able to unregister it
-    public FacetDescriptor getFacetDescriptor(String name) {
-        return allFacets.stream().filter(f -> f.getName().equals(name)).reduce((a, b) -> b).orElse(null);
-    }
-
-    // NXP-14218: used for tests, to recompute available facets
-    public void recomputeDynamicFacets() {
-        recomputeFacets();
-        dirty = false;
-    }
-
-    public synchronized void registerProxies(ProxiesDescriptor pd) {
-        allProxies.add(pd);
-        dirty = true;
-        log.info("Registered proxies descriptor for schemas: {}", pd::getSchemas);
-    }
-
-    public synchronized void unregisterProxies(ProxiesDescriptor pd) {
-        if (allProxies.remove(pd)) {
-            dirty = true;
-            log.info("Unregistered proxies descriptor for schemas: {}", pd::getSchemas);
-        } else {
-            log.error("Unregistering unknown proxies descriptor for schemas: {}", pd::getSchemas);
-        }
-    }
-
-    /**
-     * Checks if something has to be recomputed if a dynamic register/unregister happened.
-     */
-    // public for tests
-    public void checkDirty() {
-        // variant of double-check idiom
-        if (!dirty) {
-            return;
-        }
-        synchronized (this) {
-            if (!dirty) {
-                return;
-            }
-            // call recompute() synchronized
-            recompute();
-            dirty = false;
-            executeRecomputeCallbacks();
-        }
-    }
-
-    /**
-     * Recomputes effective registries for schemas, facets and document types.
-     */
-    protected void recompute() {
-        recomputeConfiguration();
-        recomputeSchemas();
-        recomputeFacets(); // depend on schemas
-        recomputeDocumentTypes(); // depend on schemas and facets
-        recomputeProxies(); // depend on schemas
-        fields.clear(); // re-filled lazily
-    }
-
-    /*
-     * ===== Configuration =====
-     */
-
-    protected void recomputeConfiguration() {
-        prefetchInfo = null;
-        clearComplexPropertyBeforeSet = CLEAR_COMPLEX_PROP_BEFORE_SET_DEFAULT;
-        allowVersionWriteForDublinCore = false; // default in the absence of any XML config
-        for (TypeConfiguration tc : allConfigurations) {
-            if (isNotBlank(tc.prefetchInfo)) {
-                prefetchInfo = new PrefetchInfo(tc.prefetchInfo);
-            }
-            if (tc.clearComplexPropertyBeforeSet != null) {
-                clearComplexPropertyBeforeSet = tc.clearComplexPropertyBeforeSet.booleanValue();
-            }
-            if (tc.allowVersionWriteForDublinCore != null) {
-                allowVersionWriteForDublinCore = tc.allowVersionWriteForDublinCore.booleanValue();
-            }
-        }
+        log.info("Using clearComplexPropertyBeforeSet: {}", config.clearComplexPropertyBeforeSet);
+        clearComplexPropertyBeforeSet = config.clearComplexPropertyBeforeSet;
+        log.info("Using allowVersionWriteForDublinCore: {}", config.allowVersionWriteForDublinCore);
+        allowVersionWriteForDublinCore = config.allowVersionWriteForDublinCore;
     }
 
     /*
      * ===== Schemas =====
      */
 
-    protected void recomputeSchemas() {
+    protected void computeSchemas(Map<String, SchemaBindingDescriptor> resolvedSchemas) {
         schemas.clear();
-        disabledSchemas.clear();
         prefixToSchema.clear();
         RuntimeException errors = new RuntimeException("Cannot load schemas");
-        // on reload, don't take confuse already-copied schemas with those contributed
-        clearSchemaDir();
-        // resolve which schemas to actually load depending on overrides
-        Map<String, SchemaBindingDescriptor> resolvedSchemas = new LinkedHashMap<>();
-        for (SchemaBindingDescriptor sd : allSchemas) {
-            String name = sd.name;
-            if (Boolean.FALSE.equals(sd.enabled)) {
-                disabledSchemas.add(name);
-                resolvedSchemas.remove(name);
-                log.debug("Disabling schema: {}", name);
-                continue;
-            }
-            if (resolvedSchemas.containsKey(name)) {
-                if (!sd.override) {
-                    log.warn("Schema {} is redefined but will not be overridden", name);
-                    continue;
-                }
-                log.debug("Re-registering schema: {} from {}", name, sd.file);
-            } else {
-                log.debug("Registering schema: {} from {}", name, sd.file);
-            }
-            resolvedSchemas.put(name, sd);
-        }
+
         for (SchemaBindingDescriptor sd : resolvedSchemas.values()) {
             try {
                 copySchema(sd);
@@ -439,15 +242,10 @@ public class SchemaManagerImpl implements SchemaManager {
     }
 
     protected void copySchema(SchemaBindingDescriptor sd) throws IOException {
-        if (sd.src == null || sd.src.length() == 0) {
-            // INLINE Schemas ARE NOT YET IMPLEMENTED!
+        if (sd.src == null) {
             return;
         }
-        URL url = sd.context.getLocalResource(sd.src);
-        if (url == null) {
-            // try asking the class loader
-            url = sd.context.getResource(sd.src);
-        }
+        URL url = sd.src.toURL();
         if (url == null) {
             log.error("XSD Schema not found: {}", sd.src);
             return;
@@ -480,19 +278,16 @@ public class SchemaManagerImpl implements SchemaManager {
 
     @Override
     public Schema[] getSchemas() {
-        checkDirty();
         return new ArrayList<>(schemas.values()).toArray(new Schema[0]);
     }
 
     @Override
     public Schema getSchema(String name) {
-        checkDirty();
         return schemas.get(name);
     }
 
     @Override
     public Schema getSchemaFromPrefix(String schemaPrefix) {
-        checkDirty();
         return prefixToSchema.get(schemaPrefix);
     }
 
@@ -502,7 +297,6 @@ public class SchemaManagerImpl implements SchemaManager {
     @Override
     @Deprecated(since = "11.1")
     public Schema getSchemaFromURI(String schemaURI) {
-        checkDirty();
         return schemas.values()
                       .stream()
                       .filter(schema -> schema.getNamespace().uri.equals(schemaURI))
@@ -514,24 +308,15 @@ public class SchemaManagerImpl implements SchemaManager {
      * ===== Facets =====
      */
 
-    protected void recomputeFacets() {
+    protected void computeFacets(List<FacetDescriptor> allFacets) {
         facets.clear();
         noPerDocumentQueryFacets.clear();
-        disabledFacets.clear();
         for (FacetDescriptor fd : allFacets) {
-            recomputeFacet(fd);
-        }
-    }
-
-    protected void recomputeFacet(FacetDescriptor fd) {
-        Set<String> fdSchemas = SchemaDescriptor.getSchemaNames(fd.schemas);
-        registerFacet(fd.name, fdSchemas);
-        if (Boolean.FALSE.equals(fd.perDocumentQuery)) {
-            noPerDocumentQueryFacets.add(fd.name);
-        }
-        if (Boolean.FALSE.equals(fd.enabled)) {
-            disabledFacets.add(fd.name);
-            facets.remove(fd.name);
+            Set<String> fdSchemas = SchemaDescriptor.getSchemaNames(fd.schemas);
+            registerFacet(fd.name, fdSchemas);
+            if (Boolean.FALSE.equals(fd.perDocumentQuery)) {
+                noPerDocumentQueryFacets.add(fd.name);
+            }
         }
     }
 
@@ -558,19 +343,16 @@ public class SchemaManagerImpl implements SchemaManager {
 
     @Override
     public CompositeType[] getFacets() {
-        checkDirty();
         return new ArrayList<>(facets.values()).toArray(new CompositeType[facets.size()]);
     }
 
     @Override
     public CompositeType getFacet(String name) {
-        checkDirty();
         return facets.get(name);
     }
 
     @Override
     public Set<String> getNoPerDocumentQueryFacets() {
-        checkDirty();
         return Collections.unmodifiableSet(noPerDocumentQueryFacets);
     }
 
@@ -578,18 +360,7 @@ public class SchemaManagerImpl implements SchemaManager {
      * ===== Document types =====
      */
 
-    protected void recomputeDocumentTypes() {
-        // effective descriptors with override
-        // linked hash map to keep order for reproducibility
-        Map<String, DocumentTypeDescriptor> dtds = new LinkedHashMap<>();
-        for (DocumentTypeDescriptor dtd : allDocumentTypes) {
-            String name = dtd.name;
-            DocumentTypeDescriptor newDtd = dtd;
-            if (dtd.append && dtds.containsKey(dtd.name)) {
-                newDtd = mergeDocumentTypeDescriptors(dtd, dtds.get(name));
-            }
-            dtds.put(name, newDtd);
-        }
+    protected void computeDocumentTypes(Map<String, DocumentTypeDescriptor> dtds) {
         // recompute all types, parents first
         documentTypes.clear();
         documentTypesExtending.clear();
@@ -613,11 +384,6 @@ public class SchemaManagerImpl implements SchemaManager {
                                    .filter(d -> Boolean.TRUE.equals(d.special))
                                    .map(d -> d.name)
                                    .collect(Collectors.toSet());
-    }
-
-    protected DocumentTypeDescriptor mergeDocumentTypeDescriptors(DocumentTypeDescriptor src,
-            DocumentTypeDescriptor dst) {
-        return dst.clone().merge(src);
     }
 
     protected DocumentType recomputeDocumentType(String name, Set<String> stack,
@@ -724,31 +490,26 @@ public class SchemaManagerImpl implements SchemaManager {
 
     @Override
     public DocumentType getDocumentType(String name) {
-        checkDirty();
         return documentTypes.get(name);
     }
 
     @Override
     public Set<String> getDocumentTypeNamesForFacet(String facet) {
-        checkDirty();
         return documentTypesForFacet.get(facet);
     }
 
     @Override
     public Set<String> getDocumentTypeNamesExtending(String docTypeName) {
-        checkDirty();
         return documentTypesExtending.get(docTypeName);
     }
 
     @Override
     public DocumentType[] getDocumentTypes() {
-        checkDirty();
         return new ArrayList<DocumentType>(documentTypes.values()).toArray(new DocumentType[0]);
     }
 
     @Override
     public int getDocumentTypesCount() {
-        checkDirty();
         return documentTypes.size();
     }
 
@@ -771,15 +532,14 @@ public class SchemaManagerImpl implements SchemaManager {
      * ===== Proxies =====
      */
 
-    protected void recomputeProxies() {
-        List<Schema> list = new ArrayList<>();
-        Set<String> nameSet = new HashSet<>();
-        for (ProxiesDescriptor pd : allProxies) {
-            if (!pd.getType().equals("*")) {
+    protected void computeProxies(List<ProxiesDescriptor> proxies) {
+        for (ProxiesDescriptor pd : proxies) {
+            if (!ProxiesDescriptor.DEFAULT_TYPE.equals(pd.getType())) {
                 log.error("Proxy descriptor for specific type not supported: {}", pd);
+                continue;
             }
             for (String schemaName : pd.getSchemas()) {
-                if (nameSet.contains(schemaName)) {
+                if (proxySchemaNames.contains(schemaName)) {
                     continue;
                 }
                 Schema schema = schemas.get(schemaName);
@@ -787,25 +547,21 @@ public class SchemaManagerImpl implements SchemaManager {
                     log.error("Proxy schema uses unknown schema: {}", schemaName);
                     continue;
                 }
-                list.add(schema);
-                nameSet.add(schemaName);
+                proxySchemas.add(schema);
+                proxySchemaNames.add(schemaName);
             }
         }
-        proxySchemas = list;
-        proxySchemaNames = nameSet;
     }
 
     @Override
     public List<Schema> getProxySchemas(String docType) {
         // docType unused for now
-        checkDirty();
         return new ArrayList<>(proxySchemas);
     }
 
     @Override
     public boolean isProxySchema(String schema, String docType) {
         // docType unused for now
-        checkDirty();
         return proxySchemaNames.contains(schema);
     }
 
@@ -815,7 +571,6 @@ public class SchemaManagerImpl implements SchemaManager {
 
     @Override
     public Field getField(String xpath) {
-        checkDirty();
         Field field = null;
         if (xpath != null && xpath.contains("/")) {
             // need to resolve subfields
@@ -899,35 +654,6 @@ public class SchemaManagerImpl implements SchemaManager {
         return null;
     }
 
-    public void flushPendingsRegistration() {
-        checkDirty();
-    }
-
-    /*
-     * ===== Recompute Callbacks =====
-     */
-
-    /**
-     * @since 8.10
-     */
-    public void registerRecomputeCallback(Runnable callback) {
-        recomputeCallbacks.add(callback);
-    }
-
-    /**
-     * @since 8.10
-     */
-    public void unregisterRecomputeCallback(Runnable callback) {
-        recomputeCallbacks.remove(callback);
-    }
-
-    /**
-     * @since 8.10
-     */
-    protected void executeRecomputeCallbacks() {
-        recomputeCallbacks.forEach(Runnable::run);
-    }
-
     /*
      * ===== Deprecation API =====
      */
@@ -969,7 +695,7 @@ public class SchemaManagerImpl implements SchemaManager {
     /**
      * @since 11.1
      */
-    protected synchronized void registerPropertyCharacteristics(List<PropertyDescriptor> descriptors) {
+    protected synchronized void computePropertyCharacteristics(List<PropertyDescriptor> descriptors) {
         propertyCharacteristics = descriptors.stream()
                                              .collect(groupingBy(PropertyDescriptor::getSchema,
                                                      toMap(PropertyDescriptor::getName, Function.identity())));
@@ -987,15 +713,6 @@ public class SchemaManagerImpl implements SchemaManager {
                                                    m1.putAll(m2);
                                                    return m1;
                                                })));
-    }
-
-    /**
-     * @since 11.1
-     */
-    protected synchronized void clearPropertyCharacteristics() {
-        propertyCharacteristics.clear();
-        deprecatedProperties.clear();
-        removedProperties.clear();
     }
 
     /**
@@ -1060,7 +777,6 @@ public class SchemaManagerImpl implements SchemaManager {
 
     @Override
     public Set<String> getSpecialDocumentTypes() {
-        checkDirty();
-        return specialDocumentTypes;
+        return Collections.unmodifiableSet(specialDocumentTypes);
     }
 }

@@ -134,6 +134,7 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule.IgnoreWindows;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -169,6 +170,9 @@ public class TestSQLRepositoryAPI {
 
     @Inject
     protected BulkService bulkService;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     protected CoreSession openSessionAs(String username) {
         return CoreInstance.getCoreSession(session.getRepositoryName(), username);
@@ -4197,7 +4201,7 @@ public class TestSQLRepositoryAPI {
         assertEquals("t1-rename", doc.getName());
 
         doc.setProperty("dublincore", "title", "t2");
-        DummyBeforeModificationListener.clear();;
+        DummyBeforeModificationListener.clear();
         doc = session.saveDocument(doc);
         session.save();
         assertEquals("t2-rename", doc.getName());
@@ -4206,7 +4210,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testObsoleteType() {
+    public void testObsoleteType() throws Exception {
         DocumentRef rootRef = session.getRootDocument().getRef();
         DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
         doc = session.createDocument(doc);
@@ -4217,8 +4221,7 @@ public class TestSQLRepositoryAPI {
         assertNotNull(session.getChild(rootRef, "doc"));
 
         // remove MyDocType from known types
-        DocumentTypeDescriptor dtd = ((SchemaManagerImpl) schemaManager).getDocumentTypeDescriptor("MyDocType");
-        ((SchemaManagerImpl) schemaManager).unregisterDocumentType(dtd);
+        hotDeployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-remove.xml");
 
         reopenSession();
         if (!isDBS()) {

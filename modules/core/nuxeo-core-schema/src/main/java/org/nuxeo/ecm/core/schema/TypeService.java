@@ -19,13 +19,8 @@
  */
 package org.nuxeo.ecm.core.schema;
 
-import org.nuxeo.runtime.RuntimeMessage.Level;
-import org.nuxeo.runtime.RuntimeMessage.Source;
-import org.nuxeo.runtime.RuntimeServiceException;
-import org.nuxeo.runtime.logging.DeprecationLogger;
+import org.nuxeo.common.xmap.registry.SingleRegistry;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -36,106 +31,17 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class TypeService extends DefaultComponent {
 
-    private static final String XP_SCHEMA = "schema";
+    /** @since 11.5 */
+    public static final String COMPONENT_NAME = "org.nuxeo.ecm.core.schema.TypeService";
 
-    private static final String XP_DOCTYPE = "doctype";
+    /** @since 11.5 */
+    public static final String XP_DOCTYPE = "doctype";
+
+    protected static final String XP_SCHEMA = "schema";
 
     private static final String XP_CONFIGURATION = "configuration";
 
-    private static final String XP_DEPRECATION = "deprecation";
-
     private SchemaManagerImpl schemaManager;
-
-    @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        schemaManager = new SchemaManagerImpl();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        super.deactivate(context);
-        schemaManager = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String xp, ComponentInstance component) {
-        switch (xp) {
-        case XP_DOCTYPE:
-            if (contribution instanceof DocumentTypeDescriptor) {
-                schemaManager.registerDocumentType((DocumentTypeDescriptor) contribution);
-            } else if (contribution instanceof FacetDescriptor) {
-                schemaManager.registerFacet((FacetDescriptor) contribution);
-            } else if (contribution instanceof ProxiesDescriptor) {
-                schemaManager.registerProxies((ProxiesDescriptor) contribution);
-            }
-            break;
-        case XP_SCHEMA:
-            if (contribution instanceof SchemaBindingDescriptor) {
-                // use the context of the bundle contributing the extension to load schemas
-                SchemaBindingDescriptor sbd = (SchemaBindingDescriptor) contribution;
-                sbd.context = component.getContext();
-                schemaManager.registerSchema(sbd);
-            } else if (contribution instanceof PropertyDescriptor) {
-                xp = computeSchemaExtensionPoint(contribution.getClass());
-                super.registerContribution(contribution, xp, component);
-            }
-            break;
-        case XP_CONFIGURATION:
-            schemaManager.registerConfiguration((TypeConfiguration) contribution);
-            break;
-        case XP_DEPRECATION:
-            xp = computeSchemaExtensionPoint(PropertyDescriptor.class);
-            PropertyDescriptor contrib = ((PropertyDeprecationDescriptor) contribution).toPropertyDescriptor();
-            super.registerContribution(contrib, xp, component);
-            ComponentName compName = component.getName();
-            String message = String.format(
-                    "Deprecation contribution on component: %s should now be contributed to extension point: %s ",
-                    compName, XP_SCHEMA);
-            DeprecationLogger.log(message, "11.1");
-            addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
-            break;
-        default:
-            throw new RuntimeServiceException("Unknown extension point: " + xp);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String xp, ComponentInstance component) {
-        switch (xp) {
-        case XP_DOCTYPE:
-            if (contribution instanceof DocumentTypeDescriptor) {
-                schemaManager.unregisterDocumentType((DocumentTypeDescriptor) contribution);
-            } else if (contribution instanceof FacetDescriptor) {
-                schemaManager.unregisterFacet((FacetDescriptor) contribution);
-            } else if (contribution instanceof ProxiesDescriptor) {
-                schemaManager.unregisterProxies((ProxiesDescriptor) contribution);
-            }
-            break;
-        case XP_SCHEMA:
-            if (contribution instanceof SchemaBindingDescriptor) {
-                schemaManager.unregisterSchema((SchemaBindingDescriptor) contribution);
-            } else if (contribution instanceof PropertyDescriptor) {
-                xp = computeSchemaExtensionPoint(contribution.getClass());
-                super.unregisterContribution(contribution, xp, component);
-            }
-            break;
-        case XP_CONFIGURATION:
-            schemaManager.unregisterConfiguration((TypeConfiguration) contribution);
-            break;
-        case XP_DEPRECATION:
-            xp = computeSchemaExtensionPoint(PropertyDescriptor.class);
-            PropertyDescriptor contrib = ((PropertyDeprecationDescriptor) contribution).toPropertyDescriptor();
-            super.unregisterContribution(contrib, xp, component);
-            break;
-        default:
-            throw new RuntimeServiceException("Unknown extension point: " + xp);
-        }
-    }
-
-    protected String computeSchemaExtensionPoint(Class<?> klass) {
-        return String.format("%s-%s", XP_SCHEMA, klass.getSimpleName());
-    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -149,19 +55,22 @@ public class TypeService extends DefaultComponent {
     }
 
     @Override
+    public int getApplicationStartedOrder() {
+        return -100;
+    }
+
+    @Override
     public void start(ComponentContext context) {
-        schemaManager.registerPropertyCharacteristics(
-                getDescriptors(computeSchemaExtensionPoint(PropertyDescriptor.class)));
-        schemaManager.flushPendingsRegistration();
+        SingleRegistry confReg = getExtensionPointRegistry(XP_CONFIGURATION);
+        SchemaRegistry schemaReg = getExtensionPointRegistry(XP_SCHEMA);
+        DocTypeRegistry docTypeReg = getExtensionPointRegistry(XP_DOCTYPE);
+        schemaManager = new SchemaManagerImpl(confReg, schemaReg, docTypeReg);
+
     }
 
     @Override
     public void stop(ComponentContext context) {
-        schemaManager.clearPropertyCharacteristics();
+        schemaManager = null;
     }
 
-    @Override
-    public int getApplicationStartedOrder() {
-        return -100;
-    }
 }

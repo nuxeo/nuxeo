@@ -22,24 +22,26 @@ package org.nuxeo.ecm.core.schema;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("configuration")
+@XRegistry(compatWarnOnMerge = true)
 public class TypeConfiguration {
 
     @XNode("prefetch")
-    String prefetchInfo;
+    protected String prefetchInfo;
 
-    @XNode("clearComplexPropertyBeforeSet")
-    Boolean clearComplexPropertyBeforeSet;
+    @XNode(value = "clearComplexPropertyBeforeSet", defaultAssignment = "true")
+    protected boolean clearComplexPropertyBeforeSet;
 
     /**
      * @since 10.3
      */
     @XNode("allowVersionWriteForDublinCore")
-    protected Boolean allowVersionWriteForDublinCore;
+    protected boolean allowVersionWriteForDublinCore;
 
     @Override
     public String toString() {

@@ -53,6 +53,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -69,6 +70,9 @@ public class TestExportImportZipArchiveFailure {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     protected DocumentModel workspace;
 
@@ -133,40 +137,26 @@ public class TestExportImportZipArchiveFailure {
         SchemaManagerImpl sm = (SchemaManagerImpl) schemaManager;
         DocumentTypeDescriptor dtd = null;
         FacetDescriptor fd = null;
+        // NXP-23035: do not fail if a type becomes unknown
+        hotDeployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/import-docType-remove.xml");
+        if (addFacet) {
+            // NXP-14218: do not fail if a facet becomes unknown
+            hotDeployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/import-facet-remove.xml");
+        }
+
+        // reimport
+        reader = new NuxeoArchiveReader(archive);
+        writer = new DocumentModelWriter(session, "/");
+
+        pipe = new DocumentPipeImpl(10);
+        pipe.setReader(reader);
+        pipe.setWriter(writer);
+
         try {
-            // NXP-23035: do not fail if a type becomes unknown
-            dtd = sm.getDocumentTypeDescriptor(DOC_TYPE);
-            sm.unregisterDocumentType(dtd);
-            if (addFacet) {
-                // NXP-14218: do not fail if a facet becomes unknown
-                fd = sm.getFacetDescriptor(FACET);
-                sm.unregisterFacet(fd);
-            }
-            sm.checkDirty();
-
-            // reimport
-            reader = new NuxeoArchiveReader(archive);
-            writer = new DocumentModelWriter(session, "/");
-
-            pipe = new DocumentPipeImpl(10);
-            pipe.setReader(reader);
-            pipe.setWriter(writer);
-
-            try {
-                pipe.run();
-                fail("Import should have failed due to missing document type");
-            } catch (IllegalArgumentException e) {
-                assertEquals(DOC_TYPE + " is not a registered core type", e.getMessage());
-            }
-        } finally {
-            // cleanup by re-registering doc type and facet
-            if (dtd != null) {
-                sm.registerDocumentType(dtd);
-            }
-            if (fd != null) {
-                sm.registerFacet(fd);
-            }
-            sm.checkDirty();
+            pipe.run();
+            fail("Import should have failed due to missing document type");
+        } catch (IllegalArgumentException e) {
+            assertEquals(DOC_TYPE + " is not a registered core type", e.getMessage());
         }
     }
 

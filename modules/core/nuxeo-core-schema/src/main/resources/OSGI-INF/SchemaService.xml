@@ -132,6 +132,7 @@
     <object class="org.nuxeo.ecm.core.schema.DocumentTypeDescriptor" />
     <object class="org.nuxeo.ecm.core.schema.FacetDescriptor" />
     <object class="org.nuxeo.ecm.core.schema.ProxiesDescriptor" />
+    <registry class="org.nuxeo.ecm.core.schema.DocTypeRegistry" />
 
   </extension-point>
 
@@ -211,6 +212,7 @@
 
     <object class="org.nuxeo.ecm.core.schema.SchemaBindingDescriptor" />
     <object class="org.nuxeo.ecm.core.schema.PropertyDescriptor" />
+    <registry class="org.nuxeo.ecm.core.schema.SchemaRegistry" />
 
   </extension-point>
 
@@ -252,10 +254,11 @@
       This will also allows to import document declaring the removed property.
       <p />
       @since 9.2
-      @deprecated since 11.1, use schema extension point with PropertyDescriptor object
+      @deprecated since 11.1, use the "schema" extension point instead, with a PropertyDescriptor contribution.
     </documentation>
 
     <object class="org.nuxeo.ecm.core.schema.PropertyDeprecationDescriptor" />
+    <registry class="org.nuxeo.ecm.core.schema.PropertyDeprecationDescriptorRegistry" />
 
   </extension-point>
 
