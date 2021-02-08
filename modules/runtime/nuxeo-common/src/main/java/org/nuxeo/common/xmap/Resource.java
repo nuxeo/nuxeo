@@ -37,14 +37,16 @@ import java.net.URL;
  */
 public class Resource {
 
+    private final Context ctx;
+
+    private final String path;
+
     private final URL url;
 
-    public Resource(URL url) {
-        this.url = url;
-    }
-
     public Resource(Context ctx, String path) {
-        url = ctx.getResource(path);
+        this.ctx = ctx;
+        this.path = path;
+        this.url = ctx.getResource(path);
     }
 
     public URL toURL() {
@@ -57,6 +59,29 @@ public class Resource {
 
     public File toFile() throws URISyntaxException {
         return url != null ? new File(url.toURI()) : null;
+    }
+
+    /**
+     * Returns the context for this resource resolution.
+     *
+     * @since 11.5
+     */
+    public Context getContext() {
+        return ctx;
+    }
+
+    /**
+     * Returns the path for this resource.
+     *
+     * @since 11.5
+     */
+    public String getPath() {
+        return path;
+    }
+
+    @Override
+    public String toString() {
+        return "Resource{path=" + path + "}";
     }
 
 }
