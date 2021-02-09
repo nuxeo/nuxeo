@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.api.security;
 
 import java.util.List;
 
-
 /**
  * Provider for existing permission and permission groups.
  *
@@ -66,7 +65,9 @@ public interface PermissionProvider {
     /**
      * @param perm the name of a registered permission
      * @return the list of alias permissions to 'perm'
+     * @deprecated since 11.5: unused
      */
+    @Deprecated(since = "11.5")
     String[] getAliasPermissions(String perm);
 
 }

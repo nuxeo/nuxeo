@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.core.security;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,7 +35,7 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
  * @author Anahide Tchertchian
  * @author Florent Guillaume
  */
-public interface SecurityPolicyService extends Serializable {
+public interface SecurityPolicyService {
 
     /**
      * Checks given permission for doc and principal.
@@ -55,10 +54,6 @@ public interface SecurityPolicyService extends Serializable {
      */
     Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] principalsToCheck);
-
-    void registerDescriptor(SecurityPolicyDescriptor descriptor);
-
-    void unregisterDescriptor(SecurityPolicyDescriptor descriptor);
 
     /**
      * Checks if any policy restricts the given permission.

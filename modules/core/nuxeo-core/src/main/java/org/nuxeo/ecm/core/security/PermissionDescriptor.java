@@ -22,10 +22,14 @@ package org.nuxeo.ecm.core.security;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @author Bogdan Stefanescu
@@ -33,9 +37,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Thierry Delprat
  */
 @XObject("permission")
+@XRegistry
 public class PermissionDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     @XNodeList(value = "include", type = String[].class, componentType = String.class)
@@ -44,11 +50,26 @@ public class PermissionDescriptor {
     @XNodeList(value = "remove", type = String[].class, componentType = String.class)
     private String[] removePermissions;
 
+    /** @deprecated since 11.5: unused **/
+    @Deprecated(since = "11.5")
     @XNodeList(value = "alias", type = String[].class, componentType = String.class)
     private String[] aliasPermissions;
 
     public String getName() {
         return name;
+    }
+
+    /**
+     * Returns included permissions, filtering out removed permissions.
+     *
+     * @since 11.5
+     */
+    public List<String> getSubPermissions() {
+        List<String> removed = getRemovePermissions();
+        return getIncludePermissions().stream()
+                                      .filter(Predicate.not(removed::contains))
+                                      .distinct()
+                                      .collect(Collectors.toList());
     }
 
     public List<String> getIncludePermissions() {
@@ -59,33 +80,10 @@ public class PermissionDescriptor {
         return Arrays.asList(removePermissions);
     }
 
+    /** @deprecated since 11.5: unused **/
+    @Deprecated(since = "11.5")
     public List<String> getAliasPermissions() {
         return Arrays.asList(aliasPermissions);
-    }
-
-    /**
-     * Used to unregistered a PermissionDescriptor out of the list of already registered contributions.
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof PermissionDescriptor) {
-            PermissionDescriptor pd = (PermissionDescriptor) o;
-            if (!name.equals(pd.name)) {
-                return false;
-            }
-            if (!getIncludePermissions().equals(pd.getIncludePermissions())) {
-                return false;
-            }
-            if (!getRemovePermissions().equals(pd.getRemovePermissions())) {
-                return false;
-            }
-            if (!getAliasPermissions().equals(pd.getAliasPermissions())) {
-                return false;
-            }
-            // this is an equivalent permission
-            return true;
-        }
-        return false;
     }
 
     @Override

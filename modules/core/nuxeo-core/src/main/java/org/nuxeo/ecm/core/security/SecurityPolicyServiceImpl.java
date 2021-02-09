@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id$
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.ecm.core.security;
@@ -24,13 +22,11 @@ package org.nuxeo.ecm.core.security;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
@@ -41,62 +37,44 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
  * Security policy service implementation.
  * <p>
  * Iterates over ordered policies. First policy to give a known access (grant or deny) applies.
- *
- * @author Anahide Tchertchian
  */
 public class SecurityPolicyServiceImpl implements SecurityPolicyService {
 
-    private static final long serialVersionUID = 482814921906794786L;
+    private static final Logger log = LogManager.getLogger(SecurityPolicyServiceImpl.class);
 
-    private static final Log log = LogFactory.getLog(SecurityPolicyServiceImpl.class);
+    private final List<SecurityPolicy> policies = new ArrayList<>();
 
-    private final Map<String, SecurityPolicyDescriptor> policyDescriptors;
-
-    private List<SecurityPolicy> policies;
-
-    public SecurityPolicyServiceImpl() {
-        policyDescriptors = new Hashtable<>();
-    }
-
-    private void computePolicies() {
-        policies = new ArrayList<>();
-        List<SecurityPolicyDescriptor> orderedDescriptors = new ArrayList<>();
-        for (SecurityPolicyDescriptor descriptor : policyDescriptors.values()) {
-            if (descriptor.isEnabled()) {
-                orderedDescriptors.add(descriptor);
-            }
-        }
+    /**
+     * Service initialized with contributed policy descriptors.
+     *
+     * @since 11.5
+     */
+    public SecurityPolicyServiceImpl(List<SecurityPolicyDescriptor> policyDescriptors) {
+        List<SecurityPolicyDescriptor> orderedDescriptors = new ArrayList<>(policyDescriptors);
         Collections.sort(orderedDescriptors);
         List<String> policyNames = new ArrayList<>();
         for (SecurityPolicyDescriptor descriptor : orderedDescriptors) {
-            if (descriptor.isEnabled()) {
-                try {
-                    Object policy = descriptor.getPolicy().getDeclaredConstructor().newInstance();
-                    if (policy instanceof SecurityPolicy) {
-                        policies.add((SecurityPolicy) policy);
-                        policyNames.add(descriptor.getName());
-                    } else {
-                        log.error(String.format("Invalid contribution to security policy service %s:"
-                                + " must implement SecurityPolicy interface", descriptor.getName()));
-                    }
-                } catch (ReflectiveOperationException e) {
-                    log.error(e, e);
+            try {
+                Object policy = descriptor.getPolicy().getDeclaredConstructor().newInstance();
+                if (policy instanceof SecurityPolicy) {
+                    policies.add((SecurityPolicy) policy);
+                    policyNames.add(descriptor.getName());
+                } else {
+                    log.error(
+                            "Invalid contribution to security policy service {}: class {} "
+                                    + "must implement the SecurityPolicy interface",
+                            descriptor::getName, descriptor::getPolicy);
                 }
+            } catch (ReflectiveOperationException e) {
+                log.error(e, e);
             }
         }
-        log.debug("Ordered security policies: " + policyNames.toString());
+        log.debug("Ordered security policies: {}", policyNames);
     }
 
     @Override
-    public synchronized List<SecurityPolicy> getPolicies() {
-        if (policies == null) {
-            computePolicies();
-        }
-        return policies;
-    }
-
-    private void resetPolicies() {
-        policies = null;
+    public List<SecurityPolicy> getPolicies() {
+        return Collections.unmodifiableList(policies);
     }
 
     @Override
@@ -126,38 +104,18 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
             if (policy.isExpressibleInQuery(repositoryName)) {
                 transformers.add(policy.getQueryTransformer(repositoryName));
             } else {
-                log.warn(String.format("Security policy '%s' for repository '%s'"
-                        + " cannot be expressed in SQL query.", policy.getClass().getName(), repositoryName));
+                log.warn("Security policy '%s' for repository '%s' cannot be expressed in SQL query.",
+                        policy.getClass().getName(), repositoryName);
             }
         }
         return transformers;
     }
 
     @Override
-    public void registerDescriptor(SecurityPolicyDescriptor descriptor) {
-        String id = descriptor.getName();
-        if (policyDescriptors.containsKey(id)) {
-            log.info("Overriding security policy " + id);
-        }
-        policyDescriptors.put(id, descriptor);
-        resetPolicies();
-    }
-
-    @Override
-    public void unregisterDescriptor(SecurityPolicyDescriptor descriptor) {
-        String id = descriptor.getName();
-        if (policyDescriptors.containsKey(id)) {
-            policyDescriptors.remove(id);
-            resetPolicies();
-        }
-    }
-
-    @Override
     public Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
-        List<SecurityPolicy> policies = getPolicies();
-        for (SecurityPolicy policy : policies) {
+        for (SecurityPolicy policy : getPolicies()) {
             Access policyAccess = policy.checkPermission(doc, mergedAcp, principal, permission, resolvedPermissions,
                     additionalPrincipals);
             if (policyAccess != null && !Access.UNKNOWN.equals(policyAccess)) {

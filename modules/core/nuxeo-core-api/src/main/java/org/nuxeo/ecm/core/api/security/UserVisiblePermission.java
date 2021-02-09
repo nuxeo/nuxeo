@@ -15,68 +15,26 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.core.api.security;
 
-import java.io.Serializable;
-
-public class UserVisiblePermission implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class UserVisiblePermission {
 
     protected final String permission;
 
     protected final String denyPermission;
 
-    protected final String id;
-
+    // compat
     public UserVisiblePermission(String id, String perm, String denyPerm) {
+        this(perm, denyPerm);
+    }
+
+    /**
+     * @since 11.5
+     */
+    public UserVisiblePermission(String perm, String denyPerm) {
         permission = perm;
         denyPermission = denyPerm;
-        this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        UserVisiblePermission other = (UserVisiblePermission) o;
-
-        if (denyPermission != null ? !denyPermission.equals(other.denyPermission) : other.denyPermission != null) {
-            return false;
-        }
-        if (id != null ? !id.equals(other.id) : other.id != null) {
-            return false;
-        }
-        if (permission != null ? !permission.equals(other.permission) : other.permission != null) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = permission != null ? permission.hashCode() : 0;
-        result = 31 * result + (denyPermission != null ? denyPermission.hashCode() : 0);
-        result = 31 * result + (id != null ? id.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        if (denyPermission != null) {
-            return String.format("UserVisiblePermission %s [%s (deny %s)]", id, permission, denyPermission);
-        } else {
-            return String.format("UserVisiblePermission %s [%s]", id, permission);
-        }
     }
 
     public String getPermission() {
@@ -88,7 +46,16 @@ public class UserVisiblePermission implements Serializable {
     }
 
     public String getId() {
-        return id;
+        return getPermission();
+    }
+
+    @Override
+    public String toString() {
+        if (denyPermission != null) {
+            return String.format("UserVisiblePermission %s (deny %s)", permission, denyPermission);
+        } else {
+            return String.format("UserVisiblePermission %s", permission);
+        }
     }
 
 }

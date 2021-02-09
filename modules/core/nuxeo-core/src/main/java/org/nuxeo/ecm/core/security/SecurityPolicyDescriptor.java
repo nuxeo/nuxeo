@@ -22,6 +22,9 @@ package org.nuxeo.ecm.core.security;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * Pluggable policy descriptor for core security
@@ -29,16 +32,19 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Anahide Tchertchian
  */
 @XObject("policy")
+@XRegistry(enable = false, compatWarnOnMerge = true)
 public class SecurityPolicyDescriptor implements Comparable<SecurityPolicyDescriptor> {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
     @XNode("@class")
     private Class<Object> policy;
 
-    @XNode("@enabled")
-    private boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    private boolean enabled;
 
     @XNode("@order")
     private int order = 0;
@@ -49,10 +55,6 @@ public class SecurityPolicyDescriptor implements Comparable<SecurityPolicyDescri
 
     public Class<Object> getPolicy() {
         return policy;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
     }
 
     public int getOrder() {
