@@ -39,6 +39,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -111,6 +112,7 @@ public class TestGridFSBinaryManager {
     }
 
     @Test
+    @Ignore("NXP-30149")
     public void testSerialization() throws Exception {
         GridFSBinaryManager binaryManager = getBinaryManager();
         Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
@@ -126,6 +128,7 @@ public class TestGridFSBinaryManager {
     }
 
     @Test
+    @Ignore("NXP-30149")
     public void testStoreFile() throws Exception {
         GridFSBinaryManager binaryManager = getBinaryManager();
 
@@ -153,6 +156,7 @@ public class TestGridFSBinaryManager {
      * NOTE THAT THIS TEST WILL REMOVE ALL FILES IN THE BUCKET!!!
      */
     @Test
+    @Ignore("NXP-30149")
     public void testBinaryManagerGC() throws Exception {
         GridFSBinaryManager binaryManager = getBinaryManager();
 
