@@ -22,6 +22,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter.TEXT_CSV_TYPE;
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.SCHEMAS_CTX_DATA;
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.XPATHS_CTX_DATA;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentPropertyCSVWriter.NEWLINE_REPLACEMENT_CTX_DATA;
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentPropertyCSVWriter.LANG_CTX_DATA;
 
 import java.io.IOException;
@@ -89,6 +90,7 @@ public class CSVProjectionComputation extends AbstractBulkComputation {
         renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, getList(command.getParams().get(PARAM_SCHEMAS)));
         renderingCtx.setParameterValues(XPATHS_CTX_DATA, getList(command.getParams().get(PARAM_XPATHS)));
         renderingCtx.setParameterValues(LANG_CTX_DATA, getString(command.getParams().get(PARAM_LANG)));
+        renderingCtx.setParameterValues(NEWLINE_REPLACEMENT_CTX_DATA, " ");
     }
 
     @Override
