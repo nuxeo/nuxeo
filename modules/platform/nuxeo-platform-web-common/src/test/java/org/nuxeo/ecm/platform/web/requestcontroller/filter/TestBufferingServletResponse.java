@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,9 +132,8 @@ public class TestBufferingServletResponse {
 
     protected HttpServletResponse getFakeResponse(ResponseProxy responseProxy) {
         ClassLoader cl = getClass().getClassLoader();
-        HttpServletResponse response = (HttpServletResponse) Proxy.newProxyInstance(cl,
+        return (HttpServletResponse) Proxy.newProxyInstance(cl,
                 new Class[] { HttpServletResponse.class }, responseProxy);
-        return response;
     }
 
     protected static abstract class DummyServletOutputStream extends ServletOutputStream {
