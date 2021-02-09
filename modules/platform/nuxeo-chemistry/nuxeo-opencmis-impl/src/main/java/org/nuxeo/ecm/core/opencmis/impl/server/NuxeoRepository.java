@@ -418,9 +418,8 @@ public class NuxeoRepository {
          */
 
         DefaultPermissionProvider permissionProvider = (DefaultPermissionProvider) Framework.getService(PermissionProvider.class);
-        permissionProvider.getUserVisiblePermissionDescriptors(); // init var
-        Map<String, PermissionVisibilityDescriptor> map = permissionProvider.mergedPermissionsVisibility;
-        // iterate for all types regisited, not just the default ""
+        Map<String, PermissionVisibilityDescriptor> map = permissionProvider.getPermissionsVisibility();
+        // iterate for all types registered, not just the default ""
         for (Entry<String, PermissionVisibilityDescriptor> en : map.entrySet()) {
             for (String permission : en.getValue().getSortedItems()) {
                 if (!done.add(permission)) {

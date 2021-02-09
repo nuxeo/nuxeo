@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,9 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Olivier Grisel
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.ecm.core.security;
@@ -24,9 +25,9 @@ package org.nuxeo.ecm.core.security;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -36,72 +37,47 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @author Bogdan Stefanescu
- * @author Olivier Grisel
- * @author Anahide Tchertchian
+ * Component for permissions-related contributions.
  */
-// TODO: improve caching invalidation
-// TODO: remove "implements SecurityConstants" and check that it doesn't break
-// anything
 public class SecurityService extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.security.SecurityService");
 
-    public static final String PERMISSIONS_EXTENSION_POINT = "permissions";
+    private static final String PERMISSIONS_EXTENSION_POINT = "permissions";
 
     private static final String PERMISSIONS_VISIBILITY_EXTENSION_POINT = "permissionsVisibility";
 
     private static final String POLICIES_EXTENSION_POINT = "policies";
 
-    private static final Log log = LogFactory.getLog(SecurityService.class);
-
-    private PermissionProviderLocal permissionProvider;
+    private PermissionProvider permissionProvider;
 
     private SecurityPolicyService securityPolicyService;
 
-    // private SecurityManager securityManager;
-
     @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        permissionProvider = new DefaultPermissionProvider();
-        securityPolicyService = new SecurityPolicyServiceImpl();
+    public int getApplicationStartedOrder() {
+        // security service needed by repository
+        return ComponentStartOrders.REPOSITORY - 1;
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        super.deactivate(context);
+    public void start(ComponentContext context) {
+        Map<String, PermissionDescriptor> permissions = this.<MapRegistry> getExtensionPointRegistry(
+                PERMISSIONS_EXTENSION_POINT).getContributions();
+        Map<String, PermissionVisibilityDescriptor> visibility = this.<MapRegistry> getExtensionPointRegistry(
+                PERMISSIONS_VISIBILITY_EXTENSION_POINT).getContributions();
+        permissionProvider = new DefaultPermissionProvider(permissions, visibility);
+        securityPolicyService = new SecurityPolicyServiceImpl(getRegistryContributions(POLICIES_EXTENSION_POINT));
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
         permissionProvider = null;
         securityPolicyService = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (PERMISSIONS_EXTENSION_POINT.equals(extensionPoint) && contribution instanceof PermissionDescriptor) {
-            permissionProvider.registerDescriptor((PermissionDescriptor) contribution);
-        } else if (PERMISSIONS_VISIBILITY_EXTENSION_POINT.equals(extensionPoint)
-                && contribution instanceof PermissionVisibilityDescriptor) {
-            permissionProvider.registerDescriptor((PermissionVisibilityDescriptor) contribution);
-        } else if (POLICIES_EXTENSION_POINT.equals(extensionPoint) && contribution instanceof SecurityPolicyDescriptor) {
-            securityPolicyService.registerDescriptor((SecurityPolicyDescriptor) contribution);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (PERMISSIONS_EXTENSION_POINT.equals(extensionPoint) && contribution instanceof PermissionDescriptor) {
-            permissionProvider.unregisterDescriptor((PermissionDescriptor) contribution);
-        } else if (PERMISSIONS_VISIBILITY_EXTENSION_POINT.equals(extensionPoint)
-                && contribution instanceof PermissionVisibilityDescriptor) {
-            permissionProvider.unregisterDescriptor((PermissionVisibilityDescriptor) contribution);
-        } else if (POLICIES_EXTENSION_POINT.equals(extensionPoint) && contribution instanceof SecurityPolicyDescriptor) {
-            securityPolicyService.unregisterDescriptor((SecurityPolicyDescriptor) contribution);
-        }
     }
 
     public PermissionProvider getPermissionProvider() {
@@ -161,10 +137,10 @@ public class SecurityService extends DefaultComponent {
         ACP acp = doc.getSession().getMergedACP(doc);
 
         List<String> result = new ArrayList<>();
-        for(String permission : permissions) {
+        for (String permission : permissions) {
             String[] resolvedPermissions = getPermissionsToCheck(permission);
             Access access = securityPolicyService.checkPermission(doc, acp, principal, permission, resolvedPermissions,
-                additionalPrincipals);
+                    additionalPrincipals);
             if (access == null || Access.UNKNOWN.equals(access)) {
                 access = acp == null ? null : acp.getAccess(additionalPrincipals, resolvedPermissions);
             }

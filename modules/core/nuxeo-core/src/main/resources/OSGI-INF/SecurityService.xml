@@ -86,24 +86,6 @@
         </permission>
       </code>
 
-      <p />
-
-      Eventually the permissions declaration also accept 'alias' tags to
-      handle backward compatibility with deprecated permissions:
-      <code>
-        <permission name="ReadVersion">
-          <documentation>
-            The Version permission is deprecated since its name is ambiguous,
-            use ReadPermission instead.
-          </documentation>
-          <alias>Version</alias>
-        </permission>
-      </code>
-
-      NB: the alias feature is parsed by the extension point but the
-      underlying SecurityManager implementation does not leverage it
-      yet.
-
     </documentation>
 
     <object class="org.nuxeo.ecm.core.security.PermissionDescriptor" />
@@ -144,8 +126,8 @@
 
     </documentation>
 
-    <object
-      class="org.nuxeo.ecm.core.security.PermissionVisibilityDescriptor" />
+    <object class="org.nuxeo.ecm.core.security.PermissionVisibilityDescriptor" />
+    <registry class="org.nuxeo.ecm.core.security.PermissionVisibilityRegistry" />
   </extension-point>
 
   <extension-point name="policies">
