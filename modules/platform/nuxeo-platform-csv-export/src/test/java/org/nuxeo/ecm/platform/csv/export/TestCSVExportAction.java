@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.core.bulk.action.computation.SortBlob.SORT_PARAMETER
 import static org.nuxeo.ecm.core.bulk.action.computation.ZipBlob.ZIP_PARAMETER;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_TOTAL;
+import static org.nuxeo.ecm.platform.csv.export.computation.CSVProjectionComputation.PARAM_XPATHS;
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVHelper.SYSTEM_PROPERTIES_HEADER_FIELDS;
 
 import java.io.File;
@@ -81,6 +82,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.collect.ImmutableList;
@@ -104,6 +106,9 @@ public class TestCSVExportAction {
 
     @Inject
     public DownloadService downloadService;
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Test
     public void testSimple() throws Exception {
@@ -173,6 +178,28 @@ public class TestCSVExportAction {
             Collections.sort(sortedContent);
             assertEquals(content, sortedContent);
         }
+    }
+
+    @Test
+    public void testSimpleWithMultiLine() throws Exception {
+        session.getChildren(new PathRef("/default-domain/workspaces/test")).forEach(doc -> {
+            doc.setPropertyValue("dc:description", "Some multiline content\nLast line");
+            session.saveDocument(doc);
+        });
+        txFeature.nextTransaction();
+
+        BulkCommand command = createBuilder(true, false).param(PARAM_XPATHS, new ArrayList<>(List.of("dc:description")))
+                                                        .build();
+        bulkService.submit(command);
+        assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
+
+        BulkStatus status = bulkService.getStatus(command.getId());
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(CREATED_TOTAL, status.getProcessed());
+        assertEquals(CREATED_TOTAL, status.getTotal());
+
+        Blob blob = getBlob(command.getId());
+        assertTrue(blob.getString().contains("Some multiline content Last line"));
     }
 
     @Test
