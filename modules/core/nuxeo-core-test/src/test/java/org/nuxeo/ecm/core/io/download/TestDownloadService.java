@@ -60,7 +60,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -99,17 +98,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestDownloadService {
 
     private static final String CONTENT = "this is a file au caf\u00e9";
-
-    protected static abstract class DummyServletOutputStream extends ServletOutputStream {
-        @Override
-        public boolean isReady() {
-            return true;
-        }
-
-        @Override
-        public void setWriteListener(WriteListener writeListener) {
-        }
-    }
 
     @Inject
     protected DownloadService downloadService;
@@ -159,12 +147,7 @@ public class TestDownloadService {
         when(request.getMethod()).thenReturn(head ? "HEAD" : "GET");
 
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
@@ -236,12 +219,7 @@ public class TestDownloadService {
         when(req.getMethod()).thenReturn("GET");
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(resp.getOutputStream()).thenReturn(sos);
@@ -274,12 +252,7 @@ public class TestDownloadService {
         when(req.getMethod()).thenReturn("GET");
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(resp.getOutputStream()).thenReturn(sos);
@@ -326,12 +299,7 @@ public class TestDownloadService {
         when(req.getMethod()).thenReturn("GET");
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(resp.getOutputStream()).thenReturn(sos);
@@ -375,12 +343,7 @@ public class TestDownloadService {
 
         // mock response
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
@@ -450,12 +413,7 @@ public class TestDownloadService {
 
         // mock response
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
@@ -496,12 +454,7 @@ public class TestDownloadService {
 
         // mock response
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
@@ -594,12 +547,7 @@ public class TestDownloadService {
 
         // mock response
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
@@ -645,12 +593,7 @@ public class TestDownloadService {
         // mock response
         response = mock(HttpServletResponse.class);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
@@ -725,12 +668,7 @@ public class TestDownloadService {
         when(request.getMethod()).thenReturn("GET");
 
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
@@ -830,12 +768,7 @@ public class TestDownloadService {
         }
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(resp.getOutputStream()).thenReturn(sos);
@@ -869,12 +802,9 @@ public class TestDownloadService {
             HttpServletRequest req = mock(HttpServletRequest.class);
             when(req.getHeader(NginxConstants.X_ACCEL_LOCATION_HEADER)).thenReturn("/protected_files");
             HttpServletResponse resp = mock(HttpServletResponse.class);
-            ServletOutputStream sos = new DummyServletOutputStream() {
-                @Override
-                public void write(int b) {
-                    throw new NuxeoException("Not supposed to write to response");
-                }
-            };
+            ServletOutputStream sos = new DummyServletOutputStream(b -> {
+                throw new NuxeoException("Not supposed to write to response");
+            });
             @SuppressWarnings("resource")
             PrintWriter printWriter = new PrintWriter(sos);
             when(resp.getOutputStream()).thenReturn(sos);
