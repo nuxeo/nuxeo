@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVPrinter;
@@ -51,9 +53,14 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
 
     public static final String LIST_DELIMITER = " | ";
 
+    /** @since 11.5 */
+    public static final String NEWLINE_REPLACEMENT_CTX_DATA = "newlineReplacement";
+
     public static final String LANG_CTX_DATA = "lang";
 
     public static final String UNKNOWN_TRANSLATED_VALUE_LABEL = "unknown translated value";
+
+    protected static final Pattern NEWLINE = Pattern.compile("\\R");
 
     public DocumentPropertyCSVWriter() {
         super();
@@ -92,6 +99,7 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
                 printer.print(null);
             } else {
                 valueAsString = type.encode(value);
+                valueAsString = replaceNewline(valueAsString);
                 printer.print(valueAsString);
             }
             Directory vocabulary = DocumentModelCSVHelper.getVocabulary(type);
@@ -129,7 +137,10 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
             if (itemType instanceof BinaryType) {
                 writeUnsupported(type, printer);
             } else {
-                String value = Arrays.stream(array).map(itemType::encode).collect(Collectors.joining(LIST_DELIMITER));
+                String value = Arrays.stream(array)
+                                     .map(itemType::encode)
+                                     .map(this::replaceNewline)
+                                     .collect(Collectors.joining(LIST_DELIMITER));
                 printer.print(value);
                 if (vocabulary != null) {
                     String[] values = Arrays.stream(array).map(itemType::encode).toArray(String[]::new);
@@ -168,17 +179,29 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
         } catch (PropertyNotFoundException e) {
             try {
                 // Check if it comes from a l10nxvocabulary, and return this value if it exists, or else return the id
-                return (String) entry.getProperty(schema, "label_en");
+                return replaceNewline((String) entry.getProperty(schema, "label_en"));
             } catch (PropertyNotFoundException e1) {
-                return value;
+                return replaceNewline(value);
             }
         }
         Locale locale = lang != null ? Locale.forLanguageTag(lang) : ctx.getLocale();
-        return I18NUtils.getMessageString("messages", label, new Object[0], locale);
+        return replaceNewline(I18NUtils.getMessageString("messages", label, new Object[0], locale));
     }
 
     protected void writeUnsupported(Type type, CSVPrinter printer) throws IOException {
         printer.print(String.format("type %s is not supported", type.getName()));
+    }
+
+    protected String replaceNewline(String value) {
+        String replacement = ctx.getParameter(NEWLINE_REPLACEMENT_CTX_DATA);
+        if (value == null || replacement == null) {
+            return value;
+        }
+        Matcher m = NEWLINE.matcher(value);
+        if (m.find()) {
+            value = m.replaceAll(Matcher.quoteReplacement(replacement));
+        }
+        return value;
     }
 
 }
