@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.core.api.repository.PoolConfiguration;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor.FulltextIndexDescriptor;
@@ -34,12 +35,10 @@ import org.nuxeo.ecm.core.storage.FulltextDescriptor.FulltextIndexDescriptor;
  *
  * @since 7.10-HF04, 8.1
  */
-public class DBSRepositoryDescriptor implements Cloneable {
-
-    public DBSRepositoryDescriptor() {
-    }
+public class DBSRepositoryDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     @XNode("@label")
@@ -151,18 +150,6 @@ public class DBSRepositoryDescriptor implements Cloneable {
 
     @XNode("pool")
     public PoolConfiguration pool;
-
-    @Override
-    public DBSRepositoryDescriptor clone() {
-        try {
-            DBSRepositoryDescriptor clone = (DBSRepositoryDescriptor) super.clone();
-            clone.fulltextDescriptor = new FulltextDescriptor(fulltextDescriptor);
-            clone.pool = pool == null ? null : new PoolConfiguration(pool);
-            return clone;
-        } catch (CloneNotSupportedException e) { // cannot happen
-            throw new RuntimeException(e);
-        }
-    }
 
     public void merge(DBSRepositoryDescriptor other) {
         if (other.name != null) {

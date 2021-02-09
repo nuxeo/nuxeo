@@ -18,44 +18,36 @@
  */
 package org.nuxeo.ecm.core.storage.mem;
 
-import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.ecm.core.storage.dbs.AbstractDBSRepositoryDescriptorRegistry;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryRegistry;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Service holding the configuration for Memory repositories.
+ * <p>
+ * Since 11.5, all logic is led by associated registry.
  *
  * @since 8.1
  */
 public class MemRepositoryService extends DefaultComponent {
 
-    private static final String XP_REPOSITORY = "repository";
+    protected static final String COMPONENT_NAME = "org.nuxeo.ecm.core.storage.mem.MemRepositoryService";
 
-    @Override
-    public void registerContribution(Object contrib, String xpoint, ComponentInstance contributor) {
-        if (XP_REPOSITORY.equals(xpoint)) {
-            addContribution((MemRepositoryDescriptor) contrib);
-        } else {
-            throw new RuntimeException("Unknown extension point: " + xpoint);
+    protected static final String XP = "repository";
+
+    /**
+     * Registry for {@link MemRepositoryDescriptor}, forwarding to {@link DBSRepositoryRegistry}.
+     * <p>
+     * Also handles custom merge.
+     *
+     * @since 11.5
+     */
+    public static final class Registry extends AbstractDBSRepositoryDescriptorRegistry {
+
+        public Registry() {
+            super(COMPONENT_NAME, XP, MemRepositoryFactory.class);
         }
-    }
 
-    @Override
-    public void unregisterContribution(Object contrib, String xpoint, ComponentInstance contributor) {
-        if (XP_REPOSITORY.equals(xpoint)) {
-            removeContribution((MemRepositoryDescriptor) contrib);
-        } else {
-            throw new RuntimeException("Unknown extension point: " + xpoint);
-        }
-    }
-
-    protected void addContribution(MemRepositoryDescriptor descriptor) {
-        Framework.getService(DBSRepositoryService.class).addContribution(descriptor, MemRepositoryFactory.class);
-    }
-
-    protected void removeContribution(MemRepositoryDescriptor descriptor) {
-        Framework.getService(DBSRepositoryService.class).removeContribution(descriptor, MemRepositoryFactory.class);
     }
 
 }

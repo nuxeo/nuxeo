@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService" version="1.0.0">
+<component name="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService">
 
   <require>org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService</require>
 
@@ -26,6 +26,7 @@
       </code>
     </documentation>
     <object class="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryDescriptor" />
+    <registry class="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService$Registry" />
   </extension-point>
 
 </component>

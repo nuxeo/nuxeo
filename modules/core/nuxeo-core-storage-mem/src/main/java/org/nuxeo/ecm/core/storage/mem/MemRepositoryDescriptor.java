@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.mem;
 
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryDescriptor;
 
 /**
@@ -26,15 +27,8 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryDescriptor;
  *
  * @since 8.1
  */
-@XObject(value = "repository")
+@XObject("repository")
+@XRegistry
 public class MemRepositoryDescriptor extends DBSRepositoryDescriptor {
-
-    public MemRepositoryDescriptor() {
-    }
-
-    @Override
-    public MemRepositoryDescriptor clone() {
-        return (MemRepositoryDescriptor) super.clone();
-    }
 
 }

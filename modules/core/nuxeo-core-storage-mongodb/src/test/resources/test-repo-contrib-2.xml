@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService.test2">
+
+  <extension target="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService" point="repository">
+    <repository name="testmongo" label="2">
+      <sequenceBlockSize>2</sequenceBlockSize>
+      <idType>sequence</idType>
+    </repository>
+  </extension>
+
+</component>

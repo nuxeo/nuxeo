@@ -20,23 +20,22 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryDescriptor;
 
 /**
  * MongoDB Repository Descriptor.
  */
 @XObject(value = "repository")
+@XRegistry
 public class MongoDBRepositoryDescriptor extends DBSRepositoryDescriptor {
-
-    public MongoDBRepositoryDescriptor() {
-    }
 
     /**
      * @deprecated since 9.3 you should now use MongoDBConnectionService to define connections
      * @see org.nuxeo.runtime.mongodb.MongoDBConnectionService
      * @see org.nuxeo.runtime.mongodb.MongoDBComponent
      */
-    @Deprecated
+    @Deprecated(since = "9.3")
     @XNode("server")
     public String server;
 
@@ -45,7 +44,7 @@ public class MongoDBRepositoryDescriptor extends DBSRepositoryDescriptor {
      * @see org.nuxeo.runtime.mongodb.MongoDBConnectionService
      * @see org.nuxeo.runtime.mongodb.MongoDBComponent
      */
-    @Deprecated
+    @Deprecated(since = "9.3")
     @XNode("dbname")
     public String dbname;
 
@@ -62,11 +61,6 @@ public class MongoDBRepositoryDescriptor extends DBSRepositoryDescriptor {
     /** @since 11.1 **/
     public Boolean getChildNameUniqueConstraintEnabled() {
         return childNameUniqueConstraintEnabled;
-    }
-
-    @Override
-    public MongoDBRepositoryDescriptor clone() {
-        return (MongoDBRepositoryDescriptor) super.clone();
     }
 
     @Override
