@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 public class TestAnonymousDownload {
 
-    protected class TestHttpServletRequestWrapper extends HttpServletRequestWrapper {
+    protected static class TestHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
         protected final Principal principal;
 

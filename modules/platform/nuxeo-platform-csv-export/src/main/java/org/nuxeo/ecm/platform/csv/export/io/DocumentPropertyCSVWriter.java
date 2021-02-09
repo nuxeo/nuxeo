@@ -167,8 +167,7 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
             label = (String) entry.getProperty(schema, "label");
         } catch (PropertyNotFoundException e) {
             try {
-                // Check if it comes from a l10nxvocabulary, and return this value if it exists,
-                // or else return the id
+                // Check if it comes from a l10nxvocabulary, and return this value if it exists, or else return the id
                 return (String) entry.getProperty(schema, "label_en");
             } catch (PropertyNotFoundException e1) {
                 return value;

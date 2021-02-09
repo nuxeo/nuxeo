@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,7 +138,8 @@ public class TestDownloadService {
         doTestBasicDownload(head, filename, filenameInHeader, true);
     }
 
-    protected void doTestBasicDownload(boolean head, String filename, String filenameInHeader, boolean empty) throws Exception {
+    protected void doTestBasicDownload(boolean head, String filename, String filenameInHeader, boolean empty)
+            throws Exception {
         // blob to download
         String blobValue = "Hello World Caf\u00e9";
         String mimeType = "text/plain";
@@ -246,9 +247,7 @@ public class TestDownloadService {
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
 
-        DownloadContext context = DownloadContext.builder(req, resp)
-                                                 .blob(blob)
-                                                 .build();
+        DownloadContext context = DownloadContext.builder(req, resp).blob(blob).build();
         downloadService.downloadBlob(context);
 
         verify(req, atLeast(1)).getHeader("If-None-Match");
@@ -286,10 +285,7 @@ public class TestDownloadService {
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
 
-        DownloadContext context = DownloadContext.builder(req, resp)
-                                                 .blob(blob)
-                                                 .reason("test")
-                                                 .build();
+        DownloadContext context = DownloadContext.builder(req, resp).blob(blob).reason("test").build();
         downloadService.downloadBlob(context);
 
         verify(req, atLeastOnce()).getHeader("If-None-Match");
@@ -341,9 +337,7 @@ public class TestDownloadService {
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
 
-        DownloadContext context = DownloadContext.builder(req, resp)
-                                                 .blob(blob)
-                                                 .build();
+        DownloadContext context = DownloadContext.builder(req, resp).blob(blob).build();
         downloadService.downloadBlob(context);
 
         verify(resp).setHeader(eq("ETag"), eq("\"b10a8db164e0754105b7a99be72e3fe5\""));
@@ -473,9 +467,7 @@ public class TestDownloadService {
         when(doc.getPropertyValue("file:content")).thenReturn((Serializable) blob);
 
         // send download request permission denied
-        DownloadContext context = DownloadContext.builder(request, response)
-                                                 .doc(doc)
-                                                 .build();
+        DownloadContext context = DownloadContext.builder(request, response).doc(doc).build();
         downloadService.downloadBlob(context);
         assertEquals("", out.toString());
         verify(response, atLeastOnce()).sendError(403, "Permission denied");
@@ -747,9 +739,7 @@ public class TestDownloadService {
         doThrow(new IllegalArgumentException()).when(response).setCharacterEncoding(encoding);
 
         // send download request
-        DownloadContext context = DownloadContext.builder(request, response)
-                                                 .blob(blob)
-                                                 .build();
+        DownloadContext context = DownloadContext.builder(request, response).blob(blob).build();
         downloadService.downloadBlob(context);
 
         // check that the blob gets returned even though the encoding was illegal
@@ -852,10 +842,7 @@ public class TestDownloadService {
         when(resp.getWriter()).thenReturn(printWriter);
 
         try (CapturingEventListener listener = new CapturingEventListener(DownloadService.EVENT_NAME)) {
-            DownloadContext context = DownloadContext.builder(req, resp)
-                                                     .blob(blob)
-                                                     .reason("test")
-                                                     .build();
+            DownloadContext context = DownloadContext.builder(req, resp).blob(blob).reason("test").build();
             downloadService.downloadBlob(context);
 
             assertEquals(expectedResult, out.toString("UTF-8"));
@@ -894,10 +881,7 @@ public class TestDownloadService {
             when(resp.getWriter()).thenReturn(printWriter);
 
             // download it
-            DownloadContext context = DownloadContext.builder(req, resp)
-                                                     .blob(blob)
-                                                     .reason("test")
-                                                     .build();
+            DownloadContext context = DownloadContext.builder(req, resp).blob(blob).reason("test").build();
             downloadService.downloadBlob(context);
 
             // assert headers (mockito wants us to assert all header in same order they were set)
