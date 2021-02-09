@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.platform.video.service;
 
+import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.video.service.Configuration.DEFAULT_CONFIGURATION;
 
 import java.io.Serializable;
@@ -99,6 +100,11 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     @Override
     public Collection<VideoConversion> getAvailableVideoConversions() {
         return getRegistryContributions(VIDEO_CONVERSIONS_EP);
+    }
+
+    @Override
+    public List<String> getAvailableVideoConversionsNames() {
+        return getAvailableVideoConversions().stream().map(VideoConversion::getName).collect(toList());
     }
 
     @Override
