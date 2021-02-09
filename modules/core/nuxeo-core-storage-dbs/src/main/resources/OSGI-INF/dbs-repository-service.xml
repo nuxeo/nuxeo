@@ -13,4 +13,13 @@
     <provide interface="org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService" />
   </service>
 
+  <extension-point name="repositoryContributor">
+    <documentation>
+      Extension point to declare a global DBS registry to be impacted by other registries, only through
+      Java API.
+    </documentation>
+    <object class="org.nuxeo.ecm.core.storage.dbs.DBSRepositoryContributor" />
+    <registry class="org.nuxeo.ecm.core.storage.dbs.DBSRepositoryRegistry" />
+  </extension-point>
+
 </component>

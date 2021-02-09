@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Anahide Tchertchian
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
@@ -24,8 +25,8 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Service holding the configuration for DBS repositories.
@@ -34,74 +35,31 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class DBSRepositoryService extends DefaultComponent {
 
-    protected DBSRepositoryDescriptorRegistry registry = new DBSRepositoryDescriptorRegistry();
+    protected static final String XP = "repositoryContributor";
 
-    protected static class DBSRepositoryDescriptorRegistry extends SimpleContributionRegistry<DBSRepositoryDescriptor> {
-
-        @Override
-        public String getContributionId(DBSRepositoryDescriptor contrib) {
-            return contrib.name;
-        }
-
-        @Override
-        public DBSRepositoryDescriptor clone(DBSRepositoryDescriptor orig) {
-            return orig.clone();
-        }
-
-        @Override
-        public void merge(DBSRepositoryDescriptor src, DBSRepositoryDescriptor dst) {
-            dst.merge(src);
-        }
-
-        @Override
-        public boolean isSupportingMerge() {
-            return true;
-        }
-
-        public void clear() {
-            currentContribs.clear();
-        }
-
-        public DBSRepositoryDescriptor getRepositoryDescriptor(String id) {
-            return getCurrentContribution(id);
-        }
+    protected DBSRepositoryRegistry getDBSRegistry() {
+        return getExtensionPointRegistry(XP);
     }
 
     @Override
-    public void activate(ComponentContext context) {
-        registry.clear();
+    public int getApplicationStartedOrder() {
+        return ComponentStartOrders.REPOSITORY - 1;
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        registry.clear();
-    }
-
-    public void addContribution(DBSRepositoryDescriptor descriptor,
-            Class<? extends DBSRepositoryFactory> factoryClass) {
-        registry.addContribution(descriptor);
-        updateRegistration(descriptor.name, factoryClass);
-    }
-
-    public void removeContribution(DBSRepositoryDescriptor descriptor,
-            Class<? extends DBSRepositoryFactory> factoryClass) {
-        registry.removeContribution(descriptor);
-        updateRegistration(descriptor.name, factoryClass);
+    public void start(ComponentContext context) {
+        DBSRepositoryRegistry registry = getDBSRegistry();
+        registry.getRepositoryContributors().forEach(desc -> {
+            updateRegistration(registry.getRepositoryDescriptor(desc.name), desc.factory);
+        });
     }
 
     /**
      * Update repository registration in high-level repository service.
      */
-    protected void updateRegistration(String repositoryName, Class<? extends DBSRepositoryFactory> factoryClass) {
-        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-        DBSRepositoryDescriptor descriptor = registry.getRepositoryDescriptor(repositoryName);
-        if (descriptor == null) {
-            // last contribution removed
-            repositoryManager.removeRepository(repositoryName);
-            return;
-        }
-        // extract label, isDefault
-        // and pass it to high-level registry
+    protected void updateRegistration(DBSRepositoryDescriptor descriptor,
+            Class<? extends DBSRepositoryFactory> factoryClass) {
+        String repositoryName = descriptor.name;
         RepositoryFactory repositoryFactory;
         try {
             repositoryFactory = factoryClass.getConstructor(String.class).newInstance(repositoryName);
@@ -111,13 +69,15 @@ public class DBSRepositoryService extends DefaultComponent {
         if (descriptor.isCacheEnabled()) {
             repositoryFactory = new DBSCachingRepositoryFactory(repositoryName, repositoryFactory);
         }
+        // extract label, isDefault, and pass it to high-level registry
         Repository repository = new Repository(repositoryName, descriptor.label, descriptor.isDefault(),
                 descriptor.isHeadless(), repositoryFactory, descriptor.pool);
-        repositoryManager.addRepository(repository);
+        Framework.getService(RepositoryManager.class).addRepository(repository);
     }
 
+    // called by factory
     public DBSRepositoryDescriptor getRepositoryDescriptor(String name) {
-        return registry.getRepositoryDescriptor(name);
+        return getDBSRegistry().getRepositoryDescriptor(name);
     }
 
 }

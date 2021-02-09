@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019-2021 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     Florent Guillaume
- *     Salem Aouana
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.core.storage.mongodb;
+package org.nuxeo.ecm.core.storage.mem;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -41,19 +39,21 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
+/**
+ * @since 11.5
+ */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, ClusterFeature.class, TransactionalFeature.class })
-@Deploy("org.nuxeo.runtime.mongodb")
 @Deploy("org.nuxeo.ecm.core:OSGI-INF/RepositoryService.xml")
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.core.storage")
 @Deploy("org.nuxeo.ecm.core.storage.dbs")
-@Deploy("org.nuxeo.ecm.core.storage.mongodb")
-@Deploy("org.nuxeo.ecm.core.storage.mongodb:mock-repo-manager-contrib.xml")
-public class TestMongoDBRepositoryService {
+@Deploy("org.nuxeo.ecm.core.storage.mem")
+@Deploy("org.nuxeo.ecm.core.storage.mem:mock-repo-manager-contrib.xml")
+public class TestMemRepositoryService {
 
     @Inject
-    protected MongoDBRepositoryService mongoDBRepositoryService;
+    protected MemRepositoryService memRepositoryService;
 
     @Inject
     protected DBSRepositoryService dbsService;
@@ -64,13 +64,12 @@ public class TestMongoDBRepositoryService {
     /**
      * Checks correct declaration of contribution.
      */
-    protected void check(String name, String label, int sequenceBlockSize, String idType) {
+    protected void check(String name, String label, String idType) {
         DBSRepositoryDescriptor desc = dbsService.getRepositoryDescriptor(name);
         assertNotNull(desc);
         assertEquals(label, desc.label);
         assertEquals(idType, desc.idType);
-        assertTrue(desc instanceof MongoDBRepositoryDescriptor);
-        assertEquals(Integer.valueOf(sequenceBlockSize), ((MongoDBRepositoryDescriptor) desc).sequenceBlockSize);
+        assertTrue(desc instanceof MemRepositoryDescriptor);
 
         Map<String, Repository> repos = ((MockRepositoryManager) repositoryManager).getResolvedRepositories();
         assertEquals(1, repos.size());
@@ -80,16 +79,16 @@ public class TestMongoDBRepositoryService {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.storage.mongodb:test-repo-contrib-1.xml")
-    public void testService() {
-        check("testmongo", "1", 1, null);
+    @Deploy("org.nuxeo.ecm.core.storage.mem:test-repo-contrib-1.xml")
+    public void testContrib() {
+        check("testmem", "1", null);
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.storage.mongodb:test-repo-contrib-1.xml")
-    @Deploy("org.nuxeo.ecm.core.storage.mongodb:test-repo-contrib-2.xml")
+    @Deploy("org.nuxeo.ecm.core.storage.mem:test-repo-contrib-1.xml")
+    @Deploy("org.nuxeo.ecm.core.storage.mem:test-repo-contrib-2.xml")
     public void testMerge() {
-        check("testmongo", "2", 2, "sequence");
+        check("testmem", "2", "sequence");
     }
 
 }

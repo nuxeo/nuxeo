@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.mem.MemRepositoryService.test1">
+
+  <extension target="org.nuxeo.ecm.core.storage.mem.MemRepositoryService" point="repository">
+    <repository name="testmem" label="1">
+      <!-- avoid lookup to schemaManager -->
+      <fulltext disabled="true" />
+    </repository>
+  </extension>
+
+</component>

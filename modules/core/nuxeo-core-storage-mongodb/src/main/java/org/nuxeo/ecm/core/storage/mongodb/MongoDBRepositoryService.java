@@ -18,69 +18,63 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
-import java.util.function.BiConsumer;
-
 import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService;
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
+import org.nuxeo.ecm.core.storage.dbs.AbstractDBSRepositoryDescriptorRegistry;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryRegistry;
+import org.nuxeo.runtime.RuntimeMessage;
+import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.mongodb.MongoDBComponent;
-import org.nuxeo.runtime.mongodb.MongoDBConnectionConfig;
-import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
+import org.w3c.dom.Element;
 
 /**
  * Service holding the configuration for MongoDB repositories.
+ * <p>
+ * Since 11.5, all logic is led by associated registry {@link Registry}.
  *
  * @since 5.9.4
  */
 public class MongoDBRepositoryService extends DefaultComponent {
 
-    public static final String DB_DEFAULT = "nuxeo";
+    protected static final String COMPONENT_NAME = "org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService";
 
-    private static final String XP_REPOSITORY = "repository";
-
-    @Override
-    public void registerContribution(Object contrib, String xpoint, ComponentInstance contributor) {
-        if (XP_REPOSITORY.equals(xpoint)) {
-            MongoDBRepositoryDescriptor desc = (MongoDBRepositoryDescriptor) contrib;
-            Framework.getService(DBSRepositoryService.class).addContribution(desc, MongoDBRepositoryFactory.class);
-            handleConnectionContribution(desc, (c, d) -> c.registerContribution(d, "connection", contributor));
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contrib, String xpoint, ComponentInstance contributor) {
-        if (XP_REPOSITORY.equals(xpoint)) {
-            MongoDBRepositoryDescriptor desc = (MongoDBRepositoryDescriptor) contrib;
-            Framework.getService(DBSRepositoryService.class).removeContribution(desc, MongoDBRepositoryFactory.class);
-            handleConnectionContribution(desc, (c, d) -> c.unregisterContribution(d, "connection", contributor));
-        }
-    }
+    protected static final String XP = "repository";
 
     /**
-     * Backward compatibility for {@link MongoDBRepositoryDescriptor#server descriptor.server} and
-     * {@link MongoDBRepositoryDescriptor#dbname descriptor.dbname}
+     * Registry for {@link MongoDBRepositoryDescriptor}, forwarding to {@link DBSRepositoryRegistry}.
+     * <p>
+     * Also handles custom merge.
      *
-     * @since 9.3
-     * @deprecated since 9.3
+     * @since 11.5
      */
-    @Deprecated
-    protected void handleConnectionContribution(MongoDBRepositoryDescriptor descriptor,
-            BiConsumer<DefaultComponent, MongoDBConnectionConfig> consumer) {
-        if (StringUtils.isNotBlank(descriptor.server)) {
-            String id = "repository/" + descriptor.name;
-            String server = descriptor.server;
-            String dbName = StringUtils.defaultIfBlank(descriptor.dbname, DB_DEFAULT);
-            MongoDBConnectionConfig connection = new MongoDBConnectionConfig();
-            connection.server = server;
-            connection.dbname = dbName;
-            connection.id = id;
+    public static final class Registry extends AbstractDBSRepositoryDescriptorRegistry {
 
-            MongoDBComponent component = (MongoDBComponent) Framework.getService(MongoDBConnectionService.class);
-
-            consumer.accept(component, connection);
+        public Registry() {
+            super(COMPONENT_NAME, XP, MongoDBRepositoryFactory.class);
         }
+
+        @Override
+        @SuppressWarnings({ "unchecked", "deprecation" })
+        protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+            MongoDBRepositoryDescriptor contrib = super.doRegister(ctx, xObject, element, extensionId);
+            if (StringUtils.isNotBlank(contrib.server) || StringUtils.isNotBlank(contrib.dbname)) {
+                String msg = String.format(
+                        "MongoDB repository contribution with name '%s' holds 'server' or 'dbname' elements that"
+                                + " should be contributed to extension point '%s--%s' since 9.3",
+                        contrib.name, MongoDBComponent.COMPONENT_NAME, "connection");
+                DeprecationLogger.log(msg, "9.3");
+                Framework.getRuntime()
+                         .getMessageHandler()
+                         .addMessage(new RuntimeMessage(Level.ERROR, msg, Source.EXTENSION, extensionId));
+            }
+            return (T) contrib;
+        }
+
     }
 
 }
