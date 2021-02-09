@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.video.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
@@ -38,6 +39,8 @@ public interface VideoService {
      * Returns the available registered video conversions that can be run on a Video document.
      */
     Collection<VideoConversion> getAvailableVideoConversions();
+
+    List<String> getAvailableVideoConversionsNames();
 
     /**
      * Launch an asynchronously video conversion of the given {@code doc}.
