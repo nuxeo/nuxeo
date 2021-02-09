@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.csv.export.io;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.SCHEMAS_CTX_DATA;
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.XPATHS_CTX_DATA;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentPropertyCSVWriter.NEWLINE_REPLACEMENT_CTX_DATA;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -142,5 +143,20 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         CSVAssert csv = csvAssert(document, renderingCtx);
         csv.has("coverage:coverage").isEquals("");
         csv.has("coverage:coverage[label]").isEquals("");
+    }
+
+    @Test
+    public void testNewlineReplacement() throws Exception {
+        document.setPropertyValue("dc:description", "There is a \n in the description");
+        session.saveDocument(document);
+
+        RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
+        renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, Collections.singletonList("dublincore"));
+        CSVAssert csv = csvAssert(document, renderingCtx);
+        csv.has("dc:description").isEquals("There is a \n in the description");
+
+        renderingCtx.setParameterValues(NEWLINE_REPLACEMENT_CTX_DATA, " $$ ");
+        csv = csvAssert(document, renderingCtx);
+        csv.has("dc:description").isEquals("There is a  $$  in the description");
     }
 }
