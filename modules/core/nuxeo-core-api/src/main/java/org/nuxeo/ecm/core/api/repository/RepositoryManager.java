@@ -56,6 +56,8 @@ public interface RepositoryManager {
 
     /**
      * Registers a new repository.
+     * <p>
+     * Repository should be registered before the runtime start.
      *
      * @param repository the repository to register
      */
@@ -67,7 +69,10 @@ public interface RepositoryManager {
      * Do nothing if the repository is not registered.
      *
      * @param name the repository name to unregister
+     * @deprecated since 11.5: removal of the repository should not be needed and should be done at runtime stop to
+     *             ensure proper hot-reload.
      */
+    @Deprecated(since = "11.5")
     void removeRepository(String name);
 
     /**

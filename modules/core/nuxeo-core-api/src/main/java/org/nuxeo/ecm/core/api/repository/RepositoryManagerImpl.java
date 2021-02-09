@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -38,7 +39,27 @@ public class RepositoryManagerImpl extends DefaultComponent implements Repositor
 
     private static final Log log = LogFactory.getLog(RepositoryManagerImpl.class);
 
-    private Map<String, Repository> repositories = Collections.synchronizedMap(new LinkedHashMap<String, Repository>());
+    private Map<String, Repository> repositories;
+
+    /**
+     * Start early to initialize repositories map for API.
+     * <p>
+     * Re-initialization of the map at start will ensure proper hot-reload.
+     */
+    @Override
+    public int getApplicationStartedOrder() {
+        return -100;
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        repositories = Collections.synchronizedMap(new LinkedHashMap<String, Repository>());
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        repositories = null;
+    }
 
     // called by low-level repository service
     @Override

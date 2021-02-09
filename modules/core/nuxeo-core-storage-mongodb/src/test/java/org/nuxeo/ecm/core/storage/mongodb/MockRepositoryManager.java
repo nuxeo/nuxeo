@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -38,7 +39,22 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class MockRepositoryManager extends DefaultComponent implements RepositoryManager {
 
-    protected Map<String, Repository> repos = new HashMap<>();
+    protected Map<String, Repository> repos;
+
+    @Override
+    public int getApplicationStartedOrder() {
+        return -100;
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        repos = new HashMap<>();
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        repos = null;
+    }
 
     @Override
     public Collection<Repository> getRepositories() {
