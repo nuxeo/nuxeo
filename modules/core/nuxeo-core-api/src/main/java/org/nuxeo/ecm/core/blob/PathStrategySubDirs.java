@@ -19,9 +19,6 @@
 package org.nuxeo.ecm.core.blob;
 
 import java.nio.file.Path;
-import java.util.regex.Pattern;
-
-import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Stores a file in a nested subdirectory based on the initial characters of the key, in groups of 2. The key is
@@ -33,9 +30,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  */
 public class PathStrategySubDirs extends PathStrategy {
 
-    /** Allowed key pattern, used as file path. */
-    protected static final Pattern PATTERN = Pattern.compile("[a-zA-Z0-9]+");
-
     protected final int depth;
 
     public PathStrategySubDirs(Path dir, int depth) {
@@ -45,9 +39,7 @@ public class PathStrategySubDirs extends PathStrategy {
 
     @Override
     public Path getPathForKey(String key) {
-        if (!PATTERN.matcher(key).matches()) {
-            throw new NuxeoException("Invalid key: " + key);
-        }
+        key = safePath(key);
         if (key.length() < 2 * depth) {
             // store short keys under a special 000 directory
             return dir.resolve("000").resolve(key);
