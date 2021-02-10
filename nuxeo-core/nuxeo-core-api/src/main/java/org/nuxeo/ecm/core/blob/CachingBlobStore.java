@@ -20,18 +20,24 @@ package org.nuxeo.ecm.core.blob;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.Clock;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import org.nuxeo.common.file.FileCache;
-import org.nuxeo.common.file.LRUFileCache;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
-import org.nuxeo.runtime.trackers.files.FileEventTracker;
 
 /**
  * Blob store wrapper that caches blobs locally because fetching them may be expensive.
@@ -40,18 +46,27 @@ import org.nuxeo.runtime.trackers.files.FileEventTracker;
  */
 public class CachingBlobStore extends AbstractBlobStore {
 
+    private static final Logger log = LogManager.getLogger(CachingBlobStore.class);
+
     protected final BlobStore store;
 
+    protected final CachingConfiguration cacheConfig;
+
     // public for tests
-    public final Path cacheDir;
-
-    protected final FileCache fileCache;
-
-    protected final PathStrategyFlat tmpPathStrategy;
-
-    protected final BlobStore tmpStore;
+    public final LocalBlobStore cacheStore;
 
     protected final BinaryGarbageCollector gc;
+
+    // lock to avoid doing redundant work in parallel, and protect access to clearOldBlobsLastTime
+    protected final Lock clearOldBlobsLock = new ReentrantLock();
+
+    protected long clearOldBlobsLastTime;
+
+    // not a constant for tests
+    protected long clearOldBlobsInterval = Duration.ofSeconds(5).toMillis();
+
+    // not a constant for tests
+    protected Clock clock = Clock.systemUTC();
 
     /** @deprecated since 11.5 */
     @Deprecated
@@ -63,12 +78,8 @@ public class CachingBlobStore extends AbstractBlobStore {
     public CachingBlobStore(String blobProviderId, String name, BlobStore store, CachingConfiguration config) {
         super(blobProviderId, name, store.getKeyStrategy());
         this.store = store;
-        cacheDir = config.dir;
-        fileCache = new LRUFileCache(cacheDir.toFile(), config.maxSize, config.maxCount, config.minAge);
-        // be sure FileTracker won't steal our files
-        FileEventTracker.registerProtectedPath(cacheDir.toAbsolutePath().toString());
-        tmpPathStrategy = new PathStrategyFlat(cacheDir);
-        tmpStore = new LocalBlobStore(name, store.getKeyStrategy(), tmpPathStrategy); // view of the LRUFileCache tmp dir
+        this.cacheConfig = config;
+        cacheStore = new LocalBlobStore(name, store.getKeyStrategy(), new PathStrategyFlat(config.dir));
         gc = new CachingBinaryGarbageCollector(store.getBinaryGarbageCollector());
     }
 
@@ -82,54 +93,69 @@ public class CachingBlobStore extends AbstractBlobStore {
         return store.unwrap();
     }
 
+    protected Path renameCachedBlob(String tmpKey, String key) throws IOException {
+        return copyOrMoveCachedBlob(key, cacheStore, tmpKey, true);
+    }
+
+    protected Path copyOrMoveCachedBlob(String destKey, LocalBlobStore sourceStore, String sourceKey,
+            boolean atomicMove) throws IOException {
+        String returnedKey = cacheStore.copyOrMoveBlob(destKey, sourceStore, sourceKey, atomicMove);
+        if (returnedKey == null) {
+            // source key didn't exist
+            return null;
+        }
+        OptionalOrUnknown<Path> fileOpt = cacheStore.getFile(destKey);
+        if (!fileOpt.isPresent()) {
+            throw new IllegalStateException("File disappeared after copy/move: " + destKey);
+        }
+        Path path = fileOpt.get();
+        recordBlobAccess(path);
+        clearOldBlobs();
+        return path;
+    }
+
     @Override
     protected String writeBlobGeneric(BlobWriteContext blobWriteContext) throws IOException {
         // write the blob to a temporary file
-        String tmpKey = tmpStore.writeBlob(blobWriteContext.copyWithKey(randomString()));
+        String tmpKey = cacheStore.writeBlob(blobWriteContext.copyWithKey(randomString()));
         // get the final key
         String key = blobWriteContext.getKey(); // may depend on write observer, for example for digests
 
         // when using deduplication, check if it's in the cache already
-        if (blobWriteContext.useDeDuplication()) {
-            if (fileCache.getFile(key) != null) {
-                logTrace("<--", "exists");
-                logTrace("hnote right: " + key);
-                // delete tmp file, not needed anymore
-                tmpStore.deleteBlob(tmpKey);
-                return key;
-            } else {
-                logTrace("<--", "missing");
-                logTrace("hnote right: " + key);
-                // fall through
-            }
+        if (blobWriteContext.useDeDuplication() && getFileFromCache(key, true).isPresent()) {
+            // delete tmp file, not needed anymore
+            cacheStore.deleteBlob(tmpKey);
+            return key;
         }
 
         // we now have a file for this blob
-        Path tmp = tmpPathStrategy.getPathForKey(tmpKey);
-        blobWriteContext.setFile(tmp);
+        OptionalOrUnknown<Path> fileOpt = cacheStore.getFile(tmpKey);
+        if (!fileOpt.isPresent()) {
+            throw new IllegalStateException("File disappeared after write: " + tmpKey);
+        }
+        blobWriteContext.setFile(fileOpt.get());
         // send the file to storage
         String returnedKey = store.writeBlob(blobWriteContext.copyWithNoWriteObserverAndKey(key));
-        // register the file in the file cache using its actual key
-        logTrace(name, "-->", name, "rename");
-        logTrace("hnote right of " + name + ": " + returnedKey);
-        fileCache.putFile(returnedKey, tmp.toFile());
+        // renamed the cached file to the actual key
+        renameCachedBlob(tmpKey, returnedKey);
         return returnedKey;
     }
 
     @Override
     public String copyOrMoveBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
-        CachingBlobStore cachingSourceStore = sourceStore instanceof CachingBlobStore ? (CachingBlobStore) sourceStore
+        LocalBlobStore sourceCacheStore = sourceStore instanceof CachingBlobStore
+                ? ((CachingBlobStore) sourceStore).cacheStore
                 : null;
-        if ((!atomicMove || copyBlobIsOptimized(sourceStore)) && cachingSourceStore != null && key != null) {
+        if ((!atomicMove || copyBlobIsOptimized(sourceStore)) && sourceCacheStore != null && key != null) {
             // if it's a copy and the original cached file won't be touched
             // else optimized move won't need the cache, so we can move the cache ahead of time
-            tmpStore.copyOrMoveBlob(key, cachingSourceStore.tmpStore, sourceKey, atomicMove);
+            copyOrMoveCachedBlob(key, sourceCacheStore, sourceKey, atomicMove);
         }
         String returnedKey = store.copyOrMoveBlob(key, sourceStore, sourceKey, atomicMove);
-        if (returnedKey != null && atomicMove && cachingSourceStore != null) {
+        if (returnedKey != null && atomicMove && sourceCacheStore != null) {
             // clear source cache
-            cachingSourceStore.tmpStore.deleteBlob(sourceKey);
+            sourceCacheStore.deleteBlob(sourceKey);
         }
         return returnedKey;
     }
@@ -141,40 +167,48 @@ public class CachingBlobStore extends AbstractBlobStore {
 
     @Override
     public OptionalOrUnknown<Path> getFile(String key) {
-        File cachedFile = fileCache.getFile(key);
-        if (cachedFile == null) {
+        // best effort: if it's not in the cache then return unknown
+        // because if the underlying store was able to return files efficiently
+        // it wouldn't need a caching layer
+        OptionalOrUnknown<Path> fileOpt = getFileFromCache(key, false);
+        return fileOpt.isPresent() ? fileOpt : OptionalOrUnknown.unknown();
+    }
+
+    protected OptionalOrUnknown<Path> getFileFromCache(String key, boolean exists) {
+        OptionalOrUnknown<Path> fileOpt = cacheStore.getFile(key);
+        if (fileOpt.isPresent()) {
+            Path path = fileOpt.get();
+            recordBlobAccess(path);
+            long len = path.toFile().length();
+            if (exists) {
+                logTrace("<--", "exists (" + len + " bytes)");
+            } else { // read
+                logTrace("<-", "read " + len + " bytes");
+            }
+            logTrace("hnote right: " + key);
+        } else {
             logTrace("<--", "missing");
             logTrace("hnote right: " + key);
-            return OptionalOrUnknown.missing();
-        } else {
-            logTrace("<-", "read " + cachedFile.length() + " bytes");
-            logTrace("hnote right: " + key);
-            return OptionalOrUnknown.of(cachedFile.toPath());
         }
+        return fileOpt;
     }
 
     @Override
     public OptionalOrUnknown<InputStream> getStream(String key) throws IOException {
-        File cachedFile = fileCache.getFile(key);
-        if (cachedFile == null) {
-            logTrace("<--", "missing");
-            logTrace("hnote right: " + key);
+        Path path;
+        OptionalOrUnknown<Path> fileOpt = getFile(key);
+        if (fileOpt.isPresent()) {
+            path = fileOpt.get();
+        } else {
             // fetch file from storage into the cache
             // go through a tmp file for atomicity
-            String tmpKey = randomString();
-            String returnedKey = tmpStore.copyOrMoveBlob(tmpKey, store, key, false);
-            if (returnedKey == null) {
+            String tmpKey = cacheStore.copyOrMoveBlob(randomString(), store, key, false);
+            if (tmpKey == null) {
                 return OptionalOrUnknown.missing();
             }
-            File tmp = tmpPathStrategy.getPathForKey(tmpKey).toFile();
-            logTrace("->", "write " + tmp.length() + " bytes");
-            logTrace("hnote right: " + key);
-            cachedFile = fileCache.putFile(key, tmp);
-        } else {
-            logTrace("<-", "read " + cachedFile.length() + " bytes");
-            logTrace("hnote right: " + key);
+            path = renameCachedBlob(tmpKey, key);
         }
-        return OptionalOrUnknown.of(new FileInputStream(cachedFile));
+        return OptionalOrUnknown.of(Files.newInputStream(path));
     }
 
     @Override
@@ -196,14 +230,119 @@ public class CachingBlobStore extends AbstractBlobStore {
 
     @Override
     public void deleteBlob(String key) {
-        tmpStore.deleteBlob(key); // TODO add API to FileCache to do this cleanly
+        cacheStore.deleteBlob(key);
         store.deleteBlob(key);
     }
 
     @Override
     public void clear() {
+        cacheStore.clear();
         store.clear();
-        tmpStore.clear();
+    }
+
+    /**
+     * Clear old blobs from the cache, but not too often (as doing directory listings has a cost).
+     *
+     * @since 11.5
+     */
+    protected void clearOldBlobs() {
+        if (clearOldBlobsLock.tryLock()) {
+            try {
+                if (clock.millis() > clearOldBlobsLastTime + clearOldBlobsInterval) {
+                    clearOldBlobsNow();
+                    clearOldBlobsLastTime = clock.millis();
+                }
+            } finally {
+                clearOldBlobsLock.unlock();
+            }
+        }
+        // else don't do anything, another thread is already doing it
+    }
+
+    /**
+     * Clear old blobs from the cache.
+     * <p>
+     * A blob is deleted if it has not been recently created or accessed (minimum age), and if in addition it would be
+     * too big for the maximum cache size in bytes, or if the cache would contain too many blobs.
+     *
+     * @since 11.5
+     */
+    protected void clearOldBlobsNow() {
+        List<PathInfo> files = new ArrayList<>();
+        try (DirectoryStream<Path> ds = Files.newDirectoryStream(cacheConfig.dir)) {
+            for (Path path : ds) {
+                try {
+                    files.add(new PathInfo(path));
+                } catch (IOException e) {
+                    log.error(e, e);
+                }
+            }
+        } catch (IOException e) {
+            log.error(e, e);
+        }
+        Collections.sort(files); // sort by most recent first
+
+        long maxSize = cacheConfig.maxSize;
+        long maxCount = cacheConfig.maxCount;
+        long minAgeMillis = cacheConfig.minAge * 1000;
+        long size = 0;
+        long count = 0;
+        long threshold = clock.millis() - minAgeMillis;
+        for (PathInfo pi : files) {
+            size += pi.size;
+            count++;
+            // is the file old enough to be a candidate for deletion?
+            if (pi.time < threshold) {
+                // are files too numerous or do they occupy too much space?
+                if (count > maxCount || size > maxSize) {
+                    // delete the file
+                    try {
+                        Files.delete(pi.path);
+                        size -= pi.size;
+                        count--;
+                    } catch (IOException e) {
+                        log.error(e, e);
+                    }
+                }
+            }
+        }
+    }
+
+    protected static class PathInfo implements Comparable<PathInfo> {
+
+        protected final Path path;
+
+        protected final long time;
+
+        protected final long size;
+
+        public PathInfo(Path path) throws IOException {
+            this.path = path;
+            this.time = Files.getLastModifiedTime(path).toMillis();
+            this.size = Files.size(path);
+        }
+
+        @Override
+        public int compareTo(PathInfo other) { // NOSONAR no need for equals
+            // compare in reverse order (most recent first)
+            return Long.compare(other.time, time);
+        }
+    }
+
+    /**
+     * Records access to a blob by changing its modification time.
+     *
+     * @since 11.5
+     */
+    // Some calls to this method may seem redundant because the file was just created,
+    // but during tests it's important to use our custom clock for last modified time.
+    protected void recordBlobAccess(Path path) {
+        try {
+            // note that the filesystem may round the time
+            Files.setLastModifiedTime(path, FileTime.fromMillis(clock.millis()));
+        } catch (IOException e) {
+            log.error(e, e);
+        }
     }
 
     @Override
@@ -242,7 +381,7 @@ public class CachingBlobStore extends AbstractBlobStore {
             delegate.stop(delete);
             if (delete) {
                 logTrace("->", "clear");
-                fileCache.clear();
+                cacheStore.clear();
             }
         }
 
