@@ -55,6 +55,7 @@
       Deprecation note: since 7.4, the 'themePage' element is deprecated, and has 
       been removed as of 11.5: just change it to use the 'page' element instead.
     </documentation>
+    <object class="org.nuxeo.theme.styling.service.descriptors.ThemePage" />
     <object class="org.nuxeo.theme.styling.service.descriptors.PageDescriptor" />
     <registry class="org.nuxeo.theme.styling.service.registries.PageRegistry" />
   </extension-point>

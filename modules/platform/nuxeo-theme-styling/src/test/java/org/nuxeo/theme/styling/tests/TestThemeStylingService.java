@@ -208,7 +208,7 @@ public class TestThemeStylingService {
     @Test
     @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-config.xml")
     @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-addon-config.xml")
-    public void testPageRegistration() throws Exception {
+    public void testPageRegistration() {
         PageDescriptor page = service.getPage("testStyling/default");
         assertNotNull(page);
         assertEquals("testStyling/default", page.getName());
@@ -228,7 +228,22 @@ public class TestThemeStylingService {
     @Test
     @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-config.xml")
     @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-addon-config.xml")
-    public void testNegotiator() throws Exception {
+    public void testCompatThemePageRegistration() {
+        PageDescriptor page = service.getPage("userCenter/default");
+        assertNotNull(page);
+        assertEquals("userCenter/default", page.getName());
+        assertEquals("default", page.getDefaultFlavor());
+        assertEquals(List.of("default", "rainbow", "addon_flavor"), page.getFlavors());
+        assertEquals(List.of("nuxeo_includes", "nuxeo_base", "nuxeo_sassCss", "pageResourceBundle_userCenter_default"),
+                page.getResourceBundles());
+        assertEquals(List.of("nuxeo_usercenter_specific.scss", "user_profile.scss", "jquery.addon.js"),
+                page.getResources());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-config.xml")
+    @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-addon-config.xml")
+    public void testNegotiator() {
         assertNull(service.negotiate("foo", null));
         assertEquals("bar", service.negotiate("testNegotiation", null));
     }
@@ -272,7 +287,7 @@ public class TestThemeStylingService {
         assertEquals(0, presets.size());
     }
 
-    protected void checkOriginalTheme() throws Exception {
+    protected void checkOriginalTheme() {
         assertEquals("default", service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
         List<String> flavorNames = service.getFlavorNames(DEFAULT_PAGE_NAME);
         assertNotNull(flavorNames);
