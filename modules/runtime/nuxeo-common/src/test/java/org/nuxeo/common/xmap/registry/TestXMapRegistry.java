@@ -77,6 +77,8 @@ public class TestXMapRegistry {
         assertEquals(5, mreg.getContributionValues().size());
         assertEquals(List.of("sample1", "sample2", "sample3", "sample4", "sample5"),
                 new ArrayList<>(mreg.getContributions().keySet()));
+        // check NPE on ConcurrentHashMap
+        assertFalse(mreg.getContribution(null).isPresent());
         assertFalse(mreg.getContribution("foo").isPresent());
         checkSample(mreg, "sample1", "Sample 1 Value", false, List.of(), null, Map.of(), Map.of(), null, List.of(),
                 Map.of());
