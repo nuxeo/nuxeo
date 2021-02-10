@@ -35,7 +35,7 @@ import org.nuxeo.ecm.web.resources.api.ResourceBundle;
  * @since 7.3
  */
 @XObject("bundle")
-@XRegistry(compatWarnOnMerge = true)
+@XRegistry
 public class ResourceBundleDescriptor implements ResourceBundle {
 
     @XNode("@name")
