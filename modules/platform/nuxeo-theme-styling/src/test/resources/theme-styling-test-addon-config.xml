@@ -13,6 +13,12 @@
       </resources>
     </page>
 
+    <themePage name="userCenter/default">
+      <resources append="true">
+        <resource>user_profile.scss</resource>
+      </resources>
+    </themePage>
+
   </extension>
 
   <extension target="org.nuxeo.theme.styling.service" point="flavors">

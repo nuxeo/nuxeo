@@ -87,8 +87,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             DeprecationLogger.log(message, "7.4");
             addRuntimeMessage(Level.ERROR, message, Source.EXTENSION, compName.getName());
         } else {
-            log.error(String.format("Unknown contribution to the theme styling service, extension point '%s': '%s",
-                    extensionPoint, contribution));
+            log.error("Unknown contribution to the theme styling service, extension point '{}': '{}'", extensionPoint,
+                    contribution);
         }
     }
 

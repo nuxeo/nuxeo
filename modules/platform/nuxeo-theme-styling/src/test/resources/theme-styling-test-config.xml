@@ -25,6 +25,20 @@
       </flavors>
     </page>
 
+    <themePage name="userCenter/default" charset="utf-8">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors>
+        <flavor>default</flavor>
+        <flavor>rainbow</flavor>
+      </flavors>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_sassCss</bundle>
+        <resource>nuxeo_usercenter_specific.scss</resource>
+      </resources>
+    </themePage>
+
   </extension>
 
   <!-- Register flavors (collections of presets) -->
