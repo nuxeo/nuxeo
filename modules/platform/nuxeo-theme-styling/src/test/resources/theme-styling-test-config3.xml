@@ -11,6 +11,16 @@
       </flavors>
     </page>
 
+    <page name="userCenter/default">
+      <defaultFlavor>dark</defaultFlavor>
+      <flavors>
+        <flavor>dark</flavor>
+      </flavors>
+      <resources append="false">
+        <bundle>userCenter_includes</bundle>
+      </resources>
+    </page>
+
     <!-- check multiple append behaviour -->
     <page name="testStyling/print">
       <flavors append="true">
