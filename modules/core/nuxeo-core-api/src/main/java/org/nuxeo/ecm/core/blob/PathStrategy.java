@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,6 +45,39 @@ public abstract class PathStrategy {
 
     public PathStrategy(Path dir) {
         this.dir = dir.normalize();
+    }
+
+    // ASCII except / (Unix) and \ (Windows) and : (Windows) and % (escaping)
+    protected static final Pattern SAFE = Pattern.compile("[ -~&&[^%/:\\\\]]+");
+
+    protected static final char[] HEX = "0123456789abcdef".toCharArray();
+
+    /**
+     * Converts a key to a safe path.
+     * <p>
+     * Different keys always map to different safe paths (no collision).
+     *
+     * @param key the key
+     * @return the safe path
+     * @since 11.5
+     */
+    protected String safePath(String key) {
+        if (SAFE.matcher(key).matches() && !key.equals(".") && !key.equals("..")) {
+            return key;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append('%'); // marker for encoded value, in case we have to decode it later
+        for (byte b : key.getBytes(UTF_8)) {
+            if (b >= ' ' && b <= '~' && b != '%' && b != '/' && b != ':' && b != '\\') {
+                // ASCII except % / : \
+                sb.append((char) b);
+            } else {
+                sb.append('%');
+                sb.append(HEX[(0xF0 & b) >>> 4]);
+                sb.append(HEX[0x0F & b]);
+            }
+        }
+        return sb.toString();
     }
 
     /**
