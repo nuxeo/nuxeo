@@ -47,6 +47,8 @@ public class MapRegistry extends AbstractRegistry implements Registry {
 
     protected Set<String> disabled = ConcurrentHashMap.newKeySet();
 
+    protected static final String DEFAULT_KEY = "null";
+
     @Override
     public void initialize() {
         contributions.clear();
@@ -76,6 +78,9 @@ public class MapRegistry extends AbstractRegistry implements Registry {
 
     @SuppressWarnings("unchecked")
     public <T> Optional<T> getContribution(String id) {
+        if (id == null) {
+            id = DEFAULT_KEY;
+        }
         checkInitialized();
         if (disabled.contains(id)) {
             return Optional.empty();
@@ -87,7 +92,7 @@ public class MapRegistry extends AbstractRegistry implements Registry {
         String id = (String) xObject.getRegistryId().getValue(ctx, element);
         if (id == null) {
             // prevent NPE on map key
-            id = "null";
+            id = DEFAULT_KEY;
         }
         return id;
     }
