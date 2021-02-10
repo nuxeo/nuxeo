@@ -20,8 +20,6 @@ package org.nuxeo.ecm.core.blob;
 
 import java.nio.file.Path;
 
-import org.nuxeo.ecm.core.api.NuxeoException;
-
 /**
  * Stores a file in a directory based on its key.
  *
@@ -35,11 +33,8 @@ public class PathStrategyFlat extends PathStrategy {
 
     @Override
     public Path getPathForKey(String key) {
-        Path path = dir.resolve(key);
-        if (!path.normalize().getParent().equals(dir)) {
-            throw new NuxeoException("Invalid key: " + key);
-        }
-        return path;
+        key = safePath(key);
+        return dir.resolve(key);
     }
 
 }
