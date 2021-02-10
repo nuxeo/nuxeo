@@ -128,6 +128,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
@@ -298,7 +299,7 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     protected Response buildItemVersionResponse(String operation, Blob blob) {
-        String itemVersion = blob.getDigest();
+        String itemVersion = getItemVersion();
         response.addHeader(ITEM_VERSION, itemVersion);
         logResponse(operation, OK.getStatusCode(), ITEM_VERSION, itemVersion);
         return Response.ok().build();
@@ -609,7 +610,9 @@ public class FilesEndpoint extends DefaultObject {
         logNuxeoAction("Updating blob");
         Blob newBlob = createBlobFromRequestBody(blob.getFilename(), blob.getMimeType());
         doc.setPropertyValue(xpath, (Serializable) newBlob);
+        doc.putContextData(CoreSession.USER_CHANGE, true);
         doc = session.saveDocument(doc);
+        session.save(); // make sure the document change token is up to date
         newBlob = (Blob) doc.getPropertyValue(xpath);
         return buildItemVersionResponse(OPERATION_PUT_FILE, newBlob);
     }
@@ -703,7 +706,7 @@ public class FilesEndpoint extends DefaultObject {
         map.put(OWNER_ID, doc.getPropertyValue("dc:creator"));
         map.put(SIZE, blob.getLength());
         map.put(USER_ID, principal.getName());
-        map.put(VERSION, blob.getDigest());
+        map.put(VERSION, getItemVersion());
     }
 
     protected void addHostCapabilitiesProperties(Map<String, Serializable> map) {
@@ -759,6 +762,13 @@ public class FilesEndpoint extends DefaultObject {
                 map.put(BREADCRUMB_FOLDER_URL, url);
             }
         }
+    }
+
+    protected String getItemVersion() {
+        String changeToken = doc.getChangeToken();
+        String[] split = changeToken.split(BaseDocument.TOKEN_SEP);
+        // use the user change token as item version
+        return split[split.length - 1];
     }
 
     protected String getDocumentURL(DocumentModel doc) {

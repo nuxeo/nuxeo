@@ -301,7 +301,7 @@ public class TestFilesEndpoint {
         toReplace.put(XPATH_VAR, FILE_CONTENT_PROPERTY);
         toReplace.put(FILENAME_VAR, "test-file.txt");
         toReplace.put(CHANGE_TOKEN_VAR, "1-0");
-        toReplace.put(ITEM_VERSION_VAR, expectedFileBlob.getDigest());
+        toReplace.put(ITEM_VERSION_VAR, "0");
         try (CloseableClientResponse response = get(johnToken, blobDocFileId)) {
             checkJSONResponse(response, "json/CheckFileInfo-john-write.json", toReplace);
         }
@@ -324,7 +324,7 @@ public class TestFilesEndpoint {
         transactionalFeature.nextTransaction();
         toReplace.put(DOC_ID_VAR, convertibleBlobDoc.getId());
         toReplace.put(FILENAME_VAR, convertibleFilename);
-        toReplace.put(ITEM_VERSION_VAR, convertibleBlob.getDigest());
+        toReplace.put(ITEM_VERSION_VAR, "0");
         try (CloseableClientResponse response = get(johnToken, convertibleBlobDocFileId)) {
             checkJSONResponse(response, "json/CheckFileInfo-john-convert.json", toReplace);
         }
@@ -423,7 +423,7 @@ public class TestFilesEndpoint {
             transactionalFeature.nextTransaction();
             assertTrue(session.getDocument(blobDoc.getRef()).isLocked());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
-            assertEquals(expectedFileBlob.getDigest(), itemVersion);
+            assertEquals("0", itemVersion);
         }
     }
 
@@ -548,7 +548,7 @@ public class TestFilesEndpoint {
             transactionalFeature.nextTransaction();
             assertFalse(session.getDocument(blobDoc.getRef()).isLocked());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
-            assertEquals(expectedFileBlob.getDigest(), itemVersion);
+            assertEquals("0", itemVersion);
         }
     }
 
@@ -791,7 +791,7 @@ public class TestFilesEndpoint {
             assertEquals("new content", updatedBlob.getString());
             assertEquals("zero-length-blob", updatedBlob.getFilename());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
-            assertEquals(updatedBlob.getDigest(), itemVersion);
+            assertEquals("1", itemVersion);
         }
 
         // fail - 409 - not locked and blob present
@@ -825,7 +825,7 @@ public class TestFilesEndpoint {
             assertEquals("new content", updatedBlob.getString());
             assertEquals("test-file.txt", updatedBlob.getFilename());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
-            assertEquals(updatedBlob.getDigest(), itemVersion);
+            assertEquals("1", itemVersion);
         }
 
         // fail - 409 - locked by another client
@@ -841,6 +841,60 @@ public class TestFilesEndpoint {
             assertEquals(409, response.getStatus());
             transactionalFeature.nextTransaction();
             assertTrue(session.getDocument(hugeBlobDoc.getRef()).isLocked());
+        }
+    }
+
+    @Test
+    public void testMultiplePutFile() throws IOException {
+        String data = "new content";
+        Map<String, String> headers = new HashMap<>();
+
+        // lock document from WOPI client
+        headers.put(LOCK, "foo");
+        headers.put(OVERRIDE, Operation.LOCK.name());
+        try (CloseableClientResponse response = post(johnToken, headers, blobDocFileId)) {
+            assertEquals(200, response.getStatus());
+            transactionalFeature.nextTransaction();
+            assertTrue(session.getDocument(blobDoc.getRef()).isLocked());
+        }
+
+        // 1st PUT - success - 200 - blob updated
+        headers.put(OVERRIDE, Operation.PUT.name());
+        try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId, CONTENTS_PATH)) {
+            assertEquals(200, response.getStatus());
+            transactionalFeature.nextTransaction();
+            Blob updatedBlob = (Blob) session.getDocument(blobDoc.getRef()).getPropertyValue(FILE_CONTENT_PROPERTY);
+            assertNotNull(updatedBlob);
+            assertEquals("new content", updatedBlob.getString());
+            assertEquals("test-file.txt", updatedBlob.getFilename());
+            String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
+            assertEquals("1", itemVersion);
+        }
+
+        // 2nd PUT - success - 200 - same blob
+        try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId, CONTENTS_PATH)) {
+            assertEquals(200, response.getStatus());
+            transactionalFeature.nextTransaction();
+            Blob updatedBlob = (Blob) session.getDocument(blobDoc.getRef()).getPropertyValue(FILE_CONTENT_PROPERTY);
+            assertNotNull(updatedBlob);
+            assertEquals("new content", updatedBlob.getString());
+            assertEquals("test-file.txt", updatedBlob.getFilename());
+            String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
+            // item version has changed
+            assertEquals("2", itemVersion);
+        }
+
+        // 3rd PUT - success - 200 - same blob
+        try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId, CONTENTS_PATH)) {
+            assertEquals(200, response.getStatus());
+            transactionalFeature.nextTransaction();
+            Blob updatedBlob = (Blob) session.getDocument(blobDoc.getRef()).getPropertyValue(FILE_CONTENT_PROPERTY);
+            assertNotNull(updatedBlob);
+            assertEquals("new content", updatedBlob.getString());
+            assertEquals("test-file.txt", updatedBlob.getFilename());
+            String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
+            // item version has changed
+            assertEquals("3", itemVersion);
         }
     }
 
@@ -992,7 +1046,7 @@ public class TestFilesEndpoint {
             toReplace.put(XPATH_VAR, FILES_FIRST_FILE_PROPERTY);
             toReplace.put(FILENAME_VAR, "test-attachment.txt");
             toReplace.put(CHANGE_TOKEN_VAR, "1-0");
-            toReplace.put(ITEM_VERSION_VAR, expectedAttachementBlob.getDigest());
+            toReplace.put(ITEM_VERSION_VAR, "0");
             checkJSONResponse(response, "json/CheckFileInfo-files-john-write.json", toReplace);
         }
 
@@ -1012,7 +1066,7 @@ public class TestFilesEndpoint {
             transactionalFeature.nextTransaction();
             assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
-            assertEquals(expectedAttachementBlob.getDigest(), itemVersion);
+            assertEquals("0", itemVersion);
         }
 
         // PutFile
@@ -1028,7 +1082,7 @@ public class TestFilesEndpoint {
             assertEquals("new attachment", updatedBlob.getString());
             assertEquals("test-attachment.txt", updatedBlob.getFilename());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
-            assertEquals(updatedBlob.getDigest(), itemVersion);
+            assertEquals("1", itemVersion);
         }
 
         // PutRelativeFile - file conversion
@@ -1055,7 +1109,7 @@ public class TestFilesEndpoint {
             transactionalFeature.nextTransaction();
             assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
-            assertEquals(expectedFileBlob.getDigest(), itemVersion);
+            assertEquals("0", itemVersion);
         }
 
         // Lock files:files/0/file
@@ -1066,7 +1120,7 @@ public class TestFilesEndpoint {
             // doc is still locked
             assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
-            assertEquals(expectedAttachementBlob.getDigest(), itemVersion);
+            assertEquals("0", itemVersion);
         }
 
         // Relock file:content
@@ -1078,7 +1132,7 @@ public class TestFilesEndpoint {
             transactionalFeature.nextTransaction();
             assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
-            assertEquals(expectedFileBlob.getDigest(), itemVersion);
+            assertEquals("0", itemVersion);
         }
 
         // Unlock files:files/0/file
@@ -1099,7 +1153,7 @@ public class TestFilesEndpoint {
             // document is still locked, WOPI lock set on files:files/0/file
             assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
-            assertEquals(expectedFileBlob.getDigest(), itemVersion);
+            assertEquals("0", itemVersion);
         }
 
         // Unlock files:files/0/file
@@ -1110,7 +1164,7 @@ public class TestFilesEndpoint {
             // document is now unlocked, no more WOPI lock set
             assertFalse(session.getDocument(multipleBlobsDocRef).isLocked());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
-            assertEquals(expectedAttachementBlob.getDigest(), itemVersion);
+            assertEquals("0", itemVersion);
         }
     }
 
@@ -1185,7 +1239,7 @@ public class TestFilesEndpoint {
             transactionalFeature.nextTransaction();
             assertFalse(session.getDocument(blobDoc.getRef()).isLocked());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
-            assertEquals(expectedFileBlob.getDigest(), itemVersion);
+            assertEquals("0", itemVersion);
         }
     }
 
