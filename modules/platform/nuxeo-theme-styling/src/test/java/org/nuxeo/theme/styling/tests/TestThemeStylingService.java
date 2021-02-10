@@ -82,14 +82,11 @@ public class TestThemeStylingService {
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
         ResourceBundle bundle = wrm.getResourceBundle(PageDescriptor.RESOURCE_BUNDLE_PREFIX + "testStyling_default");
         assertNotNull(bundle);
-        assertEquals(2, bundle.getResources().size());
-        assertEquals("jquery.fancybox.js", bundle.getResources().get(0));
-        assertEquals("jquery.fancybox.style.css", bundle.getResources().get(1));
+        assertEquals(List.of("jquery.fancybox.js", "jquery.fancybox.style.css"), bundle.getResources());
 
         ResourceBundle globalBundle = wrm.getResourceBundle(PageDescriptor.RESOURCE_BUNDLE_PREFIX + "*");
         assertNotNull(globalBundle);
-        assertEquals(1, globalBundle.getResources().size());
-        assertEquals("jquery.addon.js", globalBundle.getResources().get(0));
+        assertEquals(List.of("jquery.addon.js"), globalBundle.getResources());
 
         hotDeployer.undeploy("org.nuxeo.theme.styling.tests:theme-styling-test-config2.xml");
 
@@ -108,10 +105,7 @@ public class TestThemeStylingService {
         assertEquals("dark", service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
 
         List<String> flavorNames = service.getFlavorNames(DEFAULT_PAGE_NAME);
-        assertNotNull(flavorNames);
-        assertEquals(2, flavorNames.size());
-        assertEquals("dark", flavorNames.get(0));
-        assertEquals("addon_flavor", flavorNames.get(1));
+        assertEquals(List.of("dark", "addon_flavor"), flavorNames);
 
         List<FlavorDescriptor> flavors = service.getFlavors(DEFAULT_PAGE_NAME);
         assertNotNull(flavors);
@@ -121,13 +115,7 @@ public class TestThemeStylingService {
         assertEquals("default", service.getDefaultFlavorName(PRINT_PAGE_NAME));
 
         flavorNames = service.getFlavorNames(PRINT_PAGE_NAME);
-        assertNotNull(flavorNames);
-        assertEquals("fl: " + flavorNames, 5, flavorNames.size());
-        assertEquals("default", flavorNames.get(0));
-        assertEquals("dark", flavorNames.get(1));
-        assertEquals("subDark", flavorNames.get(2));
-        assertEquals("nonExistingFlavor", flavorNames.get(3));
-        assertEquals("addon_flavor", flavorNames.get(4));
+        assertEquals(List.of("default", "dark", "subDark", "nonExistingFlavor", "addon_flavor"), flavorNames);
 
         flavors = service.getFlavors(PRINT_PAGE_NAME);
         assertNotNull(flavors);
@@ -213,16 +201,56 @@ public class TestThemeStylingService {
         assertNotNull(page);
         assertEquals("testStyling/default", page.getName());
         assertEquals("default", page.getDefaultFlavor());
-        assertEquals(4, page.getFlavors().size());
-        assertEquals("default", page.getFlavors().get(0));
-        assertEquals("dark", page.getFlavors().get(1));
-        assertEquals("subDark", page.getFlavors().get(2));
-        assertEquals("addon_flavor", page.getFlavors().get(3));
-        assertEquals(1, page.getResourceBundles().size());
-        assertEquals("pageResourceBundle_testStyling_default", page.getResourceBundles().get(0));
-        assertEquals(2, page.getResources().size());
-        assertEquals("jquery.fancybox.js", page.getResources().get(0));
-        assertEquals("jquery.addon.js", page.getResources().get(1));
+        assertEquals(List.of("default", "dark", "subDark", "addon_flavor"), page.getFlavors());
+        assertEquals(List.of("nuxeo_includes", "pageResourceBundle_testStyling_default"), page.getResourceBundles());
+        assertEquals(List.of("nuxeo_includes"), page.getDeclaredResourceBundles());
+        assertEquals(List.of("jquery.fancybox.js", "jquery.addon.js"), page.getResources());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-config.xml")
+    @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-addon-config.xml")
+    @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-config2.xml")
+    public void testPageRegistrationMerge2() {
+        PageDescriptor page = service.getPage("testStyling/default");
+        assertNotNull(page);
+        assertEquals("testStyling/default", page.getName());
+        assertEquals("default", page.getDefaultFlavor());
+        assertEquals(List.of("default", "dark", "subDark", "addon_flavor"), page.getFlavors());
+        assertEquals(List.of("nuxeo_includes", "nuxeo_includes2", "pageResourceBundle_testStyling_default"),
+                page.getResourceBundles());
+        assertEquals(List.of("nuxeo_includes", "nuxeo_includes2"), page.getDeclaredResourceBundles());
+        assertEquals(List.of("jquery.fancybox.js", "jquery.fancybox.style.css", "jquery.addon.js"),
+                page.getResources());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-config.xml")
+    @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-addon-config.xml")
+    @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-config2.xml")
+    @Deploy("org.nuxeo.theme.styling.tests:theme-styling-test-config3.xml")
+    public void testPageRegistrationMerge3() {
+        PageDescriptor page = service.getPage("testStyling/default");
+        assertNotNull(page);
+        assertEquals("testStyling/default", page.getName());
+        assertEquals("dark", page.getDefaultFlavor());
+        assertEquals(List.of("dark", "addon_flavor"), page.getFlavors());
+        assertEquals(List.of("nuxeo_includes", "nuxeo_includes2", "pageResourceBundle_testStyling_default"),
+                page.getResourceBundles());
+        assertEquals(List.of("nuxeo_includes", "nuxeo_includes2"), page.getDeclaredResourceBundles());
+        assertEquals(List.of("jquery.fancybox.js", "jquery.fancybox.style.css", "jquery.addon.js"),
+                page.getResources());
+
+        page = service.getPage("userCenter/default");
+        assertNotNull(page);
+        assertEquals("userCenter/default", page.getName());
+        assertEquals("dark", page.getDefaultFlavor());
+        assertEquals(List.of("dark", "addon_flavor"), page.getFlavors());
+        assertEquals(List.of("userCenter_includes", "pageResourceBundle_userCenter_default"),
+                page.getResourceBundles());
+        assertEquals(List.of("userCenter_includes"), page.getDeclaredResourceBundles());
+        assertEquals(List.of("nuxeo_usercenter_specific.scss", "user_profile.scss", "jquery.addon.js"),
+                page.getResources());
     }
 
     @Test

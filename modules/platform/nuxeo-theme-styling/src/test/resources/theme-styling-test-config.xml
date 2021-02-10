@@ -10,11 +10,9 @@
         <flavor>subDark</flavor>
       </flavors>
       <resources>
+        <bundle>nuxeo_includes</bundle>
         <resource>jquery.fancybox.js</resource>
       </resources>
-      <resourceBundles>
-        <bundle>nuxeo_includes</bundle>
-      </resourceBundles>
     </page>
 
     <page name="testStyling/print">

@@ -8,6 +8,7 @@
         <style>nuxeo_dm_default2</style>
       </styles>
       <resources append="true">
+        <bundle>nuxeo_includes2</bundle>
         <resource>jquery.fancybox.style.css</resource>
       </resources>
     </page>

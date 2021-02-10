@@ -67,6 +67,7 @@ public class PageDescriptor {
      * @since 7.4
      */
     @XNodeList(value = "resources/bundle", type = ArrayList.class, componentType = String.class)
+    @XMerge(value = XMerge.MERGE, fallback = "resources@append", defaultAssignment = false)
     List<String> bundles = new ArrayList<>();
 
     // needed by XMap
