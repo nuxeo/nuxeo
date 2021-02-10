@@ -12,6 +12,7 @@ Nuxeo <-- Cache: missing
 Nuxeo --> S3: getObjectMetadata
                                 hnote right: base/acbd18db4cc2f85cedef654fccc4a4d8
 Nuxeo <-- S3: exists (3 bytes)
+                                hnote right of Cache: ${TMP3}
 Cache --> Cache: rename
                                 hnote right of Cache: acbd18db4cc2f85cedef654fccc4a4d8
 @enduml
