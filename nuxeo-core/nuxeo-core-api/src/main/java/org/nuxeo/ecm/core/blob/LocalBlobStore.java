@@ -69,7 +69,7 @@ public class LocalBlobStore extends AbstractBlobStore {
             Path dest = pathStrategy.getPathForKey(key);
             Files.createDirectories(dest.getParent());
             logTrace(name, "-->", name, "rename");
-            logTrace("hnote right of " + name + ": " + dest.getFileName().toString());
+            logTrace("hnote right of " + name + ": " + key);
             Files.move(tmp, dest, ATOMIC_MOVE);
             return key;
         } finally {
@@ -119,9 +119,15 @@ public class LocalBlobStore extends AbstractBlobStore {
         Path dest = pathStrategy.getPathForKey(key);
         Files.createDirectories(dest.getParent());
         if (atomicMove) {
-            logTrace("hnote right of " + sourceStore.name + ": " + sourceKey);
-            logTrace(sourceStore.name, "->", name, "move");
-            logTrace("hnote right: " + key);
+            if (sourceStore == this) {
+                logTrace("hnote right of " + name + ": " + sourceKey);
+                logTrace(name, "-->", name, "rename");
+                logTrace("hnote right of " + name + ": " + key);
+            } else {
+                logTrace("hnote right of " + sourceStore.name + ": " + sourceKey);
+                logTrace(sourceStore.name, "->", name, "move");
+                logTrace("hnote right: " + key);
+            }
             PathStrategy.atomicMove(source, dest);
         } else {
             logTrace("hnote right of " + sourceStore.name + ": " + sourceKey);

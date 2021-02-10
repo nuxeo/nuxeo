@@ -7,7 +7,7 @@ Nuxeo -> Cache: write 3 bytes
                                 hnote right: bin_${TMP1}.tmp
 Cache --> Cache: rename
                                 hnote right of Cache: ${TMP2}
-Nuxeo <-- Cache: exists
+Nuxeo <-- Cache: exists (3 bytes)
                                 hnote right: acbd18db4cc2f85cedef654fccc4a4d8
 Nuxeo -> Cache: delete
                                 hnote right: ${TMP2}
