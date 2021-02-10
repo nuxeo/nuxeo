@@ -33,7 +33,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.message.SimpleMessage;
@@ -150,7 +149,7 @@ public class TestS3BlobStoreTracing {
             clearCache(bs.transientStore);
         } else if (blobStore instanceof CachingBlobStore) {
             CachingBlobStore bs = (CachingBlobStore) blobStore;
-            FileUtils.cleanDirectory(bs.cacheDir.toFile());
+            bs.cacheStore.clear();
         }
     }
 

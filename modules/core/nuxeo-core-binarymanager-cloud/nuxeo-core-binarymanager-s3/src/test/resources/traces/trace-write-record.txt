@@ -11,6 +11,7 @@ Cache --> Cache: rename
 Nuxeo -> S3: write 3 bytes
                                 hnote right: record/id1
 Nuxeo <-- S3: v=${VERSION1}
+                                hnote right of Cache: ${TMP2}
 Cache --> Cache: rename
                                 hnote right of Cache: id1@${VERSION1}
                                 rnote over Nuxeo: id1@${VERSION1}
