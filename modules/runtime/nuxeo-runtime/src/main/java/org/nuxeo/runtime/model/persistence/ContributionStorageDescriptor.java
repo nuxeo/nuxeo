@@ -14,20 +14,22 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
  */
 package org.nuxeo.runtime.model.persistence;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Contribution to handle storage and retrieval of persisted distributions.
  */
 @XObject("storage")
+@XRegistry
 public class ContributionStorageDescriptor {
 
     @XNode("@class")
-    public Class<?> clazz;
+    public Class<? extends ContributionStorage> clazz;
 
 }
