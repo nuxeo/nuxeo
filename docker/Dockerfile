@@ -6,7 +6,7 @@
 
 # ------------------------------------------------------------------------
 # Build stage
-FROM azul/zulu-openjdk:11 as builder
+FROM azul/zulu-openjdk:15 as builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   procps \
@@ -61,7 +61,7 @@ RUN yum -y update \
   && yum -y --setopt=skip_missing_names_on_install=False install \
     epel-release \
     # install java first to provide it for depend packages (such as libreoffice)
-    zulu11-jdk \
+    zulu15-jdk \
   && yum -y --setopt=skip_missing_names_on_install=False install \
     ghostscript \
     ImageMagick-6.9.10.68-3.el7 \
