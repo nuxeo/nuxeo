@@ -19,7 +19,7 @@
     <provide interface="org.nuxeo.runtime.model.persistence.ContributionPersistenceManager" />
   </service>
 
-  <extension-point name="listeners">
+  <extension-point name="storage">
     <documentation>
       A class specifying the storage implementation to use. This class must implement the
       org.nuxeo.runtime.model.persistence.ContributionStorage interface.
