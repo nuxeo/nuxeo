@@ -25,8 +25,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -102,6 +104,9 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     protected LockManager lockManager;
 
     protected final boolean changeTokenEnabled;
+
+    /** @since 11.5 */
+    protected final Map<String, Object> capabilities = new HashMap<>();
 
     /**
      * @since 7.4 : used to know if the LockManager was provided by this repository or externally
@@ -329,6 +334,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     @Override
     public boolean isChangeTokenEnabled() {
         return changeTokenEnabled;
+    }
+
+    @Override
+    public Object getCapability(String name) {
+        return capabilities.get(name);
     }
 
     @Override
