@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,51 +18,22 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetConverterDescriptor;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
+import org.w3c.dom.Element;
 
 /**
  * @since 5.5
  */
-public class WidgetConverterRegistry extends SimpleContributionRegistry<WidgetConverterDescriptor> {
-
-    protected final String category;
-
-    public WidgetConverterRegistry(String category) {
-        super();
-        this.category = category;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public List<String> getLayoutNames() {
-        List<String> res = new ArrayList<>();
-        res.addAll(currentContribs.keySet());
-        return res;
-    }
+public class WidgetConverterRegistry extends AbstractCategoryMapRegistry {
 
     @Override
-    public String getContributionId(WidgetConverterDescriptor contrib) {
-        return contrib.getName();
-    }
-
-    public List<WidgetConverterDescriptor> getConverters() {
-        List<WidgetConverterDescriptor> res = new ArrayList<>();
-        for (WidgetConverterDescriptor item : currentContribs.values()) {
-            if (item != null) {
-                res.add(item);
-            }
-        }
-        return res;
-    }
-
-    public WidgetConverterDescriptor getConverter(String id) {
-        return getCurrentContribution(id);
+    protected List<String> getCategories(Context ctx, XAnnotatedObject xObject, Element element) {
+        var contrib = (WidgetConverterDescriptor) xObject.newInstance(ctx, element);
+        return List.of(contrib.getCategories());
     }
 
 }

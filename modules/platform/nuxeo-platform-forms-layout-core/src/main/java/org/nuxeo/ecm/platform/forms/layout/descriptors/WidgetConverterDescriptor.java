@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,18 @@ package org.nuxeo.ecm.platform.forms.layout.descriptors;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @since 5.5
  */
 @XObject("widgetConverter")
+@XRegistry(merge = false)
 public class WidgetConverterDescriptor implements Comparable<WidgetConverterDescriptor> {
 
     @XNode("@name")
+    @XRegistryId
     String name;
 
     @XNode("@order")

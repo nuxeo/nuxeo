@@ -2,39 +2,40 @@
 
 <component name="org.nuxeo.ecm.platform.forms.layout.LayoutStore">
 
-  <implementation
-    class="org.nuxeo.ecm.platform.forms.layout.core.service.LayoutStoreImpl" />
+  <implementation class="org.nuxeo.ecm.platform.forms.layout.core.service.LayoutStoreImpl" />
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore" />
   </service>
 
   <extension-point name="widgettypes">
-    <object
-      class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor" />
+    <object class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.forms.layout.core.registries.WidgetTypeDefinitionRegistry" />
   </extension-point>
 
   <extension-point name="layouttypes">
-    <object
-      class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutTypeDescriptor" />
+    <object class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutTypeDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.forms.layout.core.registries.LayoutTypeDefinitionRegistry" />
   </extension-point>
 
   <extension-point name="layouts">
     <object class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.forms.layout.core.registries.LayoutDefinitionRegistry" />
   </extension-point>
 
   <extension-point name="widgets">
     <object class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.forms.layout.core.registries.WidgetDefinitionRegistry" />
   </extension-point>
 
   <extension-point name="layoutConverters">
-    <object
-      class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutConverterDescriptor" />
+    <object class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutConverterDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.forms.layout.core.registries.LayoutConverterRegistry" />
   </extension-point>
 
   <extension-point name="widgetConverters">
-    <object
-      class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetConverterDescriptor" />
+    <object class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetConverterDescriptor" />
+    <registry class="org.nuxeo.ecm.platform.forms.layout.core.registries.WidgetConverterRegistry" />
   </extension-point>
 
 </component>

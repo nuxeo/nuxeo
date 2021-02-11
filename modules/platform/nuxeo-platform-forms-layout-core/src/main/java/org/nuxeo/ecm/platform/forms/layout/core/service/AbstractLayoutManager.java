@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,15 +33,13 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @author Anahide Tchertchian
+ * Abstract class with helper methods to interact with {@link LayoutStore} service.
+ *
  * @since 5.5
  */
 public abstract class AbstractLayoutManager extends DefaultComponent implements LayoutManager {
 
     private static final long serialVersionUID = 1L;
-
-    @Override
-    public abstract String getDefaultStoreCategory();
 
     protected String getStoreCategory(String cat) {
         if (StringUtils.isBlank(cat)) {
@@ -124,40 +122,6 @@ public abstract class AbstractLayoutManager extends DefaultComponent implements 
     @Override
     public WidgetDefinition getWidgetDefinition(String widgetName) {
         return getLayoutStore().getWidgetDefinition(getDefaultStoreCategory(), widgetName);
-    }
-
-    // registry helpers
-
-    protected void registerWidgetType(WidgetTypeDefinition desc) {
-        getLayoutStore().registerWidgetType(getDefaultStoreCategory(), desc);
-    }
-
-    protected void unregisterWidgetType(WidgetTypeDefinition desc) {
-        getLayoutStore().unregisterWidgetType(getDefaultStoreCategory(), desc);
-    }
-
-    protected void registerLayoutType(LayoutTypeDefinition desc) {
-        getLayoutStore().registerLayoutType(getDefaultStoreCategory(), desc);
-    }
-
-    protected void unregisterLayoutType(LayoutTypeDefinition desc) {
-        getLayoutStore().unregisterLayoutType(getDefaultStoreCategory(), desc);
-    }
-
-    protected void registerLayout(LayoutDefinition layoutDef) {
-        getLayoutStore().registerLayout(getDefaultStoreCategory(), layoutDef);
-    }
-
-    protected void unregisterLayout(LayoutDefinition layoutDef) {
-        getLayoutStore().unregisterLayout(getDefaultStoreCategory(), layoutDef);
-    }
-
-    protected void registerWidget(WidgetDefinition widgetDef) {
-        getLayoutStore().registerWidget(getDefaultStoreCategory(), widgetDef);
-    }
-
-    protected void unregisterWidget(WidgetDefinition widgetDef) {
-        getLayoutStore().unregisterWidget(getDefaultStoreCategory(), widgetDef);
     }
 
 }

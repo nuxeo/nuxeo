@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006--2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,40 +14,41 @@
  * limitations under the License.
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id: WidgetTypeDescriptor.java 26053 2007-10-16 01:45:43Z atchertchian $
+ *     Anahide Tchertchian
  */
 
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionImpl;
 
 /**
  * Widget type descriptor.
- *
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("widgetType")
+@XRegistry(merge = false)
 public class WidgetTypeDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     String name;
 
-    /**
-     * @since 6.0
-     */
+    /** @since 6.0 */
     @XNodeList(value = "aliases/alias", type = ArrayList.class, componentType = String.class)
     List<String> aliases;
 
@@ -56,6 +57,10 @@ public class WidgetTypeDescriptor {
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> properties;
+
+    /** @since 11.5: helper for JSF contributions */
+    @XNode("@category")
+    protected String category;
 
     @XNode("configuration")
     WidgetTypeConfigurationDescriptor configuration;
@@ -92,7 +97,12 @@ public class WidgetTypeDescriptor {
      * @since 5.5
      */
     public String[] getCategories() {
-        return categories;
+        Set<String> cats = new HashSet<>();
+        if (category != null) {
+            cats.add(category);
+        }
+        cats.addAll(Arrays.asList(categories));
+        return cats.toArray(String[]::new);
     }
 
     public WidgetTypeDefinition getWidgetTypeDefinition() {
@@ -100,7 +110,6 @@ public class WidgetTypeDescriptor {
                 getConfiguration());
         res.setAliases(getAliases());
         return res;
-
     }
 
 }

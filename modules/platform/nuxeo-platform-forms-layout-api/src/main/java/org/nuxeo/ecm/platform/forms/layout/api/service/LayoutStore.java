@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.api.service;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -36,7 +35,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.converters.WidgetDefinitionConver
  *
  * @since 5.5
  */
-public interface LayoutStore extends Serializable {
+public interface LayoutStore {
 
     /**
      * Returns categories of layout and widgets definitions and instances held by this service.
@@ -92,29 +91,5 @@ public interface LayoutStore extends Serializable {
     List<LayoutDefinitionConverter> getLayoutConverters(String category);
 
     List<WidgetDefinitionConverter> getWidgetConverters(String category);
-
-    // registry API
-
-    void registerWidgetType(String category, WidgetTypeDefinition desc);
-
-    void unregisterWidgetType(String category, WidgetTypeDefinition desc);
-
-    /**
-     * @since 6.0
-     */
-    void registerLayoutType(String category, LayoutTypeDefinition desc);
-
-    /**
-     * @since 6.0
-     */
-    void unregisterLayoutType(String category, LayoutTypeDefinition desc);
-
-    void registerLayout(String category, LayoutDefinition layoutDef);
-
-    void unregisterLayout(String category, LayoutDefinition layoutDef);
-
-    void registerWidget(String category, WidgetDefinition widgetDef);
-
-    void unregisterWidget(String category, WidgetDefinition widgetDef);
 
 }
