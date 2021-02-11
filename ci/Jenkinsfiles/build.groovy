@@ -546,6 +546,8 @@ pipeline {
         }
         unsuccessful {
           setGitHubBuildStatus('ftests/dev', 'Functional tests - dev environment', 'FAILURE')
+          // findText does mark the build in FAILURE but doesn't stop the pipeline, error does
+          error "Errors were found!"
         }
       }
     }
