@@ -17,17 +17,9 @@
 
     <documentation>
       Override the default PublicationTree used in Nuxeo to use the one handling
-      Rendition documents.
+      folderish documents.
     </documentation>
-    <publicationTreeConfig name="DefaultSectionsTree" tree="RootSectionsCoreTree"
-      factory="FolderishProxyFactory" title="label.publication.tree.local.sections">
-      <parameters>
-        <parameter name="RelativeRootPath">/sections</parameter>
-        <parameter name="enableSnapshot">true</parameter>
-        <parameter name="iconExpanded">/icons/folder_open.gif</parameter>
-        <parameter name="iconCollapsed">/icons/folder.gif</parameter>
-      </parameters>
-    </publicationTreeConfig>
+    <publicationTreeConfig name="DefaultSectionsTree" factory="FolderishProxyFactory" merge="true" />
 
   </extension>
 
