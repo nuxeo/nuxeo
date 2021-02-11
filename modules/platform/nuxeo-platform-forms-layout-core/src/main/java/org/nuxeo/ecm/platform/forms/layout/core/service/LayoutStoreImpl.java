@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,15 @@
 package org.nuxeo.ecm.platform.forms.layout.core.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
@@ -38,37 +37,30 @@ import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutDefinitionConver
 import org.nuxeo.ecm.platform.forms.layout.api.converters.WidgetDefinitionConverter;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
+import org.nuxeo.ecm.platform.forms.layout.core.registries.AbstractCategoryMapRegistry;
 import org.nuxeo.ecm.platform.forms.layout.core.registries.LayoutConverterRegistry;
 import org.nuxeo.ecm.platform.forms.layout.core.registries.LayoutDefinitionRegistry;
 import org.nuxeo.ecm.platform.forms.layout.core.registries.LayoutTypeDefinitionRegistry;
 import org.nuxeo.ecm.platform.forms.layout.core.registries.WidgetConverterRegistry;
 import org.nuxeo.ecm.platform.forms.layout.core.registries.WidgetDefinitionRegistry;
 import org.nuxeo.ecm.platform.forms.layout.core.registries.WidgetTypeDefinitionRegistry;
-import org.nuxeo.ecm.platform.forms.layout.core.registries.WidgetTypeRegistry;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutConverterDescriptor;
-import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutDescriptor;
-import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutTypeDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetConverterDescriptor;
-import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
-import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @author Anahide Tchertchian
+ * Manages layout-related registries.
+ *
  * @since 5.5
  */
 public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
-    private static final Log log = LogFactory.getLog(LayoutStoreImpl.class);
-
-    private static final long serialVersionUID = 1L;
+    private static final Logger log = LogManager.getLogger(LayoutStoreImpl.class);
 
     public static final String WIDGET_TYPES_EP_NAME = "widgettypes";
 
-    /**
-     * @since 6.0
-     */
+    /** @since 6.0 */
     public static final String LAYOUT_TYPES_EP_NAME = "layouttypes";
 
     public static final String WIDGETS_EP_NAME = "widgets";
@@ -79,481 +71,173 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     public static final String WIDGET_CONVERTERS_EP_NAME = "widgetConverters";
 
-    protected final Map<String, WidgetTypeRegistry> widgetTypesByCat;
+    protected Map<String, Map<String, WidgetType>> widgetTypesByCat;
 
-    protected final Map<String, WidgetTypeDefinitionRegistry> widgetTypeDefsByCat;
+    protected Map<String, List<WidgetDefinitionConverter>> widgetConvertersByCat;
 
-    protected final Map<String, LayoutTypeDefinitionRegistry> layoutTypeDefsByCat;
-
-    protected final Map<String, LayoutDefinitionRegistry> layoutsByCat;
-
-    protected final Map<String, WidgetDefinitionRegistry> widgetsByCat;
-
-    protected final Map<String, WidgetConverterRegistry> widgetConvertersByCat;
-
-    protected final Map<String, LayoutConverterRegistry> layoutConvertersByCat;
-
-    public LayoutStoreImpl() {
-        widgetTypeDefsByCat = new HashMap<>();
-        layoutTypeDefsByCat = new HashMap<>();
-        widgetTypesByCat = new HashMap<>();
-        layoutsByCat = new HashMap<>();
-        widgetsByCat = new HashMap<>();
-        widgetConvertersByCat = new HashMap<>();
-        layoutConvertersByCat = new HashMap<>();
-    }
+    protected Map<String, List<LayoutDefinitionConverter>> layoutConvertersByCat;
 
     // Runtime component API
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(WIDGET_TYPES_EP_NAME)) {
-            WidgetTypeDescriptor desc = (WidgetTypeDescriptor) contribution;
-            String[] categories = desc.getCategories();
-            if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register widget type '%s': no category found", desc.getName()));
-            } else {
-                for (String cat : categories) {
-                    registerWidgetType(cat, desc.getWidgetTypeDefinition());
+    public void start(ComponentContext context) {
+        initWidgetTypes();
+        initWidgetConverters();
+        initLayoutConverters();
+    }
+
+    protected void initWidgetTypes() {
+        widgetTypesByCat = new HashMap<>();
+        WidgetTypeDefinitionRegistry widgetTypeReg = getExtensionPointRegistry(WIDGET_TYPES_EP_NAME);
+        widgetTypeReg.getCategories().forEach(cat -> {
+            List<WidgetTypeDefinition> descs = widgetTypeReg.getContributionValues(cat);
+            descs.forEach(desc -> {
+                String className = desc.getHandlerClassName();
+                Class<?> widgetTypeClass = null;
+                if (className != null) {
+                    try {
+                        widgetTypeClass = LayoutStoreImpl.class.getClassLoader().loadClass(className);
+                    } catch (ReflectiveOperationException e) {
+                        log.error("Caught error when instantiating widget type handler", e);
+                        return;
+                    }
                 }
-            }
-        } else if (extensionPoint.equals(LAYOUT_TYPES_EP_NAME)) {
-            LayoutTypeDescriptor desc = (LayoutTypeDescriptor) contribution;
-            String[] categories = desc.getCategories();
-            if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register layout type '%s': no category found", desc.getName()));
-            } else {
-                for (String cat : categories) {
-                    registerLayoutType(cat, desc.getLayoutTypeDefinition());
+
+                String name = desc.getName();
+                WidgetTypeImpl widgetType = new WidgetTypeImpl(name, widgetTypeClass, desc.getProperties());
+                List<String> aliases = desc.getAliases();
+                widgetType.setAliases(aliases);
+                widgetTypesByCat.computeIfAbsent(cat, k -> new HashMap<>()).put(name, widgetType);
+                aliases.forEach(alias -> widgetTypesByCat.get(cat).put(alias, widgetType));
+            });
+        });
+    }
+
+    protected void initWidgetConverters() {
+        widgetConvertersByCat = new HashMap<>();
+        WidgetConverterRegistry reg = getExtensionPointRegistry(WIDGET_CONVERTERS_EP_NAME);
+        reg.getCategories().forEach(cat -> {
+            List<WidgetConverterDescriptor> descs = reg.getContributionValues(cat);
+            List<WidgetDefinitionConverter> converters = new ArrayList<>();
+            List<String> names = new ArrayList<>();
+            descs.stream().sorted().forEach(desc -> {
+                String name = desc.getName();
+                try {
+                    Class<?> converterClass = LayoutStoreImpl.class.getClassLoader()
+                                                                   .loadClass(desc.getConverterClassName());
+                    converters.add((WidgetDefinitionConverter) converterClass.getDeclaredConstructor().newInstance());
+                    names.add(name);
+                } catch (ReflectiveOperationException | ClassCastException e) {
+                    log.error("Caught error when instantiating widget definition converter {}", name, e);
+                    return;
                 }
-            }
-        } else if (extensionPoint.equals(LAYOUTS_EP_NAME)) {
-            LayoutDescriptor desc = (LayoutDescriptor) contribution;
-            String[] categories = desc.getCategories();
-            if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register layout '%s': no category found", desc.getName()));
-            } else {
-                for (String cat : categories) {
-                    registerLayout(cat, desc.getLayoutDefinition());
+            });
+            log.debug("Ordered widget converters for category '{}': {}", cat, names);
+            widgetConvertersByCat.put(cat, converters);
+        });
+    }
+
+    protected void initLayoutConverters() {
+        layoutConvertersByCat = new HashMap<>();
+        LayoutConverterRegistry reg = getExtensionPointRegistry(LAYOUT_CONVERTERS_EP_NAME);
+        reg.getCategories().forEach(cat -> {
+            List<LayoutConverterDescriptor> descs = reg.getContributionValues(cat);
+            List<LayoutDefinitionConverter> converters = new ArrayList<>();
+            List<String> names = new ArrayList<>();
+            descs.stream().sorted().forEach(desc -> {
+                String name = desc.getName();
+                try {
+                    Class<?> converterClass = LayoutStoreImpl.class.getClassLoader()
+                                                                   .loadClass(desc.getConverterClassName());
+                    converters.add((LayoutDefinitionConverter) converterClass.getDeclaredConstructor().newInstance());
+                    names.add(name);
+                } catch (ReflectiveOperationException | ClassCastException e) {
+                    log.error("Caught error when instantiating layout definition converter {}", name, e);
+                    return;
                 }
-            }
-        } else if (extensionPoint.equals(WIDGETS_EP_NAME)) {
-            WidgetDescriptor desc = (WidgetDescriptor) contribution;
-            String[] categories = desc.getCategories();
-            if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register widget '%s': no category found", desc.getName()));
-            } else {
-                for (String cat : categories) {
-                    registerWidget(cat, desc.getWidgetDefinition());
-                }
-            }
-        } else if (extensionPoint.equals(LAYOUT_CONVERTERS_EP_NAME)) {
-            LayoutConverterDescriptor desc = (LayoutConverterDescriptor) contribution;
-            String[] categories = desc.getCategories();
-            if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register layout converter '%s': no category found", desc.getName()));
-            } else {
-                for (String cat : categories) {
-                    registerLayoutConverter(cat, desc);
-                }
-            }
-        } else if (extensionPoint.equals(WIDGET_CONVERTERS_EP_NAME)) {
-            WidgetConverterDescriptor desc = (WidgetConverterDescriptor) contribution;
-            String[] categories = desc.getCategories();
-            if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register widget converter '%s': no category found", desc.getName()));
-            } else {
-                for (String cat : categories) {
-                    registerWidgetConverter(cat, desc);
-                }
-            }
-        } else {
-            log.error(String.format("Unknown extension point %s, can't register !", extensionPoint));
-        }
+            });
+            log.debug("Ordered layout converters for category '{}': {}", cat, names);
+            layoutConvertersByCat.put(cat, converters);
+        });
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(WIDGET_TYPES_EP_NAME)) {
-            WidgetTypeDescriptor desc = (WidgetTypeDescriptor) contribution;
-            String[] categories = desc.getCategories();
-            if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot unregister widget type '%s': no category found", desc.getName()));
-            } else {
-                for (String cat : categories) {
-                    unregisterWidgetType(cat, desc.getWidgetTypeDefinition());
-                }
-            }
-        } else if (extensionPoint.equals(LAYOUT_TYPES_EP_NAME)) {
-            LayoutTypeDescriptor desc = (LayoutTypeDescriptor) contribution;
-            String[] categories = desc.getCategories();
-            if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot unregister layout type '%s': no category found", desc.getName()));
-            } else {
-                for (String cat : categories) {
-                    unregisterLayoutType(cat, desc.getLayoutTypeDefinition());
-                }
-            }
-        } else if (extensionPoint.equals(LAYOUTS_EP_NAME)) {
-            LayoutDescriptor desc = (LayoutDescriptor) contribution;
-            String[] categories = desc.getCategories();
-            if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot unregister layout '%s': no category found", desc.getName()));
-            } else {
-                for (String cat : categories) {
-                    unregisterLayout(cat, desc.getLayoutDefinition());
-                }
-            }
-        } else if (extensionPoint.equals(WIDGETS_EP_NAME)) {
-            WidgetDescriptor desc = (WidgetDescriptor) contribution;
-            String[] categories = desc.getCategories();
-            if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot unregister widget '%s': no category found", desc.getName()));
-            } else {
-                for (String cat : categories) {
-                    unregisterWidget(cat, desc.getWidgetDefinition());
-                }
-            }
-        } else if (extensionPoint.equals(LAYOUT_CONVERTERS_EP_NAME)) {
-            LayoutConverterDescriptor desc = (LayoutConverterDescriptor) contribution;
-            String[] categories = desc.getCategories();
-            if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register layout converter '%s': no category found", desc.getName()));
-            } else {
-                for (String cat : categories) {
-                    unregisterLayoutConverter(cat, desc);
-                }
-            }
-        } else if (extensionPoint.equals(WIDGET_CONVERTERS_EP_NAME)) {
-            WidgetConverterDescriptor desc = (WidgetConverterDescriptor) contribution;
-            String[] categories = desc.getCategories();
-            if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register widget converter '%s': no category found", desc.getName()));
-            } else {
-                for (String cat : categories) {
-                    unregisterWidgetConverter(cat, desc);
-                }
-            }
-        } else {
-            log.error(String.format("Unknown extension point %s, can't unregister !", extensionPoint));
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        widgetTypesByCat = null;
+        widgetConvertersByCat = null;
+        layoutConvertersByCat = null;
     }
 
     // Categories
 
     @Override
     public List<String> getCategories() {
-        Set<String> cats = new HashSet<>();
-        cats.addAll(widgetTypeDefsByCat.keySet());
-        cats.addAll(widgetTypesByCat.keySet());
-        cats.addAll(layoutsByCat.keySet());
-        cats.addAll(widgetsByCat.keySet());
-        List<String> res = new ArrayList<>();
-        res.addAll(cats);
-        Collections.sort(res);
-        return res;
-    }
-
-    // widget types
-
-    @Override
-    public void registerWidgetType(String category, WidgetTypeDefinition desc) {
-        String name = desc.getName();
-        String className = desc.getHandlerClassName();
-        Class<?> widgetTypeClass = null;
-        if (className != null) {
-            try {
-                widgetTypeClass = LayoutStoreImpl.class.getClassLoader().loadClass(className);
-            } catch (ReflectiveOperationException e) {
-                log.error("Caught error when instantiating widget type handler", e);
-                return;
-            }
-        }
-
-        // override only if handler class was resolved correctly
-        if (widgetTypesByCat.containsKey(name) || widgetTypeDefsByCat.containsKey(name)) {
-            log.warn(String.format("Overriding definition for widget type %s", name));
-            widgetTypesByCat.remove(name);
-            widgetTypeDefsByCat.remove(name);
-        }
-        WidgetTypeImpl widgetType = new WidgetTypeImpl(name, widgetTypeClass, desc.getProperties());
-        widgetType.setAliases(desc.getAliases());
-        WidgetTypeRegistry typeReg = widgetTypesByCat.get(category);
-        if (typeReg == null) {
-            typeReg = new WidgetTypeRegistry(category);
-            widgetTypesByCat.put(category, typeReg);
-        }
-        typeReg.addContribution(widgetType);
-        WidgetTypeDefinitionRegistry defReg = widgetTypeDefsByCat.get(category);
-        if (defReg == null) {
-            defReg = new WidgetTypeDefinitionRegistry(category);
-            widgetTypeDefsByCat.put(category, defReg);
-        }
-        defReg.addContribution(desc);
-        log.info(String.format("Registered widget type '%s' for category '%s' ", name, category));
-    }
-
-    @Override
-    public void unregisterWidgetType(String category, WidgetTypeDefinition desc) {
-        String name = desc.getName();
-        WidgetTypeRegistry typeReg = widgetTypesByCat.get(category);
-        WidgetTypeDefinitionRegistry defReg = widgetTypeDefsByCat.get(category);
-        if (typeReg != null && defReg != null) {
-            // remove corresponding widget type, only reuse name
-            WidgetType widgetType = new WidgetTypeImpl(name, null, null);
-            typeReg.removeContribution(widgetType);
-            defReg.removeContribution(desc);
-            log.info(String.format("Unregistered widget type '%s' for category '%s' ", name, category));
-        }
-    }
-
-    // layout types
-
-    @Override
-    public void registerLayoutType(String category, LayoutTypeDefinition layoutTypeDef) {
-        LayoutTypeDefinitionRegistry reg = layoutTypeDefsByCat.get(category);
-        if (reg == null) {
-            reg = new LayoutTypeDefinitionRegistry(category);
-            layoutTypeDefsByCat.put(category, reg);
-        }
-        reg.addContribution(layoutTypeDef);
-        log.info(String.format("Registered layout type '%s' for category '%s' ", layoutTypeDef.getName(), category));
-    }
-
-    @Override
-    public void unregisterLayoutType(String category, LayoutTypeDefinition layoutTypeDef) {
-        LayoutTypeDefinitionRegistry reg = layoutTypeDefsByCat.get(category);
-        if (reg != null) {
-            reg.removeContribution(layoutTypeDef);
-            log.info(String.format("Unregistered layout type '%s' for category '%s' ", layoutTypeDef.getName(),
-                    category));
-        }
-    }
-
-    // layouts
-
-    @Override
-    public void registerLayout(String category, LayoutDefinition layoutDef) {
-        LayoutDefinitionRegistry reg = layoutsByCat.get(category);
-        if (reg == null) {
-            reg = new LayoutDefinitionRegistry(category);
-            layoutsByCat.put(category, reg);
-        }
-        reg.addContribution(layoutDef);
-        log.info(String.format("Registered layout '%s' for category '%s' ", layoutDef.getName(), category));
-    }
-
-    @Override
-    public void unregisterLayout(String category, LayoutDefinition layoutDef) {
-        LayoutDefinitionRegistry reg = layoutsByCat.get(category);
-        if (reg != null) {
-            reg.removeContribution(layoutDef);
-            log.info(String.format("Unregistered layout '%s' for category '%s' ", layoutDef.getName(), category));
-        }
-    }
-
-    // widgets
-
-    @Override
-    public void registerWidget(String category, WidgetDefinition widgetDef) {
-        WidgetDefinitionRegistry reg = widgetsByCat.get(category);
-        if (reg == null) {
-            reg = new WidgetDefinitionRegistry(category);
-            widgetsByCat.put(category, reg);
-        }
-        reg.addContribution(widgetDef);
-        log.info(String.format("Registered widget '%s' for category '%s' ", widgetDef.getName(), category));
-    }
-
-    @Override
-    public void unregisterWidget(String category, WidgetDefinition widgetDef) {
-        WidgetDefinitionRegistry reg = widgetsByCat.get(category);
-        if (reg != null) {
-            reg.removeContribution(widgetDef);
-            log.info(String.format("Unregistered widget '%s' for category '%s' ", widgetDef.getName(), category));
-        }
-    }
-
-    // converter descriptors
-
-    public void registerLayoutConverter(String category, LayoutConverterDescriptor layoutConverter) {
-        LayoutConverterRegistry reg = layoutConvertersByCat.get(category);
-        if (reg == null) {
-            reg = new LayoutConverterRegistry(category);
-            layoutConvertersByCat.put(category, reg);
-        }
-        reg.addContribution(layoutConverter);
-        log.info(String.format("Registered layout converter '%s' for category '%s' ", layoutConverter.getName(),
-                category));
-    }
-
-    public void unregisterLayoutConverter(String category, LayoutConverterDescriptor layoutConverter) {
-        LayoutConverterRegistry reg = layoutConvertersByCat.get(category);
-        if (reg != null) {
-            reg.removeContribution(layoutConverter);
-            log.info(String.format("Unregistered layout converter '%s' for category '%s' ", layoutConverter.getName(),
-                    category));
-        }
-    }
-
-    public void registerWidgetConverter(String category, WidgetConverterDescriptor widgetConverter) {
-        WidgetConverterRegistry reg = widgetConvertersByCat.get(category);
-        if (reg == null) {
-            reg = new WidgetConverterRegistry(category);
-            widgetConvertersByCat.put(category, reg);
-        }
-        reg.addContribution(widgetConverter);
-        log.info(String.format("Registered widget converter '%s' for category '%s' ", widgetConverter.getName(),
-                category));
-    }
-
-    public void unregisterWidgetConverter(String category, WidgetConverterDescriptor widgetConverter) {
-        WidgetConverterRegistry reg = widgetConvertersByCat.get(category);
-        if (reg != null) {
-            reg.removeContribution(widgetConverter);
-            log.info(String.format("Unregistered widget converter '%s' for category '%s' ", widgetConverter.getName(),
-                    category));
-        }
+        return Stream.<AbstractCategoryMapRegistry> of(getExtensionPointRegistry(WIDGET_TYPES_EP_NAME),
+                getExtensionPointRegistry(LAYOUTS_EP_NAME), getExtensionPointRegistry(WIDGETS_EP_NAME))
+                     .map(AbstractCategoryMapRegistry::getCategories)
+                     .flatMap(List::stream)
+                     .distinct()
+                     .sorted()
+                     .collect(Collectors.toList());
     }
 
     // service api
 
     @Override
     public WidgetType getWidgetType(String category, String typeName) {
-        WidgetTypeRegistry reg = widgetTypesByCat.get(category);
-        if (reg != null) {
-            return reg.getWidgetType(typeName);
-        }
-        return null;
+        return widgetTypesByCat.getOrDefault(category, Collections.emptyMap()).get(typeName);
     }
 
     @Override
     public WidgetTypeDefinition getWidgetTypeDefinition(String category, String typeName) {
-        WidgetTypeDefinitionRegistry reg = widgetTypeDefsByCat.get(category);
-        if (reg != null) {
-            return reg.getDefinition(typeName);
-        }
-        return null;
+        WidgetTypeDefinitionRegistry widgetTypeReg = getExtensionPointRegistry(WIDGET_TYPES_EP_NAME);
+        return widgetTypeReg.getContribution(category, typeName);
     }
 
     @Override
     public List<WidgetTypeDefinition> getWidgetTypeDefinitions(String category) {
-        List<WidgetTypeDefinition> res = new ArrayList<>();
-        WidgetTypeDefinitionRegistry reg = widgetTypeDefsByCat.get(category);
-        if (reg != null) {
-            Collection<WidgetTypeDefinition> defs = reg.getDefinitions();
-            if (defs != null) {
-                res.addAll(defs);
-            }
-        }
-        return res;
+        WidgetTypeDefinitionRegistry widgetTypeReg = getExtensionPointRegistry(WIDGET_TYPES_EP_NAME);
+        return widgetTypeReg.getContributionValues(category);
     }
 
     @Override
     public LayoutTypeDefinition getLayoutTypeDefinition(String category, String typeName) {
-        LayoutTypeDefinitionRegistry reg = layoutTypeDefsByCat.get(category);
-        if (reg != null) {
-            return reg.getDefinition(typeName);
-        }
-        return null;
+        LayoutTypeDefinitionRegistry reg = getExtensionPointRegistry(LAYOUT_TYPES_EP_NAME);
+        return reg.getContribution(category, typeName);
     }
 
     @Override
     public List<LayoutTypeDefinition> getLayoutTypeDefinitions(String category) {
-        List<LayoutTypeDefinition> res = new ArrayList<>();
-        LayoutTypeDefinitionRegistry reg = layoutTypeDefsByCat.get(category);
-        if (reg != null) {
-            Collection<LayoutTypeDefinition> defs = reg.getDefinitions();
-            if (defs != null) {
-                res.addAll(defs);
-            }
-        }
-        return res;
+        LayoutTypeDefinitionRegistry reg = getExtensionPointRegistry(LAYOUT_TYPES_EP_NAME);
+        return reg.getContributionValues(category);
     }
 
     @Override
     public LayoutDefinition getLayoutDefinition(String category, String layoutName) {
-        LayoutDefinitionRegistry reg = layoutsByCat.get(category);
-        if (reg != null) {
-            return reg.getLayoutDefinition(layoutName);
-        }
-        return null;
+        LayoutDefinitionRegistry reg = getExtensionPointRegistry(LAYOUTS_EP_NAME);
+        return reg.getContribution(category, layoutName);
     }
 
     @Override
     public List<String> getLayoutDefinitionNames(String category) {
-        LayoutDefinitionRegistry reg = layoutsByCat.get(category);
-        if (reg != null) {
-            return reg.getLayoutNames();
-        }
-        return Collections.emptyList();
+        LayoutDefinitionRegistry reg = getExtensionPointRegistry(LAYOUTS_EP_NAME);
+        return new ArrayList<>(reg.getContributions(category).keySet());
     }
 
     @Override
     public WidgetDefinition getWidgetDefinition(String category, String widgetName) {
-        WidgetDefinitionRegistry reg = widgetsByCat.get(category);
-        if (reg != null) {
-            return reg.getWidgetDefinition(widgetName);
-        }
-        return null;
+        WidgetDefinitionRegistry reg = getExtensionPointRegistry(WIDGETS_EP_NAME);
+        return reg.getContribution(category, widgetName);
     }
 
     @Override
     public List<LayoutDefinitionConverter> getLayoutConverters(String category) {
-        List<LayoutDefinitionConverter> res = new ArrayList<>();
-        List<String> orderedConverterNames = new ArrayList<>();
-        LayoutConverterRegistry reg = layoutConvertersByCat.get(category);
-        if (reg != null) {
-            List<LayoutConverterDescriptor> descs = reg.getConverters();
-            // first sort by order
-            Collections.sort(descs);
-            // instantiate converter instances
-            for (LayoutConverterDescriptor desc : descs) {
-                Class<?> converterClass;
-                try {
-                    converterClass = LayoutStoreImpl.class.getClassLoader().loadClass(desc.getConverterClassName());
-                    LayoutDefinitionConverter converter = (LayoutDefinitionConverter) converterClass.getDeclaredConstructor()
-                                                                                                    .newInstance();
-                    res.add(converter);
-                    orderedConverterNames.add(desc.getName());
-                } catch (ReflectiveOperationException e) {
-                    log.error("Caught error when instantiating " + "layout definition converter", e);
-                }
-            }
-        }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Ordered layout converters for category '%s': %s", category, orderedConverterNames));
-        }
-        return res;
+        return Collections.unmodifiableList(layoutConvertersByCat.getOrDefault(category, Collections.emptyList()));
     }
 
     @Override
     public List<WidgetDefinitionConverter> getWidgetConverters(String category) {
-        List<WidgetDefinitionConverter> res = new ArrayList<>();
-        List<String> orderedConverterNames = new ArrayList<>();
-        WidgetConverterRegistry reg = widgetConvertersByCat.get(category);
-        if (reg != null) {
-            List<WidgetConverterDescriptor> descs = reg.getConverters();
-            // first sort by order
-            Collections.sort(descs);
-            // instantiate converter instances
-            for (WidgetConverterDescriptor desc : descs) {
-                Class<?> converterClass;
-                try {
-                    converterClass = LayoutStoreImpl.class.getClassLoader().loadClass(desc.getConverterClassName());
-                    WidgetDefinitionConverter converter = (WidgetDefinitionConverter) converterClass.getDeclaredConstructor()
-                                                                                                    .newInstance();
-                    res.add(converter);
-                    orderedConverterNames.add(desc.getName());
-                } catch (ReflectiveOperationException e) {
-                    log.error("Caught error when instantiating " + "widget definition converter", e);
-                }
-            }
-        }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Ordered widget converters for category '%s': %s", category, orderedConverterNames));
-        }
-        return res;
+        return Collections.unmodifiableList(widgetConvertersByCat.getOrDefault(category, Collections.emptyList()));
     }
 
 }

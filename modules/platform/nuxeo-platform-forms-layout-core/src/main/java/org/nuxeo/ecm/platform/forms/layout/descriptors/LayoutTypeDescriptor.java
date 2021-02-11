@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,19 @@
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutTypeDefinitionImpl;
@@ -35,9 +40,11 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutTypeDefinitionImpl;
  * @since 6.0
  */
 @XObject("layoutType")
+@XRegistry(merge = false)
 public class LayoutTypeDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     String name;
 
     @XNodeList(value = "aliases/alias", type = ArrayList.class, componentType = String.class)
@@ -48,6 +55,10 @@ public class LayoutTypeDescriptor {
 
     @XNode("configuration")
     LayoutTypeConfigurationDescriptor configuration;
+
+    /** @since 11.5: helper for JSF contributions */
+    @XNode("@category")
+    protected String category;
 
     @XNodeList(value = "categories/category", type = String[].class, componentType = String.class)
     String[] categories = new String[0];
@@ -72,7 +83,12 @@ public class LayoutTypeDescriptor {
     }
 
     public String[] getCategories() {
-        return categories;
+        Set<String> cats = new HashSet<>();
+        if (category != null) {
+            cats.add(category);
+        }
+        cats.addAll(Arrays.asList(categories));
+        return cats.toArray(String[]::new);
     }
 
     public LayoutTypeDefinition getLayoutTypeDefinition() {

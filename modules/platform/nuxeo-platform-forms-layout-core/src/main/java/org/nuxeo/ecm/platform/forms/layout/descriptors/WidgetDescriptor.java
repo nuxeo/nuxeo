@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006--2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,31 @@
  * limitations under the License.
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ *     Anahide Tchertchian
  *
- * $Id: WidgetDescriptor.java 28478 2008-01-04 12:53:58Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
@@ -49,15 +53,15 @@ import org.w3c.dom.Node;
 
 /**
  * Widget definition descriptor.
- *
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("widget")
+@XRegistry(merge = false)
 public class WidgetDescriptor {
 
-    private static final Log log = LogFactory.getLog(WidgetDescriptor.class);
+    private static final Logger log = LogManager.getLogger(WidgetDescriptor.class);
 
     @XNode("@name")
+    @XRegistryId
     String name;
 
     @XNode("@type")
@@ -119,6 +123,10 @@ public class WidgetDescriptor {
     @XNodeMap(value = "renderingInfos", key = "@mode", type = HashMap.class, componentType = RenderingInfosDescriptor.class)
     Map<String, RenderingInfosDescriptor> renderingInfos = new HashMap<>();
 
+    /** @since 11.5: helper for JSF contributions */
+    @XNode("@category")
+    protected String category;
+
     @XNodeList(value = "categories/category", type = String[].class, componentType = String.class)
     String[] categories = new String[0];
 
@@ -167,8 +175,8 @@ public class WidgetDescriptor {
             if (value instanceof String) {
                 res = (String) value;
             } else {
-                log.error(String.format("Invalid property \"%s\" on widget %s: %s",
-                        WidgetDefinition.REQUIRED_PROPERTY_NAME, value, name));
+                log.error("Invalid property \"{}\" on widget {}: {}", WidgetDefinition.REQUIRED_PROPERTY_NAME, value,
+                        name);
             }
         }
         return res;
@@ -333,7 +341,12 @@ public class WidgetDescriptor {
      * @since 5.5
      */
     public String[] getCategories() {
-        return categories;
+        Set<String> cats = new HashSet<>();
+        if (category != null) {
+            cats.add(category);
+        }
+        cats.addAll(Arrays.asList(categories));
+        return cats.toArray(String[]::new);
     }
 
     /**

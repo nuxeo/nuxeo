@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,90 +18,36 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
+import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutTypeDescriptor;
+import org.w3c.dom.Element;
 
 /**
  * Regiustry for layoyut type definitions.
  *
  * @since 6.0
  */
-public class LayoutTypeDefinitionRegistry extends SimpleContributionRegistry<LayoutTypeDefinition> {
+public class LayoutTypeDefinitionRegistry extends AbstractCategoryMapRegistry {
 
-    protected final String category;
-
-    public LayoutTypeDefinitionRegistry(String category) {
-        super();
-        this.category = category;
-    }
-
-    public String getCategory() {
-        return category;
+    @Override
+    protected List<String> getCategories(Context ctx, XAnnotatedObject xObject, Element element) {
+        var contrib = (LayoutTypeDescriptor) xObject.newInstance(ctx, element);
+        return List.of(contrib.getCategories());
     }
 
     @Override
-    public String getContributionId(LayoutTypeDefinition contrib) {
-        return contrib.getName();
-    }
-
-    public List<LayoutTypeDefinition> getDefinitions() {
-        List<LayoutTypeDefinition> res = new ArrayList<>();
-        for (LayoutTypeDefinition item : currentContribs.values()) {
-            if (item != null) {
-                res.add(item);
-            }
-        }
-        return res;
-    }
-
-    public LayoutTypeDefinition getDefinition(String id) {
-        return getCurrentContribution(id);
+    protected <T> List<String> getContributionAliases(T contribution) {
+        return ((LayoutTypeDefinition) contribution).getAliases();
     }
 
     @Override
-    // overridden to handle aliases
-    public synchronized void addContribution(LayoutTypeDefinition contrib) {
-        super.addContribution(contrib);
-        List<String> aliases = contrib.getAliases();
-        if (aliases != null) {
-            for (String alias : aliases) {
-                FragmentList<LayoutTypeDefinition> head = addFragment(alias, contrib);
-                contributionUpdated(alias, head.merge(this), contrib);
-            }
-        }
-    }
-
-    /**
-     * Overridden to use equals method when removing elements.
-     *
-     * @since 7.2
-     */
-    @Override
-    public synchronized void removeContribution(LayoutTypeDefinition contrib) {
-        removeContribution(contrib, true);
-    }
-
-    @Override
-    // overridden to handle aliases
-    public synchronized void removeContribution(LayoutTypeDefinition contrib, boolean useEqualsMethod) {
-        super.removeContribution(contrib, useEqualsMethod);
-        List<String> aliases = contrib.getAliases();
-        if (aliases != null) {
-            for (String alias : aliases) {
-                FragmentList<LayoutTypeDefinition> head = removeFragment(alias, contrib, useEqualsMethod);
-                if (head != null) {
-                    LayoutTypeDefinition result = head.merge(this);
-                    if (result != null) {
-                        contributionUpdated(alias, result, contrib);
-                    } else {
-                        contributionRemoved(alias, contrib);
-                    }
-                }
-            }
-        }
+    protected <T> Object getConvertedContribution(T contribution) {
+        var desc = (LayoutTypeDescriptor) contribution;
+        return desc.getLayoutTypeDefinition();
     }
 
 }

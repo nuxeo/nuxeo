@@ -89,6 +89,7 @@ public class TestLayoutStoreService {
     @Test
     public void testWidgetType() throws Exception {
         WidgetType wType = service.getWidgetType("testCategory", "test");
+        assertNotNull(wType);
         assertEquals("test", wType.getName());
         assertEquals(2, wType.getProperties().size());
         assertEquals(DummyWidgetTypeHandler.class.getName(), wType.getWidgetTypeClass().getName());

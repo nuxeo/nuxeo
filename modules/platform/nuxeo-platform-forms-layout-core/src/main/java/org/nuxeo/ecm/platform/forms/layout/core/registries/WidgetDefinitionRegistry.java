@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,77 +20,34 @@ package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
 import java.util.List;
 
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
+import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
+import org.w3c.dom.Element;
 
 /**
  * Registry holding widget definitions (global widgets) for a given category
  *
  * @since 5.5
  */
-public class WidgetDefinitionRegistry extends SimpleContributionRegistry<WidgetDefinition> {
+public class WidgetDefinitionRegistry extends AbstractCategoryMapRegistry {
 
-    protected final String category;
-
-    public WidgetDefinitionRegistry(String category) {
-        super();
-        this.category = category;
-    }
-
-    public String getCategory() {
-        return category;
+    @Override
+    protected List<String> getCategories(Context ctx, XAnnotatedObject xObject, Element element) {
+        var contrib = (WidgetDescriptor) xObject.newInstance(ctx, element);
+        return List.of(contrib.getCategories());
     }
 
     @Override
-    public String getContributionId(WidgetDefinition contrib) {
-        return contrib.getName();
-    }
-
-    public WidgetDefinition getWidgetDefinition(String id) {
-        return getCurrentContribution(id);
+    protected <T> List<String> getContributionAliases(T contribution) {
+        return ((WidgetDefinition) contribution).getAliases();
     }
 
     @Override
-    // overridden to handle aliases
-    public synchronized void addContribution(WidgetDefinition contrib) {
-        super.addContribution(contrib);
-        List<String> aliases = contrib.getAliases();
-        if (aliases != null) {
-            for (String alias : aliases) {
-                FragmentList<WidgetDefinition> head = addFragment(alias, contrib);
-                contributionUpdated(alias, head.merge(this), contrib);
-            }
-        }
-    }
-
-    /**
-     * Overridden to use equals method when removing elements.
-     *
-     * @since 7.2
-     */
-    @Override
-    public synchronized void removeContribution(WidgetDefinition contrib) {
-        removeContribution(contrib, true);
-    }
-
-    @Override
-    // overridden to handle aliases
-    public synchronized void removeContribution(WidgetDefinition contrib, boolean useEqualsMethod) {
-        super.removeContribution(contrib, useEqualsMethod);
-        List<String> aliases = contrib.getAliases();
-        if (aliases != null) {
-            for (String alias : aliases) {
-                FragmentList<WidgetDefinition> head = removeFragment(alias, contrib, useEqualsMethod);
-                if (head != null) {
-                    WidgetDefinition result = head.merge(this);
-                    if (result != null) {
-                        contributionUpdated(alias, result, contrib);
-                    } else {
-                        contributionRemoved(alias, contrib);
-                    }
-                }
-            }
-        }
+    protected <T> Object getConvertedContribution(T contribution) {
+        var desc = (WidgetDescriptor) contribution;
+        return desc.getWidgetDefinition();
     }
 
 }

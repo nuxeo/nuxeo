@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,86 +18,36 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
+import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutDescriptor;
+import org.w3c.dom.Element;
 
 /**
- * Registry holding layout definitions for a given category
+ * Registry holding layout definitions for a given category.
  *
  * @since 5.5
  */
-public class LayoutDefinitionRegistry extends SimpleContributionRegistry<LayoutDefinition> {
+public class LayoutDefinitionRegistry extends AbstractCategoryMapRegistry {
 
-    protected final String category;
-
-    public LayoutDefinitionRegistry(String category) {
-        super();
-        this.category = category;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public List<String> getLayoutNames() {
-        List<String> res = new ArrayList<>();
-        res.addAll(currentContribs.keySet());
-        return res;
+    @Override
+    protected List<String> getCategories(Context ctx, XAnnotatedObject xObject, Element element) {
+        var contrib = (LayoutDescriptor) xObject.newInstance(ctx, element);
+        return List.of(contrib.getCategories());
     }
 
     @Override
-    public String getContributionId(LayoutDefinition contrib) {
-        return contrib.getName();
-    }
-
-    public LayoutDefinition getLayoutDefinition(String id) {
-        return getCurrentContribution(id);
+    protected <T> List<String> getContributionAliases(T contribution) {
+        return ((LayoutDefinition) contribution).getAliases();
     }
 
     @Override
-    // overridden to handle aliases
-    public synchronized void addContribution(LayoutDefinition contrib) {
-        super.addContribution(contrib);
-        List<String> aliases = contrib.getAliases();
-        if (aliases != null) {
-            for (String alias : aliases) {
-                FragmentList<LayoutDefinition> head = addFragment(alias, contrib);
-                contributionUpdated(alias, head.merge(this), contrib);
-            }
-        }
-    }
-
-    /**
-     * Overridden to use equals method when removing elements.
-     *
-     * @since 7.2
-     */
-    @Override
-    public synchronized void removeContribution(LayoutDefinition contrib) {
-        removeContribution(contrib, true);
-    }
-
-    @Override
-    // overridden to handle aliases
-    public synchronized void removeContribution(LayoutDefinition contrib, boolean useEqualsMethod) {
-        super.removeContribution(contrib, useEqualsMethod);
-        List<String> aliases = contrib.getAliases();
-        if (aliases != null) {
-            for (String alias : aliases) {
-                FragmentList<LayoutDefinition> head = removeFragment(alias, contrib, useEqualsMethod);
-                if (head != null) {
-                    LayoutDefinition result = head.merge(this);
-                    if (result != null) {
-                        contributionUpdated(alias, result, contrib);
-                    } else {
-                        contributionRemoved(alias, contrib);
-                    }
-                }
-            }
-        }
+    protected <T> Object getConvertedContribution(T contribution) {
+        var desc = (LayoutDescriptor) contribution;
+        return desc.getLayoutDefinition();
     }
 
 }

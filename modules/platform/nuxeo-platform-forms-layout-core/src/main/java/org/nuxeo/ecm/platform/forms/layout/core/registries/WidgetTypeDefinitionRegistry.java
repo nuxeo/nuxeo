@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,90 +18,36 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
+import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor;
+import org.w3c.dom.Element;
 
 /**
  * Registry holding widget type definitions for a given category.
  *
  * @since 5.5
  */
-public class WidgetTypeDefinitionRegistry extends SimpleContributionRegistry<WidgetTypeDefinition> {
+public class WidgetTypeDefinitionRegistry extends AbstractCategoryMapRegistry {
 
-    protected final String category;
-
-    public WidgetTypeDefinitionRegistry(String category) {
-        super();
-        this.category = category;
-    }
-
-    public String getCategory() {
-        return category;
+    @Override
+    protected List<String> getCategories(Context ctx, XAnnotatedObject xObject, Element element) {
+        var contrib = (WidgetTypeDescriptor) xObject.newInstance(ctx, element);
+        return List.of(contrib.getCategories());
     }
 
     @Override
-    public String getContributionId(WidgetTypeDefinition contrib) {
-        return contrib.getName();
-    }
-
-    public List<WidgetTypeDefinition> getDefinitions() {
-        List<WidgetTypeDefinition> res = new ArrayList<>();
-        for (WidgetTypeDefinition item : currentContribs.values()) {
-            if (item != null) {
-                res.add(item);
-            }
-        }
-        return res;
-    }
-
-    public WidgetTypeDefinition getDefinition(String id) {
-        return getCurrentContribution(id);
+    protected <T> List<String> getContributionAliases(T contribution) {
+        return ((WidgetTypeDefinition) contribution).getAliases();
     }
 
     @Override
-    // overridden to handle aliases
-    public synchronized void addContribution(WidgetTypeDefinition contrib) {
-        super.addContribution(contrib);
-        List<String> aliases = contrib.getAliases();
-        if (aliases != null) {
-            for (String alias : aliases) {
-                FragmentList<WidgetTypeDefinition> head = addFragment(alias, contrib);
-                contributionUpdated(alias, head.merge(this), contrib);
-            }
-        }
-    }
-
-    /**
-     * Overridden to use equals method when removing elements.
-     *
-     * @since 7.2
-     */
-    @Override
-    public synchronized void removeContribution(WidgetTypeDefinition contrib) {
-        removeContribution(contrib, true);
-    }
-
-    @Override
-    // overridden to handle aliases
-    public synchronized void removeContribution(WidgetTypeDefinition contrib, boolean useEqualsMethod) {
-        super.removeContribution(contrib, useEqualsMethod);
-        List<String> aliases = contrib.getAliases();
-        if (aliases != null) {
-            for (String alias : aliases) {
-                FragmentList<WidgetTypeDefinition> head = removeFragment(alias, contrib, useEqualsMethod);
-                if (head != null) {
-                    WidgetTypeDefinition result = head.merge(this);
-                    if (result != null) {
-                        contributionUpdated(alias, result, contrib);
-                    } else {
-                        contributionRemoved(alias, contrib);
-                    }
-                }
-            }
-        }
+    protected <T> Object getConvertedContribution(T contribution) {
+        var desc = (WidgetTypeDescriptor) contribution;
+        return desc.getWidgetTypeDefinition();
     }
 
 }
