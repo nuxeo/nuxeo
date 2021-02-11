@@ -22,11 +22,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.blob.AbstractBlobStore;
@@ -56,7 +59,10 @@ import org.nuxeo.ecm.core.blob.KeyStrategy;
 import org.nuxeo.ecm.core.blob.KeyStrategyDocId;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.TransactionalBlobStore;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.work.WorkManagerFeature;
+import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -66,7 +72,8 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ BlobManagerFeature.class, WorkManagerFeature.class, TransactionalFeature.class, LogCaptureFeature.class })
+@Features({ BlobManagerFeature.class, WorkManagerFeature.class, TransactionalFeature.class, LogCaptureFeature.class,
+        MockitoFeature.class })
 @LogCaptureFeature.FilterOn(logLevel = "TRACE", loggerClass = AbstractBlobStore.class)
 @TransactionalConfig(autoStart = false)
 @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-blob-provider-s3-tracing.xml")
@@ -106,6 +113,10 @@ public class TestS3BlobStoreTracing {
     @Inject
     protected TransactionalFeature txFeature;
 
+    @Mock
+    @RuntimeService
+    protected RepositoryService repositoryService;
+
     protected Path tmpFile;
 
     @BeforeClass
@@ -118,6 +129,11 @@ public class TestS3BlobStoreTracing {
         clearBlobStores();
         tmpFile = Files.createTempFile("tmp_", ".tmp");
         logCaptureResult.clear();
+    }
+
+    @Before
+    public void mockRepositoryService() {
+        when(repositoryService.getRepositoryNames()).thenReturn(Collections.emptyList());
     }
 
     @After

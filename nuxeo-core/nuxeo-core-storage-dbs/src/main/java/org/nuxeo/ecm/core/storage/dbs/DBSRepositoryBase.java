@@ -128,6 +128,9 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     protected final boolean changeTokenEnabled;
 
+    /** @since 11.5 */
+    protected final Map<String, Object> capabilities = new HashMap<>();
+
     /**
      * @since 7.4 : used to know if the LockManager was provided by this repository or externally
      */
@@ -374,6 +377,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     @Override
     public boolean isChangeTokenEnabled() {
         return changeTokenEnabled;
+    }
+
+    @Override
+    public Object getCapability(String name) {
+        return capabilities.get(name);
     }
 
     @Override

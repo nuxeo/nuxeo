@@ -58,6 +58,8 @@ import org.nuxeo.ecm.core.blob.KeyStrategyDigest;
 import org.nuxeo.ecm.core.blob.KeyStrategyDocId;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
+import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonServiceException;
@@ -116,6 +118,8 @@ public class S3BlobStore extends AbstractBlobStore {
     /** If true, include the object version in the key. */
     protected final boolean useVersion;
 
+    protected final boolean useAsyncDigest;
+
     protected final BinaryGarbageCollector gc;
 
     /** @deprecated since 11.5 */
@@ -134,6 +138,7 @@ public class S3BlobStore extends AbstractBlobStore {
         allowByteRange = config.getBooleanProperty(ALLOW_BYTE_RANGE);
         // don't use versions if we use deduplication (including managed case)
         useVersion = isBucketVersioningEnabled() && keyStrategy instanceof KeyStrategyDocId;
+        useAsyncDigest = config.digestConfiguration.digestAsync && supportsAsyncDigest();
         gc = new S3BlobGarbageCollector();
     }
 
@@ -158,7 +163,20 @@ public class S3BlobStore extends AbstractBlobStore {
 
     @Override
     public boolean useAsyncDigest() {
-        return config.digestConfiguration.digestAsync;
+        return useAsyncDigest;
+    }
+
+    /** Checks that all repositories support queries on blob keys. */
+    protected boolean supportsAsyncDigest() {
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        return repositoryService.getRepositoryNames()
+                                .stream()
+                                .map(repositoryService::getRepository)
+                                .allMatch(this::supportsAsyncDigest);
+    }
+
+    protected boolean supportsAsyncDigest(Repository repository) {
+        return repository.hasCapability(Repository.CAPABILITY_QUERY_BLOB_KEYS);
     }
 
     @Override

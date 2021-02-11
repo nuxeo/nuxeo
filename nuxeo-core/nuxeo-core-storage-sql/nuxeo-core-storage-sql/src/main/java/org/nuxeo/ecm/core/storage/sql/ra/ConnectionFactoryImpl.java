@@ -181,6 +181,11 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
         return managedConnectionFactory.getFulltextConfiguration();
     }
 
+    @Override
+    public Object getCapability(String name) {
+        return null;
+    }
+
     /*
      * ----- org.nuxeo.ecm.core.model.RepositoryManagement -----
      */
