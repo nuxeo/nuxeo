@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.platform.publisher.contrib">
 
-  <extension
-      target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
-      point="validatorsRule">
+  <extension target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
+    point="validatorsRule">
 
     <documentation>
       Default ValidatorsRule to use: the validators will be principals having
@@ -15,13 +13,11 @@
     </documentation>
 
     <validatorsRule name="CoreValidatorsRule"
-                    class="org.nuxeo.ecm.platform.publisher.rules.DefaultValidatorsRule"/>
+      class="org.nuxeo.ecm.platform.publisher.rules.DefaultValidatorsRule" />
 
   </extension>
 
-  <extension
-      target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
-      point="factory">
+  <extension target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl" point="factory">
 
     <documentation>
       Default PublishedDocumentFactories available to use.
@@ -32,19 +28,16 @@
     </documentation>
 
     <publishedDocumentFactory name="CoreProxy"
-                              class="org.nuxeo.ecm.platform.publisher.impl.core.CoreProxyFactory"/>
+      class="org.nuxeo.ecm.platform.publisher.impl.core.CoreProxyFactory" />
 
   </extension>
 
-  <extension
-      target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
-      point="tree">
+  <extension target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl" point="tree">
 
     <documentation>
       Default PublicationTrees available to use.
 
       - CoreTree: tree to use when publishing on local sections
-
       - RootSectionsCoreTree: tree to use when publishing on local sections but
       using the information stored in the Workspace to get the sections where
       a publication is allowed
@@ -53,15 +46,13 @@
     </documentation>
 
     <publicationTree name="CoreTree"
-                     class="org.nuxeo.ecm.platform.publisher.impl.core.SectionPublicationTree"/>
+      class="org.nuxeo.ecm.platform.publisher.impl.core.SectionPublicationTree" />
     <publicationTree name="RootSectionsCoreTree"
-                     class="org.nuxeo.ecm.platform.publisher.impl.core.RootSectionsPublicationTree"/>
+      class="org.nuxeo.ecm.platform.publisher.impl.core.RootSectionsPublicationTree" />
 
   </extension>
 
-  <extension
-      target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
-      point="treeInstance">
+  <extension target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl" point="treeInstance">
 
     <documentation>
       Contribute the default PublicationTree instance to be able to publish
@@ -69,10 +60,8 @@
     </documentation>
 
     <publicationTreeConfig name="DefaultSectionsTree" tree="RootSectionsCoreTree"
-                           factory="CoreProxy"
-                           title="label.publication.tree.local.sections" >
+      factory="CoreProxy" title="label.publication.tree.local.sections">
       <parameters>
-        <!-- <parameter name="RootPath">/default-domain/sections</parameter> -->
         <parameter name="RelativeRootPath">/sections</parameter>
         <parameter name="enableSnapshot">true</parameter>
         <parameter name="iconExpanded">/icons/folder_open.gif</parameter>
