@@ -529,6 +529,11 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
         return model.getFulltextConfiguration();
     }
 
+    @Override
+    public Object getCapability(String name) {
+        return null;
+    }
+
     /**
      * Creates the necessary structures in the database.
      *
