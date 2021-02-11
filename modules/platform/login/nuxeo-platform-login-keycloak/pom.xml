@@ -59,6 +59,11 @@
       <version>12.0.2</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-tomcat-adapter-spi</artifactId>
+      <version>12.0.2-NX1</version>
+    </dependency>
     <!-- #############################################################################  TEST -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
