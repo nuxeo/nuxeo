@@ -12,15 +12,7 @@
 
   <extension target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl" point="treeInstance">
 
-    <publicationTreeConfig name="DefaultSectionsTree" tree="RootSectionsCoreTree"
-      factory="CoreProxyWithWorkflow" title="label.publication.tree.local.sections">
-      <parameters>
-        <parameter name="RelativeRootPath">/sections</parameter>
-        <parameter name="enableSnapshot">true</parameter>
-        <parameter name="iconExpanded">/icons/folder_open.gif</parameter>
-        <parameter name="iconCollapsed">/icons/folder.gif</parameter>
-      </parameters>
-    </publicationTreeConfig>
+    <publicationTreeConfig name="DefaultSectionsTree" factory="CoreProxyWithWorkflow" merge="true" />
 
   </extension>
 
