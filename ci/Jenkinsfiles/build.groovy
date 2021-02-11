@@ -245,7 +245,7 @@ def buildUnitTestStage(env) {
               throw err
             } finally {
               try {
-                junit testResults: "**/target-${env}/surefire-reports/*.xml"
+                junit allowEmptyResults: true, testResults: "**/target-${env}/surefire-reports/*.xml"
                 if (!isDev) {
                   archiveKafkaLogs(testNamespace, "${env}-kafka.log")
                 }
@@ -267,7 +267,8 @@ def buildUnitTestStage(env) {
 }
 
 void archiveKafkaLogs(namespace, logFile) {
-  sh "kubectl logs ${TEST_KAFKA_POD_NAME} --namespace=${namespace} > ${logFile}"
+  // don't fail if pod doesn't exist
+  sh "kubectl logs ${TEST_KAFKA_POD_NAME} --namespace=${namespace} > ${logFile} || true"
   archiveArtifacts allowEmptyArchive: true, artifacts: "${logFile}"
 }
 
