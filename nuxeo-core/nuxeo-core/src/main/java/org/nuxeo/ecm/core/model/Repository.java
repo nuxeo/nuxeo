@@ -50,4 +50,36 @@ public interface Repository {
      */
     FulltextConfiguration getFulltextConfiguration();
 
+    /**
+     * Checks whether this repository has the given capability.
+     *
+     * @since 11.5
+     */
+    default boolean hasCapability(String name) {
+        Object value = getCapability(name);
+        if (value == null) {
+            return false;
+        } else if (value instanceof Boolean) {
+            return ((Boolean) value).booleanValue();
+        } else if ("true".equals(value) || "false".equals(value)) {
+            return Boolean.parseBoolean(value.toString());
+        } else {
+            throw new IllegalArgumentException("Capability " + name + " is not a boolean: " + value);
+        }
+    }
+
+    /**
+     * Gets the value of the given capability for this repository.
+     *
+     * @since 11.5
+     */
+    Object getCapability(String name);
+
+    /**
+     * Whether this repository has a {@code ecm:blobKeys} field which can be queried.
+     *
+     * @since 11.5
+     */
+    String CAPABILITY_QUERY_BLOB_KEYS = "queryBlobKeys";
+
 }

@@ -336,6 +336,11 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     @Override
+    public Object getCapability(String name) {
+        return repository.getCapability(name);
+    }
+
+    @Override
     public String getRootId() {
         return repository.getRootId();
     }
