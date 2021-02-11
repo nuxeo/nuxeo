@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
  */
 package org.nuxeo.runtime.model.persistence;
 
@@ -23,18 +23,19 @@ import java.util.List;
 
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.persistence.fs.FileSystemStorage;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Component handling persisted contributions.
  */
 public class ContributionPersistenceComponent extends DefaultComponent implements ContributionPersistenceManager {
 
     public static final String STORAGE_XP = "storage";
+
+    protected static final ContributionStorage DEFAULT_STORAGE = new FileSystemStorage();
 
     protected ContributionStorage storage;
 
@@ -48,34 +49,29 @@ public class ContributionPersistenceComponent extends DefaultComponent implement
     public void activate(ComponentContext context) {
         super.activate(context);
         this.ctx = context.getRuntimeContext();
-        storage = new FileSystemStorage();
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        this.<ContributionStorageDescriptor> getRegistryContribution(STORAGE_XP).ifPresentOrElse(desc -> {
+            try {
+                storage = desc.clazz.getDeclaredConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeServiceException(e);
+            }
+        }, () -> storage = DEFAULT_STORAGE);
+    }
+
+    @Override
+    public void stop(ComponentContext context) {
+        stop();
+        storage = null;
     }
 
     @Override
     public void deactivate(ComponentContext context) {
         super.deactivate(context);
         ctx = null;
-        storage = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        // This extension point is a singleton. It supports only one
-        // contribution!
-        // I am not using a runtime property to specify the implementation class
-        // because
-        // of possible problems caused by class loaders in real OSGI frameworks.
-        ContributionStorageDescriptor c = (ContributionStorageDescriptor) contribution;
-        try {
-            storage = (ContributionStorage) c.clazz.getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeServiceException(e);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        storage = null;
     }
 
     @Override
@@ -155,19 +151,6 @@ public class ContributionPersistenceComponent extends DefaultComponent implement
                 uninstallContribution(c);
             }
         }
-    }
-
-    @Override
-    public void start(ComponentContext context) {
-        if (storage == null) {
-            storage = new FileSystemStorage();
-            start();
-        }
-    }
-
-    @Override
-    public void stop(ComponentContext context) {
-        stop();
     }
 
 }

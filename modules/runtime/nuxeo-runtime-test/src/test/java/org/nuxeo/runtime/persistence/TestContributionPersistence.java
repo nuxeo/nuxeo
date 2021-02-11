@@ -64,7 +64,6 @@ public class TestContributionPersistence {
         // check the created contribution
         String content = c1.getContent();
         assertTrue(content.contains("</component>"));
-        // System.out.println(content);
         assertEquals("My first contribution", c1.getDescription());
         assertFalse(c1.isDisabled());
 
