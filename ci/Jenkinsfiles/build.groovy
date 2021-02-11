@@ -180,9 +180,12 @@ def buildUnitTestStage(env) {
   return {
     stage("Run ${env} unit tests") {
       container("maven-${env}") {
-        script {
-          setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'PENDING')
-          try {
+        // TODO NXP-29512: on a PR, make the build continue even if there is a test error
+        // on other environments than the dev one
+        // to remove when all test environments will be mandatory
+        catchError(buildResult: isPullRequest() && "dev" != env ? 'SUCCESS' : 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+          script {
+            setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'PENDING')
             sh "kubectl create namespace ${testNamespace}"
             try {
               echo """
@@ -249,11 +252,6 @@ def buildUnitTestStage(env) {
                 }
               }
             }
-          } catch(err) {
-            // TODO NXP-29512: workaround to know which env is failing later on
-            def errorMessage = "${env}: ${err.message}"
-            echo "Throwing error with message: ${errorMessage}"
-            error "${errorMessage}"
           }
         }
       }
@@ -451,23 +449,7 @@ pipeline {
           for (env in testEnvironments) {
             stages["Run ${env} unit tests"] = buildUnitTestStage(env);
           }
-          try {
-            parallel stages
-          } catch (err) {
-            // TODO NXP-29512: on a PR, make the build continue even if there is a test error
-            // on other environments than the dev one
-            // to remove when all test environments will be mandatory
-            def errorMessage = err.message
-            if (isPullRequest() && !errorMessage.startsWith('dev:')) {
-              echo """
-                Unit tests error: ${errorMessage}
-                Waiting for NXP-29512, on a PR, the build continues even if there is a unit test error in other
-                environments than the dev one.
-              """
-            } else {
-              throw err
-            }
-          }
+          parallel stages
         }
       }
     }
