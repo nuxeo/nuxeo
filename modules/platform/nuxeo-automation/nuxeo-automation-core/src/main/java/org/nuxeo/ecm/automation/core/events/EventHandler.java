@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
  */
 package org.nuxeo.ecm.automation.core.events;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +30,7 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
@@ -41,9 +41,10 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Descriptor for event handlers.
  */
 @XObject("handler")
+@XRegistry(merge = false, remove = false, enable = false)
 public class EventHandler {
 
     private static final Log log = LogFactory.getLog(EventHandler.class);
@@ -100,22 +101,10 @@ public class EventHandler {
     }
 
     protected String convertExpr(String expr) {
-        String res = expr.replaceAll("&lt;", "<");
-        res = res.replaceAll("&gt;", ">");
-        res = res.replaceAll("&amp;", "&");
+        String res = expr.replace("&lt;", "<");
+        res = res.replace("&gt;", ">");
+        res = res.replace("&amp;", "&");
         return res;
-    }
-
-    public EventHandler() {
-    }
-
-    public EventHandler(String eventId, String chainId) {
-        this(Collections.singleton(eventId), chainId);
-    }
-
-    public EventHandler(Set<String> eventId, String chainId) {
-        events = eventId;
-        this.chainId = chainId;
     }
 
     public Set<String> getEvents() {
@@ -126,44 +115,8 @@ public class EventHandler {
         return chainId;
     }
 
-    public void setPostCommit(boolean isPostCommit) {
-        this.isPostCommit = isPostCommit;
-    }
-
     public boolean isPostCommit() {
         return isPostCommit;
-    }
-
-    public void setAttributeFilter(Filter attribute) {
-        this.attribute = attribute;
-    }
-
-    public void setIsAdministrator(Boolean isAdministrator) {
-        this.isAdministrator = isAdministrator;
-    }
-
-    public void setMemberOf(List<String> groups) {
-        memberOf = groups;
-    }
-
-    public void setPathStartsWith(String pathStartsWith) {
-        this.pathStartsWith = pathStartsWith;
-    }
-
-    public void setDoctypes(Set<String> doctypes) {
-        this.doctypes = doctypes;
-    }
-
-    public void setFacet(String facet) {
-        this.facet = facet;
-    }
-
-    public void setLifeCycle(String[] lifeCycle) {
-        this.lifeCycle = lifeCycle;
-    }
-
-    public void setChainId(String chainId) {
-        this.chainId = chainId;
     }
 
     /**
@@ -173,13 +126,6 @@ public class EventHandler {
      */
     public String getCondition() {
         return condition;
-    }
-
-    /**
-     * @since 5.9.1
-     */
-    public void setCondition(String condition) {
-        this.condition = condition;
     }
 
     public String getFacet() {

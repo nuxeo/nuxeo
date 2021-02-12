@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 /**
  * @since 8.3
  */
-@Operation(id = GetLastDocumentVersion.ID, category = Constants.CAT_DOCUMENT, label = "Get Last version", description = "Returns the last version of the document if it exists.", aliases = { "Document.GetLastVersion" })
+@Operation(id = GetLastDocumentVersion.ID, category = Constants.CAT_DOCUMENT, label = "Get Last version", description = "Returns the last version of the document if it exists.")
 public class GetLastDocumentVersion {
 
     public static final String ID = "Document.GetLastVersion";

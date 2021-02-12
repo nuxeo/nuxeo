@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 /**
  * @since 8.3
  */
-@Operation(id = RemoveProxies.ID, category = Constants.CAT_DOCUMENT, label = "Remove Document Proxies", description = "Will remove all proxies pointing on the input document. Useful for instance to unpublish a document. Notice: this operation will remove all proxies, including the ones pointing to the current document version (live proxies). Activating the save parameter forces the changes to be written in database immediately (at the cost of performance loss).", aliases = {"Document.RemoveProxies"})
+@Operation(id = RemoveProxies.ID, category = Constants.CAT_DOCUMENT, label = "Remove Document Proxies", description = "Will remove all proxies pointing on the input document. Useful for instance to unpublish a document. Notice: this operation will remove all proxies, including the ones pointing to the current document version (live proxies). Activating the save parameter forces the changes to be written in database immediately (at the cost of performance loss).")
 public class RemoveProxies {
 
     public static final String ID = "Document.RemoveProxies";

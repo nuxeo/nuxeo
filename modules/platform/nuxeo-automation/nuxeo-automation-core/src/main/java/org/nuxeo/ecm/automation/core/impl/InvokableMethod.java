@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
@@ -35,6 +36,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -73,11 +75,6 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         if (p.length > 1) {
             throw new IllegalArgumentException("Operation method must accept at most one argument: " + method);
         }
-        // if produce is Void => a control operation
-        // if (produce == Void.TYPE) {
-        // throw new IllegalArgumentException("Operation method must return a
-        // value: "+method);
-        // }
         this.op = op;
         this.method = method;
         priority = anno.priority();
@@ -150,7 +147,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         if (consume.isAssignableFrom(in)) {
             return priority > 0 ? priority : ISTANCE_OF_PRIORITY;
         }
-        if (op.getService().isTypeAdaptable(in, consume)) {
+        if (Framework.getService(AutomationService.class).isTypeAdaptable(in, consume)) {
             return priority > 0 ? priority : ADAPTABLE_PRIORITY;
         }
         if (consume == Void.TYPE) {
@@ -170,7 +167,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         }
         if (input == null || !consume.isAssignableFrom(input.getClass())) {
             // try to adapt
-            input = op.getService().getAdaptedValue(ctx, input, consume);
+            input = Framework.getService(AutomationService.class).getAdaptedValue(ctx, input, consume);
         }
         return method.invoke(target, input);
     }

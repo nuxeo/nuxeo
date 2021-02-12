@@ -23,14 +23,20 @@ package org.nuxeo.ecm.automation.core;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
- * @since 5.7.3 The Automation Filter declaration.
+ * The Automation Filter declaration.
+ *
+ * @since 5.7.3
  */
 @XObject("filter")
+@XRegistry(merge = false)
 public class AutomationFilterDescriptor {
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     @XContent

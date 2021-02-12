@@ -19,18 +19,24 @@
 package org.nuxeo.ecm.automation.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @since 5.7.3 The exception chain declaration for Automation exceptions.
  */
 @XObject("catchChain")
+@XRegistry(merge = false)
 public class ChainExceptionDescriptor {
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     @XNode("@onChainId")
@@ -43,8 +49,8 @@ public class ChainExceptionDescriptor {
         return onChainId;
     }
 
-    public ArrayList<ChainExceptionRun> getChainExceptionsRun() {
-        return chainExceptionRuns;
+    public List<ChainExceptionRun> getChainExceptionsRun() {
+        return Collections.unmodifiableList(chainExceptionRuns);
     }
 
     public String getId() {

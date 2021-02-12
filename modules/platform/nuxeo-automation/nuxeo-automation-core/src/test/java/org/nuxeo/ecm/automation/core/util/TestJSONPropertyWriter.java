@@ -112,10 +112,8 @@ public class TestJSONPropertyWriter {
     }
 
     @Test
-    @Ignore("PropertyFactory returns a LongProperty for IntegerType -> ClassCast exception")
     public void testWritePropertyWithIntegerProperty() throws IOException {
-        testWriteProperty(JSONPropertyWriter.create(), IntegerType.INSTANCE, Integer.valueOf(2),
-                "{\"property\":\"string value\"}");
+        testWriteProperty(JSONPropertyWriter.create(), IntegerType.INSTANCE, Integer.valueOf(2), "{\"property\":2}");
     }
 
     @Test
@@ -285,9 +283,8 @@ public class TestJSONPropertyWriter {
     }
 
     @Test
-    @Ignore("PropertyFactory returns a LongProperty for IntegerType -> ClassCast exception")
     public void testWritePropertyValueWithIntegerProperty() throws IOException {
-        testWritePropertyValue(IntegerType.INSTANCE, Integer.valueOf(2), "\"string value\"");
+        testWritePropertyValue(IntegerType.INSTANCE, Integer.valueOf(2), "2");
     }
 
     @Test

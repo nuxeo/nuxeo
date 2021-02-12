@@ -53,11 +53,6 @@ public class ChainTypeImpl implements OperationType {
     protected final OperationChain chain;
 
     /**
-     * The service that registered the operation.
-     */
-    protected AutomationService service;
-
-    /**
      * Invocable methods.
      */
     protected InvokableMethod[] methods = new InvokableMethod[] { new InvokableMethod(this, runMethod) };
@@ -75,17 +70,15 @@ public class ChainTypeImpl implements OperationType {
     /**
      * @deprecated since 11.1, see other constructor
      */
-    @Deprecated
-    public ChainTypeImpl(AutomationService service, OperationChain chain, OperationChainContribution contribution) {
-        this(service, chain, contribution, null);
+    @Deprecated(since = "11.1")
+    public ChainTypeImpl(OperationChain chain, OperationChainContribution contribution) {
+        this(chain, contribution, null);
     }
 
     /**
      * @since 11.1
      */
-    public ChainTypeImpl(AutomationService service, OperationChain chain, OperationChainContribution contribution,
-            String contributingComponent) {
-        this.service = service;
+    public ChainTypeImpl(OperationChain chain, OperationChainContribution contribution, String contributingComponent) {
         this.contribution = contribution;
         this.chain = chain;
         this.contributingComponent = contributingComponent;
@@ -103,12 +96,7 @@ public class ChainTypeImpl implements OperationType {
     public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
         Object input = ctx.getInput();
         Class<?> inputType = input == null ? Void.TYPE : input.getClass();
-        return service.compileChain(inputType, chain);
-    }
-
-    @Override
-    public AutomationService getService() {
-        return service;
+        return Framework.getService(AutomationService.class).compileChain(inputType, chain);
     }
 
     @Override
@@ -166,7 +154,7 @@ public class ChainTypeImpl implements OperationType {
             throws OperationException {
         ArrayList<String> result = new ArrayList<>();
         Collection<String> collectedSigs = new HashSet<>();
-        OperationType operationType = service.getOperation(operations[0].getId());
+        OperationType operationType = Framework.getService(AutomationService.class).getOperation(operations[0].getId());
         for (InvokableMethod method : operationType.getMethods()) {
             String chainInput = getParamDocumentationType(method.getInputType(), method.isIterable());
             String chainOutput = getParamDocumentationType(getChainOutput(method.getInputType(), operations));
@@ -185,6 +173,7 @@ public class ChainTypeImpl implements OperationType {
      */
     protected Class<?> getChainOutput(Class<?> chainInput, OperationChainContribution.Operation[] operations)
             throws OperationException {
+        AutomationService service = Framework.getService(AutomationService.class);
         for (OperationChainContribution.Operation operation : operations) {
             OperationType operationType = service.getOperation(operation.getId());
             if (operationType instanceof ChainTypeImpl) {
@@ -325,8 +314,7 @@ public class ChainTypeImpl implements OperationType {
     }
 
     public static ChainTypeImpl typeof(OperationChain chain, boolean replace) {
-        return new ChainTypeImpl(Framework.getService(AutomationService.class), chain,
-                OperationChainContribution.contribOf(chain, replace), null);
+        return new ChainTypeImpl(chain, OperationChainContribution.contribOf(chain, replace), null);
     }
 
 }

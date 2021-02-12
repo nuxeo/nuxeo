@@ -20,14 +20,19 @@ package org.nuxeo.ecm.automation.context;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 /**
  * @since 7.3
  */
 @XObject("contextHelper")
+@XRegistry(enable = false)
 public class ContextHelperDescriptor {
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     protected ContextHelper contextHelper;
@@ -37,35 +42,16 @@ public class ContextHelperDescriptor {
         contextHelper = aType.getDeclaredConstructor().newInstance();
     }
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
     protected boolean enabled = true;
 
     public ContextHelper getContextHelper() {
         return contextHelper;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
     public String getId() {
         return id;
-    }
-
-    @Override
-    public ContextHelperDescriptor clone() {
-        ContextHelperDescriptor copy = new ContextHelperDescriptor();
-        copy.id = id;
-        copy.contextHelper = contextHelper;
-        copy.enabled = enabled;
-        return copy;
-    }
-
-    public void merge(ContextHelperDescriptor src) {
-        if (src.contextHelper != null) {
-            contextHelper = src.contextHelper;
-        }
-        enabled = src.enabled;
     }
 
 }

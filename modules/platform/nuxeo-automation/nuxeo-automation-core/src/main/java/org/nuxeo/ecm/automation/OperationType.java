@@ -55,11 +55,6 @@ public interface OperationType {
 
     Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException;
 
-    /**
-     * Gets the service that registered that type.
-     */
-    AutomationService getService();
-
     OperationDocumentation getDocumentation() throws OperationException;
 
     /**
