@@ -130,12 +130,13 @@ public class NXAuditEventsService extends DefaultComponent implements ComponentM
             bulker = bulkerConfig.newInstance(backend);
             bulker.onApplicationStarted();
         }
+        // create auditStorages during start to allow StreamAuditStorageWriter to not get a NPE
+        auditStorages = new HashMap<>();
     }
 
     @Override
     public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
         // init storages after runtime was started (as we don't have start order for storages which are backends)
-        auditStorages = new HashMap<>();
         for (AuditStorageDescriptor descriptor : this.<AuditStorageDescriptor> getRegistryContributions(
                 STORAGE_EXT_POINT)) {
             AuditStorage storage = descriptor.newInstance();
