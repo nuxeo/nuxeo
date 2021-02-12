@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,22 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
  */
 package org.nuxeo.ecm.automation.core.events;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
+import org.nuxeo.common.xmap.registry.AbstractRegistry;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -30,59 +37,50 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
+import org.w3c.dom.Element;
 
 /**
- * TODO: This service should be moved in another project, and renamed since it's a service, not a simple registry...
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Registry for {@link EventHandler} contributions. Also executes events.
  */
-public class EventHandlerRegistry {
+public class EventHandlerRegistry extends AbstractRegistry {
 
-    private static final Log log = LogFactory.getLog(OperationEventListener.class);
+    private static final Logger log = LogManager.getLogger(EventHandlerRegistry.class);
 
-    protected final AutomationService svc;
+    // event id -> list of handlers
+    protected Map<String, List<EventHandler>> handlers = new ConcurrentHashMap<>();
 
-    protected EventRegistry handlers;
+    // event id -> list of post commit handlers
+    protected Map<String, List<EventHandler>> postCommitHandlers = new ConcurrentHashMap<>();
 
-    protected EventRegistry pchandlers;
+    @Override
+    public void initialize() {
+        handlers.clear();
+        postCommitHandlers.clear();
+        super.initialize();
+    }
 
-    public EventHandlerRegistry(AutomationService svc) {
-        this.svc = svc;
-        handlers = new EventRegistry();
-        pchandlers = new EventRegistry();
+    @Override
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        EventHandler eh = getInstance(ctx, xObject, element);
+        if (eh.isPostCommit()) {
+            eh.getEvents().forEach(e -> postCommitHandlers.computeIfAbsent(e, k -> new ArrayList<>()).add(eh));
+        } else {
+            eh.getEvents().forEach(e -> handlers.computeIfAbsent(e, k -> new ArrayList<>()).add(eh));
+        }
+        return null;
     }
 
     public List<EventHandler> getEventHandlers(String eventId) {
-        return handlers.lookup().get(eventId);
+        return handlers.get(eventId);
     }
 
     public List<EventHandler> getPostCommitEventHandlers(String eventId) {
-        return pchandlers.lookup().get(eventId);
-    }
-
-    public void putEventHandler(EventHandler handler) {
-        handlers.addContribution(handler);
-    }
-
-    public synchronized void putPostCommitEventHandler(EventHandler handler) {
-        pchandlers.addContribution(handler);
-    }
-
-    public synchronized void removePostCommitEventHandler(EventHandler handler) {
-        pchandlers.removeContribution(handler);
-    }
-
-    public synchronized void removeEventHandler(EventHandler handler) {
-        handlers.removeContribution(handler);
-    }
-
-    public synchronized void clear() {
-        handlers = new EventRegistry();
-        pchandlers = new EventRegistry();
+        return postCommitHandlers.get(eventId);
     }
 
     public Set<String> getPostCommitEventNames() {
-        return pchandlers.lookup().keySet();
+        return postCommitHandlers.keySet();
     }
 
     public boolean acceptEvent(Event event, List<EventHandler> handlers) {
@@ -121,6 +119,7 @@ public class EventHandlerRegistry {
         }
 
         EventContext ectx = event.getContext();
+        AutomationService svc = Framework.getService(AutomationService.class);
         for (EventHandler handler : handlers) {
             try (OperationContext ctx = getContext(ectx)) {
                 ctx.put("Event", event);
@@ -130,10 +129,10 @@ public class EventHandlerRegistry {
                     svc.run(ctx, handler.getChainId());
                 }
             } catch (OperationException e) {
-                log.error("Failed to handle event " + event.getName() + " using chain: " + handler.getChainId(), e);
+                log.error("Failed to handle event '{}' using chain '{}'", event.getName(), handler.getChainId(), e);
                 throw new NuxeoException(e);
             } catch (NuxeoException e) {
-                log.error("Failed to handle event " + event.getName() + " using chain: " + handler.getChainId(), e);
+                log.error("Failed to handle event '{}' using chain '{}'", event.getName(), handler.getChainId(), e);
                 throw e;
             }
         }

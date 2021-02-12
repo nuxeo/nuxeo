@@ -20,6 +20,7 @@ package org.nuxeo.ecm.automation.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import javax.inject.Inject;
 
@@ -28,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.internals.ScriptingOperationTypeImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.OperationTypeImpl;
@@ -39,6 +41,7 @@ import org.nuxeo.ecm.automation.test.helpers.TestOperation;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 @RunWith(FeaturesRunner.class)
 @Features(AutomationServerFeature.class)
@@ -46,11 +49,16 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.webengine.core")
 public class TestOperationRegistration {
 
-    @Inject
-    AutomationService service;
+    protected static final String TEST_BUNDLE = "org.nuxeo.ecm.automation.test.test";
 
     @Inject
-    ObjectCodecService objectCodecService;
+    protected AutomationService service;
+
+    @Inject
+    protected ObjectCodecService objectCodecService;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testRegistration() throws Exception {
@@ -60,7 +68,7 @@ public class TestOperationRegistration {
         // register new operation to override existing one, but replace = false
         // (default value)
         try {
-            service.putOperation(DummyCreateDocument.class);
+            hotDeployer.deploy(TEST_BUNDLE + ":operation-override-contrib1.xml");
         } catch (OperationException e) {
             assertTrue(e.getMessage().startsWith("An operation is already bound to: " + DummyCreateDocument.ID));
         }
@@ -69,42 +77,41 @@ public class TestOperationRegistration {
         assertEquals(CreateDocument.class, op.getType());
 
         // register new operation to override existing one with replace = true,
-        service.putOperation(DummyCreateDocument.class, true);
         try {
+            hotDeployer.deploy(TEST_BUNDLE + ":operation-override-contrib2.xml");
             op = service.getOperation(CreateDocument.ID);
         } catch (OperationException e) {
-            // should not happen
+            fail("Unexpected operation exception: " + e.getMessage());
         }
         assertEquals(DummyCreateDocument.class, op.getType());
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.automation.test.test:operation-contrib.xml")
-    @Deploy("org.nuxeo.ecm.automation.test.test:chain-scripting-operation-contrib.xml")
-    public void testContributingComponent() throws Exception {
+    @Deploy(TEST_BUNDLE + ":operation-contrib.xml")
+    @Deploy(TEST_BUNDLE + ":chain-scripting-operation-contrib.xml")
+    public void testContributingComponent() throws OperationNotFoundException {
         OperationType op = service.getOperation(SaveDocument.ID);
-        assertEquals("service:org.nuxeo.ecm.core.automation.coreContrib", op.getContributingComponent());
+        assertEquals("org.nuxeo.ecm.core.automation.coreContrib", op.getContributingComponent());
         // check operation from another component
         op = service.getOperation(TestOperation.ID);
         assertTrue(op instanceof OperationTypeImpl);
-        assertEquals("service:org.nuxeo.automation.rest.test.operationContrib", op.getContributingComponent());
+        assertEquals("org.nuxeo.automation.rest.test.operationContrib", op.getContributingComponent());
         // check chains
         op = service.getOperation("FileManager.ImportWithMetaData");
         assertTrue(op instanceof ChainTypeImpl);
-        assertEquals("service:org.nuxeo.ecm.core.automation.features.operations", op.getContributingComponent());
+        assertEquals("org.nuxeo.ecm.core.automation.features.operations", op.getContributingComponent());
         // check chain from another component
         op = service.getOperation("testChain");
         assertTrue(op instanceof ChainTypeImpl);
-        assertEquals("service:org.nuxeo.automation.rest.test.operationContrib", op.getContributingComponent());
+        assertEquals("org.nuxeo.automation.rest.test.operationContrib", op.getContributingComponent());
         // check chain old-style
         op = service.getOperation("testChain2");
         assertTrue(op instanceof ChainTypeImpl);
-        assertEquals("service:org.nuxeo.automation.rest.test.chainScriptingOperationContrib",
-                op.getContributingComponent());
+        assertEquals("org.nuxeo.automation.rest.test.chainScriptingOperationContrib", op.getContributingComponent());
         // check scripting
         op = service.getOperation("javascript.RemoteScriptWithDoc");
         assertTrue(op instanceof ScriptingOperationTypeImpl);
-        assertEquals("service:org.nuxeo.automation.rest.test.operationContrib", op.getContributingComponent());
+        assertEquals("org.nuxeo.automation.rest.test.operationContrib", op.getContributingComponent());
     }
 
 }

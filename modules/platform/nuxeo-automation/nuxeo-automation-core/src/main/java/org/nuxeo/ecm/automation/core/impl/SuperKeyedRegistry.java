@@ -26,12 +26,17 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * A registry which is inheriting values from super keys. The super key relation is defined by the derived classes by
- * overriding {@link #getSuperKeys(Object)} method. The registry is thread safe and is optimized for lookups. A
- * concurrent cache is dynamically updated when a value is retrieved from a super entry. The cache is removed each time
- * a modification is made on the registry using {@link #put(Object, Object)} or {@link #remove(Object)} methods. Thus,
- * for maximum performance you need to avoid modifying the registry after lookups were done: at application startup
- * build the registry, at runtime perform lookups, at shutdown remove entries. The root key is passed in the constructor
- * and is used to stop looking in super entries.
+ * overriding {@link #getSuperKeys(Object)} method.
+ * <p>
+ * The registry is thread safe and is optimized for lookups.
+ * <p>
+ * A concurrent cache is dynamically updated when a value is retrieved from a super entry. The cache is removed each
+ * time a modification is made on the registry using {@link #put(Object, Object)} or {@link #remove(Object)} methods.
+ * <p>
+ * Thus, for maximum performance you need to avoid modifying the registry after lookups were done: at application
+ * startup build the registry, at runtime perform lookups, at shutdown remove entries.
+ * <p>
+ * The root key is passed in the constructor and is used to stop looking in super entries.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

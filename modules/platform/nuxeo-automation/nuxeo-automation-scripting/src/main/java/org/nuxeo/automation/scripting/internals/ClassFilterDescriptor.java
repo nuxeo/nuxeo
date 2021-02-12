@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 /**
  * Descriptor for classes that may be allowed or denied for use by the scripting engine.
@@ -30,6 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 10.2
  */
 @XObject("classFilter")
+@XRegistry
 public class ClassFilterDescriptor {
 
     @XNodeList(value = "allow", type = ArrayList.class, componentType = String.class)

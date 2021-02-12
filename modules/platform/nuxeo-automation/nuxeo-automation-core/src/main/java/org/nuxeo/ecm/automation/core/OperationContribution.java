@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Guillaume Renard
  */
 package org.nuxeo.ecm.automation.core;
 
@@ -24,14 +25,15 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
+ * Descriptor to contribute an operation.
  */
 @XObject("operation")
+@XRegistry(merge = false, remove = false, enable = false)
 public class OperationContribution {
 
     /**

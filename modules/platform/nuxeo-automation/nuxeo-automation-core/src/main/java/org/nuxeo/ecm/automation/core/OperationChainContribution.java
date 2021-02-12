@@ -41,11 +41,14 @@ import java.util.Map;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
@@ -55,18 +58,19 @@ import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
-import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("chain")
+@XRegistry(merge = false, enable = false, remove = false)
 public class OperationChainContribution {
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
-    @XNode("@replace")
+    @XNode(value = "@replace", defaultAssignment = "true")
     protected boolean replace = true;
 
     @XNode("description")
@@ -148,7 +152,12 @@ public class OperationChainContribution {
         return id;
     }
 
-    public OperationChain toOperationChain(Bundle bundle) throws OperationException {
+    /** @since 11.5 */
+    public boolean isReplace() {
+        return replace;
+    }
+
+    public OperationChain toOperationChain(Context ctx) throws OperationException {
         OperationChain chain = new OperationChain(id);
         chain.setDescription(description);
         chain.setPublic(isPublic);
@@ -232,7 +241,7 @@ public class OperationChainContribution {
                                     throw new OperationException(e);
                                 }
                             } else { // try with class loader
-                                val = bundle.getEntry(param.value);
+                                val = ctx.getResource(param.value);
                             }
                         }
                         break;

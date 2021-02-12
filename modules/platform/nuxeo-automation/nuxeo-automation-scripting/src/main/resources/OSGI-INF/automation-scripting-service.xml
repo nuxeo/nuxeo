@@ -49,8 +49,8 @@
       </code>
     </documentation>
 
-    <object
-      class="org.nuxeo.automation.scripting.internals.ScriptingOperationDescriptor" />
+    <object class="org.nuxeo.automation.scripting.internals.ScriptingOperationDescriptor" />
+    <registry class="org.nuxeo.automation.scripting.internals.AutomationScriptingRegistry" />
   </extension-point>
 
   <extension-point name="classFilter">
@@ -80,6 +80,7 @@
     </documentation>
 
     <object class="org.nuxeo.automation.scripting.internals.ClassFilterDescriptor" />
+    <registry class="org.nuxeo.automation.scripting.internals.ClassFilterRegistry" />
   </extension-point>
 
 </component>
