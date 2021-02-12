@@ -63,12 +63,16 @@ def isPullRequest() {
   return BRANCH_NAME =~ /PR-.*/
 }
 
+String getCurrentVersion() {
+  return readMavenPom().getVersion();
+}
+
 String getVersion() {
   return isPullRequest() ? getPullRequestVersion() : getReleaseVersion()
 }
 
 String getReleaseVersion() {
-  String nuxeoVersion = readMavenPom().getVersion()
+  String nuxeoVersion = getCurrentVersion()
   String noSnapshot = nuxeoVersion.replace('-SNAPSHOT', '')
   String version = noSnapshot + '.1' // first version ever
 
@@ -84,7 +88,7 @@ String getReleaseVersion() {
 }
 
 String getPullRequestVersion() {
-  return "${BRANCH_NAME}-" + readMavenPom().getVersion()
+  return "${BRANCH_NAME}-" + getCurrentVersion()
 }
 
 String getDockerTagFrom(String version) {
@@ -288,6 +292,7 @@ pipeline {
     MAVEN_ARGS = getMavenArgs()
     MAVEN_FAIL_ARGS = getMavenFailArgs()
     MAVEN_JAVADOC_ARGS = getMavenJavadocArgs()
+    CURRENT_VERSION = getCurrentVersion()
     VERSION = getVersion()
     DOCKER_TAG = getDockerTagFrom("${VERSION}")
     CHANGE_BRANCH = "${env.CHANGE_BRANCH != null ? env.CHANGE_BRANCH : BRANCH_NAME}"
@@ -329,8 +334,7 @@ pipeline {
             perl -i -pe 's|org.nuxeo.ecm.product.version=.*|org.nuxeo.ecm.product.version=${VERSION}|' server/nuxeo-nxr-server/src/main/resources/templates/nuxeo.defaults
 
             # nuxeo-parent POM
-            # only replace the first <version> occurence
-            perl -i -pe '!\$x && s|<version>.*?</version>|<version>${VERSION}</version>| && (\$x=1)' parent/pom.xml
+            perl -i -pe 's|<version>.*?</version>|<version>${VERSION}</version>|' parent/pom.xml
 
             # nuxeo-promote-packages POM
             # only replace the first <version> occurence
@@ -663,6 +667,10 @@ pipeline {
           ----------------------------------------"""
           sh """
             mvn ${MAVEN_ARGS} -Pdistrib -DskipTests deploy
+            mvn ${MAVEN_ARGS} -f parent/pom.xml deploy
+
+            # update back nuxeo-parent version to CURRENT_VERSION version
+            mvn ${MAVEN_ARGS} -f parent/pom.xml versions:set -DnewVersion=${CURRENT_VERSION} -DgenerateBackupPoms=false
             mvn ${MAVEN_ARGS} -f parent/pom.xml deploy
           """
         }
