@@ -91,11 +91,12 @@ String getDockerTagFrom(String version) {
   return version.tokenize('.')[0] + '.x'
 }
 
-void runFunctionalTests(String baseDir) {
+void runFunctionalTests(String baseDir, String tier) {
   try {
     retry(2) {
-      sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -f ${baseDir}/pom.xml verify"
+      sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -D${tier} -f ${baseDir}/pom.xml verify"
     }
+    findText regexp: ".*ERROR.*", fileSet: "ftests/**/log/server.log"
   } catch(err) {
     echo "${baseDir} functional tests error: ${err}"
     throw err
@@ -525,9 +526,10 @@ pipeline {
           ----------------------------------------
           Run "dev" functional tests
           ----------------------------------------"""
-          runFunctionalTests('ftests')
+          runFunctionalTests('ftests', 'nuxeo.ftests.tier5')
+          runFunctionalTests('ftests', 'nuxeo.ftests.tier6')
+          runFunctionalTests('ftests', 'nuxeo.ftests.tier7')
         }
-        findText regexp: ".*ERROR.*", fileSet: "ftests/**/log/server.log"
       }
       post {
         always {
