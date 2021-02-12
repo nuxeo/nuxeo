@@ -246,9 +246,9 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     }
 
     @Override
-    public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
+    public void afterFullRuntimeStart(ComponentManager mgr, boolean isResume) {
         // this is called once all components are started and ready
-        log.debug("afterRuntimeStart");
+        log.debug("afterFullRuntimeStart");
         startProcessors();
     }
 
