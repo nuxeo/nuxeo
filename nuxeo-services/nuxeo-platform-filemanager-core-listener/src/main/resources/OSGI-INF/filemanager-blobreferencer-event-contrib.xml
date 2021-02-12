@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="filemanager.core.listener.referencer" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <documentation>
+      Listen for Core event DOCUMENT_UPDATED and DOCUMENT_CREATED and update a key-value store for the number of times the digest of a blob is referenced in documents.
+      @author Charles Boidot (cboidot@nuxeo.com)
+     </documentation>
+     <!-- Needs to have a higher priority than the DigestComputer to be executed later -->
+    <listener name="blobReferencer" async="true" postCommit="false" class="org.nuxeo.ecm.platform.filemanager.core.listener.BlobReferencer" priority="150">
+    </listener>
+  </extension>
+
+</component>
