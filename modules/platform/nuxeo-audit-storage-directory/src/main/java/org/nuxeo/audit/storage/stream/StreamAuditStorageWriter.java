@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.audit.storage.impl.DirectoryAuditStorage;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
@@ -43,7 +43,8 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
  * @since 9.10
  */
 public class StreamAuditStorageWriter implements StreamProcessorTopology {
-    private static final Log log = LogFactory.getLog(StreamAuditStorageWriter.class);
+
+    private static final Logger log = LogManager.getLogger(StreamAuditStorageWriter.class);
 
     public static final String COMPUTATION_NAME = "AuditStorageLogWriter";
 
@@ -65,7 +66,7 @@ public class StreamAuditStorageWriter implements StreamProcessorTopology {
                        .build();
     }
 
-    public class AuditStorageLogWriterComputation extends AbstractComputation {
+    public static class AuditStorageLogWriterComputation extends AbstractComputation {
         protected final int batchSize;
 
         protected final int batchThresholdMs;
@@ -81,8 +82,8 @@ public class StreamAuditStorageWriter implements StreamProcessorTopology {
 
         @Override
         public void init(ComputationContext context) {
-            log.debug(String.format("Starting computation: %s reading on: %s, batch size: %d, threshold: %dms",
-                    COMPUTATION_NAME, STREAM_NAME, batchSize, batchThresholdMs));
+            log.debug("Starting computation: {} reading on: {}, batch size: {}, threshold: {}ms", COMPUTATION_NAME,
+                    STREAM_NAME, batchSize, batchThresholdMs);
             context.setTimer("batch", System.currentTimeMillis() + batchThresholdMs);
         }
 
@@ -102,8 +103,7 @@ public class StreamAuditStorageWriter implements StreamProcessorTopology {
 
         @Override
         public void destroy() {
-            log.debug(String.format("Destroy computation: %s, pending entries: %d", COMPUTATION_NAME,
-                    jsonEntries.size()));
+            log.debug("Destroy computation: {}, pending entries: {}", COMPUTATION_NAME, jsonEntries.size());
         }
 
         /**
@@ -113,10 +113,8 @@ public class StreamAuditStorageWriter implements StreamProcessorTopology {
             if (jsonEntries.isEmpty()) {
                 return;
             }
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Writing %d log entries to the directory audit storage %s.", jsonEntries.size(),
-                        DirectoryAuditStorage.NAME));
-            }
+            log.debug("Writing {} log entries to the directory audit storage {}.", jsonEntries.size(),
+                    DirectoryAuditStorage.NAME);
             NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
                                                                          .getComponent(NXAuditEventsService.NAME);
             DirectoryAuditStorage storage = (DirectoryAuditStorage) audit.getAuditStorage(DirectoryAuditStorage.NAME);
