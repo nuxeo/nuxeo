@@ -14,42 +14,77 @@
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <nuxeo.ftests.tier5>false</nuxeo.ftests.tier5>
+    <nuxeo.ftests.tier6>false</nuxeo.ftests.tier6>
+    <nuxeo.ftests.tier7>false</nuxeo.ftests.tier7>
   </properties>
 
-  <modules>
-    <module>nuxeo-3d-ftests</module>
-    <module>nuxeo-adobe-connector-ftests</module>
-    <module>nuxeo-amazon-s3-ftests</module>
-    <module>nuxeo-audit-storage-directory-ftests</module>
-    <module>nuxeo-cas2-login-ftests</module>
-    <module>nuxeo-csv-ftests</module>
-    <module>nuxeo-drive-ftests</module>
-    <module>nuxeo-duoweb-authentication-ftests</module>
-    <module>nuxeo-easyshare-ftests</module>
-    <module>nuxeo-fsexporter-ftests</module>
-    <module>nuxeo-google-storage-ftests</module>
-    <module>nuxeo-imap-connector-ftests</module>
-    <module>nuxeo-importer-ftests</module>
-    <module>nuxeo-jsf-to-web-ui-ftests</module>
-    <module>nuxeo-kerberos-authentication-ftests</module>
-    <module>nuxeo-lang-ext-incomplete-ftests</module>
-    <module>nuxeo-liveconnect-ftests</module>
-    <module>nuxeo-microsoft-azure-ftests</module>
-    <module>nuxeo-multi-tenant-ftests</module>
-    <module>nuxeo-openid-login-ftests</module>
-    <module>nuxeo-quota-ftests</module>
-    <module>nuxeo-saml2-login-ftests</module>
-    <module>nuxeo-scan-importer-ftests</module>
-    <module>nuxeo-server-cmis-tests</module>
-    <module>nuxeo-server-gatling-tests</module>
-    <module>nuxeo-server-hotreload-tests</module>
-    <module>nuxeo-server-tests</module>
-    <module>nuxeo-shibboleth-login-ftests</module>
-    <module>nuxeo-signature-ftests</module>
-    <module>nuxeo-template-rendering-ftests</module>
-    <module>nuxeo-tree-snapshot-ftests</module>
-    <module>nuxeo-wopi-ftests</module>
-  </modules>
+  <profiles>
+    <profile>
+      <id>ftestsTier5</id>
+      <activation>
+        <property>
+          <name>nuxeo.ftests.tier5</name>
+        </property>
+      </activation>
+      <modules>
+        <module>nuxeo-server-cmis-tests</module>
+        <module>nuxeo-server-tests</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>ftestsTier6</id>
+      <activation>
+        <property>
+          <name>nuxeo.ftests.tier6</name>
+        </property>
+      </activation>
+      <modules>
+        <module>nuxeo-server-gatling-tests</module>
+        <module>nuxeo-server-hotreload-tests</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>ftestsTier7</id>
+      <activation>
+        <property>
+          <name>nuxeo.ftests.tier7</name>
+        </property>
+      </activation>
+      <modules>
+        <module>nuxeo-3d-ftests</module>
+        <module>nuxeo-adobe-connector-ftests</module>
+        <module>nuxeo-amazon-s3-ftests</module>
+        <module>nuxeo-audit-storage-directory-ftests</module>
+        <module>nuxeo-cas2-login-ftests</module>
+        <module>nuxeo-csv-ftests</module>
+        <module>nuxeo-drive-ftests</module>
+        <module>nuxeo-duoweb-authentication-ftests</module>
+        <module>nuxeo-easyshare-ftests</module>
+        <module>nuxeo-fsexporter-ftests</module>
+        <module>nuxeo-google-storage-ftests</module>
+        <module>nuxeo-imap-connector-ftests</module>
+        <module>nuxeo-importer-ftests</module>
+        <module>nuxeo-jsf-to-web-ui-ftests</module>
+        <module>nuxeo-kerberos-authentication-ftests</module>
+        <module>nuxeo-lang-ext-incomplete-ftests</module>
+        <module>nuxeo-liveconnect-ftests</module>
+        <module>nuxeo-microsoft-azure-ftests</module>
+        <module>nuxeo-multi-tenant-ftests</module>
+        <module>nuxeo-openid-login-ftests</module>
+        <module>nuxeo-quota-ftests</module>
+        <module>nuxeo-saml2-login-ftests</module>
+        <module>nuxeo-scan-importer-ftests</module>
+        <module>nuxeo-shibboleth-login-ftests</module>
+        <module>nuxeo-signature-ftests</module>
+        <module>nuxeo-template-rendering-ftests</module>
+        <module>nuxeo-tree-snapshot-ftests</module>
+        <module>nuxeo-wopi-ftests</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <dependencies>
     <dependency>
