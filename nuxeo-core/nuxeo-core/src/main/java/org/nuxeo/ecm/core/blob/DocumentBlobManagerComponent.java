@@ -361,24 +361,33 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             for (BinaryGarbageCollector gc : gcs) {
                 gc.start();
             }
+            System.out.println("[DocumentBlobManagerComponent] Start time: " + (System.currentTimeMillis() - start));
             // in all repositories, mark referenced binaries
             // the marking itself will call back into the appropriate gc's mark method
             RepositoryService repositoryService = Framework.getService(RepositoryService.class);
             for (String repositoryName : repositoryService.getRepositoryNames()) {
+                System.out.println("[DocumentBlobManagerComponent] repository name: " + repositoryName);
+                long startMark = System.currentTimeMillis();
                 Repository repository = repositoryService.getRepository(repositoryName);
                 repository.markReferencedBinaries();
+                System.out.println(
+                        "[DocumentBlobManagerComponent] marking time: " + (System.currentTimeMillis() - startMark));
             }
             // stop gc
             BinaryManagerStatus globalStatus = new BinaryManagerStatus();
             for (BinaryGarbageCollector gc : gcs) {
+                long stop = System.currentTimeMillis();
                 gc.stop(delete);
+                System.out.println("[DocumentBlobManagerComponent] Stop time: " + (System.currentTimeMillis() - stop));
                 BinaryManagerStatus status = gc.getStatus();
                 globalStatus.numBinaries += status.numBinaries;
                 globalStatus.sizeBinaries += status.sizeBinaries;
                 globalStatus.numBinariesGC += status.numBinariesGC;
                 globalStatus.sizeBinariesGC += status.sizeBinariesGC;
+                System.out.println("[DocumentBlobManagerComponent] GC info: " + globalStatus.toString());
             }
             globalStatus.gcDuration = System.currentTimeMillis() - start;
+            System.out.println("[DocumentBlobManagerComponent] GC duration: " + globalStatus.gcDuration);
             return globalStatus;
         }, BINARY_GC_TX_TIMEOUT_SEC);
     }
