@@ -30,7 +30,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.script.Compilable;
@@ -39,6 +38,7 @@ import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
@@ -46,6 +46,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
+
 import jdk.nashorn.api.scripting.ClassFilter;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
@@ -56,10 +57,15 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     protected final ScriptEngine engine = getScriptEngine();
 
-    protected AutomationScriptingParamsInjector paramsInjector;
+    protected final AutomationScriptingParamsInjector paramsInjector;
 
-    // updated in-place only by extension points, so no concurrency issues
-    protected Set<String> allowedClassNames = new HashSet<>();
+    protected final Set<String> allowedClassNames;
+
+    public AutomationScriptingServiceImpl(AutomationScriptingParamsInjector paramsInjector,
+            Set<String> allowedClassNames) {
+        this.paramsInjector = paramsInjector;
+        this.allowedClassNames = allowedClassNames;
+    }
 
     @Override
     public Session get(CoreSession session) {
@@ -69,6 +75,11 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     @Override
     public Session get(OperationContext context) {
         return new Bridge(context);
+    }
+
+    @Override
+    public AutomationScriptingParamsInjector getParametersInjector() {
+        return paramsInjector;
     }
 
     class Bridge implements Session {

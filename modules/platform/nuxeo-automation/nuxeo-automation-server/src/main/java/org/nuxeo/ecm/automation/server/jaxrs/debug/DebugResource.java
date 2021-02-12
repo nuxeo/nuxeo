@@ -49,6 +49,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.impl.XMapContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -117,7 +118,7 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
         try {
             ByteArrayInputStream in = new ByteArrayInputStream(chainXml.getBytes());
             OperationChainContribution contrib = (OperationChainContribution) xmap.load(in);
-            OperationChain chain = contrib.toOperationChain(Framework.getRuntime().getContext().getBundle());
+            OperationChain chain = contrib.toOperationChain(new XMapContext(Framework.getRuntime().getContext()));
             ctx.setInput(getDocumentRef(input));
             getOperationService().run(ctx, chain);
             return Response.ok("Operation Done.").build();

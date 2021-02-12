@@ -24,7 +24,9 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 11.5: unused
  */
+@Deprecated(since = "11.5")
 public class ClassKeyedRegistry<V> extends SuperKeyedRegistry<Class<?>, V> {
 
     @Override

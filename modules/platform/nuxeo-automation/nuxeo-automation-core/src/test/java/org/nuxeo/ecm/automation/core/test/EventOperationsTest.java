@@ -25,7 +25,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.core.events.EventHandler;
 import org.nuxeo.ecm.automation.core.events.EventHandlerRegistry;
 import org.nuxeo.ecm.automation.core.impl.adapters.StringToProperties;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -64,7 +63,7 @@ public class EventOperationsTest {
     protected EventService eventService;
 
     @Before
-    public void initRepo() throws Exception {
+    public void initRepo() {
         src = session.createDocumentModel("/", "src", "Workspace");
         src.setPropertyValue("dc:title", "Source");
         src = session.createDocument(src);
@@ -149,22 +148,6 @@ public class EventOperationsTest {
     public void testShallowFiltering() {
         DocumentModel doc = session.createDocumentModel("/src", "myfile", "File");
         doc.setPropertyValue("dc:description", "ChangeMySource");
-        doc = session.createDocument(doc);
-        session.save();
-
-        nextTransaction();
-
-        doc = session.getDocument(doc.getRef());
-        assertEquals("New source", doc.getPropertyValue("dc:source"));
-    }
-
-    @Test
-    public void testDynamicHandlerRegistring() {
-        EventHandler handler = new EventHandler("documentCreated", "changeSource");
-        handler.setCondition("Document.getProperty(\"dc:description\") == \"/src/myfile\"");
-        registry.putEventHandler(handler);
-        DocumentModel doc = session.createDocumentModel("/src", "myfile", "File");
-        doc.setPropertyValue("dc:description", doc.getPathAsString());
         doc = session.createDocument(doc);
         session.save();
 

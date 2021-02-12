@@ -22,16 +22,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentParent;
@@ -89,7 +91,7 @@ public class DocumentUpdatePropertiesWithMultilineTest {
     protected OperationContext ctx;
 
     @Before
-    public void initRepo() throws Exception {
+    public void initRepo() {
         session.removeChildren(session.getRootDocument().getRef());
         session.save();
 
@@ -113,24 +115,26 @@ public class DocumentUpdatePropertiesWithMultilineTest {
     }
 
     /**
-     * Test if a multiline description is correctly updated
+     * Test if a multiline description is correctly updated.
      */
     @Test
-    @Ignore
-    public void testUpdateWithMultilineDescription() throws Exception {
+    public void testUpdateWithMultilineDescription() throws IOException, OperationException {
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("properties", new Properties("dc:title=MyDoc")).set(
-                "name", "note");
+        chain.add(CreateDocument.ID)
+             .set("type", "Note")
+             .set("properties", new Properties("dc:title=MyDoc"))
+             .set("name", "note");
         chain.add(PushDocument.ID);
         chain.add(GetDocumentParent.ID);
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "parentdoc");
         chain.add(SaveDocument.ID);
         chain.add(PopDocument.ID);
-        chain.add(UpdateDocument.ID).set("properties",
-                new Properties("dc:title=MyDoc2\ndc:description=" + "mydesc\notherdesc".replace("\n", "\\\n")));
+        chain.add(UpdateDocument.ID)
+             .set("properties",
+                     new Properties("dc:title=MyDoc2\ndc:description=" + "mydesc\notherdesc".replace("\n", "\\\n")));
         chain.add(LockDocument.ID);
         chain.add(SaveDocument.ID);
 

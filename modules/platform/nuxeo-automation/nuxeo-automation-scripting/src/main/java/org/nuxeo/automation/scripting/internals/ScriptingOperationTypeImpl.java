@@ -24,30 +24,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 7.2
  */
 public class ScriptingOperationTypeImpl implements OperationType {
 
-    protected final AutomationScriptingServiceImpl scripting;
-
-    protected final AutomationService automation;
-
     protected final ScriptingOperationDescriptor desc;
 
     protected final InvokableMethod method;
 
-    public ScriptingOperationTypeImpl(AutomationScriptingServiceImpl scripting, AutomationService automation,
-            ScriptingOperationDescriptor desc) {
-        this.scripting = scripting;
-        this.automation = automation;
+    public ScriptingOperationTypeImpl(ScriptingOperationDescriptor desc) {
         this.desc = desc;
         this.method = runMethod(this, desc.getInputType());
     }
@@ -82,7 +76,7 @@ public class ScriptingOperationTypeImpl implements OperationType {
     @Override
     public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
         Map<String, Object> params = new HashMap<>(args);
-        scripting.paramsInjector.inject(params, ctx, desc);
+        Framework.getService(AutomationScriptingService.class).getParametersInjector().inject(params, ctx, desc);
         return new ScriptingOperationImpl(desc.source, ctx, params);
     }
 
@@ -94,11 +88,6 @@ public class ScriptingOperationTypeImpl implements OperationType {
     @Override
     public String getInputType() {
         return desc.getInputType();
-    }
-
-    @Override
-    public AutomationService getService() {
-        return automation;
     }
 
     @Override

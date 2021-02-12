@@ -21,15 +21,19 @@ package org.nuxeo.automation.scripting.internals;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 
 /**
  * @since 7.2
  */
 @XObject("scriptedOperation")
+@XRegistry
 public class ScriptingOperationDescriptor {
 
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     @XNode("inputType")

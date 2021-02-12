@@ -18,49 +18,78 @@
  */
 package org.nuxeo.ecm.automation.context;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
+import org.nuxeo.common.xmap.registry.MapRegistry;
+import org.nuxeo.common.xmap.registry.Registry;
+import org.w3c.dom.Element;
 
 /**
  * Registry for {@link ContextHelperDescriptor} descriptors.
+ * <p>
+ * Modified as of 11.5 to implement {@link Registry}.
  *
  * @since 7.3
  */
-public class ContextHelperRegistry extends SimpleContributionRegistry<ContextHelperDescriptor> {
+public class ContextHelperRegistry extends MapRegistry {
 
-    private static final Log log = LogFactory.getLog(ContextHelperRegistry.class);
+    private static final Logger log = LogManager.getLogger(ContextHelperRegistry.class);
 
-    public static final String[] RESERVED_VAR_NAMES = { "CurrentDate", "Context", "ctx", "This", "Session",
-            "CurrentUser", "currentUser", "Env", "Document", "currentDocument", "Documents", "params", "input" };
+    protected static final List<String> RESERVED_VAR_NAMES = List.of("CurrentDate", "Context", "ctx", "This", "Session",
+            "CurrentUser", "currentUser", "Env", "Document", "currentDocument", "Documents", "params", "input");
 
-    @Override
-    public synchronized void addContribution(ContextHelperDescriptor contextHelperDescriptor) {
-        String id = contextHelperDescriptor.getId();
-        ContextHelper contextHelper = contextHelperDescriptor.getContextHelper();
-        if (currentContribs.keySet().contains(id)) {
-            log.warn("The context helper id/alias '" + id + " is overridden by the following helper: "
-                    + contextHelper.toString());
-        }
-        if (Arrays.asList(RESERVED_VAR_NAMES).contains(id)) {
-            log.warn("The context helper '" + contextHelper.toString() + "' cannot be registered:'" + id
-                    + "' is reserved. Please use another one. The Nuxeo reserved aliases are "
-                    + Arrays.toString(RESERVED_VAR_NAMES));
-            return;
-        }
-        super.addContribution(contextHelperDescriptor);
-    }
+    protected static final Collector<ContextHelperDescriptor, ?, Map<String, ContextHelper>> COLLECTOR = Collectors.toMap(
+            ContextHelperDescriptor::getId, ContextHelperDescriptor::getContextHelper);
 
     @Override
-    public String getContributionId(ContextHelperDescriptor metadataMappingDescriptor) {
-        return metadataMappingDescriptor.getId();
+    @SuppressWarnings("unchecked")
+    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+        String id = computeId(ctx, xObject, element);
+
+        if (shouldRemove(ctx, xObject, element, extensionId)) {
+            contributions.remove(id);
+            return null;
+        }
+
+        if (RESERVED_VAR_NAMES.contains(id)) {
+            log.error("The context helper with id '{}' cannot be registered: this identifier is reserved. "
+                    + "Please use another one (reserved identifiers: {})", id, RESERVED_VAR_NAMES);
+            return null;
+        }
+
+        Object contrib;
+        Object existing = contributions.get(id);
+        if (shouldMerge(ctx, xObject, element, extensionId, id, existing)) {
+            contrib = getMergedInstance(ctx, xObject, element, existing);
+            if (existing != null) {
+                log.warn("The context helper id/alias '{}' is overridden by the following helper: {}", id, contrib);
+            }
+        } else {
+            contrib = getInstance(ctx, xObject, element);
+        }
+        contributions.put(id, contrib);
+
+        Boolean enable = shouldEnable(ctx, xObject, element, extensionId);
+        if (enable != null) {
+            if (Boolean.TRUE.equals(enable)) {
+                disabled.remove(id);
+            } else {
+                disabled.add(id);
+            }
+        }
+
+        return (T) contrib;
     }
 
-    public Map<String, ContextHelperDescriptor> getContextHelperDescriptors() {
-        return currentContribs;
+    public Map<String, ContextHelper> getContextHelpers() {
+        return this.<ContextHelperDescriptor> getContributionValues().stream().collect(COLLECTOR);
     }
 
 }

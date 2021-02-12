@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * @since 8.3
  */
-@Operation(id = RemoveFacet.ID, category = Constants.CAT_DOCUMENT, label = "Remove Facet", description = "Removes the facet from the document. <p>WARNING: The save parameter is true by default, which means the document is saved in the database after removing the facet. It must be set to false when the operation is used in the context of an event that will fail if the document is saved (empty document created, about to create, before modification, ...).</p>", aliases = { "Document.RemoveFacet" })
+@Operation(id = RemoveFacet.ID, category = Constants.CAT_DOCUMENT, label = "Remove Facet", description = "Removes the facet from the document. <p>WARNING: The save parameter is true by default, which means the document is saved in the database after removing the facet. It must be set to false when the operation is used in the context of an event that will fail if the document is saved (empty document created, about to create, before modification, ...).</p>")
 public class RemoveFacet {
 
     public static final String ID = "Document.RemoveFacet";

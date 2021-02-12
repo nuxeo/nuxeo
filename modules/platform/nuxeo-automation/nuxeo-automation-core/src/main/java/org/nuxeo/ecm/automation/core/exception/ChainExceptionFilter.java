@@ -58,18 +58,7 @@ public class ChainExceptionFilter implements AutomationFilter {
     }
 
     public ChainExceptionFilter(AutomationFilterDescriptor automationFilterDescriptor) {
-        id = automationFilterDescriptor.getId();
-        String value = automationFilterDescriptor.getValue();
-        if (value.startsWith("expr:")) {
-            value = value.substring(5).trim();
-            // Unescape xml checking
-            value = StringEscapeUtils.unescapeXml(value);
-            if (value.contains("@{")) {
-                this.value = Scripting.newTemplate(value);
-            } else {
-                this.value = Scripting.newExpression(value);
-            }
-        }
+        this(automationFilterDescriptor.getId(), automationFilterDescriptor.getValue());
     }
 
 }

@@ -52,9 +52,9 @@ public class TestInvalidContributions {
     @Deploy("org.nuxeo.ecm.automation.core:test-invalid-operation.xml")
     public void testInvalidOperation() {
         checkStartupError(
-                "Failed to register extension to: service:org.nuxeo.ecm.core.operation.OperationServiceComponent, "
-                        + "xpoint: operations in component: service:org.nuxeo.automation.rest.test.faultyOperationContrib "
-                        + "(java.lang.IllegalArgumentException: Invalid operation class: class org.nuxeo.ecm.automation.core.AutomationComponent. "
+                "Failed to register operation in component 'org.nuxeo.automation.rest.test.faultyOperationContrib#operations' "
+                        + "with class 'org.nuxeo.ecm.automation.core.AutomationComponent' (java.lang.IllegalArgumentException: "
+                        + "Invalid operation class: class org.nuxeo.ecm.automation.core.AutomationComponent. "
                         + "No @Operation annotation found on class.)");
     }
 
@@ -62,10 +62,9 @@ public class TestInvalidContributions {
     @Deploy("org.nuxeo.ecm.automation.core:test-invalid-operation-notfound.xml")
     public void testInvalidOperationNotFound() {
         checkStartupError(
-                "Failed to register extension to: service:org.nuxeo.ecm.core.operation.OperationServiceComponent, "
-                        + "xpoint: operations in component: service:org.nuxeo.automation.rest.test.faultyOperationContrib "
-                        + "(java.lang.IllegalArgumentException: Invalid operation class 'org.nuxeo.ecm.automation.test.helpers.NonExistingOperation': "
-                        + "class not found.)");
+                "Failed to register operation in component 'org.nuxeo.automation.rest.test.faultyOperationContrib#operations' "
+                        + "with class 'org.nuxeo.ecm.automation.test.helpers.NonExistingOperation' (java.lang.ClassNotFoundException: "
+                        + "org.nuxeo.ecm.automation.test.helpers.NonExistingOperation)");
     }
 
     @Test

@@ -38,8 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 8.4
  */
-@Operation(id = SliceVideoInParts.ID, category = Constants.CAT_CONVERSION, label = "SliceVideo a Video in Parts with equal duration.", description = "Slices the video in n parts of approximately the same duration each.", aliases = {
-        "Video.SliceInParts" })
+@Operation(id = SliceVideoInParts.ID, category = Constants.CAT_CONVERSION, label = "SliceVideo a Video in Parts with equal duration.", description = "Slices the video in n parts of approximately the same duration each.")
 public class SliceVideoInParts {
 
     public static final String ID = "Video.SliceInParts";
