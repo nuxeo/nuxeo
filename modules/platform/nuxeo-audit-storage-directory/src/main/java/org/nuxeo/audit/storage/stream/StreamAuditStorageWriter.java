@@ -86,14 +86,28 @@ public class StreamAuditStorageWriter implements StreamProcessorTopology {
             context.setTimer("batch", System.currentTimeMillis() + batchThresholdMs);
         }
 
+        protected boolean checkStartStatus() {
+            boolean fullyStarted = Framework.getRuntime().getComponentManager().isFullyStarted();
+            if (!fullyStarted) {
+                log.warn("Discard computation run before full runtime start");
+            }
+            return fullyStarted;
+        }
+
         @Override
         public void processTimer(ComputationContext context, String key, long timestamp) {
+            if (!checkStartStatus()) {
+                return;
+            }
             writeJsonEntriesToAudit(context);
             context.setTimer("batch", System.currentTimeMillis() + batchThresholdMs);
         }
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
+            if (!checkStartStatus()) {
+                return;
+            }
             jsonEntries.add(new String(record.getData(), UTF_8));
             if (jsonEntries.size() >= batchSize) {
                 writeJsonEntriesToAudit(context);

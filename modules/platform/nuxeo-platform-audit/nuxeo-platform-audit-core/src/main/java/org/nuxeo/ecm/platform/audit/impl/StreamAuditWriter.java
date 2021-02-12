@@ -69,6 +69,10 @@ public class StreamAuditWriter implements StreamProcessorTopology {
 
         @Override
         public void batchProcess(ComputationContext context, String inputStreamName, List<Record> records) {
+            if (!Framework.getRuntime().getComponentManager().isFullyStarted()) {
+                log.warn("Discard computation run before full runtime start");
+                return;
+            }
             List<LogEntry> logEntries = new ArrayList<>(records.size());
             for (Record record : records) {
                 try {
