@@ -54,6 +54,11 @@ public class TestComponentManager {
 
     protected MyListener listener = new MyListener();
 
+    protected static void checkStartStatus(ComponentManager mgr, boolean started, boolean fullyStarted) {
+        assertEquals(started, mgr.isStarted());
+        assertEquals(fullyStarted, mgr.isFullyStarted());
+    }
+
     public void checkCounters(MockEventsInfo info, int beforeStart, int afterStart, int beforeStop, int afterStop) {
         assertEquals(beforeStart, info.beforeStart);
         assertEquals(afterStart, info.afterStart);
@@ -83,28 +88,34 @@ public class TestComponentManager {
     @Test
     public void testManagerEvents() throws Exception {
         ComponentManager mgr = Framework.getRuntime().getComponentManager();
+        checkStartStatus(mgr, true, true);
         mgr.addListener(legacyListener);
         mgr.addListener(listener);
         checkCounters(legacyListener.info, 0, 0, 0, 0);
         checkCounters(listener.info, 0, 0, 0, 0);
         checkCounters2(1, 1, 0, 0);
         mgr.restart(false);
+        checkStartStatus(mgr, true, true);
         checkCounters(legacyListener.info, 1, 1, 1, 1);
         checkCounters(listener.info, 1, 1, 1, 1);
         checkCounters2(1, 1, 0, 0);
         mgr.restart(true);
+        checkStartStatus(mgr, true, true);
         checkCounters(legacyListener.info, 2, 2, 2, 2);
         checkCounters(listener.info, 2, 2, 2, 2);
         checkCounters2(1, 1, 0, 0);
         mgr.refresh(true);
+        checkStartStatus(mgr, true, true);
         checkCounters(legacyListener.info, 2, 2, 2, 2);
         checkCounters(listener.info, 2, 2, 2, 2);
         checkCounters2(1, 1, 0, 0);
         mgr.stop();
+        checkStartStatus(mgr, false, false);
         checkCounters(legacyListener.info, 2, 2, 3, 3);
         checkCounters(listener.info, 2, 2, 3, 3);
         checkMockComponentManagerListener2(true);
         mgr.start();
+        checkStartStatus(mgr, true, true);
         checkCounters(legacyListener.info, 3, 3, 3, 3);
         checkCounters(listener.info, 3, 3, 3, 3);
         checkCounters2(1, 1, 0, 0);
@@ -116,21 +127,25 @@ public class TestComponentManager {
 
         @Override
         public void beforeStop(ComponentManager mgr, boolean isStandby) {
+            checkStartStatus(mgr, true, true);
             info.beforeStop++;
         }
 
         @Override
         public void beforeStart(ComponentManager mgr, boolean isResume) {
+            checkStartStatus(mgr, false, false);
             info.beforeStart++;
         }
 
         @Override
         public void afterStop(ComponentManager mgr, boolean isStandby) {
+            checkStartStatus(mgr, true, true);
             info.afterStop++;
         }
 
         @Override
         public void afterStart(ComponentManager mgr, boolean isResume) {
+            checkStartStatus(mgr, true, false);
             info.afterStart++;
         }
 
@@ -142,21 +157,25 @@ public class TestComponentManager {
 
         @Override
         public void beforeRuntimeStop(ComponentManager mgr, boolean isStandby) {
+            checkStartStatus(mgr, true, true);
             info.beforeStop++;
         }
 
         @Override
         public void beforeRuntimeStart(ComponentManager mgr, boolean isResume) {
+            checkStartStatus(mgr, false, false);
             info.beforeStart++;
         }
 
         @Override
         public void afterRuntimeStop(ComponentManager mgr, boolean isStandby) {
+            checkStartStatus(mgr, true, true);
             info.afterStop++;
         }
 
         @Override
         public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
+            checkStartStatus(mgr, true, false);
             info.afterStart++;
         }
 

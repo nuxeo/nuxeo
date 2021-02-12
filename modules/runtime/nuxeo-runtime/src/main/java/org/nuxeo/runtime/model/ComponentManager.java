@@ -29,6 +29,7 @@ import org.nuxeo.common.xmap.registry.Registry;
 import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.runtime.ComponentListener;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentManager.Listener;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 
 /**
@@ -332,6 +333,14 @@ public interface ComponentManager {
      * @since 9.2
      */
     boolean isStarted();
+
+    /**
+     * Returns true if all components have been started, and all if all listeners
+     * {@link Listener#afterRuntimeStart(ComponentManager, boolean)} method has been called.
+     *
+     * @since 11.5
+     */
+    boolean isFullyStarted();
 
     /**
      * Tests whether the components are in standby mode. That means they were started and then stopped - waiting to be

@@ -108,6 +108,14 @@ public class ComponentManagerImpl implements ComponentManager {
     protected volatile List<RegistrationInfo> started;
 
     /**
+     * Boolean stating if framework is fully started: set to true after all components have been started and if all
+     * listeners {@link Listener#afterRuntimeStart(ComponentManager, boolean)} method has been called.
+     *
+     * @since 11.5
+     */
+    protected volatile boolean fullyStarted = false;
+
+    /**
      * The list of standby components (sorted according to the start order) This list is null if component were not yet
      * started or not yet put in standby When putting components in standby all started components are stopped and the
      * {@link #started} list is assigned to {@link #standby} list then the {@link #started} field is nullified. When
@@ -880,6 +888,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
         this.started = ris;
         listeners.afterStart(isResume);
+        this.fullyStarted = true;
         watch.stop();
 
         log.debug("Components started in {}s", watch.total::formatSeconds);
@@ -997,6 +1006,7 @@ public class ComponentManagerImpl implements ComponentManager {
             deactivateComponents(true);
         } finally {
             this.started = null;
+            this.fullyStarted = false;
         }
 
         return true;
@@ -1020,6 +1030,7 @@ public class ComponentManagerImpl implements ComponentManager {
             } finally {
                 this.standby = this.started;
                 this.started = null;
+                this.fullyStarted = false;
             }
         }
     }
@@ -1049,6 +1060,11 @@ public class ComponentManagerImpl implements ComponentManager {
     @Override
     public boolean isStarted() {
         return this.started != null;
+    }
+
+    @Override
+    public boolean isFullyStarted() {
+        return fullyStarted;
     }
 
     @Override
@@ -1182,6 +1198,9 @@ public class ComponentManagerImpl implements ComponentManager {
      * Standby state corresponds to activated components.
      */
     private void applyStashWhenRunning(Stash stash) throws InterruptedException {
+        if (!stash.isEmpty()) {
+            this.fullyStarted = false;
+        }
         List<RegistrationInfo> toRemove = stash.getRegistrationsToRemove(registry);
         // Nuxeo is started so stop components to remove first and remove them from started list
         if (isStarted()) {
