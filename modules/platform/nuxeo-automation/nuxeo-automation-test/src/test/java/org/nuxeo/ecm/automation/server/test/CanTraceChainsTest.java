@@ -31,14 +31,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,6 +67,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(AutomationFeature.class)
 @Deploy("org.nuxeo.ecm.automation.test")
 @Deploy("org.nuxeo.ecm.automation.test:test-bindings.xml")
+@Deploy("org.nuxeo.ecm.automation.test:operation-dummy-contrib.xml")
 public class CanTraceChainsTest {
 
     @Inject
@@ -86,8 +85,7 @@ public class CanTraceChainsTest {
     DocumentModel src;
 
     @Before
-    public void setup() throws OperationException {
-        service.putOperation(DummyOperation.class);
+    public void setup() {
         // Setup a document
         src = session.createDocumentModel("/", "src", "Workspace");
         src.setPropertyValue("dc:title", "Source");
@@ -99,13 +97,8 @@ public class CanTraceChainsTest {
         }
     }
 
-    @After
-    public void teardown() {
-        service.removeOperation(DummyOperation.class);
-    }
-
     @Test
-    public void testSimpleChainTrace() throws Exception {
+    public void testSimpleChainTrace() throws OperationException {
         OperationChain chain = new OperationChain("testChain");
         chain.add(DummyOperation.ID).set(DummyOperation.ID, DummyOperation.ID);
         chain.add(DummyOperation.ID);
@@ -133,7 +126,7 @@ public class CanTraceChainsTest {
     }
 
     @Test
-    public void testSubchainsTrace() throws Exception {
+    public void testSubchainsTrace() throws OperationException {
         final String chainid = "traceSubchains";
         OperationChain chain = new OperationChain("parentChain");
         OperationParameters runOnListParams = new OperationParameters(RunOperationOnList.ID);
@@ -141,7 +134,7 @@ public class CanTraceChainsTest {
         runOnListParams.set("id", chainid);
         chain.add(runOnListParams);
         context.setInput(src);
-        context.put("list", Arrays.asList(new String[] { "one", "two" }));
+        context.put("list", List.of("one", "two"));
         service.run(context, chain);
         Trace trace = factory.getTrace("parentChain");
         List<Call> calls = trace.getCalls();
@@ -153,7 +146,7 @@ public class CanTraceChainsTest {
     }
 
     @Test
-    public void testOperationTrace() throws Exception {
+    public void testOperationTrace() throws OperationException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("value", src);
         service.run(context, FetchDocument.ID, parameters);
@@ -163,7 +156,7 @@ public class CanTraceChainsTest {
     }
 
     @Test
-    public void testTraceMvelExpression() throws Exception {
+    public void testTraceMvelExpression() throws OperationException {
         context.setInput(src);
         service.run(context, "testChainTrace");
         Trace trace = factory.getTrace("testChainTrace");
@@ -174,7 +167,7 @@ public class CanTraceChainsTest {
     }
 
     @Test
-    public void canKeepSubContextValuesWithTraces() throws Exception {
+    public void canKeepSubContextValuesWithTraces() throws OperationException {
         try (OperationContext ctx = new OperationContext(session)) {
             List<String> users = new ArrayList<>();
             users.add("foo");
@@ -216,7 +209,7 @@ public class CanTraceChainsTest {
     }
 
     @Test
-    public void canEnableTracesViaOperation() throws Exception {
+    public void canEnableTracesViaOperation() throws OperationException {
         // Disable trace mode
         if (factory.getRecordingState()) {
             factory.toggleRecording();

@@ -18,6 +18,7 @@ package org.nuxeo.automation.scripting.api;
 
 import java.io.InputStream;
 
+import org.nuxeo.automation.scripting.internals.AutomationScriptingParamsInjector;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -35,5 +36,12 @@ public interface AutomationScriptingService {
     Session get(CoreSession session);
 
     Session get(OperationContext context);
+
+    /**
+     * Returns injector used by the service.
+     *
+     * @since 11.5
+     */
+    AutomationScriptingParamsInjector getParametersInjector();
 
 }

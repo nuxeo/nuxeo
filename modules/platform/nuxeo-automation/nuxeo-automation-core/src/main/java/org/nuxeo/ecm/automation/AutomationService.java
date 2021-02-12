@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,63 +14,21 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Guillaume Renard
+ *
  */
 package org.nuxeo.ecm.automation;
 
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.core.annotations.Operation;
-import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
-
 /**
- * Service providing an operation registry and operation execution methods. The operation registry is thread-safe and
- * optimized for lookups. Progress monitor for asynchronous executions is not yet implemented.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author <a href="mailto:grenard@nuxeo.com">Guillaume</a>
+ * Service providing operation execution methods.
+ * <p>
+ * Progress monitor for asynchronous executions is not implemented.
  */
 public interface AutomationService {
-
-    /**
-     * Registers an operation given its class. The operation class MUST be annotated using {@link Operation} annotation.
-     * If an operation having the same ID exists an exception will be thrown.
-     */
-    void putOperation(Class<?> type) throws OperationException;
-
-    /**
-     * Registers an operation given its class. The operation class MUST be annotated using {@link Operation} annotation.
-     * If the <code>replace</code> argument is true then any existing operation having the same ID will replaced with
-     * this one.
-     */
-    void putOperation(Class<?> type, boolean replace) throws OperationException;
-
-    /**
-     * Registers an operation given its class. The operation class MUST be annotated using {@link Operation} annotation.
-     * If the <code>replace</code> argument is true then any existing operation having the same ID will replaced with
-     * this one. Third argument represents the name of the component registring the operation
-     */
-    void putOperation(Class<?> type, boolean replace, String contributingComponent) throws OperationException;
-
-    /**
-     * Registers an operation given it's type.
-     *
-     * @since 5.9.2
-     */
-    void putOperation(OperationType op, boolean replace) throws OperationException;
-
-    /**
-     * Removes an operation given its class. If the operation was not registered does nothing.
-     */
-    void removeOperation(Class<?> key);
-
-    /**
-     * Removes an operation given it's type. If the operation was not registered does nothing.
-     *
-     * @since 5.9.2
-     */
-    void removeOperation(OperationType type);
 
     /**
      * Gets all operation types that was registered.
@@ -112,68 +70,25 @@ public interface AutomationService {
     Object run(OperationContext ctx, String id, Map<String, ?> params) throws OperationException;
 
     /**
-     * Registers a parametrized operation chain. This chain can be executed later by calling <code>run</code> and
-     * passing the chain ID. If a chain having the same ID exists an exception is thrown
-     *
-     * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use
-     *             {@link #putOperation(OperationType, boolean)} method instead.
-     * @since 5.7.2
-     */
-    @Deprecated
-    void putOperationChain(OperationChain chain) throws OperationException;
-
-    /**
-     * Registers a parametrized operation chain. This chain can be executed later by calling <code>run</code> and
-     * passing the chain ID. If the replace attribute is true then any chain already registered under the same id will
-     * be replaced otherwise an exception is thrown.
-     *
-     * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use
-     *             {@link #putOperation(OperationType, boolean)} method instead.
-     * @since 5.7.2
-     */
-    @Deprecated
-    void putOperationChain(OperationChain chain, boolean replace) throws OperationException;
-
-    /**
-     * Removes a registered operation chain given its ID. Do nothing if the chain was not registered.
-     *
-     * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use
-     *             {@link #removeOperation(OperationType)} method instead.
-     * @since 5.7.2
-     */
-    @Deprecated
-    void removeOperationChain(String id);
-
-    /**
      * Gets a registered operation chain.
      *
      * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use
      *             {@link #getOperation(String)} method instead.
      * @since 5.7.2
      */
-    @Deprecated
+    @Deprecated(since = "5.9.2")
     OperationChain getOperationChain(String id) throws OperationNotFoundException;
 
     /**
      * Gets a list of all registered chains
      *
-     * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use {@link #getOperations()} method
-     *             instead.
+     * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use
+     *             {@link #getOperations()} method instead.
      * @since 5.7.2
      * @return the list or an empty list if no registered chains exists
      */
-    @Deprecated
+    @Deprecated(since = "5.9.2")
     List<OperationChain> getOperationChains();
-
-    /**
-     * Registers a new type adapter that can adapt an instance of the accepted type into one of the produced type.
-     */
-    void putTypeAdapter(Class<?> accept, Class<?> produce, TypeAdapter adapter);
-
-    /**
-     * Removes a type adapter
-     */
-    void removeTypeAdapter(Class<?> accept, Class<?> produce);
 
     /**
      * Gets a type adapter for the input type accept and the output type produce. Returns null if no adapter was
@@ -212,32 +127,12 @@ public interface AutomationService {
     /**
      * @since 5.7.3
      */
-    void putChainException(ChainException exceptionChain);
-
-    /**
-     * @since 5.7.3
-     */
-    void removeExceptionChain(ChainException exceptionChain);
-
-    /**
-     * @since 5.7.3
-     */
     ChainException[] getChainExceptions();
 
     /**
      * @since 5.7.3
      */
     ChainException getChainException(String onChainId);
-
-    /**
-     * @since 5.7.3
-     */
-    void putAutomationFilter(AutomationFilter automationFilter);
-
-    /**
-     * @since 5.7.3
-     */
-    void removeAutomationFilter(AutomationFilter automationFilter);
 
     /**
      * @since 5.7.3
@@ -255,12 +150,6 @@ public interface AutomationService {
     boolean hasChainException(String onChainId);
 
     /**
-     * @since 5.9.5
-     */
-    void putOperation(Class<?> type, boolean replace, String contributingComponent,
-            List<WidgetDefinition> widgetDefinitionList) throws OperationException;
-
-    /**
      * This running method execute operation process through a new transaction.
      *
      * @param ctx the operation context.
@@ -270,6 +159,7 @@ public interface AutomationService {
      * @param rollbackGlobalOnError Rollback or not transaction after failing.
      * @since 6.0
      */
-    Object runInNewTx(OperationContext ctx, String chainId, Map<String,?> chainParameters, Integer timeout,
+    Object runInNewTx(OperationContext ctx, String chainId, Map<String, ?> chainParameters, Integer timeout,
             boolean rollbackGlobalOnError) throws OperationException;
+
 }

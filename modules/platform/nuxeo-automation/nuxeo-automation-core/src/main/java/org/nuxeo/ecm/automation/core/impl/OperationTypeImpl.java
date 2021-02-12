@@ -49,17 +49,13 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentRefList;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
 public class OperationTypeImpl implements OperationType {
-
-    /**
-     * The service that registered the operation
-     */
-    protected final AutomationService service;
 
     /**
      * The operation ID - used for lookups.
@@ -106,25 +102,23 @@ public class OperationTypeImpl implements OperationType {
 
     protected List<WidgetDefinition> widgetDefinitionList;
 
-    public OperationTypeImpl(AutomationService service, Class<?> type) {
-        this(service, type, null);
+    public OperationTypeImpl(Class<?> type) {
+        this(type, null);
     }
 
-    public OperationTypeImpl(AutomationService service, Class<?> type, String contributingComponent) {
-        this(service, type, contributingComponent, null);
+    public OperationTypeImpl(Class<?> type, String contributingComponent) {
+        this(type, contributingComponent, null);
     }
 
     /**
      * @since 5.9.5
      */
-    public OperationTypeImpl(AutomationService service, Class<?> type, String contributingComponent,
-            List<WidgetDefinition> widgetDefinitionList) {
+    public OperationTypeImpl(Class<?> type, String contributingComponent, List<WidgetDefinition> widgetDefinitionList) {
         Operation anno = type.getAnnotation(Operation.class);
         if (anno == null) {
             throw new IllegalArgumentException(
                     "Invalid operation class: " + type + ". No @Operation annotation found on class.");
         }
-        this.service = service;
         this.type = type;
         this.widgetDefinitionList = widgetDefinitionList;
         this.contributingComponent = contributingComponent;
@@ -156,11 +150,6 @@ public class OperationTypeImpl implements OperationType {
         public String toString() {
             return "Match(" + method + ", " + priority + ")";
         }
-    }
-
-    @Override
-    public AutomationService getService() {
-        return service;
     }
 
     @Override
@@ -240,6 +229,7 @@ public class OperationTypeImpl implements OperationType {
     }
 
     public void inject(OperationContext ctx, Map<String, ?> args, Object target) throws OperationException {
+        AutomationService service = Framework.getService(AutomationService.class);
         for (Map.Entry<String, Field> entry : params.entrySet()) {
             Object obj = resolveObject(ctx, entry.getKey(), args);
             if (obj == null) {

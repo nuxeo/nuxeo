@@ -32,6 +32,7 @@ import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -77,16 +78,16 @@ public class TestChainException {
         public void populate(CoreSession session) {
             DocumentModel src = session.createDocumentModel("/", "src", "Folder");
             src.setPropertyValue("dc:title", "Source");
-            src = session.createDocument(src);
+            session.createDocument(src);
             // Document with Document as title
             DocumentModel doc = session.createDocumentModel("/", "doc", "Folder");
             doc.setPropertyValue("dc:title", "Document");
-            doc = session.createDocument(doc);
+            session.createDocument(doc);
         }
     }
 
     @Before
-    public void fetchDocuments() throws Exception {
+    public void fetchDocuments() {
         src = session.getDocument(new PathRef("/src"));
         doc = session.getDocument(new PathRef("/doc"));
         ctx = new OperationContext(session);
@@ -98,7 +99,7 @@ public class TestChainException {
     }
 
     @Test
-    public void testChainExceptionContribution() throws Exception {
+    public void testChainExceptionContribution() {
         ChainException chainException = service.getChainException("contributedchain");
         assertNotNull(chainException);
         assertEquals(3, chainException.getCatchChainExceptions().size());
@@ -106,7 +107,7 @@ public class TestChainException {
     }
 
     @Test
-    public void testAutomationFilterContribution() throws Exception {
+    public void testAutomationFilterContribution() {
         AutomationFilter automationFilter = service.getAutomationFilter("filterA");
         assertNotNull(automationFilter);
         ctx.setInput(src);
@@ -115,7 +116,7 @@ public class TestChainException {
     }
 
     @Test
-    public void testAutomationChainException() throws Exception {
+    public void testAutomationChainException() throws OperationException {
         // Activate trace mode to verify if exception chain has been run
         if (!factory.getRecordingState()) {
             factory.toggleRecording();

@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.operation.OperationServiceComponent"
-  version="1.0">
-  <!-- TODO: cannot rename this component since studio is using the old name - fix this
-    <component name="org.nuxeo.ecm.automation.core.AutomationComponent" version="1.0">
-  -->
+<component name="org.nuxeo.ecm.automation.core.AutomationComponent">
+  <alias>org.nuxeo.ecm.core.operation.OperationServiceComponent</alias>
 
   <documentation>@author Bogdan Stefanescu (bs@nuxeo.com)</documentation>
 
@@ -23,16 +20,19 @@
   <extension-point name="operations">
     <documentation>Operation registration</documentation>
     <object class="org.nuxeo.ecm.automation.core.OperationContribution" />
+    <registry class="org.nuxeo.ecm.automation.core.impl.OperationRegistry" />
   </extension-point>
 
   <extension-point name="adapters">
     <documentation>Type adapter registration</documentation>
     <object class="org.nuxeo.ecm.automation.core.TypeAdapterContribution" />
+    <registry class="org.nuxeo.ecm.automation.core.impl.TypeAdapterRegistry" />
   </extension-point>
 
   <extension-point name="chains">
     <documentation>Operation Chain registration</documentation>
     <object class="org.nuxeo.ecm.automation.core.OperationChainContribution" />
+    <registry class="org.nuxeo.ecm.automation.core.impl.ChainRegistry" />
   </extension-point>
 
   <extension-point name="chainException">
@@ -55,7 +55,8 @@
         </catchChain>
       </code>
     </documentation>
-    <object class="org.nuxeo.ecm.automation.core.ChainExceptionDescriptor"/>
+    <object class="org.nuxeo.ecm.automation.core.ChainExceptionDescriptor" />
+    <registry class="org.nuxeo.ecm.automation.core.exception.ChainExceptionRegistry" />
   </extension-point>
 
   <extension-point name="automationFilter">
@@ -72,12 +73,14 @@
         <filter id="filterB">expr:@{Document['dc:title']=='document'}</filter>
       </code>
     </documentation>
-    <object class="org.nuxeo.ecm.automation.core.AutomationFilterDescriptor"/>
+    <object class="org.nuxeo.ecm.automation.core.AutomationFilterDescriptor" />
+    <registry class="org.nuxeo.ecm.automation.core.impl.AutomationFilterRegistry" />
   </extension-point>
 
   <extension-point name="event-handlers">
     <documentation>Core Event Handlers bound to operations</documentation>
     <object class="org.nuxeo.ecm.automation.core.events.EventHandler" />
+    <registry class="org.nuxeo.ecm.automation.core.events.EventHandlerRegistry" />
   </extension-point>
 
   <extension-point name="contextHelpers">
@@ -90,7 +93,8 @@
         <contextHelper id="platformFunctions" class="org.nuxeo.ecm.automation.features.PlatformFunctions"/>
       </code>
     </documentation>
-    <object class="org.nuxeo.ecm.automation.context.ContextHelperDescriptor"/>
+    <object class="org.nuxeo.ecm.automation.context.ContextHelperDescriptor" />
+    <registry class="org.nuxeo.ecm.automation.context.ContextHelperRegistry" />
   </extension-point>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"

@@ -52,8 +52,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.business.BusinessCreateOperation;
 import org.nuxeo.ecm.automation.core.operations.business.BusinessFetchOperation;
 import org.nuxeo.ecm.automation.core.operations.business.BusinessUpdateOperation;
@@ -68,7 +66,6 @@ import org.nuxeo.ecm.automation.core.operations.services.AuditLog;
 import org.nuxeo.ecm.automation.core.operations.services.AuditPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
-import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.server.test.business.client.TestBusinessArray;
 import org.nuxeo.ecm.automation.server.test.json.JSONOperationWithArrays;
@@ -91,7 +88,6 @@ import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -110,6 +106,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Deploy("org.nuxeo.ecm.automation.test:test-bindings.xml")
 @Deploy("org.nuxeo.ecm.automation.test:test-mvalues.xml")
 @Deploy("org.nuxeo.ecm.automation.test:operation-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.test:operation-embedded-contrib.xml")
 @Features({ EmbeddedAutomationServerFeature.class, AuditFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
@@ -123,24 +120,14 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     private TransactionalFeature txFeature;
 
     @BeforeClass
-    public static void setupCodecs() throws Exception {
+    public static void setupCodecs() {
         Framework.getService(ObjectCodecService.class).addCodec(new MyObjectCodec());
-        Framework.getService(AutomationService.class).putOperation(MyObjectOperation.class);
-        // Fire application start on AutomationServer component forcing to load
-        // correctly Document Adapter Codec in Test scope (to take into account
-        // of document adapters contributed into test) -> see execution order
-        // here: org.nuxeo.runtime.test.runner.RuntimeFeature.start()
-        ComponentInstance componentInstance = Framework.getRuntime()
-                                                       .getComponentInstance(
-                                                               "org.nuxeo.ecm.automation.server.AutomationServer");
-        AutomationServerComponent automationServerComponent = (AutomationServerComponent) componentInstance.getInstance();
-        automationServerComponent.start(componentInstance);
     }
 
     /**
      * Use to setup complex documents for related tests
      */
-    public void setupComplexDocuments() throws Exception {
+    public void setupComplexDocuments() throws IOException {
         // Fill the document properties
         Map<String, Object> creationProps = new HashMap<>();
         creationProps.put("ds:tableName", "MyTable");
@@ -164,13 +151,8 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                .execute();
     }
 
-    @BeforeClass
-    public static void addDataCapsuleOperation() throws OperationException {
-        Framework.getService(AutomationService.class).putOperation(TestDataCapsule.class);
-    }
-
     @Test
-    public void testBlobSummaries() throws Exception {
+    public void testBlobSummaries() throws IOException {
         Blob blob = session.newRequest(TestDataCapsule.ID)//
                            .executeReturningBlob();
         assertEquals("TestDataCapsule", blob.getFilename());
@@ -179,7 +161,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void testCodecs() throws Exception {
+    public void testCodecs() throws IOException {
         JsonNode msg = session.newRequest(MyObjectOperation.ID) //
                               .execute();
         assertEquals("msg", msg.get(ENTITY_TYPE).asText());
@@ -187,7 +169,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void testMultiValued() throws Exception {
+    public void testMultiValued() throws IOException {
         JsonNode note = session.newRequest(CreateDocument.ID)
                                .setHeader(DOCUMENT_PROPERTIES, "*")
                                .setInput("doc:/")
@@ -239,7 +221,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
      * test a chain invocation
      */
     @Test
-    public void testChain() throws Exception {
+    public void testChain() throws IOException {
         // create a folder
         JsonNode folder = session.newRequest(CreateDocument.ID)
                                  .setInput("doc:/")
@@ -265,7 +247,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
      * We allow to call chain operation since 5.7.2. Test on it.
      */
     @Test
-    public void testRemoteChain() throws Exception {
+    public void testRemoteChain() throws IOException {
         JsonNode doc = session.newRequest("testchain") //
                               .setInput("doc:/")
                               .executeReturningDocument();
@@ -273,14 +255,14 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void testTxTimeout() throws Exception {
+    public void testTxTimeout() throws IOException {
         session.newRequest(WaitForTxTimeoutOperation.ID) //
                .setHeader(ServletHelper.TX_TIMEOUT_HEADER_KEY, "1")
                .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
     }
 
     @Test
-    public void testBaseInputAndReturnValues() throws Exception {
+    public void testBaseInputAndReturnValues() throws IOException {
         boolean b = session.newRequest(ReturnOperation.ID) //
                            .setInput(Boolean.TRUE)
                            .executeReturningBooleanEntity();
@@ -314,7 +296,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void testNumberParamAdapters() throws Exception {
+    public void testNumberParamAdapters() throws IOException {
         // Long parameter
         Long longParam = 500L;
         Number n = session.newRequest(TestNumberParamAdaptersOperation.ID) //
@@ -333,7 +315,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
      * test a chain rollback
      */
     @Test
-    public void testChainRollback() throws Exception {
+    public void testChainRollback() throws IOException {
         // 1. create a note and exit gracefully
         JsonNode doc = session.newRequest("exitNoRollback") //
                               .setInput("doc:/")
@@ -367,7 +349,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void testSendMail() throws Exception {
+    public void testSendMail() throws IOException {
 
         // Set bad SMTP configuration
         File file = new File(Environment.getDefault().getConfig(), "mail.properties");
@@ -380,11 +362,11 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         org.apache.commons.io.FileUtils.writeLines(file, mailProperties);
 
         HttpAutomationRequest operationRequest = session.newRequest(SendMail.ID)
-                                                   .setInput("doc:/")
-                                                   .set("from", "sender@nuxeo.com")
-                                                   .set("to", "recipient@nuxeo.com")
-                                                   .set("subject", "My test mail")
-                                                   .set("message", "The message content.");
+                                                        .setInput("doc:/")
+                                                        .set("from", "sender@nuxeo.com")
+                                                        .set("to", "recipient@nuxeo.com")
+                                                        .set("subject", "My test mail")
+                                                        .set("message", "The message content.");
 
         // Call SendMail with rollbackOnError = true (default value)
         String error = operationRequest.executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
@@ -398,7 +380,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void testAuthenticationAndAuthorizationErrors() throws Exception {
+    public void testAuthenticationAndAuthorizationErrors() throws IOException {
         String testUserName = "automation-test-user";
         NuxeoPrincipal principal = userManager.getPrincipal(testUserName);
         if (principal != null) {
@@ -436,7 +418,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void sampleAutomationRemoteAccessWithComplexDocuments() throws Exception {
+    public void sampleAutomationRemoteAccessWithComplexDocuments() throws IOException {
 
         // Initialize repository for this test
         setupComplexDocuments();
@@ -492,8 +474,8 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
         assertNotNull(fieldAsJsonFile);
         String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile, UTF_8);
-        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
-        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replace("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replace("\r", "");
         updateProps.put("ds:fields", fieldsDataAsJSon);
 
         testDoc = session.newRequest(UpdateDocument.ID)
@@ -524,7 +506,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     /* The following tests need automation server 5.7 or later */
 
     @Test
-    public void testRawJSONDatastructuresAsParameters() throws Exception {
+    public void testRawJSONDatastructuresAsParameters() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
         POJOObject obj1 = new POJOObject("[obj1 text]", Arrays.asList("1", "2"));
@@ -570,7 +552,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void testRawJSONDatastructuresAsInput() throws Exception {
+    public void testRawJSONDatastructuresAsInput() throws IOException {
         // It is possible to pass arbitrary Java objects as the input as
         // long as the JSON representation is a valid representation for the
         // expected input type of the operation
@@ -602,7 +584,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void testArraysAsParametersAndResult() throws Exception {
+    public void testArraysAsParametersAndResult() throws IOException {
         List<SimplePojo> list = new ArrayList<>();
         list.add(new SimplePojo("test1"));
         list.add(new SimplePojo("test2"));
@@ -640,7 +622,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void testNumericalValuesAsInputAndOuput() throws Exception {
+    public void testNumericalValuesAsInputAndOuput() throws IOException {
         Number n = session.newRequest(NestedJSONOperation.ID) //
                           .setInput(4.3)
                           .executeReturningNumberEntity();
@@ -651,7 +633,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
      * 'pojo client side' <--- mapping ----> 'adapter server side' test
      */
     @Test
-    public void testAutomationBusinessObjects() throws Exception {
+    public void testAutomationBusinessObjects() throws IOException {
         // Test for pojo <-> adapter automation creation
         BusinessBean note = new BusinessBean("Note", "File description", "Note Content", "Note", "object");
         // adapter is registered through XML
@@ -676,7 +658,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void logAndThenQueryNoMapping() throws Exception {
+    public void logAndThenQueryNoMapping() throws IOException {
         session.newRequest(AuditLog.ID) //
                .setInput("doc:/")
                .set("event", "testing")
@@ -692,7 +674,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void testAutomationBusinessObjectsArray() throws Exception {
+    public void testAutomationBusinessObjectsArray() throws IOException {
         BusinessBean[] businessBeans = session.newRequest(TestBusinessArray.ID) //
                                               .executeReturningEntity(BusinessBean[].class);
         assertNotNull(businessBeans);
@@ -700,7 +682,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void testRemoteException() throws Exception {
+    public void testRemoteException() throws IOException {
         String error = session.newRequest(FetchDocument.ID) //
                               .set("value", "/test")
                               .executeReturningExceptionEntity(SC_NOT_FOUND);
@@ -711,7 +693,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
      * @since 7.1
      */
     @Test
-    public void shouldReturnCustomHttpStatusWhenFailure() throws Exception {
+    public void shouldReturnCustomHttpStatusWhenFailure() throws IOException {
         String error = session.newRequest(HttpStatusOperationTest.ID)//
                               .set("isFailing", true)
                               .executeReturningExceptionEntity(SC_METHOD_NOT_ALLOWED);

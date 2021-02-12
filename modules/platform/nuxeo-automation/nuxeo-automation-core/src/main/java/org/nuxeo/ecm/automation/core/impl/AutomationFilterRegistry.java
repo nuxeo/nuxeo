@@ -18,82 +18,34 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
+import org.nuxeo.common.xmap.registry.MapRegistry;
+import org.nuxeo.common.xmap.registry.Registry;
 import org.nuxeo.ecm.automation.AutomationFilter;
-import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.nuxeo.ecm.automation.core.AutomationFilterDescriptor;
+import org.nuxeo.ecm.automation.core.exception.ChainExceptionFilter;
+import org.w3c.dom.Element;
 
 /**
+ * Registry for {@link AutomationFilterDescriptor} contributions.
+ * <p>
+ * Modified as of 11.5 to implement {@link Registry}.
+ *
  * @since 5.7.3
  */
-public class AutomationFilterRegistry extends ContributionFragmentRegistry<AutomationFilter> {
-
-    /**
-     * Modifiable exception chain registry. Modifying the registry is using a lock and it's thread safe. Modifications
-     * are removing the cache.
-     */
-    protected final Map<String, AutomationFilter> automationFilters = new HashMap<>();
-
-    /**
-     * Read only cache for exception chain lookup. Thread safe. Not using synchronization if cache already created.
-     */
-    protected volatile Map<String, AutomationFilter> lookup;
-
-    public synchronized void addContribution(AutomationFilter automationFilter, boolean replace)
-            throws OperationException {
-        if (!replace && automationFilters.containsKey(automationFilter.getId())) {
-            throw new OperationException("An automation filter is already bound to: " + automationFilter.getId()
-                    + ". Use 'replace=true' to replace an existing automation filter");
-        }
-        super.addContribution(automationFilter);
-    }
+public class AutomationFilterRegistry extends MapRegistry {
 
     @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public String getContributionId(AutomationFilter contrib) {
-        return contrib.getId();
-    }
-
-    @Override
-    public void contributionUpdated(String id, AutomationFilter contrib, AutomationFilter newOrigContrib) {
-        automationFilters.put(id, contrib);
-        lookup = null;
-    }
-
-    @Override
-    public void contributionRemoved(String id, AutomationFilter origContrib) {
-        automationFilters.remove(id);
-        lookup = null;
-    }
-
-    @Override
-    public AutomationFilter clone(AutomationFilter orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(AutomationFilter src, AutomationFilter dst) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Map<String, AutomationFilter> lookup() {
-        Map<String, AutomationFilter> _lookup = lookup;
-        if (_lookup == null) {
-            synchronized (this) {
-                lookup = new HashMap<>(automationFilters);
-                _lookup = lookup;
-            }
-        }
-        return _lookup;
+    @SuppressWarnings("unchecked")
+    protected <T> T getInstance(Context ctx, XAnnotatedObject xObject, Element element) {
+        AutomationFilterDescriptor desc = super.getInstance(ctx, xObject, element);
+        ChainExceptionFilter contrib = new ChainExceptionFilter(desc);
+        return (T) contrib;
     }
 
     public AutomationFilter getAutomationFilter(String id) {
-        return automationFilters.get(id);
+        return (AutomationFilter) getContribution(id).orElse(null);
     }
+
 }

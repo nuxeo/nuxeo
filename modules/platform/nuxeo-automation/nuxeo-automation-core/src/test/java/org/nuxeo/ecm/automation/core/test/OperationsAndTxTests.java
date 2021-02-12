@@ -57,8 +57,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.core:test-operations.xml")
+@Deploy("org.nuxeo.ecm.automation.core:test-operation-tx.xml")
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 public class OperationsAndTxTests {
+
 
     protected DocumentModel document;
 
@@ -71,7 +73,7 @@ public class OperationsAndTxTests {
     protected OperationContext ctx;
 
     @Before
-    public void initRepo() throws Exception {
+    public void initRepo() {
         document = session.createDocumentModel("/", "src", "Folder");
         document.setPropertyValue("dc:title", "Source");
         document = session.createDocument(document);
@@ -88,100 +90,85 @@ public class OperationsAndTxTests {
     @Test
     @SuppressWarnings("unchecked")
     public void testRunOperationOnArrayWithTx() throws Exception {
+        String input = "dummyInput";
+        ctx.setInput(input);
+        String[] groups = new String[3];
+        groups[0] = "tic";
+        groups[1] = "tac";
+        groups[2] = "toc";
+        ctx.put("groups", groups);
 
-        service.putOperation(RunOnListItemWithTx.class);
-        try {
-            String input = "dummyInput";
-            ctx.setInput(input);
-            String[] groups = new String[3];
-            groups[0] = "tic";
-            groups[1] = "tac";
-            groups[2] = "toc";
-            ctx.put("groups", groups);
+        // Test with deprecated RunOperationOnListInNewTransaction.ID
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(RunOperationOnListInNewTransaction.ID)
+             .set("list", "groups")
+             .set("id", "runOnListItemWithTx")
+             .set("isolate", "false");
+        service.run(ctx, chain);
+        List<String> result = (List<String>) ctx.remove("result");
+        List<String> txids = (List<String>) ctx.remove("txids");
 
-            // Test with deprecated RunOperationOnListInNewTransaction.ID
-            OperationChain chain = new OperationChain("testChain");
-            chain.add(RunOperationOnListInNewTransaction.ID).set("list", "groups").set("id", "runOnListItemWithTx")
-                    .set("isolate", "false");
-            service.run(ctx, chain);
-            List<String> result = (List<String>) ctx.remove("result");
-            List<String> txids = (List<String>) ctx.remove("txids");
+        assertTrue(result.contains("tic"));
+        assertTrue(result.contains("tac"));
+        assertTrue(result.contains("toc"));
+        assertFalse(txids.get(0).equals(txids.get(1)));
 
-            assertTrue(result.contains("tic"));
-            assertTrue(result.contains("tac"));
-            assertTrue(result.contains("toc"));
-            assertFalse(txids.get(0).equals(txids.get(1)));
+        // Same test with RunOperationOnList.ID
+        chain = new OperationChain("testChain");
+        chain.add(RunOperationOnList.ID)
+             .set("list", "groups")
+             .set("id", "runOnListItemWithTx")
+             .set("isolate", "false")
+             .set("newTx", "true");
+        service.run(ctx, chain);
+        result = (List<String>) ctx.remove("result");
+        txids = (List<String>) ctx.remove("txids");
 
-            // Same test with RunOperationOnList.ID
-            chain = new OperationChain("testChain");
-            chain.add(RunOperationOnList.ID).set("list", "groups").set("id", "runOnListItemWithTx")
-                    .set("isolate", "false").set("newTx", "true");
-            service.run(ctx, chain);
-            result = (List<String>) ctx.remove("result");
-            txids = (List<String>) ctx.remove("txids");
-
-            assertTrue(result.contains("tic"));
-            assertTrue(result.contains("tac"));
-            assertTrue(result.contains("toc"));
-            assertFalse(txids.get(0).equals(txids.get(1)));
-
-        } finally {
-            service.removeOperation(RunOnListItemWithTx.class);
-        }
+        assertTrue(result.contains("tic"));
+        assertTrue(result.contains("tac"));
+        assertTrue(result.contains("toc"));
+        assertFalse(txids.get(0).equals(txids.get(1)));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testRunOperationOnDocumentWithTx() throws Exception {
-        service.putOperation(RunOnListItemWithTx.class);
-        try {
-            // storing in context which session and transaction id is
-            // used in main process.
-            Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
-            getOrCreateList(ctx, "txids").add(tx.toString());
-            ctx.setInput(document);
-            OperationChain chain = new OperationChain("testChain");
-            chain.add(RunDocumentChain.ID).set("id", "runOnListItemWithTx").set("isolate", "false").set("newTx",
-                    "true");
-            DocumentModel result = (DocumentModel) service.run(ctx, chain);
+        // storing in context which session and transaction id is
+        // used in main process.
+        Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
+        getOrCreateList(ctx, "txids").add(tx.toString());
+        ctx.setInput(document);
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(RunDocumentChain.ID).set("id", "runOnListItemWithTx").set("isolate", "false").set("newTx", "true");
+        DocumentModel result = (DocumentModel) service.run(ctx, chain);
 
-            // Checking if new transaction id has been registered if same
-            // session has been used.
-            List<String> txids = (List<String>) ctx.get("txids");
+        // Checking if new transaction id has been registered if same
+        // session has been used.
+        List<String> txids = (List<String>) ctx.get("txids");
 
-            assertNotNull(result);
-            assertFalse(txids.get(0).equals(txids.get(1)));
-        } finally {
-            service.removeOperation(RunOnListItemWithTx.class);
-        }
-
+        assertNotNull(result);
+        assertFalse(txids.get(0).equals(txids.get(1)));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testRunOperationOnBlobWithTx() throws Exception {
+        // storing in context which session and transaction id is
+        // used in main process.
+        Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
+        getOrCreateList(ctx, "txids").add(tx.toString());
+        Blob blob = Blobs.createBlob("blob");
+        ctx.setInput(blob);
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(RunFileChain.ID).set("id", "runOnListItemWithTx").set("isolate", "false").set("newTx", "true");
+        Blob result = (Blob) service.run(ctx, chain);
 
-        service.putOperation(RunOnListItemWithTx.class);
-        try {
-            // storing in context which session and transaction id is
-            // used in main process.
-            Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
-            getOrCreateList(ctx, "txids").add(tx.toString());
-            Blob blob = Blobs.createBlob("blob");
-            ctx.setInput(blob);
-            OperationChain chain = new OperationChain("testChain");
-            chain.add(RunFileChain.ID).set("id", "runOnListItemWithTx").set("isolate", "false").set("newTx", "true");
-            Blob result = (Blob) service.run(ctx, chain);
+        // Checking if new transaction id has been registered if same
+        // session has been used.
+        List<String> txids = (List<String>) ctx.get("txids");
 
-            // Checking if new transaction id has been registered if same
-            // session has been used.
-            List<String> txids = (List<String>) ctx.get("txids");
-
-            assertNotNull(result);
-            assertFalse(txids.get(0).equals(txids.get(1)));
-        } finally {
-            service.removeOperation(RunOnListItemWithTx.class);
-        }
+        assertNotNull(result);
+        assertFalse(txids.get(0).equals(txids.get(1)));
     }
 
     @SuppressWarnings("unchecked")

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,62 +14,47 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     Guillaume Renard
  */
 package org.nuxeo.ecm.automation.core;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.JMException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationAdmin;
-import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.OperationChain;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
-import org.nuxeo.ecm.automation.TypeAdapter;
-import org.nuxeo.ecm.automation.context.ContextHelperDescriptor;
-import org.nuxeo.ecm.automation.context.ContextHelperRegistry;
 import org.nuxeo.ecm.automation.context.ContextService;
 import org.nuxeo.ecm.automation.context.ContextServiceImpl;
-import org.nuxeo.ecm.automation.core.events.EventHandler;
 import org.nuxeo.ecm.automation.core.events.EventHandlerRegistry;
-import org.nuxeo.ecm.automation.core.exception.ChainExceptionFilter;
-import org.nuxeo.ecm.automation.core.exception.ChainExceptionImpl;
-import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
-import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
-import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
 import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Nuxeo component that provide an implementation of the {@link AutomationService} and handle extensions registrations.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
 public class AutomationComponent extends DefaultComponent {
 
-    private static final Log log = LogFactory.getLog(AutomationComponent.class);
+    private static final Logger log = LogManager.getLogger(AutomationComponent.class);
+
+    /** @since 11.5 */
+    public static final String COMPONENT_NAME = "org.nuxeo.ecm.automation.core.AutomationComponent";
 
     public static final String XP_OPERATIONS = "operations";
 
@@ -87,22 +72,9 @@ public class AutomationComponent extends DefaultComponent {
 
     protected OperationServiceImpl service;
 
-    protected EventHandlerRegistry handlers;
-
-    protected TracerFactory tracerFactory;
-
-    protected ContextHelperRegistry contextHelperRegistry;
-
     protected ContextService contextService;
 
-    @Override
-    public void activate(ComponentContext context) {
-        service = new OperationServiceImpl();
-        tracerFactory = new TracerFactory();
-        handlers = new EventHandlerRegistry(service);
-        contextHelperRegistry = new ContextHelperRegistry();
-        contextService = new ContextServiceImpl(contextHelperRegistry);
-    }
+    protected TracerFactory tracerFactory;
 
     protected void bindManagement() throws JMException {
         ObjectName objectName = new ObjectName("org.nuxeo.automation:name=tracerfactory");
@@ -110,8 +82,8 @@ public class AutomationComponent extends DefaultComponent {
         mBeanServer.registerMBean(tracerFactory, objectName);
     }
 
-    protected void unBindManagement() throws MalformedObjectNameException, NotCompliantMBeanException,
-            InstanceAlreadyExistsException, MBeanRegistrationException, InstanceNotFoundException {
+    protected void unBindManagement()
+            throws MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
         final ObjectName on = new ObjectName("org.nuxeo.automation:name=tracerfactory");
         final ServerLocator locator = Framework.getService(ServerLocator.class);
         if (locator != null) {
@@ -121,111 +93,12 @@ public class AutomationComponent extends DefaultComponent {
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        service = null;
-        handlers = null;
-        tracerFactory = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_OPERATIONS.equals(extensionPoint)) {
-            OperationContribution opc = (OperationContribution) contribution;
-            List<WidgetDefinition> widgetDefinitionList = new ArrayList<>();
-            if (opc.widgets != null) {
-                for (WidgetDescriptor widgetDescriptor : opc.widgets) {
-                    widgetDefinitionList.add(widgetDescriptor.getWidgetDefinition());
-                }
-            }
-            try {
-                Class<?> type = Class.forName(opc.type);
-                service.putOperation(type, opc.replace, contributor.getName().toString(), widgetDefinitionList);
-            } catch (ClassNotFoundException e) {
-                throw new IllegalArgumentException("Invalid operation class '" + opc.type + "': class not found.");
-            } catch (OperationException e) {
-                throw new RuntimeException(e);
-            }
-        } else if (XP_CHAINS.equals(extensionPoint)) {
-            OperationChainContribution occ = (OperationChainContribution) contribution;
-            try {
-                ChainTypeImpl docChainType = new ChainTypeImpl(service,
-                        occ.toOperationChain(contributor.getContext().getBundle()), occ,
-                        contributor.getName().toString());
-                service.putOperation(docChainType, occ.replace);
-            } catch (OperationException e) {
-                throw new RuntimeException(e);
-            }
-        } else if (XP_CHAIN_EXCEPTION.equals(extensionPoint)) {
-            ChainExceptionDescriptor chainExceptionDescriptor = (ChainExceptionDescriptor) contribution;
-            ChainException chainException = new ChainExceptionImpl(chainExceptionDescriptor);
-            service.putChainException(chainException);
-        } else if (XP_AUTOMATION_FILTER.equals(extensionPoint)) {
-            AutomationFilterDescriptor automationFilterDescriptor = (AutomationFilterDescriptor) contribution;
-            ChainExceptionFilter chainExceptionFilter = new ChainExceptionFilter(automationFilterDescriptor);
-            service.putAutomationFilter(chainExceptionFilter);
-        } else if (XP_ADAPTERS.equals(extensionPoint)) {
-            TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
-            TypeAdapter adapter;
-            try {
-                adapter = tac.clazz.getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
-            }
-            service.putTypeAdapter(tac.accept, tac.produce, adapter);
-        } else if (XP_EVENT_HANDLERS.equals(extensionPoint)) {
-            EventHandler eh = (EventHandler) contribution;
-            if (eh.isPostCommit()) {
-                handlers.putPostCommitEventHandler(eh);
-            } else {
-                handlers.putEventHandler(eh);
-            }
-        } else if (XP_CONTEXT_HELPER.equals(extensionPoint)) {
-            contextHelperRegistry.addContribution((ContextHelperDescriptor) contribution);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_OPERATIONS.equals(extensionPoint)) {
-            try {
-                Class<?> type = Class.forName(((OperationContribution) contribution).type);
-                service.removeOperation(type);
-            } catch (ClassNotFoundException e) {
-                // ignore
-            }
-        } else if (XP_CHAINS.equals(extensionPoint)) {
-            OperationChainContribution occ = (OperationChainContribution) contribution;
-            service.removeOperationChain(occ.getId());
-        } else if (XP_CHAIN_EXCEPTION.equals(extensionPoint)) {
-            ChainExceptionDescriptor chainExceptionDescriptor = (ChainExceptionDescriptor) contribution;
-            ChainException chainException = new ChainExceptionImpl(chainExceptionDescriptor);
-            service.removeExceptionChain(chainException);
-        } else if (XP_AUTOMATION_FILTER.equals(extensionPoint)) {
-            AutomationFilterDescriptor automationFilterDescriptor = (AutomationFilterDescriptor) contribution;
-            AutomationFilter automationFilter = new ChainExceptionFilter(automationFilterDescriptor);
-            service.removeAutomationFilter(automationFilter);
-        } else if (XP_ADAPTERS.equals(extensionPoint)) {
-            TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
-            service.removeTypeAdapter(tac.accept, tac.produce);
-        } else if (XP_EVENT_HANDLERS.equals(extensionPoint)) {
-            EventHandler eh = (EventHandler) contribution;
-            if (eh.isPostCommit()) {
-                handlers.removePostCommitEventHandler(eh);
-            } else {
-                handlers.removeEventHandler(eh);
-            }
-        } else if (XP_CONTEXT_HELPER.equals(extensionPoint)) {
-            contextHelperRegistry.removeContribution((ContextHelperDescriptor) contribution);
-        }
-    }
-
-    @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter == AutomationService.class || adapter == AutomationAdmin.class) {
             return adapter.cast(service);
         }
         if (adapter == EventHandlerRegistry.class) {
-            return adapter.cast(handlers);
+            return adapter.cast(getExtensionPointRegistry(XP_EVENT_HANDLERS));
         }
         if (adapter == TracerFactory.class) {
             return adapter.cast(tracerFactory);
@@ -238,7 +111,13 @@ public class AutomationComponent extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
+        service = new OperationServiceImpl(getExtensionPointRegistry(XP_OPERATIONS),
+                getExtensionPointRegistry(XP_CHAINS), getExtensionPointRegistry(XP_CHAIN_EXCEPTION),
+                getExtensionPointRegistry(XP_AUTOMATION_FILTER), getExtensionPointRegistry(XP_ADAPTERS));
         checkOperationChains();
+        contextService = new ContextServiceImpl(getExtensionPointRegistry(XP_CONTEXT_HELPER));
+
+        tracerFactory = new TracerFactory();
         if (!tracerFactory.getRecordingState()) {
             log.info("You can activate automation trace mode to get more informations on automation executions");
         }
@@ -272,10 +151,14 @@ public class AutomationComponent extends DefaultComponent {
     @Override
     public void stop(ComponentContext context) {
         service.flushCompiledChains();
+        service = null;
+        contextService = null;
+
         try {
             unBindManagement();
         } catch (JMException e) {
             throw new RuntimeException("Cannot unbind management", e);
         }
+        tracerFactory = null;
     }
 }
