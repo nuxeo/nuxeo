@@ -18,11 +18,13 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.bulk;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.VersioningOption.NONE;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.ACTION_NAME;
+import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_ALLOW_VERSION_WRITE;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_DISABLE_AUDIT;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_VERSIONING_OPTION;
 
@@ -124,12 +126,36 @@ public class TestSetPropertiesActionOptimizations {
         assertEquals(initialLogEntries + 4, logs.getLogEntriesFor(note.getId(), session.getRepositoryName()).size());
 
         bulkService.submit(createBuilder().param(PARAM_DISABLE_AUDIT, TRUE)
+                                          .param(PARAM_ALLOW_VERSION_WRITE, FALSE)
                                           .param(PARAM_VERSIONING_OPTION, NONE.toString())
                                           .build());
         assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(60)));
         assertTrue("Logs didn't finish", logs.await(60, TimeUnit.SECONDS));
         // none
         assertEquals(initialLogEntries + 4, logs.getLogEntriesFor(note.getId(), session.getRepositoryName()).size());
+    }
+
+    @Test
+    public void testAllowVersionWrite() throws InterruptedException {
+
+        // make sure all previous logs have been bulked and processed
+        logs.await(60, TimeUnit.SECONDS);
+        int initialLogEntries = logs.getLogEntriesFor(note.getId(), session.getRepositoryName()).size();
+
+        bulkService.submit(createBuilder().build());
+        transactions.nextTransaction();
+        assertEquals(2, session.getVersions(note.getRef()).size());
+
+        bulkService.submit(createBuilder().param(PARAM_ALLOW_VERSION_WRITE, TRUE).build());
+        transactions.nextTransaction();
+        // TODO test
+        assertEquals(initialLogEntries + 3, logs.getLogEntriesFor(note.getId(), session.getRepositoryName()).size());
+
+        bulkService.submit(createBuilder().param(PARAM_ALLOW_VERSION_WRITE, FALSE).build());
+        transactions.nextTransaction();
+        // TODO test
+        assertEquals(2, session.getVersions(note.getRef()).size());
+        assertEquals(initialLogEntries + 3, logs.getLogEntriesFor(note.getId(), session.getRepositoryName()).size());
     }
 
     @Test

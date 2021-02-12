@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.bulk.action;
 import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.ACTION_NAME;
+import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_ALLOW_VERSION_WRITE;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_DISABLE_AUDIT;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_VERSIONING_OPTION;
 
@@ -60,8 +61,8 @@ public class TestSetPropertyComputation {
         values.add(new String[] { "true" });
         values.add(new ArrayList<>(singleton("tutu")));
         values.add(new ArrayList<>(singleton("true")));
-        testParamParsing(PARAM_DISABLE_AUDIT, values, false, null);
-        testParamParsing(PARAM_VERSIONING_OPTION, values, false, null);
+        testParamParsing(PARAM_DISABLE_AUDIT, values, false, null, false);
+        testParamParsing(PARAM_VERSIONING_OPTION, values, false, null, false);
     }
 
     @Test
@@ -69,7 +70,15 @@ public class TestSetPropertyComputation {
         Collection<Serializable> values = new ArrayList<>();
         values.add("true");
         values.add(Boolean.TRUE);
-        testParamParsing(PARAM_DISABLE_AUDIT, values, true, null);
+        testParamParsing(PARAM_DISABLE_AUDIT, values, true, null, false);
+    }
+
+    @Test
+    public void allowVersionWriteFieldShouldBeTrue() {
+        Collection<Serializable> values = new ArrayList<>();
+        values.add("true");
+        values.add(Boolean.TRUE);
+        testParamParsing(PARAM_ALLOW_VERSION_WRITE, values, false, null, true);
     }
 
     @Test
@@ -77,17 +86,18 @@ public class TestSetPropertyComputation {
         Collection<Serializable> values = new ArrayList<>();
         values.add("NONE");
         values.add(VersioningOption.NONE.toString());
-        testParamParsing(PARAM_VERSIONING_OPTION, values, false, VersioningOption.NONE);
+        testParamParsing(PARAM_VERSIONING_OPTION, values, false, VersioningOption.NONE, false);
     }
 
     protected void testParamParsing(String param, Collection<Serializable> values, boolean audit,
-            VersioningOption versioning) {
+            VersioningOption versioning, boolean allowVersionWrite) {
         for (Serializable value : values) {
             BulkCommand command = new Builder(ACTION_NAME, "useless").param(param, value).build();
             SetPropertyComputation computation = new TestableSetPropertyComputation(command);
             computation.startBucket(null);
             assertEquals(audit, computation.disableAudit);
             assertEquals(versioning, computation.versioningOption);
+            assertEquals(allowVersionWrite, computation.allowVersionWrite);
         }
     }
 

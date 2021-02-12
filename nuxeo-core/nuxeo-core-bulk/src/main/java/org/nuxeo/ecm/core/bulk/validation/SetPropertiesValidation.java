@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.bulk.validation;
 
+import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_DISABLE_AUDIT;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_VERSIONING_OPTION;
 
@@ -52,7 +53,7 @@ public class SetPropertiesValidation extends AbstractBulkActionValidation {
 
     @Override
     protected List<String> getParametersToValidate() {
-        return Arrays.asList(PARAM_DISABLE_AUDIT, PARAM_VERSIONING_OPTION);
+        return Arrays.asList(PARAM_DISABLE_AUDIT, PARAM_VERSIONING_OPTION, ALLOW_VERSION_WRITE);
     }
 
     @Override
@@ -60,6 +61,9 @@ public class SetPropertiesValidation extends AbstractBulkActionValidation {
 
         // Check for disableAudit parameter
         validateBoolean(PARAM_DISABLE_AUDIT, command);
+
+        // Check for allowWriteVersion parameter
+        validateBoolean(ALLOW_VERSION_WRITE, command);
 
         // Check for versioningOption parameter
         validateString(PARAM_VERSIONING_OPTION, command);

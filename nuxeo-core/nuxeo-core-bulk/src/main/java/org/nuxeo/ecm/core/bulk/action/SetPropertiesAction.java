@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.bulk.action;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
+import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -53,12 +54,13 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
     public static final String PARAM_VERSIONING_OPTION = VersioningService.VERSIONING_OPTION;
 
+    public static final String PARAM_ALLOW_VERSION_WRITE = ALLOW_VERSION_WRITE;
+
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
-                       .addComputation(SetPropertyComputation::new,
-                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
-                                       OUTPUT_1 + ":" + STATUS_STREAM))
+                       .addComputation(SetPropertyComputation::new, Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
+                               OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
 
@@ -69,6 +71,8 @@ public class SetPropertiesAction implements StreamProcessorTopology {
         protected VersioningOption versioningOption;
 
         protected boolean disableAudit;
+
+        protected boolean allowVersionWrite;
 
         public SetPropertyComputation() {
             super(ACTION_NAME);
@@ -81,6 +85,8 @@ public class SetPropertiesAction implements StreamProcessorTopology {
             disableAudit = auditParam != null && Boolean.parseBoolean(auditParam.toString());
             Serializable versioningParam = command.getParam(PARAM_VERSIONING_OPTION);
             versioningOption = VersioningOption.NONE.toString().equals(versioningParam) ? VersioningOption.NONE : null;
+            Serializable allowVersionWriteParam = command.getParam(PARAM_ALLOW_VERSION_WRITE);
+            allowVersionWrite = versioningParam != null && Boolean.parseBoolean(allowVersionWriteParam.toString());
         }
 
         @Override
@@ -92,9 +98,13 @@ public class SetPropertiesAction implements StreamProcessorTopology {
                 if (versioningOption != null) {
                     doc.putContextData(VersioningService.VERSIONING_OPTION, versioningOption);
                 }
+                if (allowVersionWrite) {
+                    doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+                }
                 // update properties
                 for (Entry<String, Serializable> es : properties.entrySet()) {
-                    if (!PARAM_DISABLE_AUDIT.equals(es.getKey()) && !PARAM_VERSIONING_OPTION.equals(es.getKey())) {
+                    if (!PARAM_DISABLE_AUDIT.equals(es.getKey()) && !PARAM_VERSIONING_OPTION.equals(es.getKey())
+                            && !PARAM_ALLOW_VERSION_WRITE.equals(es.getKey())) {
                         try {
                             doc.setPropertyValue(es.getKey(), es.getValue());
                         } catch (PropertyException e) {

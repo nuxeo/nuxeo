@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.validation;
 
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.ACTION_NAME;
+import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_ALLOW_VERSION_WRITE;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_DISABLE_AUDIT;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_VERSIONING_OPTION;
 
@@ -53,8 +54,12 @@ public class TestSetPropertiesValidation extends AbstractTestBulkActionValidatio
         assertInvalidCommand(command, "Unknown xpath fake:xpath in command: " + command);
 
         command = createBuilder(ACTION_NAME, query, repository, user).param(PARAM_DISABLE_AUDIT, "fake")
-                                                                     .build();
+                .build();
         assertInvalidCommand(command, "Invalid " + PARAM_DISABLE_AUDIT + " in command: " + command);
+
+        command = createBuilder(ACTION_NAME, query, repository, user).param(PARAM_ALLOW_VERSION_WRITE, "fake")
+                .build();
+        assertInvalidCommand(command, "Invalid " + PARAM_ALLOW_VERSION_WRITE + " in command: " + command);
 
         command = createBuilder(ACTION_NAME, query, repository, user).param(PARAM_VERSIONING_OPTION, true)
                                                                      .build();
