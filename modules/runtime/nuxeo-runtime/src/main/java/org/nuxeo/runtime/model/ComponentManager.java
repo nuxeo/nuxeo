@@ -508,7 +508,7 @@ public interface ComponentManager {
         }
 
         /**
-         * Called just after all components were started
+         * Called just after all components were started.
          *
          * @param isResume true if the event was initiated by a {@link ComponentManager#resume()} call, false otherwise.
          * @deprecated since 11.5: use {@link #afterRuntimeStart(ComponentManager, boolean)} instead.
@@ -518,13 +518,23 @@ public interface ComponentManager {
         }
 
         /**
-         * Called just after all components were started
+         * Called just after all components were started.
          *
          * @param isResume true if the event was initiated by a {@link ComponentManager#resume()} call, false otherwise.
          * @since 11.5
          */
         default void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
             afterStart(mgr, isResume);
+        }
+
+        /**
+         * Called just after all components were started and {@link #afterRuntimeStart(ComponentManager, boolean)}
+         * listeners were processed.
+         *
+         * @param isResume true if the event was initiated by a {@link ComponentManager#resume()} call, false otherwise.
+         * @since 11.5
+         */
+        default void afterFullRuntimeStart(ComponentManager mgr, boolean isResume) {
         }
 
         /**

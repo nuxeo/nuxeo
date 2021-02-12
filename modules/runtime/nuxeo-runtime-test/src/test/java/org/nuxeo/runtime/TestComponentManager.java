@@ -54,9 +54,11 @@ public class TestComponentManager {
 
     protected MyListener listener = new MyListener();
 
-    public void checkCounters(MockEventsInfo info, int beforeStart, int afterStart, int beforeStop, int afterStop) {
+    public void checkCounters(MockEventsInfo info, int beforeStart, int afterStart, int afterFullStart, int beforeStop,
+            int afterStop) {
         assertEquals(beforeStart, info.beforeStart);
         assertEquals(afterStart, info.afterStart);
+        assertEquals(afterFullStart, info.afterFullStart);
         assertEquals(beforeStop, info.beforeStop);
         assertEquals(afterStop, info.afterStop);
     }
@@ -75,39 +77,39 @@ public class TestComponentManager {
         }
     }
 
-    public void checkCounters2(int beforeStart, int afterStart, int beforeStop, int afterStop) {
+    public void checkCounters2(int beforeStart, int afterStart, int afterFullStart, int beforeStop, int afterStop) {
         MockEventsInfo info = checkMockComponentManagerListener2(false);
-        checkCounters(info, beforeStart, afterStart, beforeStop, afterStop);
+        checkCounters(info, beforeStart, afterStart, afterFullStart, beforeStop, afterStop);
     }
 
     @Test
-    public void testManagerEvents() throws Exception {
+    public void testManagerEvents() {
         ComponentManager mgr = Framework.getRuntime().getComponentManager();
         mgr.addListener(legacyListener);
         mgr.addListener(listener);
-        checkCounters(legacyListener.info, 0, 0, 0, 0);
-        checkCounters(listener.info, 0, 0, 0, 0);
-        checkCounters2(1, 1, 0, 0);
+        checkCounters(legacyListener.info, 0, 0, 0, 0, 0);
+        checkCounters(listener.info, 0, 0, 0, 0, 0);
+        checkCounters2(1, 1, 0, 0, 0);
         mgr.restart(false);
-        checkCounters(legacyListener.info, 1, 1, 1, 1);
-        checkCounters(listener.info, 1, 1, 1, 1);
-        checkCounters2(1, 1, 0, 0);
+        checkCounters(legacyListener.info, 1, 1, 0, 1, 1);
+        checkCounters(listener.info, 1, 1, 1, 1, 1);
+        checkCounters2(1, 1, 0, 0, 0);
         mgr.restart(true);
-        checkCounters(legacyListener.info, 2, 2, 2, 2);
-        checkCounters(listener.info, 2, 2, 2, 2);
-        checkCounters2(1, 1, 0, 0);
+        checkCounters(legacyListener.info, 2, 2, 0, 2, 2);
+        checkCounters(listener.info, 2, 2, 2, 2, 2);
+        checkCounters2(1, 1, 0, 0, 0);
         mgr.refresh(true);
-        checkCounters(legacyListener.info, 2, 2, 2, 2);
-        checkCounters(listener.info, 2, 2, 2, 2);
-        checkCounters2(1, 1, 0, 0);
+        checkCounters(legacyListener.info, 2, 2, 0, 2, 2);
+        checkCounters(listener.info, 2, 2, 2, 2, 2);
+        checkCounters2(1, 1, 0, 0, 0);
         mgr.stop();
-        checkCounters(legacyListener.info, 2, 2, 3, 3);
-        checkCounters(listener.info, 2, 2, 3, 3);
+        checkCounters(legacyListener.info, 2, 2, 0, 3, 3);
+        checkCounters(listener.info, 2, 2, 2, 3, 3);
         checkMockComponentManagerListener2(true);
         mgr.start();
-        checkCounters(legacyListener.info, 3, 3, 3, 3);
-        checkCounters(listener.info, 3, 3, 3, 3);
-        checkCounters2(1, 1, 0, 0);
+        checkCounters(legacyListener.info, 3, 3, 0, 3, 3);
+        checkCounters(listener.info, 3, 3, 3, 3, 3);
+        checkCounters2(1, 1, 0, 0, 0);
     }
 
     protected static class MyLegacyListener implements ComponentManager.Listener {
@@ -158,6 +160,11 @@ public class TestComponentManager {
         @Override
         public void afterRuntimeStart(ComponentManager mgr, boolean isResume) {
             info.afterStart++;
+        }
+
+        @Override
+        public void afterFullRuntimeStart(ComponentManager mgr, boolean isResume) {
+            info.afterFullStart++;
         }
 
     }

@@ -33,4 +33,6 @@ public class MockEventsInfo {
 
     public int afterStart;
 
+    public int afterFullStart;
+
 }

@@ -880,6 +880,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
         this.started = ris;
         listeners.afterStart(isResume);
+        listeners.afterFullStart(isResume);
         watch.stop();
 
         log.debug("Components started in {}s", watch.total::formatSeconds);
@@ -1352,6 +1353,11 @@ public class ComponentManagerImpl implements ComponentManager {
 
         public void afterStart(boolean isResume) {
             sortedForStart().forEach(listener -> listener.afterRuntimeStart(ComponentManagerImpl.this, isResume));
+        }
+
+        /** @since 11.5 */
+        public void afterFullStart(boolean isResume) {
+            sortedForStart().forEach(listener -> listener.afterFullRuntimeStart(ComponentManagerImpl.this, isResume));
         }
 
         public void beforeStop(boolean isStandby) {
