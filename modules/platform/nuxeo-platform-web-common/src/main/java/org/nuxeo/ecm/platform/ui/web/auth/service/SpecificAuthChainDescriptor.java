@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,33 +30,37 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XMerge;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
+import org.nuxeo.common.xmap.registry.XRemove;
 
 @XObject("specificAuthenticationChain")
+@XRegistry(compatWarnOnMerge = true)
 public class SpecificAuthChainDescriptor {
 
     public static final boolean DEFAULT_HANDLE_PROMPT_VALUE = true;
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
-    @XNode("@handlePrompt")
-    private boolean handlePrompt = DEFAULT_HANDLE_PROMPT_VALUE;
+    @XNode(value = "@handlePrompt", defaultAssignment = "true")
+    private boolean handlePrompt;
 
     @XNodeList(value = "replacementChain/plugin", type = ArrayList.class, componentType = String.class)
+    @XMerge("replacementChain@merge")
+    @XRemove("replacementChain@remove")
     private List<String> replacementChain;
 
-    public List<String> getReplacementChain() {
-        return replacementChain;
-    }
-
     @XNodeList(value = "allowedPlugins/plugin", type = ArrayList.class, componentType = String.class)
+    @XMerge("allowedPlugins@merge")
+    @XRemove("allowedPlugins@remove")
     private List<String> allowedPlugins;
 
-    public List<String> getAllowedPlugins() {
-        return allowedPlugins;
-    }
-
     @XNodeList(value = "urlPatterns/url", type = ArrayList.class, componentType = String.class)
+    @XMerge("urlPatterns@merge")
+    @XRemove("urlPatterns@remove")
     private List<String> urls;
 
     private List<Pattern> urlPatterns;
@@ -64,6 +69,19 @@ public class SpecificAuthChainDescriptor {
     private Map<String, String> headers;
 
     private Map<String, Pattern> headerPatterns;
+
+    /** @since 11.5 */
+    public String getName() {
+        return name;
+    }
+
+    public List<String> getReplacementChain() {
+        return Collections.unmodifiableList(replacementChain);
+    }
+
+    public List<String> getAllowedPlugins() {
+        return Collections.unmodifiableList(allowedPlugins);
+    }
 
     public List<Pattern> getUrlPatterns() {
         if (urlPatterns == null) {
