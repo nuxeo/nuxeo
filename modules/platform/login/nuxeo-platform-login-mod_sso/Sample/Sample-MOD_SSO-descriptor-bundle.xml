@@ -21,12 +21,8 @@
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="specificChains">
 
-    <specificAuthenticationChain name="Automation">
-      <urlPatterns>
-        <url>(.*)/automation.*</url>
-      </urlPatterns>
-
-      <replacementChain>
+    <specificAuthenticationChain name="Automation" merge="true">
+      <replacementChain merge="false">
         <plugin>AUTOMATION_BASIC_AUTH</plugin>
         <plugin>ANONYMOUS_AUTH</plugin>
         <plugin>PROXY_AUTH</plugin>
