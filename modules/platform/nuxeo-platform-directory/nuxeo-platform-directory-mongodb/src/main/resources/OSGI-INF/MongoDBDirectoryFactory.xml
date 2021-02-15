@@ -50,7 +50,8 @@
       'directory/userDirectory'
     </documentation>
 
-    <object class="org.nuxeo.directory.mongodb.MongoDBDirectoryDescriptor"/>
+    <object class="org.nuxeo.directory.mongodb.MongoDBDirectoryDescriptor" />
+    <registry class="org.nuxeo.directory.mongodb.MongoDBDirectoryFactory$Registry" />
   </extension-point>
 
 </component>

@@ -40,12 +40,15 @@ import org.apache.directory.shared.ldap.name.LdapDN;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.ldap.dns.DNSServiceEntry;
 import org.nuxeo.ecm.directory.ldap.dns.DNSServiceResolver;
 import org.nuxeo.ecm.directory.ldap.dns.DNSServiceResolverImpl;
 
 @XObject(value = "server")
+@XRegistry(compatWarnOnMerge = true)
 public class LDAPServerDescriptor {
 
     public static final Log log = LogFactory.getLog(LDAPServerDescriptor.class);
@@ -55,6 +58,7 @@ public class LDAPServerDescriptor {
     protected static final String LDAP_SCHEME = "ldap";
 
     @XNode("@name")
+    @XRegistryId
     public String name;
 
     public String ldapUrls;
@@ -313,10 +317,6 @@ public class LDAPServerDescriptor {
      */
     public int getPoolingTimeout() {
         return poolingTimeout;
-    }
-
-    public void setConnectionTimeout(int connectionTimeout) {
-        this.connectionTimeout = connectionTimeout;
     }
 
     protected DNSServiceResolver getSRVResolver() {

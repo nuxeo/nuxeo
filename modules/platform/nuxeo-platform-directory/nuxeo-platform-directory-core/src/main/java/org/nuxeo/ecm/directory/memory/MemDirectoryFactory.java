@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,25 @@
  * limitations under the License.
  *
  * Contributors:
- *     Funsho David
- *
+ *     Anahide Tchertchian
  */
-
-package org.nuxeo.directory.mongodb;
+package org.nuxeo.ecm.directory.memory;
 
 import org.nuxeo.ecm.directory.AbstractDirectoryDescriptorRegistry;
 import org.nuxeo.ecm.directory.DirectoryRegistry;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @since 9.1
+ * Component for {@link MemoryDirectoryDescriptor} registration.
+ *
+ * @since 11.5
  */
-public class MongoDBDirectoryFactory extends DefaultComponent {
+public class MemDirectoryFactory extends DefaultComponent {
 
-    protected static final String COMPONENT_NAME = "org.nuxeo.directory.mongodb.MongoDBDirectoryFactory";
+    protected static final String COMPONENT_NAME = "org.nuxeo.ecm.directory.memory.MemDirectoryFactory";
 
     /**
-     * Registry for {@link MongoDBDirectoryDescriptor}, forwarding to {@link DirectoryRegistry}.
+     * Registry for {@link MemoryDirectoryDescriptor}, forwarding to {@link DirectoryRegistry}.
      * <p>
      * Also handles custom merge.
      *

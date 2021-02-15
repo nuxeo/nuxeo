@@ -51,15 +51,14 @@ public class TestDirectoryServiceRegistration {
     protected DirectoryService directoryService;
 
     @Test
-    public void testWithoutOverride() throws Exception {
+    public void testWithoutOverride() {
         Directory dir = directoryService.getDirectory("userDirectory");
         assertTrue(dir instanceof SQLDirectory);
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.directory.sql.tests:test-directories-memory-factory.xml")
     @Deploy("org.nuxeo.ecm.directory.sql.tests:test-directories-several-factories.xml")
-    public void testOverride() throws Exception {
+    public void testOverride() {
         Directory dir = directoryService.getDirectory("userDirectory");
         assertTrue(dir instanceof MemoryDirectory);
     }

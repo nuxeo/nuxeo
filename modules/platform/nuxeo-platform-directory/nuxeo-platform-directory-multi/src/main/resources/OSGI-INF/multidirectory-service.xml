@@ -1,20 +1,14 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory">
 
-  <implementation
-      class="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory"/>
-
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
 
+  <implementation class="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory" />
   <documentation>Multi-directory implementation.</documentation>
 
   <extension-point name="directories">
-    <object
-        class="org.nuxeo.ecm.directory.multi.MultiDirectoryDescriptor"/>
-    <object class="org.nuxeo.ecm.directory.multi.SourceDescriptor"/>
-    <object
-        class="org.nuxeo.ecm.directory.multi.SubDirectoryDescriptor"/>
-    <object class="org.nuxeo.ecm.directory.multi.FieldDescriptor"/>
+    <object class="org.nuxeo.ecm.directory.multi.MultiDirectoryDescriptor" />
+    <registry class="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory$Registry" />
 
     <documentation>
       This extension point can be used to register new

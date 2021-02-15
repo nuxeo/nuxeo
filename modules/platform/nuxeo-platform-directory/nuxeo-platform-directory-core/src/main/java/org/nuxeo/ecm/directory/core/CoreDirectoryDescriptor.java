@@ -29,6 +29,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -39,6 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 8.2
  */
 @XObject(value = "directory")
+@XRegistry
 public class CoreDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     protected static final Log log = LogFactory.getLog(CoreDirectoryDescriptor.class);
@@ -58,7 +60,6 @@ public class CoreDirectoryDescriptor extends BaseDirectoryDescriptor {
 
         @XNode("@granted")
         public boolean granted = false;
-
 
         @Override
         public ACLDescriptor clone() {

@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,10 +55,12 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 /**
  * @author Florent Guillaume
@@ -69,6 +73,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.directory.core.tests:test-schema.xml")
 @WithUser("Administrator")
 public class TestMemoryDirectory {
+
+    @Inject
+    protected DirectoryService service;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     protected MemoryDirectory memDir;
 
@@ -132,7 +142,7 @@ public class TestMemoryDirectory {
 
     @Test
     public void testCreateFromModel() {
-        entry = BaseSession.createEntryModel(null, SCHEMA_NAME, null, null);
+        entry = BaseSession.createEntryModel(SCHEMA_NAME, null, null);
         entry.setProperty(SCHEMA_NAME, "i", "yo");
 
         assertNull(dir.getEntry("yo"));
@@ -192,7 +202,7 @@ public class TestMemoryDirectory {
         String id = "no-such-entry";
         Map<String, Object> map = new HashMap<>();
         map.put("i", id);
-        DocumentModel entry = BaseSession.createEntryModel(null, SCHEMA_NAME, id, map);
+        DocumentModel entry = BaseSession.createEntryModel(SCHEMA_NAME, id, map);
         try {
             dir.updateEntry(entry);
         } catch (DirectoryException de) {
@@ -600,17 +610,8 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testServiceUnregistration() {
-        MemoryDirectoryDescriptor descr = new MemoryDirectoryDescriptor();
-        descr.name = "mydir";
-        descr.schemaName = SCHEMA_NAME;
-        descr.idField = "i";
-        descr.passwordField = "pw";
-        descr.schemaSet = Set.of("i");
-
-        DirectoryService service = Framework.getService(DirectoryService.class);
-        service.registerDirectoryDescriptor(descr);
-
+    @Deploy("org.nuxeo.ecm.directory.core.tests:test-mem-directory.xml")
+    public void testServiceUnregistration() throws Exception {
         Directory dir = service.getDirectory("mydir");
         assertNotNull(dir);
         List<Directory> dirs = service.getDirectories();
@@ -618,11 +619,21 @@ public class TestMemoryDirectory {
         assertNotNull(dirs.get(0));
         assertEquals(dir, dirs.get(0));
 
-        service.unregisterDirectoryDescriptor(descr);
+        hotDeployer.undeploy("org.nuxeo.ecm.directory.core.tests:test-mem-directory.xml");
+
         dir = service.getDirectory("mydir");
         assertNull(dir);
         dirs = service.getDirectories();
         assertEquals(0, dirs.size());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.directory.core.tests:test-mem-invalid-directory.xml")
+    public void testInvalidContribution() {
+        assertNull(service.getDirectory("missingTemplate"));
+        assertNull(service.getDirectory("foo"));
+        String error = "Directory 'missingTemplate' extends non-existing directory template: 'foo'";
+        assertTrue(Framework.getRuntime().getMessageHandler().getMessages(Level.ERROR).contains(error));
     }
 
 }
