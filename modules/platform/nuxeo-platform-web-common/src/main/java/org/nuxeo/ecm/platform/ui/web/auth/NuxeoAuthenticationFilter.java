@@ -262,7 +262,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         return principal;
     }
 
-    protected boolean switchUser(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException {
+    protected boolean switchUser(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         String deputyLogin = (String) httpRequest.getAttribute(SWITCH_USER_KEY);
@@ -848,11 +849,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected void initUnAuthenticatedURLPrefix() {
         // gather unAuthenticated URLs
         unAuthenticatedURLPrefix = new ArrayList<>();
-        for (String pluginName : service.getAuthChain()) {
-            NuxeoAuthenticationPlugin plugin = service.getPlugin(pluginName);
-            if (plugin == null) {
-                throw new NullPointerException("Could not find plugin for name '" + pluginName + "'");
-            }
+        for (NuxeoAuthenticationPlugin plugin : service.getPluginChain()) {
             List<String> prefix = plugin.getUnAuthenticatedURLPrefix();
             if (prefix != null && !prefix.isEmpty()) {
                 unAuthenticatedURLPrefix.addAll(prefix);
@@ -1015,7 +1012,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                     break;
                 }
             } else {
-                log.error("Auth plugin " + pluginName + " can not be retrieved from service");
+                log.error("Auth plugin " + pluginName + " cannot be retrieved from service");
             }
         }
 

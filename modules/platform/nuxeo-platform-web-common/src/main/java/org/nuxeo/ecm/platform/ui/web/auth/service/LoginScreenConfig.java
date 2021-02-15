@@ -36,6 +36,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -46,6 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7
  */
 @XObject("loginScreenConfig")
+@XRegistry
 public class LoginScreenConfig {
 
     public static final String NUXEO_NEWS_URL = "//www.nuxeo.com/login-page-embedded-1/";
@@ -80,26 +82,32 @@ public class LoginScreenConfig {
     /**
      * @since 7.10
      */
+    @XNode("backgroundImage")
     protected String backgroundImage;
 
     @XNode("removeNews")
     protected Boolean removeNews = false;
 
+    @XNode("headerStyle")
     protected String headerStyle;
 
+    @XNode("footerStyle")
     protected String footerStyle;
 
     protected String newsIframeUrl = NUXEO_NEWS_URL;
 
     protected String newsIframeFullUrl = null;
 
+    @XNode("bodyBackgroundStyle")
     protected String bodyBackgroundStyle;
 
+    @XNode("loginBoxBackgroundStyle")
     protected String loginBoxBackgroundStyle;
 
     @XNode("loginBoxWidth")
     protected String loginBoxWidth;
 
+    @XNode("logoUrl")
     protected String logoUrl;
 
     @XNode("logoAlt")
@@ -167,10 +175,6 @@ public class LoginScreenConfig {
         return providers;
     }
 
-    public void setProviders(List<LoginProviderLink> providers) {
-        this.providers = providers;
-    }
-
     public LoginProviderLink getProvider(String name) {
         if (getProviders() == null) {
             return null;
@@ -181,33 +185,6 @@ public class LoginScreenConfig {
             }
         }
         return null;
-    }
-
-    /**
-     * @deprecated since 10.10, use {@link #LoginScreenConfig(LoginProviderLink)} instead
-     */
-    @Deprecated
-    public void registerLoginProvider(String name, String iconUrl, String link, String label, String description,
-            LoginProviderLinkComputer computer) {
-        LoginProviderLink newProvider = new LoginProviderLink();
-        newProvider.name = name;
-        newProvider.iconPath = iconUrl;
-        newProvider.link = link;
-        newProvider.label = label;
-        newProvider.description = description;
-        if (computer != null) {
-            newProvider.urlComputer = computer;
-        }
-
-        LoginProviderLink existingProvider = getProvider(name);
-        if (existingProvider != null) {
-            existingProvider.merge(newProvider);
-        } else {
-            if (providers == null) {
-                providers = new ArrayList<>();
-            }
-            providers.add(newProvider);
-        }
     }
 
     /**
@@ -277,42 +254,12 @@ public class LoginScreenConfig {
         return fieldAutocomplete == null ? true : fieldAutocomplete;
     }
 
-    @XNode("headerStyle")
-    public void setHeaderStyle(String headerStyle) {
-        this.headerStyle = Framework.expandVars(headerStyle);
-    }
-
-    @XNode("footerStyle")
-    public void setFooterStyle(String footerStyle) {
-        this.footerStyle = Framework.expandVars(footerStyle);
-    }
-
-    @XNode("bodyBackgroundStyle")
-    public void setBodyBackgroundStyle(String bodyBackgroundStyle) {
-        this.bodyBackgroundStyle = Framework.expandVars(bodyBackgroundStyle);
-    }
-
-    @XNode("backgroundImage")
-    public void setBackgroundImage(String backgroundImage) {
-        this.backgroundImage = Framework.expandVars(backgroundImage);
-    }
-
     public String getBackgroundImage() {
         return this.backgroundImage;
     }
 
     public String getLoginButtonBackgroundColor() {
         return loginButtonBackgroundColor;
-    }
-
-    @XNode("loginBoxBackgroundStyle")
-    public void setLoginBoxBackgroundStyle(String loginBoxBackgroundStyle) {
-        this.loginBoxBackgroundStyle = Framework.expandVars(loginBoxBackgroundStyle);
-    }
-
-    @XNode("logoUrl")
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = Framework.expandVars(logoUrl);
     }
 
     /**
@@ -481,54 +428,6 @@ public class LoginScreenConfig {
             mergedLocales.addAll(newLocales);
         }
         supportedLocales = new ArrayList<>(mergedLocales);
-    }
-
-    /**
-     * @since 7.10
-     */
-    @Override
-    public LoginScreenConfig clone() {
-        LoginScreenConfig clone = new LoginScreenConfig();
-        clone.bodyBackgroundStyle = bodyBackgroundStyle;
-        clone.disableBackgroundSizeCover = disableBackgroundSizeCover;
-        clone.fieldAutocomplete = fieldAutocomplete;
-        clone.footerStyle = footerStyle;
-        clone.headerStyle = headerStyle;
-        clone.loginBoxBackgroundStyle = loginBoxBackgroundStyle;
-        clone.loginBoxWidth = loginBoxWidth;
-        clone.loginButtonBackgroundColor = loginButtonBackgroundColor;
-        clone.logoAlt = logoAlt;
-        clone.logoHeight = logoHeight;
-        clone.logoUrl = logoUrl;
-        clone.logoWidth = logoWidth;
-        clone.loop = loop;
-        clone.muted = muted;
-        clone.newsIframeUrl = newsIframeUrl;
-        if (providers != null) {
-            clone.providers = new ArrayList<>();
-            for (LoginProviderLink l : providers) {
-                clone.providers.add(l.clone());
-            }
-        }
-        if (startupPages != null) {
-            clone.startupPages = new HashMap<>();
-            for (Map.Entry<String, LoginStartupPage> startupPage : startupPages.entrySet()) {
-                clone.startupPages.put(startupPage.getKey(), startupPage.getValue().clone());
-            }
-        }
-        clone.removeNews = removeNews;
-        if (videos != null) {
-            clone.videos = new ArrayList<>();
-            for (LoginVideo v : videos) {
-                clone.videos.add(v.clone());
-            }
-        }
-        clone.defaultLocale = defaultLocale;
-        clone.appendSupportedLocales = appendSupportedLocales;
-        if (supportedLocales != null) {
-            clone.supportedLocales = new ArrayList<>(supportedLocales);
-        }
-        return clone;
     }
 
 }

@@ -18,50 +18,69 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
+import org.nuxeo.common.xmap.registry.Registry;
+import org.nuxeo.common.xmap.registry.SingleRegistry;
+import org.w3c.dom.Element;
 
 /**
- * Registry handling hot-reload and merge of {@link LoginScreenConfig} contributions.
+ * Registry handling hot-reload and custom merge of {@link LoginScreenConfig} contributions.
+ * <p>
+ * Also accepts programmatic configurations for provider links.
+ * <p>
+ * Modified as of 11.5 to implement {@link Registry}.
  *
  * @since 7.10
  */
-public class LoginScreenConfigRegistry extends SimpleContributionRegistry<LoginScreenConfig> {
+public class LoginScreenConfigRegistry extends SingleRegistry {
 
-    LoginScreenConfig config;
+    protected Map<String, LoginProviderLink> programmaticLinks = Collections.synchronizedMap(new LinkedHashMap<>());
 
     @Override
-    public String getContributionId(LoginScreenConfig contrib) {
-        // only one contrib
-        return "static";
+    public void initialize() {
+        super.initialize();
+        this.<LoginScreenConfig> getContribution()
+            .ifPresent(conf -> programmaticLinks.values().forEach(l -> conf.merge(new LoginScreenConfig(l))));
     }
 
     @Override
-    public void contributionUpdated(String id, LoginScreenConfig contrib, LoginScreenConfig newOrigContrib) {
-        config = contrib;
+    @SuppressWarnings("unchecked")
+    protected <T> T getMergedInstance(Context ctx, XAnnotatedObject xObject, Element element, Object existing) {
+        LoginScreenConfig contrib = getInstance(ctx, xObject, element);
+        if (existing != null) {
+            ((LoginScreenConfig) existing).merge(contrib);
+            return (T) existing;
+        } else {
+            return (T) contrib;
+        }
     }
 
-    @Override
-    public void contributionRemoved(String id, LoginScreenConfig origContrib) {
-        config = currentContribs.get("static");
+    /**
+     * Adds provider links held by given {@link LoginScreenConfig} to the global login configuration.
+     */
+    public void addContribution(LoginScreenConfig config) {
+        List<LoginProviderLink> links = config.getProviders();
+        if (!links.isEmpty()) {
+            links.forEach(link -> programmaticLinks.put(link.getName(), link));
+            initialize();
+        }
     }
 
-    @Override
-    public boolean isSupportingMerge() {
-        return true;
-    }
-
-    @Override
-    public LoginScreenConfig clone(LoginScreenConfig orig) {
-        return orig.clone();
-    }
-
-    @Override
-    public void merge(LoginScreenConfig src, LoginScreenConfig dst) {
-        dst.merge(src);
-    }
-
-    public LoginScreenConfig getConfig() {
-        return config;
+    /**
+     * Removes provider links held by given {@link LoginScreenConfig} from the global login configuration.
+     */
+    public void removeContribution(LoginScreenConfig config) {
+        List<LoginProviderLink> links = config.getProviders();
+        if (!links.isEmpty()) {
+            links.stream().map(LoginProviderLink::getName).forEach(programmaticLinks::remove);
+            initialize();
+        }
     }
 
 }

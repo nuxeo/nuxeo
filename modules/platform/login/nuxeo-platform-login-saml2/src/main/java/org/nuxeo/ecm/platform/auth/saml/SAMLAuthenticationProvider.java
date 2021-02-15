@@ -456,7 +456,7 @@ public class SAMLAuthenticationProvider
             return null;
         }
 
-        Optional<String> userId  = findOrCreateNuxeoUser(userResolver, credential);
+        Optional<String> userId = findOrCreateNuxeoUser(userResolver, credential);
 
         if (!userId.isPresent()) {
             log.warn("Failed to resolve user with NameID \"" + credential.getNameID().getValue() + "\".");
@@ -516,7 +516,8 @@ public class SAMLAuthenticationProvider
         return null;
     }
 
-    protected void populateLocalContext(@SuppressWarnings("rawtypes") SAMLMessageContext context, HttpServletRequest request) {
+    protected void populateLocalContext(@SuppressWarnings("rawtypes") SAMLMessageContext context,
+            HttpServletRequest request) {
         // Set local info
         context.setLocalEntityId(SAMLConfiguration.getEntityId());
         context.setLocalEntityRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
