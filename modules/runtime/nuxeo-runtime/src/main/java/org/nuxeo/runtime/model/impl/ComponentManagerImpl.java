@@ -1005,7 +1005,7 @@ public class ComponentManagerImpl implements ComponentManager {
     @Override
     public void stop(int timeoutInSeconds) {
         try {
-            runWihtinTimeout(timeoutInSeconds, TimeUnit.SECONDS, "Timed out on stop, blocking", this::stop);
+            runWithTimeout(timeoutInSeconds, TimeUnit.SECONDS, "Timed out on stop, blocking", this::stop);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Interrupted while stopping components", e);
@@ -1027,7 +1027,7 @@ public class ComponentManagerImpl implements ComponentManager {
     @Override
     public void standby(int timeoutInSeconds) {
         try {
-            runWihtinTimeout(timeoutInSeconds, TimeUnit.SECONDS, "Timed out on standby, blocking", this::standby);
+            runWithTimeout(timeoutInSeconds, TimeUnit.SECONDS, "Timed out on standby, blocking", this::standby);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Interrupted while standbying components", e);
@@ -1259,7 +1259,7 @@ public class ComponentManagerImpl implements ComponentManager {
     /**
      * Log a warning message if the timeout is reached while executing the given runnable.
      */
-    protected static void runWihtinTimeout(long timeout, TimeUnit unit, String warn, Runnable runnable)
+    protected static void runWithTimeout(long timeout, TimeUnit unit, String warn, Runnable runnable)
             throws InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         try {
