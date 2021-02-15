@@ -105,12 +105,20 @@ public class DefaultComponent implements Component, Adaptable {
         setModifiedNow();
     }
 
+    /**
+     * @deprecated since 11.5: contributions registration should use a {@link Registry}.
+     */
+    @Deprecated(since = "11.5")
     public void registerContribution(Object contribution, String xp, ComponentInstance component) {
         if (contribution instanceof Descriptor) {
             register(xp, (Descriptor) contribution);
         }
     }
 
+    /**
+     * @deprecated since 11.5: contributions unregistration should use a {@link Registry}.
+     */
+    @Deprecated(since = "11.5")
     public void unregisterContribution(Object contribution, String xp, ComponentInstance component) {
         if (contribution instanceof Descriptor) {
             unregister(xp, (Descriptor) contribution);
