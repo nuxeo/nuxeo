@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ftest.server.dev.hot.reload.contrib" version="1.0">
+<component name="org.nuxeo.ftest.server.dev.hot.reload.contrib">
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
     <chain id="CreateDocumentAndStartWorkflow">

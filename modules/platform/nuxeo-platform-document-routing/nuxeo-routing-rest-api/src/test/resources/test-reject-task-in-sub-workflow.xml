@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.ecm.platform.restapi.server.routing.test.sub.workflow" version="1.0.0">
+<component name="org.nuxeo.ecm.platform.restapi.server.routing.test.sub.workflow">
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="var_Task7b6" prefix="var_Task7b6" override="true" src="data/schemas/var_Task7b6.xsd" />

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.versioning.default-policies" version="1.0">
+<component name="org.nuxeo.ecm.core.versioning.default-policies">
 
   <require>org.nuxeo.ecm.platform.el.service</require>
 

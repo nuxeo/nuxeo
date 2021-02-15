@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.ecm.platform.restapi.server.routing.test.task.action" version="1.0.0">
+<component name="org.nuxeo.ecm.platform.restapi.server.routing.test.task.action">
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="var_confirm-20200527183138945-start-node" prefix="var_confirm-20200527183138945-start-node" override="true" src="task-request-unmarshalling/schemas/var_confirm-20200527183138945-start-node.xsd"/>

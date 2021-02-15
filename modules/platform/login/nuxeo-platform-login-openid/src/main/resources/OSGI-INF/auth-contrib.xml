@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.platform.oauth2.openid.auth.contrib" version="1.0">
+<component name="org.nuxeo.ecm.platform.oauth2.openid.auth.contrib">
 
   <extension point="authenticators" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
     <authenticationPlugin class="org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDConnectAuthenticator" enabled="true" name="OPENID_CONNECT_AUTH">

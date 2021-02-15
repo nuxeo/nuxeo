@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.storage.sql.tests.schema.longnames" version="1.0.0">
+<component name="org.nuxeo.ecm.core.storage.sql.tests.schema.longnames">
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="schema_name_that_is_too_long_for_oracle" src="schemas/withlongfield.xsd"/>
   </extension>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.core.CoreService" version="1.0">
+<component name="org.nuxeo.ecm.core.CoreService">
   <documentation>
   The core service provides a way to register version removal policies
   </documentation>

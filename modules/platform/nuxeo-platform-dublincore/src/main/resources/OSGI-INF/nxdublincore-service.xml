@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<component name="DublinCoreStorageService" version="1.0.0">
-
+<component name="DublinCoreStorageService">
 
   <implementation class="org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageServiceImpl"/>
 

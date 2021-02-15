@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.automation.server.AutomationServer"
-           version="1.0">
+<component name="org.nuxeo.ecm.automation.server.AutomationServer">
 
   <require>org.nuxeo.ecm.automation.io.services.IOComponent</require>
 

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="filemanager.core.listener.digest" version="1.0.0">
+<component name="filemanager.core.listener.digest">
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
     <documentation>

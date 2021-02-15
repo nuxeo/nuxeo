@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.runtime.cluster.lock.test" version="1.0">
+<component name="org.nuxeo.runtime.cluster.lock.test">
 
   <extension target="org.nuxeo.runtime.cluster.ClusterService" point="configuration">
     <clusterNode id="123" enabled="true" />

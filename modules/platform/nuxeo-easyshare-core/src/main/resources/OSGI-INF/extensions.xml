@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<component name="studio.extensions.easyshare" version="1.0.0">
+<component name="studio.extensions.easyshare">
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="easysharefolder" prefix="eshare" src="data/schemas/easysharefolder.xsd"/>

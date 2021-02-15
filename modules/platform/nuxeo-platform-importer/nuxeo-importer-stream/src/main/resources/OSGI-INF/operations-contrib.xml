@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.importer.stream.automation.contrib" version="1.0">
+<component name="org.nuxeo.importer.stream.automation.contrib">
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
     <operation class="org.nuxeo.importer.stream.automation.RandomBlobProducers" />

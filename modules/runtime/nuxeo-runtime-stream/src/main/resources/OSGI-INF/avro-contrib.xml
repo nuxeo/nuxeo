@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.runtime.avro.contrib" version="1.0.0">
+<component name="org.nuxeo.runtime.avro.contrib">
   <documentation>
     Avro basic replacements.
   </documentation>

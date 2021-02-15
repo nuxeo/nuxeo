@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.core.tests.version.readversion.enabled" version="1.0.0">
+<component name="org.nuxeo.core.tests.version.readversion.enabled">
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
     <property name="org.nuxeo.version.readversion.disabled">false</property>

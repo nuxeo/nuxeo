@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.runtime.migration.test.descriptor.override" version="1.0">
+<component name="org.nuxeo.runtime.migration.test.descriptor.override">
 
   <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
     <migration id="my_migration">

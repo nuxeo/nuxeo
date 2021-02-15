@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.drive.hierarchy.permission"
-  version="1.0">
+<component name="org.nuxeo.drive.hierarchy.permission">
 
   <require>org.nuxeo.drive.adapters</require>
   <require>org.nuxeo.drive.adapters.hierarchy.permission</require>

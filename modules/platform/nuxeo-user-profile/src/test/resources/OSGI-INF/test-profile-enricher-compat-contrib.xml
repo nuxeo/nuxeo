@@ -1,4 +1,4 @@
-<component name="org.nuxeo.ecm.user.center.profile.properties.test" version="1.0.0">
+<component name="org.nuxeo.ecm.user.center.profile.properties.test">
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
     <property name="nuxeo.userprofile.enricher.compatibility">true</property>

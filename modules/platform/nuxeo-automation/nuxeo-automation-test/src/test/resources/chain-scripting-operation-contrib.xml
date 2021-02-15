@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.automation.rest.test.chainScriptingOperationContrib"
-           version="1.0">
+<component name="org.nuxeo.automation.rest.test.chainScriptingOperationContrib">
 
   <extension point="chains"
              target="org.nuxeo.ecm.core.operation.OperationServiceComponent">

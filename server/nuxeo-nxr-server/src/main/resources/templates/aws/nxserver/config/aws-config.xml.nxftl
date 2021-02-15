@@ -1,6 +1,6 @@
 <#escape x as x?xml>
 <?xml version="1.0"?>
-<component name="aws.config" version="1.0">
+<component name="aws.config">
 
   <extension target="org.nuxeo.runtime.aws.AWSConfigurationService" point="configuration">
     <configuration>

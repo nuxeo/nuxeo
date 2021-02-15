@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.runtime.model.persistence" version="1.0">
+<component name="org.nuxeo.runtime.model.persistence">
   <documentation>
   Manage (install and persist) external contributions.
 

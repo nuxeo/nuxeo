@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.core.tests.bulk.low.scroll.size.config" version="1.0.0">
+<component name="org.nuxeo.core.tests.bulk.low.scroll.size.config">
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
     <property name="nuxeo.core.bulk.scroller.scroll.size">1</property>

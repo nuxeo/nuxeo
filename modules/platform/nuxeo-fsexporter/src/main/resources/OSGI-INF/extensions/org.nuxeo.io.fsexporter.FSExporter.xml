@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.io.fsexporter.FSExporter" version="1.0">
+<component name="org.nuxeo.io.fsexporter.FSExporter">
 
   <implementation class="org.nuxeo.io.fsexporter.FSExporter" />
 

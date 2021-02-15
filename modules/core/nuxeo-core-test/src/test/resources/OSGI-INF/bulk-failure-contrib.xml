@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.core.tests.bulk.config" version="1.0.0">
+<component name="org.nuxeo.core.tests.bulk.config">
 
   <require>org.nuxeo.ecm.core.bulk.config</require>
 

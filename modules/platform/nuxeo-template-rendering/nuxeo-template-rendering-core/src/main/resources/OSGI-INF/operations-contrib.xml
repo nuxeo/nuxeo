@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.platform.TemplateSources.operations" version="1.0">
+<component name="org.nuxeo.platform.TemplateSources.operations">
 
   <documentation>
   Contribute Operation to encapsulate TemplateProcessor rendering features

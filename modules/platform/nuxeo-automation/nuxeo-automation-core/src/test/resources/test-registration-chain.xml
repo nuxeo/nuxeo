@@ -1,4 +1,4 @@
-<component name="org.nuxeo.ecm.core.rules.test-parametrization-chain" version="1.0">
+<component name="org.nuxeo.ecm.core.rules.test-parametrization-chain">
 
   <extension point="chains" target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
 

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.runtime.cluster.test-disabled" version="1.0">
+<component name="org.nuxeo.runtime.cluster.test-disabled">
 
   <extension target="org.nuxeo.runtime.cluster.ClusterService" point="configuration">
     <clusterNode enabled="" />

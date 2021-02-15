@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.core.tests.version.acl.disabled" version="1.0.0">
+<component name="org.nuxeo.core.tests.version.acl.disabled">
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
     <property name="org.nuxeo.version.acl.disabled">true</property>

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.drive.coreTypes" version="1.0">
+<component name="org.nuxeo.drive.coreTypes">
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
     point="schema">

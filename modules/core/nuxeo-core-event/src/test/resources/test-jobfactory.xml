@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="test-jobfactory" version="1.0">
+<component name="test-jobfactory">
 
   <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService" point="schedule">
 

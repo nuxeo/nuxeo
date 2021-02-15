@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<component name="studio.extensions.nuxeo-routing-default" version="1.0.0">
+<component name="studio.extensions.nuxeo-routing-default">
 
   <extension target="org.nuxeo.runtime.services.resource.ResourceService" point="resources">
     <resource name="NRD-PR-TasksInfo">data/templates/NRD-PR-TasksInfo</resource>

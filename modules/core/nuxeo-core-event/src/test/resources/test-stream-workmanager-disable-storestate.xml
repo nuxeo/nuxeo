@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.work.stream.config.test.disable.storestate" version="1.0">
+<component name="org.nuxeo.ecm.core.work.stream.config.test.disable.storestate">
   <require>org.nuxeo.ecm.core.work.service</require>
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">

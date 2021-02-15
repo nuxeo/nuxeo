@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.core.export.tests" version="1.0">
+<component name="org.nuxeo.core.export.tests">
 
 	<extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
 		<schema name="invoice" prefix="inv" src="schema/invoice.xsd" />
