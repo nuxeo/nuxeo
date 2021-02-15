@@ -134,15 +134,10 @@ public class LDAPDirectory extends AbstractDirectory {
      * @return connection parameters to use for all LDAP queries
      */
     protected Properties computeContextProperties() {
-        LDAPDirectoryDescriptor ldapDirectoryDesc = getDescriptor();
         // Initialization of LDAP connection parameters from parameters
         // registered in the LDAP "server" extension point
         Properties props = new Properties();
         LDAPServerDescriptor serverConfig = getServer();
-
-        if (null == serverConfig) {
-            throw new DirectoryException("LDAP server configuration not found: " + ldapDirectoryDesc.getServerName());
-        }
 
         props.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 
@@ -304,10 +299,6 @@ public class LDAPDirectory extends AbstractDirectory {
             /*
              * Dynamic server list requires re-computation on each access
              */
-            String serverName = getDescriptor().getServerName();
-            if (StringUtils.isEmpty(serverName)) {
-                throw new DirectoryException("server configuration is missing for directory " + getName());
-            }
             LDAPServerDescriptor serverConfig = getServer();
             if (serverConfig.isDynamicServerList()) {
                 String ldapUrls = serverConfig.getLdapUrls();
@@ -324,7 +315,11 @@ public class LDAPDirectory extends AbstractDirectory {
      * @return ldap server descriptor bound to this directory
      */
     public LDAPServerDescriptor getServer() {
-        return factory.getServer(getDescriptor().getServerName());
+        String serverName = getDescriptor().getServerName();
+        if (StringUtils.isEmpty(serverName)) {
+            throw new DirectoryException("Server configuration is missing for directory " + getName());
+        }
+        return factory.getServer(serverName);
     }
 
     @Override

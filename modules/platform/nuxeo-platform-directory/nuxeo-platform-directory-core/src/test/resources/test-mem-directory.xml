@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.core.memory.dir">
+
+  <extension target="org.nuxeo.ecm.directory.memory.MemDirectoryFactory" point="directories">
+    <directory name="mydir">
+      <schema>myschema</schema>
+      <idField>i</idField>
+      <passwordField>pw</passwordField>
+      <schemaSet>
+        <field>i</field>
+      </schemaSet>
+    </directory>
+  </extension>
+
+</component>

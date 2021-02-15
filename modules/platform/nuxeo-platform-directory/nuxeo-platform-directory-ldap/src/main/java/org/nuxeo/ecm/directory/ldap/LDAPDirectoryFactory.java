@@ -21,54 +21,35 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.directory.DefaultDirectoryFactory;
-import org.nuxeo.ecm.directory.DirectoryServiceImpl;
-import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.ldap.registry.LDAPServerRegistry;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.ecm.directory.AbstractDirectoryDescriptorRegistry;
+import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.DirectoryRegistry;
+import org.nuxeo.runtime.model.DefaultComponent;
 
-public class LDAPDirectoryFactory extends DefaultDirectoryFactory {
+public class LDAPDirectoryFactory extends DefaultComponent {
+
+    protected static final String COMPONENT_NAME = "org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory";
 
     public static final String SERVERS_XP = "servers";
 
-    protected LDAPServerRegistry servers = new LDAPServerRegistry();
+    /**
+     * Registry for {@link LDAPDirectoryDescriptor}, forwarding to {@link DirectoryRegistry}.
+     * <p>
+     * Also handles custom merge.
+     *
+     * @since 11.5
+     */
+    public static final class Registry extends AbstractDirectoryDescriptorRegistry {
+
+        public Registry() {
+            super(COMPONENT_NAME);
+        }
+
+    }
 
     public LDAPServerDescriptor getServer(String name) {
-        return servers.getServer(name);
-    }
-
-    protected static DirectoryServiceImpl getDirectoryService() {
-        return (DirectoryServiceImpl) Framework.getService(DirectoryService.class);
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (DIRECTORIES_XP.equals(extensionPoint)) {
-            super.registerContribution(contribution, extensionPoint, contributor);
-        } else if (SERVERS_XP.equals(extensionPoint)) {
-            registerServerContribution((LDAPServerDescriptor) contribution);
-        } else {
-            throw new NuxeoException("Unknown extension point: " + extensionPoint);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (DIRECTORIES_XP.equals(extensionPoint)) {
-            super.unregisterContribution(contribution, extensionPoint, contributor);
-        } else if (SERVERS_XP.equals(extensionPoint)) {
-            unregisterServerContribution((LDAPServerDescriptor) contribution);
-        }
-    }
-
-    public void registerServerContribution(LDAPServerDescriptor descriptor) {
-        servers.addContribution(descriptor);
-    }
-
-    public void unregisterServerContribution(LDAPServerDescriptor descriptor) {
-        servers.removeContribution(descriptor);
+        return this.<LDAPServerDescriptor> getRegistryContribution(SERVERS_XP, name)
+                   .orElseThrow(() -> new DirectoryException("LDAP server configuration not found: " + name));
     }
 
 }

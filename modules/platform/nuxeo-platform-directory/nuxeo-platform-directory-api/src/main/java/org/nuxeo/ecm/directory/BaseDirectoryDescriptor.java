@@ -32,6 +32,8 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 
 /**
@@ -39,7 +41,8 @@ import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
  *
  * @since 8.2
  */
-@XObject(value = "directory")
+@XObject("directory")
+@XRegistry
 public class BaseDirectoryDescriptor implements Cloneable {
 
     private static final Logger log = LogManager.getLogger(BaseDirectoryDescriptor.class);
@@ -138,10 +141,8 @@ public class BaseDirectoryDescriptor implements Cloneable {
             DATA_LOADING_POLICY_UPDATE_DUPLICATE);
 
     @XNode("@name")
+    @XRegistryId
     public String name;
-
-    @XNode("@remove")
-    public boolean remove;
 
     @XNode("@template")
     public boolean template;

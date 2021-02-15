@@ -52,7 +52,7 @@ public class TestDirectoryWithTSVInit {
     protected DirectoryService directoryService;
 
     @Test
-    public void testGetEntry() throws Exception {
+    public void testGetEntry() {
         try (Session session = directoryService.open("userDirectory")) {
             DocumentModel dm = session.getEntry("AdministratorTSV");
             assertNotNull(dm);

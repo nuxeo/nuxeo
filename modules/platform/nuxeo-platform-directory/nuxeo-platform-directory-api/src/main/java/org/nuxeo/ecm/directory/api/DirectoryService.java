@@ -134,16 +134,6 @@ public interface DirectoryService {
     String getParentDirectoryName(String id);
 
     /**
-     * INTERNAL registers a directory descriptor.
-     */
-    void registerDirectoryDescriptor(BaseDirectoryDescriptor descriptor);
-
-    /**
-     * INTERNAL unregisters a directory descriptor.
-     */
-    void unregisterDirectoryDescriptor(BaseDirectoryDescriptor descriptor);
-
-    /**
      * Loads a CSV into the given {@code directoryName}.
      *
      * @see BaseDirectoryDescriptor#DATA_LOADING_POLICIES

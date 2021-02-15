@@ -167,7 +167,7 @@ public class TestCoreDirectory {
     @Test
     @Ignore
     public void testCreateFromModel() {
-        DocumentModel entry = BaseSession.createEntryModel(null, SCHEMA_NAME, null, null);
+        DocumentModel entry = BaseSession.createEntryModel(SCHEMA_NAME, null, null);
         String id = "newId";
         entry.setPropertyValue(UID_FIELD, id);
 

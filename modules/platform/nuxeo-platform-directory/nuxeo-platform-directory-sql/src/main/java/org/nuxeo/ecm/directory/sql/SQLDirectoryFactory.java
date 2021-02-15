@@ -18,8 +18,27 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
-import org.nuxeo.ecm.directory.DefaultDirectoryFactory;
+import org.nuxeo.ecm.directory.AbstractDirectoryDescriptorRegistry;
+import org.nuxeo.ecm.directory.DirectoryRegistry;
+import org.nuxeo.runtime.model.DefaultComponent;
 
-public class SQLDirectoryFactory extends DefaultDirectoryFactory {
+public class SQLDirectoryFactory extends DefaultComponent {
+
+    protected static final String COMPONENT_NAME = "org.nuxeo.ecm.directory.sql.SQLDirectoryFactory";
+
+    /**
+     * Registry for {@link SQLDirectoryDescriptor}, forwarding to {@link DirectoryRegistry}.
+     * <p>
+     * Also handles custom merge.
+     *
+     * @since 11.5
+     */
+    public static final class Registry extends AbstractDirectoryDescriptorRegistry {
+
+        public Registry() {
+            super(COMPONENT_NAME);
+        }
+
+    }
 
 }

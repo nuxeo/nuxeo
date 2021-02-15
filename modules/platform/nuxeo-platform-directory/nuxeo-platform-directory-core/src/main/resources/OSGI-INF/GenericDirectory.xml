@@ -44,7 +44,7 @@
     </documentation>
 
     <object class="org.nuxeo.ecm.directory.BaseDirectoryDescriptor" />
-
+    <registry class="org.nuxeo.ecm.directory.GenericDirectoryComponent$Registry" />
   </extension-point>
 
 </component>

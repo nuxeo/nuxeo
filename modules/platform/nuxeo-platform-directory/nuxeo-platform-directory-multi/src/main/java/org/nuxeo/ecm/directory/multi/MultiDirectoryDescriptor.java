@@ -24,13 +24,15 @@ package org.nuxeo.ecm.directory.multi;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
+import org.nuxeo.ecm.directory.Directory;
 
 /**
  * @author Florent Guillaume
  */
 @XObject(value = "directory")
+@XRegistry
 public class MultiDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     @XNode("querySizeLimit")

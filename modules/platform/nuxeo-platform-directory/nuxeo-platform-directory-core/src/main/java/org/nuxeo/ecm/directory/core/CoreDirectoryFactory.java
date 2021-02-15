@@ -18,13 +18,32 @@
  */
 package org.nuxeo.ecm.directory.core;
 
-import org.nuxeo.ecm.directory.DefaultDirectoryFactory;
+import org.nuxeo.ecm.directory.AbstractDirectoryDescriptorRegistry;
+import org.nuxeo.ecm.directory.DirectoryRegistry;
+import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Factory implementation for directory on repository
+ * Factory implementation for directory on repository.
  *
  * @since 8.2
  */
-public class CoreDirectoryFactory extends DefaultDirectoryFactory {
+public class CoreDirectoryFactory extends DefaultComponent {
+
+    protected static final String COMPONENT_NAME = "org.nuxeo.ecm.directory.core.CoreDirectoryFactory";
+
+    /**
+     * Registry for {@link CoreDirectoryDescriptor}, forwarding to {@link DirectoryRegistry}.
+     * <p>
+     * Also handles custom merge.
+     *
+     * @since 11.5
+     */
+    public static final class Registry extends AbstractDirectoryDescriptorRegistry {
+
+        public Registry() {
+            super(COMPONENT_NAME);
+        }
+
+    }
 
 }
