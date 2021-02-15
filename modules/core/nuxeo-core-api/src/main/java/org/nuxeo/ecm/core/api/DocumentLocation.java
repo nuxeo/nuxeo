@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: DocumentLocation.java 25074 2007-09-18 14:23:08Z atchertchian $
  */
 
 package org.nuxeo.ecm.core.api;

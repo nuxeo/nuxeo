@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: AbstractDocumentViewCodec.java 29556 2008-01-23 00:59:39Z jcarsique $
  */
 
 package org.nuxeo.ecm.platform.url.service;

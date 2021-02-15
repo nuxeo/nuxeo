@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: TestDocumentPathCodec.java 28480 2008-01-04 14:04:49Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.url.codec;

@@ -17,7 +17,6 @@
  *     Nuxeo - initial API and implementation
  *
  *
- * $Id: Plugin.java 4449 2006-10-19 11:51:56Z janguenot $
  */
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;

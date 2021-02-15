@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: AbstractCreationContainerListProvider.java 30586 2008-02-26 14:30:17Z ogrisel $
  */
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;

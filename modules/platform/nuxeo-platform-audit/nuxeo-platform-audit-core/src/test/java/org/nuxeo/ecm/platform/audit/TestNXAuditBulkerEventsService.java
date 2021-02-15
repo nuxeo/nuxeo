@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestEventConfService.java 28493 2008-01-04 19:51:30Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.audit;

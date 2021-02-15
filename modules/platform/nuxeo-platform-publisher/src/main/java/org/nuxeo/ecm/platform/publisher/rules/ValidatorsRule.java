@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
- * $Id: ValidatorsRule.java 28476 2008-01-04 09:52:52Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.publisher.rules;

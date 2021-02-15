@@ -16,7 +16,6 @@
  * Contributors:
  *     narcis
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.ec.notification;

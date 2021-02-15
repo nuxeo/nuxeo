@@ -16,7 +16,6 @@
  * Contributors:
  *     gracinet
  *
- * $Id$
  */
 
 package org.nuxeo.runtime.test;

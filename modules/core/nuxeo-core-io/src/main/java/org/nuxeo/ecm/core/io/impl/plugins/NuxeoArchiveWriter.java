@@ -16,7 +16,6 @@
  * Contributors:
  *     bstefanescu
  *
- * $Id: NuxeoArchiveWriter.java 29029 2008-01-14 18:38:14Z ldoguin $
  */
 
 package org.nuxeo.ecm.core.io.impl.plugins;

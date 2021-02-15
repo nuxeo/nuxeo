@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestListDiff.java 20563 2007-06-15 15:52:27Z ogrisel $
  */
 
 package org.nuxeo.ecm.core.api;

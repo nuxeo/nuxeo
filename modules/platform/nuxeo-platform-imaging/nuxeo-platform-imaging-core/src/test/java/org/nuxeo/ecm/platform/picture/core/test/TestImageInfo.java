@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.picture.core.test;

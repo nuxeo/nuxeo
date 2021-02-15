@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: LogEntry.java 1362 2006-07-26 14:26:03Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.audit.api;

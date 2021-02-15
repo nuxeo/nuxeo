@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: IORelationGraphHelper.java 25081 2007-09-18 14:57:22Z atchertchian $
  */
 
 package org.nuxeo.ecm.platform.relations.io;

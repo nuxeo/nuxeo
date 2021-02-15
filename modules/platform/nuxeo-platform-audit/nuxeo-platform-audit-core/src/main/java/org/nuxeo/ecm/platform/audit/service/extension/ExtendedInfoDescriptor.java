@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: LogEntryFactoryDescriptor.java 19481 2007-05-27 10:50:10Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.audit.service.extension;

@@ -16,7 +16,6 @@
  * Contributors:
  *     Thierry Delprat
  *
- * $Id: AnonymousAuthenticator.java 30865 2008-03-11 09:00:53Z arussel $
  */
 
 package org.nuxeo.ecm.platform.ui.web.auth.plugins;

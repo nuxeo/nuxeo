@@ -16,7 +16,6 @@
  * Contributors:
  *     ldoguin
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.task;

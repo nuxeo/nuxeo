@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: SearchException.java 23183 2007-07-30 17:28:06Z janguenot $
  */
 
 package org.nuxeo.ecm.core.search.api.client;

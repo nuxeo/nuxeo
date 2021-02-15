@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: DocumentViewCodecDescriptor.java 22535 2007-07-13 14:57:58Z atchertchian $
  */
 
 package org.nuxeo.ecm.platform.url.codec.descriptor;

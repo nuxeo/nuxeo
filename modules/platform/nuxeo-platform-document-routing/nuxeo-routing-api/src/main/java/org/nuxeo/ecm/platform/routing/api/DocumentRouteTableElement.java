@@ -16,7 +16,6 @@
  * Contributors:
  *    mcedica
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.routing.api;

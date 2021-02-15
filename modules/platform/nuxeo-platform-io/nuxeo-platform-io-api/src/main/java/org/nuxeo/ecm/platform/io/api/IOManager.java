@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: IOManager.java 30145 2008-02-13 16:56:56Z dmihalache $
  */
 
 package org.nuxeo.ecm.platform.io.api;

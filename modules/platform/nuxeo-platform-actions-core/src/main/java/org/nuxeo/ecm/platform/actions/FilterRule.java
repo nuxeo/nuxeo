@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: FilterRule.java 30476 2008-02-22 09:13:23Z bstefanescu $
  */
 
 package org.nuxeo.ecm.platform.actions;

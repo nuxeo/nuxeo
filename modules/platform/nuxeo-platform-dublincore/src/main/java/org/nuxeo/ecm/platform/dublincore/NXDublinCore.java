@@ -17,7 +17,6 @@
  *     Nuxeo - initial API and implementation
  *     Julien Anguenot (ja@nuxeo.com)
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.dublincore;

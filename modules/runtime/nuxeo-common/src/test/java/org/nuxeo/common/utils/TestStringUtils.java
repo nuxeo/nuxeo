@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestStringUtils.java 27204 2007-11-14 19:14:10Z gracinet $
  */
 
 package org.nuxeo.common.utils;

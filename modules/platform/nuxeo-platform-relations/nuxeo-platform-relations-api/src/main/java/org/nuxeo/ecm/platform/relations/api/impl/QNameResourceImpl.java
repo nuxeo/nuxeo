@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: QNameResourceImpl.java 20796 2007-06-19 09:52:03Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.relations.api.impl;

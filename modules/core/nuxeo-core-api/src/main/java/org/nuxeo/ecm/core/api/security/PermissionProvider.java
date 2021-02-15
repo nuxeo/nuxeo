@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: PermissionProvider.java 28325 2007-12-24 08:29:26Z sfermigier $
  */
 
 package org.nuxeo.ecm.core.api.security;

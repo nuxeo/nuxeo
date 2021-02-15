@@ -16,7 +16,6 @@
  * Contributors:
  *     dragos
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.rendering;

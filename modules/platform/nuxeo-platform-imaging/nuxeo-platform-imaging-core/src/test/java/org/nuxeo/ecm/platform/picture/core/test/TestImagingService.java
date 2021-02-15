@@ -16,7 +16,6 @@
  * Contributors:
  *     btatar
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.picture.core.test;

@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: AbstractDocumentReader.java 30477 2008-02-22 10:02:15Z dmihalache $
  */
 
 package org.nuxeo.ecm.core.io.impl;

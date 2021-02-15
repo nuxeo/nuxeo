@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: ClearTrustParameters.java 32994 2009-02-11 02:09:57Z madarche $
  */
 
 package org.nuxeo.ecm.platform.ui.web.auth.cleartrust;

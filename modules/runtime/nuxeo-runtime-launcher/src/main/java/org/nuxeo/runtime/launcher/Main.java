@@ -16,7 +16,6 @@
  * Contributors:
  *     bstefanescu, jcarsique
  *
- * $Id$
  */
 
 package org.nuxeo.runtime.launcher;

@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: RelationDate.java 28460 2008-01-03 15:34:05Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.relations.api.impl;

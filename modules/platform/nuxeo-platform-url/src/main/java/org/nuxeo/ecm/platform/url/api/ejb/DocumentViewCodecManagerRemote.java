@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: DocumentViewCodecManagerRemote.java 22535 2007-07-13 14:57:58Z atchertchian $
  */
 
 package org.nuxeo.ecm.platform.url.api.ejb;

@@ -17,7 +17,6 @@
  *     Nuxeo - initial API and implementation
  *
  *
- * $Id: TestCoreEvent.java 28563 2008-01-08 08:56:29Z sfermigier $
  */
 
 package org.nuxeo.ecm.core.event;

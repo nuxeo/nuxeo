@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: AbstractNode.java 20645 2007-06-17 13:16:54Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.relations.api.impl;

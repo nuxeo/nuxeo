@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: ResourceAdapterDescriptor.java 19155 2007-05-22 16:19:48Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.relations.descriptors;

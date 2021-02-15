@@ -16,7 +16,6 @@
  * Contributors:
  *     bstefanescu
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.webengine.ui.tree.document;

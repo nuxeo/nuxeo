@@ -16,7 +16,6 @@
  * Contributors:
  *     btatar
  *
- * $Id: XMLDirectoryWriter.java 30235 2008-02-18 15:35:09Z fguillaume $
  */
 
 package org.nuxeo.ecm.core.io.impl.plugins;

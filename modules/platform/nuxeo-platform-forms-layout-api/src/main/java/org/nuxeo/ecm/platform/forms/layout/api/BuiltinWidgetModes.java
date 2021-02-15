@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: BuiltinWidgetModes.java 28460 2008-01-03 15:34:05Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.forms.layout.api;

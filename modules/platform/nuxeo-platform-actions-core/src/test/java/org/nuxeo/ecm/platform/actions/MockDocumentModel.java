@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: MockDocumentModel.java 21693 2007-07-01 08:00:36Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.actions;

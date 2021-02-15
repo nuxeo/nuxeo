@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: ArrayUtils.java 28607 2008-01-09 15:49:32Z sfermigier $
  */
 
 package org.nuxeo.common.utils;

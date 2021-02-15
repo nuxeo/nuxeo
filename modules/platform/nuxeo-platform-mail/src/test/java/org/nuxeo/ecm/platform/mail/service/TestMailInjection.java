@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  *
- * $Id:
  */
 
 package org.nuxeo.ecm.platform.mail.service;

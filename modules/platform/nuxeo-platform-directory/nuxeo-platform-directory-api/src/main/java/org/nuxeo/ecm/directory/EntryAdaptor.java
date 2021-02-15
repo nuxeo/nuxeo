@@ -16,7 +16,6 @@
  * Contributors:
  *     Olivier Grisel
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.directory;

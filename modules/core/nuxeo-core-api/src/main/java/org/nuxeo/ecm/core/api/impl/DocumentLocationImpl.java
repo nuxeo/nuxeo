@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: DocumentLocationImpl.java 25074 2007-09-18 14:23:08Z atchertchian $
  */
 
 package org.nuxeo.ecm.core.api.impl;

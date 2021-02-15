@@ -16,7 +16,6 @@
  * Contributors:
  *     anguenot
  *
- * $Id: DateRangeQueryConstants.java 17892 2007-04-26 23:21:09Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.audit.api.query;

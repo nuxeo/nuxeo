@@ -16,7 +16,6 @@
  * Contributors:
  *     Florent Guillaume
  *
- * $Id$
  */
 
 package org.nuxeo.common.utils;

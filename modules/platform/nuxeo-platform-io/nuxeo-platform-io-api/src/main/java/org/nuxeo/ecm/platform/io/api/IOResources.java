@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: IOResources.java 24798 2007-09-11 19:41:39Z atchertchian $
  */
 
 package org.nuxeo.ecm.platform.io.api;

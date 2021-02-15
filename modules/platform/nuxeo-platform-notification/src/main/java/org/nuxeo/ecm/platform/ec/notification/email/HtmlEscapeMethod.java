@@ -16,7 +16,6 @@
  * Contributors:
  *     tmartins
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.ec.notification.email;

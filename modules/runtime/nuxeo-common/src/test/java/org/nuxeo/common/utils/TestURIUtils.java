@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: TestURIUtils.java 29987 2008-02-07 22:19:33Z sfermigier $
  */
 
 package org.nuxeo.common.utils;

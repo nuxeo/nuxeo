@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: LogsRemote.java 21905 2007-07-04 09:29:11Z janguenot $
  */
 
 package org.nuxeo.ecm.platform.audit.api.remote;

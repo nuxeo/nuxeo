@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: IORelationAdapter.java 26168 2007-10-18 11:21:21Z dmihalache $
  */
 
 package org.nuxeo.ecm.platform.relations.io;

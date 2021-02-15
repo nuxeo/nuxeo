@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: FieldDescriptor.java 28478 2008-01-04 12:53:58Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
