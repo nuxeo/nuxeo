@@ -664,6 +664,7 @@ public class ComponentManagerImpl implements ComponentManager {
             }
             iwatch.stop(ri.getName().getName());
         }
+        iwatch.stop();
         log.debug("Components instantiated in {}s", iwatch.total::formatSeconds);
         writeDevMetrics(iwatch, "instantiate");
 
