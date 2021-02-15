@@ -16,7 +16,6 @@
  * Contributors:
  *     troger
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.preview.tests.codec;

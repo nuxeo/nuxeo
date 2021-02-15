@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: IODocumentManagerImpl.java 29979 2008-02-07 16:00:26Z dmihalache $
  */
 
 package org.nuxeo.ecm.core.io.impl;

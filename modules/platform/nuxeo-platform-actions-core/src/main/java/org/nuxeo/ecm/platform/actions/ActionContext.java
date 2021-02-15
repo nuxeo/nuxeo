@@ -19,7 +19,6 @@
  *     <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  *     Anahide Tchertchian
  *
- * $Id: ActionContext.java 20218 2007-06-07 19:19:46Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.actions;

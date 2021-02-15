@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: ResultItem.java 28480 2008-01-04 14:04:49Z sfermigier $
  */
 
 package org.nuxeo.ecm.core.search.api.client.search.results;

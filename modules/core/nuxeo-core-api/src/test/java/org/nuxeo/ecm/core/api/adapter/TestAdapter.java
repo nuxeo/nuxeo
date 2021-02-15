@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestAdapter.java 21546 2007-06-28 11:46:32Z sfermigier $
  */
 
 package org.nuxeo.ecm.core.api.adapter;

@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: NXMimeType.java 16046 2007-04-12 14:34:58Z fguillaume $
  */
 package org.nuxeo.ecm.platform.mimetype;
 

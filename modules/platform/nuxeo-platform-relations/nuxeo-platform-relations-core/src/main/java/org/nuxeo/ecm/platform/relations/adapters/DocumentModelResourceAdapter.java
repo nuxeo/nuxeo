@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: DocumentModelResourceAdapter.java 28924 2008-01-10 14:04:05Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.relations.adapters;

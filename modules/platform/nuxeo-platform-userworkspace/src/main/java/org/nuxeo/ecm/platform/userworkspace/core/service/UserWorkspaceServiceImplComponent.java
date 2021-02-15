@@ -17,7 +17,6 @@
  *     btatar
  *     Damien METZLER (damien.metzler@leroymerlin.fr)
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.userworkspace.core.service;

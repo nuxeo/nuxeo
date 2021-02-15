@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: MimetypeDescriptor.java 20874 2007-06-19 20:26:15Z sfermigier $
  */
 package org.nuxeo.ecm.platform.mimetype.service;
 

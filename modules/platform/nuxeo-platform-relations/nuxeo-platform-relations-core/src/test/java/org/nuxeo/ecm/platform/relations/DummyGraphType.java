@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: DummyGraphType.java 25534 2007-09-28 11:40:25Z atchertchian $
  */
 
 package org.nuxeo.ecm.platform.relations;

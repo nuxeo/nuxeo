@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:tdelprat@nuxeo.com">Thierry Delprat</a>
  *
- * $Id:
  */
 
 package org.nuxeo.ecm.platform.mail.service.automation;

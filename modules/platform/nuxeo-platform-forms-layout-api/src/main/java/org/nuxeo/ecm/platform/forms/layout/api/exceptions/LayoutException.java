@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: LayoutException.java 26053 2007-10-16 01:45:43Z atchertchian $
  */
 
 package org.nuxeo.ecm.platform.forms.layout.api.exceptions;

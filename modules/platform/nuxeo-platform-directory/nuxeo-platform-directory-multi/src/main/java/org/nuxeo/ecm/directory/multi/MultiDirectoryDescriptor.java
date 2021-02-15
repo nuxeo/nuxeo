@@ -16,7 +16,6 @@
  * Contributors:
  *     Florent Guillaume
  *
- * $Id: MultiDirectoryDescriptor.java 24597 2007-09-05 16:04:04Z fguillaume $
  */
 
 package org.nuxeo.ecm.directory.multi;

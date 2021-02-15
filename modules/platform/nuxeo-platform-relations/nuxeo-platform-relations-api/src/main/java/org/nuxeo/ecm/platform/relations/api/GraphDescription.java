@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: GraphDescription.java 19245 2007-05-23 18:10:54Z atchertchian $
  */
 
 package org.nuxeo.ecm.platform.relations.api;

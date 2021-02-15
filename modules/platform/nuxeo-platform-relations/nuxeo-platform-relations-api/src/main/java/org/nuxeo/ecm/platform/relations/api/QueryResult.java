@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: QueryResult.java 19480 2007-05-27 10:46:28Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.relations.api;

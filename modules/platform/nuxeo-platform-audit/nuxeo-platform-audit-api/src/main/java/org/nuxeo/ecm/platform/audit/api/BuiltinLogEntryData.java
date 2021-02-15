@@ -16,7 +16,6 @@
  * Contributors:
  *     anguenot
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.audit.api;

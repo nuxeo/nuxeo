@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: RelationEvents.java 22537 2007-07-13 16:07:30Z gracinet $
  */
 
 package org.nuxeo.ecm.platform.relations.api.event;

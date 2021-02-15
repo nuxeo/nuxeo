@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: SingleDocumentReader.java 30256 2008-02-18 21:52:11Z tdelprat $
  */
 
 package org.nuxeo.ecm.core.io.impl.plugins;

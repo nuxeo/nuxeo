@@ -55,7 +55,6 @@ import org.apache.directory.server.core.prefs.ServerSystemPreferenceException;
  * An embedded LDAP test server, complete with test data for running the unit tests against.
  *
  * @author Luke Taylor
- * @version $Id: LdapTestServer.java 1496 2006-05-23 13:38:33Z benalex $
  */
 public class MockLdapServer implements ContextProvider {
     private static final String BASE_DN = "dc=example,dc=com";

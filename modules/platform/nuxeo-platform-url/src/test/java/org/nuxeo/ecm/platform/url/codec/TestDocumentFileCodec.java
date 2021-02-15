@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: TestDocumentFileCodec.java 22839 2007-07-22 20:43:16Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.url.codec;

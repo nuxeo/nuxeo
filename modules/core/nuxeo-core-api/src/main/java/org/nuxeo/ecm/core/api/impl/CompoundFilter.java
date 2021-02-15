@@ -16,7 +16,6 @@
  * Contributors:
  *     troger
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.core.api.impl;

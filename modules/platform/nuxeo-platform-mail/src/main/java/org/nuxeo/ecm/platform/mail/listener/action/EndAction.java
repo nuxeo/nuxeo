@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: EndAction.java 55400 2008-05-26 09:46:02Z atchertchian $
  */
 
 package org.nuxeo.ecm.platform.mail.listener.action;

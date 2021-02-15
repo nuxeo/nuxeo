@@ -15,7 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- * $Id:LifeCycleState.java 4249 2006-10-16 19:56:10Z janguenot $
  */
 
 package org.nuxeo.ecm.core.lifecycle;

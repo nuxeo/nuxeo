@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: ClearTrustAuthenticator.java 33212 2009-04-22 14:06:56Z madarche $
  */
 
 package org.nuxeo.ecm.platform.ui.web.auth.cleartrust;

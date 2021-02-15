@@ -16,7 +16,6 @@
  * Contributors:
  *     Stephane Lacoin, Julien Carsique
  *
- * $Id$
  */
 
 package org.nuxeo.runtime.transaction;

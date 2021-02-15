@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: I18NUtils.java 19046 2007-05-21 13:03:50Z sfermigier $
  */
 
 package org.nuxeo.common.utils.i18n;

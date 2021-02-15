@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: CoreEvent.java 30799 2008-03-01 12:36:18Z bstefanescu $
  */
 
 package org.nuxeo.ecm.core.api.event;

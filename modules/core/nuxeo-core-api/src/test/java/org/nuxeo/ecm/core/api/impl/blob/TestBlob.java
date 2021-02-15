@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestBlob.java 28924 2008-01-10 14:04:05Z sfermigier $
  */
 
 package org.nuxeo.ecm.core.api.impl.blob;

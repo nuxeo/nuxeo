@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestMimetypeRegistryServiceExtensions.java 28476 2008-01-04 09:52:52Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.mimetype.service;

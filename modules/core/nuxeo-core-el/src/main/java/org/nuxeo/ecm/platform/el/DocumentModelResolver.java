@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: DocumentModelResolver.java 23589 2007-08-08 16:50:40Z fguillaume $
  */
 
 package org.nuxeo.ecm.platform.el;

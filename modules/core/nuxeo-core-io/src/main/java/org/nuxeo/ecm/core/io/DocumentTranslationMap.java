@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: DocumentTranslationMap.java 29029 2008-01-14 18:38:14Z ldoguin $
  */
 
 package org.nuxeo.ecm.core.io;

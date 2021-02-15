@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: DocumentEventCategories.java 19250 2007-05-23 20:06:09Z sfermigier $
  */
 
 package org.nuxeo.ecm.core.api.event;

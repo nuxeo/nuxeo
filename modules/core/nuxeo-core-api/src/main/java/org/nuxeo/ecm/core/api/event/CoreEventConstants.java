@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: CoreEventConstants.java 29901 2008-02-05 17:01:22Z ogrisel $
  */
 
 package org.nuxeo.ecm.core.api.event;

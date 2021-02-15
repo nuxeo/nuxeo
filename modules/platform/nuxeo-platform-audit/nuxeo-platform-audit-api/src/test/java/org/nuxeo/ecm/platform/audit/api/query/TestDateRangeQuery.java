@@ -16,7 +16,6 @@
  * Contributors:
  *     anguenot
  *
- * $Id: TestDateRangeQuery.java 21908 2007-07-04 09:34:14Z janguenot $
  */
 
 package org.nuxeo.ecm.platform.audit.api.query;

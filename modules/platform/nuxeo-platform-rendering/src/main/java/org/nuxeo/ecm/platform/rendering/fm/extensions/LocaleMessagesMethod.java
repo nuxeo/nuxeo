@@ -18,7 +18,6 @@
  *     <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
  *
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.rendering.fm.extensions;

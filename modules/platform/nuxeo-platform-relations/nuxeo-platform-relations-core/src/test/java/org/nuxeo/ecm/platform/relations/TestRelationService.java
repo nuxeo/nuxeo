@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestRelationService.java 22121 2007-07-06 16:33:15Z gracinet $
  */
 
 package org.nuxeo.ecm.platform.relations;

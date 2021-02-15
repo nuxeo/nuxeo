@@ -16,7 +16,6 @@
  * Contributors:
  *     George Lefter
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.directory.api;

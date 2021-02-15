@@ -16,7 +16,6 @@
  * Contributors:
  *     Florent Guillaume
  *
- * $Id: MemoryDirectorySession.java 30374 2008-02-20 16:31:28Z gracinet $
  */
 
 package org.nuxeo.ecm.directory.memory;

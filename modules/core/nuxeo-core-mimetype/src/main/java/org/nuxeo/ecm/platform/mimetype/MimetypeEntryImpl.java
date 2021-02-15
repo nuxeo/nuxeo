@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: MimetypeEntryImpl.java 21445 2007-06-26 14:47:16Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.mimetype;

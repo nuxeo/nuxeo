@@ -16,7 +16,6 @@
  * Contributors:
  *     stan
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.rendering.fm.extensions;

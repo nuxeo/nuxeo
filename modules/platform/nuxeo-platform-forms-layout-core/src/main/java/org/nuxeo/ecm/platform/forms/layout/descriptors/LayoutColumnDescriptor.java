@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: $
  */
 
 package org.nuxeo.ecm.platform.forms.layout.descriptors;

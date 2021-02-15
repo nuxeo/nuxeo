@@ -16,7 +16,6 @@
  * Contributors:
  *     Florent Guillaume
  *
- * $Id: FakeUserManagerImpl.java 28010 2007-12-07 19:23:44Z fguillaume $
  */
 
 package org.nuxeo.ecm.platform.usermanager;

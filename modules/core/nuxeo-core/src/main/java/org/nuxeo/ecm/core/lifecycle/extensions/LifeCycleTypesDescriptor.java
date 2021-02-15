@@ -15,7 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- * $Id: LifeCycleTypesDescriptor.java 20625 2007-06-17 07:21:00Z sfermigier $
  */
 
 package org.nuxeo.ecm.core.lifecycle.extensions;

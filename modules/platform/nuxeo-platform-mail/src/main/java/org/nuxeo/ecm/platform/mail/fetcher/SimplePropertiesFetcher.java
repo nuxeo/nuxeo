@@ -16,7 +16,6 @@
  * Contributors:
  *     Alexandre Russel
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.mail.fetcher;

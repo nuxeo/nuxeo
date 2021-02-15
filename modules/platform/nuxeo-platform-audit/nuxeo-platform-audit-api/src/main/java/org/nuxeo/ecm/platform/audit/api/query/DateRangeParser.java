@@ -16,7 +16,6 @@
  * Contributors:
  *     anguenot
  *
- * $Id: DateRangeParser.java 20577 2007-06-16 09:26:07Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.audit.api.query;

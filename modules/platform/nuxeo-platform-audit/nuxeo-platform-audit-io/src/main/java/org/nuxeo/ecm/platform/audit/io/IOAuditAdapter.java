@@ -15,7 +15,6 @@
  *
  * Contributors:
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.audit.io;

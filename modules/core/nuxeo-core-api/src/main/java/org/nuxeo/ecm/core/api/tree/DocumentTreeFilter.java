@@ -16,7 +16,6 @@
  * Contributors:
  *     george
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.core.api.tree;
