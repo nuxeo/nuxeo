@@ -2,6 +2,7 @@
   <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
   <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
   <require>org.nuxeo.ecm.automation.server.auth.config</require>
+  <require>org.nuxeo.ecm.restapi.server.auth.config</require>
   <require>org.nuxeo.ecm.platform.login.keycloak</require>
 
   <!-- Override Keycloak Auth into authentication chain -->
@@ -20,12 +21,8 @@
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="specificChains">
 
-    <specificAuthenticationChain name="RestAPI">
-      <urlPatterns>
-        <url>(.*)/api/v.*</url>
-      </urlPatterns>
-
-      <replacementChain>
+    <specificAuthenticationChain name="RestAPI" merge="true">
+      <replacementChain merge="false">
         <plugin>KEYCLOAK_AUTH</plugin>
         <plugin>AUTOMATION_BASIC_AUTH</plugin>
       </replacementChain>
@@ -36,12 +33,8 @@
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="specificChains">
 
-    <specificAuthenticationChain name="Automation">
-      <urlPatterns>
-        <url>(.*)/automation.*</url>
-      </urlPatterns>
-
-      <replacementChain>
+    <specificAuthenticationChain name="Automation" merge="true">
+      <replacementChain merge="false">
         <plugin>KEYCLOAK_AUTH</plugin>
         <plugin>AUTOMATION_BASIC_AUTH</plugin>
       </replacementChain>
