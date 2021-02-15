@@ -38,11 +38,6 @@ public class DataSourceRegistry implements Registry {
     protected MapRegistry linkRegistry = new MapRegistry();
 
     @Override
-    public boolean isNull() {
-        return false;
-    }
-
-    @Override
     public void initialize() {
         registry.initialize();
         linkRegistry.initialize();

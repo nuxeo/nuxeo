@@ -40,11 +40,6 @@ public class FileManagerRegistry implements Registry {
     protected Map<String, MapRegistry> registries = new ConcurrentHashMap<>();
 
     @Override
-    public boolean isNull() {
-        return false;
-    }
-
-    @Override
     public void initialize() {
         registries.values().forEach(MapRegistry::initialize);
     }
