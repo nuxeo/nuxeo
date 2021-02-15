@@ -74,6 +74,23 @@ public abstract class XValueFactory {
         return factory.deserialize(context, value);
     }
 
+    /**
+     * Allows mapping current resolution context to the target instance.
+     *
+     * @since 11.5
+     */
+    public static final XValueFactory CONTEXT = new XValueFactory() {
+        @Override
+        public Object deserialize(Context context, String value) {
+            return context;
+        }
+
+        @Override
+        public String serialize(Context context, Object value) {
+            return value.toString();
+        }
+    };
+
     public static final XValueFactory STRING = new XValueFactory() {
         @Override
         public Object deserialize(Context context, String value) {
@@ -241,6 +258,7 @@ public abstract class XValueFactory {
     };
 
     static {
+        addFactory(Context.class, CONTEXT);
         addFactory(String.class, STRING);
         addFactory(Integer.class, INTEGER);
         addFactory(Long.class, LONG);

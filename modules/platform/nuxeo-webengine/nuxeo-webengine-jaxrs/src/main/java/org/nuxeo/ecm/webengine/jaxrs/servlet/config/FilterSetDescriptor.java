@@ -19,11 +19,14 @@
 package org.nuxeo.ecm.webengine.jaxrs.servlet.config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.FilterSet;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.mapping.Path;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.mapping.PathMatcher;
@@ -32,12 +35,14 @@ import org.nuxeo.ecm.webengine.jaxrs.servlet.mapping.PathMatcher;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("filters")
+@XRegistry(compatWarnOnMerge = true)
 public class FilterSetDescriptor {
 
     /**
      * To be used only when a filter set is declared outside a servlet. This is the ID of the contributed filter set.
      */
     @XNode("@id")
+    @XRegistryId
     protected String id;
 
     /**
@@ -62,7 +67,7 @@ public class FilterSetDescriptor {
     }
 
     public List<FilterDescriptor> getFilters() {
-        return filters;
+        return Collections.unmodifiableList(filters);
     }
 
     public FilterSet getFilterSet() {

@@ -14,26 +14,39 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
  */
 package org.nuxeo.ecm.webengine.jaxrs.servlet.config;
 
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodes;
+import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationManager;
 import org.nuxeo.ecm.webengine.jaxrs.views.BundleResource;
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.impl.XMapContext;
 import org.osgi.framework.Bundle;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Descriptor for a resource extension, defining sub-resources that can be injected into the target application.
  */
 @XObject("resource")
+@XRegistry(compatWarnOnMerge = true)
+@XRegistryId(value = { "@target", "@segment" }, separator = "#")
 public class ResourceExtension {
 
-    private Bundle bundle;
+    /** @since 11.5 */
+    @XNode
+    protected Context ctx;
 
     @XNode("@class")
     protected Class<? extends BundleResource> clazz;
+
+    /** @since 11.5 */
+    @XNodes(values = { "@target", "@segment" }, separator = "#")
+    protected String id;
 
     @XNode("@target")
     protected String target;
@@ -41,24 +54,14 @@ public class ResourceExtension {
     @XNode("@segment")
     protected String segment;
 
-    @XNode("@application")
-    protected String application = ApplicationManager.DEFAULT_HOST;
-
-    public ResourceExtension() {
-
-    }
-
-    public ResourceExtension(Bundle bundle, Class<? extends BundleResource> clazz) {
-        this.bundle = bundle;
-        this.clazz = clazz;
-    }
-
-    public void setBundle(Bundle bundle) {
-        this.bundle = bundle;
-    }
+    @XNode(value = "@application", defaultAssignment = ApplicationManager.DEFAULT_HOST)
+    protected String application;
 
     public Bundle getBundle() {
-        return bundle;
+        if (ctx instanceof XMapContext) {
+            return ((XMapContext) ctx).getRuntimeContext().getBundle();
+        }
+        return null;
     }
 
     public String getTarget() {
@@ -69,20 +72,8 @@ public class ResourceExtension {
         return segment;
     }
 
-    public void setTarget(String target) {
-        this.target = target;
-    }
-
-    public void setSegment(String segment) {
-        this.segment = segment;
-    }
-
     public String getApplication() {
         return application;
-    }
-
-    public void setApplication(String application) {
-        this.application = application;
     }
 
     public Class<? extends BundleResource> getResourceClass() {
@@ -90,11 +81,13 @@ public class ResourceExtension {
     }
 
     public String getId() {
-        return target + "#" + segment;
+        return id;
     }
 
     @Override
     public String toString() {
-        return bundle.getSymbolicName() + ":" + target + "#" + segment;
+        Bundle bundle = getBundle();
+        return bundle != null ? bundle.getSymbolicName() : "" + ":" + id;
     }
+
 }

@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
  */
 package org.nuxeo.ecm.webengine.jaxrs.servlet.config;
 
 import javax.servlet.ServletException;
 
-import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationManager;
+import org.nuxeo.runtime.RuntimeServiceException;
+import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.service.http.NamespaceException;
 
 /**
@@ -41,57 +41,35 @@ public class ServletRegistryComponent extends DefaultComponent {
 
     protected ServletRegistry registry;
 
-    public ServletRegistryComponent() {
-    }
-
     @Override
-    public void activate(ComponentContext context) {
+    public void start(ComponentContext context) {
         registry = ServletRegistry.getInstance();
+
+        this.<FilterSetDescriptor> getRegistryContributions(XP_FILTERS).forEach(registry::addFilterSet);
+        this.<ResourcesDescriptor> getRegistryContributions(XP_RESOURCES).forEach(registry::addResources);
+        this.<ResourceExtension> getRegistryContributions(XP_SUBRESOURCES)
+            .forEach(desc -> ApplicationManager.getInstance()
+                                               .getOrCreateApplication(desc.getApplication())
+                                               .addExtension(desc));
+        // servlets might depend on resources to be already registered
+        this.<ServletDescriptor> getRegistryContributions(XP_SERVLETS).forEach(desc -> {
+            try {
+                registry.addServlet(desc);
+            } catch (ServletException | NamespaceException e) {
+                throw new RuntimeServiceException(e);
+            }
+        });
+
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public void stop(ComponentContext context) throws InterruptedException {
+        this.<ResourceExtension> getRegistryContributions(XP_SUBRESOURCES)
+            .forEach(desc -> ApplicationManager.getInstance()
+                                               .getOrCreateApplication(desc.getApplication())
+                                               .removeExtension(desc));
         ServletRegistry.dispose();
         registry = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_SERVLETS.equals(extensionPoint)) {
-            ((ServletDescriptor) contribution).setBundle(contributor.getContext().getBundle());
-            try {
-                registry.addServlet((ServletDescriptor) contribution);
-            } catch (ServletException | NamespaceException e) {
-                throw new RuntimeException(e);
-            }
-        } else if (XP_FILTERS.equals(extensionPoint)) {
-            registry.addFilterSet((FilterSetDescriptor) contribution);
-        } else if (XP_RESOURCES.equals(extensionPoint)) {
-            ResourcesDescriptor rd = (ResourcesDescriptor) contribution;
-            rd.setBundle(contributor.getContext().getBundle());
-            registry.addResources(rd);
-        } else if (XP_SUBRESOURCES.equals(extensionPoint)) {
-            ResourceExtension rxt = (ResourceExtension) contribution;
-            rxt.setBundle(contributor.getContext().getBundle());
-            ApplicationManager.getInstance().getOrCreateApplication(rxt.getApplication()).addExtension(rxt);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_SERVLETS.equals(extensionPoint)) {
-            registry.removeServlet((ServletDescriptor) contribution);
-        } else if (XP_FILTERS.equals(extensionPoint)) {
-            registry.removeFilterSet((FilterSetDescriptor) contribution);
-        } else if (XP_RESOURCES.equals(extensionPoint)) {
-            ResourcesDescriptor rd = (ResourcesDescriptor) contribution;
-            rd.setBundle(contributor.getContext().getBundle());
-            registry.removeResources(rd);
-        } else if (XP_SUBRESOURCES.equals(extensionPoint)) {
-            ResourceExtension rxt = (ResourceExtension) contribution;
-            rxt.setBundle(contributor.getContext().getBundle());
-            ApplicationManager.getInstance().getOrCreateApplication(rxt.getApplication()).removeExtension(rxt);
-        }
     }
 
 }
