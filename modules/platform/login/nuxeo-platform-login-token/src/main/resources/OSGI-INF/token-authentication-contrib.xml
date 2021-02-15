@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.login.token.authentication.contrib">
 
-  <!-- Replace Automation specific authentication chain -->
+  <!-- Replace some specific authentication chains -->
   <require>org.nuxeo.ecm.automation.server.auth.config</require>
+  <require>org.nuxeo.ecm.restapi.server.auth.config</require>
 
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="authenticators">
@@ -32,17 +33,12 @@
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="specificChains">
 
-    <documentation>
-      Override Automation specific authentication chain to
-      use token authentication just after basic one.
-    </documentation>
-
-    <specificAuthenticationChain name="Automation">
-
-      <urlPatterns>
-        <url>(.*)/automation.*</url>
-      </urlPatterns>
-      <replacementChain>
+    <specificAuthenticationChain name="Automation" merge="true">
+      <documentation>
+        Override Automation specific authentication chain to
+        use token authentication just after basic one.
+      </documentation>
+      <replacementChain merge="false">
         <plugin>AUTOMATION_BASIC_AUTH</plugin>
         <plugin>TOKEN_AUTH</plugin>
         <plugin>OAUTH2_AUTH</plugin>
@@ -50,26 +46,23 @@
       </replacementChain>
     </specificAuthenticationChain>
 
-    <specificAuthenticationChain name="RestAPI">
-      <urlPatterns>
-        <url>(.*)/api/v.*</url>
-      </urlPatterns>
-      <replacementChain>
+    <specificAuthenticationChain name="RestAPI" merge="true">
+      <documentation>
+        Override RestAPI specific authentication chain to
+        use token authentication just after basic one.
+      </documentation>
+      <replacementChain merge="false">
         <plugin>AUTOMATION_BASIC_AUTH</plugin>
         <plugin>TOKEN_AUTH</plugin>
         <plugin>OAUTH2_AUTH</plugin>
         <plugin>JWT_AUTH</plugin>
       </replacementChain>
     </specificAuthenticationChain>
-
-
-
-    <documentation>
-      Use token authentication if the related request
-      header is sent.
-    </documentation>
 
     <specificAuthenticationChain name="TokenAuth">
+      <documentation>
+        Use token authentication if the related request header is sent.
+      </documentation>
       <headers>
         <header name="X-Authentication-Token">.*</header>
       </headers>
