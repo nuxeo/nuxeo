@@ -14,21 +14,36 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
  */
 package org.nuxeo.ecm.webengine.jaxrs.servlet.config;
 
 import java.net.URL;
 
+import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodes;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
+import org.nuxeo.runtime.model.impl.XMapContext;
 import org.osgi.framework.Bundle;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Descriptor for resource resolvers that can be contributed to a servlet.
  */
 @XObject("resources")
+@XRegistry(compatWarnOnMerge = true)
+@XRegistryId({ "@servlet", "@path" })
 public class ResourcesDescriptor {
+
+    /** @since 11.5 */
+    @XNode
+    protected Context ctx;
+
+    /** @since 11.5 */
+    @XNodes(values = { "@servlet", "@path" })
+    protected String resolverId;
 
     @XNode("@servlet")
     protected String servlet;
@@ -36,28 +51,13 @@ public class ResourcesDescriptor {
     @XNode("@path")
     protected String path;
 
-    private Bundle bundle;
-
-    private String id;
-
     private ResourceResolver resolver;
 
-    void setBundle(Bundle bundle) {
-        this.bundle = bundle;
-        if (path.startsWith("file:")) {
-            resolver = new FileResourceResolver(path.substring("file:".length()));
-        } else {
-            resolver = new BundleResourceResolver(bundle, path);
-        }
-        id = bundle.getSymbolicName() + ":" + servlet + ":" + path;
-    }
-
-    public void setResolver(ResourceResolver resolver) {
-        this.resolver = resolver;
-    }
-
     public Bundle getBundle() {
-        return bundle;
+        if (ctx instanceof XMapContext) {
+            return ((XMapContext) ctx).getRuntimeContext().getBundle();
+        }
+        return null;
     }
 
     public String getPath() {
@@ -69,11 +69,23 @@ public class ResourcesDescriptor {
     }
 
     public String getId() {
-        return id;
+        Bundle bundle = getBundle();
+        return bundle != null ? bundle.getSymbolicName() : "" + ":" + resolverId;
+    }
+
+    protected ResourceResolver getResolver() {
+        if (resolver == null) {
+            if (path != null && path.startsWith("file:")) {
+                resolver = new FileResourceResolver(path.substring("file:".length()));
+            } else {
+                resolver = new BundleResourceResolver(getBundle(), path);
+            }
+        }
+        return resolver;
     }
 
     public URL getResource(String name) {
-        return resolver.getResource(name);
+        return getResolver().getResource(name);
     }
 
     @Override
@@ -82,13 +94,14 @@ public class ResourcesDescriptor {
             return true;
         }
         if (obj instanceof ResourcesDescriptor) {
-            return id.equals(((ResourcesDescriptor) obj).id);
+            return getId().equals(((ResourcesDescriptor) obj).getId());
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return id;
+        return getId();
     }
+
 }

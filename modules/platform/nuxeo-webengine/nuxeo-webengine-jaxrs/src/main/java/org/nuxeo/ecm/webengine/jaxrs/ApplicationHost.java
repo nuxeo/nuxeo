@@ -115,10 +115,6 @@ public class ApplicationHost extends Application {
         return extensions.get(id);
     }
 
-    public synchronized ResourceExtension[] getExtensions(ResourceExtension xt) {
-        return extensions.values().toArray(new ResourceExtension[extensions.size()]);
-    }
-
     public String getName() {
         return name;
     }

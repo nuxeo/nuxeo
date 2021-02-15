@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
  */
 package org.nuxeo.ecm.webengine.jaxrs.servlet.config;
 
@@ -33,11 +33,12 @@ import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 
 /**
- * Handle servlet registration from Nuxeo extension points. This class is a singleton shared by the {@link Activator}
- * and the {@link ServletRegistryComponent} component. Because we don't have yet a solution to synchronize the
- * initialization time of the Activator and a Nuxeo component we are using a singleton instance to be able
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Handle servlet registration from Nuxeo extension points.
+ * <p>
+ * This class is a singleton shared by the {@link Activator} and the {@link ServletRegistryComponent} component.
+ * <p>
+ * Because we don't have yet a solution to synchronize the initialization time of the Activator and a Nuxeo component,
+ * we are using a singleton instance.
  */
 public class ServletRegistry {
 
@@ -211,41 +212,22 @@ public class ServletRegistry {
 
     private void installServlet(ServletDescriptor sd) throws ServletException, NamespaceException {
         if (service != null) {
-            // ClassRef ref = sd.getClassRef();
-            BundleHttpContext ctx = new BundleHttpContext(sd.bundle, sd.resources);
-            List<ResourcesDescriptor> rd = resources.get(sd.path);
+            String name = sd.getName();
+            String path = sd.getPath();
+            BundleHttpContext ctx = new BundleHttpContext(sd.getBundle(), sd.getResources());
+            List<ResourcesDescriptor> rd = resources.get(path);
             // register resources contributed so far
             if (rd != null) {
                 ctx.setResources(rd.toArray(new ResourcesDescriptor[rd.size()]));
             }
             Hashtable<String, String> params = new Hashtable<>();
-            if (sd.name != null) {
+            if (name != null) {
                 params.putAll(sd.getInitParams());
-                params.put(SERVLET_NAME, sd.name);
+                params.put(SERVLET_NAME, name);
             }
-            service.registerServlet(sd.path, new ServletHolder(), params, ctx);
-            contexts.put(sd.path, ctx);
+            service.registerServlet(path, new ServletHolder(), params, ctx);
+            contexts.put(path, ctx);
         }
     }
 
-    // static class BundleHttpContext implements HttpContext {
-    // protected Bundle bundle;
-    // public BundleHttpContext(Bundle bundle) {
-    // this.bundle = bundle;
-    // }
-    // @Override
-    // public String getMimeType(String name) {
-    // return null;
-    // }
-    // @Override
-    // public URL getResource(String name) {
-    // return null;
-    // }
-    // @Override
-    // public boolean handleSecurity(HttpServletRequest request,
-    // HttpServletResponse response) throws IOException {
-    // // default behaviour assumes the container has already performed authentication
-    // return true;
-    // }
-    // }
 }
