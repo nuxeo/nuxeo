@@ -32,7 +32,9 @@ public interface Registry {
     /**
      * Returns true if registry is just a placeholder and should not be used for registrations.
      */
-    boolean isNull();
+    default boolean isNull() {
+        return false;
+    }
 
     /**
      * Initialized the registry.
@@ -40,7 +42,9 @@ public interface Registry {
      * Initialization can be performed when all registrations/unregistrations have been performed. This avoids
      * triggering unnecessary merge logics while the registry content is being modified.
      */
-    void initialize();
+    default void initialize() {
+        // NOOP
+    }
 
     /**
      * Tags the registry with given identifier.

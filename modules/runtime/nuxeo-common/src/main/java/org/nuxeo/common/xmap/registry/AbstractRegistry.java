@@ -45,11 +45,6 @@ public abstract class AbstractRegistry implements Registry {
     protected AbstractRegistry() {
     }
 
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-
     protected boolean isInitialized() {
         synchronized (this) {
             return initialized;
