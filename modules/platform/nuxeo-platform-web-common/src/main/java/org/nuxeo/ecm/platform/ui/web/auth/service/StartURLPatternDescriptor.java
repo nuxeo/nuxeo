@@ -21,19 +21,23 @@
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 @XObject("startURLPattern")
+@XRegistry
 public class StartURLPatternDescriptor {
 
-    @XNodeList(value = "patterns/pattern", type = ArrayList.class, componentType = String.class)
-    private List<String> startURLPatterns;
+    @XNodeList(value = "patterns/pattern", type = HashSet.class, componentType = String.class)
+    private Set<String> startURLPatterns;
 
-    List<String> getStartURLPatterns() {
-        return startURLPatterns;
+    public List<String> getStartURLPatterns() {
+        return new ArrayList<>(startURLPatterns);
     }
 
 }

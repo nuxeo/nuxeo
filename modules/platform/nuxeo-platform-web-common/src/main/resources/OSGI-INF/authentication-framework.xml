@@ -110,7 +110,7 @@
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>
     <object class="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig" />
-
+    <registry class="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfigRegistry" />
   </extension-point>
 
 </component>

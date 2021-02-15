@@ -87,7 +87,7 @@ public class LoginScreenHelper {
      *             {@link #registerSingleProviderLoginScreenConfig(String, String, String, String, String, LoginProviderLinkComputer)}
      *             instead
      */
-    @Deprecated
+    @Deprecated(since = "10.10")
     public static void registerLoginProvider(String name, String iconUrl, String link, String label, String description,
             LoginProviderLinkComputer computer) {
         registerSingleProviderLoginScreenConfig(name, iconUrl, link, label, description, computer);

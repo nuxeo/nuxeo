@@ -26,14 +26,18 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 
 @XObject("openUrl")
+@XRegistry(compatWarnOnMerge = true)
 public class OpenUrlDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
+    @XNode("grantPattern")
     protected String grantPattern;
 
     protected Pattern compiledGrantPattern;
@@ -48,11 +52,6 @@ public class OpenUrlDescriptor {
 
     public String getName() {
         return name;
-    }
-
-    @XNode("grantPattern")
-    public void setGrantPattern(String grantPattern) {
-        this.grantPattern = Framework.expandVars(grantPattern);
     }
 
     public String getGrantPattern() {

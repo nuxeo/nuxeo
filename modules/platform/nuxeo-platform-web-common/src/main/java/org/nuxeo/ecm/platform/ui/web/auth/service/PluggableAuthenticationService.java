@@ -15,36 +15,37 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionManager;
 import org.nuxeo.ecm.platform.web.common.session.NuxeoHttpSessionMonitor;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class PluggableAuthenticationService extends DefaultComponent {
+
+    private static final Logger log = LogManager.getLogger(PluggableAuthenticationService.class);
 
     public static final String NAME = "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService";
 
@@ -62,200 +63,109 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public static final String EP_LOGINSCREEN = "loginScreen";
 
-    private static final Log log = LogFactory.getLog(PluggableAuthenticationService.class);
-
-    private Map<String, AuthenticationPluginDescriptor> authenticatorsDescriptors;
-
     private Map<String, NuxeoAuthenticationPlugin> authenticators;
 
     private Map<String, NuxeoAuthenticationSessionManager> sessionManagers;
 
     private List<String> authChain;
 
-    private final Map<String, SpecificAuthChainDescriptor> specificAuthChains = new HashMap<>();
-
-    private final List<OpenUrlDescriptor> openUrls = new ArrayList<>();
-
-    private final List<String> startupURLs = new ArrayList<>();
-
-    private LoginScreenConfigRegistry loginScreenConfigRegistry;
+    private List<NuxeoAuthenticationPlugin> authPluginChain;
 
     @Override
-    public void activate(ComponentContext context) {
-        authenticatorsDescriptors = new HashMap<>();
-        authChain = new ArrayList<>();
+    public void start(ComponentContext context) {
         authenticators = new HashMap<>();
+        this.<AuthenticationPluginDescriptor> getRegistryContributions(EP_AUTHENTICATOR).forEach(desc -> {
+            String name = desc.getName();
+            try {
+                NuxeoAuthenticationPlugin authPlugin = desc.getClassName().getDeclaredConstructor().newInstance();
+                authPlugin.initPlugin(desc.getParameters());
+                authenticators.put(name, authPlugin);
+            } catch (ReflectiveOperationException e) {
+                String msg = String.format("Unable to create AuthPlugin with name '%s' (%s)", name, e.getMessage());
+                addRuntimeMessage(Level.ERROR, msg);
+                log.error(msg, e);
+            }
+        });
+        authChain = this.<AuthenticationChainDescriptor> getRegistryContribution(EP_CHAIN)
+                        .map(AuthenticationChainDescriptor::getPluginsNames)
+                        .orElse(Collections.emptyList());
+        authPluginChain = authChain.stream()
+                                   .filter(authenticators::containsKey)
+                                   .map(authenticators::get)
+                                   .collect(Collectors.toList());
         sessionManagers = new HashMap<>();
-        loginScreenConfigRegistry = new LoginScreenConfigRegistry();
+        this.<SessionManagerDescriptor> getRegistryContributions(EP_SESSIONMANAGER).forEach(desc -> {
+            String name = desc.getName();
+            try {
+                NuxeoAuthenticationSessionManager sm = desc.getClassName().getDeclaredConstructor().newInstance();
+                sessionManagers.put(name, sm);
+            } catch (ReflectiveOperationException e) {
+                log.error("Unable to create session manager", e);
+            }
+        });
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        authenticatorsDescriptors = null;
+    public void stop(ComponentContext context) throws InterruptedException {
         authenticators = null;
         authChain = null;
+        authPluginChain = null;
         sessionManagers = null;
-        loginScreenConfigRegistry = null;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
-        if (extensionPoint.equals(EP_AUTHENTICATOR)) {
-            AuthenticationPluginDescriptor descriptor = (AuthenticationPluginDescriptor) contribution;
-            if (authenticatorsDescriptors.containsKey(descriptor.getName())) {
-                mergeDescriptors(descriptor);
-                log.debug("merged AuthenticationPluginDescriptor: " + descriptor.getName());
-            } else {
-                authenticatorsDescriptors.put(descriptor.getName(), descriptor);
-                log.debug("registered AuthenticationPluginDescriptor: " + descriptor.getName());
-            }
-
-            // create the new instance
-            AuthenticationPluginDescriptor actualDescriptor = authenticatorsDescriptors.get(descriptor.getName());
-            try {
-                NuxeoAuthenticationPlugin authPlugin = actualDescriptor.getClassName().getDeclaredConstructor().newInstance();
-                authPlugin.initPlugin(actualDescriptor.getParameters());
-                authenticators.put(actualDescriptor.getName(), authPlugin);
-            } catch (ReflectiveOperationException e) {
-                log.error(
-                        "Unable to create AuthPlugin for : " + actualDescriptor.getName() + "Error : " + e.getMessage(),
-                        e);
-            }
-
-        } else if (extensionPoint.equals(EP_CHAIN)) {
-            AuthenticationChainDescriptor chainContrib = (AuthenticationChainDescriptor) contribution;
-            log.debug("New authentication chain powered by " + contributor.getName());
-            authChain.clear();
-            authChain.addAll(chainContrib.getPluginsNames());
-        } else if (extensionPoint.equals(EP_OPENURL)) {
-            OpenUrlDescriptor openUrlContrib = (OpenUrlDescriptor) contribution;
-            openUrls.add(openUrlContrib);
-        } else if (extensionPoint.equals(EP_STARTURL)) {
-            StartURLPatternDescriptor startupURLContrib = (StartURLPatternDescriptor) contribution;
-            startupURLs.addAll(startupURLContrib.getStartURLPatterns());
-        } else if (extensionPoint.equals(EP_SESSIONMANAGER)) {
-            SessionManagerDescriptor smContrib = (SessionManagerDescriptor) contribution;
-            if (smContrib.enabled) {
-                try {
-                    NuxeoAuthenticationSessionManager sm = smContrib.getClassName()
-                                                                    .getDeclaredConstructor()
-                                                                    .newInstance();
-                    sessionManagers.put(smContrib.getName(), sm);
-                } catch (ReflectiveOperationException e) {
-                    log.error("Unable to create session manager", e);
-                }
-            } else {
-                sessionManagers.remove(smContrib.getName());
-            }
-        } else if (extensionPoint.equals(EP_SPECIFIC_CHAINS)) {
-            SpecificAuthChainDescriptor desc = (SpecificAuthChainDescriptor) contribution;
-            specificAuthChains.put(desc.name, desc);
-        } else if (extensionPoint.equals(EP_LOGINSCREEN)) {
-            LoginScreenConfig newConfig = (LoginScreenConfig) contribution;
-            registerLoginScreenConfig(newConfig);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
-        if (extensionPoint.equals(EP_AUTHENTICATOR)) {
-            AuthenticationPluginDescriptor descriptor = (AuthenticationPluginDescriptor) contribution;
-            authenticatorsDescriptors.remove(descriptor.getName());
-            log.debug("unregistered AuthenticationPlugin: " + descriptor.getName());
-        } else if (extensionPoint.equals(EP_LOGINSCREEN)) {
-            LoginScreenConfig newConfig = (LoginScreenConfig) contribution;
-            unregisterLoginScreenConfig(newConfig);
-        }
-    }
-
-    private void mergeDescriptors(AuthenticationPluginDescriptor newContrib) {
-        AuthenticationPluginDescriptor oldDescriptor = authenticatorsDescriptors.get(newContrib.getName());
-
-        // Enable/Disable
-        oldDescriptor.setEnabled(newContrib.getEnabled());
-
-        // Merge parameters
-        Map<String, String> oldParameters = oldDescriptor.getParameters();
-        oldParameters.putAll(newContrib.getParameters());
-        oldDescriptor.setParameters(oldParameters);
-
-        oldDescriptor.setStateful(newContrib.getStateful());
-
-        if (newContrib.getClassName() != null) {
-            oldDescriptor.setClassName(newContrib.getClassName());
-        }
-
-        oldDescriptor.setNeedStartingURLSaving(newContrib.getNeedStartingURLSaving());
     }
 
     // Service API
 
     public List<String> getStartURLPatterns() {
-        return startupURLs;
+        return this.<StartURLPatternDescriptor> getRegistryContribution(EP_STARTURL)
+                   .map(StartURLPatternDescriptor::getStartURLPatterns)
+                   .orElse(Collections.emptyList());
     }
 
     public List<String> getAuthChain() {
-        return authChain;
+        return Collections.unmodifiableList(authChain);
     }
 
     public List<String> getAuthChain(HttpServletRequest request) {
-
-        if (specificAuthChains == null || specificAuthChains.isEmpty()) {
+        List<SpecificAuthChainDescriptor> specificAuthChains = getRegistryContributions(EP_SPECIFIC_CHAINS);
+        if (specificAuthChains.isEmpty()) {
             return authChain;
         }
-
-        SpecificAuthChainDescriptor desc = getAuthChainDescriptor(request);
-
-        if (desc != null) {
-            return desc.computeResultingChain(authChain);
-        } else {
-            return authChain;
-        }
+        return getAuthChainDescriptor(request).map(desc -> desc.computeResultingChain(authChain)).orElse(authChain);
     }
 
     public boolean doHandlePrompt(HttpServletRequest request) {
-        if (specificAuthChains == null || specificAuthChains.isEmpty()) {
+        List<SpecificAuthChainDescriptor> specificAuthChains = getRegistryContributions(EP_SPECIFIC_CHAINS);
+        if (specificAuthChains.isEmpty()) {
             return true;
         }
-
-        SpecificAuthChainDescriptor desc = getAuthChainDescriptor(request);
-
-        return desc != null ? desc.doHandlePrompt() : SpecificAuthChainDescriptor.DEFAULT_HANDLE_PROMPT_VALUE;
+        return getAuthChainDescriptor(request).map(SpecificAuthChainDescriptor::doHandlePrompt)
+                                              .orElse(SpecificAuthChainDescriptor.DEFAULT_HANDLE_PROMPT_VALUE);
 
     }
 
-    private SpecificAuthChainDescriptor getAuthChainDescriptor(HttpServletRequest request) {
+    private Optional<SpecificAuthChainDescriptor> getAuthChainDescriptor(HttpServletRequest request) {
         String specificAuthChainName = getSpecificAuthChainName(request);
-        SpecificAuthChainDescriptor desc = specificAuthChains.get(specificAuthChainName);
-        return desc;
+        return getRegistryContribution(EP_SPECIFIC_CHAINS, specificAuthChainName);
     }
 
     public String getSpecificAuthChainName(HttpServletRequest request) {
-        for (String specificAuthChainName : specificAuthChains.keySet()) {
-            SpecificAuthChainDescriptor desc = specificAuthChains.get(specificAuthChainName);
-
-            List<Pattern> urlPatterns = desc.getUrlPatterns();
-            if (!urlPatterns.isEmpty()) {
-                // test on URI
-                String requestUrl = request.getRequestURI();
-                for (Pattern pattern : urlPatterns) {
-                    Matcher m = pattern.matcher(requestUrl);
-                    if (m.matches()) {
-                        return specificAuthChainName;
-                    }
+        List<SpecificAuthChainDescriptor> specificAuthChains = getRegistryContributions(EP_SPECIFIC_CHAINS);
+        for (SpecificAuthChainDescriptor desc : specificAuthChains) {
+            String name = desc.getName();
+            String requestUrl = request.getRequestURI();
+            // test on URI
+            for (Pattern pattern : desc.getUrlPatterns()) {
+                Matcher m = pattern.matcher(requestUrl);
+                if (m.matches()) {
+                    return name;
                 }
             }
-
-            Map<String, Pattern> headerPattern = desc.getHeaderPatterns();
-
-            for (String headerName : headerPattern.keySet()) {
-                String headerValue = request.getHeader(headerName);
+            for (Map.Entry<String, Pattern> entry : desc.getHeaderPatterns().entrySet()) {
+                String headerValue = request.getHeader(entry.getKey());
                 if (headerValue != null) {
-                    Matcher m = headerPattern.get(headerName).matcher(headerValue);
+                    Matcher m = entry.getValue().matcher(headerValue);
                     if (m.matches()) {
-                        return specificAuthChainName;
+                        return name;
                     }
                 }
             }
@@ -264,44 +174,25 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public List<NuxeoAuthenticationPlugin> getPluginChain() {
-        List<NuxeoAuthenticationPlugin> result = new ArrayList<>();
-
-        for (String pluginName : authChain) {
-            if (authenticatorsDescriptors.containsKey(pluginName)
-                    && authenticatorsDescriptors.get(pluginName).getEnabled()) {
-                if (authenticators.containsKey(pluginName)) {
-                    result.add(authenticators.get(pluginName));
-                }
-            }
-        }
-        return result;
+        return Collections.unmodifiableList(authPluginChain);
     }
 
     public NuxeoAuthenticationPlugin getPlugin(String pluginName) {
-        if (authenticatorsDescriptors.containsKey(pluginName)
-                && authenticatorsDescriptors.get(pluginName).getEnabled()) {
-            if (authenticators.containsKey(pluginName)) {
-                return authenticators.get(pluginName);
-            }
-        }
-        return null;
+        return authenticators.get(pluginName);
     }
 
     public AuthenticationPluginDescriptor getDescriptor(String pluginName) {
-        if (authenticatorsDescriptors.containsKey(pluginName)) {
-            return authenticatorsDescriptors.get(pluginName);
-        } else {
-            log.error("Plugin " + pluginName + " not registered or not created");
-            return null;
-        }
+        return this.<AuthenticationPluginDescriptor> getRegistryContribution(EP_AUTHENTICATOR, pluginName)
+                   .orElseGet(() -> {
+                       log.error("Plugin '{}' not registered or not created", pluginName);
+                       return null;
+                   });
     }
 
     public void invalidateSession(ServletRequest request) {
         boolean done = false;
-        if (!sessionManagers.isEmpty()) {
-            Iterator<NuxeoAuthenticationSessionManager> it = sessionManagers.values().iterator();
-            while (it.hasNext() && !(done = it.next().invalidateSession(request))) {
-            }
+        Iterator<NuxeoAuthenticationSessionManager> it = sessionManagers.values().iterator();
+        while (it.hasNext() && !(done = it.next().invalidateSession(request))) {
         }
         if (!done) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -313,45 +204,18 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public HttpSession reinitSession(HttpServletRequest httpRequest) {
-        if (!sessionManagers.isEmpty()) {
-            for (String smName : sessionManagers.keySet()) {
-                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
-                sm.onBeforeSessionReinit(httpRequest);
-            }
-        }
-
+        sessionManagers.values().forEach(sm -> sm.onBeforeSessionReinit(httpRequest));
         HttpSession session = httpRequest.getSession(true);
-
-        if (!sessionManagers.isEmpty()) {
-            for (String smName : sessionManagers.keySet()) {
-                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
-                sm.onAfterSessionReinit(httpRequest);
-            }
-        }
+        sessionManagers.values().forEach(sm -> sm.onAfterSessionReinit(httpRequest));
         return session;
     }
 
     public boolean canBypassRequest(ServletRequest request) {
-        if (!sessionManagers.isEmpty()) {
-            for (String smName : sessionManagers.keySet()) {
-                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
-                if (sm.canBypassRequest(request)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return sessionManagers.values().stream().anyMatch(sm -> sm.canBypassRequest(request));
     }
 
     public boolean needResetLogin(ServletRequest request) {
-        if (!sessionManagers.isEmpty()) {
-            for (NuxeoAuthenticationSessionManager sm : sessionManagers.values()) {
-                if (sm.needResetLogin(request)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return sessionManagers.values().stream().anyMatch(sm -> sm.needResetLogin(request));
     }
 
     public String getBaseURL(ServletRequest request) {
@@ -360,37 +224,34 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public void onAuthenticatedSessionCreated(ServletRequest request, HttpSession session,
             CachableUserIdentificationInfo cachebleUserInfo) {
-
         NuxeoHttpSessionMonitor.instance().associatedUser(session, cachebleUserInfo.getPrincipal().getName());
-
-        if (!sessionManagers.isEmpty()) {
-            for (String smName : sessionManagers.keySet()) {
-                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
-                sm.onAuthenticatedSessionCreated(request, session, cachebleUserInfo);
-            }
-        }
+        sessionManagers.values().forEach(sm -> sm.onAuthenticatedSessionCreated(request, session, cachebleUserInfo));
     }
 
     public List<OpenUrlDescriptor> getOpenUrls() {
-        return openUrls;
+        return getRegistryContributions(EP_OPENURL);
     }
 
     public LoginScreenConfig getLoginScreenConfig() {
-        return loginScreenConfigRegistry.getConfig();
+        return this.<LoginScreenConfig> getRegistryContribution(EP_LOGINSCREEN).orElse(null);
+    }
+
+    protected LoginScreenConfigRegistry getLoginScreenConfigRegistry() {
+        return getExtensionPointRegistry(EP_LOGINSCREEN);
     }
 
     /**
      * @since 10.10
      */
     public void registerLoginScreenConfig(LoginScreenConfig config) {
-        loginScreenConfigRegistry.addContribution(config);
+        getLoginScreenConfigRegistry().addContribution(config);
     }
 
     /**
      * @since 10.10
      */
     public void unregisterLoginScreenConfig(LoginScreenConfig config) {
-        loginScreenConfigRegistry.removeContribution(config);
+        getLoginScreenConfigRegistry().removeContribution(config);
     }
 
 }
