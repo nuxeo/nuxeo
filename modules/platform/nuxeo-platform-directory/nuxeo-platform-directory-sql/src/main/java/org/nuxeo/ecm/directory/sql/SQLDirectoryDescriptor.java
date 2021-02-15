@@ -22,9 +22,11 @@ package org.nuxeo.ecm.directory.sql;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 
-@XObject(value = "directory")
+@XObject("directory")
+@XRegistry
 public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     public static final int QUERY_SIZE_LIMIT_DEFAULT = 0;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,138 +19,96 @@
  */
 package org.nuxeo.ecm.directory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.xmap.registry.MapRegistry;
+import org.nuxeo.common.xmap.registry.Registry;
+import org.nuxeo.runtime.RuntimeMessage;
+import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.RuntimeMessage.Source;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Generic {@link BaseDirectoryDescriptor} registry holding registered descriptors and instantiated {@link Directory}
  * objects.
  * <p>
- * The directory descriptors have two special boolean flags that control how merge works:
+ * The directory descriptors has a special boolean flag that control how merge works:
  * <ul>
- * <li>{@code remove="true"}: this removes the definition of the directory. The next definition (if any) will be done
- * from scratch.
  * <li>{@code template="true"}: this defines an abstract descriptor which cannot be directly instantiated as a
  * directory. However another descriptor can extend it through {@code extends="templatename"} to inherit all its
  * properties.
  * </ul>
+ * <p>
+ * Modified as of 11.5 to implement {@link Registry}.
  *
  * @since 8.2
  */
-public class DirectoryRegistry {
+public class DirectoryRegistry extends MapRegistry {
 
-    private static final Log log = LogFactory.getLog(DirectoryRegistry.class);
+    private static final Logger log = LogManager.getLogger(DirectoryRegistry.class);
 
-    /** All descriptors registered. */
-    // used under synchronization
-    protected Map<String, List<BaseDirectoryDescriptor>> allDescriptors = new HashMap<>();
-
-    /** Effective descriptors. */
-    // used under synchronization
-    protected Map<String, BaseDirectoryDescriptor> descriptors = new HashMap<>();
+    /** Effective computed descriptors. */
+    protected Map<String, BaseDirectoryDescriptor> descriptors = new ConcurrentHashMap<>();
 
     /** Effective instantiated directories. */
-    // used under synchronization
-    protected Map<String, Directory> directories = new HashMap<>();
+    protected Map<String, Directory> directories = new ConcurrentHashMap<>();
 
-    public synchronized void addContribution(BaseDirectoryDescriptor contrib) {
-        String id = contrib.name;
-        if (id.contains("/") && log.isWarnEnabled()) {
-            log.warn("Directory " + id + " should not contain forward slashes in its name, as they are not supported."
-                    + " Operations with the REST API on this directory won't work.");
-        }
-        log.info("Registered directory" + (contrib.template ? " template" : "") + ": " + id);
-        allDescriptors.computeIfAbsent(id, k -> new ArrayList<>()).add(contrib);
-        contributionChanged(contrib);
-    }
-
-    public synchronized void removeContribution(BaseDirectoryDescriptor contrib) {
-        String id = contrib.name;
-        log.info("Unregistered directory" + (contrib.template ? " template" : "") + ": " + id);
-        allDescriptors.getOrDefault(id, Collections.emptyList()).remove(contrib);
-        contributionChanged(contrib);
-    }
-
-    protected void contributionChanged(BaseDirectoryDescriptor contrib) {
-        LinkedList<String> todo = new LinkedList<>();
-        todo.add(contrib.name);
-        Set<String> done = new HashSet<>();
-        while (!todo.isEmpty()) {
-            String id = todo.removeFirst();
-            if (!done.add(id)) {
-                // already done, avoid loops
-                continue;
-            }
-            BaseDirectoryDescriptor desc = recomputeDescriptor(id);
-            // recompute dependencies
-            if (desc != null) {
-                for (List<BaseDirectoryDescriptor> list : allDescriptors.values()) {
-                    for (BaseDirectoryDescriptor d : list) {
-                        if (id.equals(d.extendz)) {
-                            todo.add(d.name);
-                            break;
-                        }
-                    }
-                }
+    @Override
+    public void initialize() {
+        shutdown();
+        directories.clear();
+        descriptors.clear();
+        super.initialize();
+        // compute effective descriptors for all contributions
+        for (String id : getContributions().keySet()) {
+            BaseDirectoryDescriptor desc = computeFinalDescriptor(id, new HashSet<>());
+            if (desc != null && !desc.template) {
+                descriptors.put(id, desc);
             }
         }
     }
 
-    protected void removeDirectory(String id) {
-        Directory dir = directories.remove(id);
-        if (dir != null) {
-            shutdownDirectory(dir);
+    protected BaseDirectoryDescriptor computeFinalDescriptor(String id, Set<String> done) {
+        BaseDirectoryDescriptor desc = getBareDirectoryDescriptor(id);
+        if (done.contains(id)) {
+            // avoid loops
+            return desc;
         }
-    }
-
-    /** Recomputes the effective descriptor for a directory id. */
-    protected BaseDirectoryDescriptor recomputeDescriptor(String id) {
-        removeDirectory(id);
-        // compute effective descriptor
-        List<BaseDirectoryDescriptor> list = allDescriptors.getOrDefault(id, Collections.emptyList());
-        BaseDirectoryDescriptor contrib = null;
-        for (BaseDirectoryDescriptor next : list) {
-            String extendz = next.extendz;
-            if (extendz != null) {
-                // merge from base
-                BaseDirectoryDescriptor base = descriptors.get(extendz);
-                if (base != null && base.template) {
-                    // merge generic base descriptor into specific one from the template
-                    contrib = base.clone();
-                    contrib.template = false;
-                    contrib.name = next.name;
-                    contrib.merge(next);
-                } else {
-                    log.debug("Directory " + id + " extends non-existing directory template: " + extendz);
-                    contrib = null;
-                }
-            } else if (next.remove) {
-                contrib = null;
-            } else if (contrib == null) {
-                // first descriptor or first one after a remove
-                contrib = next.clone();
-            } else if (contrib.getClass() == next.getClass()) {
-                contrib.merge(next);
-            } else {
-                log.warn("Directory " + id + " redefined with different factory");
-                contrib = next.clone();
-            }
+        done.add(id);
+        if (desc == null) {
+            return null;
         }
-        if (contrib == null) {
-            descriptors.remove(id);
+        String extendz = desc.extendz;
+        if (extendz == null) {
+            return desc;
         } else {
-            descriptors.put(id, contrib);
+            // merge from base
+            BaseDirectoryDescriptor base = computeFinalDescriptor(extendz, done);
+            if (base == null || !base.template) {
+                String message = String.format("Directory '%s' extends non-existing directory template: '%s'", id,
+                        extendz);
+                log.error(message);
+                Framework.getRuntime()
+                         .getMessageHandler()
+                         .addMessage(new RuntimeMessage(Level.ERROR, message, Source.COMPONENT,
+                                 DirectoryServiceImpl.COMPONENT_NAME));
+                return null;
+            } else {
+                // merge generic base descriptor into specific one from the template
+                BaseDirectoryDescriptor finalDesc = base.clone();
+                finalDesc.template = false;
+                finalDesc.name = id;
+                finalDesc.merge(desc);
+                return finalDesc;
+            }
         }
-        return contrib;
     }
 
     /**
@@ -159,10 +117,14 @@ public class DirectoryRegistry {
      * Templates are not returned.
      *
      * @param id the directory id
-     * @return the effective directory descriptor, or {@code null} if not found
+     * @return the effective directory descriptor, or {@code null} if a template or not found
      */
-    public synchronized BaseDirectoryDescriptor getDirectoryDescriptor(String id) {
+    public BaseDirectoryDescriptor getDirectoryDescriptor(String id) {
+        checkInitialized();
         BaseDirectoryDescriptor descriptor = descriptors.get(id);
+        if (descriptor == null) {
+            return null;
+        }
         return descriptor.template ? null : descriptor;
     }
 
@@ -170,9 +132,9 @@ public class DirectoryRegistry {
      * Gets the directory with the given id.
      *
      * @param id the directory id
-     * @return the directory, or {@code null} if not found
+     * @return the directory, or {@code null} if a template or not found
      */
-    public synchronized Directory getDirectory(String id) {
+    public Directory getDirectory(String id) {
         Directory dir = directories.get(id);
         if (dir == null) {
             BaseDirectoryDescriptor descriptor = descriptors.get(id);
@@ -185,19 +147,16 @@ public class DirectoryRegistry {
     }
 
     /**
-     * Gets all the directory ids.
-     *
-     * @return the directory ids
+     * Returns all the directory ids.
+     * <p>
+     * Templates are not returned.
      */
-    public synchronized List<String> getDirectoryIds() {
-        List<String> list = new ArrayList<>();
-        for (BaseDirectoryDescriptor descriptor : descriptors.values()) {
-            if (descriptor.template) {
-                continue;
-            }
-            list.add(descriptor.name);
-        }
-        return list;
+    public List<String> getDirectoryIds() {
+        return descriptors.values()
+                          .stream()
+                          .filter(desc -> !desc.template)
+                          .map(desc -> desc.name)
+                          .collect(Collectors.toList());
     }
 
     /**
@@ -205,40 +164,40 @@ public class DirectoryRegistry {
      *
      * @return the directories
      */
-    public synchronized List<Directory> getDirectories() {
-        List<Directory> list = new ArrayList<>();
-        for (BaseDirectoryDescriptor descriptor : descriptors.values()) {
-            if (descriptor.template) {
-                continue;
-            }
-            list.add(getDirectory(descriptor.name));
-        }
-        return list;
+    public List<Directory> getDirectories() {
+        return descriptors.values()
+                          .stream()
+                          .filter(desc -> !desc.template)
+                          .map(desc -> getDirectory(desc.name))
+                          .collect(Collectors.toList());
     }
 
     /**
-     * Shuts down all directories and clears the registry.
+     * Shuts down all computed directories and catches any {@link DirectoryException}.
      */
     public synchronized void shutdown() {
         for (Directory dir : directories.values()) {
-            shutdownDirectory(dir);
+            try {
+                dir.shutdown();
+            } catch (DirectoryException e) {
+                log.error("Error while shutting down directory: {}", dir.getName(), e);
+            }
         }
-        allDescriptors.clear();
-        descriptors.clear();
-        directories.clear();
     }
 
-    /**
-     * Shuts down the given directory and catches any {@link DirectoryException}.
-     *
-     * @param dir the directory
-     */
-    protected static void shutdownDirectory(Directory dir) {
-        try {
-            dir.shutdown();
-        } catch (DirectoryException e) {
-            log.error("Error while shutting down directory:" + dir.getName(), e);
-        }
+    protected BaseDirectoryDescriptor getBareDirectoryDescriptor(String name) {
+        return this.<DirectoryContributor> getContribution(name)
+                   .map(c -> getTargetRegistry(c.target, c.point))
+                   .flatMap(r -> r.<BaseDirectoryDescriptor> getContribution(name))
+                   .orElse(null);
+    }
+
+    protected MapRegistry getTargetRegistry(String component, String point) {
+        return Framework.getRuntime()
+                        .getComponentManager()
+                        .<MapRegistry> getExtensionPointRegistry(component, point)
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                String.format("Unknown registry for extension point '%s--%s'", component, point)));
     }
 
 }

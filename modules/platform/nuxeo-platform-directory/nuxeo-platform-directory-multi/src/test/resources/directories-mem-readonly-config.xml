@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.multi.config.mem.readonly">
+
+  <require>org.nuxeo.ecm.directory.multi.config.mem</require>
+  <extension target="org.nuxeo.ecm.directory.memory.MemDirectoryFactory" point="directories">
+
+    <directory name="dir2">
+      <readonly>true</readonly>
+    </directory>
+
+  </extension>
+
+</component>

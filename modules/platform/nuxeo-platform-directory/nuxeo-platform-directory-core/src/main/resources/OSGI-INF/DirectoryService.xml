@@ -15,12 +15,13 @@
     The directory service holds registered directories.
   </documentation>
 
-  <extension-point name="factoryDescriptor">
+  <extension-point name="directoryContributor">
     <documentation>
-      This extension point is obsolete.
+      Extension point to declare the directory global registry to be impacted by other registries, only
+      through Java API.
     </documentation>
-
-    <object class="org.nuxeo.ecm.directory.DirectoryFactoryDescriptor" />
+    <object class="org.nuxeo.ecm.directory.DirectoryContributor" />
+    <registry class="org.nuxeo.ecm.directory.DirectoryRegistry" />
   </extension-point>
 
   <extension target="org.nuxeo.runtime.EventService" point="listeners">

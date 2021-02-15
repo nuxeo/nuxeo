@@ -27,10 +27,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,8 +41,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.directory.DirectorySecurityException;
-import org.nuxeo.ecm.directory.PermissionDescriptor;
-import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
 import org.nuxeo.ecm.directory.memory.MemoryDirectoryDescriptor;
@@ -53,9 +52,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ MultiDirectoryFeature.class })
 @Deploy("org.nuxeo.ecm.directory.multi.tests:directories-security-config.xml")
+@Deploy("org.nuxeo.ecm.directory.multi.tests:directories-mem-config.xml")
+@Deploy("org.nuxeo.ecm.directory.multi.tests:directories-mem-perm-config1.xml")
 public class TestMultiDirectorySecurity1 {
 
-    DirectoryService directoryService;
+    @Inject
+    protected DirectoryService directoryService;
 
     MemoryDirectory memdir1;
 
@@ -84,106 +86,35 @@ public class TestMultiDirectorySecurity1 {
     }
 
     public void setUpWithPrivileged() {
-        // mem dir factory
-        directoryService = Framework.getService(DirectoryService.class);
-
-        // create and register mem directories
-        Map<String, Object> e;
-
-        PermissionDescriptor perm1 = new PermissionDescriptor();
-        perm1.name = "Read";
-        perm1.users = new String[] { READER_USER };
-        PermissionDescriptor perm2 = new PermissionDescriptor();
-        perm2.name = "Write";
-        perm2.users = new String[] { SUPER_USER };
-        PermissionDescriptor[] permissions = new PermissionDescriptor[] { perm1, perm2 };
-
-        // dir 1
-        desc1 = new MemoryDirectoryDescriptor();
-        desc1.name = "dir1";
-        desc1.schemaName = "schema1";
-        desc1.schemaSet = new HashSet<>(Arrays.asList("uid", "password", "foo"));
-        desc1.idField = "uid";
-        desc1.passwordField = "password";
-        desc1.permissions = permissions;
-        directoryService.registerDirectoryDescriptor(desc1);
+        // init mem directories
         memdir1 = (MemoryDirectory) directoryService.getDirectory("dir1");
-
-        try (Session dir1 = memdir1.getSession()) {
-            e = new HashMap<>();
-            e.put("uid", "1");
-            e.put("password", "pw1");
-            e.put("foo", "foo1");
-            dir1.createEntry(e);
-            e = new HashMap<>();
-            e.put("uid", "2");
-            e.put("password", "pw2");
-            e.put("foo", "foo2");
-            dir1.createEntry(e);
-        }
-
-        // dir 2
-        desc2 = new MemoryDirectoryDescriptor();
-        desc2.name = "dir2";
-        desc2.schemaName = "schema2";
-        desc2.schemaSet = new HashSet<>(Arrays.asList("id", "bar"));
-        desc2.idField = "id";
-        desc2.passwordField = null;
-        desc2.permissions = permissions;
-        directoryService.registerDirectoryDescriptor(desc2);
+        TestDirectoryHelper.fillMemDir(memdir1, List.of( //
+                Map.of("uid", "1", "password", "pw1", "foo", "foo1"), //
+                Map.of("uid", "2", "password", "pw2", "foo", "foo2")));
         memdir2 = (MemoryDirectory) directoryService.getDirectory("dir2");
-
-        try (Session dir2 = memdir2.getSession()) {
-            e = new HashMap<>();
-            e.put("id", "1");
-            e.put("bar", "bar1");
-            dir2.createEntry(e);
-            e = new HashMap<>();
-            e.put("id", "2");
-            e.put("bar", "bar2");
-            dir2.createEntry(e);
-        }
-
-        // dir 3
-        desc3 = new MemoryDirectoryDescriptor();
-        desc3.name = "dir3";
-        desc3.schemaName = "schema3";
-        desc3.schemaSet = new HashSet<>(Arrays.asList("uid", "thepass", "thefoo", "thebar"));
-        desc3.idField = "uid";
-        desc3.passwordField = "thepass";
-        desc3.permissions = permissions;
-        directoryService.registerDirectoryDescriptor(desc3);
+        TestDirectoryHelper.fillMemDir(memdir2, List.of( //
+                Map.of("id", "1", "bar", "bar1"), //
+                Map.of("id", "2", "bar", "bar2")));
         memdir3 = (MemoryDirectory) directoryService.getDirectory("dir3");
-
-        try (Session dir3 = memdir3.getSession()) {
-            e = new HashMap<>();
-            e.put("uid", "3");
-            e.put("thepass", "pw3");
-            e.put("thefoo", "foo3");
-            e.put("thebar", "bar3");
-            dir3.createEntry(e);
-            e = new HashMap<>();
-            e.put("uid", "4");
-            e.put("thepass", "pw4");
-            e.put("thefoo", "foo4");
-            e.put("thebar", "bar4");
-            dir3.createEntry(e);
-        }
+        TestDirectoryHelper.fillMemDir(memdir3, List.of( //
+                Map.of("uid", "3", "thepass", "pw3", "thefoo", "foo3", "thebar", "bar3"), //
+                Map.of("uid", "4", "thepass", "pw4", "thefoo", "foo4", "thebar", "bar4")));
 
         // the multi directory
         multiDir = (MultiDirectory) directoryService.getDirectory("multi");
+        assertNotNull(multiDir);
         dir = multiDir.getSession();
     }
 
     @After
+    @WithUser // as Administrator
     public void tearDown() {
         if (dir != null) {
             dir.close();
         }
-        directoryService = Framework.getService(DirectoryService.class);
-        directoryService.unregisterDirectoryDescriptor(desc1);
-        directoryService.unregisterDirectoryDescriptor(desc2);
-        directoryService.unregisterDirectoryDescriptor(desc3);
+        TestDirectoryHelper.clearDirectory(memdir1);
+        TestDirectoryHelper.clearDirectory(memdir2);
+        TestDirectoryHelper.clearDirectory(memdir3);
     }
 
     @Test

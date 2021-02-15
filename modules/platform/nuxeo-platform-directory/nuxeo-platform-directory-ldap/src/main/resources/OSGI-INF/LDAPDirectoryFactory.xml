@@ -116,7 +116,7 @@
       / bindPassword credentials.
     </documentation>
 
-    <object class="org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor"/>
+    <object class="org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor" />
   </extension-point>
 
   <extension-point name="directories">
@@ -313,8 +313,8 @@
 
     </documentation>
 
-    <object
-        class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor"/>
+    <object class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
+    <registry class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory$Registry" />
   </extension-point>
 
 </component>

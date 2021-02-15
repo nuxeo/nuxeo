@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="ds:nxaudit-test-dir">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="eventTypes" remove="true" />
+    <directory name="eventCategories" remove="true" />
+
+  </extension>
+
+</component>

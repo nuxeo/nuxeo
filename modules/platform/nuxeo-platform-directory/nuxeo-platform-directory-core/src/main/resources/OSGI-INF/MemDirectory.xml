@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.memory.MemDirectoryFactory">
+
+  <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
+
+  <implementation class="org.nuxeo.ecm.directory.memory.MemDirectoryFactory" />
+  <documentation>Memory directory implementation.</documentation>
+
+  <extension-point name="directories">
+    <object class="org.nuxeo.ecm.directory.memory.MemoryDirectoryDescriptor" />
+    <registry class="org.nuxeo.ecm.directory.memory.MemDirectoryFactory$Registry" />
+  </extension-point>
+
+</component>

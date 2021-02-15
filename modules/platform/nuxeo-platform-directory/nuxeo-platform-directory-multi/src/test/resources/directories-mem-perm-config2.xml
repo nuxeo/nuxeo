@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.multi.config.mem.perm2">
+
+  <require>org.nuxeo.ecm.directory.multi.config.mem</require>
+  <extension target="org.nuxeo.ecm.directory.memory.MemDirectoryFactory" point="directories">
+
+    <directory name="dir1">
+      <permissions>
+        <permission name="Write">
+          <group>Everyone</group>
+        </permission>
+      </permissions>
+    </directory>
+
+    <directory name="dir2">
+      <permissions>
+        <permission name="Write">
+          <group>Everyone</group>
+        </permission>
+      </permissions>
+    </directory>
+
+    <directory name="dir3">
+      <permissions>
+        <permission name="Write">
+          <group>Everyone</group>
+        </permission>
+      </permissions>
+    </directory>
+
+  </extension>
+
+</component>

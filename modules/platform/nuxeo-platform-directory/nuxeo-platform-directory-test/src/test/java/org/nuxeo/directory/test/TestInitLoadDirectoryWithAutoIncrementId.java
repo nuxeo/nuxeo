@@ -21,12 +21,10 @@ package org.nuxeo.directory.test;
 
 import static java.util.Comparator.naturalOrder;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 import static org.nuxeo.directory.test.DirectoryConfiguration.DIRECTORY_MONGODB;
 import static org.nuxeo.directory.test.DirectoryConfiguration.DIRECTORY_SQL;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -84,7 +82,11 @@ public class TestInitLoadDirectoryWithAutoIncrementId {
 
     protected void assertDirectoryEntries(String... expectedLabels) {
         try (Session session = directoryService.open(CSV_LOAD_DIRECTORY)) {
-            String[] labels = session.query(Map.of()).stream().map(d -> (String) d.getPropertyValue("label")).sorted().toArray(String[]::new);
+            String[] labels = session.query(Map.of())
+                                     .stream()
+                                     .map(d -> (String) d.getPropertyValue("label"))
+                                     .sorted()
+                                     .toArray(String[]::new);
             Arrays.sort(expectedLabels, naturalOrder());
             assertArrayEquals(expectedLabels, labels);
         }

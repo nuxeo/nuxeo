@@ -41,6 +41,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.core.persistence")
 @Deploy("org.nuxeo.ecm.platform.audit")
 @Deploy("org.nuxeo.ecm.platform.audit:nxaudit-ds.xml")
+@Deploy("org.nuxeo.ecm.platform.audit:nxaudit-directories-remove.xml")
 public class AuditFeature implements RunnerFeature {
 
     @Override

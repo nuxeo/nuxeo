@@ -68,6 +68,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ MultiDirectoryFeature.class })
 @Deploy("org.nuxeo.ecm.directory.multi.tests:directories-config.xml")
+@Deploy("org.nuxeo.ecm.directory.multi.tests:directories-mem-config.xml")
 public class TestMultiDirectory {
 
     @Inject
@@ -90,96 +91,39 @@ public class TestMultiDirectory {
     protected MemoryDirectoryDescriptor desc3;
 
     @Before
-    public void setUp() throws Exception {
-        // create and register mem directories
-        Map<String, Object> e;
-
-        // dir 1
-        desc1 = new MemoryDirectoryDescriptor();
-        desc1.name = "dir1";
-        desc1.schemaName = "schema1";
-        desc1.schemaSet = new HashSet<>(Arrays.asList("uid", "password", "foo"));
-        desc1.idField = "uid";
-        desc1.passwordField = "password";
-        directoryService.registerDirectoryDescriptor(desc1);
+    public void setUp() {
+        // init mem directories
         memdir1 = (MemoryDirectory) directoryService.getDirectory("dir1");
-
-        try (Session dir1 = memdir1.getSession()) {
-            e = new HashMap<>();
-            e.put("uid", "1");
-            e.put("password", "pw1");
-            e.put("foo", "foo1");
-            dir1.createEntry(e);
-            e = new HashMap<>();
-            e.put("uid", "2");
-            e.put("password", "pw2");
-            e.put("foo", "foo2");
-            dir1.createEntry(e);
-        }
-
-        // dir 2
-        desc2 = new MemoryDirectoryDescriptor();
-        desc2.name = "dir2";
-        desc2.schemaName = "schema2";
-        desc2.schemaSet = new HashSet<>(Arrays.asList("id", "bar"));
-        desc2.idField = "id";
-        desc2.passwordField = null;
-        directoryService.registerDirectoryDescriptor(desc2);
+        TestDirectoryHelper.fillMemDir(memdir1, List.of( //
+                Map.of("uid", "1", "password", "pw1", "foo", "foo1"), //
+                Map.of("uid", "2", "password", "pw2", "foo", "foo2")));
         memdir2 = (MemoryDirectory) directoryService.getDirectory("dir2");
-
-        try (Session dir2 = memdir2.getSession()) {
-            e = new HashMap<>();
-            e.put("id", "1");
-            e.put("bar", "bar1");
-            dir2.createEntry(e);
-            e = new HashMap<>();
-            e.put("id", "2");
-            e.put("bar", "bar2");
-            dir2.createEntry(e);
-        }
-
-        // dir 3
-        desc3 = new MemoryDirectoryDescriptor();
-        desc3.name = "dir3";
-        desc3.schemaName = "schema3";
-        desc3.schemaSet = new HashSet<>(Arrays.asList("uid", "thepass", "thefoo", "thebar"));
-        desc3.idField = "uid";
-        desc3.passwordField = "thepass";
-        directoryService.registerDirectoryDescriptor(desc3);
+        TestDirectoryHelper.fillMemDir(memdir2, List.of( //
+                Map.of("id", "1", "bar", "bar1"), //
+                Map.of("id", "2", "bar", "bar2")));
         memdir3 = (MemoryDirectory) directoryService.getDirectory("dir3");
-
-        try (Session dir3 = memdir3.getSession()) {
-            e = new HashMap<>();
-            e.put("uid", "3");
-            e.put("thepass", "pw3");
-            e.put("thefoo", "foo3");
-            e.put("thebar", "bar3");
-            dir3.createEntry(e);
-            e = new HashMap<>();
-            e.put("uid", "4");
-            e.put("thepass", "pw4");
-            e.put("thefoo", "foo4");
-            e.put("thebar", "bar4");
-            dir3.createEntry(e);
-        }
+        TestDirectoryHelper.fillMemDir(memdir3, List.of( //
+                Map.of("uid", "3", "thepass", "pw3", "thefoo", "foo3", "thebar", "bar3"), //
+                Map.of("uid", "4", "thepass", "pw4", "thefoo", "foo4", "thebar", "bar4")));
 
         // the multi directory
         multiDir = (MultiDirectory) directoryService.getDirectory("multi");
+        assertNotNull(multiDir);
         dir = multiDir.getSession();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (dir != null) {
             dir.close();
         }
-        directoryService.unregisterDirectoryDescriptor(desc1);
-        directoryService.unregisterDirectoryDescriptor(desc2);
-        directoryService.unregisterDirectoryDescriptor(desc3);
+        TestDirectoryHelper.clearDirectory(memdir1);
+        TestDirectoryHelper.clearDirectory(memdir2);
+        TestDirectoryHelper.clearDirectory(memdir3);
     }
 
     @Test
-    public void testGetEntry() throws Exception {
+    public void testGetEntry() {
         DocumentModel entry;
         entry = dir.getEntry("1");
         assertEquals("1", entry.getProperty("schema3", "uid"));
@@ -202,7 +146,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testGetEntries() throws Exception {
+    public void testGetEntries() {
         DocumentModelList l;
         l = dir.getEntries();
         assertEquals(4, l.size());
@@ -218,7 +162,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreate() {
         try (Session dir1 = memdir1.getSession();
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
@@ -254,12 +198,13 @@ public class TestMultiDirectory {
                 entry = dir.createEntry(map);
                 fail("Should raise an error, entry already exists");
             } catch (DirectoryException e) {
+                assertEquals("Entry with id 5 already exists in directory dir1", e.getMessage());
             }
         }
     }
 
     @Test
-    public void testAuthenticate() throws Exception {
+    public void testAuthenticate() {
         // sub dirs
         try (Session dir1 = memdir1.getSession(); //
                 Session dir3 = memdir3.getSession()) {
@@ -279,7 +224,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testUpdateEntry() throws Exception {
+    public void testUpdateEntry() {
         try (Session dir1 = memdir1.getSession();
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
@@ -321,7 +266,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testUpdateReadonlyMultidir() throws Exception {
+    public void testUpdateReadonlyMultidir() {
         MultiDirectory readonlyMultidir = (MultiDirectory) directoryService.getDirectory("readonlymulti");
         try (MultiDirectorySession readonlyDir = readonlyMultidir.getSession();
                 Session dir1 = memdir1.getSession();
@@ -339,7 +284,7 @@ public class TestMultiDirectory {
                 readonlyDir.updateEntry(e);
                 fail("Should not be able to update entry");
             } catch (DirectorySecurityException ee) {
-                // ok
+                assertEquals("Directory is read-only", ee.getMessage());
             }
             e = readonlyDir.getEntry("1");
             // the multidirectory entry was not updated
@@ -354,7 +299,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testUpdatePartialReadOnlyMultidir() throws Exception {
+    public void testUpdatePartialReadOnlyMultidir() {
         try (Session dir1 = memdir1.getSession();
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
@@ -402,7 +347,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testDeleteEntry() throws Exception {
+    public void testDeleteEntry() {
         try (Session dir1 = memdir1.getSession();
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
@@ -427,7 +372,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testQuery() throws Exception {
+    public void testQuery() {
         Map<String, Serializable> filter = new HashMap<>();
         DocumentModelList entries;
         DocumentModel e;
@@ -510,7 +455,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testQueryFulltext() throws Exception {
+    public void testQueryFulltext() {
         Map<String, Serializable> filter = new HashMap<>();
         Set<String> fulltext = new HashSet<>();
         DocumentModelList entries;
@@ -522,7 +467,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testQueryWithBuilder() throws Exception {
+    public void testQueryWithBuilder() {
 
         // everything (empty predicates)
         QueryBuilder queryBuilder = new QueryBuilder();
@@ -650,7 +595,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testGetProjection() throws Exception {
+    public void testGetProjection() {
         Map<String, Serializable> filter = new HashMap<>();
         List<String> list;
 
@@ -735,9 +680,9 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testCreateFromModel() throws Exception {
+    public void testCreateFromModel() {
         String schema = "schema3";
-        DocumentModel entry = BaseSession.createEntryModel(null, schema, null, null);
+        DocumentModel entry = BaseSession.createEntryModel(schema, null, null);
         entry.setProperty("schema3", "uid", "yo");
 
         assertNull(dir.getEntry("yo"));
@@ -750,17 +695,18 @@ public class TestMultiDirectory {
             entry = dir.createEntry(entry);
             fail("Should raise an error, entry already exists");
         } catch (DirectoryException e) {
+            assertEquals("Entry with id 1 already exists in directory dir1", e.getMessage());
         }
     }
 
     @Test
-    public void testHasEntry() throws Exception {
+    public void testHasEntry() {
         assertTrue(dir.hasEntry("1"));
         assertFalse(dir.hasEntry("foo"));
     }
 
     @Test
-    public void testReadOnlyEntryFromMultidirectory() throws Exception {
+    public void testReadOnlyEntryFromMultidirectory() {
         MultiDirectory readonlyMultidir = (MultiDirectory) directoryService.getDirectory("readonlymulti");
         try (MultiDirectorySession readonlyDir = readonlyMultidir.getSession()) {
             // all should be readonly
@@ -772,7 +718,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testReadOnlyEntryFromGetEntry() throws Exception {
+    public void testReadOnlyEntryFromGetEntry() {
 
         // by default no backing dir is readonly
         assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
@@ -814,7 +760,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testReadOnlyEntryInQueryResults() throws Exception {
+    public void testReadOnlyEntryInQueryResults() {
         Map<String, String> orderBy = new HashMap<>();
         orderBy.put("schema3:uid", "asc");
         DocumentModelComparator comp = new DocumentModelComparator(orderBy);
@@ -851,7 +797,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testReadOnlyEntryInGetEntriesResults() throws Exception {
+    public void testReadOnlyEntryInGetEntriesResults() {
         Map<String, String> orderBy = new HashMap<>();
         orderBy.put("schema3:uid", "asc");
         DocumentModelComparator comp = new DocumentModelComparator(orderBy);

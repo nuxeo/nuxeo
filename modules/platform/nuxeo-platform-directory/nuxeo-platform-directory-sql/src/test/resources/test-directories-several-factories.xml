@@ -1,13 +1,11 @@
 <?xml version="1.0"?>
 
-<!-- This is a test setup for the directory service, mixing a directory registration
-  in several factories, see NXP-6574 -->
+<!-- This is a test setup for the directory service, mixing a directory registration in several factories, see NXP-6574 -->
 
 <component name="org.nuxeo.ecm.directory.several.factories">
 
   <!-- register an existing directory to the new factory -->
-  <extension target="org.nuxeo.ecm.directory.service.MockMemoryDirectoryFactory"
-    point="directories">
+  <extension target="org.nuxeo.ecm.directory.memory.MemDirectoryFactory" point="directories">
     <directory name="userDirectory">
       <schema>user</schema>
       <types>
@@ -16,16 +14,14 @@
       <idField>username</idField>
     </directory>
     <references>
-      <tableReference field="groups" directory="groupDirectory"
-        table="user2group" sourceColumn="userId"
+      <tableReference field="groups" directory="groupDirectory" table="user2group" sourceColumn="userId"
         targetColumn="groupId" dataFile="test-user2group.csv" />
     </references>
   </extension>
 
-  <!-- then register a different directory with SQL factory => bug shows that the
-    previous directory is retrieved (from the wrong factory) instead -->
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
+  <!-- then register a different directory with SQL factory => bug shows that the previous directory is retrieved from the
+    wrong factory instead -->
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
 
     <directory name="myOtherNewDirectory">
       <schema>user</schema>
@@ -38,9 +34,8 @@
       <idField>username</idField>
 
       <references>
-        <tableReference field="groups" directory="groupDirectory"
-          table="user2group" sourceColumn="userId"
-          targetColumn="groupId" dataFile="test-user2group.csv" />
+        <tableReference field="groups" directory="groupDirectory" table="user2group"
+          sourceColumn="userId" targetColumn="groupId" dataFile="test-user2group.csv" />
       </references>
     </directory>
 

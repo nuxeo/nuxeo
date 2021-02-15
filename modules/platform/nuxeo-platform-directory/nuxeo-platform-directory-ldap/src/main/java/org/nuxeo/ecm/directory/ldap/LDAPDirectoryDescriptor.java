@@ -34,12 +34,14 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntryAdaptor;
 import org.nuxeo.ecm.directory.Reference;
 
 @XObject(value = "directory")
+@XRegistry
 public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     public static final Log log = LogFactory.getLog(LDAPDirectoryDescriptor.class);
@@ -154,12 +156,6 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
     protected Class<? extends LdapExceptionProcessor> exceptionProcessorClass;
 
     protected LdapExceptionProcessor exceptionProcessor;
-
-    // XXX: passwordEncryption?
-    // XXX: ignoredFields?
-    // XXX: referenceFields?
-    public LDAPDirectoryDescriptor() {
-    }
 
     public String getRdnAttribute() {
         return rdnAttribute;
