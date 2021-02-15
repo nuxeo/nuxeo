@@ -88,6 +88,10 @@ public class DeploymentPreprocessor {
         return root;
     }
 
+    protected static void logElapsedTime(String logSentence, long nanoStartTime, long nanoEndTime) {
+        log.error(String.format("%s in [%s] milliseconds", logSentence, (nanoEndTime - nanoStartTime) / 1000000));
+    }
+
     public void init() throws IOException {
         root = getDefaultContainer(dir);
         if (root != null) {
@@ -110,6 +114,7 @@ public class DeploymentPreprocessor {
     }
 
     protected void init(ContainerDescriptor cd) throws IOException {
+        long startTime = System.nanoTime();
         cd.context = new CommandContextImpl(cd.directory);
         initContextProperties(cd.context);
         // run container install instructions if any
@@ -130,6 +135,8 @@ public class DeploymentPreprocessor {
                 }
             }
         }
+        long endTime = System.nanoTime();
+        logElapsedTime("Init done", startTime, endTime);
     }
 
     protected void initContextProperties(CommandContext ctx) {
@@ -293,6 +300,7 @@ public class DeploymentPreprocessor {
     }
 
     protected static void predeploy(ContainerDescriptor cd) throws IOException {
+        long startTime = System.nanoTime();
         // run installer and register contributions for each fragment
         List<DependencyTree.Entry<String, FragmentDescriptor>> entries = cd.fragments.getResolvedEntries();
         printInfo(cd.fragments);
@@ -365,6 +373,8 @@ public class DeploymentPreprocessor {
         for (ContainerDescriptor subCd : cd.subContainers) {
             predeploy(subCd);
         }
+        long endTime = System.nanoTime();
+        logElapsedTime("Predeploy done", startTime, endTime);
     }
 
     protected FragmentDescriptor getXMLFragment(File file) throws IOException {
