@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.core.tests.types.defaultvalue" version="1.0">
+<component name="org.nuxeo.core.tests.types.defaultvalue">
   <!-- used by org.nuxeo.ecm.core.TestSQLRepositoryDefaultValues -->
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">

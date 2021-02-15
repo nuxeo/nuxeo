@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="s3" version="1.0.0">
+<component name="s3">
 
   <require>default-repository-config</require>
 

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="s3DirectUpload" version="1.0.0">
+<component name="s3DirectUpload">
 
 <#if "${nuxeo.s3storage.useDirectUpload}" == "true">
 

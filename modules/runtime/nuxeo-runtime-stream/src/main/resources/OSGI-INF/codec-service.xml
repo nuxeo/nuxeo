@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.runtime.codec.service" version="1.0">
+<component name="org.nuxeo.runtime.codec.service">
 
   <documentation>
     The component allows you to register a Codec to encode records.

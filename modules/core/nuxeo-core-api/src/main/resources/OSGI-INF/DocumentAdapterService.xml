@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.core.api.DocumentAdapterService" version="1.0.0">
+<component name="org.nuxeo.ecm.core.api.DocumentAdapterService">
   <documentation>
     Service providing a dynamic adapter mechanism to adapt documents to random interfaces.
     @author Bogdan Stefanescu (bs@nuxeo.com)

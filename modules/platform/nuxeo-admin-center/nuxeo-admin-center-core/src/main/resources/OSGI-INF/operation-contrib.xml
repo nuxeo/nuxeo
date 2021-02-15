@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.platform.admin.operation" version="1.0">
+<component name="org.nuxeo.platform.admin.operation">
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
     <operation class="org.nuxeo.ecm.admin.operation.HotReloadStudioSnapshot" />

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.csv.core.test.properties" version="1.0">
+<component name="org.nuxeo.ecm.csv.core.test.properties">
 
   <require>org.nuxeo.ecm.csv.core.properties</require>
 

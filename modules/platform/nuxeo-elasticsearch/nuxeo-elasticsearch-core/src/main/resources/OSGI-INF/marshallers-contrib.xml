@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.elasticsearch.marshallers" version="1.0.0">
+<component name="org.nuxeo.elasticsearch.marshallers">
   <extension point="marshallers" target="org.nuxeo.ecm.core.io.MarshallerRegistry">
     <register class="org.nuxeo.elasticsearch.io.marshallers.json.AggregateJsonWriter" enable="true" />
     <register class="org.nuxeo.elasticsearch.io.HighlightJsonEnricher" enable="true" />

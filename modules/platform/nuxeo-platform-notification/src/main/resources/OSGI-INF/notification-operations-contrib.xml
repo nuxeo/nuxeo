@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.ec.notification.operations" version="1.0">
+<component name="org.nuxeo.ecm.platform.ec.notification.operations">
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
 
     <operation class="org.nuxeo.ecm.platform.ec.notification.automation.SubscribeOperation" />

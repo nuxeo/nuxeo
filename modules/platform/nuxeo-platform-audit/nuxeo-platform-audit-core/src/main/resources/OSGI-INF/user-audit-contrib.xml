@@ -1,4 +1,4 @@
-<component name="org.nuxeo.ecm.platform.audit.user.contrib" version="1.0">
+<component name="org.nuxeo.ecm.platform.audit.user.contrib">
 
   <documentation>Contribute the search event to the Audit configuration :
     this is

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.rest.managemen.test.migration.object" version="1.0">
+<component name="org.nuxeo.rest.managemen.test.migration.object">
 
   <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
 

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.versioning.test.document-type" version="1.0">
+<component name="org.nuxeo.ecm.core.versioning.test.document-type">
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
     <doctype name="Note2" extends="Document">

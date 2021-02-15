@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.automation.scripting.classfilter.test.contrib2" version="1.0">
+<component name="org.nuxeo.automation.scripting.classfilter.test.contrib2">
 
   <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="classFilter">
     <classFilter>

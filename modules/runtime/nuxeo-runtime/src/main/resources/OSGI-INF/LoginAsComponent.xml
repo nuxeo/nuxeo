@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.runtime.LoginAsComponent" version="1.0">
+<component name="org.nuxeo.runtime.LoginAsComponent">
 
   <documentation>
     The LoginAs component provides the service that allows to login

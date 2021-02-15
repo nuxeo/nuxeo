@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.runtime.cluster.test.feature" version="1.0">
+<component name="org.nuxeo.runtime.cluster.test.feature">
 
   <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
     <store name="cluster" class="org.nuxeo.runtime.kv.MemKeyValueStore" />

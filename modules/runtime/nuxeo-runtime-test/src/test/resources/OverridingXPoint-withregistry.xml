@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="OverridingXPoint" version="1.0.0">
+<component name="OverridingXPoint">
 
   <documentation>
     This component is contributing 2 extensions to 2 extension points.

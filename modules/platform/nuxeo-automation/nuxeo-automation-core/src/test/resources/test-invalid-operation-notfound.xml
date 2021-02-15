@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.automation.rest.test.faultyOperationContrib" version="1.0">
+<component name="org.nuxeo.automation.rest.test.faultyOperationContrib">
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
     <operation class="org.nuxeo.ecm.automation.test.helpers.NonExistingOperation" />

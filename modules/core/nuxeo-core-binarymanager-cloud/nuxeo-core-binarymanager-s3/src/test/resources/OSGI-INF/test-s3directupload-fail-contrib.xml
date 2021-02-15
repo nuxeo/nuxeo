@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="s3DirectUpload-fail" version="1.0.0">
+<component name="s3DirectUpload-fail">
 
    <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
     <store name="s3DUTransientStoreFail"

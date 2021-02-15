@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.platform.comment.workflow.services.CommentsModerationService"
- version="1.0">
+<component name="org.nuxeo.ecm.platform.comment.workflow.services.CommentsModerationService">
 
  <service>
   <provide

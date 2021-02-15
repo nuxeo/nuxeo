@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.core.io.MarshallerRegistry" version="1.0.0">
+<component name="org.nuxeo.ecm.core.io.MarshallerRegistry">
   <documentation>
     Service providing a way to register marshallers and use them.
   </documentation>

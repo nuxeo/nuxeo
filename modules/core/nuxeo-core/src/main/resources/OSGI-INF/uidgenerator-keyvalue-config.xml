@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.uidseq.keyvaluestore" version="1.0">
+<component name="org.nuxeo.ecm.core.uidseq.keyvaluestore">
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
     <documentation>

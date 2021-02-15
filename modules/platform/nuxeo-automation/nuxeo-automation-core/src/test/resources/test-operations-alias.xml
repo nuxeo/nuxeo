@@ -1,4 +1,4 @@
-<component name="org.nuxeo.ecm.automation.operations.alias.test" version="1.0">
+<component name="org.nuxeo.ecm.automation.operations.alias.test">
 
   <extension point="operations"
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">

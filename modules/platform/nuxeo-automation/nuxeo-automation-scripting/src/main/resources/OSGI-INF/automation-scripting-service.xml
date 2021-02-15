@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" version="1.0">
+<component name="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent">
 
    <documentation>
     Automation Scripting is a Nuxeo module which provides ability to create and contribute Automation chain/operation in JavaScript.

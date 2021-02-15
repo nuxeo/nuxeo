@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.drive.elasticsearch.automation.server.bindings" version="1.0">
+<component name="org.nuxeo.drive.elasticsearch.automation.server.bindings">
 
   <require>org.nuxeo.elasticsearch.audit.contrib</require>
 

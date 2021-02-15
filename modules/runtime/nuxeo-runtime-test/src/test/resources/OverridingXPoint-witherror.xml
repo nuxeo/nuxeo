@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="OverridingXPoint-witherror" version="1.0.0">
+<component name="OverridingXPoint-witherror">
 
   <extension target="BaseXPoint" point="xp">
     <printer class="this-is-not-a-class">

@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.tag.service.querymaker"
-  version="1.0.0">
+<component name="org.nuxeo.ecm.platform.tag.service.querymaker">
 
   <extension target="org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService"
     point="queryMaker">

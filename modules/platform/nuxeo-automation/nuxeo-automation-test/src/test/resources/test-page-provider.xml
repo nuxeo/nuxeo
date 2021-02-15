@@ -1,4 +1,4 @@
-<component name="org.nuxeo.ecm.automation.provider.test" version="1.0">
+<component name="org.nuxeo.ecm.automation.provider.test">
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
 

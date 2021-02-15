@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.core.tests.types.defaultvalue" version="1.0">
+<component name="org.nuxeo.core.tests.types.defaultvalue">
   <!-- used by org.nuxeo.ecm.restapi.test.DocWithDefaultValuesTest -->
   <!-- used by org.nuxeo.ecm.restapi.test.DocumentBrowsingTest -->
 

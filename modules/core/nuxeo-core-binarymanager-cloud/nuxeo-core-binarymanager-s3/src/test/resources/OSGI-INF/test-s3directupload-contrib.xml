@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="s3DirectUpload" version="1.0.0">
+<component name="s3DirectUpload">
 
   <!-- this is the blobProvider pointing to the transient bucket -->
   <!-- it is the source blobProvider -->

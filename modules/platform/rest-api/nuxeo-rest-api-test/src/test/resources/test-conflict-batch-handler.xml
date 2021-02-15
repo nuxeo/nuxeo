@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.core.tests.batch.handler" version="1.0">
+<component name="org.nuxeo.core.tests.batch.handler">
 
     <extension target="org.nuxeo.ecm.automation.server.BatchManager"
                point="handlers">

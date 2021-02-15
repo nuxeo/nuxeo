@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.core.tests.types.multiResolved" version="1.0">
+<component name="org.nuxeo.core.tests.types.multiResolved">
   <!-- used by org.nuxeo.ecm.restapi.test.DocWithMultiResolvedFieldTest -->
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">

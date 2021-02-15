@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.runtime.jtajca.JtaActivator" version="1.0">
+<component name="org.nuxeo.runtime.jtajca.JtaActivator">
   <documentation>
   Activates JTA/JCA. By default activation is disabled. To enable it define the following runtime property:
 

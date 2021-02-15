@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.userworkspace.operationsContrib" version="1.0">
+<component name="org.nuxeo.ecm.platform.userworkspace.operationsContrib">
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">

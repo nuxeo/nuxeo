@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.usermapper.service.UserMapperComponent"
-  version="1.0">
+<component name="org.nuxeo.usermapper.service.UserMapperComponent">
 
   <implementation class="org.nuxeo.usermapper.service.UserMapperComponent" />
 

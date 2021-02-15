@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.automation.rest.test.operationContrib"
-  version="1.0">
-
+<component name="org.nuxeo.automation.rest.test.operationContrib">
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">

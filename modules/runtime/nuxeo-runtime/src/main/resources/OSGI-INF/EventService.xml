@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.runtime.EventService" version="1.0">
+<component name="org.nuxeo.runtime.EventService">
   <documentation>
   An event notification service. Notifications are grouped by topics.
   @author Bogdan Stefanescu (bs@nuxeo.com)

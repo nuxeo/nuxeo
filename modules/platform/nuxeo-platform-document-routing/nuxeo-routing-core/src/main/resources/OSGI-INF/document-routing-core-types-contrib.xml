@@ -1,6 +1,4 @@
-
-<component name="org.nuxeo.ecm.platform.routing.CoreExtensions"
-  version="1.0">
+<component name="org.nuxeo.ecm.platform.routing.CoreExtensions">
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
   <require>org.nuxeo.ecm.plateform.task.type</require>

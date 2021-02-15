@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.runtime.migration.MigrationService" version="1.0">
+<component name="org.nuxeo.runtime.migration.MigrationService">
 
   <documentation>
     The Migration service allows registration and access to migration configurations.
