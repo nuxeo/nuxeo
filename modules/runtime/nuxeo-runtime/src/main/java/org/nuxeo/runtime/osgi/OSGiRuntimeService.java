@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,6 +59,7 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentPersistence;
 import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
+import org.nuxeo.runtime.util.Watch;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -209,6 +211,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
     protected void loadComponents(Bundle bundle, RuntimeContext ctx, boolean isFragment) {
         String name = bundle.getSymbolicName();
+        Watch watch = new Watch("Load components for bundle " + name, "org.nuxeo.watch.loadComponents");
+        watch.start();
         if (isFragment && name.equals(context.getBundle().getSymbolicName())) {
             // avoid deploying again runtime components as a fragment (already handled in #doStart)
             return;
@@ -222,6 +226,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         StringTokenizer tok = new StringTokenizer(list, ", \t\n\r\f");
         while (tok.hasMoreTokens()) {
             String path = tok.nextToken();
+            watch.start(path);
             URL url = bundle.getEntry(path);
             if (url != null) {
                 log.trace("Load component {} [{}]", name, url);
@@ -236,11 +241,14 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                 log.error(message + ". Check the MANIFEST.MF");
                 messageHandler.addMessage(new RuntimeMessage(Level.ERROR, message, Source.BUNDLE, name));
             }
+            watch.stop(path);
         }
+        watch.stop();
+        watch.log();
     }
 
     public static String getComponentsList(Bundle bundle) {
-        return (String) bundle.getHeaders().get("Nuxeo-Component");
+        return bundle.getHeaders().get("Nuxeo-Component");
     }
 
     protected boolean loadConfigurationFromProvider() throws IOException {
@@ -490,7 +498,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     }
 
     public Bundle findHostBundle(Bundle bundle) {
-        String hostId = (String) bundle.getHeaders().get(Constants.FRAGMENT_HOST);
+        String hostId = bundle.getHeaders().get(Constants.FRAGMENT_HOST);
         log.debug("Looking for host bundle: {} host id: {}", bundle.getSymbolicName(), hostId);
         if (hostId != null) {
             int p = hostId.indexOf(';');

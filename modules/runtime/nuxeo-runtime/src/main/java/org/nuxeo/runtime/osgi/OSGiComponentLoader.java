@@ -23,9 +23,11 @@ package org.nuxeo.runtime.osgi;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.runtime.util.Watch;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -48,12 +50,15 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
     }
 
     public void install() {
+        Watch watch = new Watch("Load bundles", "org.nuxeo.watch.loadBundles");
+        watch.start();
         BundleContext ctx = runtime.getBundleContext();
         ctx.addBundleListener(this);
         Bundle[] bundles = ctx.getBundles();
         int mask = Bundle.STARTING | Bundle.ACTIVE;
         for (Bundle bundle : bundles) {
             String name = bundle.getSymbolicName();
+            watch.start(name);
             runtime.bundles.put(name, bundle);
             int state = bundle.getState();
             log.debug("Install bundle: {} {}", () -> name, () -> bundleStateAsString(state));
@@ -75,7 +80,10 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
             } else {
                 log.debug("Install bundle: {} is not STARTING or ACTIVE, so no context was created", name);
             }
+            watch.stop(name);
         }
+        watch.stop();
+        watch.log();
     }
 
     public void uninstall() {

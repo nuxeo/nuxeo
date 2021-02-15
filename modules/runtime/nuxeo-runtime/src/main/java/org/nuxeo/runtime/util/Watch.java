@@ -19,10 +19,16 @@
 package org.nuxeo.runtime.util;
 
 import java.text.DecimalFormat;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Usage:
@@ -44,17 +50,39 @@ import java.util.concurrent.TimeUnit;
  */
 public class Watch {
 
+    private static final Logger log = LogManager.getLogger(Watch.class);
+
+    public final String label;
+
+    public final String thresholdKey;
+
+    public final long threshold;
+
+    public final long intervalThreshold;
+
     public final TimeInterval total;
 
     public final Map<String, TimeInterval> intervals;
 
     public Watch() {
-        this(new HashMap<>());
+        this(null, null, null);
+    }
+
+    public Watch(String label, String thresholdKey) {
+        this(label, thresholdKey, null);
     }
 
     public Watch(Map<String, TimeInterval> intervals) {
+        this(null, null, intervals);
+    }
+
+    protected Watch(String label, String thresholdKey, Map<String, TimeInterval> intervals) {
+        this.label = label;
+        this.thresholdKey = thresholdKey;
+        this.threshold = Long.valueOf(Framework.getProperty(thresholdKey + ".threshold", "-1"));
+        this.intervalThreshold = Long.valueOf(Framework.getProperty(thresholdKey + ".intervalthreshold", "-1"));
         this.total = new TimeInterval("total");
-        this.intervals = Objects.requireNonNull(intervals, "Given intervals can't be null");
+        this.intervals = new LinkedHashMap<>(Objects.requireNonNullElse(intervals, Collections.emptyMap()));
     }
 
     public Watch start() {
@@ -103,6 +131,42 @@ public class Watch {
 
     public TimeInterval[] getIntervals() {
         return intervals.values().toArray(new TimeInterval[intervals.size()]);
+    }
+
+    public void log() {
+        log(TimeUnit.MILLISECONDS, threshold, intervalThreshold);
+    }
+
+    public void log(TimeUnit unit, long threshold, long intervalThreshold) {
+        // use ERROR for testing
+        log(Level.ERROR, unit, threshold, intervalThreshold);
+    }
+
+    public void log(Level level, TimeUnit unit, long threshold, long intervalThreshold) {
+        boolean loggedTotal = false;
+        if (threshold <= 0 || elapsed(unit) > threshold) {
+            logTotal(level, unit, threshold, intervalThreshold);
+            loggedTotal = true;
+        }
+        if (intervalThreshold > 0) {
+            for (TimeInterval i : getIntervals()) {
+                if (i.elapsed(unit) > intervalThreshold) {
+                    if (!loggedTotal) {
+                        logTotal(level, unit, threshold, intervalThreshold);
+                        loggedTotal = true;
+                    }
+                    String msg = String.format("%s- %s: [%s] %s", label != null ? label + ": " : "", i.name,
+                            i.elapsed(unit), unit);
+                    log.log(level, msg);
+                }
+            }
+        }
+    }
+
+    protected final void logTotal(Level level, TimeUnit unit, long threshold, long intervalThreshold) {
+        String msg = String.format("%stotal: [%s] %s (threshold: %s, interval threshold: %s)",
+                label != null ? label + ": " : "", elapsed(unit), unit, threshold, intervalThreshold);
+        log.log(level, msg);
     }
 
     public static class TimeInterval implements Comparable<TimeInterval> {
