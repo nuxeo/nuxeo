@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
-  <implementation
-          class="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" />
+  <implementation class="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" />
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" />
@@ -36,8 +35,7 @@
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>
 
-    <object
-            class="org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor" />
+    <object class="org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor" />
   </extension-point>
 
   <extension-point name="chain">
@@ -47,8 +45,7 @@
 
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>
-    <object
-            class="org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationChainDescriptor" />
+    <object class="org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationChainDescriptor" />
   </extension-point>
 
   <extension-point name="startURL">
@@ -61,8 +58,7 @@
 
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>
-    <object
-            class="org.nuxeo.ecm.platform.ui.web.auth.service.StartURLPatternDescriptor" />
+    <object class="org.nuxeo.ecm.platform.ui.web.auth.service.StartURLPatternDescriptor" />
   </extension-point>
 
   <extension-point name="sessionManager">
@@ -71,8 +67,7 @@
 
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>
-    <object
-            class="org.nuxeo.ecm.platform.ui.web.auth.service.SessionManagerDescriptor" />
+    <object class="org.nuxeo.ecm.platform.ui.web.auth.service.SessionManagerDescriptor" />
   </extension-point>
 
   <extension-point name="openUrl">
@@ -81,8 +76,7 @@
 
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>
-    <object
-            class="org.nuxeo.ecm.platform.ui.web.auth.service.OpenUrlDescriptor" />
+    <object class="org.nuxeo.ecm.platform.ui.web.auth.service.OpenUrlDescriptor" />
   </extension-point>
 
 
@@ -93,8 +87,7 @@
 
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>
-    <object
-            class="org.nuxeo.ecm.platform.ui.web.auth.service.SpecificAuthChainDescriptor" />
+    <object class="org.nuxeo.ecm.platform.ui.web.auth.service.SpecificAuthChainDescriptor" />
   </extension-point>
 
 
