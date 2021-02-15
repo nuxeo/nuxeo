@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,10 +40,15 @@ import org.nuxeo.ecm.directory.localconfiguration.DirectoryConfiguration;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class DirectoryServiceImpl extends DefaultComponent implements DirectoryService {
+
+    private static final Logger log = LogManager.getLogger(DirectoryServiceImpl.class);
+
+    protected static final String COMPONENT_NAME = "org.nuxeo.ecm.directory.DirectoryServiceImpl";
+
+    protected static final String XP = "directoryContributor";
 
     /** @since 11.1 */
     public static final String CLUSTER_START_DURATION_PROP = "org.nuxeo.directory.cluster.start.duration";
@@ -52,36 +57,6 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
     public static final Duration CLUSTER_START_DURATION_DEFAULT = Duration.ofMinutes(1);
 
     protected static final String DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX = "_";
-
-    private static final Logger log = LogManager.getLogger(DirectoryServiceImpl.class);
-
-    protected DirectoryRegistry registry = new DirectoryRegistry();
-
-    @Override
-    public void activate(ComponentContext context) {
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        registry.shutdown();
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        DirectoryFactoryDescriptor factoryDescriptor = (DirectoryFactoryDescriptor) contribution;
-        String factoryName = factoryDescriptor.getFactoryName();
-        log.warn("No need to register factoryDescriptor anymore: {}", factoryName);
-    }
-
-    @Override
-    public void registerDirectoryDescriptor(BaseDirectoryDescriptor descriptor) {
-        registry.addContribution(descriptor);
-    }
-
-    @Override
-    public void unregisterDirectoryDescriptor(BaseDirectoryDescriptor descriptor) {
-        registry.removeContribution(descriptor);
-    }
 
     @Override
     public void loadFromCSV(String directoryName, Blob dataBlob, String dataLoadingPolicy) {
@@ -113,6 +88,15 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         directories.forEach(Directory::initialize);
         directories.forEach(Directory::initializeReferences);
         directories.forEach(Directory::initializeInverseReferences);
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        getDirectoryRegistry().shutdown();
+    }
+
+    protected DirectoryRegistry getDirectoryRegistry() {
+        return getExtensionPointRegistry(XP);
     }
 
     protected DirectoryConfiguration getDirectoryConfiguration(DocumentModel documentContext) {
@@ -152,7 +136,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
 
     @Override
     public BaseDirectoryDescriptor getDirectoryDescriptor(String id) {
-        return registry.getDirectoryDescriptor(id);
+        return getDirectoryRegistry().getDirectoryDescriptor(id);
     }
 
     @Override
@@ -161,7 +145,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
             // TODO throw an exception
             return null;
         }
-        return registry.getDirectory(id);
+        return getDirectoryRegistry().getDirectory(id);
     }
 
     @Override
@@ -194,12 +178,12 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
 
     @Override
     public List<Directory> getDirectories() {
-        return registry.getDirectories();
+        return getDirectoryRegistry().getDirectories();
     }
 
     @Override
     public List<String> getDirectoryNames() {
-        return registry.getDirectoryIds();
+        return getDirectoryRegistry().getDirectoryIds();
     }
 
     @Override

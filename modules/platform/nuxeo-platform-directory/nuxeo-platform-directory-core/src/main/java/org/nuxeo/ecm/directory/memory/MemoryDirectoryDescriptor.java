@@ -18,23 +18,51 @@
  */
 package org.nuxeo.ecm.directory.memory;
 
+import java.util.HashSet;
 import java.util.Set;
 
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
+import org.nuxeo.ecm.directory.Directory;
 
 /**
  * @since 5.6
  */
 @XObject("directory")
+@XRegistry
 public class MemoryDirectoryDescriptor extends BaseDirectoryDescriptor {
 
+    @XNodeList(value = "schemaSet/field", type = HashSet.class, componentType = String.class)
     public Set<String> schemaSet;
 
     @Override
     public Directory newDirectory() {
         return new MemoryDirectory(this);
+    }
+
+    @Override
+    public void merge(BaseDirectoryDescriptor other) {
+        super.merge(other);
+        if (other instanceof MemoryDirectoryDescriptor) {
+            merge((MemoryDirectoryDescriptor) other);
+        }
+    }
+
+    protected void merge(MemoryDirectoryDescriptor other) {
+        if (other.schemaSet != null && !other.schemaSet.isEmpty()) {
+            schemaSet = other.schemaSet;
+        }
+    }
+
+    @Override
+    public MemoryDirectoryDescriptor clone() {
+        MemoryDirectoryDescriptor clone = (MemoryDirectoryDescriptor) super.clone();
+        if (schemaSet != null) {
+            clone.schemaSet = new HashSet<>(schemaSet);
+        }
+        return clone;
     }
 
 }

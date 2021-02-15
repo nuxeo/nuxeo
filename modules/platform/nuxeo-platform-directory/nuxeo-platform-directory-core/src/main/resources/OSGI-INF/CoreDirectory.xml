@@ -1,16 +1,14 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.directory.core.CoreDirectoryFactory">
 
-  <implementation
-    class="org.nuxeo.ecm.directory.core.CoreDirectoryFactory" />
-
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
 
+  <implementation class="org.nuxeo.ecm.directory.core.CoreDirectoryFactory" />
   <documentation>Core directory implementation.</documentation>
 
   <extension-point name="directories">
     <object class="org.nuxeo.ecm.directory.core.CoreDirectoryDescriptor" />
-    <object class="org.nuxeo.ecm.directory.core.CoreDirectoryDescriptor$ACLDescriptor" />
+    <registry class="org.nuxeo.ecm.directory.core.CoreDirectoryFactory$Registry" />
 
     <documentation>
       This extension point can be used to register new

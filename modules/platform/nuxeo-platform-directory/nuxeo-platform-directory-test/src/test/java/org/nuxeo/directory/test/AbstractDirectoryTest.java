@@ -102,7 +102,7 @@ public abstract class AbstractDirectoryTest {
                 calendar.get(Calendar.SECOND), 0);
     }
 
-    public static void assertCalendarEquals(Calendar expected, Calendar actual) throws Exception {
+    public static void assertCalendarEquals(Calendar expected, Calendar actual) {
         if (expected.equals(actual)) {
             return;
         }
@@ -113,16 +113,16 @@ public abstract class AbstractDirectoryTest {
         assertEquals(expected, actual); // proper failure
     }
 
-    public Session getSession() throws Exception {
+    public Session getSession() {
         return directoryService.open(USER_DIR);
     }
 
-    public Directory getDirectory() throws Exception {
+    public Directory getDirectory() {
         return directoryService.getDirectory(USER_DIR);
     }
 
     @Test
-    public void testReference() throws Exception {
+    public void testReference() {
         Reference membersRef = directoryService.getDirectory(GROUP_DIR).getReference("members");
 
         // test initial configuration
@@ -190,7 +190,7 @@ public abstract class AbstractDirectoryTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCreateEntry() throws Exception {
+    public void testCreateEntry() {
         try (Session session = getSession()) {
             Map<String, Object> map = new HashMap<>();
             map.put("username", "user_0");
@@ -252,7 +252,7 @@ public abstract class AbstractDirectoryTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testGetEntry() throws Exception {
+    public void testGetEntry() {
         try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_1");
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
@@ -282,7 +282,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testGetEntries() throws Exception {
+    public void testGetEntries() {
         try (Session session = getSession()) {
             DocumentModelList entries = session.getEntries();
 
@@ -331,7 +331,7 @@ public abstract class AbstractDirectoryTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testUpdateEntry() throws Exception {
+    public void testUpdateEntry() {
         try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_1");
 
@@ -379,7 +379,7 @@ public abstract class AbstractDirectoryTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testUpdateEntry2() throws Exception {
+    public void testUpdateEntry2() {
         try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_1");
 
@@ -404,7 +404,7 @@ public abstract class AbstractDirectoryTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testDeleteEntry() throws Exception {
+    public void testDeleteEntry() {
         try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_1");
             session.deleteEntry(dm);
@@ -429,7 +429,7 @@ public abstract class AbstractDirectoryTest {
     // directory configuration, so drop it for now.
     @Test
     @Ignore
-    public void testDeleteEntryExtended() throws Exception {
+    public void testDeleteEntryExtended() {
         try (Session session = getSession()) {
             // create a second entry with user_1 as key but with
             // a different email (would be "parent" in a hierarchical
@@ -470,7 +470,7 @@ public abstract class AbstractDirectoryTest {
 
     @Test
     @Deploy("org.nuxeo.ecm.directory.tests:test-directories-bundle-custom-user-schema.xml")
-    public void testCreateOrUpdateEntryWithReferenceAsArray() throws Exception {
+    public void testCreateOrUpdateEntryWithReferenceAsArray() {
         try (Session session = getSession()) {
             // create an entry
             Map<String, Object> map = new HashMap<>();
@@ -488,7 +488,7 @@ public abstract class AbstractDirectoryTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testQuery1() throws Exception {
+    public void testQuery1() {
         try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("username", "user_1");
@@ -522,7 +522,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testQuerySubAny() throws Exception {
+    public void testQuerySubAny() {
         try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("username", "er_");
@@ -540,7 +540,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testQuery2() throws Exception {
+    public void testQuery2() {
         try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("username", "user_1");
@@ -551,7 +551,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testQueryCaseInsensitive() throws Exception {
+    public void testQueryCaseInsensitive() {
         try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             // case insensitive substring search
@@ -564,7 +564,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testQueryWithBuilder() throws Exception {
+    public void testQueryWithBuilder() {
         try (Session session = getSession()) {
             // everything (empty predicates)
             QueryBuilder queryBuilder = new QueryBuilder();
@@ -656,7 +656,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testGetProjection() throws Exception {
+    public void testGetProjection() {
         try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("username", "user_1");
@@ -667,7 +667,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testSearch() throws Exception {
+    public void testSearch() {
         try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
 
@@ -701,7 +701,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testIsAuthenticating() throws Exception {
+    public void testIsAuthenticating() {
         try (Session session = getSession()) {
             // by default the user directory is authenticating
             assertTrue(session.isAuthenticating());
@@ -720,7 +720,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testAuthenticate() throws Exception {
+    public void testAuthenticate() {
         try (Session session = getSession()) {
             // successful authentication
             assertTrue(session.authenticate("Administrator", "Administrator"));
@@ -739,7 +739,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testCreateFromModel() throws Exception {
+    public void testCreateFromModel() {
         try (Session session = getSession()) {
             String schema = "user";
             DocumentModel entry = BaseSession.createEntryModel(null, schema, null, null);
@@ -762,7 +762,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testHasEntry() throws Exception {
+    public void testHasEntry() {
         try (Session session = getSession()) {
             assertTrue(session.hasEntry("Administrator"));
             assertFalse(session.hasEntry("foo"));
@@ -772,7 +772,7 @@ public abstract class AbstractDirectoryTest {
     @Ignore
     @Test
     @Deploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-alteration-config.xml")
-    public void testColumnCreation() throws Exception {
+    public void testColumnCreation() {
         AbstractDirectory dirtmp1 = null;
         AbstractDirectory dirtmp2 = null;
 
@@ -813,7 +813,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testPasswordIgnoredInQueryFilter() throws Exception {
+    public void testPasswordIgnoredInQueryFilter() {
         try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("username", "user_1");
@@ -825,7 +825,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     @Test
-    public void testPasswordNotReturned() throws Exception {
+    public void testPasswordNotReturned() {
         String username = "myuser";
         String password = "MyPassword:)";
         // create entry

@@ -18,8 +18,28 @@
  */
 package org.nuxeo.ecm.directory;
 
-import org.nuxeo.ecm.directory.DefaultDirectoryFactory;
+import org.nuxeo.runtime.model.DefaultComponent;
 
-public class GenericDirectoryComponent extends DefaultDirectoryFactory {
+/**
+ * Component registering templates for other directories.
+ */
+public class GenericDirectoryComponent extends DefaultComponent {
+
+    protected static final String COMPONENT_NAME = "org.nuxeo.ecm.directory.GenericDirectory";
+
+    /**
+     * Registry for {@link BaseDirectoryDescriptor}, forwarding to {@link DirectoryRegistry}.
+     * <p>
+     * Also handles custom merge.
+     *
+     * @since 11.5
+     */
+    public static final class Registry extends AbstractDirectoryDescriptorRegistry {
+
+        public Registry() {
+            super(COMPONENT_NAME);
+        }
+
+    }
 
 }

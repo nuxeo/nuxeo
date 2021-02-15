@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.multi.config.mem">
+
+  <extension target="org.nuxeo.ecm.directory.memory.MemDirectoryFactory" point="directories">
+
+    <directory name="dir1">
+      <schema>schema1</schema>
+      <idField>uid</idField>
+      <passwordField>password</passwordField>
+      <schemaSet>
+        <field>uid</field>
+        <field>password</field>
+        <field>foo</field>
+      </schemaSet>
+    </directory>
+
+    <directory name="dir2">
+      <schema>schema2</schema>
+      <idField>id</idField>
+      <!-- no password -->
+      <schemaSet>
+        <field>id</field>
+        <field>bar</field>
+      </schemaSet>
+    </directory>
+
+    <directory name="dir3">
+      <schema>schema3</schema>
+      <idField>uid</idField>
+      <passwordField>thepass</passwordField>
+      <schemaSet>
+        <field>uid</field>
+        <field>thepass</field>
+        <field>thefoo</field>
+        <field>thebar</field>
+      </schemaSet>
+    </directory>
+
+  </extension>
+
+</component>

@@ -18,9 +18,12 @@
  */
 package org.nuxeo.ecm.core.storage.mem;
 
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.nuxeo.ecm.core.storage.dbs.AbstractDBSRepositoryDescriptorRegistry;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryRegistry;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.w3c.dom.Element;
 
 /**
  * Service holding the configuration for Memory repositories.

@@ -57,7 +57,8 @@ import org.nuxeo.runtime.api.Framework;
  * {@code
  * <xs:element name="coverage">
  *   <xs:simpleType>
- *     <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="l10ncoverage" ref:parentField="parent" ref:separator="/" />
+ *     <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="l10ncoverage" ref:parentField=
+"parent" ref:separator="/" />
  *   </xs:simpleType>
  * </xs:element>
  * }
@@ -104,9 +105,9 @@ public class DirectoryEntryResolver extends AbstractObjectResolver implements Ob
         if (directoryName == null || directoryName.isEmpty()) {
             throw new IllegalArgumentException("missing directory parameter. A directory name is necessary");
         }
-        Directory directory = getDirectory();
-        idField = directory.getIdField();
-        schema = directory.getSchema();
+        BaseDirectoryDescriptor desc = getDirectoryDescriptor();
+        idField = desc.idField;
+        schema = desc.schemaName;
         if (schema.endsWith("xvocabulary")) {
             hierarchical = true;
             parentField = "parent";
@@ -131,11 +132,21 @@ public class DirectoryEntryResolver extends AbstractObjectResolver implements Ob
         return managedClasses;
     }
 
+    protected BaseDirectoryDescriptor getDirectoryDescriptor() {
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        BaseDirectoryDescriptor desc = directoryService.getDirectoryDescriptor(directoryName);
+        if (desc == null) {
+            throw new IllegalArgumentException(
+                    String.format("The directory descriptor \"%s\" was not found", directoryName));
+        }
+        return desc;
+    }
+
     public Directory getDirectory() {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         Directory directory = directoryService.getDirectory(directoryName);
         if (directory == null) {
-            throw new IllegalArgumentException(String.format("the directory \"%s\" was not found", directoryName));
+            throw new IllegalArgumentException(String.format("The directory \"%s\" was not found", directoryName));
         }
         return directory;
     }

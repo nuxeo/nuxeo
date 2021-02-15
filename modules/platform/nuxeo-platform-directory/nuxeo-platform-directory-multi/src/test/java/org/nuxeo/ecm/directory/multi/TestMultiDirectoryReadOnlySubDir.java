@@ -20,8 +20,7 @@
 
 package org.nuxeo.ecm.directory.multi;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
 
@@ -43,6 +42,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ MultiDirectoryFeature.class })
 @Deploy("org.nuxeo.ecm.directory.multi.tests:directories-readonly-subdir-config.xml")
+@Deploy("org.nuxeo.ecm.directory.multi.tests:directories-mem-config.xml")
+@Deploy("org.nuxeo.ecm.directory.multi.tests:directories-mem-readonly-config.xml")
 public class TestMultiDirectoryReadOnlySubDir {
 
     private static final String MULTI_DIRECTORY_NAME = "multi";
@@ -59,39 +60,19 @@ public class TestMultiDirectoryReadOnlySubDir {
     protected MemoryDirectoryDescriptor desc2;
 
     @Before
-    public void setUp() throws Exception {
-
-        // dir 1
-        desc1 = new MemoryDirectoryDescriptor();
-        desc1.name = "dir1";
-        desc1.schemaName = "schema1";
-        desc1.schemaSet = new HashSet<>(Arrays.asList("uid", "foo"));
-        desc1.idField = "uid";
-        desc1.passwordField = "foo";
-        directoryService.registerDirectoryDescriptor(desc1);
+    public void setUp() {
         memdir1 = (MemoryDirectory) directoryService.getDirectory("dir1");
-
-        // dir 2
-        desc2 = new MemoryDirectoryDescriptor();
-        desc2.name = "dir2";
-        desc2.schemaName = "schema2";
-        desc2.schemaSet = new HashSet<>(Arrays.asList("id", "bar"));
-        desc2.idField = "id";
-        desc2.passwordField = null;
-        desc2.readOnly = true;
-        directoryService.registerDirectoryDescriptor(desc2);
+        assertNotNull(memdir1);
         memdir2 = (MemoryDirectory) directoryService.getDirectory("dir2");
-
+        assertNotNull(memdir2);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Session session = directoryService.getDirectory(MULTI_DIRECTORY_NAME).getSession();
         if (session != null) {
             session.close();
         }
-        directoryService.unregisterDirectoryDescriptor(desc1);
-        directoryService.unregisterDirectoryDescriptor(desc2);
     }
 
     @Test

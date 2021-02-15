@@ -25,8 +25,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.impl.AbstractDirectoryDeleteConstraint;
 
@@ -59,8 +57,8 @@ public class HierarchicalDirectoryDeleteConstraint extends AbstractDirectoryDele
             throw new DirectoryException(String.format("This delete constraint requires property '%s'", targetDirKey));
         }
         if (!properties.containsKey(targetDirFieldKey)) {
-            throw new DirectoryException(String.format("This delete constraint requires property '%s'",
-                    targetDirFieldKey));
+            throw new DirectoryException(
+                    String.format("This delete constraint requires property '%s'", targetDirFieldKey));
         }
         targetDirectory = properties.get(targetDirKey);
         targetDirectoryField = properties.get(targetDirFieldKey);

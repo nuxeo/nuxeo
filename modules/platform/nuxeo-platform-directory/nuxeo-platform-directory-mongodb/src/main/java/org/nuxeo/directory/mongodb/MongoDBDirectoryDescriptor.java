@@ -22,12 +22,14 @@ package org.nuxeo.directory.mongodb;
 
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 
 /**
  * @since 9.1
  */
 @XObject("directory")
+@XRegistry
 public class MongoDBDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     @XNodeList(value = "references/reference", type = MongoDBReferenceDescriptor[].class, componentType = MongoDBReferenceDescriptor.class)

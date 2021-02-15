@@ -21,7 +21,7 @@ package org.nuxeo.ecm.directory.ldap;
 import javax.naming.directory.SearchControls;
 
 /**
- * Helper for translating ldap search scope from string to integer
+ * Helper for translating ldap search scope from string to integer.
  *
  * @author Anahide Tchertchian
  */

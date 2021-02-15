@@ -111,7 +111,7 @@ public class TableReference extends AbstractReference {
                 insert.addColumn(column);
             }
             try (PreparedStatement ps = connection.prepareStatement(insert.getStatement())) {
-                Consumer<Map<String, Object>> loader = new Consumer<Map<String, Object>>() {
+                Consumer<Map<String, Object>> loader = new Consumer<>() {
                     @Override
                     public void accept(Map<String, Object> map) {
                         try {

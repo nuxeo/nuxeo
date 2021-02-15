@@ -140,6 +140,7 @@
     </documentation>
 
     <object class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor" />
+    <registry class="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory$Registry" />
   </extension-point>
 
 </component>
