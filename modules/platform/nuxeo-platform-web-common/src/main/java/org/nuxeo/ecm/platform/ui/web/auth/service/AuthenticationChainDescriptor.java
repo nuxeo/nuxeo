@@ -26,8 +26,10 @@ import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
 
 @XObject("authenticationChain")
+@XRegistry(merge = false)
 public class AuthenticationChainDescriptor {
 
     @XNodeList(value = "plugins/plugin", type = ArrayList.class, componentType = String.class)

@@ -21,41 +21,41 @@ package org.nuxeo.ecm.platform.ui.web.auth.service;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
 @XObject("authenticationPlugin")
+@XRegistry(enable = false)
 public class AuthenticationPluginDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
-    @XNode("@enabled")
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
     boolean enabled = true;
 
     @XNode("@class")
-    Class<NuxeoAuthenticationPlugin> className;
+    private Class<NuxeoAuthenticationPlugin> className;
 
-    private Boolean needStartingURLSaving;
+    @XNode("needStartingURLSaving")
+    private boolean needStartingURLSaving;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> parameters = new HashMap<>();
 
-    private Boolean stateful;
+    @XNode("stateful")
+    private boolean stateful;
 
     public Class<NuxeoAuthenticationPlugin> getClassName() {
         return className;
-    }
-
-    public boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public String getName() {
@@ -66,36 +66,12 @@ public class AuthenticationPluginDescriptor {
         return parameters;
     }
 
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-    }
-
     public boolean getNeedStartingURLSaving() {
-        if (needStartingURLSaving != null) {
-            return needStartingURLSaving;
-        }
-        return false;
+        return needStartingURLSaving;
     }
 
     public boolean getStateful() {
-        if (stateful != null) {
-            return stateful;
-        }
-        return Boolean.valueOf(getNeedStartingURLSaving());
-    }
-
-    public void setClassName(Class<NuxeoAuthenticationPlugin> className) {
-        this.className = className;
-    }
-
-    @XNode("needStartingURLSaving")
-    public void setNeedStartingURLSaving(boolean needStartingURLSaving) {
-        this.needStartingURLSaving = Boolean.valueOf(needStartingURLSaving);
-    }
-
-    @XNode("stateful")
-    public void setStateful(boolean stateful) {
-        this.stateful = Boolean.valueOf(stateful);
+        return stateful;
     }
 
 }

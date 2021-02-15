@@ -23,19 +23,25 @@ package org.nuxeo.ecm.platform.ui.web.auth.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XEnable;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionManager;
 
 @XObject("sessionManager")
+@XRegistry(enable = false)
 public class SessionManagerDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     private String name;
 
-    @XNode("@enabled")
-    boolean enabled = true;
+    @XNode(value = XEnable.ENABLE, fallback = "@enabled")
+    @XEnable
+    private boolean enabled = true;
 
     @XNode("@class")
-    Class<NuxeoAuthenticationSessionManager> className;
+    private Class<NuxeoAuthenticationSessionManager> className;
 
     public String getName() {
         return name;
