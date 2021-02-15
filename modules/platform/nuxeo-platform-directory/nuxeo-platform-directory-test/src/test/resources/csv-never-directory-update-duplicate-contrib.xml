@@ -6,6 +6,7 @@
     <directory name="csvLoadedDirectory" extends="template-directory">
       <schema>csvLoadSchema</schema>
       <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>never</createTablePolicy>
       <dataLoadingPolicy>update_duplicate</dataLoadingPolicy>
       <dataFile>test-append-directory.csv</dataFile>
