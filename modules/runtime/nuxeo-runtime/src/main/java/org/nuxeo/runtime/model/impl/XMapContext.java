@@ -33,10 +33,19 @@ public class XMapContext extends Context {
 
     private static final long serialVersionUID = -7194560385886298218L;
 
-    final RuntimeContext ctx;
+    private final RuntimeContext ctx;
 
     public XMapContext(RuntimeContext ctx) {
         this.ctx = ctx;
+    }
+
+    /**
+     * Returns the underlying runtime context.
+     *
+     * @since 11.5
+     */
+    public RuntimeContext getRuntimeContext() {
+        return ctx;
     }
 
     @Override

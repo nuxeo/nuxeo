@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
  */
 package org.nuxeo.ecm.webengine.jaxrs.servlet.config;
 
@@ -24,23 +24,29 @@ import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 
+import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.registry.XRegistry;
+import org.nuxeo.common.xmap.registry.XRegistryId;
 import org.nuxeo.ecm.webengine.jaxrs.BundleNotFoundException;
 import org.nuxeo.ecm.webengine.jaxrs.Utils;
 import org.nuxeo.ecm.webengine.jaxrs.Utils.ClassRef;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.FilterSet;
+import org.nuxeo.runtime.model.impl.XMapContext;
 import org.osgi.framework.Bundle;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Descriptor for a servlet contribution.
  */
 @XObject("servlet")
+@XRegistry(compatWarnOnMerge = true)
 public class ServletDescriptor {
 
     @XNode("@name")
+    @XRegistryId
     protected String name;
 
     @XNode("@class")
@@ -55,9 +61,6 @@ public class ServletDescriptor {
     @XNode("resources")
     protected String resources;
 
-    /**
-     * Must use hashtable since it extends Dictionary
-     */
     @XNodeMap(value = "properties/property", key = "@name", type = HashMap.class, componentType = String.class, trim = true, nullByDefault = false)
     protected HashMap<String, String> initParams;
 
@@ -67,22 +70,17 @@ public class ServletDescriptor {
     @XNode("listeners")
     protected ListenerSetDescriptor listeners;
 
-    /**
-     * The bundle that deployed this extension
-     */
-    protected Bundle bundle;
+    /** @since 11.5 */
+    @XNode
+    protected Context ctx;
 
     private ClassRef ref;
 
-    public ServletDescriptor() {
-    }
-
-    public void setBundle(Bundle bundle) {
-        this.bundle = bundle;
-    }
-
     public Bundle getBundle() {
-        return bundle;
+        if (ctx instanceof XMapContext) {
+            return ((XMapContext) ctx).getRuntimeContext().getBundle();
+        }
+        return null;
     }
 
     public String getPath() {
@@ -90,12 +88,12 @@ public class ServletDescriptor {
     }
 
     public HashMap<String, String> getInitParams() {
-        return initParams;
+        return new HashMap<>(initParams);
     }
 
     public ClassRef getClassRef() throws ClassNotFoundException, BundleNotFoundException {
         if (ref == null) {
-            ref = Utils.getClassRef(classRef, bundle);
+            ref = Utils.getClassRef(classRef, getBundle());
         }
         return ref;
     }
