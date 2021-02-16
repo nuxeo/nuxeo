@@ -118,6 +118,17 @@ public class TestBinaryMetadataService extends BaseBinaryMetadataTest {
     }
 
     @Test
+    public void testNullFilename() throws IOException {
+        File file = FileUtils.getResourceFileFromContext("data/iptc_one_keyword.jpg");
+        Blob blob = Blobs.createBlob(file);
+        blob.setFilename(null);
+        DocumentModel doc = session.createDocumentModel("/folder", "file", "File");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        binaryMetadataService.writeMetadata(doc, "IPTC-ONE-KW");
+        // test ok if we haven't crashed here
+    }
+
+    @Test
     public void itShouldExtractKeywordListToStringList() throws PropertyException, IOException {
         // Get the document with One KW attached
         File binary = FileUtils.getResourceFileFromContext("data/Budget-Example.xlsx");
