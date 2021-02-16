@@ -30,6 +30,7 @@ import java.util.function.Function;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.query.sql.model.Literals;
@@ -283,6 +284,8 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         StringBuilder queryStr = new StringBuilder(" FROM LogEntry log");
 
         // add predicate clauses
+        Map<String, MutableInt> fieldCounts = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         boolean firstFilter = true;
         String op = multiExpression.operator == Operator.AND ? " AND" : " OR";
         for (Predicate predicate : predicates) {
@@ -292,18 +295,36 @@ public class LogEntryProvider implements BaseLogEntryProvider {
             } else {
                 queryStr.append(op);
             }
-            String leftName = getFieldName.apply(predicate.lvalue);
+
+            String fieldName = getFieldName.apply(predicate.lvalue);
+            Operator operator = predicate.operator;
+            Object value = Literals.valueOf(predicate.rvalue);
+
+            int fieldCount = fieldCounts.computeIfAbsent(fieldName, k -> new MutableInt()).incrementAndGet();
+            String param = fieldCount == 1 ? fieldName : fieldName + fieldCount;
+
+            if (value instanceof ZonedDateTime) {
+                // The ZonedDateTime representation is not compatible with Hibernate query
+                value = Date.from(((ZonedDateTime) value).toInstant());
+            }
+            if (Operator.LIKE.equals(operator)) {
+                value = "%" + value + "%";
+            } else if (Operator.STARTSWITH.equals(operator)) {
+                value = value + "%";
+            }
+
             queryStr.append(" log.")
-                    .append(leftName)
+                    .append(fieldName)
                     .append(" ")
-                    .append(toString(predicate.operator))
+                    .append(toString(operator))
                     .append(" ");
-            if (predicate.operator == Operator.IN) {
+            if (operator == Operator.IN) {
                 queryStr.append("("); // parentheses needed in old HQL for IN
             }
             queryStr.append(":");
-            queryStr.append(leftName);
-            if (predicate.operator == Operator.IN) {
+            queryStr.append(param);
+            params.put(param, value);
+            if (operator == Operator.IN) {
                 queryStr.append(")");
             }
         }
@@ -329,22 +350,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         }
 
         Query query = em.createQuery(queryStr.toString());
-
-        for (Predicate predicate : predicates) {
-            String leftName = getFieldName.apply(predicate.lvalue);
-            Operator operator = predicate.operator;
-            Object rightValue = Literals.valueOf(predicate.rvalue);
-            if (rightValue instanceof ZonedDateTime) {
-                // The ZonedDateTime representation is not compatible with Hibernate query
-                rightValue = Date.from(((ZonedDateTime) rightValue).toInstant());
-            }
-            if (Operator.LIKE.equals(operator)) {
-                rightValue = "%" + rightValue + "%";
-            } else if (Operator.STARTSWITH.equals(operator)) {
-                rightValue = rightValue + "%";
-            }
-            query.setParameter(leftName, rightValue);
-        }
+        params.forEach(query::setParameter);
 
         // add offset clause
         if (offset > 0) {
