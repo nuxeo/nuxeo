@@ -312,9 +312,12 @@ public final class Framework {
     }
 
     /**
-     * Login as the system user. The returned {@link NuxeoLoginContext} MUST be closed when done.
+     * Login as the system user (with no originating user).
+     * <p>
+     * The returned {@link NuxeoLoginContext} MUST be closed when done.
      *
      * @return the login context, to be closed when done
+     * @see #loginSystem(String)
      * @since 11.1
      */
     public static NuxeoLoginContext loginSystem() {
@@ -324,11 +327,15 @@ public final class Framework {
     }
 
     /**
-     * Login as the system user, remembering the originating user. The returned {@link NuxeoLoginContext} MUST be closed
-     * when done.
+     * Login as the system user, remembering the originating user.
+     * <p>
+     * The returned {@link NuxeoLoginContext} MUST be closed when done.
+     * <p>
+     * If the originating user is {@code null}, then this is equivalent to {@link #loginSystem()}.
      *
      * @param originatingUser the originating user
      * @return the login context, to be closed when done
+     * @see #loginSystem()
      * @since 11.1
      */
     public static NuxeoLoginContext loginSystem(String originatingUser) {
