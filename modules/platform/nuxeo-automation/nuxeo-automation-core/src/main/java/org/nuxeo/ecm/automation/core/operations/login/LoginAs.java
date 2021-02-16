@@ -52,7 +52,8 @@ public class LoginAs {
         NuxeoLoginContext lc;
         if (name == null) {
             Principal origPrincipal = ctx.getPrincipal();
-            lc = Framework.loginSystem(origPrincipal.getName());
+            String origUser = origPrincipal == null ? null : origPrincipal.getName();
+            lc = Framework.loginSystem(origUser);
         } else {
             lc = Framework.loginUser(name);
         }
