@@ -188,4 +188,15 @@ public abstract class AbstractAuditStorageTest {
         reader.queryLogs(dateBuilder);
     }
 
+    @Test
+    public void testReferenceUsedTwice() throws Exception {
+        // eventId = "something AND eventId != 'other'
+        // won't match if parameters are incorrectly mapped to the same name
+        setUpTestData();
+        QueryBuilder query = new AuditQueryBuilder().predicate(Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS))
+                                                    .and(Predicates.noteq(LOG_EVENT_ID, "no-such-event-id"));
+        List<LogEntry> logs = auditBackend.queryLogs(query);
+        assertEquals(NUM_OF_EVENTS, logs.size());
+    }
+
 }
