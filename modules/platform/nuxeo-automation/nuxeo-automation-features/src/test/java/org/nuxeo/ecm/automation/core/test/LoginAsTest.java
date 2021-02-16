@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.login.LoginAs;
@@ -101,6 +102,23 @@ public class LoginAsTest {
 
             Assert.assertEquals(origPrincipal, ctx.getPrincipal().getName());
             Assert.assertEquals("Foo", doc.getPropertyValue("dc:creator"));
+        }
+    }
+
+    // this happens if the chain is called from a scheduled event, where there's no session
+    @Test
+    public void testLoginAsSystemWithNoSession() throws OperationException {
+        try (OperationContext ctx = new OperationContext(null)) {
+            ctx.setInput(src);
+            OperationChain chain = new OperationChain("testloginas");
+            chain.add(FetchContextDocument.ID);
+            chain.add(LoginAs.ID);
+            chain.add(CreateDocument.ID).set("type", "Folder").set("name", "myfolder");
+            chain.add(Logout.ID);
+
+            DocumentModel doc = (DocumentModel) service.run(ctx, chain);
+
+            Assert.assertEquals("system", doc.getPropertyValue("dc:creator"));
         }
     }
 
