@@ -255,7 +255,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
      */
     protected CloseableFile getTemporaryFile(Blob blob) throws IOException {
         String ext = FilenameUtils.getExtension(blob.getFilename());
-        if (!VALID_EXT.matcher(ext).matches()) {
+        if (ext == null || !VALID_EXT.matcher(ext).matches()) {
             ext = "tmp";
         }
         File tmp = Framework.createTempFile("nxblob-", '.' + ext);
@@ -285,7 +285,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
      */
     protected Blob getTemporaryBlob(Blob blob) throws IOException {
         String ext = FilenameUtils.getExtension(blob.getFilename());
-        if (!VALID_EXT.matcher(ext).matches()) {
+        if (ext == null || !VALID_EXT.matcher(ext).matches()) {
             ext = "tmp";
         }
         Blob newBlob = new FileBlob('.' + ext);
