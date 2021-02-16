@@ -90,7 +90,7 @@ public class BatchUploadFixture extends BaseTest {
      */
     @Test
     public void itCanUseBatchUpload() throws IOException {
-        itCanUseBatchUpload(false);
+        itCanUseBatchUpload(false, false);
     }
 
     /**
@@ -100,23 +100,35 @@ public class BatchUploadFixture extends BaseTest {
      */
     @Test
     public void itCanUseBatchUploadNoDrop() throws IOException {
-        itCanUseBatchUpload(true);
+        itCanUseBatchUpload(true, false);
     }
 
-    private void itCanUseBatchUpload(boolean noDrop) throws IOException {
+    @Test
+    public void testBatchUploadNoFilename() throws IOException {
+        itCanUseBatchUpload(false, true);
+    }
+
+    private void itCanUseBatchUpload(boolean noDrop, boolean noFilename) throws IOException {
 
         // Get batch id, used as a session id
         String batchId = initializeDeprecatedNewBatch();
 
         // Upload a file
-        String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", UTF_8);
+        String fileName1 = "Fichier accentué 1.txt";
         String mimeType = "text/plain";
         String data1 = "Contenu accentué du premier fichier";
         String fileSize1 = String.valueOf(getUTF8Bytes(data1).length);
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "text/plain");
         headers.put("X-Upload-Type", "normal");
-        headers.put("X-File-Name", fileName1);
+        String expectedFilename1;
+        if (noFilename) {
+            // don't set any X-File-Name header
+            expectedFilename1 = "file.bin";
+        } else {
+            headers.put("X-File-Name", URLEncoder.encode(fileName1, UTF_8));
+            expectedFilename1 = fileName1;
+        }
         headers.put("X-File-Size", fileSize1);
         headers.put("X-File-Type", mimeType);
 
@@ -157,7 +169,7 @@ public class BatchUploadFixture extends BaseTest {
             ArrayNode nodes = (ArrayNode) mapper.readTree(response.getEntityInputStream());
             assertEquals(2, nodes.size());
             JsonNode node = nodes.get(0);
-            assertEquals("Fichier accentué 1.txt", node.get("name").asText());
+            assertEquals(expectedFilename1, node.get("name").asText());
             assertEquals(fileSize1, node.get("size").asText());
             assertEquals("normal", node.get("uploadType").asText());
             node = nodes.get(1);
@@ -170,7 +182,7 @@ public class BatchUploadFixture extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.GET, "upload/" + batchId + "/0")) {
             assertEquals(Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("Fichier accentué 1.txt", node.get("name").asText());
+            assertEquals(expectedFilename1, node.get("name").asText());
             assertEquals(fileSize1, node.get("size").asText());
             assertEquals("normal", node.get("uploadType").asText());
         }
@@ -210,7 +222,7 @@ public class BatchUploadFixture extends BaseTest {
         DocumentModel doc = session.getDocument(new PathRef("/testBatchUploadDoc"));
         Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
         assertNotNull(blob);
-        assertEquals("Fichier accentué 1.txt", blob.getFilename());
+        assertEquals(expectedFilename1, blob.getFilename());
         assertEquals("text/plain", blob.getMimeType());
         assertEquals(data1, blob.getString());
         blob = (Blob) doc.getPropertyValue("mb:blobs/1/content");

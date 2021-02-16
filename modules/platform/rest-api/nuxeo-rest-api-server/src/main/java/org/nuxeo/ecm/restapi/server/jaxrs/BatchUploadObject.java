@@ -211,6 +211,11 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         String mimeType = request.getHeader("X-File-Type");
         String requestBodyFile = request.getHeader(NginxConstants.X_REQUEST_BODY_FILE_HEADER);
         String contentMd5 = request.getHeader(NginxConstants.X_CONTENT_MD5_HEADER);
+        if (StringUtils.isBlank(fileName)) {
+            fileName = "file.bin";
+        } else {
+            fileName = URLDecoder.decode(fileName, "UTF-8");
+        }
 
         int chunkCount = -1;
         int uploadChunkIndex = -1;
@@ -231,9 +236,6 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         long uploadedSize = getUploadedSize(request);
         if (Framework.isBooleanPropertyTrue(NginxConstants.X_ACCEL_ENABLED)
                 && StringUtils.isNotEmpty(requestBodyFile)) {
-            if (StringUtils.isNotEmpty(fileName)) {
-                fileName = URLDecoder.decode(fileName, "UTF-8");
-            }
             File file = new File(requestBodyFile);
             Blob blob = new FileBlob(file, true);
 
@@ -245,9 +247,6 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             addBlob(uploadType, batchId, fileIdx, blob, fileName, mimeType, uploadedSize, chunkCount, uploadChunkIndex,
                     fileSize);
         } else {
-            if (StringUtils.isNotEmpty(fileName)) {
-                fileName = URLDecoder.decode(fileName, "UTF-8");
-            }
             try (InputStream is = request.getInputStream()) {
                 Blob blob = Blobs.createBlob(is);
                 addBlob(uploadType, batchId, fileIdx, blob, fileName, mimeType, uploadedSize, chunkCount,
