@@ -43,11 +43,23 @@ public class MapRegistry extends AbstractRegistry implements Registry {
 
     private static final Logger log = LogManager.getLogger(MapRegistry.class);
 
+    public static final String DEFAULT_KEY = "null";
+
     protected Map<String, Object> contributions = Collections.synchronizedMap(new LinkedHashMap<>());
 
     protected Set<String> disabled = ConcurrentHashMap.newKeySet();
 
-    protected static final String DEFAULT_KEY = "null";
+    // Internal getters
+
+    public Map<String, Object> getInnerContributions() {
+        return contributions;
+    }
+
+    public Set<String> getInnerDisabled() {
+        return disabled;
+    }
+
+    // API
 
     @Override
     public void initialize() {
@@ -108,6 +120,7 @@ public class MapRegistry extends AbstractRegistry implements Registry {
             XAnnotatedMember merge = xObject.getMerge();
             if (existing != null && xObject.getCompatWarnOnMerge() && !merge.hasValue(ctx, element)
                     && !onlyHandlesEnablement(ctx, xObject, element, true)) {
+                // to be impacted...
                 log.warn(
                         "The contribution with id '{}' on extension '{}' has been implicitly merged: "
                                 + "the compatibility mechanism on its descriptor class '{}' detected it, "

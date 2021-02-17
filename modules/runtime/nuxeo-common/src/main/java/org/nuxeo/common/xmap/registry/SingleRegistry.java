@@ -42,9 +42,29 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
     // volatile for double-checked locking
     protected volatile boolean enabled = true;
 
+    // Internal getters/setters
+
+    public Object getInnerContribution() {
+        return contribution;
+    }
+
+    public void setInnerContribution(Object contribution) {
+        this.contribution = contribution;
+    }
+
+    public boolean isInnerEnabled() {
+        return enabled;
+    }
+
+    public void setInnerEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    // API
+
     @Override
     public void initialize() {
-        setContribution(null);
+        setInnerContribution(null);
         enabled = true;
         super.initialize();
     }
@@ -53,10 +73,6 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
     public <T> Optional<T> getContribution() {
         checkInitialized();
         return enabled ? Optional.ofNullable((T) contribution) : Optional.empty();
-    }
-
-    protected void setContribution(Object contribution) {
-        this.contribution = contribution;
     }
 
     @Override
@@ -78,7 +94,7 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
     @SuppressWarnings("unchecked")
     public <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
         if (shouldRemove(ctx, xObject, element, extensionId)) {
-            setContribution(null);
+            setInnerContribution(null);
             return null;
         }
 
@@ -88,11 +104,11 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
         } else {
             contrib = getInstance(ctx, xObject, element);
         }
-        setContribution(contrib);
+        setInnerContribution(contrib);
 
         Boolean enable = shouldEnable(ctx, xObject, element, extensionId);
         if (enable != null) {
-            this.enabled = Boolean.TRUE.equals(enable);
+            setInnerEnabled(Boolean.TRUE.equals(enable));
         }
 
         return (T) contrib;

@@ -54,10 +54,13 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XAnnotatedObject;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.XMapException;
+import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.common.xmap.registry.NullRegistry;
 import org.nuxeo.common.xmap.registry.Registry;
+import org.nuxeo.common.xmap.registry.SingleRegistry;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
 import org.nuxeo.runtime.RuntimeMessage;
@@ -73,6 +76,8 @@ import org.nuxeo.runtime.model.DescriptorRegistry;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
+import org.nuxeo.runtime.model.registry.MapRuntimeRegistry;
+import org.nuxeo.runtime.model.registry.SingleRuntimeRegistry;
 import org.nuxeo.runtime.util.Watch;
 
 /**
@@ -549,6 +554,17 @@ public class ComponentManagerImpl implements ComponentManager {
         return Optional.empty();
     }
 
+    protected Registry createRegistry(String component, String point, XMap xmap, XAnnotatedObject xObject) {
+        Registry registry = null;
+        Registry xRegistry = xmap.getRegistry(xObject);
+        if (xRegistry instanceof SingleRegistry) {
+            registry = new SingleRuntimeRegistry(component, point, (SingleRegistry) xRegistry);
+        } else if (xRegistry instanceof MapRegistry) {
+            registry = new MapRuntimeRegistry(component, point, (MapRegistry) xRegistry);
+        }
+        return registry;
+    }
+
     protected Registry getOrCreateRegistry(String component, ExtensionPoint xp) {
         Optional<Registry> stored = getExtensionPointRegistry(component, xp.getName());
         if (stored.isPresent()) {
@@ -576,7 +592,7 @@ public class ComponentManagerImpl implements ComponentManager {
                 registry = Arrays.stream(contributions)
                                  .map(xmap::getObject)
                                  .filter(Objects::nonNull)
-                                 .map(xmap::getRegistry)
+                                 .map(xObject -> createRegistry(component, xp.getName(), xmap, xObject))
                                  .filter(Objects::nonNull)
                                  .findFirst()
                                  .orElse(NULL_REGISTRY);

@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.xmap.registry.MapRegistry;
 import org.nuxeo.common.xmap.registry.SingleRegistry;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -204,15 +205,13 @@ public class TestRegistry {
         checkOverriddenSingleRegistry(service.getSingleRegistry());
         checkOverriddenCompatMapRegistry(service.getCompatWarnMapRegistry());
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
-        if (useHotDeployer()) {
-            assertEquals(2, caughtEvents.size());
-            assertEquals(warnSingle, caughtEvents.get(0));
-            assertEquals(warnMap, caughtEvents.get(1));
-        } else {
-            assertEquals(2, caughtEvents.size());
-            assertEquals(warnSingle, caughtEvents.get(0));
-            assertEquals(warnMap, caughtEvents.get(1));
-        }
+        assertEquals(2, caughtEvents.size());
+        assertEquals(warnSingle, caughtEvents.get(0));
+        assertEquals(warnMap, caughtEvents.get(1));
+        List<String> rwarns = Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING);
+        assertEquals(2, rwarns.size());
+        assertEquals(warnSingle, rwarns.get(0));
+        assertEquals(warnMap, rwarns.get(1));
         hotUndeploy("registry-contrib-2.xml");
         checkInitialSingleRegistry(service.getSingleRegistry());
         checkInitialCompatMapRegistry(service.getCompatWarnMapRegistry());
@@ -234,17 +233,13 @@ public class TestRegistry {
         service.getSingleRegistry();
         service.getCompatWarnMapRegistry();
 
-        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
-        if (useHotDeployer()) {
-            assertEquals(0, caughtEvents.size());
-        } else {
-            assertEquals(0, caughtEvents.size());
-        }
+        assertTrue(logCaptureResult.getCaughtEventMessages().isEmpty());
+        assertTrue(Framework.getRuntime().getMessageHandler().getMessages(Level.WARNING).isEmpty());
 
         hotUndeploy("registry-contrib-3.xml");
         service.getSingleRegistry();
         service.getCompatWarnMapRegistry();
-        assertEquals(0, logCaptureResult.getCaughtEventMessages().size());
+        assertTrue(logCaptureResult.getCaughtEventMessages().isEmpty());
     }
 
     @Test
