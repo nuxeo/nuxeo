@@ -40,7 +40,9 @@ public class ResourceRegistry extends MapRegistry {
     @SuppressWarnings("unchecked")
     protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
         ResourceDescriptor resource = super.doRegister(ctx, xObject, element, extensionId);
-        computeResourceUri(resource, ctx);
+        if (resource != null) {
+            computeResourceUri(resource, ctx);
+        }
         return (T) resource;
     }
 

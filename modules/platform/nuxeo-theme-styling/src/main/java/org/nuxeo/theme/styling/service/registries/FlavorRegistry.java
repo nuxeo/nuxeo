@@ -48,7 +48,9 @@ public class FlavorRegistry extends MapRegistry {
     @SuppressWarnings("unchecked")
     protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
         FlavorDescriptor flavor = super.doRegister(ctx, xObject, element, extensionId);
-        updateFlavor(flavor, ctx);
+        if (flavor != null) {
+            updateFlavor(flavor, ctx);
+        }
         return (T) flavor;
     }
 
