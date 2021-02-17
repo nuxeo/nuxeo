@@ -70,8 +70,6 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
      */
     protected boolean commit = true;
 
-    protected final List<CleanupHandler> cleanupHandlers;
-
     /**
      * The context variables.
      */
@@ -112,7 +110,6 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
 
     protected OperationContext(CoreSession session, Map<String, Object> bindings) {
         vars = bindings;
-        cleanupHandlers = new ArrayList<>();
         loginStack = new LoginStack(session);
         trace = new ArrayList<>();
         callback = Framework.getService(TracerFactory.class).newTracer();
@@ -191,14 +188,6 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
         }
     }
 
-    public void addCleanupHandler(CleanupHandler handler) {
-        cleanupHandlers.add(handler);
-    }
-
-    public void removeCleanupHandler(CleanupHandler handler) {
-        cleanupHandlers.remove(handler);
-    }
-
     @Override
     public void close() {
         if (getCoreSession() != null && isCommit()) {
@@ -207,7 +196,6 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
         }
         trace.clear();
         loginStack.clear();
-        cleanupHandlers.forEach(CleanupHandler::cleanup);
     }
 
     /**
