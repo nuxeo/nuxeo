@@ -437,8 +437,17 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
     @POST
     @Path("{batchId}/{fileIdx}/complete")
-    public Response uploadCompleted(@PathParam(REQUEST_BATCH_ID) String batchId,
-            @PathParam(REQUEST_FILE_IDX) String fileIdx, String body) throws IOException {
+    public Response complete(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx,
+            String body) throws IOException {
+        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            return completeNoTransaction(batchId, fileIdx, body);
+        } finally {
+            TransactionHelper.startTransaction();
+        }
+    }
+
+    protected Response completeNoTransaction(String batchId, String fileIdx, String body) throws IOException {
         BatchManager bm = Framework.getService(BatchManager.class);
         JsonNode jsonNode = new ObjectMapper().readTree(body);
 
