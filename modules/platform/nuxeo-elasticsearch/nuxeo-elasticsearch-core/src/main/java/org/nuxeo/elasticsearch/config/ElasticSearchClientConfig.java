@@ -32,7 +32,7 @@ import org.nuxeo.elasticsearch.api.ESClientFactory;
  * @since 9.3
  */
 @XObject(value = "elasticSearchClient")
-@XRegistry(merge = false, compatWarnOnMerge = true)
+@XRegistry(compatWarnOnMerge = true)
 public class ElasticSearchClientConfig {
 
     @XNode("@class")
