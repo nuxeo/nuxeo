@@ -25,6 +25,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandler;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandlerParameters;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandlersDescriptor;
@@ -39,7 +40,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ExceptionHandlingComponent extends DefaultComponent implements ExceptionHandlingService {
 
-    protected NuxeoExceptionHandler exceptionHandler;
+    protected NuxeoExceptionHandler exceptionHandler = new DefaultNuxeoExceptionHandler();
 
     protected final NuxeoExceptionHandlerParameters exceptionHandlerParameters = new NuxeoExceptionHandlerParameters();
 

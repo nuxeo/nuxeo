@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,30 @@
  * limitations under the License.
  *
  * Contributors:
- *     vpasquier <vpasquier@nuxeo.com>
- *     slacoin <slacoin@nuxeo.com>
+ *     Florent Guillaume
  */
+package org.nuxeo.ecm.platform.web.common.exceptionhandling.service;
 
-package org.nuxeo.ecm.automation;
+import java.util.List;
 
-import java.util.Map;
-
-import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
- * @since 5.7.3
+ * Request dumper returning nothing.
+ *
+ * @since 11.5
  */
-public interface OperationCallback {
+public class NullRequestDumper implements RequestDumper {
 
-    void onChainEnter(OperationType chain);
+    @Override
+    public String getDump(HttpServletRequest request) {
+        return "";
+    }
 
-    void onChainExit();
-
-    void onOperationEnter(OperationContext context, OperationType type, InvokableMethod method, Map<String, Object> parms);
-
-    void onOperationExit(Object output);
-
-    void onError(Exception error);
+    @Override
+    public void setNotListedAttributes(List<String> attributes) {
+        // nothing
+    }
 
 }

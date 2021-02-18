@@ -19,6 +19,9 @@
 package org.nuxeo.ecm.platform.web.requestcontroller.filter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -80,7 +83,9 @@ public class TestBufferingServletResponse {
         assertEquals("", bout.toString());
         out.close();
         assertEquals("", bout.toString());
+        assertFalse(response.isCommitted());
         out.stopBuffering();
+        assertTrue(response.isCommitted());
         assertEquals("", bout.toString());
     }
 
@@ -90,7 +95,9 @@ public class TestBufferingServletResponse {
         PrintWriter w = response.getWriter();
         w.write("abc");
         // no flush, let stopBuffering do it
+        assertFalse(response.isCommitted());
         response.stopBuffering();
+        assertTrue(response.isCommitted());
         assertEquals("abc", bout.toString());
         w.write("def");
         w.flush();
@@ -115,7 +122,9 @@ public class TestBufferingServletResponse {
         assertEquals("", bout.toString());
         out.close();
         assertEquals("", bout.toString());
+        assertFalse(response.isCommitted());
         out.stopBuffering();
+        assertTrue(response.isCommitted());
         assertEquals(initial + buf.toString() + "DEF", bout.toString());
     }
 
@@ -128,6 +137,55 @@ public class TestBufferingServletResponse {
     public void testBig2() throws Exception {
         // directly switch to file
         doBig(null);
+    }
+
+    protected void doTestResetBuffer(int size) throws IOException {
+        BufferingServletOutputStream out = response.getOutputStream();
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        for (int i = 0; i < size; i++) {
+            buf.write('K');
+        }
+        byte[] bytes = buf.toByteArray();
+        if (size > 0)  {
+            out.write(bytes);
+        }
+        out.flush();
+        assertFalse(response.isCommitted());
+        response.resetBuffer();
+        out.close();
+        out.stopBuffering();
+        assertTrue(response.isCommitted());
+        assertEquals("", bout.toString());
+    }
+
+    @Test
+    public void testResetBufferNothing() throws IOException {
+        doTestResetBuffer(0);
+    }
+
+    @Test
+    public void testResetBufferSmall() throws IOException {
+        doTestResetBuffer(10);
+    }
+
+    @Test
+    public void testResetBufferBig() throws IOException {
+        doTestResetBuffer(BufferingServletOutputStream.MAX + 10);
+    }
+
+    @Test
+    public void testResetBufferStreaming() throws IOException {
+        BufferingServletOutputStream out = response.getOutputStream();
+        out.write("ABC".getBytes());
+        out.close();
+        out.stopBuffering();
+        assertTrue(response.isCommitted());
+        try {
+            response.resetBuffer();
+            fail();
+        } catch (IllegalStateException e) {
+            // ok
+        }
     }
 
     protected HttpServletResponse getFakeResponse(ResponseProxy responseProxy) {
