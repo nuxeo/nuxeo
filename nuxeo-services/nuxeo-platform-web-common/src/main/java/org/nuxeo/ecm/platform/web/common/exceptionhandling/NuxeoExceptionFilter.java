@@ -20,63 +20,34 @@ package org.nuxeo.ecm.platform.web.common.exceptionhandling;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService;
 import org.nuxeo.runtime.api.Framework;
 
-public class NuxeoExceptionFilter implements Filter {
+public class NuxeoExceptionFilter extends HttpFilter {
 
-    private NuxeoExceptionHandler exceptionHandler;
+    private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(NuxeoExceptionFilter.class);
-
-    public void init(FilterConfig filterConfig) throws ServletException {
-        try {
-            getHandler();
-        } catch (ServletException e) {
-            log.info("NuxeoExceptionHandler will be lazy loaded");
-        }
-    }
-
-    protected NuxeoExceptionHandler getHandler() throws ServletException {
-        if (exceptionHandler == null) {
-            ExceptionHandlingService service = Framework.getService(ExceptionHandlingService.class);
-            exceptionHandler = service.getExceptionHandler();
-        }
-        return exceptionHandler;
-    }
-
-    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception e)
-            throws IOException, ServletException {
-        getHandler().handleException(request, response, e);
-    }
-
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    @Override
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         try {
             chain.doFilter(request, response);
         } catch (RuntimeException | IOException | ServletException e) {
             try {
-                handleException((HttpServletRequest) request, (HttpServletResponse) response, e);
+                ExceptionHandlingService service = Framework.getService(ExceptionHandlingService.class);
+                service.getExceptionHandler().handleException(request, response, e);
             } catch (ServletException ee) {
                 throw ee;
             } catch (RuntimeException | IOException ee) {
                 throw new ServletException(ee);
             }
         }
-    }
-
-    public void destroy() {
     }
 
 }

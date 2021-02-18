@@ -38,6 +38,14 @@
     </filter>
 
     <filter context="/">
+      <filter-name>NuxeoExceptionFilter</filter-name>
+      <filter-class>org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionFilter</filter-class>
+      <filter-mapping>
+        <url-pattern>/*</url-pattern>
+      </filter-mapping>
+    </filter>
+
+    <filter context="/">
       <filter-name>NuxeoAuthenticationFilter</filter-name>
       <filter-class>org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter</filter-class>
       <display-name>WebEngine Authentication Filter</display-name>

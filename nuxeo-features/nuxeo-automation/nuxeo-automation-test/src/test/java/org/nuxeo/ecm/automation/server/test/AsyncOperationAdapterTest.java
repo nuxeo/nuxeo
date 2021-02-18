@@ -179,15 +179,15 @@ public class AsyncOperationAdapterTest {
 
     @Test
     public void testError() throws Exception {
-        Object r = session.newRequest("Test.Exit").setInput("Error").execute();
-        assertEquals("Error", r);
+        Object r = async.newRequest("Test.Exit").set("rollback", false).execute();
+        assertEquals("test exit", r);
 
         try {
             r = async.newRequest("Test.Exit").set("error", true).set("rollback", true).execute();
             fail("expected error");
         } catch (RemoteException e) {
-            assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getStatus());
-            assertEquals("termination error", e.getMessage());
+            assertEquals(ExitOperation.ERR_CODE, e.getStatus());
+            assertEquals("Failed to invoke operation Test.Exit, termination error", e.getMessage());
         }
     }
 
@@ -235,11 +235,11 @@ public class AsyncOperationAdapterTest {
                  .set("query", "SELECT * FROM Folder")
                  .set("bucketSize", "10")
                  .set("batchSize", "5")
-                 .set("parameters", "{}")
+                 .set("parameters", "{}") // no operation id
                  .execute();
             fail("expected error");
         } catch (RemoteException e) {
-            assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getStatus());
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
             assertTrue(
                     e.getMessage()
                      .startsWith("Unknown operation id null in command: org.nuxeo.ecm.core.bulk.message.BulkCommand"));

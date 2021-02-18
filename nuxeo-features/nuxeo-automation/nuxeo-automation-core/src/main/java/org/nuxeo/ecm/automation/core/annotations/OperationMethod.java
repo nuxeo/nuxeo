@@ -78,7 +78,5 @@ public @interface OperationMethod {
 
     int priority() default 0;
 
-    boolean async() default false;
-
     Class<? extends AsyncService> asyncService() default AsyncService.class;
 }
