@@ -214,8 +214,9 @@ public class TestBulkRunAction {
         try {
             service.run(ctx, BulkRunAction.ID, params);
             fail("Expected exception");
-        } catch (OperationException e) {
-            assertEquals("Query and ProviderName cannot be both null", e.getMessage());
+        } catch (NuxeoException e) {
+            assertEquals("Failed to invoke operation Bulk.RunAction, Query and ProviderName cannot be both null",
+                    e.getMessage());
         }
 
         // should work with a query
@@ -227,8 +228,9 @@ public class TestBulkRunAction {
         try {
             service.run(ctx, BulkRunAction.ID, params);
             fail("Expected exception");
-        } catch (OperationException e) {
-            assertEquals("Query parameters could not be parsed", e.getMessage());
+        } catch (NuxeoException e) {
+            assertEquals("Failed to invoke operation Bulk.RunAction, Query parameters could not be parsed",
+                    e.getMessage());
         }
 
         // should not work with unknown provider name
@@ -237,8 +239,8 @@ public class TestBulkRunAction {
         try {
             service.run(ctx, BulkRunAction.ID, params);
             fail("Expected exception");
-        } catch (OperationException e) {
-            assertEquals("Could not get Provider Definition from either query or provider name", e.getMessage());
+        } catch (NuxeoException e) {
+            assertEquals("Failed to invoke operation Bulk.RunAction, Could not get Provider Definition from either query or provider name", e.getMessage());
         }
 
         // should work with unparameterized simpleProviderTest1
@@ -251,8 +253,10 @@ public class TestBulkRunAction {
         try {
             service.run(ctx, BulkRunAction.ID, params);
             fail("Expected exception");
-        } catch (OperationException e) {
-            assertEquals("Could not parse parameters, expecting valid json value", e.getMessage());
+        } catch (NuxeoException e) {
+            assertEquals(
+                    "Failed to invoke operation Bulk.RunAction, Could not parse parameters, expecting valid json value",
+                    e.getMessage());
         }
     }
 
@@ -273,8 +277,10 @@ public class TestBulkRunAction {
         try {
             service.run(ctx, BulkRunAction.ID, params);
             fail("Command should have failed");
-        } catch (OperationException e) {
-            // ok
+        } catch (NuxeoException e) {
+            String message = e.getMessage();
+            assertTrue(message, message.startsWith(
+                    "Failed to invoke operation Bulk.RunAction, Unknown xpath unknown:path in command: "));
         }
     }
 }

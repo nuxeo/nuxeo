@@ -181,6 +181,36 @@ public class BufferingServletOutputStream extends ServletOutputStream {
 
     }
 
+    /** @since 11.5 */
+    public boolean isCommitted() {
+        return streaming;
+    }
+
+    /** @since 11.5 */
+    public void resetBuffer() {
+        if (streaming) {
+            throw new IllegalStateException();
+        }
+        if (file != null) {
+            try {
+                file.close();
+            } catch (IOException e) {
+                log.error(e, e);
+            }
+            file = null;
+            try {
+                Files.delete(tmp.toPath());
+            } catch (IOException e) {
+                log.error(e, e);
+            }
+            tmp = null;
+        } else {
+            memory = null;
+        }
+        needsFlush = false;
+        needsClose = false;
+    }
+
     /**
      * Writes any buffered data to the underlying {@link OutputStream} and from now on don't buffer anymore.
      */

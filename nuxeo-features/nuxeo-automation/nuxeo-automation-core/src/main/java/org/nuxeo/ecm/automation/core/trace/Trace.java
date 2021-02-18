@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 
 /**
@@ -52,10 +51,9 @@ public class Trace {
 
     protected final Object output;
 
-    protected final OperationException error;
+    protected final Exception error;
 
-    protected Trace(Call parent, OperationType chain, List<Call> calls, Object input, Object output,
-            OperationException error) {
+    protected Trace(Call parent, OperationType chain, List<Call> calls, Object input, Object output, Exception error) {
         this.parent = parent;
         this.chain = chain;
         this.calls = new ArrayList<>(calls);
@@ -72,7 +70,7 @@ public class Trace {
         return chain;
     }
 
-    public OperationException getError() {
+    public Exception getError() {
         return error;
     }
 

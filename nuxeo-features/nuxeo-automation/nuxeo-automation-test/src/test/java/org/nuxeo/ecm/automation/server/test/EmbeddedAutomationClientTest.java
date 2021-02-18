@@ -352,14 +352,14 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // get the root
         Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
         // 1. create a note and exit gracefully
-        Document doc = (Document) session.newRequest("exitNoRollback").setInput(root).execute();
-        assertEquals("/test-exit1", doc.getPath());
+        String result = (String) session.newRequest("exitNoRollback").setInput(root).execute();
+        assertEquals("test exit", result);
         Document note = (Document) session.newRequest(FetchDocument.ID).set("value", "/test-exit1").execute();
-        assertEquals(doc.getPath(), note.getPath());
+        assertEquals("/test-exit1", note.getPath());
 
         // 2. create a note and exit with rollback
-        doc = (Document) session.newRequest("exitRollback").setInput(root).execute();
-        assertEquals("/test-exit2", doc.getPath());
+        result = (String) session.newRequest("exitRollback").setInput(root).execute();
+        assertEquals("test exit", result);
         try {
             note = (Document) session.newRequest(FetchDocument.ID).set("value", "/test-exit2").execute();
             fail("document should not exist");
@@ -369,11 +369,13 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
         // 3. create a note and exit with error (+rollback)
         try {
-            doc = (Document) session.newRequest("exitError").setInput(root).execute();
+            session.newRequest("exitError").setInput(root).execute();
             fail("expected error");
         } catch (RemoteException t) {
-            assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getStatus());
-            assertEquals("Failed to invoke operation: exitError", t.getMessage());
+            assertEquals(ExitOperation.ERR_CODE, t.getStatus());
+            assertEquals(
+                    "Failed to invoke operation: exitError, Failed to invoke operation Test.Exit, termination error",
+                    t.getMessage());
         }
         // test the note was not created
         try {
@@ -383,6 +385,45 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             // do nothing
         }
 
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.test:test-exception-handling-contrib.xml")
+    public void testException() throws IOException {
+        String result = (String) session.newRequest("Test.Exit") //
+                                        .set("rollback", true)
+                                        .execute();
+        assertEquals("test exit", result);
+
+        result = (String) session.newRequest("Test.Exit") //
+                                 .set("rollback", false)
+                                 .execute();
+        assertEquals("test exit", result);
+
+        try {
+            session.newRequest("Test.Exit") //
+                   .set("error", true)
+                   .set("rollback", true)
+                   .execute();
+        } catch (RemoteException e) {
+            assertEquals(ExitOperation.ERR_CODE, e.getStatus());
+            assertEquals(
+                    "Failed to invoke operation: Test.Exit, Failed to invoke operation Test.Exit, termination error",
+                    e.getMessage());
+        }
+
+        // Usually the only errors that can happen on RequestContext.dispose() are those
+        // coming from RestOperationContext when it closes the OperationContext, which does a save().
+        // Given that it's hard in tests to cause an error in save(), we do it by
+        // adding dynamically in the operation another cleanup handler that throws.
+        try {
+            session.newRequest("Test.Exit") //
+                   .setContextProperty("throwOnCleanup", true)
+                   .execute();
+        } catch (RemoteException e) {
+            assertEquals(ExitOperation.ERR_CODE, e.getStatus());
+            assertEquals("exc in cleanup", e.getMessage());
+        }
     }
 
     @Test

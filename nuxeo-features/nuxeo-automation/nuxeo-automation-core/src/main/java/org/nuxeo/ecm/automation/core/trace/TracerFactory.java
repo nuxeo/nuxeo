@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 import org.nuxeo.runtime.api.Framework;
@@ -123,8 +122,7 @@ public class TracerFactory implements TracerFactoryMBean {
         return new Call(chain, context, type, method, params);
     }
 
-    public Trace newTrace(Call parent, OperationType typeof, List<Call> calls, Object output,
-            OperationException error) {
+    public Trace newTrace(Call parent, OperationType typeof, List<Call> calls, Object output, Exception error) {
         return new Trace(parent, typeof, calls, calls.get(0).details.input, output, error);
     }
 
