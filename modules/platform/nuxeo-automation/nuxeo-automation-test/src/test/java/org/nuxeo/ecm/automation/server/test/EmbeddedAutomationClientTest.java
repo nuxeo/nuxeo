@@ -317,20 +317,20 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     @Test
     public void testChainRollback() throws IOException {
         // 1. create a note and exit gracefully
-        JsonNode doc = session.newRequest("exitNoRollback") //
-                              .setInput("doc:/")
-                              .executeReturningDocument();
-        assertEquals("/test-exit1", getPath(doc));
+        String result = session.newRequest("exitNoRollback") //
+                               .setInput("doc:/")
+                               .executeReturningStringEntity();
+        assertEquals("test exit", result);
         JsonNode note = session.newRequest(FetchDocument.ID) //
                                .set("value", "/test-exit1")
                                .executeReturningDocument();
         assertEquals("/test-exit1", getPath(note));
 
         // 2. create a note and exit with rollback
-        doc = session.newRequest("exitRollback") //
-                     .setInput("doc:/")
-                     .executeReturningDocument();
-        assertEquals("/test-exit2", getPath(doc));
+        result = session.newRequest("exitRollback") //
+                        .setInput("doc:/")
+                        .executeReturningStringEntity();
+        assertEquals("test exit", result);
         String error = session.newRequest(FetchDocument.ID) //
                               .set("value", "/test-exit2")
                               .executeReturningExceptionEntity(SC_NOT_FOUND);
@@ -339,13 +339,44 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // 3. create a note and exit with error (+rollback)
         error = session.newRequest("exitError") //
                        .setInput("doc:/")
-                       .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Internal Server Error", error);
+                       .executeReturningExceptionEntity(ExitOperation.ERR_CODE);
+        assertEquals("Failed to invoke operation: exitError, Failed to invoke operation Test.Exit, termination error",
+                error);
         // test the note was not created
         error = session.newRequest(FetchDocument.ID) //
                        .set("value", "/test-exit3")
                        .executeReturningExceptionEntity(SC_NOT_FOUND);
         assertEquals("Failed to invoke operation: Repository.GetDocument, /test-exit3", error);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.test:test-exception-handling-contrib.xml")
+    public void testException() throws IOException {
+        String result = session.newRequest("Test.Exit")
+                               .set("rollback", true)
+                               .executeReturningStringEntity();
+        assertEquals("test exit", result);
+
+        result = session.newRequest("Test.Exit")
+                        .set("rollback", false)
+                        .executeReturningStringEntity();
+        assertEquals("test exit", result);
+
+        String error = session.newRequest("Test.Exit") //
+                              .set("error", true)
+                              .set("rollback", true)
+                              .executeReturningExceptionEntity(ExitOperation.ERR_CODE);
+        assertEquals("Failed to invoke operation: Test.Exit, Failed to invoke operation Test.Exit, termination error",
+                error);
+
+        // Usually the only errors that can happen on RequestContext.dispose() are those
+        // coming from RestOperationContext when it closes the OperationContext, which does a save().
+        // Given that it's hard in tests to cause an error in save(), we do it by
+        // adding dynamically in the operation another cleanup handler that throws.
+        error = session.newRequest("Test.Exit") //
+                       .setContextParameter("throwOnCleanup", true)
+                       .executeReturningExceptionEntity(ExitOperation.ERR_CODE);
+        assertEquals("exc in cleanup", error);
     }
 
     @Test

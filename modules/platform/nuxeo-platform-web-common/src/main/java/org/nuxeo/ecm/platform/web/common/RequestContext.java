@@ -96,9 +96,10 @@ public class RequestContext extends HashMap<String, Object> {
             } catch (RuntimeException e) {
                 // allow other cleanup handlers to do their work
                 if (suppressed == null) {
-                    suppressed = new RuntimeException("Exceptions during cleanup");
+                    suppressed = e;
+                } else {
+                    suppressed.addSuppressed(e);
                 }
-                suppressed.addSuppressed(e);
             }
         }
         cleanupHandlers = null;

@@ -18,12 +18,16 @@
  */
 package org.nuxeo.ecm.platform.web.common.exceptionhandling;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandler;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingListener;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullExceptionHandlingListener;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullRequestDumper;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.RequestDumper;
 
 /**
@@ -35,13 +39,13 @@ public class NuxeoExceptionHandlerParameters {
 
     protected String defaultErrorPage;
 
-    protected RequestDumper requestDumper;
+    protected RequestDumper requestDumper = new NullRequestDumper();
 
     protected Log errorLog;
 
-    protected List<ErrorHandler> handlers;
+    protected List<ErrorHandler> handlers = Collections.emptyList();
 
-    protected ExceptionHandlingListener listener;
+    protected ExceptionHandlingListener listener = new NullExceptionHandlingListener();
 
     public String getBundleName() {
         return bundleName;
@@ -72,7 +76,7 @@ public class NuxeoExceptionHandlerParameters {
     }
 
     public void setLoggerName(String loggerName) {
-        errorLog = LogFactory.getLog(loggerName);
+        errorLog = StringUtils.isBlank(loggerName) ? null : LogFactory.getLog(loggerName);
     }
 
     public List<ErrorHandler> getHandlers() {

@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.automation.server.test;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -197,16 +198,16 @@ public class AsyncOperationAdapterTest {
 
     @Test
     public void testError() throws Exception {
-        String r = session.newRequest("Test.Exit") //
-                          .setInput("Error")
-                          .executeReturningStringEntity();
-        assertEquals("Error", r);
+        String r = async.newRequest("Test.Exit") //
+                        .set("rollback", false)
+                        .executeReturningStringEntity();
+        assertEquals("test exit", r);
 
         String error = async.newRequest("Test.Exit") //
                             .set("error", true)
                             .set("rollback", true)
-                            .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Internal Server Error", error);
+                            .executeReturningExceptionEntity(ExitOperation.ERR_CODE);
+        assertEquals("Failed to invoke operation Test.Exit, termination error", error);
     }
 
     @Test
@@ -252,9 +253,9 @@ public class AsyncOperationAdapterTest {
                              .set("query", "SELECT * FROM Folder")
                              .set("bucketSize", "10")
                              .set("batchSize", "5")
-                             .set("parameters", "{}")
-                             .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Internal Server Error", result);
+                             .set("parameters", "{}") // no operation id
+                             .executeReturningExceptionEntity(SC_BAD_REQUEST);
+        assertTrue(result, result.startsWith("Unknown operation id null in command"));
     }
 
     /**

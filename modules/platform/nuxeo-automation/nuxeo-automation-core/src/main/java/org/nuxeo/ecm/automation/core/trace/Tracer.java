@@ -26,7 +26,6 @@ import java.util.Stack;
 
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 
@@ -48,7 +47,7 @@ public class Tracer implements OperationCallback {
 
         final LinkedList<Call> calls = new LinkedList<>();
 
-        OperationException error;
+        Exception error;
 
         Context(Call parent, OperationType oftype) {
             this.parent = parent;
@@ -98,8 +97,8 @@ public class Tracer implements OperationCallback {
     }
 
     @Override
-    public OperationException onError(OperationException error) {
-        return stack.peek().error = error;
+    public void onError(Exception error) {
+        stack.peek().error = error;
     }
 
 }

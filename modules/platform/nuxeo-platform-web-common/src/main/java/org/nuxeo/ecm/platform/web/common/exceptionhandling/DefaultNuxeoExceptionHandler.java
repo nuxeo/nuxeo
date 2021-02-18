@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.platform.web.common.exceptionhandling;
 
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS_LOGIN;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGINCONTEXT_KEY;
@@ -41,6 +44,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,6 +58,9 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandler;
 import org.nuxeo.runtime.api.Framework;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * @author arussel
  */
@@ -61,7 +68,9 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
     private static final Log log = LogFactory.getLog(DefaultNuxeoExceptionHandler.class);
 
-    protected NuxeoExceptionHandlerParameters parameters;
+    protected static final ObjectMapper MAPPER = new ObjectMapper();
+
+    protected NuxeoExceptionHandlerParameters parameters = new NuxeoExceptionHandlerParameters();
 
     @Override
     public void setParameters(NuxeoExceptionHandlerParameters parameters) {
@@ -111,11 +120,23 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             }
         }
 
+        int defaultStatus;
+        Throwable cause = t;
+        while (cause != null && !(cause instanceof NuxeoException)) {
+            cause = cause.getCause();
+        }
+        if (cause instanceof NuxeoException) {
+            defaultStatus = ((NuxeoException) cause).getStatusCode();
+        } else {
+            defaultStatus = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        }
+
         startHandlingException(request, response, t);
         try {
             ErrorHandler handler = getHandler(t);
             Integer code = handler.getCode();
-            int status = code == null ? HttpServletResponse.SC_INTERNAL_SERVER_ERROR : code.intValue();
+            int status = code == null ? defaultStatus : code.intValue();
+            Log logger = parameters.getLogger();
             parameters.getListener().startHandling(t, request, response);
 
             StringWriter swriter = new StringWriter();
@@ -124,22 +145,33 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             String stackTrace = swriter.getBuffer().toString();
             if (DownloadHelper.isClientAbortError(t)) {
                 DownloadHelper.logClientAbort(t);
-            } else if (status < HttpServletResponse.SC_INTERNAL_SERVER_ERROR) { // 500
-                log.debug(t.getMessage(), t);
+            } else if (status < HttpServletResponse.SC_INTERNAL_SERVER_ERROR) {
+                log.debug(t, t);
             } else {
-                log.error(stackTrace);
-                parameters.getLogger().error(stackTrace);
+                log.error(t, t);
+                if (logger != null) {
+                    logger.error(t, t);
+                }
             }
 
             parameters.getListener().beforeSetErrorPageAttribute(unwrappedException, request, response);
             request.setAttribute("exception_message", unwrappedException.getLocalizedMessage());
-            request.setAttribute("user_message", getUserMessage(handler.getMessage(), request.getLocale()));
+            String message = handler.getMessage();
+            if (message == null) {
+                message = "Error.Unknown";
+            }
+            String bundleName = parameters.getBundleName();
+            if (isNotBlank(bundleName)) {
+                Locale locale = request.getLocale();
+                request.setAttribute("messageBundle",
+                        ResourceBundle.getBundle(bundleName, locale, Thread.currentThread().getContextClassLoader()));
+                message = I18NUtils.getMessageString(bundleName, message, null, locale);
+            }
+            request.setAttribute("user_message", message);
             request.setAttribute("securityError", ExceptionHelper.isSecurityError(unwrappedException));
-            request.setAttribute("messageBundle", ResourceBundle.getBundle(parameters.getBundleName(),
-                    request.getLocale(), Thread.currentThread().getContextClassLoader()));
             String dumpedRequest = parameters.getRequestDumper().getDump(request);
-            if (status >= HttpServletResponse.SC_INTERNAL_SERVER_ERROR) { // 500
-                parameters.getLogger().error(dumpedRequest);
+            if (status >= HttpServletResponse.SC_INTERNAL_SERVER_ERROR && logger != null) {
+                logger.error(dumpedRequest);
             }
             request.setAttribute("isDevModeSet", Framework.isDevModeSet());
             if (Framework.isDevModeSet()) {
@@ -153,14 +185,19 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 // the OutputStream and usage of these two can't be mixed. So we reset the response.
                 response.reset();
                 response.setStatus(status);
-                String errorPage = handler.getPage();
-                errorPage = (errorPage == null) ? parameters.getDefaultErrorPage() : errorPage;
-                RequestDispatcher requestDispatcher = request.getRequestDispatcher(errorPage);
-                if (requestDispatcher != null) {
-                    requestDispatcher.forward(request, response);
+                String errorPage = defaultString(handler.getPage(), parameters.getDefaultErrorPage());
+                if (isNotBlank(errorPage)) {
+                    RequestDispatcher requestDispatcher = request.getRequestDispatcher(errorPage);
+                    if (requestDispatcher != null) {
+                        requestDispatcher.forward(request, response);
+                    } else {
+                        log.error("Cannot forward to error page, no RequestDispatcher found for errorPage=" + errorPage
+                                + " handler=" + handler);
+                    }
                 } else {
-                    log.error("Cannot forward to error page, no RequestDispatcher found for errorPage=" + errorPage
-                            + " handler=" + handler);
+                    // missing config or unit tests
+                    // do a minimal output here, it's a borderline case for an exception during filters cleanup
+                    writeExceptionAsJson(response, status, unwrappedException);
                 }
                 parameters.getListener().responseComplete();
             } else if (!DownloadHelper.isClientAbortError(t)) {
@@ -220,11 +257,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 return handler;
             }
         }
-        throw new NuxeoException("No error handler set.");
-    }
-
-    protected Object getUserMessage(String messageKey, Locale locale) {
-        return I18NUtils.getMessageString(parameters.getBundleName(), messageKey, null, locale);
+        return new ErrorHandler();
     }
 
     protected Principal getPrincipal(HttpServletRequest request) {
@@ -238,6 +271,27 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                                 .orElse(null);
         }
         return principal;
+    }
+
+    protected void writeExceptionAsJson(HttpServletResponse response, int status, Throwable e) throws IOException {
+        response.setContentType(MediaType.APPLICATION_JSON);
+        try (PrintWriter w = response.getWriter(); //
+                JsonGenerator jg = MAPPER.createGenerator(w);) {
+            jg.writeStartObject();
+            jg.writeStringField("entity-type", "exception");
+            jg.writeNumberField("status", status);
+            jg.writeStringField("message", getExceptionMessage(e.getMessage(), status));
+            jg.writeEndObject();
+            jg.flush();
+        }
+    }
+
+    protected String getExceptionMessage(String message, int status) {
+        if (status < SC_INTERNAL_SERVER_ERROR || Framework.isDevModeSet()) {
+            return defaultString(message, "");
+        } else {
+            return "Internal Server Error";
+        }
     }
 
 }
