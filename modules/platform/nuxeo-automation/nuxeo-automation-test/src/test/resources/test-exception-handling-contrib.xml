@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.server.test.exceptionhandling">
+
+  <extension
+    target="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService"
+    point="errorhandlers">
+    <!-- no logger or redirection to error page -->
+    <errorHandlers bundle="messages" loggerName="" defaultpage="" />
+  </extension>
+
+</component>

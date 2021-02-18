@@ -63,7 +63,15 @@ public class BufferingHttpServletResponse extends HttpServletResponseWrapper {
         bufferingOutputStream.stopBuffering();
     }
 
+    @Override
+    public boolean isCommitted() {
+        return bufferingOutputStream.isCommitted();
+    }
 
+    @Override
+    public void resetBuffer() {
+        bufferingOutputStream.resetBuffer();
+    }
 
     /**
      * Don't flush if we are still buffering.

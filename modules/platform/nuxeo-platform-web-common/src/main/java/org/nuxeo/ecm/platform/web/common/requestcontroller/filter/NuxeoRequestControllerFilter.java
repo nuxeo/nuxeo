@@ -138,9 +138,18 @@ public class NuxeoRequestControllerFilter implements Filter {
             }
             chain.doFilter(request, response);
         } catch (IOException | ServletException | RuntimeException e) {
+            if (!response.isCommitted()) {
+                response.resetBuffer();
+            }
+            int status;
+            if (e instanceof NuxeoException) {
+                status = ((NuxeoException) e).getStatusCode();
+            } else {
+                status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            }
             // Don't call response.sendError, because it commits the response
             // which prevents NuxeoExceptionFilter from returning a custom error page.
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setStatus(status);
             if (TransactionHelper.isTransactionActive()) {
                 TransactionHelper.setTransactionRollbackOnly();
             }

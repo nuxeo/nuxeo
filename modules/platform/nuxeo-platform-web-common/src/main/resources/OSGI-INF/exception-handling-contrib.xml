@@ -12,8 +12,6 @@
           message="Error.Document.Not.Found" />
         <handler error=".*SecurityException" code="403"
           message="Error.Insuffisant.Rights" page="/nuxeo_error_security.jsp" />
-        <handler error=".*" code="500"
-          message="Error.Unknown" />
       </handlers>
     </errorHandlers>
   </extension>
@@ -29,13 +27,6 @@
         </notListed>
       -->
     </requestdump>
-  </extension>
-
-  <extension
-    target="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService"
-    point="listener">
-    <listener
-      class="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullExceptionHandlingListener" />
   </extension>
 
   <extension

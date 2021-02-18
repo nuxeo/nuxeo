@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.adapters;
 
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
@@ -55,6 +57,7 @@ import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.OperationResource;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
+import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
 import org.nuxeo.ecm.core.api.AsyncService;
 import org.nuxeo.ecm.core.api.AsyncStatus;
 import org.nuxeo.ecm.core.api.Blob;
@@ -101,6 +104,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     protected static final String TRANSIENT_STORE_SERVICE = "service";
 
     protected static final String TRANSIENT_STORE_TASK_ID = "taskId";
+
+    protected static final String TRANSIENT_STORE_ERROR_STATUS = "status";
 
     protected static final String TRANSIENT_STORE_ERROR = "error";
 
@@ -173,9 +178,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
             }
 
             @Override
-            public OperationException onError(OperationException error) {
+            public void onError(Exception error) {
                 setError(executionId, error);
-                return error;
             }
 
         });
@@ -195,12 +199,12 @@ public class AsyncOperationAdapter extends DefaultAdapter {
                         CoreSession s = CoreInstance.getCoreSession(repoName, principal);
                         opCtx.setCoreSession(s);
                         service.run(opCtx, opId, xreq.getParams());
-                    } catch (OperationException e) {
+                    } catch (RuntimeException | OperationException e) {
                         setError(executionId, e);
                     } finally {
                         LoginComponent.popPrincipal();
                     }
-	         });
+                });
              }
         }, String.format("Nuxeo-AsyncOperation-%s", executionId)).start();
 
@@ -215,24 +219,18 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     @GET
     @Path("{executionId}/status")
     public Object status(@PathParam("executionId") String executionId) throws IOException, MessagingException {
-        String error = getError(executionId);
-        if (error != null) {
-            throw new NuxeoException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
         if (isCompleted(executionId)) {
             String resURL = String.format("%s/%s", getPath(), executionId);
             return redirect(resURL);
         } else {
-            if (isAsync(executionId)) {
-                Serializable taskId = getTaskId(executionId);
-                Object result = getAsyncService(executionId).getStatus(taskId);
+            Serializable taskId = getAsyncTaskId(executionId);
+            if (taskId != null) {
+                AsyncStatus<?> result = getAsyncService(executionId).getStatus(taskId);
                 return ResponseHelper.getResponse(result, request, HttpServletResponse.SC_OK);
-            } else {
-                return Response.status(HttpServletResponse.SC_OK)
-                               .entity(MAPPER.writeValueAsString(RUNNING_STATUS))
-                               .build();
             }
-
+            return Response.status(HttpServletResponse.SC_OK) //
+                           .entity(MAPPER.writeValueAsString(RUNNING_STATUS))
+                           .build();
         }
     }
 
@@ -243,13 +241,14 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         if (isCompleted(executionId)) {
             Object output = getResult(executionId);
 
+            int status = getErrorStatus(executionId);
             String error = getError(executionId);
 
             // cleanup after result is accessed
             cleanup(executionId);
 
-            if (error != null) {
-                throw new NuxeoException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            if (status != 0) {
+                throw new NuxeoException(error, status);
             }
 
             // if output is a map let's return as json
@@ -281,8 +280,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     public Object abort(@PathParam("executionId") String executionId) throws IOException, MessagingException {
         if (exists(executionId) && !isCompleted(executionId)) {
             // TODO NXP-26304: support aborting any execution
-            if (isAsync(executionId)) {
-                Serializable taskId = getTaskId(executionId);
+            Serializable taskId = getAsyncTaskId(executionId);
+            if (taskId != null) {
                 return getAsyncService(executionId).abort(taskId);
             }
             return ResponseHelper.getResponse(RUNNING_STATUS, request, HttpServletResponse.SC_OK);
@@ -305,16 +304,34 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     protected void setError(String executionId, Throwable t) {
-        setError(executionId, ExceptionHelper.unwrapException(t).getMessage());
-    }
-
-    /**
-     * @deprecated since 11.1, because unused
-     */
-    @Deprecated(since = "11.1")
-    protected void setError(String executionId, String error) {
+        // find custom status from any NuxeoException or RestOperationException
+        int status = SC_INTERNAL_SERVER_ERROR;
+        Throwable cause = t;
+        do {
+            if (cause instanceof NuxeoException) {
+                status = ((NuxeoException) cause).getStatusCode();
+            } else if (cause instanceof RestOperationException) {
+                status = ((RestOperationException) cause).getStatus();
+            }
+            cause = cause.getCause();
+        } while (cause != null);
+        String error;
+        if (status < SC_INTERNAL_SERVER_ERROR) {
+            error = ExceptionHelper.unwrapException(t).getMessage();
+            if (error == null) {
+                error = "";
+            }
+        } else {
+            error = "Internal Server Error";
+        }
+        getTransientStore().putParameter(executionId, TRANSIENT_STORE_ERROR_STATUS, (long) status);
         getTransientStore().putParameter(executionId, TRANSIENT_STORE_ERROR, error);
         setCompleted(executionId);
+    }
+
+    public int getErrorStatus(String executionId) {
+        Long status = (Long) getTransientStore().getParameter(executionId, TRANSIENT_STORE_ERROR_STATUS);
+        return status == null ? 0 : status.intValue();
     }
 
     public String getError(String executionId) {
@@ -325,8 +342,12 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         TransientStore ts = getTransientStore();
         // store only taskId for async tasks
         if (isAsync(executionId)) {
-            Serializable taskId = output instanceof AsyncStatus ? ((AsyncStatus<?>) output).getId() : output;
-            ts.putParameter(executionId, TRANSIENT_STORE_TASK_ID, taskId);
+            if (output instanceof AsyncStatus) {
+                Serializable taskId = ((AsyncStatus<?>) output).getId();
+                ts.putParameter(executionId, TRANSIENT_STORE_TASK_ID, taskId);
+            } else if (output != null) {
+                log.error("Unexpected output instead of async status: {}", output);
+            }
         } else {
             if (output instanceof DocumentModel) {
                 detach((DocumentModel) output);
@@ -339,7 +360,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
             } else if (output instanceof BlobList) {
                 ts.putParameter(executionId, TRANSIENT_STORE_OUTPUT_BLOB, false);
                 ts.putBlobs(executionId, (BlobList) output);
-            } else {
+            } else if (output != null) {
                 ts.putParameter(executionId, TRANSIENT_STORE_OUTPUT, output);
             }
         }
@@ -348,12 +369,9 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     protected Object getResult(String executionId) {
         TransientStore ts = getTransientStore();
 
-        if (isAsync(executionId)) {
-            AsyncService<Serializable, ?, ?> service = getAsyncService(executionId);
-            if (service != null) {
-                Serializable taskId = ts.getParameter(executionId, TRANSIENT_STORE_TASK_ID);
-                return service.getResult(taskId);
-            }
+        Serializable taskId = getAsyncTaskId(executionId);
+        if (taskId != null) {
+            return getAsyncService(executionId).getResult(taskId);
         }
 
         Object output;
@@ -384,8 +402,11 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         return getTransientStore().getParameter(executionId, TRANSIENT_STORE_SERVICE) != null;
     }
 
-    protected Serializable getTaskId(String executionId) {
-        return getTransientStore().getParameter(executionId, TRANSIENT_STORE_TASK_ID);
+    protected Serializable getAsyncTaskId(String executionId) {
+        if (isAsync(executionId)) {
+            return getTransientStore().getParameter(executionId, TRANSIENT_STORE_TASK_ID);
+        }
+        return null;
     }
 
     protected AsyncService<Serializable, ?, ?> getAsyncService(String executionId) {
@@ -405,8 +426,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     protected boolean isCompleted(String executionId) {
-        if (isAsync(executionId)) {
-            Serializable taskId = getTransientStore().getParameter(executionId, TRANSIENT_STORE_TASK_ID);
+        Serializable taskId = getAsyncTaskId(executionId);
+        if (taskId != null) {
             return getAsyncService(executionId).getStatus(taskId).isCompleted();
         }
         return getTransientStore().isCompleted(executionId);

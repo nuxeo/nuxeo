@@ -214,9 +214,12 @@ public class OperationChainCompiler {
                     if (e.isRollback()) {
                         ctx.setRollback();
                     }
-                    return ctx.getInput();
-                } catch (OperationException op) {
-                    throw ctx.getCallback().onError(op);
+                    Object output = e.getOutput();
+                    ctx.getCallback().onOperationExit(output);
+                    return output;
+                } catch (RuntimeException | OperationException e) {
+                    ctx.getCallback().onError(e);
+                    throw e;
                 } finally {
                     ctx.getCallback().onChainExit();
                 }

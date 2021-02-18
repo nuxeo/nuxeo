@@ -20,11 +20,14 @@ package org.nuxeo.ecm.automation.server.test;
 
 import org.nuxeo.ecm.automation.ExitException;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.platform.web.common.RequestContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -33,6 +36,8 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 public class ExitOperation {
 
     public static final String ID = "Test.Exit";
+
+    public static final int ERR_CODE = 444;
 
     @Context
     protected OperationContext ctx;
@@ -43,12 +48,21 @@ public class ExitOperation {
     @Param(name = "rollback", required = false)
     protected boolean rollback = false;
 
+    @Param(name = "throwOnCleanup", required = false)
+    protected boolean throwOnCleanup = false;
+
     @OperationMethod
-    public void run() throws Exception {
-        if (error && rollback) {
-            throw new Exception("termination error");
+    public void run() throws OperationException {
+        if (throwOnCleanup) {
+            RequestContext.getActiveContext().addRequestCleanupHandler(req -> {
+                throw new NuxeoException("exc in cleanup", ERR_CODE);
+            });
+            return;
         }
-        throw new ExitException(ctx.getInput(), rollback);
+        if (error && rollback) {
+            throw new NuxeoException("termination error", ERR_CODE);
+        }
+        throw new ExitException("test exit", rollback);
     }
 
 }
