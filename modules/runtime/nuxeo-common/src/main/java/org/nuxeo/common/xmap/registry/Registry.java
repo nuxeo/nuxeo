@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public interface Registry {
+public interface Registry<T> {
 
     /**
      * Returns true if registry is just a placeholder and should not be used for registrations.
@@ -68,7 +68,7 @@ public interface Registry {
      * <p>
      * Several registrations can be done with the same tag.
      */
-    void register(Context ctx, XAnnotatedObject xObject, Element element, String tag);
+    void register(Context ctx, XAnnotatedObject<T> xObject, Element element, String tag);
 
     /**
      * Unregisters all elements previously registered with given tag identifier.

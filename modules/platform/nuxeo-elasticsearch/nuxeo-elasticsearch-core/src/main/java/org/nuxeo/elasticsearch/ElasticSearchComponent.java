@@ -129,7 +129,7 @@ public class ElasticSearchComponent extends DefaultComponent
                 EP_CLIENT_INIT)
                                                      .orElseThrow(() -> new IllegalArgumentException(
                                                              "Missing Elasticsearch client contribution"));
-        Map<String, ElasticSearchIndexConfig> indexConfig = this.<MapRegistry> getExtensionPointRegistry(EP_INDEX)
+        Map<String, ElasticSearchIndexConfig> indexConfig = this.<MapRegistry<ElasticSearchIndexConfig>> getExtensionPointRegistry(EP_INDEX)
                                                                 .getContributions();
         JsonESDocumentWriter jsonESDocumentWriter = this.<ElasticSearchDocWriterDescriptor> getRegistryContribution(
                 EP_DOC_WRITER).map(desc -> {

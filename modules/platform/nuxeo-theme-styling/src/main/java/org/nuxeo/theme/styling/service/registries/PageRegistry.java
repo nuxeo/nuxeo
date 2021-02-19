@@ -50,7 +50,7 @@ import org.w3c.dom.Element;
  *
  * @since 5.5
  */
-public class PageRegistry extends MapRegistry {
+public class PageRegistry extends MapRegistry<PageDescriptor> {
 
     protected static final String GLOBAL_CONFIG_NAME = "*";
 
@@ -58,7 +58,7 @@ public class PageRegistry extends MapRegistry {
 
     protected Map<String, PageDescriptor> mergedPages;
 
-    protected static XAnnotatedObject xBundle;
+    protected static XAnnotatedObject<ResourceBundleDescriptor> xBundle;
 
     static {
         XMap fxmap = new XMap();
@@ -72,7 +72,7 @@ public class PageRegistry extends MapRegistry {
         mergedPages = Collections.synchronizedMap(new LinkedHashMap<>());
         globalPage = null;
         if (!disabled.contains(GLOBAL_CONFIG_NAME)) {
-            globalPage = (PageDescriptor) contributions.get(GLOBAL_CONFIG_NAME);
+            globalPage = contributions.get(GLOBAL_CONFIG_NAME);
         }
 
         if (globalPage == null) {
@@ -80,60 +80,58 @@ public class PageRegistry extends MapRegistry {
         } else {
             super.getContributions().forEach((k, v) -> {
                 if (GLOBAL_CONFIG_NAME.equals(k)) {
-                    mergedPages.put(k, (PageDescriptor) v);
+                    mergedPages.put(k, v);
                 } else {
                     // merge with global resources
-                    mergedPages.put(k, mergePage((PageDescriptor) v, globalPage));
+                    mergedPages.put(k, mergePage(v, globalPage));
                 }
             });
         }
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> Map<String, T> getContributions() {
+    public Map<String, PageDescriptor> getContributions() {
         checkInitialized();
-        return (Map<String, T>) Collections.unmodifiableMap(mergedPages);
+        return Collections.unmodifiableMap(mergedPages);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> List<T> getContributionValues() {
+    public List<PageDescriptor> getContributionValues() {
         checkInitialized();
-        return (List<T>) new ArrayList<>(mergedPages.values());
+        return new ArrayList<>(mergedPages.values());
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> Optional<T> getContribution(String id) {
+    public Optional<PageDescriptor> getContribution(String id) {
         checkInitialized();
         if (GLOBAL_CONFIG_NAME.contentEquals(id)) {
-            return Optional.ofNullable((T) globalPage);
+            return Optional.ofNullable(globalPage);
         }
         if (disabled.contains(id)) {
             return Optional.empty();
         }
-        return Optional.ofNullable((T) mergedPages.get(id));
+        return Optional.ofNullable(mergedPages.get(id));
     }
 
-    public Registry getTargetRegistry() {
-        return Framework.getRuntime()
-                        .getComponentManager()
-                        .getExtensionPointRegistry("org.nuxeo.ecm.platform.WebResources", "bundles")
-                        .orElseThrow(() -> new IllegalArgumentException("Unknown target registry"));
+    public Registry<ResourceBundleDescriptor> getTargetRegistry() {
+        return (Registry<ResourceBundleDescriptor>) Framework.getRuntime()
+                                                             .getComponentManager()
+                                                             .getExtensionPointRegistry(
+                                                                     "org.nuxeo.ecm.platform.WebResources", "bundles")
+                                                             .orElseThrow(() -> new IllegalArgumentException(
+                                                                     "Unknown target registry"));
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
-        PageDescriptor page = (PageDescriptor) super.doRegister(ctx, xObject, element, extensionId);
+    protected PageDescriptor doRegister(Context ctx, XAnnotatedObject<PageDescriptor> xObject, Element element, String extensionId) {
+        PageDescriptor page = super.doRegister(ctx, xObject, element, extensionId);
         if (page != null) {
             // forward bundle to WebResourceManager bundle registry, build DOM element from scratch
             Document xmlDoc = new DocumentImpl();
             Element root = xmlDoc.createElement("bundle");
             root.setAttribute("name", page.getComputedResourceBundleName());
             String doMerge = "false";
-            XAnnotatedMember merge = xObject.getMerge();
+            XAnnotatedMember<Boolean> merge = xObject.getMerge();
             if (merge != null && Boolean.TRUE.equals(merge.getValue(ctx, element))) {
                 doMerge = "true";
             }
@@ -149,7 +147,7 @@ public class PageRegistry extends MapRegistry {
             }
             getTargetRegistry().register(ctx, xBundle, root, extensionId);
         }
-        return (T) page;
+        return page;
     }
 
     protected PageDescriptor mergePage(PageDescriptor page, PageDescriptor globalPage) {
@@ -172,7 +170,7 @@ public class PageRegistry extends MapRegistry {
     }
 
     public PageDescriptor getPage(String id) {
-        return (PageDescriptor) getContribution(id).orElse(null);
+        return getContribution(id).orElse(null);
     }
 
     public List<PageDescriptor> getPages() {

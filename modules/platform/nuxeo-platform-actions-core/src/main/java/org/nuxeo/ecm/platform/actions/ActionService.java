@@ -155,7 +155,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     protected ActionRegistry getActionRegistry() {
-        return getExtensionPointRegistry(ACTIONS_XP);
+        return this.<ActionRegistry> getExtensionPointRegistry(ACTIONS_XP);
     }
 
     @SuppressWarnings("resource") // timerContext closed by stop() in finally
@@ -236,7 +236,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     public boolean isEnabled(Action action, ActionContext context) {
-        MapRegistry filterReg = getExtensionPointRegistry(FILTERS_XP);
+        MapRegistry<ActionFilter> filterReg = getExtensionPointRegistry(FILTERS_XP);
         for (String filterId : action.getFilterIds()) {
             Optional<ActionFilter> filter = filterReg.getContribution(filterId);
             if (filter.isPresent() && !filter.get().accept(context)) {
@@ -252,13 +252,13 @@ public class ActionService extends DefaultComponent implements ActionManager {
         if (action == null) {
             return null;
         }
-        MapRegistry filterReg = getExtensionPointRegistry(FILTERS_XP);
+        MapRegistry<ActionFilter> filterReg = getExtensionPointRegistry(FILTERS_XP);
         List<String> filterIds = action.getFilterIds();
         if (filterIds != null && !filterIds.isEmpty()) {
             ActionFilter[] filters = new ActionFilter[filterIds.size()];
             for (int i = 0; i < filters.length; i++) {
                 String filterId = filterIds.get(i);
-                filters[i] = (ActionFilter) filterReg.getContribution(filterId).orElse(null);
+                filters[i] = filterReg.getContribution(filterId).orElse(null);
             }
             return filters;
         }
@@ -297,9 +297,9 @@ public class ActionService extends DefaultComponent implements ActionManager {
         }
         final Timer.Context timerContext = filtersTimer.time();
         try {
-            MapRegistry filterReg = getExtensionPointRegistry(FILTERS_XP);
+            MapRegistry<ActionFilter> filterReg = getExtensionPointRegistry(FILTERS_XP);
             for (String filterId : filterIds) {
-                ActionFilter filter = (ActionFilter) filterReg.getContribution(filterId).orElse(null);
+                ActionFilter filter = filterReg.getContribution(filterId).orElse(null);
                 if (filter == null) {
                     continue;
                 }

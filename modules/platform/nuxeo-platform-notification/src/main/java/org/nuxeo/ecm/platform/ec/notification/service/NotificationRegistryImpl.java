@@ -37,7 +37,7 @@ import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
 /**
  * Registry with extra API for notification configurations retrieval.
  */
-public class NotificationRegistryImpl extends MapRegistry implements NotificationRegistry {
+public class NotificationRegistryImpl extends MapRegistry<Notification> implements NotificationRegistry {
 
     // maps EventId to a list of notifications
     protected final Map<String, List<Notification>> notificationsByEvent = new ConcurrentHashMap<>();

@@ -131,7 +131,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     }
 
     @SuppressWarnings("unchecked")
-    protected <T extends Registry> T getRegistry(String extensionPoint) {
+    protected <T extends Registry<?>> T getRegistry(String extensionPoint) {
         return (T) Framework.getRuntime()
                             .getComponentManager()
                             .getExtensionPointRegistry(NAME, extensionPoint)
@@ -143,11 +143,11 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     public void init() {
         asyncExec.init();
         listenerDescriptors = getRegistry(EVENT_LISTENER_XP);
-        this.<SingleRegistry> getRegistry(EVENT_DISPATCHER_XP)
+        this.<SingleRegistry<EventDispatcherDescriptor>> getRegistry(EVENT_DISPATCHER_XP)
             .getContribution()
-            .map(EventDispatcherDescriptor.class::cast)
             .ifPresent(dispatcher -> {
-                List<EventPipeDescriptor> pipes = this.<MapRegistry> getRegistry(EVENT_PIPE_XP).getContributionValues();
+                List<EventPipeDescriptor> pipes = this.<MapRegistry<EventPipeDescriptor>> getRegistry(EVENT_PIPE_XP)
+                                                      .getContributionValues();
                 if (!pipes.isEmpty()) {
                     pipeDispatcher = dispatcher.getInstance();
                     pipeDispatcher.init(pipes, dispatcher.getParameters());
@@ -535,7 +535,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     @Override
     public List<DomainEventProducer> createDomainEventProducers() {
         // TODO: optimize this by keeping an immutable list
-        return this.<MapRegistry> getRegistry(DOMAIN_EVENT_PRODUCER_XP)
+        return this.<MapRegistry<DomainEventProducerDescriptor>> getRegistry(DOMAIN_EVENT_PRODUCER_XP)
                    .getContributionValues()
                    .stream()
                    .map(DomainEventProducerDescriptor.class::cast)
@@ -544,8 +544,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     }
 
     protected void initDomainEventStreams() {
-        List<DomainEventProducerDescriptor> descriptors = this.<MapRegistry> getRegistry(DOMAIN_EVENT_PRODUCER_XP)
-                                                              .getContributionValues();
+        List<DomainEventProducerDescriptor> descriptors = this.<MapRegistry<DomainEventProducerDescriptor>> getRegistry(
+                DOMAIN_EVENT_PRODUCER_XP).getContributionValues();
         Settings settings = new Settings(1, 1);
         List<String> streams = new ArrayList<>();
         CodecService codecService = Framework.getService(CodecService.class);

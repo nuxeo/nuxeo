@@ -115,7 +115,8 @@ public class DmkComponent extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
-        Map<String, DmkProtocol> configs = this.<MapRegistry> getExtensionPointRegistry(XP).getContributions();
+        Map<String, DmkProtocol> configs = this.<MapRegistry<DmkProtocol>> getExtensionPointRegistry(XP)
+                                               .getContributions();
         if (configs.containsKey("html")) {
             htmlAdaptor = newAdaptor(configs.get("html"));
             log.info("JMX HTML adaptor available at port 8081 (not active, to be started in JMX console)");

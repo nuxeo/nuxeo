@@ -39,11 +39,11 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class MapRegistry extends AbstractRegistry implements Registry {
+public class MapRegistry<T> extends AbstractRegistry<T> {
 
     private static final Logger log = LogManager.getLogger(MapRegistry.class);
 
-    protected Map<String, Object> contributions = Collections.synchronizedMap(new LinkedHashMap<>());
+    protected Map<String, T> contributions = Collections.synchronizedMap(new LinkedHashMap<>());
 
     protected Set<String> disabled = ConcurrentHashMap.newKeySet();
 
@@ -56,8 +56,7 @@ public class MapRegistry extends AbstractRegistry implements Registry {
         super.initialize();
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> Map<String, T> getContributions() {
+    public Map<String, T> getContributions() {
         checkInitialized();
         return (Map<String, T>) contributions.entrySet()
                                              .stream()
@@ -66,8 +65,7 @@ public class MapRegistry extends AbstractRegistry implements Registry {
                                                      (v1, v2) -> v2, LinkedHashMap::new));
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> List<T> getContributionValues() {
+    public List<T> getContributionValues() {
         checkInitialized();
         return (List<T>) contributions.entrySet()
                                       .stream()
@@ -76,8 +74,7 @@ public class MapRegistry extends AbstractRegistry implements Registry {
                                       .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> Optional<T> getContribution(String id) {
+    public Optional<T> getContribution(String id) {
         if (id == null) {
             id = DEFAULT_KEY;
         }
@@ -93,7 +90,7 @@ public class MapRegistry extends AbstractRegistry implements Registry {
         return Collections.unmodifiableSet(disabled);
     }
 
-    protected String computeId(Context ctx, XAnnotatedObject xObject, Element element) {
+    protected String computeId(Context ctx, XAnnotatedObject<T> xObject, Element element) {
         String id = (String) xObject.getRegistryId().getValue(ctx, element);
         if (id == null) {
             // prevent NPE on map key
@@ -102,7 +99,7 @@ public class MapRegistry extends AbstractRegistry implements Registry {
         return id;
     }
 
-    protected boolean shouldMerge(Context ctx, XAnnotatedObject xObject, Element element, String extensionId, String id,
+    protected boolean shouldMerge(Context ctx, XAnnotatedObject<T> xObject, Element element, String extensionId, String id,
             Object existing) {
         if (super.shouldMerge(ctx, xObject, element, extensionId)) {
             XAnnotatedMember merge = xObject.getMerge();
@@ -120,8 +117,7 @@ public class MapRegistry extends AbstractRegistry implements Registry {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected T doRegister(Context ctx, XAnnotatedObject<T> xObject, Element element, String extensionId) {
         String id = computeId(ctx, xObject, element);
 
         if (shouldRemove(ctx, xObject, element, extensionId)) {
@@ -129,8 +125,8 @@ public class MapRegistry extends AbstractRegistry implements Registry {
             return null;
         }
 
-        Object contrib;
-        Object existing = contributions.get(id);
+        T contrib;
+        T existing = contributions.get(id);
         if (shouldMerge(ctx, xObject, element, extensionId, id, existing)) {
             contrib = getMergedInstance(ctx, xObject, element, existing);
         } else {

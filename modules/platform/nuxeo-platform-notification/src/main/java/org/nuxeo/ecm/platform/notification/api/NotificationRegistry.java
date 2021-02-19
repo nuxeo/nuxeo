@@ -27,7 +27,7 @@ import org.nuxeo.common.xmap.registry.Registry;
 /**
  * Notification descriptors registry API.
  */
-public interface NotificationRegistry extends Registry {
+public interface NotificationRegistry extends Registry<Notification> {
 
     /**
      * Gets the list of event names used by notifications.

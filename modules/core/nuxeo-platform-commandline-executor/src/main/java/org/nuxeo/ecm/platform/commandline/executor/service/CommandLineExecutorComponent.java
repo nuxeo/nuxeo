@@ -71,7 +71,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
     @Override
     public void start(ComponentContext context) {
         // compatibility check after behavior change: descriptor used to accept multiple names separated by a comma
-        this.<MapRegistry> getExtensionPointRegistry(EP_ENV)
+        this.<MapRegistry<EnvironmentDescriptor>> getExtensionPointRegistry(EP_ENV)
             .getContributions()
             .keySet()
             .stream()
@@ -170,7 +170,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
     @Override
     public List<String> getRegistredCommands() {
-        return new ArrayList<>(this.<MapRegistry> getExtensionPointRegistry(EP_CMD).getContributions().keySet());
+        return new ArrayList<>(this.<MapRegistry<?>> getExtensionPointRegistry(EP_CMD).getContributions().keySet());
     }
 
     @Override

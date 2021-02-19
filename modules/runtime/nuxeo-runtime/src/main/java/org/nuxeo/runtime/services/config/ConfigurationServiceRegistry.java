@@ -30,11 +30,11 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class ConfigurationServiceRegistry extends MapRegistry {
+public class ConfigurationServiceRegistry extends MapRegistry<ConfigurationPropertyDescriptor> {
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected ConfigurationPropertyDescriptor doRegister(Context ctx,
+            XAnnotatedObject<ConfigurationPropertyDescriptor> xObject, Element element, String extensionId) {
         String id = computeId(ctx, xObject, element);
         if (shouldRemove(ctx, xObject, element, extensionId)) {
             contributions.remove(id);
@@ -48,14 +48,14 @@ public class ConfigurationServiceRegistry extends MapRegistry {
                     id, extensionId);
             DeprecationLogger.log(message, "7.4");
         }
-        ConfigurationPropertyDescriptor existing = (ConfigurationPropertyDescriptor) contributions.get(id);
+        ConfigurationPropertyDescriptor existing = contributions.get(id);
         if (existing != null) {
             ConfigurationPropertyDescriptor merged = existing.merge(contrib);
             contributions.put(id, merged);
         } else {
             contributions.put(id, contrib);
         }
-        return (T) contrib;
+        return contrib;
     }
 
 }

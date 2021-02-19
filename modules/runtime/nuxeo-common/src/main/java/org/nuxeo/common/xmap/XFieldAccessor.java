@@ -25,7 +25,7 @@ import java.lang.reflect.Field;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class XFieldAccessor implements XAccessor {
+public class XFieldAccessor<T> implements XAccessor<T> {
 
     private final Field field;
 
@@ -34,13 +34,14 @@ public class XFieldAccessor implements XAccessor {
         this.field.setAccessible(true);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Class<?> getType() {
-        return field.getType();
+    public Class<T> getType() {
+        return (Class<T>) field.getType();
     }
 
     @Override
-    public void setValue(Object instance, Object value) {
+    public void setValue(Object instance, T value) {
         try {
             field.set(instance, value);
         } catch (IllegalAccessException e) {
@@ -48,10 +49,11 @@ public class XFieldAccessor implements XAccessor {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Object getValue(Object instance) {
+    public T getValue(Object instance) {
         try {
-            return field.get(instance);
+            return (T) field.get(instance);
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException(e);
         }

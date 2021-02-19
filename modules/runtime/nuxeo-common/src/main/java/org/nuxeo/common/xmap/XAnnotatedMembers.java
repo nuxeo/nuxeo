@@ -30,31 +30,31 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class XAnnotatedMembers extends XAnnotatedMember {
+public class XAnnotatedMembers<T> extends XAnnotatedMember<T> {
 
-    protected XAnnotatedMember[] members;
+    protected XAnnotatedMember<T>[] members;
 
     protected String separator;
 
-    public XAnnotatedMembers(XMap xmap, XAccessor setter, XAnnotatedMember[] members, String separator,
+    public XAnnotatedMembers(XMap xmap, XAccessor<T> setter, XAnnotatedMember<T>[] members, String separator,
             String defaultValue) {
         super(xmap, setter);
         init(xmap, setter, members, separator, defaultValue);
     }
 
-    public XAnnotatedMembers(XMap xmap, XAccessor setter, XNodes anno) {
+    public XAnnotatedMembers(XMap xmap, XAccessor<T> setter, XNodes anno) {
         this(xmap, setter, anno.values(), anno.separator(), anno.defaultAssignment());
     }
 
-    public XAnnotatedMembers(XMap xmap, XAccessor setter, String[] values, String separator, String defaultValue) {
+    public XAnnotatedMembers(XMap xmap, XAccessor<T> setter, String[] values, String separator, String defaultValue) {
         super(xmap, setter);
-        XAnnotatedMember[] members = Arrays.stream(values)
-                                           .map(value -> new XAnnotatedReference(xmap, String.class, value, null, null))
-                                           .toArray(XAnnotatedMember[]::new);
+        XAnnotatedMember<T>[] members = Arrays.stream(values)
+                                              .map(value -> new XAnnotatedReference(xmap, String.class, value, null, null))
+                                              .toArray(XAnnotatedMember[]::new);
         init(xmap, setter, members, separator, defaultValue);
     }
 
-    protected void init(XMap xmap, XAccessor setter, XAnnotatedMember[] members, String separator,
+    protected void init(XMap xmap, XAccessor<T> setter, XAnnotatedMember<T>[] members, String separator,
             String defaultValue) {
         this.members = members;
         this.separator = separator;
@@ -62,7 +62,9 @@ public class XAnnotatedMembers extends XAnnotatedMember {
         if (setter != null) {
             type = setter.getType();
         } else {
-            type = String.class;
+            @SuppressWarnings("unchecked")
+            Class<T> stringType = (Class<T>) String.class;
+            type = stringType;
         }
         valueFactory = xmap.getValueFactory(type);
         xao = xmap.register(type);
@@ -74,9 +76,9 @@ public class XAnnotatedMembers extends XAnnotatedMember {
     }
 
     @Override
-    public Object getValue(Context ctx, Element base) {
+    public T getValue(Context ctx, Element base) {
         List<String> values = new ArrayList<>();
-        for (XAnnotatedMember member : members) {
+        for (XAnnotatedMember<T> member : members) {
             if (member.hasValue(ctx, base)) {
                 Object mvalue = member.getValue(ctx, base);
                 values.add(mvalue != null ? String.valueOf(mvalue) : "");
@@ -85,7 +87,9 @@ public class XAnnotatedMembers extends XAnnotatedMember {
         if (values.isEmpty()) {
             return getDefaultValue(ctx);
         }
-        return String.join(separator, values);
+        @SuppressWarnings("unchecked")
+        T joined = (T) String.join(separator, values);
+        return joined;
     }
 
     @Override

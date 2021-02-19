@@ -88,8 +88,8 @@ public final class DOMHelper {
     /**
      * Visits the nodes selected by the given path using the given visitor.
      */
-    public static void visitNodes(Context ctx, XAnnotatedList xam, Element base, Path path, NodeVisitor visitor,
-            Collection<Object> result) {
+    public static <T, V> void visitNodes(Context ctx, XAnnotatedList<T, V> xam, Element base,
+            Path path, NodeVisitor<V> visitor, Collection<V> result) {
         Node el = base;
         int len = path.segments.length - 1;
         for (int i = 0; i < len; i++) {
@@ -107,8 +107,8 @@ public final class DOMHelper {
         }
     }
 
-    public static void visitAttributes(Context ctx, XAnnotatedList xam, Node base, String name, String attrName,
-            NodeVisitor visitor, Collection<Object> result) {
+    public static <T, V> void visitAttributes(Context ctx, XAnnotatedList<T, V> xam, Node base,
+            String name, String attrName, NodeVisitor<V> visitor, Collection<V> result) {
         Node p = base.getFirstChild();
         while (p != null) {
             if (p.getNodeType() == Node.ELEMENT_NODE) {
@@ -123,8 +123,8 @@ public final class DOMHelper {
         }
     }
 
-    public static void visitElements(Context ctx, XAnnotatedList xam, Node base, String name, NodeVisitor visitor,
-            Collection<Object> result) {
+    public static <T, V> void visitElements(Context ctx, XAnnotatedList<T, V> xam, Node base,
+            String name, NodeVisitor<V> visitor, Collection<V> result) {
         Node p = base.getFirstChild();
         while (p != null) {
             if (p.getNodeType() == Node.ELEMENT_NODE) {
@@ -136,8 +136,8 @@ public final class DOMHelper {
         }
     }
 
-    public static void visitMapNodes(Context ctx, XAnnotatedMap xam, Element base, Path path, NodeMapVisitor visitor,
-            Map<String, Object> result) {
+    public static <V> void visitMapNodes(Context ctx, XAnnotatedMap xam, Element base, Path path, NodeMapVisitor<V> visitor,
+            Map<String, V> result) {
         Node el = base;
         int len = path.segments.length - 1;
         for (int i = 0; i < len; i++) {
@@ -218,15 +218,15 @@ public final class DOMHelper {
         return el;
     }
 
-    public interface NodeVisitor {
+    public interface NodeVisitor<T> {
 
-        void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result);
+        void visitNode(Context ctx, XAnnotatedMember<T> xam, Node node, Collection<T> result);
 
     }
 
-    public interface NodeMapVisitor {
+    public interface NodeMapVisitor<T> {
 
-        void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result);
+        void visitNode(Context ctx, XAnnotatedMember<T> xam, Node node, String key, Map<String, T> result);
 
     }
 

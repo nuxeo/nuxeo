@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class MarshallerRegistry extends AbstractRegistry {
+public class MarshallerRegistry extends AbstractRegistry<MarshallerDescriptor> {
 
     protected List<MarshallerDescriptor> contributions = new CopyOnWriteArrayList<>();
 
@@ -48,13 +48,12 @@ public class MarshallerRegistry extends AbstractRegistry {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected MarshallerDescriptor doRegister(Context ctx, XAnnotatedObject<MarshallerDescriptor> xObject, Element element, String extensionId) {
         MarshallerDescriptor contrib = getInstance(ctx, xObject, element);
         if (contrib != null) {
             contributions.add(contrib);
         }
-        return (T) contrib;
+        return contrib;
     }
 
 }

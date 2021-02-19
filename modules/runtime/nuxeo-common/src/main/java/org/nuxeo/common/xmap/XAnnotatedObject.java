@@ -41,33 +41,33 @@ import org.w3c.dom.Element;
 /**
  * Processor for annotated type into an object.
  */
-public class XAnnotatedObject {
+public class XAnnotatedObject<T> {
 
     final XMap xmap;
 
-    final Class<?> klass;
+    final Class<T> klass;
 
-    final Constructor<?> constructor;
+    final Constructor<T> constructor;
 
     final Path path;
 
-    final List<XAnnotatedMember> members;
+    final List<XAnnotatedMember<?>> members;
 
     Sorter sorter;
 
     protected boolean hasRegistry;
 
-    protected XAnnotatedMember registryId;
+    protected XAnnotatedMember<String> registryId;
 
-    protected XAnnotatedMember merge;
+    protected XAnnotatedMember<Boolean> merge;
 
-    protected XAnnotatedMember remove;
+    protected XAnnotatedMember<Boolean> remove;
 
-    protected XAnnotatedMember enable;
+    protected XAnnotatedMember<Boolean> enable;
 
     protected boolean compatWarnOnMerge;
 
-    public XAnnotatedObject(XMap xmap, Class<?> klass, XObject xob) {
+    public XAnnotatedObject(XMap xmap, Class<T> klass, XObject xob) {
         try {
             this.xmap = xmap;
             this.klass = klass;
@@ -86,7 +86,7 @@ public class XAnnotatedObject {
         }
     }
 
-    public void addMember(XAnnotatedMember member) {
+    public void addMember(XAnnotatedMember<?> member) {
         members.add(member);
     }
 
@@ -98,7 +98,7 @@ public class XAnnotatedObject {
         return klass;
     }
 
-    public Object newInstance(Context ctx, Element element) {
+    public T newInstance(Context ctx, Element element) {
         return newInstance(ctx, element, null);
     }
 
@@ -107,18 +107,18 @@ public class XAnnotatedObject {
      *
      * @since 11.5
      */
-    public Object newInstance(Context ctx, Element element, Object existing) {
+    public T newInstance(Context ctx, Element element, T existing) {
+        T ob;
         if (existing == null) {
-            Object ob;
             try {
                 ob = constructor.newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new IllegalArgumentException(e);
             }
-            ctx.push(ob);
         } else {
-            ctx.push(existing);
+            ob = existing;
         }
+        ctx.push(ob);
 
         if (sorter != null) {
             Collections.sort(members, sorter);
@@ -126,11 +126,12 @@ public class XAnnotatedObject {
         }
 
         // set annotated members
-        for (XAnnotatedMember member : members) {
+        for (XAnnotatedMember<?> member : members) {
             member.process(ctx, element, existing);
         }
 
-        return ctx.pop();
+        ctx.pop();
+        return ob;
     }
 
     /**
@@ -156,7 +157,7 @@ public class XAnnotatedObject {
      *
      * @since 11.5
      */
-    public XAnnotatedMember getRegistryId() {
+    public XAnnotatedMember<String> getRegistryId() {
         return registryId;
     }
 
@@ -165,7 +166,7 @@ public class XAnnotatedObject {
      *
      * @since 11.5
      */
-    public void setRegistryId(XAnnotatedMember registryId) {
+    public void setRegistryId(XAnnotatedMember<String> registryId) {
         this.registryId = registryId;
     }
 
@@ -174,7 +175,7 @@ public class XAnnotatedObject {
      *
      * @since 11.5
      */
-    public XAnnotatedMember getMerge() {
+    public XAnnotatedMember<Boolean> getMerge() {
         return merge;
     }
 
@@ -183,7 +184,7 @@ public class XAnnotatedObject {
      *
      * @since 11.5
      */
-    public void setMerge(XAnnotatedMember merge) {
+    public void setMerge(XAnnotatedMember<Boolean> merge) {
         this.merge = merge;
     }
 
@@ -192,7 +193,7 @@ public class XAnnotatedObject {
      *
      * @since 11.5
      */
-    public XAnnotatedMember getRemove() {
+    public XAnnotatedMember<Boolean> getRemove() {
         return remove;
     }
 
@@ -201,7 +202,7 @@ public class XAnnotatedObject {
      *
      * @since 11.5
      */
-    public void setRemove(XAnnotatedMember remove) {
+    public void setRemove(XAnnotatedMember<Boolean> remove) {
         this.remove = remove;
     }
 
@@ -210,7 +211,7 @@ public class XAnnotatedObject {
      *
      * @since 11.5
      */
-    public XAnnotatedMember getEnable() {
+    public XAnnotatedMember<Boolean> getEnable() {
         return enable;
     }
 
@@ -219,7 +220,7 @@ public class XAnnotatedObject {
      *
      * @since 11.5
      */
-    public void setEnable(XAnnotatedMember enable) {
+    public void setEnable(XAnnotatedMember<Boolean> enable) {
         this.enable = enable;
     }
 
@@ -239,7 +240,7 @@ public class XAnnotatedObject {
 
 }
 
-class Sorter implements Comparator<XAnnotatedMember>, Serializable {
+class Sorter implements Comparator<XAnnotatedMember<?>>, Serializable {
 
     private static final long serialVersionUID = -2546984283687927308L;
 
@@ -252,7 +253,7 @@ class Sorter implements Comparator<XAnnotatedMember>, Serializable {
     }
 
     @Override
-    public int compare(XAnnotatedMember o1, XAnnotatedMember o2) {
+    public int compare(XAnnotatedMember<?> o1, XAnnotatedMember<?> o2) {
         String p1 = o1.path == null ? "" : o1.path.path;
         String p2 = o2.path == null ? "" : o2.path.path;
         Integer order1 = order.get(p1);

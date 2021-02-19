@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class NullRegistry extends AbstractRegistry implements Registry {
+public class NullRegistry extends AbstractRegistry<Object> {
 
     @Override
     public boolean isNull() {
@@ -37,7 +37,7 @@ public class NullRegistry extends AbstractRegistry implements Registry {
     }
 
     @Override
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected Object doRegister(Context ctx, XAnnotatedObject<Object> xObject, Element element, String extensionId) {
         throw new UnsupportedOperationException();
     }
 

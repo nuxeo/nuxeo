@@ -43,7 +43,7 @@ import org.w3c.dom.Element;
  *
  * @author Thierry Delprat
  */
-public class EventListenerList extends MapRegistry {
+public class EventListenerList extends MapRegistry<EventListenerDescriptor> {
 
     private static final Logger log = LogManager.getLogger(EventListenerList.class);
 
@@ -67,8 +67,8 @@ public class EventListenerList extends MapRegistry {
     }
 
     @Override
-    protected String computeId(Context ctx, XAnnotatedObject xObject, Element element) {
-        String id = ((EventListenerDescriptor) xObject.newInstance(ctx, element)).getName();
+    protected String computeId(Context ctx, XAnnotatedObject<EventListenerDescriptor> xObject, Element element) {
+        String id = xObject.newInstance(ctx, element).getName();
         if (id == null) {
             // prevent NPE on map key
             id = "null";
@@ -77,8 +77,7 @@ public class EventListenerList extends MapRegistry {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected EventListenerDescriptor doRegister(Context ctx, XAnnotatedObject<EventListenerDescriptor> xObject, Element element, String extensionId) {
         EventListenerDescriptor desc = super.doRegister(ctx, xObject, element, extensionId);
         if (desc != null) {
             try {
@@ -92,11 +91,11 @@ public class EventListenerList extends MapRegistry {
                          .addMessage(new RuntimeMessage(Level.ERROR, msg, Source.EXTENSION, extensionId));
             }
         }
-        return (T) desc;
+        return desc;
     }
 
     public void setListenerEnabledFlag(String listenerName, boolean enabled) {
-        EventListenerDescriptor desc = (EventListenerDescriptor) contributions.get(listenerName);
+        EventListenerDescriptor desc = contributions.get(listenerName);
         if (desc == null) {
             return;
         }
@@ -125,7 +124,7 @@ public class EventListenerList extends MapRegistry {
         inlineListenersDescriptors.clear();
         syncPostCommitListenersDescriptors.clear();
         asyncPostCommitListenersDescriptors.clear();
-        this.<EventListenerDescriptor> getContributionValues().forEach(this::updateOnAdd);
+        getContributionValues().forEach(this::updateOnAdd);
         programmaticDescriptors.forEach(this::updateOnAdd);
     }
 

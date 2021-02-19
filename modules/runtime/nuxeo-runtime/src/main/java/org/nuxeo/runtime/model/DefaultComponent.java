@@ -204,8 +204,7 @@ public class DefaultComponent implements Component, Adaptable {
      *
      * @since 11.5
      */
-    @SuppressWarnings("unchecked")
-    protected <T extends Registry> T getExtensionPointRegistry(String point) {
+    protected <T extends Registry<?>> T getExtensionPointRegistry(String point) {
         return (T) Framework.getRuntime()
                             .getComponentManager()
                             .getExtensionPointRegistry(name, point)
@@ -221,7 +220,7 @@ public class DefaultComponent implements Component, Adaptable {
      * @since 11.5
      */
     protected <T> Optional<T> getRegistryContribution(String point) {
-        SingleRegistry registry = getExtensionPointRegistry(point);
+        SingleRegistry<T> registry = getExtensionPointRegistry(point);
         return registry.getContribution();
     }
 
@@ -233,7 +232,7 @@ public class DefaultComponent implements Component, Adaptable {
      * @since 11.5
      */
     protected <T> Optional<T> getRegistryContribution(String point, String id) {
-        MapRegistry registry = getExtensionPointRegistry(point);
+        MapRegistry<T> registry = getExtensionPointRegistry(point);
         return registry.getContribution(id);
     }
 
@@ -245,7 +244,7 @@ public class DefaultComponent implements Component, Adaptable {
      * @since 11.5
      */
     protected <T> List<T> getRegistryContributions(String point) {
-        MapRegistry registry = getExtensionPointRegistry(point);
+        MapRegistry<T> registry = getExtensionPointRegistry(point);
         return registry.getContributionValues();
     }
 

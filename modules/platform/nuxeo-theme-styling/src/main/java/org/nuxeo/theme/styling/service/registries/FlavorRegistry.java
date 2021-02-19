@@ -40,16 +40,15 @@ import org.w3c.dom.Element;
  *
  * @since 5.5
  */
-public class FlavorRegistry extends MapRegistry {
+public class FlavorRegistry extends MapRegistry<FlavorDescriptor> {
 
     private static final Logger log = LogManager.getLogger(FlavorRegistry.class);
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected FlavorDescriptor doRegister(Context ctx, XAnnotatedObject<FlavorDescriptor> xObject, Element element, String extensionId) {
         FlavorDescriptor flavor = super.doRegister(ctx, xObject, element, extensionId);
         updateFlavor(flavor, ctx);
-        return (T) flavor;
+        return flavor;
     }
 
     protected void updateFlavor(FlavorDescriptor flavor, Context ctx) {
@@ -85,7 +84,7 @@ public class FlavorRegistry extends MapRegistry {
     }
 
     public List<FlavorDescriptor> getFlavorsExtending(String flavor) {
-        return this.<FlavorDescriptor> getContributionValues().stream().filter(f -> {
+        return this.getContributionValues().stream().filter(f -> {
             String extendsFlavor = f.getExtendsFlavor();
             return !StringUtils.isBlank(extendsFlavor) && extendsFlavor.equals(flavor);
         }).collect(Collectors.toList());

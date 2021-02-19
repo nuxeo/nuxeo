@@ -120,12 +120,12 @@ public class XMap {
     private static DocumentBuilderFactory factory = initFactory();
 
     // top level objects
-    private final Map<String, XAnnotatedObject> roots;
+    private final Map<String, XAnnotatedObject<?>> roots;
 
     // the scanned objects
-    private final Map<Class<?>, XAnnotatedObject> objects;
+    private final Map<Class<?>, XAnnotatedObject<?>> objects;
 
-    private final Map<Class<?>, XValueFactory> factories;
+    private final Map<Class<?>, XValueFactory<?>> factories;
 
     /**
      * Creates a new XMap object.
@@ -144,8 +144,10 @@ public class XMap {
      * @param type the object type
      * @return the value factory if any, null otherwise
      */
-    public XValueFactory getValueFactory(Class<?> type) {
-        return factories.get(type);
+    public <T> XValueFactory<T> getValueFactory(Class<T> type) {
+        @SuppressWarnings("unchecked")
+        XValueFactory<T> factory = (XValueFactory<T>) factories.get(type);
+        return factory;
     }
 
     /**
@@ -156,7 +158,7 @@ public class XMap {
      * @param type the object type
      * @param factory the value factory to use for the given type
      */
-    public void setValueFactory(Class<?> type, XValueFactory factory) {
+    public <T> void setValueFactory(Class<T> type, XValueFactory<T> factory) {
         factories.put(type, factory);
     }
 
@@ -165,7 +167,7 @@ public class XMap {
      * <p>
      * Scanned objects are annotated objects that were registered by this XMap instance.
      */
-    public Collection<XAnnotatedObject> getScannedObjects() {
+    public Collection<XAnnotatedObject<?>> getScannedObjects() {
         return objects.values();
     }
 
@@ -176,7 +178,7 @@ public class XMap {
      *
      * @return the root objects
      */
-    public Collection<XAnnotatedObject> getRootObjects() {
+    public Collection<XAnnotatedObject<?>> getRootObjects() {
         return roots.values();
     }
 
@@ -188,12 +190,13 @@ public class XMap {
      * @param klass the object class
      * @return the mapping description
      */
-    public XAnnotatedObject register(Class<?> klass) {
-        XAnnotatedObject xao = objects.get(klass);
+    public <T> XAnnotatedObject<T> register(Class<T> klass) {
+        @SuppressWarnings("unchecked")
+        XAnnotatedObject<T> xao = (XAnnotatedObject<T>) objects.get(klass);
         if (xao == null) { // avoid scanning twice
             XObject xob = klass.getAnnotation(XObject.class);
             if (xob != null) {
-                xao = new XAnnotatedObject(this, klass, xob);
+                xao = new XAnnotatedObject<>(this, klass, xob);
                 objects.put(xao.klass, xao);
                 scanObjectRegistryAnnotations(xao, xao.klass);
                 scanClass(xao, xao.klass);
@@ -216,30 +219,30 @@ public class XMap {
      *
      * @since 11.5
      */
-    public Registry getRegistry(XAnnotatedObject xObject) {
+    public Registry<?> getRegistry(XAnnotatedObject<?> xObject) {
         if (xObject == null || !xObject.hasRegistry()) {
             return null;
         }
         if (xObject.getRegistryId() != null) {
-            return new MapRegistry();
+            return new MapRegistry<>();
         } else {
-            return new SingleRegistry();
+            return new SingleRegistry<>();
         }
     }
 
-    private void scanClass(XAnnotatedObject xob, Class<?> klass) {
+    private void scanClass(XAnnotatedObject<?> xob, Class<?> klass) {
         Field[] fields = klass.getDeclaredFields();
         for (Field field : fields) {
             Annotation anno = checkMemberAnnotation(field);
             if (anno != null) {
-                XAccessor setter = new XFieldAccessor(field);
-                XAnnotatedMember member = createMember(anno, setter);
+                XAccessor<?> setter = new XFieldAccessor<>(field);
+                XAnnotatedMember<?> member = createMember(anno, setter);
                 xob.addMember(member);
                 if (anno instanceof XNode) {
                     scanMemberRegistryAnnotations(xob, (XNode) anno, field);
                 }
                 if (member instanceof XAnnotatedList) {
-                    scanMergeAnnotations(xob, field, (XAnnotatedList) member);
+                    scanMergeAnnotations(xob, field, (XAnnotatedList<?, ?>) member);
                 }
             }
         }
@@ -253,8 +256,8 @@ public class XMap {
             }
             Annotation anno = checkMemberAnnotation(method);
             if (anno != null) {
-                XAccessor setter = new XMethodAccessor(method, klass);
-                XAnnotatedMember xm = createMember(anno, setter);
+                XAccessor<?> setter = new XMethodAccessor<>(method, klass);
+                XAnnotatedMember<?> xm = createMember(anno, setter);
                 xob.addMember(xm);
                 if (anno instanceof XNode) {
                     scanMemberRegistryAnnotations(xob, (XNode) anno, method);
@@ -268,29 +271,29 @@ public class XMap {
         }
     }
 
-    private void scanObjectRegistryAnnotations(XAnnotatedObject xob, Class<?> klass) {
+    private void scanObjectRegistryAnnotations(XAnnotatedObject<?> xob, Class<?> klass) {
         XRegistry xreg = klass.getAnnotation(XRegistry.class);
         xob.setHasRegistry(xreg != null);
         XRegistryId xregistryId = klass.getAnnotation(XRegistryId.class);
         if (xregistryId != null) {
             String[] idValue = xregistryId.value();
             if (idValue.length == 1) {
-                xob.setRegistryId(new XAnnotatedReference(this, String.class, idValue[0], xregistryId.fallback(),
+                xob.setRegistryId(new XAnnotatedReference<>(this, String.class, idValue[0], xregistryId.fallback(),
                         xregistryId.defaultAssignment()));
             } else {
-                xob.setRegistryId(new XAnnotatedMembers(this, null, idValue, xregistryId.separator(),
+                xob.setRegistryId(new XAnnotatedMembers<>(this, null, idValue, xregistryId.separator(),
                         xregistryId.defaultAssignment()));
             }
         }
         if (xreg != null) {
             if (xreg.merge()) {
-                xob.setMerge(new XAnnotatedReference(this, XMerge.MERGE, null, true));
+                xob.setMerge(new XAnnotatedReference<>(this, XMerge.MERGE, null, true));
             }
             if (xreg.enable()) {
-                xob.setEnable(new XAnnotatedReference(this, XEnable.ENABLE, null, true));
+                xob.setEnable(new XAnnotatedReference<>(this, XEnable.ENABLE, null, true));
             }
             if (xreg.remove()) {
-                xob.setRemove(new XAnnotatedReference(this, XRemove.REMOVE, null, false));
+                xob.setRemove(new XAnnotatedReference<>(this, XRemove.REMOVE, null, false));
             }
             if (xreg.compatWarnOnMerge()) {
                 xob.setCompatWarnOnMerge(true);
@@ -298,35 +301,35 @@ public class XMap {
         }
     }
 
-    private void scanMemberRegistryAnnotations(XAnnotatedObject xob, XNode annotation, AnnotatedElement ae) {
+    private void scanMemberRegistryAnnotations(XAnnotatedObject<?> xob, XNode annotation, AnnotatedElement ae) {
         if (xob.getRegistryId() == null && ae.isAnnotationPresent(XRegistryId.class)) {
-            xob.setRegistryId(new XAnnotatedReference(this, String.class, annotation.value(), annotation.fallback(),
+            xob.setRegistryId(new XAnnotatedReference<>(this, String.class, annotation.value(), annotation.fallback(),
                     annotation.defaultAssignment()));
         }
         if (xob.getMerge() == null && ae.isAnnotationPresent(XMerge.class)) {
             XMerge merge = ae.getAnnotation(XMerge.class);
-            xob.setMerge(new XAnnotatedReference(this, annotation.value(), annotation.fallback(),
+            xob.setMerge(new XAnnotatedReference<>(this, annotation.value(), annotation.fallback(),
                     merge.defaultAssignment()));
         }
         if (xob.getEnable() == null && ae.isAnnotationPresent(XEnable.class)) {
-            xob.setEnable(new XAnnotatedReference(this, annotation.value(), annotation.fallback(),
+            xob.setEnable(new XAnnotatedReference<>(this, annotation.value(), annotation.fallback(),
                     ae.getAnnotation(XEnable.class).defaultAssignment()));
         }
         if (xob.getRemove() == null && ae.isAnnotationPresent(XRemove.class)) {
-            xob.setRemove(new XAnnotatedReference(this, annotation.value(), annotation.fallback(),
+            xob.setRemove(new XAnnotatedReference<>(this, annotation.value(), annotation.fallback(),
                     ae.getAnnotation(XRemove.class).defaultAssignment()));
         }
     }
 
-    private void scanMergeAnnotations(XAnnotatedObject xob, AnnotatedElement ae, XAnnotatedList member) {
+    private void scanMergeAnnotations(XAnnotatedObject<?> xob, AnnotatedElement ae, XAnnotatedList<?, ?> member) {
         if (ae.isAnnotationPresent(XMerge.class)) {
             XMerge merge = ae.getAnnotation(XMerge.class);
-            member.setMerge(new XAnnotatedReference(this, merge.value(), merge.fallback(), merge.defaultAssignment()));
+            member.setMerge(new XAnnotatedReference<>(this, merge.value(), merge.fallback(), merge.defaultAssignment()));
         }
         if (ae.isAnnotationPresent(XRemove.class)) {
             XRemove remove = ae.getAnnotation(XRemove.class);
             member.setRemove(
-                    new XAnnotatedReference(this, remove.value(), remove.fallback(), remove.defaultAssignment()));
+                    new XAnnotatedReference<>(this, remove.value(), remove.fallback(), remove.defaultAssignment()));
         }
     }
 
@@ -484,7 +487,7 @@ public class XMap {
     public Object load(Context ctx, Element root) {
         // check if the current element is bound to an annotated object
         String name = root.getNodeName();
-        XAnnotatedObject xob = roots.get(name);
+        XAnnotatedObject<?> xob = roots.get(name);
         if (xob != null) {
             return xob.newInstance(ctx, root);
         } else {
@@ -548,7 +551,7 @@ public class XMap {
     public void loadAll(Context ctx, Element root, Collection<Object> result) {
         // check if the current element is bound to an annotated object
         String name = root.getNodeName();
-        XAnnotatedObject xob = roots.get(name);
+        XAnnotatedObject<?> xob = roots.get(name);
         if (xob != null) {
             Object ob = xob.newInstance(ctx, root);
             result.add(ob);
@@ -568,8 +571,10 @@ public class XMap {
      *
      * @since 11.5
      */
-    public XAnnotatedObject getObject(Class<?> klass) {
-        return objects.get(klass);
+    public <T> XAnnotatedObject<T> getObject(Class<T> klass) {
+        @SuppressWarnings("unchecked")
+        XAnnotatedObject<T> xob = (XAnnotatedObject<T>) objects.get(klass);
+        return xob;
     }
 
     /**
@@ -577,12 +582,13 @@ public class XMap {
      *
      * @since 11.5
      */
-    public void register(Registry registry, Context ctx, Element root, String tag) {
+    public <T> void register(Registry<T> registry, Context ctx, Element root, String tag) {
         if (registry == null || registry.isNull()) {
             return;
         }
         String name = root.getNodeName();
-        XAnnotatedObject xob = roots.get(name);
+        @SuppressWarnings("unchecked")
+        XAnnotatedObject<T> xob = (XAnnotatedObject<T>) roots.get(name);
         if (xob != null) {
             registry.register(ctx, xob, root, tag);
         } else {
@@ -601,7 +607,7 @@ public class XMap {
      *
      * @since 11.5
      */
-    public void unregister(Registry registry, String tag) {
+    public void unregister(Registry<?> registry, String tag) {
         if (registry == null || registry.isNull()) {
             return;
         }
@@ -618,23 +624,23 @@ public class XMap {
         return null;
     }
 
-    private XAnnotatedMember createMember(Annotation annotation, XAccessor setter) {
-        XAnnotatedMember member = null;
+    private <T> XAnnotatedMember<T> createMember(Annotation annotation, XAccessor<T> setter) {
+        XAnnotatedMember<T> member = null;
         int type = annotation.annotationType().getAnnotation(XMemberAnnotation.class).value();
         if (type == XMemberAnnotation.NODE) {
-            member = new XAnnotatedMember(this, setter, (XNode) annotation);
+            member = new XAnnotatedMember<>(this, setter, (XNode) annotation);
         } else if (type == XMemberAnnotation.NODES) {
-            member = new XAnnotatedMembers(this, setter, (XNodes) annotation);
+            member = new XAnnotatedMembers<>(this, setter, (XNodes) annotation);
         } else if (type == XMemberAnnotation.NODE_LIST) {
             member = new XAnnotatedList(this, setter, (XNodeList) annotation);
         } else if (type == XMemberAnnotation.NODE_MAP) {
             member = new XAnnotatedMap(this, setter, (XNodeMap) annotation);
         } else if (type == XMemberAnnotation.PARENT) {
-            member = new XAnnotatedParent(this, setter);
+            member = new XAnnotatedParent<>(this, setter);
         } else if (type == XMemberAnnotation.CONTENT) {
-            member = new XAnnotatedContent(this, setter, (XContent) annotation);
+            member = (XAnnotatedMember<T>) new XAnnotatedContent(this, (XAccessor<Object>) setter, (XContent) annotation);
         } else if (type == XMemberAnnotation.CONTEXT) {
-            member = new XAnnotatedContext(this, setter, (XContext) annotation);
+            member = (XAnnotatedMember<T>) new XAnnotatedContext(this, (XAccessor<Object>) setter, (XContext) annotation);
         }
         return member;
     }
@@ -668,8 +674,9 @@ public class XMap {
         FileUtils.writeStringToFile(file, xml, UTF_8);
     }
 
-    public void toXML(Object object, Element root) {
-        XAnnotatedObject xao = objects.get(object.getClass());
+    public <T> void toXML(T object, Element root) {
+        @SuppressWarnings("unchecked")
+        XAnnotatedObject<T> xao = (XAnnotatedObject<T>) objects.get(object.getClass());
         if (xao == null) {
             throw new IllegalArgumentException(object.getClass().getCanonicalName() + " is NOT registred in xmap");
         }

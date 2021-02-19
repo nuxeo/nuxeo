@@ -32,16 +32,16 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class ResourceRegistry extends MapRegistry {
+public class ResourceRegistry extends MapRegistry<ResourceDescriptor> {
 
     private static final Logger log = LogManager.getLogger(ResourceRegistry.class);
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected ResourceDescriptor doRegister(Context ctx, XAnnotatedObject<ResourceDescriptor> xObject, Element element,
+            String extensionId) {
         ResourceDescriptor resource = super.doRegister(ctx, xObject, element, extensionId);
         computeResourceUri(resource, ctx);
-        return (T) resource;
+        return resource;
     }
 
     protected void computeResourceUri(ResourceDescriptor resource, Context context) {

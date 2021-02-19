@@ -144,9 +144,9 @@ public class ComponentManagerImpl implements ComponentManager {
      *
      * @since 11.5
      */
-    protected final Map<String, Map<String, Registry>> registries;
+    protected final Map<String, Map<String, Registry<?>>> registries;
 
-    protected static final Registry NULL_REGISTRY = new NullRegistry();
+    protected static final NullRegistry NULL_REGISTRY = new NullRegistry();
 
     /**
      * @since 9.2
@@ -519,7 +519,7 @@ public class ComponentManagerImpl implements ComponentManager {
         if (ri.useFormerLifecycleManagement()) {
             ri.getExtensionPoint(xt.getExtensionPoint()).filter(xp -> xp.getContributions() != null).ifPresent(xp -> {
                 try {
-                    Optional<Registry> registry = getExtensionPointRegistry(ri.getName().getName(), xp.getName());
+                    Optional<Registry<?>> registry = getExtensionPointRegistry(ri.getName().getName(), xp.getName());
                     if (registry.isPresent() && !registry.get().isNull()) {
                         try {
                             xp.getXMap().unregister(registry.get(), xt.getId());
@@ -537,31 +537,32 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T extends Registry> Optional<T> getExtensionPointRegistry(String component, String point) {
-        Map<String, Registry> target = registries.get(component);
+    public <T extends Registry<?>> Optional<T> getExtensionPointRegistry(String component, String point) {
+        Map<String, Registry<?>> target = registries.get(component);
         if (target != null && target.containsKey(point)) {
-            Registry registry = target.get(point);
+            @SuppressWarnings("unchecked")
+            T registry = (T) target.get(point);
             if (!registry.isNull()) {
-                return Optional.of((T) registry);
+                return Optional.of(registry);
             }
         }
         return Optional.empty();
     }
 
-    protected Registry getOrCreateRegistry(String component, ExtensionPoint xp) {
-        Optional<Registry> stored = getExtensionPointRegistry(component, xp.getName());
+    protected <T> Registry<T> getOrCreateRegistry(String component, ExtensionPoint xp) {
+        Optional<Registry<T>> stored = getExtensionPointRegistry(component, xp.getName());
         if (stored.isPresent()) {
             return stored.get();
         }
-        Registry registry = NULL_REGISTRY;
+        Registry<T> registry = (Registry<T>) NULL_REGISTRY;
         String point = xp.getName();
         String registryClass = xp.getRegistryClass();
         if (registryClass != null) {
             try {
-                Class<?> clazz = Class.forName(registryClass);
-                Constructor<?> constructor = clazz.getConstructor();
-                registry = (Registry) constructor.newInstance();
+                @SuppressWarnings("unchecked")
+                Class<Registry<T>> clazz = (Class<Registry<T>>) Class.forName(registryClass);
+                Constructor<Registry<T>> constructor = clazz.getConstructor();
+                registry = constructor.newInstance();
             } catch (ReflectiveOperationException e) {
                 String msg = String.format(
                         "Failed to create registry on component '%s', extension point '%s': error initializing class '%s' (%s).",
@@ -579,7 +580,7 @@ public class ComponentManagerImpl implements ComponentManager {
                                  .map(xmap::getRegistry)
                                  .filter(Objects::nonNull)
                                  .findFirst()
-                                 .orElse(NULL_REGISTRY);
+                                 .orElse((Registry<T>) NULL_REGISTRY);
             }
         }
         registries.computeIfAbsent(component, k -> new ConcurrentHashMap<>()).put(point, registry);

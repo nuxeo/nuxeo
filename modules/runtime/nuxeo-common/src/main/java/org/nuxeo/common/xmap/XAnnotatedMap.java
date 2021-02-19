@@ -143,17 +143,17 @@ public class XAnnotatedMap extends XAnnotatedList {
 
 }
 
-class ElementMapVisitor implements DOMHelper.NodeMapVisitor {
+class ElementMapVisitor<T> implements DOMHelper.NodeMapVisitor<T> {
 
     @Override
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember<T> xam, Node node, String key, Map<String, T> result) {
         result.put(key, xam.xao.newInstance(ctx, (Element) node, result.get(key)));
     }
 }
 
-class ElementValueMapVisitor implements DOMHelper.NodeMapVisitor {
+class ElementValueMapVisitor<T> implements DOMHelper.NodeMapVisitor<T> {
     @Override
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember<T> xam, Node node, String key, Map<String, T> result) {
         String val = node.getTextContent();
         if (xam.trim) {
             val = val.trim();
@@ -162,20 +162,20 @@ class ElementValueMapVisitor implements DOMHelper.NodeMapVisitor {
             result.put(key, xam.valueFactory.deserialize(ctx, val));
         } else {
             // TODO: log warning?
-            result.put(key, val);
+            result.put(key, (T) val);
         }
     }
 }
 
-class AttributeValueMapVisitor implements DOMHelper.NodeMapVisitor {
+class AttributeValueMapVisitor<T> implements DOMHelper.NodeMapVisitor<T> {
     @Override
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember<T> xam, Node node, String key, Map<String, T> result) {
         String val = node.getNodeValue();
         if (xam.valueFactory != null) {
             result.put(key, xam.valueFactory.deserialize(ctx, val));
         } else {
             // TODO: log warning?
-            result.put(key, val);
+            result.put(key, (T) val);
         }
     }
 }

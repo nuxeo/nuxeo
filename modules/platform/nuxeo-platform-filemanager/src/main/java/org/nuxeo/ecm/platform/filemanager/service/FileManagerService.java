@@ -158,7 +158,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     protected void registerPlugins() {
-        FileManagerRegistry registry = getExtensionPointRegistry(PLUGINS_EP);
+        FileManagerRegistry registry = (FileManagerRegistry) getExtensionPointRegistry(PLUGINS_EP);
         fileImporters = registry.getContributionValues(FileImporterDescriptor.class)
                                 .stream()
                                 .map(FileImporterDescriptor.class::cast)

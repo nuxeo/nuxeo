@@ -138,7 +138,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     @Override
     public Set<String> getPageProviderDefinitionNames() {
         return Stream.of(programmaticDefinitions.keySet(),
-                this.<MapRegistry> getExtensionPointRegistry(PROVIDER_EP).getContributions().keySet())
+                this.<MapRegistry<?>> getExtensionPointRegistry(PROVIDER_EP).getContributions().keySet())
                      .flatMap(Set::stream)
                      .collect(Collectors.toSet());
     }

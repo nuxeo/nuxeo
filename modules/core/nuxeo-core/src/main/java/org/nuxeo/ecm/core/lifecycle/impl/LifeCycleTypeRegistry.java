@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTypesDescriptor;
  *
  * @since 5.6
  */
-public class LifeCycleTypeRegistry extends MapRegistry {
+public class LifeCycleTypeRegistry extends MapRegistry<LifeCycleTypesDescriptor> {
 
     /** Type name -&gt; life cycle name. */
     protected Map<String, String> typesMapping = new ConcurrentHashMap<>();
@@ -50,7 +50,7 @@ public class LifeCycleTypeRegistry extends MapRegistry {
         typesMapping.clear();
         docTypeToNonRecursiveTransition.clear();
         super.initialize();
-        this.<LifeCycleTypesDescriptor> getContributionValues().forEach(contrib -> {
+        getContributionValues().forEach(contrib -> {
             typesMapping.put(contrib.getDocumentType(), contrib.getLifeCycleName());
             String transitionArray = contrib.getNoRecursionForTransitions();
             List<String> transitions = new ArrayList<>();

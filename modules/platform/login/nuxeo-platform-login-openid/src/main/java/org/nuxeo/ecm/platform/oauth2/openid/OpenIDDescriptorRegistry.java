@@ -30,15 +30,16 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class OpenIDDescriptorRegistry extends MapRegistry {
+public class OpenIDDescriptorRegistry extends MapRegistry<OpenIDConnectProviderDescriptor> {
 
     private static final Logger log = LogManager.getLogger(OpenIDDescriptorRegistry.class);
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected OpenIDConnectProviderDescriptor doRegister(Context ctx,
+            XAnnotatedObject<OpenIDConnectProviderDescriptor> xObject, Element element, String extensionId) {
         OpenIDConnectProviderDescriptor provider = super.doRegister(ctx, xObject, element, extensionId);
-        if (provider != null && provider.isEnabled()
+        if (provider != null
+                && provider.isEnabled()
                 && (provider.getClientId() == null || provider.getClientSecret() == null)) {
             log.info(
                     "OpenId provider for '{}', contributed by '{}', is disabled because clientId and/or clientSecret are empty",
@@ -46,7 +47,7 @@ public class OpenIDDescriptorRegistry extends MapRegistry {
             provider.setEnabled(false);
             disabled.add(provider.getId());
         }
-        return (T) provider;
+        return provider;
     }
 
 }

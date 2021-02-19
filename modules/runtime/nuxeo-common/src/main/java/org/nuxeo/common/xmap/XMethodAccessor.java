@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class XMethodAccessor implements XAccessor {
+public class XMethodAccessor<T> implements XAccessor<T> {
 
     private final Method setter;
 
@@ -41,13 +41,14 @@ public class XMethodAccessor implements XAccessor {
         this.klass = klass;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Class<?> getType() {
-        return setter.getParameterTypes()[0];
+    public Class<T> getType() {
+        return (Class<T>) setter.getParameterTypes()[0];
     }
 
     @Override
-    public void setValue(Object instance, Object value) {
+    public void setValue(Object instance, T value) {
         try {
             setter.invoke(instance, value);
         } catch (IllegalAccessException e) {
@@ -65,8 +66,9 @@ public class XMethodAccessor implements XAccessor {
         return "XMethodSetter {method: " + setter + '}';
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Object getValue(Object instance) {
+    public T getValue(Object instance) {
         // lazy initialization for getter to keep the compatibility
         // with current xmap definition
         if (getter == null) {
@@ -74,7 +76,7 @@ public class XMethodAccessor implements XAccessor {
         }
         if (getter != null) {
             try {
-                return getter.invoke(instance);
+                return (T) getter.invoke(instance);
             } catch (IllegalAccessException e) {
                 throw new IllegalArgumentException(e);
             } catch (InvocationTargetException e) {

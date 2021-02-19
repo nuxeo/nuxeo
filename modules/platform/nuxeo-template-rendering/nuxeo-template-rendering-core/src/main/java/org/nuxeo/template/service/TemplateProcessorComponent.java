@@ -147,7 +147,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     @Override
     public Map<String, ContextExtensionFactoryDescriptor> getRegistredContextExtensions() {
-        Map<String, ContextExtensionFactoryDescriptor> map = this.<MapRegistry> getExtensionPointRegistry(
+        Map<String, ContextExtensionFactoryDescriptor> map = this.<MapRegistry<ContextExtensionFactoryDescriptor>> getExtensionPointRegistry(
                 CONTEXT_EXTENSION_XP).getContributions();
         return Collections.unmodifiableMap(map);
     }

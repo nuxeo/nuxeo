@@ -589,6 +589,6 @@ public interface ComponentManager {
      *
      * @since 11.5
      */
-    <T extends Registry> Optional<T> getExtensionPointRegistry(String component, String point);
+    <T extends Registry<?>> Optional<T> getExtensionPointRegistry(String component, String point);
 
 }

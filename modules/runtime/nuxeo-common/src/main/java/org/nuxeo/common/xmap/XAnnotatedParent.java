@@ -25,15 +25,17 @@ import org.w3c.dom.Element;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class XAnnotatedParent extends XAnnotatedMember {
+public class XAnnotatedParent<T> extends XAnnotatedMember<T> {
 
-    protected XAnnotatedParent(XMap xmap, XAccessor accessor) {
+    protected XAnnotatedParent(XMap xmap, XAccessor<T> accessor) {
         super(xmap, accessor);
     }
 
     @Override
-    public Object getValue(Context ctx, Element base) {
-        return ctx.getParent();
+    public T getValue(Context ctx, Element base) {
+        @SuppressWarnings("unchecked")
+        T parent = (T) ctx.getParent();
+        return parent;
     }
 
 }

@@ -71,7 +71,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
         postContentCreationHandlers = getOrderedHandlers();
 
         // check factories referenced by bindings
-        Set<String> factories = this.<MapRegistry> getExtensionPointRegistry(FACTORY_DECLARATION_EP)
+        Set<String> factories = this.<MapRegistry<?>> getExtensionPointRegistry(FACTORY_DECLARATION_EP)
                                     .getContributions()
                                     .keySet();
         this.<FactoryBindingDescriptor> getRegistryContributions(FACTORY_BINDING_EP)
@@ -176,13 +176,13 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
     // for testing
 
     public Map<String, ContentFactoryDescriptor> getFactories() {
-        Map<String, ContentFactoryDescriptor> contribs = this.<MapRegistry> getExtensionPointRegistry(
+        Map<String, ContentFactoryDescriptor> contribs = this.<MapRegistry<ContentFactoryDescriptor>> getExtensionPointRegistry(
                 FACTORY_DECLARATION_EP).getContributions();
         return Collections.unmodifiableMap(contribs);
     }
 
     public Map<String, FactoryBindingDescriptor> getFactoryBindings() {
-        Map<String, FactoryBindingDescriptor> contribs = this.<MapRegistry> getExtensionPointRegistry(
+        Map<String, FactoryBindingDescriptor> contribs = this.<MapRegistry<FactoryBindingDescriptor>> getExtensionPointRegistry(
                 FACTORY_BINDING_EP).getContributions();
         return Collections.unmodifiableMap(contribs);
     }

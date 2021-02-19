@@ -32,12 +32,12 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class SingleRegistry extends AbstractRegistry implements Registry {
+public class SingleRegistry<T> extends AbstractRegistry<T> {
 
     private static final Logger log = LogManager.getLogger(SingleRegistry.class);
 
     // volatile for double-checked locking
-    protected volatile Object contribution;
+    protected volatile T contribution;
 
     // volatile for double-checked locking
     protected volatile boolean enabled = true;
@@ -49,20 +49,19 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
         super.initialize();
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> Optional<T> getContribution() {
+    public Optional<T> getContribution() {
         checkInitialized();
-        return enabled ? Optional.ofNullable((T) contribution) : Optional.empty();
+        return enabled ? Optional.ofNullable(contribution) : Optional.empty();
     }
 
-    protected void setContribution(Object contribution) {
+    protected void setContribution(T contribution) {
         this.contribution = contribution;
     }
 
     @Override
-    protected boolean shouldMerge(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected boolean shouldMerge(Context ctx, XAnnotatedObject<T> xObject, Element element, String extensionId) {
         if (super.shouldMerge(ctx, xObject, element, extensionId)) {
-            XAnnotatedMember merge = xObject.getMerge();
+            XAnnotatedMember<Boolean> merge = xObject.getMerge();
             if (contribution != null && xObject.getCompatWarnOnMerge() && !merge.hasValue(ctx, element)
                     && !onlyHandlesEnablement(ctx, xObject, element, false)) {
                 log.warn("A contribution on extension '{}' has been implicitly merged: the compatibility "
@@ -75,14 +74,13 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    public T doRegister(Context ctx, XAnnotatedObject<T> xObject, Element element, String extensionId) {
         if (shouldRemove(ctx, xObject, element, extensionId)) {
             setContribution(null);
             return null;
         }
 
-        Object contrib;
+        T contrib;
         if (shouldMerge(ctx, xObject, element, extensionId)) {
             contrib = getMergedInstance(ctx, xObject, element, contribution);
         } else {
@@ -95,7 +93,7 @@ public class SingleRegistry extends AbstractRegistry implements Registry {
             this.enabled = Boolean.TRUE.equals(enable);
         }
 
-        return (T) contrib;
+        return contrib;
     }
 
 }

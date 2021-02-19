@@ -30,17 +30,17 @@ import org.w3c.dom.Element;
 /**
  * @since 11.5
  */
-public class DummyRegistry extends AbstractRegistry {
+public class DummyRegistry extends AbstractRegistry<DummyContribution> {
 
-    public Optional<Registry> getTargetRegistry() {
+    public Optional<Registry<DummyContribution>> getTargetRegistry() {
         return Framework.getRuntime()
                         .getComponentManager()
                         .getExtensionPointRegistry(ComponentWithXPoint.NAME.getName(), ComponentWithXPoint.XP);
     }
 
     @Override
-    public void register(Context ctx, XAnnotatedObject xObject, Element element, String tag) {
-        Optional<Registry> optReg = getTargetRegistry();
+    public void register(Context ctx, XAnnotatedObject<DummyContribution> xObject, Element element, String tag) {
+        Optional<Registry<DummyContribution>> optReg = getTargetRegistry();
         if (optReg.isPresent()) {
             optReg.get().register(ctx, xObject, element, tag);
         } else {
@@ -49,7 +49,8 @@ public class DummyRegistry extends AbstractRegistry {
     }
 
     @Override
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected DummyContribution doRegister(Context ctx, XAnnotatedObject<DummyContribution> xObject, Element element,
+            String extensionId) {
         // NOOP
         return null;
     }

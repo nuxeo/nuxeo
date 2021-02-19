@@ -814,7 +814,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     @Override
     public Set<String> getConfigurationsName() {
-        return this.<MapRegistry> getExtensionPointRegistry(XP).getContributions().keySet();
+        return this.<MapRegistry<?>> getExtensionPointRegistry(XP).getContributions().keySet();
     }
 
     @Override

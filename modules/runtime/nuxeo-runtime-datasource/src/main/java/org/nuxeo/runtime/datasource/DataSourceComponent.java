@@ -50,7 +50,7 @@ public class DataSourceComponent extends DefaultComponent {
     @Override
     public void start(ComponentContext context) {
         poolRegistry = new PooledDataSourceRegistry();
-        DataSourceRegistry reg = getExtensionPointRegistry(DATASOURCES_XP);
+        DataSourceRegistry reg = (DataSourceRegistry) getExtensionPointRegistry(DATASOURCES_XP);
         reg.getDataSources().forEach(this::bindDataSource);
         reg.getDataSourceLinks().forEach(this::bindDataSourceLink);
     }

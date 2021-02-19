@@ -30,19 +30,19 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class RestBindingRegistry extends MapRegistry {
+public class RestBindingRegistry extends MapRegistry<RestBinding> {
 
     @Override
-    protected String computeId(Context ctx, XAnnotatedObject xObject, Element element) {
+    protected String computeId(Context ctx, XAnnotatedObject<RestBinding> xObject, Element element) {
         // generate the new instance in all cases, to check if this is a chain
-        RestBinding ob = (RestBinding) xObject.newInstance(ctx, element);
+        RestBinding ob = xObject.newInstance(ctx, element);
         String name = ob.name;
         // adjust id
         return ob.chain ? Constants.CHAIN_ID_PREFIX + name : name;
     }
 
     @Override
-    protected Boolean shouldEnable(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected Boolean shouldEnable(Context ctx, XAnnotatedObject<RestBinding> xObject, Element element, String extensionId) {
         // handle deprecated disablement
         if (element.hasAttribute("disabled")) {
             String message = String.format(

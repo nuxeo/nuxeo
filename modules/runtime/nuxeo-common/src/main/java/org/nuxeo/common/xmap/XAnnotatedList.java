@@ -38,35 +38,39 @@ import org.w3c.dom.Node;
 /**
  * Processor for annotated field or method into a list-like object.
  */
-public class XAnnotatedList extends XAnnotatedMember {
+public class XAnnotatedList<T, V> extends XAnnotatedMember<T> {
 
-    protected static final ElementVisitor elementListVisitor = new ElementVisitor();
+    protected final ElementVisitor<V> elementListVisitor = new ElementVisitor<>();
 
-    protected static final ElementValueVisitor elementVisitor = new ElementValueVisitor();
+    protected final ElementValueVisitor<V> elementVisitor = new ElementValueVisitor<>();
 
-    protected static final AttributeValueVisitor attributeVisitor = new AttributeValueVisitor();
+    protected final AttributeValueVisitor<V> attributeVisitor = new AttributeValueVisitor<>();
 
     // indicates the type of the collection components
-    protected Class<?> componentType;
+    protected Class<V> componentType;
+
+    protected XAnnotatedObject<V> componentXao;
+
+    protected XValueFactory<V> componentValueFactory;
 
     protected boolean isNullByDefault;
 
-    protected XAnnotatedReference merge;
+    protected XAnnotatedReference<Boolean> merge;
 
-    protected XAnnotatedReference remove;
+    protected XAnnotatedReference<Boolean> remove;
 
-    protected XAnnotatedList(XMap xmap, XAccessor setter) {
+    protected XAnnotatedList(XMap xmap, XAccessor<T> setter) {
         super(xmap, setter);
     }
 
-    public XAnnotatedList(XMap xmap, XAccessor setter, XNodeList anno) {
+    public XAnnotatedList(XMap xmap, XAccessor<T> setter, XNodeList anno) {
         super(xmap, setter);
         path = new Path(anno.value());
         trim = anno.trim();
-        type = anno.type();
-        componentType = anno.componentType();
-        valueFactory = xmap.getValueFactory(componentType);
-        xao = xmap.register(componentType);
+        type = (Class<T>) anno.type();
+        componentType = (Class<V>) anno.componentType();
+        componentValueFactory = xmap.getValueFactory(componentType);
+        componentXao = xmap.register(componentType);
         isNullByDefault = anno.nullByDefault();
     }
 
@@ -75,7 +79,7 @@ public class XAnnotatedList extends XAnnotatedMember {
      *
      * @since 11.5
      */
-    public void setMerge(XAnnotatedReference merge) {
+    public void setMerge(XAnnotatedReference<Boolean> merge) {
         this.merge = merge;
     }
 
@@ -84,7 +88,7 @@ public class XAnnotatedList extends XAnnotatedMember {
      *
      * @since 11.5
      */
-    public void setRemove(XAnnotatedReference remove) {
+    public void setRemove(XAnnotatedReference<Boolean> remove) {
         this.remove = remove;
     }
 
@@ -94,27 +98,27 @@ public class XAnnotatedList extends XAnnotatedMember {
             setValue(ctx.getObject(), convertList(Collections.emptyList()));
             return;
         }
-        List<Object> initList = new ArrayList<>();
+        List<V> initList = new ArrayList<>();
         if (existing != null
                 && (!hasValue(ctx, element) || merge == null || Boolean.TRUE.equals(merge.getValue(ctx, element)))) {
-            Object[] currentListValue = getCurrentListValue(existing);
+            V[] currentListValue = getCurrentListValue(existing);
             if (currentListValue != null) {
                 initList.addAll(Arrays.asList(currentListValue));
             }
         }
-        Object value = getValue(ctx, element, initList);
+        T value = getValue(ctx, element, initList);
         if (value != null) {
             setValue(ctx.getObject(), value);
         }
     }
 
     @Override
-    public Object getValue(Context ctx, Element base) {
+    public T getValue(Context ctx, Element base) {
         return getValue(ctx, base, new ArrayList<>());
     }
 
-    protected Object getValue(Context ctx, Element base, List<Object> values) {
-        if (xao != null) {
+    protected T getValue(Context ctx, Element base, List<V> values) {
+        if (componentXao != null) {
             DOMHelper.visitNodes(ctx, this, base, path, elementListVisitor, values);
         } else {
             if (path.attribute != null) {
@@ -128,8 +132,7 @@ public class XAnnotatedList extends XAnnotatedMember {
         return convertList(values);
     }
 
-    @SuppressWarnings("unchecked")
-    protected Object convertList(List<Object> values) {
+    protected T convertList(List<V> values) {
         if (isNullByDefault && values.isEmpty()) {
             return null;
         }
@@ -138,14 +141,14 @@ public class XAnnotatedList extends XAnnotatedMember {
             if (type.isArray()) {
                 if (componentType.isPrimitive()) {
                     // primitive arrays cannot be casted to Object[]
-                    return PrimitiveArrays.toPrimitiveArray(values, componentType);
+                    return (T) PrimitiveArrays.toPrimitiveArray((Collection<Object>) values, (Class<?>) componentType);
                 } else {
-                    return values.toArray((Object[]) Array.newInstance(componentType, values.size()));
+                    return (T) values.toArray((V[]) Array.newInstance(componentType, values.size()));
                 }
             } else {
                 try {
-                    Collection<Object> col = (Collection<Object>) type.getDeclaredConstructor().newInstance();
-                    col.addAll(values);
+                    T col = type.getDeclaredConstructor().newInstance();
+                    ((Collection<V>) col).addAll(values);
                     return col;
                 } catch (ReflectiveOperationException e) {
                     throw new IllegalArgumentException(e);
@@ -153,10 +156,10 @@ public class XAnnotatedList extends XAnnotatedMember {
             }
         }
 
-        return values;
+        return (T) values;
     }
 
-    protected Object[] getCurrentListValue(Object instance) {
+    protected V[] getCurrentListValue(Object instance) {
         Object v = accessor.getValue(instance);
         if (v != null) {
             Object[] objects;
@@ -169,19 +172,19 @@ public class XAnnotatedList extends XAnnotatedMember {
             } else {
                 objects = PrimitiveArrays.toObjectArray(v);
             }
-            return objects;
+            return (V[]) objects;
         }
         return null;
     }
 
     @Override
     public void toXML(Object instance, Element parent) {
-        Object[] objects = getCurrentListValue(instance);
+        V[] objects = getCurrentListValue(instance);
         if (objects != null) {
-            if (xao == null) {
-                for (Object o : objects) {
-                    if (valueFactory != null && !(o instanceof Element)) {
-                        String value = valueFactory.serialize(null, o);
+            if (componentXao == null) {
+                for (V o : objects) {
+                    if (componentValueFactory != null && !(o instanceof Element)) {
+                        String value = componentValueFactory.serialize(null, o);
                         if (value != null) {
                             Element e = XMLBuilder.addElement(parent, path);
                             XMLBuilder.fillField(e, value, path.attribute);
@@ -191,27 +194,27 @@ public class XAnnotatedList extends XAnnotatedMember {
             } else {
                 for (Object o : objects) {
                     Element e = XMLBuilder.addElement(parent, path);
-                    XMLBuilder.toXML(o, e, xao);
+                    XMLBuilder.toXML(o, e, componentXao);
                 }
             }
         }
     }
 }
 
-class ElementVisitor implements DOMHelper.NodeVisitor {
+class ElementVisitor<T> implements DOMHelper.NodeVisitor<T> {
 
     @Override
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember<T> xam, Node node, Collection<T> result) {
         result.add(xam.xao.newInstance(ctx, (Element) node));
     }
 
 }
 
-class ElementValueVisitor implements DOMHelper.NodeVisitor {
+class ElementValueVisitor<T> implements DOMHelper.NodeVisitor<T> {
     @Override
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
-        if (((XAnnotatedList) xam).componentType == Element.class) {
-            result.add(node);
+    public void visitNode(Context ctx, XAnnotatedMember<T> xam, Node node, Collection<T> result) {
+        if (((XAnnotatedList<?, ?>) xam).componentType == Element.class) {
+            result.add((T) node);
             return;
         }
         String val = node.getTextContent();
@@ -222,20 +225,20 @@ class ElementValueVisitor implements DOMHelper.NodeVisitor {
             result.add(xam.valueFactory.deserialize(ctx, val));
         } else {
             // TODO: log warning?
-            result.add(val);
+            result.add((T) val);
         }
     }
 }
 
-class AttributeValueVisitor implements DOMHelper.NodeVisitor {
+class AttributeValueVisitor<T> implements DOMHelper.NodeVisitor<T> {
     @Override
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember<T> xam, Node node, Collection<T> result) {
         String val = node.getNodeValue();
         if (xam.valueFactory != null) {
             result.add(xam.valueFactory.deserialize(ctx, val));
         } else {
             // TODO: log warning?
-            result.add(val);
+            result.add((T) val);
         }
     }
 }

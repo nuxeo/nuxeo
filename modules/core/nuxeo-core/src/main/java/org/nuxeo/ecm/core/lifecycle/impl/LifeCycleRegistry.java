@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleDescriptor;
  *
  * @since 5.6
  */
-public class LifeCycleRegistry extends MapRegistry {
+public class LifeCycleRegistry extends MapRegistry<LifeCycleDescriptor> {
 
     private static final Logger log = LogManager.getLogger(LifeCycleRegistry.class);
 
@@ -49,9 +49,9 @@ public class LifeCycleRegistry extends MapRegistry {
     public void initialize() {
         super.initialize();
         lifeCycles.clear();
-        lifeCycles.putAll(this.<LifeCycleDescriptor> getContributionValues()
-                              .stream()
-                              .collect(Collectors.toConcurrentMap(LifeCycleDescriptor::getName, this::getLifeCycle)));
+        lifeCycles.putAll(getContributionValues().stream()
+                                                 .collect(Collectors.toConcurrentMap(LifeCycleDescriptor::getName,
+                                                         this::getLifeCycle)));
     }
 
     // API

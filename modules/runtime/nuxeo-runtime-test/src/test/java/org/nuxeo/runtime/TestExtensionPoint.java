@@ -78,16 +78,16 @@ public class TestExtensionPoint {
         assertEquals("My duty is to override", ((DummyContributionOverriden) contribs[0]).name);
 
         // registry contribs are not using the overridden class
-        Registry reg = co.getComputedRegistry();
+        Registry<?> reg = co.getComputedRegistry();
         assertTrue(reg instanceof MapRegistry);
-        MapRegistry mreg = (MapRegistry) reg;
-        Map<String, Object> rcontribs = mreg.getContributions();
+        MapRegistry<?> mreg = (MapRegistry<?>) reg;
+        Map<String, Object> rcontribs = (Map<String, Object>) mreg.getContributions();
         assertEquals(2, rcontribs.size());
         assertSame(rcontribs.get("OverXP contrib").getClass(), DummyContributionWithRegistry.class);
         assertSame(rcontribs.get("XP contrib").getClass(), DummyContributionWithRegistry.class);
         assertEquals("OverXP contrib",
                 ((DummyContributionWithRegistry) mreg.getContribution("OverXP contrib").get()).message);
-        Optional<DummyContributionWithRegistry> c = mreg.getContribution("XP contrib");
+        Optional<DummyContributionWithRegistry> c = (Optional<DummyContributionWithRegistry>) mreg.getContribution("XP contrib");
         assertEquals("XP contrib", c.get().message);
     }
 
@@ -105,15 +105,15 @@ public class TestExtensionPoint {
         assertEquals(0, contribs.length);
 
         // new contribs relying on registry are using the overridden class
-        Registry reg = co.getComputedRegistry();
+        Registry<?> reg = co.getComputedRegistry();
         assertTrue(reg instanceof MapRegistry);
-        MapRegistry mreg = (MapRegistry) reg;
-        Map<String, Object> rcontribs = mreg.getContributions();
+        MapRegistry<?> mreg = (MapRegistry<?>) reg;
+        Map<String, Object> rcontribs = (Map<String, Object>) mreg.getContributions();
         assertEquals(2, rcontribs.size());
         assertSame(rcontribs.get("XP contrib").getClass(), DummyContributionWithRegistry.class);
         assertSame(rcontribs.get("OverXP contrib").getClass(), DummyContributionOverridenWithRegistry.class);
         assertEquals("XP contrib", ((DummyContributionWithRegistry) mreg.getContribution("XP contrib").get()).message);
-        Optional<DummyContributionOverridenWithRegistry> c = mreg.getContribution("OverXP contrib");
+        Optional<DummyContributionOverridenWithRegistry> c = (Optional<DummyContributionOverridenWithRegistry>) mreg.getContribution("OverXP contrib");
         assertEquals("OverXP contrib", c.get().message);
         assertEquals("My duty is to override", c.get().name);
     }

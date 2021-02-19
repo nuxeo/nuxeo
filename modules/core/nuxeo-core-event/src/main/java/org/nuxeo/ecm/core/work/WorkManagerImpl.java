@@ -315,7 +315,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public List<String> getWorkQueueIds() {
-        return new ArrayList<>(this.<MapRegistry> getExtensionPointRegistry(QUEUES_EP).getContributions().keySet());
+        return new ArrayList<>(this.<MapRegistry<?>> getExtensionPointRegistry(QUEUES_EP).getContributions().keySet());
     }
 
     @Override

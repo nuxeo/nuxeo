@@ -26,9 +26,9 @@ import org.w3c.dom.Element;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class XAnnotatedContext extends XAnnotatedMember {
+public class XAnnotatedContext extends XAnnotatedMember<Object> {
 
-    protected XAnnotatedContext(XMap xmap, XAccessor accessor, XContext anno) {
+    protected XAnnotatedContext(XMap xmap, XAccessor<Object> accessor, XContext anno) {
         super(xmap, accessor);
         path = new Path(anno.value());
     }

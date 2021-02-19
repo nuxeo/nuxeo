@@ -28,17 +28,17 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class RegistryContribution {
+public class RegistryContribution<T> {
 
     protected final Context context;
 
-    protected final XAnnotatedObject object;
+    protected final XAnnotatedObject<T> object;
 
     protected final Element element;
 
     protected final String tag;
 
-    public RegistryContribution(Context context, XAnnotatedObject object, Element element, String tag) {
+    public RegistryContribution(Context context, XAnnotatedObject<T> object, Element element, String tag) {
         this.context = context;
         this.object = object;
         this.element = element;
@@ -49,7 +49,7 @@ public class RegistryContribution {
         return context;
     }
 
-    public XAnnotatedObject getObject() {
+    public XAnnotatedObject<T> getObject() {
         return object;
     }
 

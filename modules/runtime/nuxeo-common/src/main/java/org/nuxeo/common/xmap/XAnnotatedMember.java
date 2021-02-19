@@ -27,9 +27,9 @@ import org.w3c.dom.Element;
 /**
  * Processor for annotated member field or method.
  */
-public class XAnnotatedMember {
+public class XAnnotatedMember<T> {
 
-    protected final XAccessor accessor;
+    protected final XAccessor<T> accessor;
 
     protected Path path;
 
@@ -40,22 +40,22 @@ public class XAnnotatedMember {
     protected boolean trim = true;
 
     /** The Java type of the described element. */
-    protected Class<?> type;
+    protected Class<T> type;
 
     /** Not null if the described object is an xannotated object. */
-    protected XAnnotatedObject xao;
+    protected XAnnotatedObject<T> xao;
 
     /**
      * The value factory used to transform strings in objects compatible with this member type. In the case of
      * collection types this factory is used for collection components.
      */
-    protected XValueFactory valueFactory;
+    protected XValueFactory<T> valueFactory;
 
-    protected XAnnotatedMember(XMap xmap, XAccessor accessor) {
+    protected XAnnotatedMember(XMap xmap, XAccessor<T> accessor) {
         this.accessor = accessor;
     }
 
-    public XAnnotatedMember(XMap xmap, XAccessor accessor, String path, String fallbackPath, String defaultValue,
+    public XAnnotatedMember(XMap xmap, XAccessor<T> accessor, String path, String fallbackPath, String defaultValue,
             boolean trim) {
         this(xmap, accessor);
         this.path = new Path(path);
@@ -65,20 +65,20 @@ public class XAnnotatedMember {
         type = accessor.getType();
         valueFactory = xmap.getValueFactory(type);
         if (valueFactory == null && type.isEnum()) {
-            valueFactory = new XValueFactory() {
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            XValueFactory<T> factory = (XValueFactory<T>) new XValueFactory<Enum>() {
                 @Override
-                public String serialize(Context arg0, Object arg1) {
-                    return ((Enum<?>) arg1).name();
+                public String serialize(Context context, Enum value) {
+                    return value.name();
                 }
 
-                @SuppressWarnings("unchecked")
                 @Override
-                public Object deserialize(Context arg0, String arg1) {
-                    @SuppressWarnings("rawtypes")
+                public Enum deserialize(Context context, String value) {
                     Class<Enum> enumType = (Class<Enum>) type;
-                    return Enum.valueOf(enumType, arg1);
+                    return Enum.valueOf(enumType, value);
                 }
             };
+            valueFactory = factory;
             xmap.setValueFactory(type, valueFactory);
         }
         xao = xmap.register(type);
@@ -88,11 +88,11 @@ public class XAnnotatedMember {
         this.trim = trim;
     }
 
-    public XAnnotatedMember(XMap xmap, XAccessor setter, XNode anno) {
+    public XAnnotatedMember(XMap xmap, XAccessor<T> setter, XNode anno) {
         this(xmap, setter, anno.value(), anno.fallback(), anno.defaultAssignment(), anno.trim());
     }
 
-    protected void setValue(Object instance, Object value) {
+    protected void setValue(Object instance, T value) {
         try {
             accessor.setValue(instance, value);
         } catch (IllegalArgumentException e) {
@@ -103,7 +103,7 @@ public class XAnnotatedMember {
 
     public void toXML(Object instance, Element parent) {
         Element e = XMLBuilder.getOrCreateElement(parent, path);
-        Object v = accessor.getValue(instance);
+        T v = accessor.getValue(instance);
         if (xao == null) {
             if (v != null && valueFactory != null) {
                 String value = valueFactory.serialize(null, v);
@@ -127,7 +127,7 @@ public class XAnnotatedMember {
      */
     public void process(Context ctx, Element element, Object existing) {
         if (existing == null || hasValue(ctx, element)) {
-            Object value;
+            T value;
             if (existing == null) {
                 value = getValue(ctx, element);
             } else {
@@ -161,7 +161,7 @@ public class XAnnotatedMember {
      *
      * @since 11.5
      */
-    public Object getValue(Context ctx, Element base) {
+    public T getValue(Context ctx, Element base) {
         return getValue(ctx, base, null);
     }
 
@@ -170,7 +170,7 @@ public class XAnnotatedMember {
      *
      * @since 11.5
      */
-    public Object getValue(Context ctx, Element base, Object existing) {
+    public T getValue(Context ctx, Element base, T existing) {
         if (xao != null) {
             Element el = getElement(base);
             if (el == null) {
@@ -182,7 +182,9 @@ public class XAnnotatedMember {
         // scalar field
         if (type == Element.class) {
             // allow DOM elements as values
-            return getElement(base);
+            @SuppressWarnings("unchecked")
+            T value = (T) getElement(base);
+            return value;
         }
         String val = DOMHelper.getNodeValue(base, path);
         if (val == null && fallbackPath != null) {
@@ -200,11 +202,11 @@ public class XAnnotatedMember {
         return getDefaultValue(ctx);
     }
 
-    protected Object getDefaultValue(Context ctx) {
+    protected T getDefaultValue(Context ctx) {
         if (defaultValue != null && valueFactory != null) {
             return valueFactory.deserialize(ctx, defaultValue);
         }
-        return defaultValue;
+        return (T) defaultValue;
     }
 
 }

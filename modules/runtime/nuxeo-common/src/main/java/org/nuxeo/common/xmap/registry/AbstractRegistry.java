@@ -33,14 +33,14 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public abstract class AbstractRegistry implements Registry {
+public abstract class AbstractRegistry<T> implements Registry<T> {
 
     // volatile for double-checked locking
     protected volatile boolean initialized;
 
     protected Set<String> tags = ConcurrentHashMap.newKeySet();
 
-    protected List<RegistryContribution> registrations = new CopyOnWriteArrayList<>();
+    protected List<RegistryContribution<T>> registrations = new CopyOnWriteArrayList<>();
 
     protected AbstractRegistry() {
     }
@@ -86,9 +86,9 @@ public abstract class AbstractRegistry implements Registry {
     }
 
     @Override
-    public void register(Context ctx, XAnnotatedObject xObject, Element element, String tag) {
+    public void register(Context ctx, XAnnotatedObject<T> xObject, Element element, String tag) {
         tag(tag);
-        registrations.add(new RegistryContribution(ctx, xObject, element, tag));
+        registrations.add(new RegistryContribution<>(ctx, xObject, element, tag));
         setInitialized(false);
     }
 
@@ -102,9 +102,9 @@ public abstract class AbstractRegistry implements Registry {
         setInitialized(false);
     }
 
-    protected abstract <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId);
+    protected abstract T doRegister(Context ctx, XAnnotatedObject<T> xObject, Element element, String extensionId);
 
-    protected boolean shouldRemove(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected boolean shouldRemove(Context ctx, XAnnotatedObject<T> xObject, Element element, String extensionId) {
         XAnnotatedMember remove = xObject.getRemove();
         return remove != null && Boolean.TRUE.equals(remove.getValue(ctx, element));
     }
@@ -113,7 +113,7 @@ public abstract class AbstractRegistry implements Registry {
      * Returns true if contribution should be enabled, false if it should be disabled, and null if the enablement status
      * should not change.
      */
-    protected Boolean shouldEnable(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected Boolean shouldEnable(Context ctx, XAnnotatedObject<T> xObject, Element element, String extensionId) {
         XAnnotatedMember enable = xObject.getEnable();
         if (enable != null && enable.hasValue(ctx, element)) {
             Object enabled = enable.getValue(ctx, element);
@@ -122,7 +122,7 @@ public abstract class AbstractRegistry implements Registry {
         return null;
     }
 
-    protected boolean onlyHandlesEnablement(Context ctx, XAnnotatedObject xObject, Element element, boolean hasId) {
+    protected boolean onlyHandlesEnablement(Context ctx, XAnnotatedObject<T> xObject, Element element, boolean hasId) {
         // checks no children
         if (element.getChildNodes().getLength() > 0) {
             return false;
@@ -137,19 +137,17 @@ public abstract class AbstractRegistry implements Registry {
         return enable != null && enable.hasValue(ctx, element);
     }
 
-    protected boolean shouldMerge(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected boolean shouldMerge(Context ctx, XAnnotatedObject<T> xObject, Element element, String extensionId) {
         XAnnotatedMember merge = xObject.getMerge();
         return merge != null && Boolean.TRUE.equals(merge.getValue(ctx, element));
     }
 
-    @SuppressWarnings("unchecked")
-    protected <T> T getMergedInstance(Context ctx, XAnnotatedObject xObject, Element element, Object existing) {
-        return (T) xObject.newInstance(ctx, element, existing);
+    protected T getMergedInstance(Context ctx, XAnnotatedObject<T> xObject, Element element, T existing) {
+        return xObject.newInstance(ctx, element, existing);
     }
 
-    @SuppressWarnings("unchecked")
-    protected <T> T getInstance(Context ctx, XAnnotatedObject xObject, Element element) {
-        return (T) xObject.newInstance(ctx, element);
+    protected T getInstance(Context ctx, XAnnotatedObject<T> xObject, Element element) {
+        return xObject.newInstance(ctx, element);
     }
 
 }

@@ -34,7 +34,7 @@ public class XMLBuilder {
     private XMLBuilder() {
     }
 
-    public static String saveToXML(Object object, Element root, XAnnotatedObject xao) {
+    public static String saveToXML(Object object, Element root, XAnnotatedObject<?> xao) {
         try {
             toXML(object, root, xao);
             return DOMSerializer.toString(root);
@@ -44,7 +44,7 @@ public class XMLBuilder {
         return null;
     }
 
-    public static void toXML(Object o, Element parent, XAnnotatedObject xao) {
+    public static void toXML(Object o, Element parent, XAnnotatedObject<?> xao) {
         // XPath xpath = XPathFactory.newInstance().newXPath();
         Element currentNode = parent;
         String path = xao.getPath().toString();
@@ -53,7 +53,7 @@ public class XMLBuilder {
             parent.appendChild(currentNode);
         }
         // process annotated members
-        for (XAnnotatedMember m : xao.members) {
+        for (XAnnotatedMember<?> m : xao.members) {
             if (m instanceof XAnnotatedMap) {
                 m.toXML(o, currentNode);
             } else if (m instanceof XAnnotatedList) {

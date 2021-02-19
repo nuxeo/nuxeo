@@ -33,7 +33,7 @@ import org.w3c.dom.ranges.Range;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class XAnnotatedContent extends XAnnotatedMember {
+public class XAnnotatedContent extends XAnnotatedMember<Object> {
 
     private static final OutputFormat DEFAULT_FORMAT = new OutputFormat();
 
@@ -44,7 +44,7 @@ public class XAnnotatedContent extends XAnnotatedMember {
         DEFAULT_FORMAT.setEncoding("UTF-8");
     }
 
-    public XAnnotatedContent(XMap xmap, XAccessor setter, XContent anno) {
+    public XAnnotatedContent(XMap xmap, XAccessor<Object> setter, XContent anno) {
         super(xmap, setter, anno.value(), null, null, false);
     }
 

@@ -35,7 +35,7 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class MimetypeDescriptorRegistry extends MapRegistry {
+public class MimetypeDescriptorRegistry extends MapRegistry<MimetypeDescriptor> {
 
     private static final Logger log = LogManager.getLogger(MimetypeDescriptorRegistry.class);
 
@@ -51,8 +51,7 @@ public class MimetypeDescriptorRegistry extends MapRegistry {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected MimetypeDescriptor doRegister(Context ctx, XAnnotatedObject<MimetypeDescriptor> xObject, Element element, String extensionId) {
         MimetypeDescriptor desc = super.doRegister(ctx, xObject, element, extensionId);
         if (desc != null) {
             MimetypeEntry mimetype = desc.getMimetype();
@@ -62,7 +61,7 @@ public class MimetypeDescriptorRegistry extends MapRegistry {
                 mimetypeByExtensionRegistry.put(extension, mimetype);
             }
         }
-        return (T) desc;
+        return desc;
     }
 
     public boolean isNormalized(String mimeType) {

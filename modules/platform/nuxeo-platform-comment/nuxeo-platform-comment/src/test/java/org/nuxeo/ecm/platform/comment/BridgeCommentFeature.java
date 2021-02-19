@@ -70,15 +70,15 @@ public class BridgeCommentFeature implements RunnerFeature {
     }
 
     protected MigrationDescriptor getDescriptor(String id) {
-        return Framework.getRuntime()
-                        .getComponentManager()
-                        .getExtensionPointRegistry("org.nuxeo.runtime.migration.MigrationService",
-                                MigrationServiceImpl.XP_CONFIG)
-                        .map(MapRegistry.class::cast)
-                        .get()
-                        .getContribution(id)
-                        .map(MigrationDescriptor.class::cast)
-                        .orElse(null);
+        return (MigrationDescriptor) Framework.getRuntime()
+                                              .getComponentManager()
+                                              .getExtensionPointRegistry("org.nuxeo.runtime.migration.MigrationService",
+                                                      MigrationServiceImpl.XP_CONFIG)
+                                              .map(MapRegistry.class::cast)
+                                              .get()
+                                              .getContribution(id)
+                                              .map(MigrationDescriptor.class::cast)
+                                              .orElse(null);
     }
 
     @Override

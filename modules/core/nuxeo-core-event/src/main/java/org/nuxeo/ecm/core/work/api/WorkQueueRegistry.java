@@ -32,22 +32,22 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class WorkQueueRegistry extends MapRegistry {
+public class WorkQueueRegistry extends MapRegistry<WorkQueueDescriptor> {
 
     private static final Logger log = LogManager.getLogger(WorkQueueRegistry.class);
 
     @Override
-    protected <T> T doRegister(Context ctx, XAnnotatedObject xObject, Element element, String extensionId) {
+    protected WorkQueueDescriptor doRegister(Context ctx, XAnnotatedObject<WorkQueueDescriptor> xObject, Element element, String extensionId) {
         String id = computeId(ctx, xObject, element);
         if (WorkQueueDescriptor.ALL_QUEUES.equals(id)) {
             // impact existing descriptors
-            WorkQueueDescriptor allDesc = (WorkQueueDescriptor) xObject.newInstance(ctx, element);
+            WorkQueueDescriptor allDesc = xObject.newInstance(ctx, element);
             Boolean processing = allDesc.processing;
             if (processing == null) {
                 log.error("Ignoring work queue descriptor {} with no processing/queuing", ALL_QUEUES);
             } else {
                 log.info("Setting on all work queues: processing={}", processing);
-                contributions.values().forEach(desc -> ((WorkQueueDescriptor) desc).processing = processing);
+                contributions.values().forEach(desc -> desc.processing = processing);
             }
             return null;
         } else {

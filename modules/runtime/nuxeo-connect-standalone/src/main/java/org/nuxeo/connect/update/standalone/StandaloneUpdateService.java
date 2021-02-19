@@ -123,37 +123,37 @@ public class StandaloneUpdateService implements PackageUpdateService {
     public static XMap createXmap() {
         @SuppressWarnings("hiding")
         XMap xmap = new XMap();
-        xmap.setValueFactory(PackageType.class, new XValueFactory() {
+        xmap.setValueFactory(PackageType.class, new XValueFactory<PackageType>() {
             @Override
-            public String serialize(Context arg0, Object arg1) {
+            public String serialize(Context arg0, PackageType arg1) {
                 return ((PackageType) arg1).getValue();
             }
 
             @Override
-            public Object deserialize(Context arg0, String arg1) {
+            public PackageType deserialize(Context arg0, String arg1) {
                 return PackageType.getByValue(arg1);
             }
         });
-        xmap.setValueFactory(Version.class, new XValueFactory() {
+        xmap.setValueFactory(Version.class, new XValueFactory<Version>() {
             @Override
-            public String serialize(Context arg0, Object arg1) {
+            public String serialize(Context arg0, Version arg1) {
                 return arg1.toString();
             }
 
             @Override
-            public Object deserialize(Context arg0, String arg1) {
+            public Version deserialize(Context arg0, String arg1) {
                 return new Version(arg1);
             }
         });
-        xmap.setValueFactory(PackageDependency.class, new XValueFactory() {
+        xmap.setValueFactory(PackageDependency.class, new XValueFactory<PackageDependency>() {
 
             @Override
-            public String serialize(Context arg0, Object arg1) {
+            public String serialize(Context arg0, PackageDependency arg1) {
                 return arg1.toString();
             }
 
             @Override
-            public Object deserialize(Context arg0, String arg1) {
+            public PackageDependency deserialize(Context arg0, String arg1) {
                 return new PackageDependency(arg1);
             }
         });

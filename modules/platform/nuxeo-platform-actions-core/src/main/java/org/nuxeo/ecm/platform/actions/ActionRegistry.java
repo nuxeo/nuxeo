@@ -45,7 +45,7 @@ import org.w3c.dom.Element;
 /**
  * Custom registry with extra API that can lookup filter registry for embedded filters registration.
  */
-public class ActionRegistry extends MapRegistry {
+public class ActionRegistry extends MapRegistry<ActionDescriptor> {
 
     private static final Logger log = LogManager.getLogger(ActionRegistry.class);
 
@@ -57,7 +57,7 @@ public class ActionRegistry extends MapRegistry {
     // mapping of types per compat category
     protected Map<String, String> typeByCategory = new ConcurrentHashMap<>();
 
-    protected static XAnnotatedObject xFilter;
+    protected static XAnnotatedObject<DefaultActionFilter> xFilter;
 
     static {
         XMap fxmap = new XMap();
@@ -129,22 +129,23 @@ public class ActionRegistry extends MapRegistry {
         compats.forEach(compat -> compat.getCategories().forEach(cat -> typeByCategory.put(cat, compat.getType())));
     }
 
-    protected Registry getFilterRegistry() {
-        return Framework.getRuntime()
-                        .getComponentManager()
-                        .getExtensionPointRegistry(ID.getName(), FILTERS_XP)
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                String.format("Unknown registry for extension point '%s--%s'", ID, FILTERS_XP)));
+    protected Registry<DefaultActionFilter> getFilterRegistry() {
+        return (Registry<DefaultActionFilter>) Framework.getRuntime()
+                                                        .getComponentManager()
+                                                        .getExtensionPointRegistry(ID.getName(), FILTERS_XP)
+                                                        .orElseThrow(() -> new IllegalArgumentException(String.format(
+                                                                "Unknown registry for extension point '%s--%s'", ID,
+                                                                FILTERS_XP)));
     }
 
     @Override
-    public void register(Context ctx, XAnnotatedObject xObject, Element element, String tag) {
+    public void register(Context ctx, XAnnotatedObject<ActionDescriptor> xObject, Element element, String tag) {
         super.register(ctx, xObject, element, tag);
         ActionDescriptor action = getInstance(ctx, xObject, element);
         if (action != null) {
             List<Element> innerFilters = action.getFilterElements();
             if (!innerFilters.isEmpty()) {
-                Registry filterRegistry = getFilterRegistry();
+                Registry<DefaultActionFilter> filterRegistry = getFilterRegistry();
                 for (Element innerFilter : innerFilters) {
                     if (!innerFilter.hasAttribute("append") && !innerFilter.hasAttribute("merge")) {
                         // compat: inner filters are merged by default

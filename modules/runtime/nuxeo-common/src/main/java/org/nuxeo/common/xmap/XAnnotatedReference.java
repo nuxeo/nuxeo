@@ -26,9 +26,9 @@ import org.w3c.dom.Element;
  *
  * @since 11.5
  */
-public class XAnnotatedReference extends XAnnotatedMember {
+public class XAnnotatedReference<T> extends XAnnotatedMember<T> {
 
-    public XAnnotatedReference(XMap xmap, Class<?> type, String path, String fallbackPath, String defaultValue) {
+    public XAnnotatedReference(XMap xmap, Class<T> type, String path, String fallbackPath, String defaultValue) {
         super(xmap, null);
         this.path = new Path(path);
         if (fallbackPath != null && !XNode.NO_FALLBACK_MARKER.equals(fallbackPath)) {
@@ -43,8 +43,9 @@ public class XAnnotatedReference extends XAnnotatedMember {
         xao = xmap.register(type);
     }
 
+    @SuppressWarnings("unchecked")
     public XAnnotatedReference(XMap xmap, String path, String fallbackPath, boolean defaultValue) {
-        this(xmap, Boolean.class, path, fallbackPath, String.valueOf(defaultValue));
+        this(xmap, (Class<T>) Boolean.class, path, fallbackPath, String.valueOf(defaultValue));
     }
 
     @Override

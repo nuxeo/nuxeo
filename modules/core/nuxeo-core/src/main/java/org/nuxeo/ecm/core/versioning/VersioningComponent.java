@@ -302,11 +302,11 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
     }
 
     protected Map<String, VersioningFilterDescriptor> getVersioningFilters() {
-        return this.<MapRegistry> getExtensionPointRegistry(VERSIONING_FILTER_XP).getContributions();
+        return this.<MapRegistry<VersioningFilterDescriptor>> getExtensionPointRegistry(VERSIONING_FILTER_XP).getContributions();
     }
 
     protected Map<String, VersioningRestrictionDescriptor> getVersioningRestrictions() {
-        return this.<MapRegistry> getExtensionPointRegistry(VERSIONING_RESTRICTION_XP).getContributions();
+        return this.<MapRegistry<VersioningRestrictionDescriptor>> getExtensionPointRegistry(VERSIONING_RESTRICTION_XP).getContributions();
     }
 
     @Override
