@@ -31,6 +31,7 @@ import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.DEFAUL
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -41,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
@@ -118,6 +120,28 @@ public class TestMimetypeRegistryService {
 
         List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
         assertTrue(extensions.contains("doc"));
+    }
+
+    @Test
+    public void testGetMimetypeFromBigBlob() {
+        Blob fakeBigBlob = new AbstractBlob() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public long getLength() {
+                return MimetypeRegistryService.MAX_SIZE_FOR_SCAN + 1;
+            }
+            @Override
+            public InputStream getStream() {
+                fail();
+                return null;
+            }
+        };
+        try {
+            mimetypeRegistry.getMimetypeFromBlob(fakeBigBlob);
+            fail();
+        } catch (MimetypeNotFoundException e) {
+            assertEquals("File is too big for binary scan", e.getMessage());
+        }
     }
 
     @Test
