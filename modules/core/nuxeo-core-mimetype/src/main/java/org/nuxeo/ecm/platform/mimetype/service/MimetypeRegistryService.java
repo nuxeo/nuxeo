@@ -205,6 +205,13 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
 
     @Override
     public String getMimetypeFromBlob(Blob blob) {
+        if (blob.getLength() > MAX_SIZE_FOR_SCAN) {
+            try {
+                return getMimetypeFromFilename(blob.getFilename());
+            } catch (MimetypeNotFoundException e) {
+                throw new MimetypeNotFoundException("File is too big for binary scan");
+            }
+        }
         File file;
         try {
             file = Framework.createTempFile("NXMimetypeBean", ".bin");
