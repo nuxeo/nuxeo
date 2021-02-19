@@ -100,6 +100,8 @@ public class S3BlobStore extends AbstractBlobStore {
 
     private static final Logger log = LogManager.getLogger(S3BlobStore.class);
 
+    private static final Logger logs3dl = LogManager.getLogger("S3_Download");
+
     // x-amz-meta-username header
     protected static final String USER_METADATA_USERNAME = "username";
 
@@ -425,32 +427,33 @@ public class S3BlobStore extends AbstractBlobStore {
             versionId = null;
         }
         String bucketKey = bucketPrefix + objectKey;
-        long t0 = 0;
-        if (log.isDebugEnabled()) {
-            t0 = System.currentTimeMillis();
-            log.debug("Reading s3://" + bucketName + "/" + bucketKey);
-        }
+        String debugKey = bucketKey + (versionId == null ? "" : "@" + versionId);
+        String debugObject = "s3://" + bucketName + "/" + debugKey;
         try {
+            log.debug("Reading {}", debugObject);
             GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, bucketKey, versionId);
             if (byteRange != null) {
                 getObjectRequest.setRange(byteRange.getStart(), byteRange.getEnd());
             }
+            long t0 = System.currentTimeMillis();
             Download download = config.transferManager.download(getObjectRequest, dest.toFile());
             download.waitForCompletion();
+            long dtms = System.currentTimeMillis() - t0;
+
             logTrace("<-", "read " + Files.size(dest) + " bytes");
-            logTrace("hnote right: " + bucketKey + (versionId == null ? "" : "@" + versionId));
-            if (log.isDebugEnabled()) {
-                long dtms = System.currentTimeMillis() - t0;
-                log.debug("Read s3://" + bucketName + "/" + bucketKey + " in " + dtms + "ms");
+            logTrace("hnote right: " + debugKey);
+            log.debug("Read {} in {} ms", debugObject, dtms);
+            if (logs3dl.isDebugEnabled()) {
+                String message = String.format("Read %s (%d bytes) in %.3f s", debugObject, Files.size(dest),
+                        dtms / 1000.0);
+                logs3dl.debug(message, new Exception("DEBUGGING STACK TRACE"));
             }
             return true;
         } catch (AmazonServiceException e) {
             if (isMissingKey(e)) {
                 logTrace("<--", "missing");
-                logTrace("hnote right: " + bucketKey + (versionId == null ? "" : "@" + versionId));
-                if (log.isDebugEnabled()) {
-                    log.debug("Blob s3://" + bucketName + "/" + bucketKey + " does not exist");
-                }
+                logTrace("hnote right: " + debugKey);
+                log.debug("Blob {} does not exist", debugObject);
                 return false;
             }
             throw new IOException(e);
