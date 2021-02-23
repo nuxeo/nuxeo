@@ -27,6 +27,16 @@ limitations under the License.
       *[role=widget] {
         margin-bottom: 8px;
       }
+      .retentionDuration {
+        margin-bottom: 8px;
+      }
+
+      .retentionDuration::after {
+        display: inline-block;
+        content: '*';
+        margin-left: 4px;
+        color: var(--paper-input-container-invalid-color, #de350b);
+      }
     </style>
 
     <nuxeo-input role="widget"
@@ -140,26 +150,24 @@ limitations under the License.
     </nuxeo-card>
 
     <nuxeo-card heading="[[i18n('retention.rule.label.duration.heading')]]">
+      <div class="retentionDuration">[[i18n('retention.rule.label.duration.subHeading')]]</div>
       <div class="layout horizontal justified flex">
         <nuxeo-input role="widget" name="years"
           value="{{document.properties.retention_def:durationYears}}"
           label="[[i18n('retention.rule.label.duration.years')]]"
           min="0"
-          required
           type="number">
         </nuxeo-input>
         <nuxeo-input role="widget" name="months"
           value="{{document.properties.retention_def:durationMonths}}"
           label="[[i18n('retention.rule.label.duration.months')]]"
           min="0"
-          required
           type="number">
         </nuxeo-input>
         <nuxeo-input role="widget" name="days"
           value="{{document.properties.retention_def:durationDays}}"
           label="[[i18n('retention.rule.label.duration.days')]]"
           min="0"
-          required
           type="number">
         </nuxeo-input>
       </div>
