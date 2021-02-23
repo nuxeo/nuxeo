@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,9 @@ import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeMBean;
 import org.nuxeo.runtime.management.api.ProbeStatus;
 
+/**
+ * @since 5.4
+ */
 public class ProbeInfoImpl implements ProbeMBean, ProbeInfo, Serializable {
 
     private static final long serialVersionUID = 1L;
