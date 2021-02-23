@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,12 +32,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Returns the status of the application
- * 
+ *
  * @since 9.3
  */
 public class HealthCheckResult {
 
-    private static final Log log = LogFactory.getLog(HealthCheckResult.class);
+    private static final Logger log = LogManager.getLogger(HealthCheckResult.class);
 
     protected Collection<ProbeInfo> probes;
 
@@ -46,6 +46,9 @@ public class HealthCheckResult {
     public HealthCheckResult(Collection<ProbeInfo> probesToCheck) {
         this.probes = probesToCheck;
         healthy = probes.stream().allMatch(p -> p.getStatus().isSuccess());
+        if (!healthy) {
+            log.warn("HealthCheck is not healthy, see probes: {}", probes);
+        }
     }
 
     public boolean isHealthy() {

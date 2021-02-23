@@ -125,6 +125,10 @@
 
     <Logger name="org.nuxeo" level="warn" />
     <Logger name="org.nuxeo.ecm.core.storage.dbs.DBSCachingRepository" level="warn" />
+    <Logger name="org.nuxeo.ecm.core.management.statuses.HealthCheckResult">
+      <!-- this filter allows to print 1 log (maxBurst) every minute (rate) -->
+      <BurstFilter level="warn" rate="0.0166" maxBurst="1"/>
+    </Logger>
     <Logger name="org.nuxeo.elasticsearch.ElasticSearchComponent" level="warn" />
     <Logger name="org.nuxeo.elasticsearch.audit.ESAuditBackend" level="warn" />
     <Logger name="org.nuxeo.elasticsearch.audit.ESAuditMigrationWork" level="warn" />
