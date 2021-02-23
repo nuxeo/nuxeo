@@ -160,4 +160,9 @@ public class ProbeInfoImpl implements ProbeMBean, ProbeInfo, Serializable {
         this.shortcutName = shortcutName;
     }
 
+    @Override
+    public String toString() {
+        return String.format("ProbeInfo{name=%s, status=%s, runCount=%s, runDate=%s, runDuration=%sms}", shortcutName,
+                lastStatus, runnedCount, lastRunnedDate, lastDuration);
+    }
 }
