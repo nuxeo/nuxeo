@@ -44,15 +44,18 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogFeature;
+import org.nuxeo.runtime.test.runner.LoggerLevel;
 
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, LogFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.runtime.management")
 @Deploy("org.nuxeo.ecm.core.management")
 @Deploy("org.nuxeo.ecm.core.management.test")
+@LoggerLevel(klass = HealthCheckResult.class, level = "ERROR")
 public class TestProbes {
 
     private static final String TEST_PROBE_OK_RESULT_AS_JSON = "{\"testProbeStatus\":\"ok\"}";
