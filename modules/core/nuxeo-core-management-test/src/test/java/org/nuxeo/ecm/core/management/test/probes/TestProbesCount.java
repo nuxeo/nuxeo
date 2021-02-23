@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@ package org.nuxeo.ecm.core.management.test.probes;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.management.probes.ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY;
 
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
-import org.nuxeo.ecm.core.management.probes.ProbeManagerImpl;
 import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -49,36 +48,37 @@ import com.google.inject.Inject;
 public class TestProbesCount {
 
     @Inject
-    CoreSession session;
-
-    @Inject
-    ProbeManager pm;
+    protected ProbeManager pm;
 
     @AfterClass
     public static void cleanupProbes() {
         // set healthCheck interval back to default value after test
-        Framework.getProperties().remove(ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY);
+        Framework.getProperties().remove(DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY);
     }
 
     @Test
     public void testConsecutiveCallsOnHealthCheck() {
         HealthCheckResult result = pm.getOrRunHealthCheck("runtimeStatus");
         ProbeInfo probeInfo = pm.getProbeInfo("runtimeStatus");
-
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
+        assertEquals(1, probeInfo.getRunnedCount());
+
         // run again and test that the probe was only invoked once since the default check interval is 20s
         result = pm.getOrRunHealthCheck("runtimeStatus");
         probeInfo = pm.getProbeInfo("runtimeStatus");
+        assertTrue(result.isHealthy());
+        assertTrue(probeInfo.getStatus().isSuccess());
         assertEquals(1, probeInfo.getRunnedCount());
 
         // modify the default check interval to -1, run again and test that the probe was invoked
-        Framework.getProperties().setProperty(ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY, "-1");
+        Framework.getProperties().setProperty(DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY, "-1");
 
         result = pm.getOrRunHealthCheck("runtimeStatus");
         probeInfo = pm.getProbeInfo("runtimeStatus");
+        assertTrue(result.isHealthy());
+        assertTrue(probeInfo.getStatus().isSuccess());
         assertEquals(2, probeInfo.getRunnedCount());
-
     }
 
 }

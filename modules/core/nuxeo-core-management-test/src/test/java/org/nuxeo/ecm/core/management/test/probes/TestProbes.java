@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,22 +21,21 @@ package org.nuxeo.ecm.core.management.test.probes;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.core.management.probes.ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY;
 
-import java.io.IOException;
 import java.util.Collection;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.probes.AdministrativeStatusProbe;
-import org.nuxeo.ecm.core.management.probes.ProbeManagerImpl;
 import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -64,23 +63,19 @@ public class TestProbes {
 
     private static final String ALL_PROBES_FAILED_RESULT_AS_JSON = "{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"failed\",\"streamStatus\":\"ok\"}";
 
-    @Inject
-    CoreSession session;
-
-    @Inject
-    ProbeManager pm;
-
-    @Inject
-    FakeService fs;
-
     protected static final int TEST_INTERVAL_SECONDS = -1;
+
+    @Inject
+    protected ProbeManager pm;
+
+    @Inject
+    protected FakeService fs;
 
     @Before
     public void removeCacheOnProbes() {
         // remove effects linked to cache for these tests
         Framework.getProperties()
-                 .setProperty(ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY,
-                         String.valueOf(TEST_INTERVAL_SECONDS));
+                 .setProperty(DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY, String.valueOf(TEST_INTERVAL_SECONDS));
         // reset fake service status
         fs.setSuccess();
     }
@@ -88,17 +83,11 @@ public class TestProbes {
     @After
     public void cleanupProbes() {
         // set healthCheck interval back to default value after each test
-        Framework.getProperties().remove(ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY);
-    }
-
-    @Test
-    public void testServiceLookup() {
-        assertNotNull(pm);
+        Framework.getProperties().remove(DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY);
     }
 
     @Test
     public void testService() {
-
         pm.runAllProbes();
 
         ProbeInfo info = pm.getProbeInfo(AdministrativeStatusProbe.class);
@@ -113,13 +102,13 @@ public class TestProbes {
 
         assertEquals(1, info.getRunnedCount());
         assertFalse("not a success", info.isInError());
-        assertFalse("wrong success value", info.getStatus().getAsString().equals("[unavailable]"));
+        assertNotEquals("wrong success value", "[unavailable]", info.getStatus().getAsString());
         assertEquals("wrong default value", "[unavailable]", info.getLastFailureStatus().getAsString());
 
     }
 
     @Test
-    public void testHealthCheck() throws IOException {
+    public void testHealthCheck() {
         Collection<ProbeInfo> healthCheckProbes = pm.getHealthCheckProbes();
         assertEquals(4, healthCheckProbes.size());
         HealthCheckResult result = pm.getOrRunHealthChecks();
@@ -133,7 +122,7 @@ public class TestProbes {
      * @since 10.1
      */
     @Test
-    public void testChangingHealthCheck() throws IOException, InterruptedException {
+    public void testChangingHealthCheck() {
         // make sure test probe status should be ok
         assertTrue(fs.getStatus().isSuccess());
         HealthCheckResult result = pm.getOrRunHealthChecks();
@@ -175,8 +164,7 @@ public class TestProbes {
     }
 
     @Test
-    public void testSingleProbeStatus() throws IOException {
-
+    public void testSingleProbeStatus() {
         HealthCheckResult result = pm.getOrRunHealthCheck("runtimeStatus");
         ProbeInfo probeInfo = pm.getProbeInfo("runtimeStatus");
 
@@ -191,7 +179,7 @@ public class TestProbes {
      * @since 10.1
      */
     @Test
-    public void testChangingSingleProbeStatus() throws IOException, InterruptedException {
+    public void testChangingSingleProbeStatus() {
         // make sure test probe status should be ok
         assertTrue(fs.getStatus().isSuccess());
 
@@ -236,18 +224,16 @@ public class TestProbes {
 
     @Test
     public void testInvalidProbe() {
-        IllegalArgumentException e = null;
         try {
             pm.getOrRunHealthCheck("invalidProbe");
-        } catch (IllegalArgumentException e1) {
-            e = e1;
+            fail("The invalidProbe should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Probe: invalidProbe does not exist, or not registered for the health check", e.getMessage());
         }
-        assertNotNull(e);
     }
 
     @Test
-    public void testRepositoryStatusProbe() throws IOException {
-
+    public void testRepositoryStatusProbe() {
         HealthCheckResult result = pm.getOrRunHealthCheck("repositoryStatus");
         ProbeInfo probeInfo = pm.getProbeInfo("repositoryStatus");
         assertTrue(result.isHealthy());
