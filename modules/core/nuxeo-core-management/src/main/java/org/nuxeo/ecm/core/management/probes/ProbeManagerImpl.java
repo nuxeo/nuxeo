@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
@@ -40,9 +40,16 @@ import org.nuxeo.runtime.management.ManagementRuntimeException;
 import org.nuxeo.runtime.management.api.Probe;
 import org.nuxeo.runtime.management.api.ProbeStatus;
 
+/**
+ * @since 5.4
+ */
 public class ProbeManagerImpl implements ProbeManager {
 
-    protected static final Log log = LogFactory.getLog(ProbeManagerImpl.class);
+    protected static final Logger log = LogManager.getLogger(ProbeManagerImpl.class);
+
+    public static final String DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY = "nuxeo.healthcheck.refresh.interval.seconds";
+
+    public static final String DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS = "20";
 
     protected final Map<Class<? extends Probe>, ProbeInfo> infosByTypes = new HashMap<>();
 
@@ -55,10 +62,6 @@ public class ProbeManagerImpl implements ProbeManager {
     protected final Set<ProbeInfo> failed = new HashSet<>();
 
     protected final Set<ProbeInfo> succeed = new HashSet<>();
-
-    public static final String DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY = "nuxeo.healthcheck.refresh.interval.seconds";
-
-    public static final String DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS = "20";
 
     protected Set<String> doExtractProbesName(Collection<ProbeInfo> runners) {
         Set<String> names = new HashSet<>();
@@ -117,7 +120,7 @@ public class ProbeManagerImpl implements ProbeManager {
     public ProbeInfo getProbeInfo(Class<? extends Probe> probeClass) {
         ProbeInfo info = infosByTypes.get(probeClass);
         if (info == null) {
-            throw new IllegalArgumentException("no probe registered for " + probeClass);
+            throw new IllegalArgumentException("No probe registered for: " + probeClass);
         }
         return info;
     }
@@ -138,7 +141,7 @@ public class ProbeManagerImpl implements ProbeManager {
     public ProbeInfo runProbe(String name) {
         ProbeInfo probeInfo = getProbeInfo(name);
         if (probeInfo == null) {
-            log.warn("Probe " + name + " can not be found");
+            log.warn("Probe: {} can not be found", name);
             return null;
         }
         return runProbe(probeInfo);
@@ -155,10 +158,10 @@ public class ProbeManagerImpl implements ProbeManager {
         try {
             probe = probeClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new ManagementRuntimeException("Cannot create management probe for " + descriptor);
+            throw new ManagementRuntimeException("Cannot create management probe for: " + descriptor);
         }
 
-        ProbeInfoImpl info = new ProbeInfoImpl(descriptor);
+        var info = new ProbeInfoImpl(descriptor);
         infosByTypes.put(probeClass, info);
         infosByShortcuts.put(descriptor.getShortcut(), info);
         probesByShortcuts.put(descriptor.getShortcut(), probe);
@@ -187,7 +190,7 @@ public class ProbeManagerImpl implements ProbeManager {
         }
         boolean ok = false;
         try {
-            ProbeInfoImpl probeInfoImpl = (ProbeInfoImpl) probe;
+            var probeInfoImpl = (ProbeInfoImpl) probe;
             Thread currentThread = Thread.currentThread();
             ClassLoader lastLoader = currentThread.getContextClassLoader();
             currentThread.setContextClassLoader(ProbeInfoImpl.class.getClassLoader());
@@ -253,7 +256,7 @@ public class ProbeManagerImpl implements ProbeManager {
             String probeName = es.getKey();
             ProbeInfo probe = es.getValue();
             if (probe == null) {
-                log.warn("Probe:" + probeName + " does not exist, skipping it for the health check");
+                log.warn("Probe: {} does not exist, skipping it for the health check", probeName);
                 continue;
             }
             getStatusOrRunProbe(probe, getDefaultCheckInterval());
@@ -263,9 +266,9 @@ public class ProbeManagerImpl implements ProbeManager {
 
     @Override
     public HealthCheckResult getOrRunHealthCheck(String name) throws IllegalArgumentException {
-
         if (!probesForHealthCheck.containsKey(name)) {
-            throw new IllegalArgumentException("Probe:" + name + " does not exist, or not registed for the healthCheck");
+            throw new IllegalArgumentException(
+                    "Probe: " + name + " does not exist, or not registered for the health check");
         }
         ProbeInfo probe = probesForHealthCheck.get(name);
         getStatusOrRunProbe(probe, getDefaultCheckInterval());

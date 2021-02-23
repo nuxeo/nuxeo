@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,11 +36,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class HealthCheckResult {
 
-    private static final Log log = LogFactory.getLog(HealthCheckResult.class);
+    private static final Logger log = LogManager.getLogger(HealthCheckResult.class);
 
-    protected Collection<ProbeInfo> probes;
+    protected static final String EMPTY_JSON = "{}";
 
-    protected boolean healthy;
+    protected final Collection<ProbeInfo> probes;
+
+    protected final boolean healthy;
 
     public HealthCheckResult(Collection<ProbeInfo> probesToCheck) {
         this.probes = probesToCheck;
@@ -61,8 +62,8 @@ public class HealthCheckResult {
             }
             return om.writeValueAsString(res);
         } catch (JsonProcessingException e) {
-            log.error(e);
-            return StringUtils.EMPTY;
+            log.error("Unable to write HealthCheckResult to json", e);
+            return EMPTY_JSON;
         }
     }
 }
