@@ -46,7 +46,7 @@ public @interface XNode {
      *
      * @since 11.5
      */
-    public static final String NO_FALLBACK_MARKER = "__NO_FALLBACK_MARKER__";
+    String NO_FALLBACK_MARKER = "__NO_FALLBACK_MARKER__";
 
     /**
      * An xpathy expression specifying the fallback XML node to bind to.
@@ -62,7 +62,7 @@ public @interface XNode {
      *
      * @since 11.5
      */
-    public static final String NO_DEFAULT_ASSIGNMENT_MARKER = "__NO_DEFAULT_ASSIGNMENT_MARKER__";
+    String NO_DEFAULT_ASSIGNMENT_MARKER = "__NO_DEFAULT_ASSIGNMENT_MARKER__";
 
     /**
      * String representation of the default assignment for the retrieved value for this node.
