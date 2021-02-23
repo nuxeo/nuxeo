@@ -18,9 +18,6 @@
  */
 package org.nuxeo.ecm.core.blob;
 
-import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +67,7 @@ public class LocalBlobStore extends AbstractBlobStore {
             Files.createDirectories(dest.getParent());
             logTrace(name, "-->", name, "rename");
             logTrace("hnote right of " + name + ": " + key);
-            Files.move(tmp, dest, ATOMIC_MOVE);
+            PathStrategy.atomicMove(tmp, dest);
             return key;
         } finally {
             try {
@@ -133,7 +130,7 @@ public class LocalBlobStore extends AbstractBlobStore {
             logTrace("hnote right of " + sourceStore.name + ": " + sourceKey);
             logTrace(sourceStore.name, "->", name, "copy");
             logTrace("hnote right: " + key);
-            Files.copy(source, dest, REPLACE_EXISTING);
+            PathStrategy.atomicCopy(source, dest);
         }
         return key;
     }
@@ -155,7 +152,7 @@ public class LocalBlobStore extends AbstractBlobStore {
             }
             OptionalOrUnknown<Path> fileOpt = sourceStore.getFile(sourceKey);
             if (fileOpt.isPresent()) {
-                Files.copy(fileOpt.get(), readTo, REPLACE_EXISTING);
+                PathStrategy.atomicCopy(fileOpt.get(), readTo);
             } else {
                 boolean found = sourceStore.readBlob(sourceKey, readTo);
                 if (!found) {
@@ -163,7 +160,7 @@ public class LocalBlobStore extends AbstractBlobStore {
                 }
             }
             if (atomicMove) {
-                Files.move(readTo, dest, ATOMIC_MOVE);
+                PathStrategy.atomicMove(readTo, dest);
                 sourceStore.deleteBlob(sourceKey);
             }
             return key;
@@ -204,7 +201,7 @@ public class LocalBlobStore extends AbstractBlobStore {
         if (Files.exists(file)) { // NOSONAR (squid:S3725)
             logTrace("<-", "read " + Files.size(file) + " bytes");
             logTrace("hnote right: " + key);
-            Files.copy(file, dest, REPLACE_EXISTING);
+            PathStrategy.atomicCopy(file, dest);
             return true;
         } else {
             logTrace("<--", "missing");
