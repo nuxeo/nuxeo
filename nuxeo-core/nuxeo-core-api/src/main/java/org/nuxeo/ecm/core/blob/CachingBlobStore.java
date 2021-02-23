@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.time.Clock;
@@ -31,6 +32,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -47,6 +50,9 @@ import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 public class CachingBlobStore extends AbstractBlobStore {
 
     private static final Logger log = LogManager.getLogger(CachingBlobStore.class);
+
+    // static because we want all caches to share the same locks
+    protected static final Set<Path> LOCKED_FILES = ConcurrentHashMap.newKeySet();
 
     protected final BlobStore store;
 
@@ -99,10 +105,14 @@ public class CachingBlobStore extends AbstractBlobStore {
 
     protected Path copyOrMoveCachedBlob(String destKey, LocalBlobStore sourceStore, String sourceKey,
             boolean atomicMove) throws IOException {
-        String returnedKey = cacheStore.copyOrMoveBlob(destKey, sourceStore, sourceKey, atomicMove);
+        recordBlobAccess(sourceStore, sourceKey);
+        String returnedKey = cacheStore.copyBlob(destKey, sourceStore, sourceKey, atomicMove);
         if (returnedKey == null) {
             // source key didn't exist
             return null;
+        }
+        if (!returnedKey.equals(destKey)) {
+            throw new IllegalStateException("Expected " + destKey + " but was " + returnedKey);
         }
         OptionalOrUnknown<Path> fileOpt = cacheStore.getFile(destKey);
         if (!fileOpt.isPresent()) {
@@ -175,10 +185,10 @@ public class CachingBlobStore extends AbstractBlobStore {
     }
 
     protected OptionalOrUnknown<Path> getFileFromCache(String key, boolean exists) {
+        recordBlobAccess(cacheStore, key);
         OptionalOrUnknown<Path> fileOpt = cacheStore.getFile(key);
         if (fileOpt.isPresent()) {
             Path path = fileOpt.get();
-            recordBlobAccess(path);
             long len = path.toFile().length();
             if (exists) {
                 logTrace("<--", "exists (" + len + " bytes)");
@@ -291,18 +301,26 @@ public class CachingBlobStore extends AbstractBlobStore {
         for (PathInfo pi : files) {
             size += pi.size;
             count++;
-            // is the file old enough to be a candidate for deletion?
-            if (pi.time < threshold) {
-                // are files too numerous or do they occupy too much space?
-                if (count > maxCount || size > maxSize) {
-                    // delete the file
-                    try {
-                        Files.delete(pi.path);
-                        size -= pi.size;
-                        count--;
-                    } catch (IOException e) {
-                        log.error(e, e);
-                    }
+            // are there too many files, or do they occupy too much space?
+            if (count > maxCount || size > maxSize) {
+                // is the file old enough to be a candidate for deletion?
+                if (pi.time < threshold) {
+                    if (tryLock(pi.path)) {
+                        try {
+                            // re-check file age under lock
+                            long time = Files.getLastModifiedTime(pi.path).toMillis();
+                            if (time < threshold) {
+                                // delete the file
+                                Files.delete(pi.path);
+                                size -= pi.size;
+                                count--;
+                            }
+                        } catch (IOException e) {
+                            log.error(e, e);
+                        } finally {
+                            unlock(pi.path);
+                        }
+                    } // else if failed to lock ignore the file
                 }
             }
         }
@@ -329,20 +347,54 @@ public class CachingBlobStore extends AbstractBlobStore {
         }
     }
 
+    protected void recordBlobAccess(LocalBlobStore localBlobStore, String key) {
+        recordBlobAccess(localBlobStore.pathStrategy.getPathForKey(key));
+    }
+
     /**
-     * Records access to a blob by changing its modification time.
+     * Records access to a file by changing its modification time.
+     * <p>
+     * Recording access is also a form of locking against concurrent deletion by the clearing mechanism.
      *
      * @since 11.5
      */
-    // Some calls to this method may seem redundant because the file was just created,
-    // but during tests it's important to use our custom clock for last modified time.
     protected void recordBlobAccess(Path path) {
-        try {
-            // note that the filesystem may round the time
-            Files.setLastModifiedTime(path, FileTime.fromMillis(clock.millis()));
-        } catch (IOException e) {
-            log.error(e, e);
+        if (tryLock(path)) {
+            try {
+                // note that the filesystem may round the time
+                Files.setLastModifiedTime(path, FileTime.fromMillis(clock.millis()));
+            } catch (NoSuchFileException e) {
+                // ignore
+            } catch (IOException e) {
+                log.error(e, e);
+            } finally {
+                unlock(path);
+            }
         }
+    }
+
+    // try to lock with exponential backoff
+    protected static boolean tryLock(Path path) {
+        long millis = 1;
+        for (int i = 0; i < 20; i++) {
+            if (LOCKED_FILES.add(path)) {
+                return true;
+            }
+            if (i >= 10) {
+                millis *= 2; // exponential backoff after a 10ms
+            }
+            try {
+                Thread.sleep(millis);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e); // NOSONAR
+            }
+        }
+        return false;
+    }
+
+    protected static void unlock(Path path) {
+        LOCKED_FILES.remove(path);
     }
 
     @Override
