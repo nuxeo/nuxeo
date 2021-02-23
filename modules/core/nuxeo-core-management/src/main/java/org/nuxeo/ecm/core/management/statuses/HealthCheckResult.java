@@ -47,6 +47,9 @@ public class HealthCheckResult {
     public HealthCheckResult(Collection<ProbeInfo> probesToCheck) {
         this.probes = probesToCheck;
         healthy = probes.stream().allMatch(p -> p.getStatus().isSuccess());
+        if (!healthy) {
+            log.warn("HealthCheck is not healthy, see probes: {}", probes);
+        }
     }
 
     public boolean isHealthy() {
