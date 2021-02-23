@@ -130,4 +130,24 @@ public abstract class PathStrategy {
         }
     }
 
+    /**
+     * Does an atomic copy from source to dest.
+     *
+     * @param source the source
+     * @param dest the destination
+     * @since 11.5
+     */
+    public static void atomicCopy(Path source, Path dest) throws IOException {
+        Path tmp = Files.createTempFile(dest.getParent(), "bin_", ".tmp");
+        try {
+            Files.copy(source, tmp, REPLACE_EXISTING);
+            Files.move(tmp, dest, ATOMIC_MOVE, REPLACE_EXISTING);
+        } finally {
+            try {
+                Files.deleteIfExists(tmp);
+            } catch (IOException e) {
+                log.error(e, e);
+            }
+        }
+    }
 }
