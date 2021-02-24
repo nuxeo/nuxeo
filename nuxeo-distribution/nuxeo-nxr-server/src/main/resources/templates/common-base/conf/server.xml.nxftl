@@ -216,6 +216,11 @@
         <Valve className="org.apache.catalina.authenticator.SingleSignOn" />
         -->
 
+        <!-- This valve replaces the apparent client remote IP address and hostname for the request
+             with the IP address list presented by a proxy or a load balancer via a request header -->
+        <Valve className="org.apache.catalina.valves.RemoteIpValve"
+               protocolHeader="X-Forwarded-Proto" />
+
         <!-- Access log processes all example.
              Documentation at: /docs/config/valve.html -->
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="log"
