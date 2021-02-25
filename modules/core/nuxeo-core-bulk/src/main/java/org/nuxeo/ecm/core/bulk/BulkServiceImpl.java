@@ -99,7 +99,11 @@ public class BulkServiceImpl implements BulkService {
     public static final long COMPLETED_TTL_SECONDS = 3_600;
 
     // How long we keep the command and its status in the kv store once aborted
-    public static final long ABORTED_TTL_SECONDS = 7_200;
+    public static final long ABORTED_TTL_SECONDS = 43_200;
+
+    // @since 11.5
+    // How long we keep the command and its status in the kv store once completed with an error
+    public static final long COMPLETED_IN_ERROR_TTL_SECONDS = 86_400;
 
     // @since 11.3
     protected final AtomicLong externalScrollerCounter = new AtomicLong();
@@ -219,8 +223,9 @@ public class BulkServiceImpl implements BulkService {
             kvStore.put(COMMAND_PREFIX + status.getId(), (String) null);
             break;
         case COMPLETED:
-            kvStore.put(STATUS_PREFIX + status.getId(), statusAsBytes, COMPLETED_TTL_SECONDS);
-            kvStore.setTTL(COMMAND_PREFIX + status.getId(), COMPLETED_TTL_SECONDS);
+            long ttl = status.hasError() ? COMPLETED_IN_ERROR_TTL_SECONDS : COMPLETED_TTL_SECONDS;
+            kvStore.put(STATUS_PREFIX + status.getId(), statusAsBytes, ttl);
+            kvStore.setTTL(COMMAND_PREFIX + status.getId(), ttl);
             break;
         default:
             kvStore.put(STATUS_PREFIX + status.getId(), statusAsBytes);
