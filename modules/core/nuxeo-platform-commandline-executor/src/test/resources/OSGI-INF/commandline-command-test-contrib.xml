@@ -19,4 +19,17 @@
     </command>
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" point="command">
+    <command name="block" enabled="true">
+      <commandLine>sleep</commandLine>
+      <parameterString>3</parameterString>
+      <timeout>1s</timeout>
+    </command>
+
+    <command name="tooLong" enabled="true">
+      <commandLine>sleep</commandLine>
+      <parameterString>3</parameterString>
+    </command>
+  </extension>
+
 </component>

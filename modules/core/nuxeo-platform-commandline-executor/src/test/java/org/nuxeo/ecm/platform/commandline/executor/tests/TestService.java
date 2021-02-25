@@ -64,7 +64,7 @@ public class TestService {
 
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
-        assertEquals(1, cmds.size());
+        assertEquals(2, cmds.size());
         assertTrue(cmds.contains("aspell"));
 
         hotDeployer.deploy(
@@ -72,7 +72,7 @@ public class TestService {
 
         cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
-        assertEquals(2, cmds.size());
+        assertEquals(3, cmds.size());
         assertTrue(cmds.contains("identify"));
 
         hotDeployer.deploy(
@@ -80,15 +80,14 @@ public class TestService {
 
         cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
-        assertEquals(1, cmds.size());
+        assertEquals(2, cmds.size());
         assertFalse(cmds.contains("identify"));
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-dummy-test-contrib.xml")
     public void testCmdAvailable() {
-        assertEquals(List.of("cmdThatDoNotExist"), cles.getRegistredCommands());
-        assertTrue(cles.getAvailableCommands().isEmpty());
+        assertTrue(cles.getRegistredCommands().contains("cmdThatDoNotExist"));
 
         CommandAvailability ca1 = cles.getCommandAvailability("cmdThatDoNotExist");
         assertFalse(ca1.isAvailable());
@@ -96,7 +95,8 @@ public class TestService {
                 + "(descriptor CommandLineDescriptor[available=false,command=cmdThatDoNotExistAtAllForSure,enabled=true,"
                 + "installErrorMessage=<null>,installationDirective=You need to install this command that does not exist!"
                 + ",name=cmdThatDoNotExist,parameterString=,readOutput=true,testParameterString=,tester=<null>,"
-                + "winCommand=<null>,winParameterString=<null>,winTestParameterString=<null>])", ca1.getErrorMessage());
+                + "timeout=<null>,winCommand=<null>,winParameterString=<null>,winTestParameterString=<null>])",
+                ca1.getErrorMessage());
         assertEquals("You need to install this command that does not exist!", ca1.getInstallMessage());
         assertTrue(ca1.getInstallMessage().contains("need to install this command that does not"));
 

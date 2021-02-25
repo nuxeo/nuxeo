@@ -109,4 +109,9 @@ public class ExecResult implements Serializable {
         return commandLine;
     }
 
+    public boolean isCommandInTimeout() {
+        // When a command is killed by timeout using SIGKILL the return code is 137 = 128 + SIGKILL(9)
+        return returnCode == 137;
+    }
+
 }

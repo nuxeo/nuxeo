@@ -23,4 +23,12 @@
     </commandTester>
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" point="command">
+    <!-- timeout is used to set a time limit when running command, this definition checks if timeout is available -->
+    <command name="timeout" enabled="true">
+      <commandLine>timeout</commandLine>
+      <parameterString>--version</parameterString>
+    </command>
+  </extension>
+
 </component>
