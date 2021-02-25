@@ -18,10 +18,15 @@
  */
 package org.nuxeo.ecm.platform.routing.core.listener;
 
+import java.time.Duration;
+
+import org.nuxeo.common.utils.DurationUtils;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 
 /**
  * Imports route models in the root folder defined by the current persister from a contributed zip resource.
@@ -32,13 +37,29 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RouteModelsInitializator extends RepositoryInitializationHandler {
 
+    /** @since 11.5 */
+    public static final String CLUSTER_START_DURATION_PROP = "org.nuxeo.workflow.cluster.start.duration";
+
+    /** @since 11.5 */
+    public static final Duration CLUSTER_START_DURATION_DEFAULT = Duration.ofMinutes(1);
+
     @Override
     public void doInitializeRepository(CoreSession session) {
-        // This method gets called as a system user
-        // so we have all needed rights to do the check and the creation
+        String repositoryName = session.getRepositoryName();
+        String prop = Framework.getProperty(CLUSTER_START_DURATION_PROP);
+        Duration duration = DurationUtils.parsePositive(prop, CLUSTER_START_DURATION_DEFAULT);
+        Duration pollDelay = Duration.ofSeconds(1);
+        ClusterService clusterService = Framework.getService(ClusterService.class);
+        clusterService.runAtomically("start-workflows-" + repositoryName, duration, pollDelay,
+                () -> importWorkflows(repositoryName));
+    }
+
+    protected void importWorkflows(String repositoryName) {
         DocumentRoutingService service = Framework.getService(DocumentRoutingService.class);
-        service.importAllRouteModels(session);
-        session.save();
+        CoreInstance.doPrivileged(repositoryName, session -> {
+            service.importAllRouteModels(session);
+            session.save();
+        });
     }
 
 }
