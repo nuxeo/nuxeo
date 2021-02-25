@@ -20,6 +20,8 @@
 
 package org.nuxeo.ecm.platform.commandline.executor.service;
 
+import java.time.Duration;
+
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -78,6 +80,10 @@ public class CommandLineDescriptor {
 
     @XNode("installationDirective")
     protected String installationDirective;
+
+    // @since 11.5
+    @XNode("timeout")
+    public Duration timeout;
 
     public String getName() {
         if (name == null) {
@@ -181,4 +187,12 @@ public class CommandLineDescriptor {
         this.installErrorMessage = installErrorMessage;
     }
 
+    /**
+     * Returns the time limit for the command
+     *
+     * @since 11.5
+     */
+    public Duration getTimeout() {
+        return timeout;
+    }
 }

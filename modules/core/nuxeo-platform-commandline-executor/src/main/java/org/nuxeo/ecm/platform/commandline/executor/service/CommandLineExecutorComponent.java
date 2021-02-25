@@ -64,9 +64,12 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
     public static final String DEFAULT_EXECUTOR = "ShellExecutor";
 
-    protected static final Executor DEFAULT_EXECUTOR_INSTANCE = new ShellExecutor();
+    protected Executor defaultExecutorInstance;
 
     protected Map<String, CommandAvailability> unavailableCommands;
+
+    // @since 11.5
+    protected boolean useTimeout;
 
     @Override
     public void start(ComponentContext context) {
@@ -130,6 +133,18 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
                 }
             }
         });
+        checkIfTimeoutIsAvailable();
+        defaultExecutorInstance = new ShellExecutor(useTimeout);
+    }
+
+    // @since 11.5
+    protected void checkIfTimeoutIsAvailable() {
+        if (unavailableCommands.containsKey("timeout")) {
+            log.warn("There is no timeout command available, command executions won't be time-boxed.");
+            return;
+        }
+        log.debug("Using timeout to limit time execution of commands.");
+        useTimeout = true;
     }
 
     @Override
@@ -154,7 +169,8 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
                              .or(() -> this.getRegistryContribution(EP_ENV, cmdDesc.getCommand()))
                              .orElse(null);
         var env = new EnvironmentDescriptor().merge(globalEnv).merge(commandEnv);
-        return DEFAULT_EXECUTOR_INSTANCE.exec(cmdDesc, params, env);
+
+        return defaultExecutorInstance.exec(cmdDesc, params, env);
     }
 
     @Override
