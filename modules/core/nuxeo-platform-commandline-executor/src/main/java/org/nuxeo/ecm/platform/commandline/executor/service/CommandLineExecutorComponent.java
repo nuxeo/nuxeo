@@ -72,13 +72,22 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
     private static final Log log = LogFactory.getLog(CommandLineExecutorComponent.class);
 
+    // @since 11.5
+    protected boolean useTimeout;
+
     @Override
     public void activate(ComponentContext context) {
         commandDescriptors = new HashMap<>();
         env = new EnvironmentDescriptor();
         testers = new HashMap<>();
         executors = new HashMap<>();
-        executors.put(DEFAULT_EXECUTOR, new ShellExecutor());
+
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        super.start(context);
+        executors.put(DEFAULT_EXECUTOR, new ShellExecutor(useTimeout));
     }
 
     @Override
@@ -137,6 +146,12 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
                     desc.setInstallErrorMessage(testResult.getErrorMessage());
                     log.warn("Command not available: " + name + " (" + desc.getInstallErrorMessage() + ". "
                             + desc.getInstallationDirective() + ')');
+                }
+                if ("timeout".equals(name)) {
+                    useTimeout = cmdAvailable;
+                    if (!useTimeout) {
+                        log.warn("There is no timeout command available, command executions won't be time-boxed.");
+                    }
                 }
             }
             desc.setAvailable(cmdAvailable);

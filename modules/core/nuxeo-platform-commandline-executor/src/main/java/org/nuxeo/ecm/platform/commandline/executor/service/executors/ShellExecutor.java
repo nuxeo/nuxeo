@@ -53,6 +53,7 @@ import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 import org.nuxeo.ecm.platform.commandline.executor.service.EnvironmentDescriptor;
 import org.nuxeo.runtime.RuntimeServiceException;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Default implementation of the {@link Executor} interface. Use simple shell exec.
@@ -65,6 +66,14 @@ public class ShellExecutor implements Executor {
 
     /** Used to split the contributed command, NOT the passed parameter values. */
     protected static final Pattern COMMAND_SPLIT = Pattern.compile("\"([^\"]*)\"|'([^']*)'|[^\\s]+");
+
+    protected final boolean useTimeout;
+
+    public static final int DEFAULT_TIMEOUT_S = 24 * 3600;
+
+    public ShellExecutor(boolean useTimeout) {
+        this.useTimeout = useTimeout;
+    }
 
     @Override
     public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params, EnvironmentDescriptor env) {
@@ -89,6 +98,14 @@ public class ShellExecutor implements Executor {
             throws IOException {
         // split the configured parameters while keeping quoted parts intact
         List<String> list = new ArrayList<>();
+        if (useTimeout) {
+            // prefix the command using timeout in order to limit time execution with a SIGKILL
+            list.add("timeout");
+            list.add("-s");
+            list.add("9");
+            list.add(getTimeout(cmdDesc) + "s");
+            log.debug("Prefixing command: {}, with {}", cmdDesc.getName(), list);
+        }
         list.add(cmdDesc.getCommand());
         Matcher m = COMMAND_SPLIT.matcher(cmdDesc.getParametersString());
         while (m.find()) {
@@ -125,7 +142,7 @@ public class ShellExecutor implements Executor {
             }
             var processBuilder = createProcessBuilder(command, env);
             builders.add(processBuilder);
-
+            log.trace("Add command: {}", command);
             command = new LinkedList<>(); // reset for next loop
         }
         // now start all process
@@ -142,6 +159,17 @@ public class ShellExecutor implements Executor {
         int returnCode = getReturnCode(processes);
 
         return new ExecResult(null, output, 0, returnCode);
+    }
+
+    protected int getTimeout(CommandLineDescriptor cmdDesc) {
+        int timeout = cmdDesc.getTimeout() != null ? Math.toIntExact(cmdDesc.getTimeout().getSeconds()) : DEFAULT_TIMEOUT_S;
+        int ttl = TransactionHelper.getTransactionTimeToLive();
+        if (ttl < 0) {
+            // out of transaction
+            return timeout;
+        }
+        // increment ttl because timeout 0s means no timeout
+        return Math.min(ttl + 1, timeout);
     }
 
     protected ProcessBuilder createProcessBuilder(List<String> command, EnvironmentDescriptor env) {

@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.commandline.executor.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -31,6 +32,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
@@ -42,7 +44,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * Tests commands parsing.
@@ -51,7 +55,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  * @author Vincent Dutat
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features(TransactionalFeature.class)
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 public class TestCommands {
 
@@ -91,7 +95,7 @@ public class TestCommands {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-command-test-contrib.xml")
     public void testCmdEnvironment() throws Exception {
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
@@ -107,7 +111,7 @@ public class TestCommands {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-command-test-contrib.xml")
     public void testCmdPipe() throws Exception {
 
         ExecResult result = cles.execCommand("pipe", cles.getDefaultCmdParameters());
@@ -117,6 +121,49 @@ public class TestCommands {
         // window's echo displays things exactly as is including quotes
         String expected = SystemUtils.IS_OS_WINDOWS ? "\"a   b\" \"c   d\" e" : "a   b c   d e";
         assertEquals(expected, line);
+    }
+
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-command-test-contrib.xml")
+    public void testTimeoutOnBlockingCommand() throws Exception {
+        Assume.assumeTrue("Requires timeout", cles.getAvailableCommands().contains("timeout"));
+        List<String> cmds = cles.getRegistredCommands();
+        assertTrue(cmds.contains("block"));
+
+        ExecResult result = cles.execCommand("block", cles.getDefaultCmdParameters());
+        assertFalse(result.isSuccessful());
+        // Command terminated with SIGKILL = 128 + 9
+        assertEquals(137, result.getReturnCode());
+        assertTrue(result.isCommandInTimeout());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-command-test-contrib.xml")
+    public void testTimeoutOnTransaction() throws Exception {
+        Assume.assumeTrue("Requires timeout", cles.getAvailableCommands().contains("timeout"));
+        List<String> cmds = cles.getRegistredCommands();
+        assertTrue(cmds.contains("tooLong"));
+
+        // Execute a long command
+        ExecResult result = cles.execCommand("tooLong", cles.getDefaultCmdParameters());
+        assertTrue(result.isSuccessful());
+        assertFalse(result.isCommandInTimeout());
+
+        // Execute the command again but within a short transaction
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction(1);
+        result = cles.execCommand("tooLong", cles.getDefaultCmdParameters());
+        assertFalse(result.isSuccessful());
+        assertTrue(result.isCommandInTimeout());
+
+        // Start a new transaction to prevent tx timeout during test tear down
+        try {
+            TransactionHelper.commitOrRollbackTransaction();
+        } catch (TransactionRuntimeException e) {
+            // timeout is expected
+        }
+        TransactionHelper.startTransaction();
     }
 
 }

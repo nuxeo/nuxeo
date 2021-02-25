@@ -60,7 +60,7 @@ public class TestService {
 
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
-        assertEquals(1, cmds.size());
+        assertEquals(2, cmds.size());
         assertTrue(cmds.contains("aspell"));
 
         hotDeployer.deploy(
@@ -68,7 +68,7 @@ public class TestService {
 
         cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
-        assertEquals(2, cmds.size());
+        assertEquals(3, cmds.size());
         assertTrue(cmds.contains("identify"));
 
         hotDeployer.deploy(
@@ -76,7 +76,7 @@ public class TestService {
 
         cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
-        assertEquals(1, cmds.size());
+        assertEquals(2, cmds.size());
         assertFalse(cmds.contains("identify"));
     }
 
