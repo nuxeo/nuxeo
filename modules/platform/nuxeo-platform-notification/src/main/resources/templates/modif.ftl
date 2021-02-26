@@ -90,6 +90,11 @@
                           <a style="color:#22aee8;text-decoration:underline;word-wrap:break-word !important;" href="${docUrl}?tabIds=%3ATAB_CONTENT_HISTORY">&#187; Review history of the document</a>
                         </p>
                       </#if>
+                      <#if docUrl?? && !isJSFUI>
+                        <p style="margin:0;">
+                          <a style="color:#22aee8;text-decoration:underline;word-wrap:break-word !important;" href="${docUrl}?p=history">&#187; Review history of the document</a>
+                        </p>
+                      </#if>
                         <br/>
                       </td>
                     </tr>
