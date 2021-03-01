@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.frameio.core.contributions" version="1.0.0">
+
+  <require>org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry</require>
+
+  <documentation>
+    Management of FrameIO configuration.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry" point="providers">
+    <provider>
+      <name>frameio</name>
+      <description>Frame IO Provider</description>
+      <class>org.nuxeo.ecm.platform.oauth2.providers.FrameIOOAuth2ServiceProvider</class>
+      <tokenServerURL>https://applications.frame.io/oauth2/token</tokenServerURL>
+      <authorizationServerURL>https://applications.frame.io/oauth2/auth</authorizationServerURL>
+      <scope>team.read</scope>
+      <scope>account.read</scope>
+      <scope>offline</scope>
+    </provider>
+  </extension>
+
+</component>
