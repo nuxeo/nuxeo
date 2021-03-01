@@ -291,12 +291,16 @@ public class TestNXQLQueryBuilder {
 
         String replacedPattern1 = NXQLQueryBuilder.buildPattern(pattern1, ":title", "'test'");
         String replacedPattern2 = NXQLQueryBuilder.buildPattern(pattern2, ":title", "'test'");
+        String replacedPattern2a = NXQLQueryBuilder.buildPattern(pattern2, ":title", "' $0'");
+        String replacedPattern2b = NXQLQueryBuilder.buildPattern(pattern2, ":title", "' :title'");
         String replacedPattern3 = NXQLQueryBuilder.buildPattern(pattern3, ":title", "'test'");
         String replacedPattern4 = NXQLQueryBuilder.buildPattern(pattern4, ":title", "'test'");
         String replacedPattern5 = NXQLQueryBuilder.buildPattern(pattern5, ":title", "'test'");
 
         assertEquals("SELECT * FROM Document WHERE dc:title = :myTitle", replacedPattern1);
         assertEquals("SELECT * FROM Document WHERE dc:title = 'test'", replacedPattern2);
+        assertEquals("SELECT * FROM Document WHERE dc:title = ' $0'", replacedPattern2a);
+        assertEquals("SELECT * FROM Document WHERE dc:title = ' :title'", replacedPattern2b);
         assertEquals("SELECT * FROM Document WHERE dc:title = 'test' OR dc:title = :titleLonger", replacedPattern3);
         assertEquals(
                 "SELECT * FROM Document WHERE dc:title = :titleLongest OR dc:title = 'test' OR dc:title = :titleLonger",
