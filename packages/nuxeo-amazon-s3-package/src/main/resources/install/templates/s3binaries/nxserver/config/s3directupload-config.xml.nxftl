@@ -32,11 +32,11 @@
       <property name="crypt.serverside">${nuxeo.s3storage.transient.crypt.serverside}</property>
       <property name="cachesize">100MB</property>
       <!-- min file age, in second, to be removed from cache if the size max size is reached, default is 3600 -->
-      <property name="cacheminage">60</property>
-      <property name="connection.max">50</property>
-      <property name="connection.retry">3</property>
-      <property name="connection.timeout">50000</property>
-      <property name="socket.timeout">50000</property>
+      <property name="cacheminage">${nuxeo.s3storage.cacheminage}</property>
+      <property name="connection.max">${nuxeo.s3storage.connection.max}</property>
+      <property name="connection.retry">${nuxeo.s3storage.connection.retry}</property>
+      <property name="connection.timeout">${nuxeo.s3storage.connection.timeout}</property>
+      <property name="socket.timeout">${nuxeo.s3storage.socket.timeout}</property>
       <!-- this blob provider is used for transient storage -->
       <property name="transient">true</property>
     </blobprovider>
@@ -54,11 +54,11 @@
       <property name="region">${nuxeo.s3storage.region}</property>
       <property name="bucket_prefix">s3DirectUpload</property>
       <property name="crypt.serverside">${nuxeo.s3storage.crypt.serverside}</property>
-      <property name="cachesize">100MB</property>
-      <property name="connection.max">50</property>
-      <property name="connection.retry">3</property>
-      <property name="connection.timeout">50000</property>
-      <property name="socket.timeout">50000</property>
+      <property name="cachesize">${nuxeo.s3storage.cachesize}</property>
+      <property name="connection.max">${nuxeo.s3storage.connection.max}</property>
+      <property name="connection.retry">${nuxeo.s3storage.connection.retry}</property>
+      <property name="connection.timeout">${nuxeo.s3storage.connection.timeout}</property>
+      <property name="socket.timeout">${nuxeo.s3storage.socket.timeout}</property>
       <!-- this blob provider is used for transient storage -->
       <property name="transient">true</property>
       <property name="keyStrategy">managed</property>
