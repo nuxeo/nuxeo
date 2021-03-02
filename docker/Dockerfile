@@ -62,11 +62,15 @@ RUN yum -y update \
     epel-release \
     # install java first to provide it for depend packages (such as libreoffice)
     zulu11-jdk \
+  # install libreoffice
+  && curl -f -L https://download.documentfoundation.org/libreoffice/stable/7.1.0/rpm/x86_64/LibreOffice_7.1.0_Linux_x86-64_rpm.tar.gz | tar -C /tmp -xzv \
+  && yum -y localinstall /tmp/LibreOffice_7.1.0*/RPMS/*.rpm \
+  && ln -s /opt/libreoffice7.1/program/soffice /usr/bin/soffice \
+  && rm -rf /tmp/LibreOffice_7.1.0* \
   && yum -y --setopt=skip_missing_names_on_install=False install \
     ghostscript \
     ImageMagick-6.9.10.68-3.el7 \
     less \
-    libreoffice-headless libreoffice-writer libreoffice-calc libreoffice-impress \
     libwpd-tools \
     # required by perl-Image-ExifTool to extract binary metadata from open office document
     perl-Archive-Zip \
