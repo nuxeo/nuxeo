@@ -793,9 +793,11 @@
        <mimetype>application/psd</mimetype>
        <mimetype>zz-application</mimetype>
        <mimetype>zz-winassoc-psd</mimetype>
+       <mimetype>application/vnd.3gpp.pic-bw-small</mimetype> <!-- psb files -->
      </mimetypes>
      <extensions>
        <extension>psd</extension>
+       <extension>psb</extension>
      </extensions>
    </mimetype>
 
