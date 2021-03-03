@@ -24,6 +24,7 @@ Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/imaging-service-framework.xml,
  OSGI-INF/imaging-service-contrib.xml,
  OSGI-INF/imaging-bulk-contrib.xml,
+ OSGI-INF/imaging-pageprovider-contrib.xml,
  OSGI-INF/picture-schemas-contrib.xml,
  OSGI-INF/imaging-types-contrib.xml,
  OSGI-INF/picture-life-cycle-contrib.xml,
