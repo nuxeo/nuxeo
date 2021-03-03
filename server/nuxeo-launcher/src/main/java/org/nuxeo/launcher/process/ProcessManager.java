@@ -42,11 +42,23 @@ public class ProcessManager {
     public Optional<Long> findPid() throws IOException {
         try {
             return ProcessHandle.allProcesses()
-                                .filter(ph -> processPattern.matcher(ph.info().commandLine().orElse("")).matches())
+                                .filter(ph -> processPattern.matcher(getCommandLine(ph)).matches())
                                 .map(ProcessHandle::pid)
                                 .findFirst();
         } catch (UnsupportedOperationException e) {
             throw new IOException("Your system doesn't support looking up of process", e);
+        }
+    }
+
+    protected static String getCommandLine(ProcessHandle ph) {
+        try {
+            return ph.info().commandLine().orElse("");
+        } catch (RuntimeException e) {
+            if ("Input/output error".equals(e.getMessage())) {
+                // workaround for a JDK bug on Apple Silicon (M1) (NXP-30225)
+                return "";
+            }
+            throw e;
         }
     }
 
