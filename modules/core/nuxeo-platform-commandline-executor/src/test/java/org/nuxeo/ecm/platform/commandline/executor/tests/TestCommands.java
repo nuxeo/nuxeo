@@ -46,6 +46,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * Tests commands parsing.
@@ -157,7 +158,11 @@ public class TestCommands {
         assertTrue(result.isCommandInTimeout());
 
         // Start a new transaction to prevent tx timeout during test tear down
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            TransactionHelper.commitOrRollbackTransaction();
+        } catch (TransactionRuntimeException e) {
+            // timeout is expected
+        }
         TransactionHelper.startTransaction();
     }
 
