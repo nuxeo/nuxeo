@@ -160,6 +160,66 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
     }
 
     @Test
+    public void testFixupDigestOnWrite() throws IOException {
+        // write blob with no digest
+        Blob blob = Blobs.createBlob(CONTENT);
+        String key = binaryManager.writeBlob(blob);
+        assertEquals(CONTENT_MD5, key);
+        // digest was fixed up
+        assertEquals("MD5", blob.getDigestAlgorithm());
+        assertEquals(CONTENT_MD5, blob.getDigest());
+
+        // write blob with temporary digest
+        blob = Blobs.createBlob(CONTENT);
+        blob.setDigest("notadigest-0");
+        key = binaryManager.writeBlob(blob);
+        assertEquals(CONTENT_MD5, key);
+        // digest was fixed up
+        assertEquals("MD5", blob.getDigestAlgorithm());
+        assertEquals(CONTENT_MD5, blob.getDigest());
+
+        // write blob with custom digest
+        String digest = "rL0Y20zC+Fzt72VPzMSk2A==";
+        blob = Blobs.createBlob(CONTENT);
+        blob.setDigest(digest);
+        key = binaryManager.writeBlob(blob);
+        assertEquals(CONTENT_MD5, key);
+        // digest was not fixed up
+        assertNull(blob.getDigestAlgorithm());
+        assertEquals(digest, blob.getDigest());
+    }
+
+    @Test
+    public void testFixupDigestOnRead() throws IOException {
+        // write blob
+        String key = binaryManager.writeBlob(Blobs.createBlob(CONTENT));
+        assertEquals(CONTENT_MD5, key);
+
+        // read blob
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = CONTENT_MD5;
+        Blob blob = binaryManager.readBlob(blobInfo);
+        // digest was fixed up
+        assertEquals("MD5", blob.getDigestAlgorithm());
+        assertEquals(CONTENT_MD5, blob.getDigest());
+
+        // read blob with temporary digest in database
+        blobInfo.digest = "notadigest-0";
+        blob = binaryManager.readBlob(blobInfo);
+        // digest was fixed up
+        assertEquals("MD5", blob.getDigestAlgorithm());
+        assertEquals(CONTENT_MD5, blob.getDigest());
+
+        // read blob with custom digest in database
+        String digest = "rL0Y20zC+Fzt72VPzMSk2A==";
+        blobInfo.digest = digest;
+        blob = binaryManager.readBlob(blobInfo);
+        // digest was not fixed up
+        assertNull(blob.getDigestAlgorithm());
+        assertEquals(digest, blob.getDigest());
+    }
+
+    @Test
     public void testCopy() throws IOException {
         // put blob in first binary manager
         Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));

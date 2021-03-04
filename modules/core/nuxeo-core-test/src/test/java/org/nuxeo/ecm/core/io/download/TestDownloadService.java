@@ -796,7 +796,7 @@ public class TestDownloadService {
             String digest = binary.getDigest();
             String filename = "cafe.txt";
             long length = binary.getFile().length();
-            Blob blob = new BinaryBlob(binary, digest, filename, "text/plain", "utf-8", digest, length);
+            Blob blob = new BinaryBlob(binary, digest, filename, "text/plain", "utf-8", "MD5", digest, length);
 
             // mock request response
             HttpServletRequest req = mock(HttpServletRequest.class);
