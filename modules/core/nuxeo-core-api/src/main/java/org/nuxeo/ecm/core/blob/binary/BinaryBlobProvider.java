@@ -114,7 +114,7 @@ public class BinaryBlobProvider implements BlobProvider {
             length = blobInfo.length.longValue();
         }
         BinaryBlob blob = new BinaryBlob(binary, blobInfo.key, blobInfo.filename, blobInfo.mimeType, blobInfo.encoding,
-                blobInfo.digest, length);
+                null, blobInfo.digest, length);
         fixupDigest(blob, digest);
         return blob;
     }
@@ -145,12 +145,16 @@ public class BinaryBlobProvider implements BlobProvider {
      * @since 11.5
      */
     protected void fixupDigest(Blob blob, String digest) {
-        if (blob.getDigestAlgorithm() == null) {
-            if (binaryManager instanceof AbstractBinaryManager) {
-                AbstractBinaryManager bm = (AbstractBinaryManager) binaryManager;
-                String digestAlgorithm = bm.isValidDigest(digest) ? bm.getDigestAlgorithm() : null;
+        if (binaryManager instanceof AbstractBinaryManager) {
+            AbstractBinaryManager bm = (AbstractBinaryManager) binaryManager;
+            String currentDigest = blob.getDigest();
+            if (currentDigest == null || currentDigest.contains("-")) {
+                // missing or temporary digest
                 blob.setDigest(digest);
-                blob.setDigestAlgorithm(digestAlgorithm);
+                currentDigest = digest;
+            }
+            if (blob.getDigestAlgorithm() == null && bm.isValidDigest(currentDigest)) {
+                blob.setDigestAlgorithm(bm.getDigestAlgorithm());
             }
         }
     }
