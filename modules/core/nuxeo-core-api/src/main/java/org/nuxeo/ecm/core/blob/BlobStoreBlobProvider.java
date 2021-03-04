@@ -230,10 +230,16 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
             }
             if (keyStrategy instanceof KeyStrategyDigest) {
                 KeyStrategyDigest ksd = (KeyStrategyDigest) keyStrategy;
-                String digest = stripBlobKeyVersionSuffix(stripBlobKeyPrefix(key));
-                String digestAlgorithm = ksd.isValidDigest(digest) ? ksd.digestAlgorithm : null;
-                blob.setDigest(digest);
-                blob.setDigestAlgorithm(digestAlgorithm);
+                String currentDigest = blob.getDigest();
+                if (currentDigest == null || currentDigest.contains("-")) {
+                    // missing or temporary digest
+                    String digest = stripBlobKeyVersionSuffix(stripBlobKeyPrefix(key));
+                    blob.setDigest(digest);
+                    currentDigest = digest;
+                }
+                if (blob.getDigestAlgorithm() == null && ksd.isValidDigest(currentDigest)) {
+                    blob.setDigestAlgorithm(ksd.digestAlgorithm);
+                }
             }
         }
     }
