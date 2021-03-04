@@ -188,19 +188,6 @@ public abstract class TestAbstractBlobStore {
         assertKey(ID1, key1);
         // check content
         assertBlob(key1, FOO);
-        // check digest fallback
-        if (useDeDuplication()) {
-            assertEquals(FOO_MD5, blobContext.blob.getDigest());
-        }
-
-        // read blob from provider, with a digest unset in the repository
-        if (useDeDuplication()) {
-            BlobInfo blobInfo = new BlobInfo();
-            blobInfo.key = key1;
-            Blob blob = bp.readBlob(blobInfo);
-            // check digest fallback
-            assertEquals(FOO_MD5, blob.getDigest());
-        }
 
         // replace
         String key2 = bs.writeBlob(blobContext(ID1, BAR));
@@ -214,6 +201,70 @@ public abstract class TestAbstractBlobStore {
             // check deleted
             assertNoBlob(key2);
         }
+    }
+
+    @Test
+    public void testFixupDigestOnWrite() throws IOException {
+        assumeTrue("digest is not fixed up in record mode", useDeDuplication());
+
+        // write blob with no digest
+        Blob blob = new StringBlob(FOO);
+        String key = bp.writeBlob(blob);
+        assertEquals(FOO_MD5, key);
+        // digest was fixed up
+        assertEquals("MD5", blob.getDigestAlgorithm());
+        assertEquals(FOO_MD5, blob.getDigest());
+
+        // write blob with temporary digest
+        blob = new StringBlob(FOO);
+        blob.setDigest("notadigest-0");
+        key = bp.writeBlob(blob);
+        assertEquals(FOO_MD5, key);
+        // digest was fixed up
+        assertEquals("MD5", blob.getDigestAlgorithm());
+        assertEquals(FOO_MD5, blob.getDigest());
+
+        // write blob with custom digest
+        String digest = "rL0Y20zC+Fzt72VPzMSk2A==";
+        blob = new StringBlob(FOO);
+        blob.setDigest(digest);
+        key = bp.writeBlob(blob);
+        assertEquals(FOO_MD5, key);
+        // digest was not fixed up
+        assertNull(blob.getDigestAlgorithm());
+        assertEquals(digest, blob.getDigest());
+    }
+
+    @Test
+    public void testFixupDigestOnRead() throws IOException {
+        assumeTrue("digest is not fixed up in record mode", useDeDuplication());
+
+        // write blob
+        String key = bp.writeBlob(new StringBlob(FOO));
+        assertEquals(FOO_MD5, key);
+
+        // read blob
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = FOO_MD5;
+        Blob blob = bp.readBlob(blobInfo);
+        // digest was fixed up
+        assertEquals("MD5", blob.getDigestAlgorithm());
+        assertEquals(FOO_MD5, blob.getDigest());
+
+        // read blob with temporary digest in database
+        blobInfo.digest = "notadigest-0";
+        blob = bp.readBlob(blobInfo);
+        // digest was fixed up
+        assertEquals("MD5", blob.getDigestAlgorithm());
+        assertEquals(FOO_MD5, blob.getDigest());
+
+        // read blob with custom digest in database
+        String digest = "rL0Y20zC+Fzt72VPzMSk2A==";
+        blobInfo.digest = digest;
+        blob = bp.readBlob(blobInfo);
+        // digest was not fixed up
+        assertNull(blob.getDigestAlgorithm());
+        assertEquals(digest, blob.getDigest());
     }
 
     @Test

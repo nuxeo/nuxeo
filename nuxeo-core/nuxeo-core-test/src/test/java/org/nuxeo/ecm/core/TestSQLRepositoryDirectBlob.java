@@ -113,7 +113,7 @@ public class TestSQLRepositoryDirectBlob {
         assertNotNull("Missing file for digest: " + digest, binary);
         String filename = "doc.txt";
         long length = binary.getFile().length();
-        Blob blob = new BinaryBlob(binary, digest, filename, "text/plain", "utf-8", digest, length);
+        Blob blob = new BinaryBlob(binary, digest, filename, "text/plain", "utf-8", "MD5", digest, length);
         blob.setFilename(filename);
         assertEquals("MD5", blob.getDigestAlgorithm());
         assertEquals(digest, blob.getDigest());

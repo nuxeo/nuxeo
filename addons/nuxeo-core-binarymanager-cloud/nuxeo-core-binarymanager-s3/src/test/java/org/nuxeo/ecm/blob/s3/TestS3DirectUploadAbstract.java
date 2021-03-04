@@ -235,7 +235,7 @@ public abstract class TestS3DirectUploadAbstract {
         if (keyLookingLikeADigest) {
             key = "01234567890123456789012345678901"; // same size as MD5
         } else {
-            key = "key" + System.nanoTime();
+            key = "key-" + System.nanoTime(); // with "-" to denote temporary digest
         }
         // generate unique key and and random content of give size
         String name = "name" + System.nanoTime();

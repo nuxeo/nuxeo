@@ -44,16 +44,23 @@ public class BinaryBlob extends AbstractBlob implements ManagedBlob, Serializabl
 
     protected final long length;
 
-    public BinaryBlob(Binary binary, String key, String filename, String mimeType, String encoding, String digest,
-            long length) {
+    public BinaryBlob(Binary binary, String key, String filename, String mimeType, String encoding,
+            String digestAlgorithm, String digest, long length) {
         this.binary = binary;
         this.key = key;
         this.length = length;
         setFilename(filename);
         setMimeType(mimeType);
         setEncoding(encoding);
+        setDigestAlgorithm(digestAlgorithm);
         setDigest(digest);
-        setDigestAlgorithm(binary.getDigestAlgorithm());
+    }
+
+    /** @deprecated since 11.5, use signature with digestAlgorithm instead */
+    @Deprecated
+    public BinaryBlob(Binary binary, String key, String filename, String mimeType, String encoding, String digest,
+            long length) {
+        this(binary, key, filename, mimeType, encoding, binary.getDigestAlgorithm(), digest, length);
     }
 
     @Override

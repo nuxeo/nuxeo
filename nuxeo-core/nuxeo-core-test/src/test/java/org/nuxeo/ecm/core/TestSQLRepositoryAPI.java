@@ -2874,7 +2874,7 @@ public class TestSQLRepositoryAPI {
         byte[] bytes = "hello".getBytes(UTF_8);
         Blob blob = Blobs.createBlob(bytes, "java/class", "UTF8");
         blob.setFilename("blob.txt");
-        blob.setDigest("XYZ");
+        blob.setDigest("XYZ-123"); // include "-" to denote temporary digest
         long length = blob.getLength();
         byte[] content = blob.getByteArray();
 
@@ -2900,12 +2900,12 @@ public class TestSQLRepositoryAPI {
         URL url = getClass().getClassLoader().getResource("META-INF/MANIFEST.MF");
         blob = new URLBlob(url, "java/manifest", null);
         blob.setFilename("manifest.mf");
-        blob.setDigest("YYY");
+        blob.setDigest("YYY-123");
         childFile.setPropertyValue("content", (Serializable) blob);
         session.saveDocument(childFile);
         childFile = session.getDocument(childFile.getRef());
         blob = (Blob) childFile.getPropertyValue("content");
-        assertNotEquals("YYY", blob.getDigest());
+        assertNotEquals("YYY-123", blob.getDigest());
         assertEquals("manifest.mf", blob.getFilename());
         assertNull(blob.getEncoding());
         assertEquals("java/manifest", blob.getMimeType());
