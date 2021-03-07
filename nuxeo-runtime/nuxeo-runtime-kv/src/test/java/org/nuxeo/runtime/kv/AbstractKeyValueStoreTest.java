@@ -318,6 +318,9 @@ public abstract class AbstractKeyValueStoreTest {
 
     @Test
     public void testGetMany() {
+        assertTrue(store.get(Collections.emptyList()).isEmpty());
+        assertTrue(store.getStrings(Collections.emptyList()).isEmpty());
+
         String key1 = "foo1";
         String key2 = "foo2";
         String key3 = "foo3";
@@ -350,6 +353,8 @@ public abstract class AbstractKeyValueStoreTest {
     @SuppressWarnings("boxing")
     @Test
     public void testGetManyLong() {
+        assertTrue(store.getLongs(Collections.emptyList()).isEmpty());
+
         String key1 = "foo1";
         String key2 = "foo2";
         String key3 = "foo3";

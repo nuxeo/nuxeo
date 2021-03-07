@@ -213,6 +213,9 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
      * @since 9.10
      */
     protected List<byte[]> getValuesForKeys(Collection<String> keys) {
+        if (keys.isEmpty()) {
+            return Collections.emptyList();
+        }
         byte[][] byteKeys = new byte[keys.size()][];
         int i = 0;
         for (String key : keys) {
