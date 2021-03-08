@@ -69,6 +69,12 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     /** @since 11.1 */
     public static final Duration CLUSTER_START_DURATION_DEFAULT = Duration.ofMinutes(1);
 
+    /** @since 11.5 */
+    public static final String CLUSTER_START_DELAY_PROP = "org.nuxeo.scheduler.start.delay";
+
+    /** @since 11.5 */
+    public static final String CLUSTER_START_DELAY_DEFAULT = "30";
+
     protected RuntimeContext context;
 
     protected Scheduler scheduler;
@@ -108,7 +114,8 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
             schedulerFactory.initialize(props);
         }
         scheduler = schedulerFactory.getScheduler();
-        scheduler.start();
+        // delay Quartz scheduler start to avoid unique key constraints violation with qrtz_LOCKS table
+        scheduler.startDelayed(Integer.valueOf(Framework.getProperty(CLUSTER_START_DELAY_PROP, CLUSTER_START_DELAY_DEFAULT)));
         // server = MBeanServerFactory.createMBeanServer();
         // server.createMBean("org.quartz.ee.jmx.jboss.QuartzService",
         // quartzObjectName);
