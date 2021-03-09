@@ -281,6 +281,11 @@ class Spreadsheet {
           newV = newV ? newV.split(',') : [];
         }
 
+        // Fix empty object values
+        if (!newV && typeof oldV === 'object') {
+          newV = null;
+        }
+
         assign(doc, field, newV);
       }
       if (this.autosave) {
