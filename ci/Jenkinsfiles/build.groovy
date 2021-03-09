@@ -849,6 +849,32 @@ pipeline {
         }
       }
     }
+
+    stage('Trigger hotfix build') {
+      when {
+        not {
+          branch 'PR-*'
+        }
+      }
+      steps {
+        echo """
+        ----------------------------------------
+        Trigger hotfix package build
+        ----------------------------------------
+        """
+        script {
+          def parameters = [
+            string(name: 'NUXEO_BRANCH', value: "${BRANCH_NAME}"),
+            string(name: 'NUXEO_CURRENT_VERSION', value: "${VERSION}"),
+          ]
+          build(
+            job: "nuxeo/LTS/nuxeo-hf-2021",
+            parameters: parameters,
+            wait: false
+          )
+        }
+      }
+    }
   }
 
   post {
