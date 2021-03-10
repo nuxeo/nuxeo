@@ -20,8 +20,11 @@
 package org.nuxeo.ecm.core.io.registry;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -261,15 +264,26 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
         return searchCandidate(ctx, marshalledClazz, genericType, mediatype, wildcards, forceInstantiation);
     }
 
+    /**
+     * Returns the marshallers, in fact always enrichers, in their reverse priority order.
+     * <p>
+     * The {@code customs} and {@code wildcards} sets come sorted with higher priorities first, e.g.: [3000, 2000], see
+     * {@link MarshallerInspector#compareTo(MarshallerInspector)}. The enrichers with higher priority need to be
+     * processed last, e.g.: [2000, 3000], to make sure they override any enricher with the same name and lower
+     * priority, see ExtensibleEntityJsonWriter#write(EntityType entity, JsonGenerator jg).
+     */
     public <T> Collection<Marshaller<T>> getAllMarshallers(RenderingContext ctx, Class<T> marshalledClazz,
             Type genericType, MediaType mediatype, Set<MarshallerInspector> customs,
             Set<MarshallerInspector> wildcards) {
-        Map<MarshallerInspector, Marshaller<T>> result = new HashMap<>();
+        // keep the marshallers (in fact enrichers) sorted to respect their priority
+        Map<MarshallerInspector, Marshaller<T>> result = new LinkedHashMap<>();
         if (customs != null) {
             result.putAll(searchAllCandidates(ctx, marshalledClazz, genericType, mediatype, customs));
         }
         result.putAll(searchAllCandidates(ctx, marshalledClazz, genericType, mediatype, wildcards));
-        return result.values();
+        List<Marshaller<T>> resultList = new ArrayList<>(result.values());
+        Collections.reverse(resultList);
+        return resultList;
     }
 
     @SuppressWarnings("unchecked")
@@ -299,7 +313,8 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
 
     private <T> Map<MarshallerInspector, Marshaller<T>> searchAllCandidates(RenderingContext ctx,
             Class<T> marshalledClazz, Type genericType, MediaType mediatype, Set<MarshallerInspector> candidates) {
-        Map<MarshallerInspector, Marshaller<T>> result = new HashMap<>();
+        // keep the marshallers (in fact enrichers) sorted to respect their priority
+        Map<MarshallerInspector, Marshaller<T>> result = new LinkedHashMap<>();
         for (MarshallerInspector inspector : candidates) {
             // checks the managed class is compatible
             if (inspector.getMarshalledType().isAssignableFrom(marshalledClazz)) {
