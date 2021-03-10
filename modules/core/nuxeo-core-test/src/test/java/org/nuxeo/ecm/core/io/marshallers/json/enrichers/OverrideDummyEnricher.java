@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,12 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nour AL KOTOB
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-
 package org.nuxeo.ecm.core.io.marshallers.json.enrichers;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
-import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.OVERRIDE_REFERENCE;
 
 import java.io.IOException;
 
@@ -30,14 +29,16 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
- * @since 11.1
+ * Overrides the {@link DummyEnricher} with a higher priority to validate precedence.
+ *
+ * @since 11.5
  */
-@Setup(mode = SINGLETON, priority = REFERENCE)
-public class DummyEnricher extends AbstractJsonEnricher<DocumentModel> {
+@Setup(mode = SINGLETON, priority = OVERRIDE_REFERENCE)
+public class OverrideDummyEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     public static final String NAME = "dummyEnricher";
 
-    public DummyEnricher() {
+    public OverrideDummyEnricher() {
         super(NAME);
     }
 
@@ -45,7 +46,7 @@ public class DummyEnricher extends AbstractJsonEnricher<DocumentModel> {
     public void write(JsonGenerator jg, DocumentModel enriched) throws IOException {
         jg.writeFieldName(NAME);
         jg.writeStartObject();
-        jg.writeStringField("foo", "bar");
+        jg.writeStringField("joe", "doe");
         jg.writeEndObject();
     }
 }
