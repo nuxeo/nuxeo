@@ -34,6 +34,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -50,6 +51,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ORIGINAL_PATH_ATTRIBUTE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE_KEY;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -670,6 +672,41 @@ public class TestNuxeoAuthenticationFilter {
         String entity = out.toString(UTF_8);
         assertTrue(entity, entity.contains(
                 "window.location = 'http://localhost:8080/nuxeo/dummy_login.jsp?requestedUrl=mystart%2Ffoo';"));
+
+        // check that start url was saved
+        assertEquals("mystart/foo", sessionAttributes.get(START_PAGE_SAVE_KEY));
+    }
+
+    /**
+     * Redirect to plugin login page without saving start URL.
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-no-start-url.xml")
+    public void testNoStartURLSaving() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession session = mock(HttpSession.class);
+        Map<String, Object> sessionAttributes = mockSessionAttributes(session);
+        when(request.getSession(anyBoolean())).thenReturn(session);
+        // mystart/ is defined as a start url in the XML config
+        mockRequestURI(request, "/mystart/foo");
+
+        filter.doFilter(request, response, chain);
+
+        // chain not called, as we redirect
+        assertFalse(chain.called);
+
+        // no login event
+        checkNoEvents();
+
+        // redirecting to /login
+        verify(response).sendRedirect("http://localhost:8080/nuxeo/dummy_login.jsp");
+
+        // redirect is not done through the HTML page as we don't need to save start url
+        verify(response, never()).setContentType(eq("text/html;charset=UTF-8"));
+
+        // no start url saved
+        assertFalse(sessionAttributes.containsKey(START_PAGE_SAVE_KEY));
     }
 
     /**
