@@ -73,11 +73,9 @@ if [ -n "$offline" ]; then
   sed -i "/$noConnectProperty/d" $NUXEO_HOME/bin/nuxeo.conf
 fi
 
-# Clean up package installation directories
-backupDir=$NUXEO_HOME/packages/backup
+# Clean up tmp package installation directory
 tmpDir=$NUXEO_HOME/packages/tmp
-echo "Clean up package installation directories: $backupDir, $tmpDir"
-rm -rf $backupDir
+echo "Clean up tmp package installation directory: $tmpDir"
 rm -rf $tmpDir
 echo
 
