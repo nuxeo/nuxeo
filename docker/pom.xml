@@ -52,11 +52,11 @@
             </goals>
             <configuration>
               <repository>nuxeo/nuxeo</repository>
-              <tag>latest</tag>
+              <tag>latest-lts</tag>
               <buildArgs>
                 <BUILD_TAG>local-nuxeo-nuxeo</BUILD_TAG>
                 <GIT_COMMIT>built-locally</GIT_COMMIT>
-                <VERSION>latest</VERSION>
+                <VERSION>latest-lts</VERSION>
               </buildArgs>
               <pullNewerImage>false</pullNewerImage>
             </configuration>
