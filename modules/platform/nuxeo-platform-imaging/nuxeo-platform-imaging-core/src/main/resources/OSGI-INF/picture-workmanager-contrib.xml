@@ -5,6 +5,7 @@
     <queue id="pictureViewsGeneration">
       <maxThreads>2</maxThreads>
       <category>pictureViewsGeneration</category>
+      <category>pictureViewsGenerationListener</category>
     </queue>
   </extension>
 

@@ -5,6 +5,8 @@
     <queue id="videoConversion">
       <maxThreads>2</maxThreads>
       <category>videoConversion</category>
+      <category>videoInfo</category>
+      <category>videoStoryboard</category>
     </queue>
   </extension>
 

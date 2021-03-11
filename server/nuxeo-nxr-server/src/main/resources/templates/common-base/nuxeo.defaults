@@ -79,6 +79,20 @@ mail.from=noreply@nuxeo.com
 nuxeo.core.binarymanager=org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager
 nuxeo.core.binarymanager_key=
 nuxeo.quartz.enable=false
+
+###
+# WorkManager
+# A common queue is used instead of the default queue for all Nuxeo Works
+nuxeo.work.queue.common.enabled=true
+nuxeo.work.queue.common.threads=4
+# A dedicated queue for thumbnail
+nuxeo.work.queue.thumbnail.enabled=true
+nuxeo.work.queue.thumbnail.threads=4
+# Number of threads for video queue
+nuxeo.work.queue.video.threads=2
+# Number of threads for the pictureViews queue
+nuxeo.work.queue.picture.threads=2
+
 ###
 # Elasticsearch
 elasticsearch.enabled=true
