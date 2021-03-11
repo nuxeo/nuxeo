@@ -1,0 +1,54 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.work.config.default" version="1.0">
+  <require>org.nuxeo.ecm.core.work.config</require>
+  <require>org.nuxeo.ecm.automation.core.impl.workmanager</require>
+  <require>org.nuxeo.ecm.collections.workmanager</require>
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+<#if "${nuxeo.work.queue.common.enabled}" == "true">
+    <queue id="common">
+      <name>Common Shared Queue for Nuxeo Works</name>
+      <maxThreads>${nuxeo.work.queue.common.threads}</maxThreads>
+      <category>aceStatusUpdatedListener</category>
+      <category>binary_metadata_work</category>
+      <category>checkedInCommentListener</category>
+      <category>cleanOpenTasksOnWorkflowDone</category>
+      <category>ConversionWork</category>
+      <category>CounterListener</category>
+      <category>deleteRoutingTaskListener</category>
+      <category>docRemovedCommentListener</category>
+      <category>documenttemplate-type-binding</category>
+      <category>findRetentionExpired</category>
+      <category>fulltextExtractor</category>
+      <category>notificationListener</category>
+      <category>nuxeoDriveGroupUpdateListener</category>
+      <category>nuxeoDriveVirtualEventLoggerListener</category>
+      <category>opchainpclistener</category>
+      <category>permissionNotificationListener</category>
+      <category>removeDocumentRoutesForDeletedDocument</category>
+      <category>removeTasksForDeletedDocumentRoute</category>
+      <category>security</category>
+      <category>storedRenditionsCleanup</category>
+      <category>taggedVersionListener</category>
+      <category>TransiantStorageGCWork</category>
+      <category>triggerEsclationRules</category>
+      <category>unicityListener</category>
+      <category>UserProfileImporterWork</category>
+      <category>wopiDiscoveryRefreshListener</category>
+      <category>wopiLocksExpiration</category>
+      <category>workflowInstancesCleanup</category>
+<#if "${nuxeo.work.queue.thumbnail.enabled}" != "true">
+      <category>updateThumbListener</category>
+</#if>
+    </queue>
+</#if>
+<#if "${nuxeo.work.queue.thumbnail.enabled}" == "true">
+    <queue id="updateThumbListener">
+      <maxThreads>${nuxeo.work.queue.thumbnail.threads}</maxThreads>
+      <category>updateThumbListener</category>
+    </queue>
+</#if>
+  </extension>
+</component>
+</#escape>
+
