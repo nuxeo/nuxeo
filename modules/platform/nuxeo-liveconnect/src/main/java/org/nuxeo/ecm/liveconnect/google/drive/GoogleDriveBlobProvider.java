@@ -524,7 +524,11 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
      * Retrieve a partial {@link File} resource.
      */
     protected File getPartialFile(String user, String fileId, String... fields) throws IOException {
-        return getService(user).files().get(fileId).setFields(StringUtils.join(fields, ",")).execute();
+        return getService(user).files()
+                               .get(fileId)
+                               .setSupportsAllDrives(true)
+                               .setFields(StringUtils.join(fields, ","))
+                               .execute();
     }
 
     /**
@@ -537,7 +541,7 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
         // ignore revisionId
         String fileId = fileInfo.getFileId();
         String cacheKey = "file_" + fileId;
-        DriveRequest<File> request = getService(fileInfo.getUser()).files().get(fileId);
+        DriveRequest<File> request = getService(fileInfo.getUser()).files().get(fileId).setSupportsAllDrives(true);
         return executeAndCache(cacheKey, request, File.class);
     }
 
