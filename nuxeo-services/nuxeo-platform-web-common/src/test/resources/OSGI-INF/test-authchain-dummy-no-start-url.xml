@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="test-no-start-url">
+
+    <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="chain">
+        <authenticationChain>
+            <plugins>
+                <plugin>DUMMY_AUTH_FORM</plugin>
+            </plugins>
+        </authenticationChain>
+    </extension>
+
+    <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="authenticators">
+        <authenticationPlugin name="DUMMY_AUTH_FORM"
+                              class="org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginForm">
+            <needStartingURLSaving>false</needStartingURLSaving>
+        </authenticationPlugin>
+    </extension>
+
+    <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="startURL">
+        <startURLPattern>
+            <patterns>
+                <pattern>mystart/</pattern>
+            </patterns>
+        </startURLPattern>
+    </extension>
+
+</component>
