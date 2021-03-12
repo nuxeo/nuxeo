@@ -96,7 +96,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoBulkWriteException;
+import com.mongodb.MongoException;
 import com.mongodb.MongoExecutionTimeoutException;
+import com.mongodb.MongoQueryException;
+import com.mongodb.MongoSocketReadTimeoutException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.bulk.BulkWriteError;
 import com.mongodb.client.ClientSession;
@@ -532,9 +535,8 @@ public class MongoDBConnection extends DBSConnectionBase {
         return findOne(filter);
     }
 
-    protected NuxeoException newQueryTimeout(MongoExecutionTimeoutException cause, Bson filter) {
-        NuxeoException exc = new NuxeoException(
-                "Query timed out as a result of the maximum operation time being exceeded", cause);
+    protected NuxeoException newQueryException(String message, MongoException cause, Bson filter) {
+        NuxeoException exc = new NuxeoException(message, cause);
         if (filter != null) {
             String msg;
             if (filter instanceof Document) {
@@ -545,6 +547,19 @@ public class MongoDBConnection extends DBSConnectionBase {
             exc.addInfo("Filter: " + msg);
         }
         return exc;
+    }
+
+    protected NuxeoException newQueryTimeout(MongoException cause, Bson filter) {
+        return newQueryException("Query timed out as a result of the maximum operation time being exceeded", cause,
+                filter);
+    }
+
+    protected NuxeoException newQueryTimeoutClient(MongoException cause, Bson filter) {
+        return newQueryException("Query timed out on client side after socketTimeout exceeded", cause, filter);
+    }
+
+    protected NuxeoException newQueryFailure(MongoException cause, Bson filter) {
+        return newQueryException("Query operation failed on the server", cause, filter);
     }
 
     protected void logQuery(String id, Bson fields) {
@@ -662,6 +677,10 @@ public class MongoDBConnection extends DBSConnectionBase {
             return find(filter).projection(projection).first() != null;
         } catch (MongoExecutionTimeoutException e) {
             throw newQueryTimeout(e, filter);
+        } catch (MongoSocketReadTimeoutException e) {
+            throw newQueryTimeoutClient(e, filter);
+        } catch (MongoQueryException e) {
+            throw newQueryFailure(e, filter);
         }
     }
 
@@ -680,6 +699,10 @@ public class MongoDBConnection extends DBSConnectionBase {
             return stream.collect(Collectors.toList());
         } catch (MongoExecutionTimeoutException e) {
             throw newQueryTimeout(e, filter);
+        } catch (MongoSocketReadTimeoutException e) {
+            throw newQueryTimeoutClient(e, filter);
+        } catch (MongoQueryException e) {
+            throw newQueryFailure(e, filter);
         }
     }
 
@@ -724,6 +747,10 @@ public class MongoDBConnection extends DBSConnectionBase {
             return stream;
         } catch (MongoExecutionTimeoutException e) {
             throw newQueryTimeout(e, filter); // NOSONAR (cursor is not leaked)
+        } catch (MongoSocketReadTimeoutException e) {
+            throw newQueryTimeoutClient(e, filter); // NOSONAR (cursor is not leaked)
+        } catch (MongoQueryException e) {
+            throw newQueryFailure(e, filter); // NOSONAR (cursor is not leaked)
         } finally {
             if (completedAbruptly) {
                 cursor.close();
@@ -782,6 +809,10 @@ public class MongoDBConnection extends DBSConnectionBase {
             }
         } catch (MongoExecutionTimeoutException e) {
             throw newQueryTimeout(e, filter);
+        } catch (MongoSocketReadTimeoutException e) {
+            throw newQueryTimeoutClient(e, filter);
+        } catch (MongoQueryException e) {
+            throw newQueryFailure(e, filter);
         }
         if (countUpTo == -1) {
             // count full size
@@ -837,6 +868,10 @@ public class MongoDBConnection extends DBSConnectionBase {
             cursor.hasNext(); // check timeout asap - NOSONAR
         } catch (MongoExecutionTimeoutException e) {
             throw newQueryTimeout(e, filter);
+        } catch (MongoSocketReadTimeoutException e) {
+            throw newQueryTimeoutClient(e, filter);
+        } catch (MongoQueryException e) {
+            throw newQueryFailure(e, filter);
         }
         String scrollId = cursorService.registerCursor(cursor, batchSize, keepAliveSeconds);
         return scroll(scrollId);
@@ -849,6 +884,10 @@ public class MongoDBConnection extends DBSConnectionBase {
             return cursorService.scroll(scrollId);
         } catch (MongoExecutionTimeoutException e) {
             throw newQueryTimeout(e, null);
+        } catch (MongoSocketReadTimeoutException e) {
+            throw newQueryTimeoutClient(e, null);
+        } catch (MongoQueryException e) {
+            throw newQueryFailure(e, null);
         }
     }
 
