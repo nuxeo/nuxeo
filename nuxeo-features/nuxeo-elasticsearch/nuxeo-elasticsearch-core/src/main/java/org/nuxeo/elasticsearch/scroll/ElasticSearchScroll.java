@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.search.SearchHit;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.scroll.RepositoryScroll;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.api.EsScrollResult;
@@ -48,13 +50,17 @@ public class ElasticSearchScroll extends RepositoryScroll {
     @Override
     protected boolean fetch() {
         ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
-        if (esScroll == null) {
-            esScroll = ess.scroll(new NxQueryBuilder(session).nxql(request.getQuery())
-                                                             .limit(request.getSize())
-                                                             .onlyElasticsearchResponse(),
-                    request.getTimeout().getSeconds());
-        } else {
-            esScroll = ess.scroll(esScroll);
+        try {
+            if (esScroll == null) {
+                esScroll = ess.scroll(new NxQueryBuilder(session).nxql(request.getQuery())
+                                                                 .limit(request.getSize())
+                                                                 .onlyElasticsearchResponse(),
+                        request.getTimeout().getSeconds());
+            } else {
+                esScroll = ess.scroll(esScroll);
+            }
+        } catch (ElasticsearchException e) {
+            throw new NuxeoException("Elastic scroll failure on request: " + request, e);
         }
         SearchHit[] hits = esScroll.getElasticsearchResponse().getHits().getHits();
         return hits != null && hits.length > 0;
