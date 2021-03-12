@@ -63,10 +63,10 @@ RUN yum -y update \
     # install java first to provide it for depend packages (such as libreoffice)
     zulu11-jdk \
   # install libreoffice
-  && curl -f -L https://download.documentfoundation.org/libreoffice/stable/7.1.0/rpm/x86_64/LibreOffice_7.1.0_Linux_x86-64_rpm.tar.gz | tar -C /tmp -xzv \
-  && yum -y localinstall /tmp/LibreOffice_7.1.0*/RPMS/*.rpm \
+  && curl -f -L https://download.documentfoundation.org/libreoffice/stable/7.1.1/rpm/x86_64/LibreOffice_7.1.1_Linux_x86-64_rpm.tar.gz | tar -C /tmp -xzv \
+  && yum -y localinstall /tmp/LibreOffice_7.1.1*/RPMS/*.rpm \
   && ln -s /opt/libreoffice7.1/program/soffice /usr/bin/soffice \
-  && rm -rf /tmp/LibreOffice_7.1.0* \
+  && rm -rf /tmp/LibreOffice_7.1.1* \
   && yum -y --setopt=skip_missing_names_on_install=False install \
     ghostscript \
     ImageMagick-6.9.10.68-3.el7 \
