@@ -1082,7 +1082,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     private boolean handleLogin(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String baseURL = service.getBaseURL(httpRequest);
 
-        // go through plugins to get UserIndentity
+        // go through plugins to get UserIdentity
         for (String pluginName : service.getAuthChain(httpRequest)) {
             NuxeoAuthenticationPlugin plugin = service.getPlugin(pluginName);
             AuthenticationPluginDescriptor descriptor = service.getDescriptor(pluginName);
@@ -1092,33 +1092,32 @@ public class NuxeoAuthenticationFilter implements Filter {
             if (Boolean.TRUE.equals(plugin.needLoginPrompt(httpRequest))) {
                 if (descriptor.getNeedStartingURLSaving()) {
                     saveRequestedURLBeforeRedirect(httpRequest, httpResponse);
-                }
+                    httpResponse = new HttpServletResponseWrapper(httpResponse) {
+                        @Override
+                        public void sendRedirect(String location) throws IOException {
+                            Map<String, String> parameters = URIUtils.getRequestParameters(location);
+                            // failed form authentication, fragment is already stored
+                            if (parameters.containsKey(LOGIN_MISSING) || parameters.containsKey(LOGIN_FAILED)) {
+                                super.sendRedirect(location);
+                                return;
+                            }
+                            HttpServletResponse response = (HttpServletResponse) getResponse();
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("<script type=\"text/javascript\">\n");
+                            sb.append("document.cookie = '" + NXAuthConstants.START_PAGE_FRAGMENT_KEY
+                                    + "=' + encodeURIComponent(window.location.hash.substring(1) || '') + '; path=/';\n");
+                            sb.append("window.location = '" + location + "';\n");
+                            sb.append("</script>");
+                            String script = sb.toString();
 
-                HttpServletResponse response = new HttpServletResponseWrapper(httpResponse) {
-                    @Override
-                    public void sendRedirect(String location) throws IOException {
-                        Map<String, String> parameters =  URIUtils.getRequestParameters(location);
-                        // failed form authentication, fragment is already stored
-                        if (parameters.containsKey(LOGIN_MISSING) || parameters.containsKey(LOGIN_FAILED)) {
-                            super.sendRedirect(location);
-                            return;
+                            response.setStatus(SC_UNAUTHORIZED);
+                            response.setContentType("text/html;charset=UTF-8");
+                            response.setContentLength(script.length());
+                            response.getWriter().write(script);
                         }
-                        HttpServletResponse response = (HttpServletResponse) getResponse();
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("<script type=\"text/javascript\">\n");
-                        sb.append("document.cookie = '" + NXAuthConstants.START_PAGE_FRAGMENT_KEY
-                                + "=' + encodeURIComponent(window.location.hash.substring(1) || '') + '; path=/';\n");
-                        sb.append("window.location = '" + location + "';\n");
-                        sb.append("</script>");
-                        String script = sb.toString();
-
-                        response.setStatus(SC_UNAUTHORIZED);
-                        response.setContentType("text/html;charset=UTF-8");
-                        response.setContentLength(script.length());
-                        response.getWriter().write(script);
-                    }
-                };
-                return Boolean.TRUE.equals(plugin.handleLoginPrompt(httpRequest, response, baseURL));
+                    };
+                }
+                return Boolean.TRUE.equals(plugin.handleLoginPrompt(httpRequest, httpResponse, baseURL));
             }
         }
 
