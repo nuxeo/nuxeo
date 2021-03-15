@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,11 +113,11 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
     protected static final String TRANSIENT_STORE_OUTPUT_BLOB = "blob";
 
-    protected static final String STATUS_PATH= "status";
+    protected static final String STATUS_PATH = "status";
 
-    protected static final String RUNNING_STATUS= "RUNNING";
+    protected static final String RUNNING_STATUS = "RUNNING";
 
-    protected static final String RESULT_URL_KEY= "url";
+    protected static final String RESULT_URL_KEY = "url";
 
     protected static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -190,7 +190,9 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         // TODO NXP-26303: use thread pool
         SpanContext traceContext = Tracing.getTracer().getCurrentSpan().getContext();
         new Thread(() -> {
-            Span span = Tracing.getTracer().spanBuilderWithRemoteParent("automation/" + opId + "/async", traceContext).startSpan();
+            Span span = Tracing.getTracer()
+                               .spanBuilderWithRemoteParent("automation/" + opId + "/async", traceContext)
+                               .startSpan();
             span.addLink(Link.fromSpanContext(traceContext, Link.Type.PARENT_LINKED_SPAN));
             try (Scope scope = Tracing.getTracer().withSpan(span)) {
                 TransactionHelper.runInTransaction(() -> {
@@ -205,7 +207,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
                         LoginComponent.popPrincipal();
                     }
                 });
-             }
+            }
         }, String.format("Nuxeo-AsyncOperation-%s", executionId)).start();
 
         try {
@@ -413,7 +415,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         String serviceClass = (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_SERVICE);
         try {
             @SuppressWarnings("unchecked")
-            AsyncService<Serializable, ?, ?> asyncService = (AsyncService<Serializable, ?, ?>) Framework.getService(Class.forName(serviceClass));
+            AsyncService<Serializable, ?, ?> asyncService = (AsyncService<Serializable, ?, ?>) Framework.getService(
+                    Class.forName(serviceClass));
             return asyncService;
         } catch (ClassNotFoundException e) {
             log.error("AsyncService class {} not found", serviceClass);

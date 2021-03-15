@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 public class TestBulkProcessor {
+
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(TestBulkProcessor.class);
 
     @Inject
@@ -324,7 +325,7 @@ public class TestBulkProcessor {
         // now append first bucket
         service.appendExternalBucket(new BulkBucket(commandId, docs.subList(0, nbDocs / 2)));
         // wait for the status
-        await().atMost(ONE_MINUTE) .until(() -> service.getStatus(commandId).getProcessed() == nbDocs / 2);
+        await().atMost(ONE_MINUTE).until(() -> service.getStatus(commandId).getProcessed() == nbDocs / 2);
         status = service.getStatus(commandId);
         assertEquals(SCROLLING_RUNNING, status.getState());
         assertEquals(0, status.getTotal());
@@ -365,7 +366,7 @@ public class TestBulkProcessor {
         // prepare and submit the command with an external scroller and submit it
         String commandId = service.submit(
                 new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, "ignored", "system").useExternalScroller()
-                        .build());
+                                                                                             .build());
         // wait for the scroller
         await().atMost(ONE_MINUTE).until(() -> service.getStatus(commandId).getState() == SCROLLING_RUNNING);
         BulkStatus status = service.getStatus(commandId);
