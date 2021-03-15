@@ -104,7 +104,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
             if (policy.isExpressibleInQuery(repositoryName)) {
                 transformers.add(policy.getQueryTransformer(repositoryName));
             } else {
-                log.warn("Security policy '%s' for repository '%s' cannot be expressed in SQL query.",
+                log.warn("Security policy '{}' for repository '{}' cannot be expressed in SQL query.",
                         policy.getClass().getName(), repositoryName);
             }
         }

@@ -102,7 +102,8 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
         return CoreInstance.doPrivileged(session, s -> {
             if (commentManager.hasFeature(COMMENTS_LINKED_WITH_PROPERTY)) {
                 Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) s);
-                List<DocumentModel> docs = getPageProviderPage(GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME, props, documentId, xpath);
+                List<DocumentModel> docs = getPageProviderPage(GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME, props,
+                        documentId, xpath);
                 docs.forEach(doc -> doc.detach(true)); // due to privileged session
                 return docs;
             } else if (commentManager.hasFeature(COMMENTS_ARE_SPECIAL_CHILDREN)) {
