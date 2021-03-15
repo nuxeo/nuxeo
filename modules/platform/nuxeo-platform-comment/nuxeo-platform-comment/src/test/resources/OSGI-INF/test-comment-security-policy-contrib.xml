@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.comment.security.policies.test">
+
+  <require>org.nuxeo.ecm.core.security.defaultPolicies</require>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService" point="policies">
+    <policy name="comment" class="org.nuxeo.ecm.platform.comment.security.AccessFromCommentTextSecurityPolicy" />
+  </extension>
+
+</component>
