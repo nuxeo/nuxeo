@@ -101,13 +101,8 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
         DocumentModel annotatedDoc = session.getDocument(new IdRef(documentId));
         CommentManager commentManager = Framework.getService(CommentManager.class);
         return CoreInstance.doPrivileged(session, s -> {
-            if (commentManager.hasFeature(COMMENTS_LINKED_WITH_PROPERTY)) {
-                Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) s);
-                List<DocumentModel> docs = getPageProviderPage(GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME, props,
-                        documentId, xpath);
-                docs.forEach(doc -> doc.detach(true)); // due to privileged session
-                return docs;
-            } else if (commentManager.hasFeature(COMMENTS_ARE_SPECIAL_CHILDREN)) {
+            // check the TreeCommentManager first as it also handles COMMENTS_LINKED_WITH_PROPERTY feature
+            if (commentManager.hasFeature(COMMENTS_ARE_SPECIAL_CHILDREN)) {
                 // handle first comment/reply cases
                 String parentId = documentId;
                 if (!annotatedDoc.hasSchema(COMMENT_SCHEMA) && s.hasChild(annotatedDoc.getRef(), COMMENTS_DIRECTORY)) {
@@ -118,6 +113,12 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
                 Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY,
                         (Serializable) session);
                 return getPageProviderPage(GET_ANNOTATIONS_FOR_DOCUMENT_PAGE_PROVIDER_NAME, props, parentId, xpath);
+            } else if (commentManager.hasFeature(COMMENTS_LINKED_WITH_PROPERTY)) {
+                Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) s);
+                List<DocumentModel> docs = getPageProviderPage(GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME, props,
+                        documentId, xpath);
+                docs.forEach(doc -> doc.detach(true)); // due to privileged session
+                return docs;
             }
             // provide a poor support for deprecated implementations
             return commentManager.getComments(s, annotatedDoc)

@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.newAnnotation;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.newExternalAnnotation;
+import static org.nuxeo.ecm.platform.comment.security.AccessFromCommentTextSecurityPolicy.DENY;
 
 import java.util.List;
 
@@ -52,6 +53,7 @@ import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -245,6 +247,23 @@ public class TestAnnotationService {
                     e.getMessage());
         }
 
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/secured-comment-manager-override.xml") // only works on tree
+    @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/test-comment-security-policy-contrib.xml")
+    public void testGetAnnotationsForDocumentUnderSecurityPolicy() {
+        String xpathToAnnotate = "files:files/0/file";
+
+        List<Annotation> annotations = annotationService.getAnnotations(session, annotatedDocModel.getId(),
+                xpathToAnnotate);
+        assertTrue(annotations.isEmpty());
+
+        annotationService.createAnnotation(session, newAnnotation(annotatedDocModel.getId(), xpathToAnnotate, "Grant"));
+        annotationService.createAnnotation(session, newAnnotation(annotatedDocModel.getId(), xpathToAnnotate, DENY));
+        session.save();
+
+        assertEquals(1, annotationService.getAnnotations(session, annotatedDocModel.getId(), xpathToAnnotate).size());
     }
 
     @Test
