@@ -55,6 +55,9 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
 
     public static final List<String> IGNORE_FIELDS_ON_UPDATE = Collections.singletonList(NXQL.ECM_LIFECYCLESTATE);
 
+    /** @since 11.5 */
+    public static final String CSV_IMPORT_SOURCE = "csvImport";
+
     protected CSVImporterOptions importerOptions = CSVImporterOptions.DEFAULT_OPTIONS;
 
     @Override
@@ -62,6 +65,7 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             Map<String, Serializable> values) {
         values = prepareValues(values);
         DocumentModel doc = session.createDocumentModel(parentPath, name, type);
+        doc.putContextData(CoreSession.SOURCE, CSV_IMPORT_SOURCE);
 
         if (importerOptions.importMode.equals(ImportMode.IMPORT)) {
             setLifeCycleState(values, doc, IMPORT_LIFECYCLE_STATE);
@@ -113,6 +117,7 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
     @Override
     public void updateDocument(CoreSession session, DocumentRef docRef, Map<String, Serializable> values) {
         DocumentModel doc = session.getDocument(docRef);
+        doc.putContextData(CoreSession.SOURCE, CSV_IMPORT_SOURCE);
         for (Map.Entry<String, Serializable> entry : values.entrySet()) {
             if (!IGNORE_FIELDS_ON_UPDATE.contains(entry.getKey())) {
                 doc.setPropertyValue(entry.getKey(), entry.getValue());

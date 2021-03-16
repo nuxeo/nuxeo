@@ -19,11 +19,14 @@
 
 package org.nuxeo.ecm.csv.core;
 
+import static java.util.function.Predicate.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.api.CoreSession.SOURCE;
+import static org.nuxeo.ecm.csv.core.DefaultCSVImporterDocumentFactory.CSV_IMPORT_SOURCE;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,6 +53,8 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
@@ -680,5 +685,35 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         assertTrue(importStatus.isComplete());
         assertEquals(336, importStatus.getTotalNumberOfDocument());
         assertEquals(336, importStatus.getNumberOfProcessedDocument());
+    }
+
+    /**
+     * NXP-28548
+     */
+    @Test
+    public void shouldSetCsvImportSource() throws InterruptedException, IOException {
+        TransactionHelper.commitOrRollbackTransaction();
+        String importId;
+        try (var listener = new CapturingEventListener("documentCreated")) {
+            CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
+            importId = csvImporter.launchImport(session, "/", getCSVBlob(DOCS_OK_CSV), options);
+            workManager.awaitCompletion(10000, TimeUnit.SECONDS);
+
+            boolean allHasCsvImportSource = listener.streamCapturedEventContexts(DocumentEventContext.class)
+                                                    .map(DocumentEventContext::getSourceDocument)
+                                                    // exclude auto versioned note
+                                                    .filter(not(DocumentModel::isVersion))
+                                                    .map(doc -> doc.getContextData(SOURCE))
+                                                    .allMatch(CSV_IMPORT_SOURCE::equals);
+            assertTrue("Some imported documents doesn't have the csvImport source", allHasCsvImportSource);
+        }
+        TransactionHelper.startTransaction();
+
+        CSVImportStatus importStatus = csvImporter.getImportStatus(importId);
+        assertNotNull(importStatus);
+        assertTrue(importStatus.isComplete());
+
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
+        assertEquals(3, importLogs.size());
     }
 }
