@@ -44,6 +44,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -333,11 +334,38 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
     public int getErrorStatus(String executionId) {
         Long status = (Long) getTransientStore().getParameter(executionId, TRANSIENT_STORE_ERROR_STATUS);
-        return status == null ? 0 : status.intValue();
+        if (status != null) {
+            return status.intValue();
+        }
+
+        // check the errors, if the execution is a bulk action
+        Serializable taskId = getAsyncTaskId(executionId);
+        if (taskId != null) {
+            AsyncStatus<?> asyncStatus = getAsyncService(executionId).getStatus(taskId);
+            if (asyncStatus != null) {
+                return asyncStatus.getErrorCode();
+            }
+        }
+
+        return 0;
     }
 
     public String getError(String executionId) {
-        return (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_ERROR);
+        String error = (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_ERROR);
+        if (StringUtils.isNotEmpty(error)) {
+            return error;
+        }
+
+        // check the errors, if the execution is a bulk action
+        Serializable taskId = getAsyncTaskId(executionId);
+        if (taskId != null) {
+            AsyncStatus<?> asyncStatus = getAsyncService(executionId).getStatus(taskId);
+            if (asyncStatus != null) {
+                return asyncStatus.getErrorMessage();
+            }
+        }
+
+        return null;
     }
 
     protected void setOutput(String executionId, Serializable output) {

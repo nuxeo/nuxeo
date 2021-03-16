@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.collections4.map.PassiveExpiringMap;
+import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -166,10 +167,14 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
 
     @Override
     public void processFailure(ComputationContext context, Throwable failure) {
+        int status = HttpStatus.SC_INTERNAL_SERVER_ERROR;
+        if (failure instanceof NuxeoException) {
+            status = ((NuxeoException) failure).getStatusCode();
+        }
         log.error(String.format("Action: %s fails on record: %s after retries.", metadata.name(),
                 context.getLastOffset()), failure);
         // The delta will be send only if the policy is set with continueOnFailure = true
-        delta.inError(metadata.name() + " fails on " + context.getLastOffset() + ": " + failure.getMessage());
+        delta.inError(metadata.name() + " fails on " + context.getLastOffset() + ": " + failure.getMessage(), status);
         endBucket(context, delta);
     }
 

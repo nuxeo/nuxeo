@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+
 import java.io.Serializable;
 
 /**
@@ -37,4 +39,34 @@ public interface AsyncStatus<K extends Serializable> extends Serializable {
      * Returns true if command is completed.
      */
     boolean isCompleted();
+
+    /**
+     * Gets the error message if any.
+     *
+     * @return the error message if any, {@code null} otherwise
+     * @since 11.5
+     */
+    default String getErrorMessage() {
+        return null;
+    }
+
+    /**
+     * Gets the error code if any.
+     *
+     * @return the error code if any, {@code 0} otherwise
+     * @since 11.5
+     */
+    default int getErrorCode() {
+        return hasError() ? SC_INTERNAL_SERVER_ERROR : 0;
+    }
+
+    /**
+     * Checks if there is any error.
+     *
+     * @return {@code true} if there is any error, {@code false} otherwise
+     * @since 11.5
+     */
+    default boolean hasError() {
+        return getErrorMessage() != null;
+    }
 }
