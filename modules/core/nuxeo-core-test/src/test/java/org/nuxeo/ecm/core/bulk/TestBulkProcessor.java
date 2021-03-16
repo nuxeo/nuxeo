@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Duration.ONE_MINUTE;
 import static org.junit.Assert.assertEquals;
@@ -81,6 +82,9 @@ public class TestBulkProcessor {
     @Inject
     public StreamService stream;
 
+    @Inject
+    public CoreFeature coreFeature;
+
     @Test
     public void testEmptyQuery() throws InterruptedException {
         @SuppressWarnings("resource")
@@ -128,6 +132,7 @@ public class TestBulkProcessor {
         assertEquals(COMPLETED, status.getState());
         assertEquals(0, status.getTotal());
         assertTrue(status.hasError());
+        assertEquals(SC_BAD_REQUEST, status.getErrorCode());
 
         // query with error
         nxql = "SELECT * FROM Document WHERE ecm:path = 'non/existing/path'";
@@ -138,6 +143,7 @@ public class TestBulkProcessor {
         assertEquals(COMPLETED, status.getState());
         assertEquals(0, status.getTotal());
         assertTrue(status.hasError());
+        assertEquals(SC_BAD_REQUEST, status.getErrorCode());
     }
 
     @Test

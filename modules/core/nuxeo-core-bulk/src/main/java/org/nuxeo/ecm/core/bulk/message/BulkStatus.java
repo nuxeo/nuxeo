@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.bulk.message;
 
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Collections;
@@ -81,6 +83,10 @@ public class BulkStatus implements AsyncStatus<String> {
 
     @Nullable
     protected String errorMessage;
+
+    /** @since 11.5 **/
+    @Nullable
+    protected Integer errorCode;
 
     @Nullable
     protected Long processed;
@@ -211,6 +217,9 @@ public class BulkStatus implements AsyncStatus<String> {
         }
         if (update.errorMessage != null && errorMessage == null) {
             errorMessage = update.errorMessage;
+        }
+        if (update.errorCode != null && errorCode == null) {
+            errorCode = update.errorCode;
         }
         if (update.queryLimitReached) {
             queryLimitReached = true;
@@ -435,6 +444,7 @@ public class BulkStatus implements AsyncStatus<String> {
         this.processingDurationMillis = processingDurationMillis;
     }
 
+    @Override
     public boolean hasError() {
         return errorCount > 0;
     }
@@ -461,12 +471,22 @@ public class BulkStatus implements AsyncStatus<String> {
      * An error occurred during the processing
      */
     public void inError(String message) {
+        inError(message, SC_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * An error occurred during the processing
+     * 
+     * @since 11.5
+     */
+    public void inError(String message, int code) {
         if (isDelta()) {
             errorCount = 1;
         } else {
             errorCount++;
         }
         this.errorMessage = message;
+        this.errorCode = code;
     }
 
     @Override
@@ -484,4 +504,11 @@ public class BulkStatus implements AsyncStatus<String> {
         return ToStringBuilder.reflectionToString(this);
     }
 
+    @Override
+    public int getErrorCode() {
+        if (errorCode == null) {
+            return 0;
+        }
+        return errorCode;
+    }
 }
