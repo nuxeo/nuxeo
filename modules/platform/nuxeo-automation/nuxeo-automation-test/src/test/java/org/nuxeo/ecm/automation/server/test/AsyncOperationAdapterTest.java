@@ -208,6 +208,18 @@ public class AsyncOperationAdapterTest {
                             .set("rollback", true)
                             .executeReturningExceptionEntity(ExitOperation.ERR_CODE);
         assertEquals("Failed to invoke operation Test.Exit, termination error", error);
+
+        // automation bulk action with invalid query
+        Map<String, Serializable> automationParams = Map.of("properties", "dc:title=folder_title_updated");
+        Map<String, Serializable> actionParams = Map.of(AutomationBulkAction.OPERATION_ID, "Document.Update", //
+                AutomationBulkAction.OPERATION_PARAMETERS, (Serializable) automationParams);
+        JsonNode jsonNode = async.newRequest(BulkRunAction.ID)
+                                 .set("action", AutomationBulkAction.ACTION_NAME)
+                                 .set("query", "SELCT * FROM Folder") // Invalid Query
+                                 .set("bucketSize", "10")
+                                 .set("batchSize", "5")
+                                 .set("parameters", MAPPER.writeValueAsString(actionParams))
+                                 .execute(SC_BAD_REQUEST);
     }
 
     @Test

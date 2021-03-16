@@ -20,6 +20,9 @@
 package org.nuxeo.ecm.core.bulk.computation;
 
 import static java.lang.Math.min;
+import static java.util.Objects.requireNonNullElse;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
@@ -207,11 +210,11 @@ public class BulkScrollerComputation extends AbstractComputation {
             }
         } catch (IllegalArgumentException | QueryParseException | DocumentNotFoundException e) {
             log.error("Invalid query results in an empty document set: {}", command, e);
-            updateStatusAfterScroll(context, commandId, "Invalid query");
+            updateStatusAfterScroll(context, commandId, "Invalid query", SC_BAD_REQUEST);
         } catch (NuxeoException e) {
             if (command != null) {
                 log.error("Invalid command produces an empty document set: {}", command, e);
-                updateStatusAfterScroll(context, command.getId(), "Invalid command");
+                updateStatusAfterScroll(context, command.getId(), "Invalid command", e.getStatusCode());
             } else {
                 log.error("Discard invalid record: {}", record, e);
             }
@@ -284,20 +287,21 @@ public class BulkScrollerComputation extends AbstractComputation {
                 BulkCodecs.getStatusCodec().encode(delta));
     }
 
-    protected void updateStatusAfterScroll(ComputationContext context, String commandId, String errorMessage) {
-        updateStatusAfterScroll(context, commandId, 0, errorMessage, false);
+    protected void updateStatusAfterScroll(ComputationContext context, String commandId, String errorMessage,
+            Integer errorCode) {
+        updateStatusAfterScroll(context, commandId, 0, errorMessage, errorCode, false);
     }
 
     protected void updateStatusAfterScroll(ComputationContext context, String commandId, long documentCount,
             boolean limited) {
-        updateStatusAfterScroll(context, commandId, documentCount, null, limited);
+        updateStatusAfterScroll(context, commandId, documentCount, null, null, limited);
     }
 
     protected void updateStatusAfterScroll(ComputationContext context, String commandId, long documentCount,
-            String errorMessage, boolean limited) {
+            String errorMessage, Integer errorCode, boolean limited) {
         BulkStatus delta = BulkStatus.deltaOf(commandId);
         if (errorMessage != null) {
-            delta.inError(errorMessage);
+            delta.inError(errorMessage, requireNonNullElse(errorCode, SC_INTERNAL_SERVER_ERROR));
         }
         if (documentCount == 0) {
             delta.setState(COMPLETED);
