@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -474,7 +474,7 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         TransactionHelper.startTransaction();
 
         try {
-            CoreSession leelaSession = openSessionAs("leela");
+            CoreSession leelaSession = coreFeature.getCoreSession("leela");
             String importId = csvImporter.launchImport(leelaSession, "/", getCSVBlob(DOCS_WITHOUT_CONTRIBUTORS_CSV),
                     options);
 
@@ -672,8 +672,7 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
 
     protected void testImportTotals(CSVImporterOptions options) throws IOException, InterruptedException {
         TransactionHelper.commitOrRollbackTransaction();
-        String importId = csvImporter.launchImport(session, "/", getCSVBlob(DOCS_OK_BIG_CSV),
-                options);
+        String importId = csvImporter.launchImport(session, "/", getCSVBlob(DOCS_OK_BIG_CSV), options);
         workManager.awaitCompletion(10000, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();
 
@@ -682,9 +681,4 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         assertEquals(336, importStatus.getTotalNumberOfDocument());
         assertEquals(336, importStatus.getNumberOfProcessedDocument());
     }
-
-    public CoreSession openSessionAs(String username) {
-        return coreFeature.getCoreSession(username);
-    }
-
 }

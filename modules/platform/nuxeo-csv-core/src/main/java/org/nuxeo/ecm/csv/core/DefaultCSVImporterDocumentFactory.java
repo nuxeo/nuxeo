@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,8 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
         }
     }
 
-    protected void setLifeCycleState(Map<String, Serializable> values, DocumentModel doc, String lifeCyclePropertyName) {
+    protected void setLifeCycleState(Map<String, Serializable> values, DocumentModel doc,
+            String lifeCyclePropertyName) {
         if (values.containsKey(NXQL.ECM_LIFECYCLESTATE)) {
             doc.putContextData(lifeCyclePropertyName, values.get(NXQL.ECM_LIFECYCLESTATE));
             values.remove(NXQL.ECM_LIFECYCLESTATE);
@@ -104,7 +105,7 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             if (StringUtils.isNotBlank(creator) && !contributors.contains(creator)) {
                 contributors.add(creator);
             }
-            values.put(DC_CONTRIBUTORS, contributors.toArray(new String[contributors.size()]));
+            values.put(DC_CONTRIBUTORS, contributors.toArray(new String[0]));
         }
         return values;
     }
