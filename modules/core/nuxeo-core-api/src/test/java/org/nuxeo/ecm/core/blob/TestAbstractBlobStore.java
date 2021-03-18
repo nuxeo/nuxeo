@@ -355,6 +355,11 @@ public abstract class TestAbstractBlobStore {
         }
     }
 
+    // overridden by cache tests
+    protected PathStrategy getCachePathStrategy() {
+        return null;
+    }
+
     @Test
     public void testGC() throws IOException {
         // doesn't bring anything over the LocalBlobStore GC test;  avoid additional setup for this
@@ -402,6 +407,13 @@ public abstract class TestAbstractBlobStore {
         assertBlob(key1, FOO);
         assertBlob(key2, "barbaz");
 
+        // when caching, create a tmp file in the cache that shouldn't disappear during GC
+        PathStrategy cachePathStrategy = getCachePathStrategy();
+        Path cacheTmp = null;
+        if (cachePathStrategy != null) {
+            cacheTmp = cachePathStrategy.createTempFile();
+        }
+
         // real GC
         assertFalse(gc.isInProgress());
         gc.start();
@@ -423,6 +435,11 @@ public abstract class TestAbstractBlobStore {
         // if time threshold, other blob is still here
         if (hasGCTimeThreshold()) {
             assertBlob(key3, "abcde");
+        }
+
+        // cache tmp is still here
+        if (cacheTmp != null) {
+            assertTrue(Files.exists(cacheTmp));
         }
     }
 
