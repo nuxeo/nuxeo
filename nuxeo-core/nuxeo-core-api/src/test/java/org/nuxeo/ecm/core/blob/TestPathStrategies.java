@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.blob;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -51,7 +52,6 @@ public class TestPathStrategies {
         }
         assertEquals("%/:\\", rejected);
     }
-
 
     @Test
     public void testSafePath() throws IOException {
@@ -113,6 +113,17 @@ public class TestPathStrategies {
         // encoded key
         path = stringify(ps.getPathForKey("bad/key"));
         assertTrue(path, path.endsWith("/%b/ad/%bad%2fkey"));
+    }
+
+    @Test
+    public void testTempFile() throws IOException {
+        Path dir = Files.createTempDirectory("tmp_");
+        PathStrategy ps = new PathStrategyFlat(dir);
+        Path path = ps.createTempFile();
+        assertTrue(ps.isTempFile(path));
+        // non-temp file
+        Path path2 = path.resolveSibling("1234");
+        assertFalse(ps.isTempFile(path2));
     }
 
 }

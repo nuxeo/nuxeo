@@ -69,7 +69,7 @@ public class CachingBlobStore extends AbstractBlobStore {
     protected long clearOldBlobsLastTime;
 
     // not a constant for tests
-    protected long clearOldBlobsInterval = Duration.ofSeconds(5).toMillis();
+    protected long clearOldBlobsInterval = Duration.ofMinutes(1).toMillis();
 
     // not a constant for tests
     protected Clock clock = Clock.systemUTC();
@@ -278,26 +278,41 @@ public class CachingBlobStore extends AbstractBlobStore {
      * @since 11.5
      */
     protected void clearOldBlobsNow() {
-        List<PathInfo> files = new ArrayList<>();
-        try (DirectoryStream<Path> ds = Files.newDirectoryStream(cacheConfig.dir)) {
-            for (Path path : ds) {
-                try {
-                    files.add(new PathInfo(path));
-                } catch (IOException e) {
-                    log.error(e, e);
-                }
-            }
-        } catch (IOException e) {
-            log.error(e, e);
-        }
-        Collections.sort(files); // sort by most recent first
-
         long maxSize = cacheConfig.maxSize;
         long maxCount = cacheConfig.maxCount;
         long minAgeMillis = cacheConfig.minAge * 1000;
+        long threshold = clock.millis() - minAgeMillis;
+        log.debug("clearOldBlobs starting, dir={} maxSize={}, maxCount={}, minAge={}s, threshold={}", cacheConfig.dir,
+                maxSize, maxCount, cacheConfig.minAge, threshold);
+
+        List<PathInfo> files = new ArrayList<>();
+        try (DirectoryStream<Path> ds = Files.newDirectoryStream(cacheConfig.dir)) {
+            for (Path path : ds) {
+                PathInfo pi;
+                try {
+                    pi = new PathInfo(path);
+                } catch (NoSuchFileException e) {
+                    log.trace("clearOldBlobs ignoring missing file: {}", path);
+                    continue;
+                } catch (IOException e) {
+                    log.warn(e.getMessage());
+                    continue;
+                }
+                if (cacheStore.pathStrategy.isTempFile(path)) {
+                    log.trace("clearOldBlobs ignoring temporary file: {} (timestamp {})", path, pi.time);
+                    continue;
+                }
+                files.add(pi);
+            }
+        } catch (IOException e) {
+            log.warn(e.getMessage());
+        }
+        Collections.sort(files); // sort by most recent first
+
+        log.debug("clearOldBlobs {} files to check", files.size());
         long size = 0;
         long count = 0;
-        long threshold = clock.millis() - minAgeMillis;
+        long recentCount = 0;
         for (PathInfo pi : files) {
             size += pi.size;
             count++;
@@ -311,18 +326,40 @@ public class CachingBlobStore extends AbstractBlobStore {
                             long time = Files.getLastModifiedTime(pi.path).toMillis();
                             if (time < threshold) {
                                 // delete the file
+                                log.trace(
+                                        "clearOldBlobs DELETING file: {} (timestamp {}, cumulative count {}, cumulative size {})",
+                                        pi.path, time, count, size);
                                 Files.delete(pi.path);
                                 size -= pi.size;
                                 count--;
+                            } else {
+                                recentCount++;
+                                log.trace("clearOldBlobs keeping file: {} because it's recent (timestamp {})", pi.path,
+                                        time);
                             }
                         } catch (IOException e) {
-                            log.error(e, e);
+                            log.warn(e.getMessage());
                         } finally {
                             unlock(pi.path);
                         }
-                    } // else if failed to lock ignore the file
+                    } else {
+                        log.trace("clearOldBlobs skipping file: {} because it's already locked", pi.path);
+                    }
+                } else {
+                    recentCount++;
+                    log.trace("clearOldBlobs keeping file: {} because it's recent (timestamp {})", pi.path, pi.time);
                 }
+            } else {
+                log.trace("clearOldBlobs keeping file: {}", pi.path);
             }
+        }
+        if (log.isDebugEnabled()) {
+            if (maxSize == 0) {
+                maxSize = 1; // shouldn't happen, but don't divide by zero
+            }
+            log.debug(String.format(
+                    "clearOldBlobs done (keeping %d files out of %d (including %d recent), cache fill ratio now %.1f%%)",
+                    count, files.size(), recentCount, 100d * size / maxSize));
         }
     }
 
