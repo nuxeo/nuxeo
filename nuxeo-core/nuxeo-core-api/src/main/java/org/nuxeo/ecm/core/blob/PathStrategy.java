@@ -94,6 +94,18 @@ public abstract class PathStrategy {
     }
 
     /**
+     * Checks if the given file is a temporary file
+     *
+     * @param path the file
+     * @return {@code true} if the file is a temporary file
+     * @since 11.5
+     */
+    public boolean isTempFile(Path path) {
+        String filename = path.getFileName().toString();
+        return filename.startsWith("bin_") && filename.endsWith(".tmp");
+    }
+
+    /**
      * Gets the storage path for a given key.
      *
      * @param key the key
