@@ -26,9 +26,9 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -224,10 +224,25 @@ public class LocalBlobStore extends AbstractBlobStore {
 
     @Override
     public void clear() {
-        try {
-            FileUtils.cleanDirectory(pathStrategy.dir.toFile());
+        // also called when this store is a caching store and GC on the main store was just done
+        // so we have to avoid deleting tmp files
+        try (Stream<Path> stream = Files.walk(pathStrategy.dir)) {
+            stream.forEach(path -> {
+                if (path == pathStrategy.dir || pathStrategy.isTempFile(path)) {
+                    // don't delete root or tmp files
+                    return;
+                }
+                try {
+                    Files.delete(path);
+                } catch (IOException e) {
+                    if (!Files.isDirectory(path)) {
+                        // don't warn for non-empty dirs
+                        log.warn(e, e);
+                    }
+                }
+            });
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.warn(e, e);
         }
     }
 
@@ -306,12 +321,15 @@ public class LocalBlobStore extends AbstractBlobStore {
                 long lastModified = file.lastModified();
                 long length = file.length();
                 if (lastModified == 0) {
-                    log.warn("Cannot read last modified for file: " + file);
+                    log.warn("GC cannot read last modified for file: {}", file);
                 } else if (lastModified < minTime) {
                     status.sizeBinariesGC += length;
                     status.numBinariesGC++;
-                    if (delete && !file.delete()) { // NOSONAR
-                        log.warn("Cannot gc file: " + file);
+                    if (delete) {
+                        log.debug("GC deleting file: {}", file);
+                        if (!file.delete()) { // NOSONAR
+                            log.warn("GC failed to delete file: {}", file);
+                        }
                     }
                 } else {
                     status.sizeBinaries += length;
