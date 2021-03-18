@@ -64,4 +64,23 @@ public class TestFileAvroSchemaStore {
         assertNotNull(store);
     }
 
+    @Test
+    public void testSharedStore() throws IOException {
+        Path root = folder.newFolder().toPath();
+
+        // open a store and add a schema
+        AvroSchemaStore store1 = new FileAvroSchemaStore(root);
+        long v1fp = store1.addSchema(ReflectData.get().getSchema(MessageV1.class));
+        assertTrue(v1fp != 0);
+
+        // open another store using the same storage directory
+        AvroSchemaStore store2 = new FileAvroSchemaStore(root);
+        assertNotNull(store2.findByFingerprint(v1fp));
+        // add a new schema on store2
+        long v2fp = store2.addSchema(ReflectData.get().getSchema(MessageV2.class));
+        assertNotNull(store2.findByFingerprint(v2fp));
+
+        // store1 is aware of the new schema
+        assertNotNull(store1.findByFingerprint(v2fp));
+    }
 }
