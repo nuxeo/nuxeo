@@ -66,8 +66,17 @@ public class FileAvroSchemaStore implements AvroSchemaStore {
      * Load all avro schema files from this directory. Files must have the .avsc extention.
      */
     public void loadSchemas(Path directory) {
+        loadSchemasEndingWith(directory, AVRO_SCHEMA_EXT);
+    }
+
+    /**
+     * Loads all avro schema files from this directory that end with the pattern.
+     *
+     * @since 11.5
+     */
+    protected void loadSchemasEndingWith(Path directory, String pattern) {
         try (Stream<Path> paths = Files.list(directory)) {
-            paths.filter(path -> Files.isReadable(path) && path.getFileName().toString().endsWith(AVRO_SCHEMA_EXT))
+            paths.filter(path -> Files.isReadable(path) && path.getFileName().toString().endsWith(pattern))
                  .forEach(this::loadSchema);
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid base path: " + directory, e);
@@ -90,8 +99,8 @@ public class FileAvroSchemaStore implements AvroSchemaStore {
     public long addSchema(Schema schema) {
         long fp = SchemaNormalization.parsingFingerprint64(schema);
         if (schemas.put(fp, schema) == null) {
-            Path schemaPath = schemaDirectoryPath.resolve(
-                    String.format("%s-0x%08X%s", schema.getName(), fp, AVRO_SCHEMA_EXT));
+            Path schemaPath = schemaDirectoryPath.resolve(getFilename(schema.getName(), fp));
+            // no need for a lock, even in concurrency the content is the same and file is truncated first
             try (PrintWriter out = new PrintWriter(schemaPath.toFile())) {
                 out.println(schema.toString(true));
             } catch (FileNotFoundException e) {
@@ -101,8 +110,26 @@ public class FileAvroSchemaStore implements AvroSchemaStore {
         return fp;
     }
 
+    protected String getFilename(String prefix, long fingerprint) {
+        return String.format("%s-0x%08X%s", prefix, fingerprint, AVRO_SCHEMA_EXT);
+    }
+
     @Override
     public Schema findByFingerprint(long fingerprint) {
-        return schemas.get(fingerprint);
+        Schema ret = schemas.get(fingerprint);
+        if (ret != null) {
+            return ret;
+        }
+        // reload from disk, a schema store can be shared
+        String suffix = getFilename("", fingerprint);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Fingerprint %d not found, reload from disk: *%s", fingerprint, suffix));
+        }
+        loadSchemasEndingWith(schemaDirectoryPath, suffix);
+        ret = schemas.get(fingerprint);
+        if (ret == null) {
+            log.warn(String.format("Fingerprint %d not found, no schema matching *%s", fingerprint, suffix));
+        }
+        return ret;
     }
 }
