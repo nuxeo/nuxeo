@@ -46,6 +46,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1294,27 +1295,19 @@ public class ComponentManagerImpl implements ComponentManager {
         }
 
         public void beforeActivation() {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).beforeRuntimeActivation(ComponentManagerImpl.this);
-            }
+            safeLoop(l -> l.beforeRuntimeActivation(ComponentManagerImpl.this), "beforeActivation");
         }
 
         public void afterActivation() {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).afterRuntimeActivation(ComponentManagerImpl.this);
-            }
+            safeLoop(l -> l.afterRuntimeActivation(ComponentManagerImpl.this), "afterActivation");
         }
 
         public void beforeDeactivation() {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).beforeRuntimeDeactivation(ComponentManagerImpl.this);
-            }
+            safeLoop(l -> l.beforeRuntimeDeactivation(ComponentManagerImpl.this), "beforeDeactivation");
         }
 
         public void afterDeactivation() {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).afterRuntimeDeactivation(ComponentManagerImpl.this);
-            }
+            safeLoop(l -> l.afterRuntimeDeactivation(ComponentManagerImpl.this), "afterDeactivation");
         }
 
         /**
@@ -1348,21 +1341,45 @@ public class ComponentManagerImpl implements ComponentManager {
         }
 
         public void beforeStart(boolean isResume) {
-            sortedForStart().forEach(listener -> listener.beforeRuntimeStart(ComponentManagerImpl.this, isResume));
+            safeLoop(l -> l.beforeRuntimeStart(ComponentManagerImpl.this, isResume), "beforeStart");
         }
 
         public void afterStart(boolean isResume) {
-            sortedForStart().forEach(listener -> listener.afterRuntimeStart(ComponentManagerImpl.this, isResume));
+            safeLoop(l -> l.afterRuntimeStart(ComponentManagerImpl.this, isResume), "afterStart");
         }
 
         public void beforeStop(boolean isStandby) {
-            sortedForStop().forEach(listener -> listener.beforeRuntimeStop(ComponentManagerImpl.this, isStandby));
+            safeLoop(l -> l.beforeRuntimeStop(ComponentManagerImpl.this, isStandby), "beforeStop");
         }
 
         public void afterStop(boolean isStandby) {
-            sortedForStop().forEach(listener -> listener.afterRuntimeStop(ComponentManagerImpl.this, isStandby));
+            safeLoop(l -> l.afterRuntimeStop(ComponentManagerImpl.this, isStandby), "afterStop");
         }
 
+        protected void safeLoop(Consumer<ComponentManager.Listener> consumer, String step) {
+            streamListeners(step).forEach(listener -> {
+                try {
+                    consumer.accept(listener);
+                } catch (RuntimeException e) {
+                    String msg = String.format("An error occurred during %s listener execution", step);
+                    log.error(msg, e);
+                    Framework.getRuntime().getMessageHandler().addError(String.format("%s (%s)", msg, e));
+                }
+            });
+        }
+
+        protected Stream<ComponentManager.Listener> streamListeners(String step) {
+            switch (step) {
+                case "beforeStart":
+                case "afterStart":
+                    return sortedForStart();
+                case "beforeStop":
+                case "afterStop":
+                    return sortedForStop();
+                default:
+                    return Arrays.stream(listeners.getListeners()).map(ComponentManager.Listener.class::cast);
+            }
+        }
     }
 
     protected static class Stash {
