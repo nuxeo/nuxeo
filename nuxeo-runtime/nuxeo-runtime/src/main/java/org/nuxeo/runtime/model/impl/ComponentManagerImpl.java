@@ -42,6 +42,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -1101,53 +1102,48 @@ public class ComponentManagerImpl implements ComponentManager {
         }
 
         public void beforeActivation() {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).beforeActivation(ComponentManagerImpl.this);
-            }
+            safeLoop(l -> l.beforeActivation(ComponentManagerImpl.this), "beforeActivation");
         }
 
         public void afterActivation() {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).afterActivation(ComponentManagerImpl.this);
-            }
+            safeLoop(l -> l.afterActivation(ComponentManagerImpl.this), "afterActivation");
         }
 
         public void beforeDeactivation() {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).beforeDeactivation(ComponentManagerImpl.this);
-            }
+            safeLoop(l -> l.beforeDeactivation(ComponentManagerImpl.this), "beforeDeactivation");
         }
 
         public void afterDeactivation() {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).afterDeactivation(ComponentManagerImpl.this);
-            }
+            safeLoop(l -> l.afterDeactivation(ComponentManagerImpl.this), "afterDeactivation");
         }
 
         public void beforeStart(boolean isResume) {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).beforeStart(ComponentManagerImpl.this, isResume);
-            }
+            safeLoop(l -> l.beforeStart(ComponentManagerImpl.this, isResume), "beforeStart");
         }
 
         public void afterStart(boolean isResume) {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).afterStart(ComponentManagerImpl.this, isResume);
-            }
+            safeLoop(l -> l.afterStart(ComponentManagerImpl.this, isResume), "afterStart");
         }
 
         public void beforeStop(boolean isStandby) {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).beforeStop(ComponentManagerImpl.this, isStandby);
-            }
+            safeLoop(l -> l.beforeStop(ComponentManagerImpl.this, isStandby), "beforeStop");
         }
 
         public void afterStop(boolean isStandby) {
-            for (Object listener : listeners.getListeners()) {
-                ((ComponentManager.Listener) listener).afterStop(ComponentManagerImpl.this, isStandby);
-            }
+            safeLoop(l -> l.afterStop(ComponentManagerImpl.this, isStandby), "afterStop");
         }
 
+        protected void safeLoop(Consumer<ComponentManager.Listener> consumer, String step) {
+            for (Object listener : listeners.getListeners()) {
+                try {
+                    consumer.accept((ComponentManager.Listener) listener);
+                } catch (RuntimeException e) {
+                    String msg = String.format("An error occurred during %s listener execution", step);
+                    log.error(msg, e);
+                    Framework.getRuntime().getMessageHandler().addError(String.format("%s (%s)", msg, e));
+                }
+            }
+        }
     }
 
     protected static class Stash {
