@@ -390,7 +390,7 @@ public abstract class AbstractWork implements Work {
                     span.setStatus(Status.UNKNOWN);
                     if (suppressed == null) {
                         suppressed = e;
-                    } else {
+                    } else if (e != suppressed) {
                         suppressed.addSuppressed(e);
                     }
                 }
