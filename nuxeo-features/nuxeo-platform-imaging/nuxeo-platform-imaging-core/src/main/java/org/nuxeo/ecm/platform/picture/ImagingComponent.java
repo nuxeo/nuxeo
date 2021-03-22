@@ -91,8 +91,6 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
     private LibrarySelector librarySelector;
 
-    protected final PictureMigrationHandler pictureMigrationHandler = new PictureMigrationHandler();
-
     @Override
     public List<PictureConversion> getPictureConversions() {
         return pictureConversionRegistry.getPictureConversions();
@@ -563,13 +561,4 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         return allViews;
     }
 
-    @Override
-    public void activate(ComponentContext context) {
-        pictureMigrationHandler.install();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        pictureMigrationHandler.uninstall();
-    }
 }

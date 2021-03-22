@@ -50,8 +50,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * <p>
  * It does not recompute the picture views.
  *
+ * @deprecated since 10.10 assuming this migration step is already done.
  * @since 7.2
  */
+@Deprecated
 public class PictureMigrationHandler extends RepositoryInitializationHandler {
 
     private static final Log log = getLog(PictureMigrationHandler.class);
