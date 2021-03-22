@@ -386,7 +386,7 @@ public abstract class AbstractWork implements Work {
             } catch (RuntimeException e) {
                 if (suppressed == null) {
                     suppressed = e;
-                } else {
+                } else if (e != suppressed) {
                     suppressed.addSuppressed(e);
                 }
             }
