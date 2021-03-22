@@ -84,8 +84,6 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
     protected List<PictureConversion> conversions;
 
-    protected final PictureMigrationHandler pictureMigrationHandler = new PictureMigrationHandler();
-
     @Override
     public void start(ComponentContext context) {
         configurationParameters = this.<ImagingConfigurationDescriptor> getRegistryContribution(
@@ -455,13 +453,4 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         return allViews;
     }
 
-    @Override
-    public void activate(ComponentContext context) {
-        pictureMigrationHandler.install();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        pictureMigrationHandler.uninstall();
-    }
 }
