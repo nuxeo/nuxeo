@@ -49,6 +49,7 @@ import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Thumbnail listener handling creation and update of thumbnail preview on main blob update, for documents holding the
@@ -94,7 +95,15 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             }
             doc.putContextData(THUMBNAIL_UPDATED, true);
             session.saveDocument(doc);
+            newTransaction();
         }
+    }
+
+    protected void newTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+        TransactionHelper.startTransaction();
     }
 
     private Blob getManagedThumbnail(DocumentModel doc) {
