@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
@@ -139,7 +140,8 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
     // @since 11.5
     protected void checkIfTimeoutIsAvailable() {
-        if (unavailableCommands.containsKey("timeout")) {
+        if (SystemUtils.IS_OS_WINDOWS || unavailableCommands.containsKey("timeout")) {
+            // Windows comes with a TIMEOUT.exe command but for different purpose
             log.warn("There is no timeout command available, command executions won't be time-boxed.");
             return;
         }
