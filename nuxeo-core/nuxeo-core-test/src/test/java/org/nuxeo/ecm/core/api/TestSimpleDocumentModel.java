@@ -18,8 +18,10 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -113,6 +115,19 @@ public class TestSimpleDocumentModel {
         values.put("title", null);
         doc.setProperties("dublincore", values);
         assertTrue(doc.getProperty("dc:title").isDirty());
+    }
+
+    // NXP-30052
+    @Test
+    public void testNonExistingType() {
+        try {
+            SimpleDocumentModel.ofType("Foo");
+            fail("Should have raised a NuxeoException");
+        } catch (NuxeoException e) {
+            assertEquals(400, e.getStatusCode());
+            assertEquals("Type: Foo does not exist", e.getMessage());
+        }
+
     }
 
 }

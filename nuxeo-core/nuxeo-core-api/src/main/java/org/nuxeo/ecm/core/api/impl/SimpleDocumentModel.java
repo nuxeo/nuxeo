@@ -20,6 +20,7 @@
  */
 package org.nuxeo.ecm.core.api.impl;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.nuxeo.ecm.core.schema.types.ComplexTypeImpl.canonicalXPath;
 
 import java.io.Serializable;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -114,6 +116,9 @@ public class SimpleDocumentModel implements DocumentModel {
     public static SimpleDocumentModel ofType(String type) {
         SchemaManager service = Framework.getService(SchemaManager.class);
         DocumentType dType = service.getDocumentType(type);
+        if (dType == null) {
+            throw new NuxeoException("Type: " + type + " does not exist", SC_BAD_REQUEST);
+        }
         return new SimpleDocumentModel(dType);
     }
 

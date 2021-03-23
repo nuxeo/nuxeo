@@ -617,6 +617,22 @@ public class DocumentBrowsingTest extends BaseTest {
         }
     }
 
+    // NXP-30052
+    @Test
+    public void iCantCreateADocumentWithNonExistingType() throws IOException {
+        DocumentModel folder = RestServerInit.getFolder(0, session);
+
+        String data = "{\"entity-type\": \"document\",\"type\": \"Foo\",\"name\":\"newName\",\"properties\": {\"dc:title\":\"Foo\"}}";
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path" + folder.getPathAsString(),
+                data)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(400, node.get("status").longValue());
+            assertEquals("Type: Foo does not exist", node.get("message").textValue());
+        }
+    }
+
     @Test
     public void iCanDeleteADocument() {
         // Given a document
