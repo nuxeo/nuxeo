@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.model.VersionNotModifiableException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -1069,6 +1070,22 @@ public class TestSQLRepositoryVersioning {
         // then the version change
         doc = session.getDocument(doc.getRef());
         assertNotEquals(v3, doc.getVersionLabel());
+    }
+
+    // NXP-30075
+    @Test
+    public void testVersionNotModifiableException() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        DocumentRef vRef = session.checkIn(doc.getRef(), VersioningOption.MAJOR, null);
+
+        try {
+            session.checkIn(vRef, VersioningOption.MAJOR, null);
+            fail("should have thrown VersionNotModifiableException");
+        } catch (VersionNotModifiableException e) {
+            assertEquals(400, e.getStatusCode());
+        }
     }
 
 }
