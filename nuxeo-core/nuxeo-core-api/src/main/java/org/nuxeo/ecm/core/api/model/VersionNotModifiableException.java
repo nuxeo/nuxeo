@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.api.model;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
@@ -30,19 +32,19 @@ public class VersionNotModifiableException extends NuxeoException {
     private static final long serialVersionUID = 1L;
 
     public VersionNotModifiableException() {
-        super();
+        super(SC_BAD_REQUEST);
     }
 
     public VersionNotModifiableException(String message) {
-        super(message);
+        super(message, SC_BAD_REQUEST);
     }
 
     public VersionNotModifiableException(String message, Throwable cause) {
-        super(message, cause);
+        super(message, cause, SC_BAD_REQUEST);
     }
 
     public VersionNotModifiableException(Throwable cause) {
-        super(cause);
+        super(cause, SC_BAD_REQUEST);
     }
 
 }
