@@ -382,6 +382,19 @@ pipeline {
       }
     }
 
+    stage('Hotfix Protection') {
+      steps {
+        container('maven') {
+          withCredentials([usernameColonPassword(credentialsId: 'jx-pipeline-git-github-git', variable: 'GITHUB_CREDENTIALS')]) {
+            sh 'git clone --branch $CHANGE_TARGET https://$GITHUB_CREDENTIALS@github.com/nuxeo/nuxeo-hf-protection.git nuxeo-patches'
+          }
+          dir('nuxeo-patches') {
+            sh './prepare-patches'
+          }
+        }
+      }
+    }
+
     stage('Build') {
       steps {
         setGitHubBuildStatus('maven/build', 'Build', 'PENDING')
@@ -526,9 +539,18 @@ pipeline {
           ----------------------------------------
           Run "dev" functional tests
           ----------------------------------------"""
-          runFunctionalTests('ftests', 'nuxeo.ftests.tier5')
-          runFunctionalTests('ftests', 'nuxeo.ftests.tier6')
-          runFunctionalTests('ftests', 'nuxeo.ftests.tier7')
+          withCredentials([string(credentialsId: 'instance-clid', variable: 'INSTANCE_CLID')]) {
+            sh(
+              script: '''#!/bin/bash +x
+                echo -e "$INSTANCE_CLID" >| /tmp/instance.clid
+              '''
+            )
+            withEnv(["TEST_CLID_PATH=/tmp/instance.clid"]) {
+              runFunctionalTests('ftests', 'nuxeo.ftests.tier5')
+              runFunctionalTests('ftests', 'nuxeo.ftests.tier6')
+              runFunctionalTests('ftests', 'nuxeo.ftests.tier7')
+            }
+          }
         }
       }
       post {
