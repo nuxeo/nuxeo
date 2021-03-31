@@ -244,3 +244,9 @@ nuxeo.stream.health.check.delay=36h
 # JWT config, must be the same cluster-wide
 nuxeo.jwt.secret=
 nuxeo.jwt.defaultTTL=3600
+
+# Cors config (active if nuxeo.cors.urls has a value)
+nuxeo.cors.allowSubdomains=true
+nuxeo.cors.supportedMethods=GET,POST,HEAD,OPTIONS,DELETE,PUT
+nuxeo.cors.urls=
+nuxeo.cors.pattern=/.*
