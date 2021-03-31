@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.cors.config">
+
+<#if (nuxeo.cors.urls)?has_content>
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService" point="corsConfig">
+      <corsConfig name="cors" allowOrigin="${nuxeo.cors.urls}" allowSubdomains="${nuxeo.cors.allowSubdomains}" supportedMethods="${nuxeo.cors.supportedMethods}">
+        <pattern>${nuxeo.cors.pattern}</pattern>
+      </corsConfig>
+  </extension>
+</#if>
+
+</component> 
