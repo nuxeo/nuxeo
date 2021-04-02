@@ -161,6 +161,8 @@ elasticsearch.restClient.keystore.type=
 
 elasticsearch.check.classpath=${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-{common,core-api,elasticsearch-core}*.jar
 elasticsearch.check.class=org.nuxeo.elasticsearch.ElasticSearchChecker
+# Nuxeo managing index alias
+elasticsearch.manageAlias.enabled=false
 
 # Kafka
 kafka.check.classpath=${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-{common,core-api,runtime-stream}*.jar
