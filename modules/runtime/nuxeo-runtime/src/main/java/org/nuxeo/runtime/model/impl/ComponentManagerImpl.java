@@ -366,11 +366,16 @@ public class ComponentManagerImpl implements ComponentManager {
     public ComponentInstance getComponentProvidingService(Class<?> serviceClass) {
         RegistrationInfo ri = services.get(serviceClass.getName());
         if (ri == null) {
+            log.debug("The component exposing the service: {} doesn't exist", serviceClass);
             return null;
         }
         ComponentInstance ci = ri.getComponent();
         if (ci == null) {
-            log.debug("The component exposing the service {} is not resolved or not started", serviceClass);
+            log.debug("The component exposing the service: {} is not resolved", serviceClass);
+        }
+        if (ri.getState() == RegistrationInfo.START_FAILURE && Boolean.getBoolean("nuxeo.start.strict")) {
+            log.warn("The component exposing the service: {} has failed to start", serviceClass);
+            return null;
         }
         return ci;
     }
@@ -491,6 +496,7 @@ public class ComponentManagerImpl implements ComponentManager {
             return;
         }
         for (String service : serviceNames) {
+            log.trace("Unregistering service: {}", service);
             services.remove(service);
         }
     }
