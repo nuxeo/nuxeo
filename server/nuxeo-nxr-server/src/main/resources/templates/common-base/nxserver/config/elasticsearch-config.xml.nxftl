@@ -50,7 +50,7 @@
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
     point="elasticSearchIndex">
-    <elasticSearchIndex name="${elasticsearch.indexName}" type="doc" repository="default">
+    <elasticSearchIndex name="${elasticsearch.indexName}" type="doc" repository="default" manageAlias="${elasticsearch.manageAlias.enabled}">
       <fetchFromSource>
         <include>ecm:*</include>
         <include>dc:*</include>
