@@ -94,7 +94,10 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
                 if (it != null && it.hasNext()) {
                     AbstractID3v2Frame frame = (AbstractID3v2Frame) it.next();
                     FrameBodyAPIC framePic = (FrameBodyAPIC) frame.getBody();
-                    thumbnailBlob = Blobs.createBlob(framePic.getImageData());
+                    byte[] imageData = framePic.getImageData();
+                    if (imageData != null) {
+                        thumbnailBlob = Blobs.createBlob(imageData);
+                    }
                 }
             }
         } catch (IOException | TagException | InvalidAudioFrameException | ReadOnlyFileException e) {
