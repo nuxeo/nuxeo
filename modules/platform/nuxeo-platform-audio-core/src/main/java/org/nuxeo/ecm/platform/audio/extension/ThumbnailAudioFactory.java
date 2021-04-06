@@ -68,8 +68,8 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
         if (thumbnailBlob == null) {
             TypeInfo docType = doc.getAdapter(TypeInfo.class);
             try {
-                return Blobs.createBlob(FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator
-                        + docType.getBigIcon()));
+                return Blobs.createBlob(
+                        FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator + docType.getBigIcon()));
             } catch (IOException e) {
                 throw new NuxeoException(e);
             }
@@ -78,7 +78,6 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
     public Blob computeThumbnail(DocumentModel doc, CoreSession session) {
         Blob thumbnailBlob = null;
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
@@ -90,9 +89,10 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
             }
             MP3File file = new MP3File(fileBlob.getFile());
             if (file.hasID3v2Tag()) {
-                Iterator it = file.getID3v2Tag().getFrameOfType("APIC");
+                @SuppressWarnings("unchecked")
+                Iterator<AbstractID3v2Frame> it = file.getID3v2Tag().getFrameOfType("APIC");
                 if (it != null && it.hasNext()) {
-                    AbstractID3v2Frame frame = (AbstractID3v2Frame) it.next();
+                    AbstractID3v2Frame frame = it.next();
                     FrameBodyAPIC framePic = (FrameBodyAPIC) frame.getBody();
                     thumbnailBlob = Blobs.createBlob(framePic.getImageData());
                 }
