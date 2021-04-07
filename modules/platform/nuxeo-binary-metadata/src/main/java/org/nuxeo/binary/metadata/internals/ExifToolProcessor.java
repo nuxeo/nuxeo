@@ -31,7 +31,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,13 +38,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataException;
 import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableFile;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
@@ -62,7 +62,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class ExifToolProcessor implements BinaryMetadataProcessor {
 
-    private static final Log log = LogFactory.getLog(ExifToolProcessor.class);
+    private static final Logger log = LogManager.getLogger(ExifToolProcessor.class);
+
+    protected static final String COMMAND_NOT_AVAILABLE = "Command '%s' is not available.";
+
+    protected static final String COMMAND_NOT_EXECUTABLE_NULL_BLOB = "The following command %s cannot be executed with a null blob.";
 
     private static final String META_NON_USED_SOURCE_FILE = "SourceFile";
 
@@ -89,10 +93,10 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
                 : BinaryMetadataConstants.EXIFTOOL_WRITE;
         CommandAvailability ca = commandLineService.getCommandAvailability(command);
         if (!ca.isAvailable()) {
-            throw new BinaryMetadataException("Command '" + command + "' is not available.");
+            throw new BinaryMetadataException(String.format(COMMAND_NOT_AVAILABLE, command));
         }
         if (blob == null) {
-            throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
+            throw new BinaryMetadataException(String.format(COMMAND_NOT_EXECUTABLE_NULL_BLOB, ca));
         }
         try {
             Blob newBlob = getTemporaryBlob(blob);
@@ -102,8 +106,8 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
             ExecResult er = commandLineService.execCommand(command, params);
             boolean success = er.isSuccessful();
             if (!success) {
-                log.error("There was an error executing " + "the following command: " + er.getCommandLine() + ". \n"
-                        + er.getOutput());
+                log.error("There was an error executing the following command: {}.\n{}", er.getCommandLine(),
+                        er.getOutput());
                 return null;
             }
             newBlob.setMimeType(blob.getMimeType());
@@ -111,19 +115,30 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
             newBlob.setFilename(blob.getFilename());
             return newBlob;
         } catch (CommandNotAvailable commandNotAvailable) {
-            throw new BinaryMetadataException("Command '" + command + "' is not available.", commandNotAvailable);
+            throw new BinaryMetadataException(String.format(COMMAND_NOT_AVAILABLE, command), commandNotAvailable);
         } catch (IOException ioException) {
             throw new BinaryMetadataException(ioException);
         }
     }
 
+    /**
+     * @deprecated since 11.5, use {@link #readMetadata(String, Blob, List)} instead
+     */
+    @Deprecated(since = "11.5")
     protected Map<String, Object> readMetadata(String command, Blob blob, List<String> metadata, boolean ignorePrefix) {
+        return readMetadata(command, blob, metadata);
+    }
+
+    /**
+     * @since 11.5
+     */
+    protected Map<String, Object> readMetadata(String command, Blob blob, List<String> metadata) {
         CommandAvailability ca = commandLineService.getCommandAvailability(command);
         if (!ca.isAvailable()) {
-            throw new BinaryMetadataException("Command '" + command + "' is not available.");
+            throw new BinaryMetadataException(String.format(COMMAND_NOT_AVAILABLE, command));
         }
         if (blob == null) {
-            throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
+            throw new BinaryMetadataException(String.format(COMMAND_NOT_EXECUTABLE_NULL_BLOB, ca));
         }
         try {
             ExecResult er;
@@ -137,7 +152,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
             }
             return returnResultMap(er);
         } catch (CommandNotAvailable commandNotAvailable) {
-            throw new RuntimeException("Command '" + command + "' is not available.", commandNotAvailable);
+            throw new NuxeoException(String.format(COMMAND_NOT_AVAILABLE, command), commandNotAvailable);
         } catch (IOException ioException) {
             throw new BinaryMetadataException(ioException);
         }
@@ -147,14 +162,14 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
     public Map<String, Object> readMetadata(Blob blob, List<String> metadata, boolean ignorePrefix) {
         String command = ignorePrefix ? BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST_NOPREFIX
                 : BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST;
-        return readMetadata(command, blob, metadata, ignorePrefix);
+        return readMetadata(command, blob, metadata);
     }
 
     @Override
     public Map<String, Object> readMetadata(Blob blob, boolean ignorePrefix) {
         String command = ignorePrefix ? BinaryMetadataConstants.EXIFTOOL_READ_NOPREFIX
                 : BinaryMetadataConstants.EXIFTOOL_READ;
-        return readMetadata(command, blob, null, ignorePrefix);
+        return readMetadata(command, blob, null);
     }
 
     /*--------------------------- Utils ------------------------*/
@@ -162,7 +177,8 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
     protected Map<String, Object> returnResultMap(ExecResult er) throws IOException {
         if (!er.isSuccessful()) {
             throw new BinaryMetadataException(
-                    "There was an error executing " + "the following command: " + er.getCommandLine(), er.getError());
+                    String.format("There was an error executing the following command: %s", er.getCommandLine()),
+                    er.getError());
         }
         StringBuilder sb = new StringBuilder();
         for (String line : er.getOutput()) {
@@ -193,7 +209,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
                         Date date = f.parse((String) dateObject);
                         resultMap.put(prop, date);
                     } catch (ParseException e) {
-                        log.error("Could not parse property " + prop, e);
+                        log.error("Could not parse property: {}", prop, e);
                     }
                 }
             }
@@ -207,8 +223,9 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
     @SuppressWarnings("unchecked")
     protected List<String> getCommandTags(Map<String, Object> metadataMap) {
         List<String> commandTags = new ArrayList<>();
-        for (String tag : metadataMap.keySet()) {
-            Object metadataValue = metadataMap.get(tag);
+        for (Map.Entry<String, Object> metadata : metadataMap.entrySet()) {
+            String tag = metadata.getKey();
+            Object metadataValue = metadata.getValue();
             if (metadataValue instanceof Collection) {
                 commandTags.addAll(buildCommandTagsFromCollection(tag, (Collection<Object>) metadataValue));
             } else if (metadataValue instanceof Object[]) {
@@ -245,7 +262,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
         return "-" + tag + "=" + formatter.format(date);
     }
 
-    protected Pattern VALID_EXT = Pattern.compile("[a-zA-Z0-9]*");
+    protected static final Pattern VALID_EXT = Pattern.compile("[a-zA-Z0-9]*");
 
     /**
      * We don't want to rely on {@link Blob#getCloseableFile} because it may return the original and we always want a
@@ -267,7 +284,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
             }
         } else {
             // attempt to create a symbolic link, which would be cheaper than a copy
-            tmp.delete();
+            Files.delete(tmp.toPath());
             try {
                 Files.createSymbolicLink(tmp.toPath(), file.toPath().toAbsolutePath());
             } catch (IOException | UnsupportedOperationException e) {
