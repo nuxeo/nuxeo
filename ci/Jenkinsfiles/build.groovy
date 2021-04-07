@@ -43,6 +43,12 @@ void setGitHubBuildStatus(String context, String message, String state) {
   }
 }
 
+String getCurrentNamespace() {
+  container('maven') {
+    return sh(returnStdout: true, script: "kubectl get pod ${NODE_NAME} -ojsonpath='{..namespace}'")
+  }
+}
+
 String getMavenArgs() {
   def args = '-B -nsu -Dnuxeo.skip.enforcer=true -P-nexus,nexus-private'
   if (!isPullRequest()) {
@@ -287,7 +293,8 @@ pipeline {
     // force ${HOME}=/root - for an unexplained reason, ${HOME} is resolved as /home/jenkins though sh 'env' shows HOME=/root
     HOME = '/root'
     HELMFILE_COMMAND = "helmfile --file ci/helm/helmfile.yaml --helm-binary /usr/bin/helm3"
-    TEST_NAMESPACE_PREFIX = "nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
+    CURRENT_NAMESPACE = getCurrentNamespace()
+    TEST_NAMESPACE_PREFIX = "$CURRENT_NAMESPACE-nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
     TEST_REDIS_K8S_OBJECT = 'redis-master'
     TEST_KAFKA_K8S_OBJECT = 'kafka'
@@ -778,7 +785,7 @@ pipeline {
             Deploy Preview environment
             ----------------------------------------"""
             // Kubernetes namespace, requires lower case alphanumeric characters
-            def previewNamespace = "nuxeo-preview-${BRANCH_NAME.toLowerCase()}"
+            def previewNamespace = "${CURRENT_NAMESPACE}-nuxeo-preview-${BRANCH_NAME.toLowerCase()}"
             def previewEnvironment = 'default'
             def previewHelmRelease = 'nuxeo'
             boolean nsExists = sh(returnStatus: true, script: "kubectl get namespace ${previewNamespace}") == 0
