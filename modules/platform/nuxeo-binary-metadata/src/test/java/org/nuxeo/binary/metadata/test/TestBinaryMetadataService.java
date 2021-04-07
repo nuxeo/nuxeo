@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.logging.log4j.core.LogEvent;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -45,7 +47,6 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -55,8 +56,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogFeature;
-
-import javax.inject.Inject;
 
 /**
  * @since 7.1
@@ -74,7 +73,7 @@ public class TestBinaryMetadataService extends BaseBinaryMetadataTest {
 
     private static List<String> musicMetadata;
 
-    private static List<String> PSDMetadata;
+    private static List<String> psdMetadata;
 
     @Inject
     protected LogCaptureFeature.Result logCaptureResult;
@@ -96,15 +95,15 @@ public class TestBinaryMetadataService extends BaseBinaryMetadataTest {
         musicMetadata.add("ID3:Publisher");
         musicMetadata.add("ID3:Comment");
 
-        PSDMetadata = new ArrayList<>();
-        PSDMetadata.add("EXIF:ImageHeight");
-        PSDMetadata.add("EXIF:Software");
-        PSDMetadata.add("IPTC:Keywords");
-        PSDMetadata.add("EXIF:DateTimeOriginal");
+        psdMetadata = new ArrayList<>();
+        psdMetadata.add("EXIF:ImageHeight");
+        psdMetadata.add("EXIF:Software");
+        psdMetadata.add("IPTC:Keywords");
+        psdMetadata.add("EXIF:DateTimeOriginal");
     }
 
     @Test
-    public void itShouldExtractSingleKeywordToStringList() throws PropertyException, IOException {
+    public void itShouldExtractSingleKeywordToStringList() throws IOException {
         // Get the document with One KW attached
         File binary = FileUtils.getResourceFileFromContext("data/iptc_one_keyword.jpg");
 
@@ -129,7 +128,7 @@ public class TestBinaryMetadataService extends BaseBinaryMetadataTest {
     }
 
     @Test
-    public void itShouldExtractKeywordListToStringList() throws PropertyException, IOException {
+    public void itShouldExtractKeywordListToStringList() throws IOException {
         // Get the document with One KW attached
         File binary = FileUtils.getResourceFileFromContext("data/Budget-Example.xlsx");
 
@@ -143,7 +142,7 @@ public class TestBinaryMetadataService extends BaseBinaryMetadataTest {
     }
 
     @Test
-    public void itShouldExtractKeywordListToString() throws PropertyException, IOException {
+    public void itShouldExtractKeywordListToString() throws IOException {
         // Get the document with One KW attached
         File binary = FileUtils.getResourceFileFromContext("data/Budget-Example.xlsx");
 
@@ -186,7 +185,7 @@ public class TestBinaryMetadataService extends BaseBinaryMetadataTest {
         BlobHolder psdBlobHolder = psdFile.getAdapter(BlobHolder.class);
 
         // Check the content
-        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(psdBlobHolder.getBlob(), PSDMetadata,
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(psdBlobHolder.getBlob(), psdMetadata,
                 false);
         assertNotNull(blobProperties);
         assertEquals(2, blobProperties.size());
@@ -199,12 +198,13 @@ public class TestBinaryMetadataService extends BaseBinaryMetadataTest {
         assertNotNull(blob);
 
         // Check the content
-        blobProperties = binaryMetadataService.readMetadata(blob, PSDMetadata, false);
+        blobProperties = binaryMetadataService.readMetadata(blob, psdMetadata, false);
         assertNotNull(blobProperties);
         assertEquals(4, blobProperties.size());
         assertEquals(200, blobProperties.get("EXIF:ImageHeight"));
         assertEquals("Nuxeo", blobProperties.get("EXIF:Software").toString());
         // Check keywords were written to the binary
+        @SuppressWarnings("unchecked")
         List<String> keywords = (List<String>) blobProperties.get("IPTC:Keywords");
         assertEquals("keyword1", keywords.get(0));
         assertEquals("keyword2", keywords.get(1));
