@@ -1,0 +1,16 @@
+<component name="org.nuxeo.binary.metadata.contribs.failing.exiftool">
+
+  <require>org.nuxeo.binary.metadata.contribs</require>
+
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    point="command">
+
+    <command name="exiftool-write" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString>test failure #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool</installationDirective>
+    </command>
+
+  </extension>
+
+</component>

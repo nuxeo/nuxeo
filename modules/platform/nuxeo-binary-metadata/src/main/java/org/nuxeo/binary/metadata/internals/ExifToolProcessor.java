@@ -106,9 +106,9 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
             ExecResult er = commandLineService.execCommand(command, params);
             boolean success = er.isSuccessful();
             if (!success) {
-                log.error("There was an error executing the following command: {}.\n{}", er.getCommandLine(),
-                        er.getOutput());
-                return null;
+                log.error("There was an error executing the following command: {}.\n{}\nReturning original blob.",
+                        er.getCommandLine(), er.getOutput());
+                return blob;
             }
             newBlob.setMimeType(blob.getMimeType());
             newBlob.setEncoding(blob.getEncoding());
