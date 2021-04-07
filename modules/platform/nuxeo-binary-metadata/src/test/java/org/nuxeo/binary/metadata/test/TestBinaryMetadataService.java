@@ -21,6 +21,7 @@ package org.nuxeo.binary.metadata.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -31,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -278,5 +280,30 @@ public class TestBinaryMetadataService extends BaseBinaryMetadataTest {
         assertEquals("WARN", event.getLevel().toString());
         String message = "Failed to set property: uid:major_version to value: 1.4 from metadata: PDF:PDFVersion in: file:content in document: /folder/decimalToIntegerFile: Property Conversion failed from class java.lang.String to class java.lang.Long: For input string: \"1.4\"";
         assertEquals(message, event.getMessage().getFormattedMessage());
+    }
+
+    // NXP-30247
+    @Test
+    @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-failing-exiftool.xml")
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR")
+    @ConsoleLogLevelThreshold("FATAL")
+    public void itShouldNotDeleteBlobWhenExifToolFails() throws IOException {
+        File binary = FileUtils.getResourceFileFromContext("data/hello.pdf");
+        Blob blob = Blobs.createBlob(binary);
+
+        Blob updatedBlob = binaryMetadataService.writeMetadata(blob, Collections.emptyMap(), false);
+        assertNotNull(updatedBlob);
+        // blob is unchanged
+        assertEquals(blob, updatedBlob);
+
+        List<LogEvent> events = logCaptureResult.getCaughtEvents();
+        assertEquals(1, events.size());
+        LogEvent event = events.get(0);
+        assertEquals("ERROR", event.getLevel().toString());
+        String messageStart = "There was an error executing the following command";
+        String messageEnd = "Returning original blob.";
+        String message = event.getMessage().getFormattedMessage();
+        assertTrue(message.startsWith(messageStart));
+        assertTrue(message.endsWith(messageEnd));
     }
 }
