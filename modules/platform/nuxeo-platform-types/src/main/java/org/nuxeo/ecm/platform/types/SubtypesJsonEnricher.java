@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.types;
 import static java.util.stream.Collectors.toSet;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -31,9 +32,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration;
 import org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants;
 import org.nuxeo.runtime.api.Framework;
 
@@ -74,11 +77,15 @@ public class SubtypesJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
     }
 
     protected Collection<String> computeSubtypes(DocumentModel enriched) {
-        Collection<String> defaultSubtypes = enriched.getDocumentType().getAllowedSubtypes();
-        if (enriched.hasFacet(UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET)) {
-            return computeLocalConfigurationSubtypes(enriched, defaultSubtypes);
+        Collection<String> allowedSubtypes = enriched.getDocumentType().getAllowedSubtypes();
+        LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
+        UITypesConfiguration uiTypesConfiguration = localConfigurationService.getConfiguration(
+                UITypesConfiguration.class, UI_TYPES_CONFIGURATION_FACET, enriched);
+        if (uiTypesConfiguration != null) {
+            allowedSubtypes = uiTypesConfiguration.filterSubTypes(allowedSubtypes);
         }
-        return defaultSubtypes;
+
+        return allowedSubtypes;
     }
 
     protected Collection<String> computeLocalConfigurationSubtypes(DocumentModel enriched,
