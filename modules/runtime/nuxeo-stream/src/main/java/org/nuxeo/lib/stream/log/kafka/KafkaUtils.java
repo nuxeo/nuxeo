@@ -180,8 +180,29 @@ public class KafkaUtils implements AutoCloseable {
                 throw new StreamRuntimeException(e);
             }
         } catch (TimeoutException e) {
-            throw new StreamRuntimeException("Unable to create topics " + topic + " within the timeout", e);
+            throw new StreamRuntimeException("Unable to create topic " + topic + " within the timeout", e);
         }
+        if (partitions(topic) != partitions) {
+            waitForTopicCreation(topic, Duration.ofMinutes(2));
+        }
+    }
+
+    protected void waitForTopicCreation(String topic, Duration timeout) {
+        log.warn("Waiting for brokers to become aware that the topic " + topic + " has been created.");
+        long deadline = System.currentTimeMillis() + timeout.toMillis();
+        do {
+            if (System.currentTimeMillis() > deadline) {
+                throw new StreamRuntimeException(new TimeoutException(
+                        "Timeout while waiting for topic " + topic + " metadata propagation in the cluster"));
+            }
+            try {
+                Thread.sleep(5_000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new StreamRuntimeException("Interrupted while waiting for topic creation " + topic, e);
+            }
+        } while (!topicExists(topic));
+        log.debug("Topic is now available");
     }
 
     public boolean topicExists(String topic) {
