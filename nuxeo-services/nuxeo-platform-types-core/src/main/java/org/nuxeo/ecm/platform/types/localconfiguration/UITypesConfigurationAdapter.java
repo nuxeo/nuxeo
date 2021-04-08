@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurati
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -176,6 +177,22 @@ public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITy
                 it.remove();
             }
         }
+        return filteredAllowedSubTypes;
+    }
+
+    @Override
+    public Collection<String> filterSubTypes(Collection<String> allowedSubTypes) {
+        if (denyAllTypes) {
+            return Collections.emptyList();
+        }
+
+        if (allowedTypes.isEmpty() && deniedTypes.isEmpty()) {
+            return allowedSubTypes;
+        }
+
+        List<String> filteredAllowedSubTypes = new ArrayList<>(allowedSubTypes);
+        filteredAllowedSubTypes.removeIf(subTypeName -> deniedTypes.contains(subTypeName)
+                || !allowedTypes.isEmpty() && !allowedTypes.contains(subTypeName));
         return filteredAllowedSubTypes;
     }
 
