@@ -144,9 +144,9 @@ public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITy
             allowedTypes = Collections.unmodifiableList(new ArrayList<>(other.getAllowedTypes()));
         }
 
-        List<String> deniedTypes = new ArrayList<>(this.deniedTypes);
-        deniedTypes.addAll(other.getDeniedTypes());
-        this.deniedTypes = Collections.unmodifiableList(deniedTypes);
+        List<String> dTypes = new ArrayList<>(this.deniedTypes);
+        dTypes.addAll(other.getDeniedTypes());
+        this.deniedTypes = Collections.unmodifiableList(dTypes);
 
         denyAllTypes = other.denyAllTypes();
         if (denyAllTypes) {
@@ -158,19 +158,18 @@ public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITy
 
     @Override
     public Map<String, SubType> filterSubTypes(Map<String, SubType> allowedSubTypes) {
-        if (denyAllTypes()) {
+        if (denyAllTypes) {
             return Collections.emptyMap();
         }
 
-        List<String> allowedTypes = getAllowedTypes();
-        List<String> deniedTypes = getDeniedTypes();
         if (allowedTypes.isEmpty() && deniedTypes.isEmpty()) {
             return allowedSubTypes;
         }
 
         Map<String, SubType> filteredAllowedSubTypes = new HashMap<>(allowedSubTypes);
-        filteredAllowedSubTypes.keySet().removeIf(subTypeName -> deniedTypes.contains(subTypeName)
-                || !allowedTypes.isEmpty() && !allowedTypes.contains(subTypeName));
+        filteredAllowedSubTypes.keySet()
+                               .removeIf(subTypeName -> deniedTypes.contains(subTypeName)
+                                       || !allowedTypes.isEmpty() && !allowedTypes.contains(subTypeName));
         return filteredAllowedSubTypes;
     }
 

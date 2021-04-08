@@ -20,10 +20,8 @@
 
 package org.nuxeo.ecm.platform.types;
 
-import org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants;
-
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -37,6 +35,7 @@ import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 
@@ -58,11 +57,11 @@ public class SubtypesJsonEnricherTest extends AbstractJsonWriterTest.Local<Docum
     @Before
     public void setup() {
         DocumentModel document = session.createDocumentModel("/", "folder_root", "MyFolderRoot");
-        document = session.createDocument(document);
+        session.createDocument(document);
         document = session.createDocumentModel("/", "doc1", "MyFolder");
-        document = session.createDocument(document);
+        session.createDocument(document);
         document = session.createDocumentModel("/", "doc2", "MyFolder2");
-        document = session.createDocument(document);
+        session.createDocument(document);
 
     }
 
@@ -111,7 +110,7 @@ public class SubtypesJsonEnricherTest extends AbstractJsonWriterTest.Local<Docum
         DocumentModel folderRoot = session.getDocument(new PathRef("/folder_root"));
         folderRoot.addFacet(UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET);
         folderRoot.setPropertyValue(UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY,
-                (Serializable) Arrays.asList("MyFolder"));
+                (Serializable) List.of("MyFolder"));
         RenderingContext ctx = RenderingContext.CtxBuilder.enrichDoc("subtypes").get();
         JsonAssert json = jsonAssert(folderRoot, ctx);
         json = json.has("contextParameters").isObject();
@@ -126,7 +125,7 @@ public class SubtypesJsonEnricherTest extends AbstractJsonWriterTest.Local<Docum
         DocumentModel folderRoot = session.getDocument(new PathRef("/folder_root"));
         folderRoot.addFacet(UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET);
         folderRoot.setPropertyValue(UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY,
-                (Serializable) Arrays.asList("MyFolder"));
+                (Serializable) List.of("MyFolder"));
         RenderingContext ctx = RenderingContext.CtxBuilder.enrichDoc("subtypes").get();
         JsonAssert json = jsonAssert(folderRoot, ctx);
         json = json.has("contextParameters").isObject();
@@ -147,7 +146,7 @@ public class SubtypesJsonEnricherTest extends AbstractJsonWriterTest.Local<Docum
         json = json.has("contextParameters").isObject();
         json.properties(1);
         json = json.has("subtypes").isArray();
-        json = json.length(0);
+        json.length(0);
     }
 
     @Test
@@ -155,9 +154,9 @@ public class SubtypesJsonEnricherTest extends AbstractJsonWriterTest.Local<Docum
         DocumentModel folderRoot = session.getDocument(new PathRef("/folder_root"));
         folderRoot.addFacet(UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET);
         folderRoot.setPropertyValue(UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY,
-                (Serializable) Arrays.asList("MyFolder"));
+                (Serializable) List.of("MyFolder"));
         folderRoot.setPropertyValue(UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY,
-                (Serializable) Arrays.asList("MyFolder2"));
+                (Serializable) List.of("MyFolder2"));
         RenderingContext ctx = RenderingContext.CtxBuilder.enrichDoc("subtypes").get();
         JsonAssert json = jsonAssert(folderRoot, ctx);
         json = json.has("contextParameters").isObject();
