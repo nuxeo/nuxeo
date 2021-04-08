@@ -76,17 +76,15 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
 
     protected final ObjectMapper jacksonMapper;
 
-    protected final CommandLineExecutorService commandLineService;
-
     public ExifToolProcessor() {
         jacksonMapper = new ObjectMapper();
-        commandLineService = Framework.getService(CommandLineExecutorService.class);
     }
 
     @Override
     public Blob writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix) {
         String command = ignorePrefix ? BinaryMetadataConstants.EXIFTOOL_WRITE_NOPREFIX
                 : BinaryMetadataConstants.EXIFTOOL_WRITE;
+        CommandLineExecutorService commandLineService = Framework.getService(CommandLineExecutorService.class);
         CommandAvailability ca = commandLineService.getCommandAvailability(command);
         if (!ca.isAvailable()) {
             throw new BinaryMetadataException("Command '" + command + "' is not available.");
@@ -118,6 +116,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
     }
 
     protected Map<String, Object> readMetadata(String command, Blob blob, List<String> metadata, boolean ignorePrefix) {
+        CommandLineExecutorService commandLineService = Framework.getService(CommandLineExecutorService.class);
         CommandAvailability ca = commandLineService.getCommandAvailability(command);
         if (!ca.isAvailable()) {
             throw new BinaryMetadataException("Command '" + command + "' is not available.");
