@@ -18,6 +18,7 @@
 
 package org.nuxeo.ecm.platform.types.localconfiguration;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +51,13 @@ public interface UITypesConfiguration extends LocalConfiguration<UITypesConfigur
      * Filter the {@code allowedSubTypes} according to this object configuration.
      */
     Map<String, SubType> filterSubTypes(Map<String, SubType> allowedSubTypes);
+
+    /**
+     * Filters the {@code allowedSubTypes} according to this object configuration.
+     *
+     * @since 11.5
+     */
+    Collection<String> filterSubTypes(Collection<String> allowedSubTypes);
 
     String getDefaultType();
 }
