@@ -371,6 +371,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         Bson filter = Filters.eq(MONGODB_ID, SETTING_DENORMALIZED_BLOB_KEYS);
         Bson update = Updates.set(SETTING_VALUE, supportsDenormalizedBlobKeys);
         settingsColl.updateOne(filter, update, new UpdateOptions().upsert(true));
+        initCapabilities();
     }
 
     protected void readSettings() {
@@ -380,6 +381,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
         } else {
             supportsDenormalizedBlobKeys = doc.getBoolean(SETTING_VALUE, false);
         }
+        initCapabilities();
+    }
+
+    protected void initCapabilities() {
         capabilities.put(CAPABILITY_QUERY_BLOB_KEYS, supportsDenormalizedBlobKeys);
     }
 
