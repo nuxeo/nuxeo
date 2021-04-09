@@ -5433,4 +5433,12 @@ public class TestSQLRepositoryAPI {
         assertEquals(2, children.totalSize());
     }
 
+    @Test
+    public void testCapabilities() {
+        Repository repository = repositoryService.getRepository(session.getRepositoryName());
+        if (isDBS()) {
+            assertTrue(repository.hasCapability(Repository.CAPABILITY_QUERY_BLOB_KEYS));
+        }
+    }
+
 }
