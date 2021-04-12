@@ -23,9 +23,4 @@ import org.nuxeo.runtime.test.runner.Deploy;
 @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-blob-provider-inmemory-caching.xml")
 public class TestCachingBlobStore extends TestAbstractBlobStore {
 
-    @Override
-    protected PathStrategy getCachePathStrategy() {
-        return ((CachingBlobStore) bs).cacheStore.pathStrategy;
-    }
-
 }
