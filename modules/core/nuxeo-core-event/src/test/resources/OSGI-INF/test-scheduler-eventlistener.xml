@@ -1,9 +1,15 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.scheduler.test.listener">
+  <require>org.nuxeo.ecm.core.scheduler.SchedulerService</require>
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
     <listener name="testListener" async="false" postCommit="false"
       class="org.nuxeo.ecm.core.scheduler.DummyEventListener">
     </listener>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <!-- setting property to 0 in unit tests to keep the same behavior and faster tests -->
+    <property name="org.nuxeo.scheduler.start.delay">0s</property>
   </extension>
 </component>
