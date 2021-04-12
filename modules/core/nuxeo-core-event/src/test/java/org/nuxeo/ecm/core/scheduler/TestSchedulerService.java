@@ -119,5 +119,16 @@ public class TestSchedulerService {
         newCount = DummyEventListener.getNewCount();
         assertTrue(newCount >= 1);
     }
+    @Test
+    @Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-with-delay-config.xml")
+    public void testSchedulerStartWithDelay() throws Exception {
 
+        waitUntilDummyEventListenerIsCalled(5); // wait 5 seconds for the event
+        long count = DummyEventListener.getCount();
+        assertTrue("count " + count, count == 0); // scheduler is started with a 10s delay, so no event is triggered
+
+        waitUntilDummyEventListenerIsCalled(10); // wait more
+        count = DummyEventListener.getCount();
+        assertTrue("count " + count, count >= 1);
+    }
 }

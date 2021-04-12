@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.scheduler.test.with.delay.config">
+
+  <require>org.nuxeo.ecm.core.scheduler.SchedulerService</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.scheduler.start.delay">10s</property>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.core.scheduler.SchedulerService" point="schedule">
+    <schedule id="testing">
+      <username>Administrator</username>
+      <eventId>testEvent</eventId>
+      <eventCategory>default</eventCategory>
+      <!-- every second -->
+      <cronExpression>*/1 * * * * ?</cronExpression>
+    </schedule>
+  </extension>
+</component>

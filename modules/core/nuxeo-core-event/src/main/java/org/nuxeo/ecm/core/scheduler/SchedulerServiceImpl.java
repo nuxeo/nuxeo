@@ -42,6 +42,7 @@ import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.ObjectAlreadyExistsException;
@@ -70,6 +71,16 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
 
     /** @since 11.1 */
     public static final Duration CLUSTER_START_DURATION_DEFAULT = Duration.ofMinutes(1);
+
+    /** @since 11.5 */
+    public static final String CLUSTER_START_DELAY_PROP = "org.nuxeo.scheduler.start.delay";
+
+    /**
+     * Default value is set to 5 seconds to delay the start by default
+     *
+     * @since 11.5
+     */
+    public static final Duration CLUSTER_START_DELAY_DEFAULT = Duration.ofSeconds(5);
 
     protected static final String XP = "schedule";
 
@@ -102,7 +113,9 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
             schedulerFactory.initialize(props);
         }
         scheduler = schedulerFactory.getScheduler();
-        scheduler.start();
+        // delay Quartz scheduler start to avoid unique key constraints violation with qrtz_LOCKS table
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        scheduler.startDelayed((int) cs.getDuration(CLUSTER_START_DELAY_PROP, CLUSTER_START_DELAY_DEFAULT).toSeconds());
         // server = MBeanServerFactory.createMBeanServer();
         // server.createMBean("org.quartz.ee.jmx.jboss.QuartzService",
         // quartzObjectName);

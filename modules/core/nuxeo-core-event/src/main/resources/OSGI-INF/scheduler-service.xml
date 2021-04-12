@@ -49,5 +49,15 @@
 
   </extension-point>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Delay Quartz scheduler start to avoid unique key constraint violation with qrtz_LOCKS table
+      <p />
+      Default behavior is to delay for 5 seconds.
+
+      @since 11.5
+    </documentation>
+    <property name="org.nuxeo.scheduler.start.delay">5s</property>
+  </extension>
 
 </component>
