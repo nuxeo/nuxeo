@@ -86,7 +86,7 @@ public class CachingBlobStore extends AbstractBlobStore {
         this.store = store;
         this.cacheConfig = config;
         cacheStore = new LocalBlobStore(name, store.getKeyStrategy(), new PathStrategyFlat(config.dir));
-        gc = new CachingBinaryGarbageCollector(store.getBinaryGarbageCollector());
+        gc = new CachingBinaryGarbageCollector();
     }
 
     @Override
@@ -446,8 +446,17 @@ public class CachingBlobStore extends AbstractBlobStore {
 
         protected final BinaryGarbageCollector delegate;
 
+        protected final BinaryGarbageCollector cacheDelegate;
+
+        public CachingBinaryGarbageCollector() {
+            delegate = store.getBinaryGarbageCollector();
+            cacheDelegate = cacheStore.getBinaryGarbageCollector();
+        }
+
+        /** @deprecated since 11.5 */
+        @Deprecated
         public CachingBinaryGarbageCollector(BinaryGarbageCollector delegate) {
-            this.delegate = delegate;
+            this();
         }
 
         @Override
@@ -458,20 +467,19 @@ public class CachingBlobStore extends AbstractBlobStore {
         @Override
         public void start() {
             delegate.start();
+            cacheDelegate.start();
         }
 
         @Override
         public void mark(String key) {
             delegate.mark(key);
+            cacheDelegate.mark(key);
         }
 
         @Override
         public void stop(boolean delete) {
             delegate.stop(delete);
-            if (delete) {
-                logTrace("->", "clear");
-                cacheStore.clear();
-            }
+            cacheDelegate.stop(delete);
         }
 
         @Override
