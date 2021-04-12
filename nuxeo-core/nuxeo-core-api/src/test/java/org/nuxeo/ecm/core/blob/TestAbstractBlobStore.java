@@ -40,8 +40,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.blob.BlobStore.OptionalOrUnknown;
+import org.nuxeo.ecm.core.blob.LocalBlobStore.LocalBlobGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.runtime.test.runner.Features;
@@ -355,8 +357,10 @@ public abstract class TestAbstractBlobStore {
         }
     }
 
-    // overridden by cache tests
     protected PathStrategy getCachePathStrategy() {
+        if (bs instanceof CachingBlobStore) {
+            return ((CachingBlobStore) bs).cacheStore.pathStrategy;
+        }
         return null;
     }
 
@@ -407,17 +411,30 @@ public abstract class TestAbstractBlobStore {
         assertBlob(key1, FOO);
         assertBlob(key2, "barbaz");
 
-        // when caching, create a tmp file in the cache that shouldn't disappear during GC
         PathStrategy cachePathStrategy = getCachePathStrategy();
-        Path cacheTmp = null;
         if (cachePathStrategy != null) {
-            cacheTmp = cachePathStrategy.createTempFile();
+            // later we check absence of GCed blob (key2), so we must make sure that these are deleted
+            // this means waiting a bit to account for the cache layer whose storages has a time threshold
+            try {
+                Thread.sleep(LocalBlobGarbageCollector.TIME_RESOLUTION + 1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new NuxeoException();
+            }
         }
 
         // real GC
         assertFalse(gc.isInProgress());
         gc.start();
         assertTrue(gc.isInProgress());
+        // when caching, create a tmp/other file in the cache that shouldn't disappear during GC
+        Path cacheTmp = null;
+        Path cacheOther = null;
+        if (cachePathStrategy != null) {
+            cacheTmp = cachePathStrategy.createTempFile();
+            cacheOther = cachePathStrategy.getPathForKey(((AbstractBlobStore) bs).randomString());
+            Files.createFile(cacheOther);
+        }
         gc.mark(key1);
         assertTrue(gc.isInProgress());
         gc.stop(true); // delete=true
@@ -437,9 +454,12 @@ public abstract class TestAbstractBlobStore {
             assertBlob(key3, "abcde");
         }
 
-        // cache tmp is still here
+        // cache tmp/other is still here
         if (cacheTmp != null) {
             assertTrue(Files.exists(cacheTmp));
+        }
+        if (cacheOther != null) {
+            assertTrue(Files.exists(cacheOther));
         }
     }
 
