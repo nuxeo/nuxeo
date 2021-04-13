@@ -22,15 +22,14 @@ package org.nuxeo.launcher.config;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.launcher.config.ConfigurationMarshaller.NEW_FILES;
 
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Map;
 
@@ -82,53 +81,41 @@ public class ConfigurationMarshallerTest {
         // nuxeo.conf should not have been rewritten
         assertEquals(modifiedTime, actualModifiedTime);
 
-        var expectedNuxeoConf = testDirectory.resolve("expected-nuxeo.conf");
-        assertTrue(FileUtils.contentEquals(expectedNuxeoConf.toFile(), nuxeoConf.toFile()));
+        assertNuxeoConf();
     }
 
     @Test
     public void testPersistNuxeoConfConfiguratorParameters() throws Exception {
-        var modifiedTime = Files.readAttributes(nuxeoConf, BasicFileAttributes.class).lastModifiedTime();
-
         configHolder.userConfig.put("nuxeo.parameter", "next");
         marshaller.persistNuxeoConf(configHolder);
 
-        assertNuxeoConf(modifiedTime);
+        assertNuxeoConf();
     }
 
     @Test
     public void testPersistNuxeoConfUniqueParameters() throws Exception {
-        var modifiedTime = Files.readAttributes(nuxeoConf, BasicFileAttributes.class).lastModifiedTime();
-
         marshaller.persistNuxeoConf(configHolder);
 
-        assertNuxeoConf(modifiedTime);
+        assertNuxeoConf();
     }
 
     @Test
     public void testPersistNuxeoConfNoTemplatesParameter() throws Exception {
-        var modifiedTime = Files.readAttributes(nuxeoConf, BasicFileAttributes.class).lastModifiedTime();
-
         configHolder.put(ConfigurationConstants.PARAM_TEMPLATES_NAME, "default,testTemplate");
         marshaller.persistNuxeoConf(configHolder);
 
-        assertNuxeoConf(modifiedTime);
+        assertNuxeoConf();
     }
 
     @Test
     public void testPersistNuxeoConfCommentedParameters() throws Exception {
-        var modifiedTime = Files.readAttributes(nuxeoConf, BasicFileAttributes.class).lastModifiedTime();
-
         configHolder.userConfig.remove("nuxeo.parameter2");
         marshaller.persistNuxeoConf(configHolder);
 
-        assertNuxeoConf(modifiedTime);
+        assertNuxeoConf();
     }
 
-    protected void assertNuxeoConf(FileTime modifiedTime) throws java.io.IOException {
-        var actualModifiedTime = Files.readAttributes(nuxeoConf, BasicFileAttributes.class).lastModifiedTime();
-        assertNotEquals(modifiedTime, actualModifiedTime);
-
+    protected void assertNuxeoConf() throws IOException {
         var expectedNuxeoConf = testDirectory.resolve("expected-nuxeo.conf");
         assertTrue(FileUtils.contentEquals(expectedNuxeoConf.toFile(), nuxeoConf.toFile()));
     }
