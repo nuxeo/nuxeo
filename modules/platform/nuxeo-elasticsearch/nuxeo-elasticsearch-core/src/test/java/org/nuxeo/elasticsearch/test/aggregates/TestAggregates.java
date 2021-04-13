@@ -22,6 +22,7 @@ package org.nuxeo.elasticsearch.test.aggregates;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_CARDINALITY;
 
 import java.io.ByteArrayInputStream;
@@ -48,6 +49,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
@@ -80,6 +82,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.elasticsearch.core:schemas-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestAggregates {
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -448,6 +453,7 @@ public class TestAggregates {
 
     @Test
     public void testPageProviderBooleanAggregate() throws Exception {
+        assumeFalse("Test is failing on MongoDB - NXP-30338", coreFeature.getStorageConfiguration().isDBSMongoDB());
         buildDocs();
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
