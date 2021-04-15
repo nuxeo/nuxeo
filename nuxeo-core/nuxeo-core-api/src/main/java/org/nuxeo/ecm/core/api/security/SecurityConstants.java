@@ -132,4 +132,10 @@ public interface SecurityConstants {
      */
     String MANAGE_LEGAL_HOLD = "ManageLegalHold";
 
+    /**
+     * Permission needed to move document's main content to cold storage.
+     *
+     * @since 11.1
+     */
+    String WRITE_COLD_STORAGE = "WriteColdStorage";
 }
