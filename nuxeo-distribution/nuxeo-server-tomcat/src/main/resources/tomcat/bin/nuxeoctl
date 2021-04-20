@@ -25,6 +25,11 @@ if [[ "x $@" =~ " -d" || "x $@" =~ " --debug" || -n "$LAUNCHER_DEBUG" ]]; then
   set -x
 fi
 
+VERBOSE=true
+if [[ "x $@" =~ " -q" || "x $@" =~ " --quiet" ]]; then
+  VERBOSE=false
+fi
+
 MAX_FD_LIMIT_HELP_URL="https://doc.nuxeo.com/nxdoc/java.net.SocketException-too-many-open-files/"
 
 : ${NUXEO_HOME:=$(cd "$(dirname "$0")"/..; pwd -P)}
@@ -220,7 +225,9 @@ if [ ! -e "$NUXEO_LAUNCHER" ]; then
 fi
 
 [ -d "$LOG_DIR" ] || mkdir -p "$LOG_DIR"
-echo "[`date`] Command: $0 $@" >> "$LOG_DIR"/nuxeoctl.log
+if [ "$VERBOSE" = true ]; then
+  echo "[`date`] Command: $0 $@" >> "$LOG_DIR"/nuxeoctl.log
+fi
 
 [ -d "$TMP_DIR" ] || mkdir -p "$TMP_DIR"
 
@@ -232,7 +239,9 @@ while true; do
     fi
   done
   cp "$NUXEO_LAUNCHER" "$TMPLAUNCHER"
-  echo [`date`] "Launcher command: $JAVA  \"-Xbootclasspath/a:$JAVA_TOOLS\" $MODULE_OPTS $LAUNCHER_DEBUG \"-Dlauncher.java.opts=$JAVA_OPTS\" \"-Dnuxeo.home=$NUXEO_HOME\" \"-Dnuxeo.conf=$NUXEO_CONF\" \"-Dnuxeo.log.dir=$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@" >> "$LOG_DIR"/nuxeoctl.log
+  if [ "$VERBOSE" = true ]; then
+    echo [`date`] "Launcher command: $JAVA  \"-Xbootclasspath/a:$JAVA_TOOLS\" $MODULE_OPTS $LAUNCHER_DEBUG \"-Dlauncher.java.opts=$JAVA_OPTS\" \"-Dnuxeo.home=$NUXEO_HOME\" \"-Dnuxeo.conf=$NUXEO_CONF\" \"-Dnuxeo.log.dir=$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@" >> "$LOG_DIR"/nuxeoctl.log
+  fi
   "$JAVA" "-Xbootclasspath/a:$JAVA_TOOLS" $MODULE_OPTS $LAUNCHER_DEBUG "-Dlauncher.java.opts=$JAVA_OPTS" "-Dnuxeo.home=$NUXEO_HOME" "-Dnuxeo.conf=$NUXEO_CONF" "-Dnuxeo.log.dir=$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
   exitcode=$?
   rm -f "$TMPLAUNCHER"
