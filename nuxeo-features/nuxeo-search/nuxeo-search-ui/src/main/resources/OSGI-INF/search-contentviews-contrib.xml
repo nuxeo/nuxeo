@@ -249,10 +249,10 @@
             <field>defaults:dc_modified_max</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+            <mode value="any">#{contentView.pageProvider.hasAggregateSupport() ?
               'hidden' : 'edit'}</mode>
           </widgetModes>
-          <properties widgetMode="edit">
+          <properties widgetMode="any">
             <property name="styleClass">dataInputTextDate</property>
             <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
           </properties>
@@ -262,7 +262,7 @@
             <field>defaults:dc_modified_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+            <mode value="any">#{contentView.pageProvider.hasAggregateSupport() ?
               'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
@@ -303,10 +303,10 @@
             <field>defaults:dc_creator</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+            <mode value="any">#{contentView.pageProvider.hasAggregateSupport() ?
               'hidden' : 'edit'}</mode>
           </widgetModes>
-          <properties widgetMode="edit">
+          <properties widgetMode="any">
             <property name="searchType">USER_TYPE</property>
             <property name="minChars">3</property>
             <property name="hideHelpLabel">true</property>
@@ -317,10 +317,10 @@
             <field>defaults:dc_creator_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+            <mode value="any">#{contentView.pageProvider.hasAggregateSupport() ?
               'edit' : 'hidden'}</mode>
           </widgetModes>
-          <properties widgetMode="edit">
+          <properties widgetMode="any">
             <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_creator_agg'].extendedBuckets}</property>
           </properties>
           <controls mode="any">
@@ -369,7 +369,7 @@
             <field>defaults:dc_nature</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+            <mode value="any">#{contentView.pageProvider.hasAggregateSupport() ?
               'hidden' : 'edit'}</mode>
           </widgetModes>
           <properties widgetMode="any">
@@ -385,7 +385,7 @@
             <field>defaults:dc_nature_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+            <mode value="any">#{contentView.pageProvider.hasAggregateSupport() ?
               'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
@@ -415,7 +415,7 @@
             <field>defaults:dc_subjects</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+            <mode value="any">#{contentView.pageProvider.hasAggregateSupport() ?
               'hidden' : 'edit'}</mode>
           </widgetModes>
           <properties widgetMode="any">
@@ -432,7 +432,7 @@
             <field>defaults:dc_subjects_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+            <mode value="any">#{contentView.pageProvider.hasAggregateSupport() ?
               'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
@@ -463,7 +463,7 @@
             <field>defaults:dc_coverage</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+            <mode value="any">#{contentView.pageProvider.hasAggregateSupport() ?
               'hidden' : 'edit'}</mode>
           </widgetModes>
           <properties widgetMode="any">
@@ -480,7 +480,7 @@
             <field>defaults:dc_coverage_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+            <mode value="any">#{contentView.pageProvider.hasAggregateSupport() ?
               'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
@@ -503,7 +503,7 @@
       </labels>
       <translated>true</translated>
       <widgetModes>
-        <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+        <mode value="any">#{contentView.pageProvider.hasAggregateSupport() ?
           'edit' : 'hidden'}</mode>
       </widgetModes>
       <properties widgetMode="any">
@@ -515,7 +515,7 @@
             <field>defaults:common_size_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+            <mode value="any">#{contentView.pageProvider.hasAggregateSupport() ?
               'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">

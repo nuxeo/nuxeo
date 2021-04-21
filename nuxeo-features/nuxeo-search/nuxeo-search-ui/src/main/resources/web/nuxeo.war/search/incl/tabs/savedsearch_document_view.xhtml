@@ -1,0 +1,50 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+<div class="summary">
+
+  <nxu:set var="contentView"
+    value="#{contentViewActions.getContentViewWithProvider(currentDocument.cvd.contentViewName, currentDocument, null, 1, -1, -1)}"
+    cache="true">
+
+  <nxu:set var="summaryLayouts"
+    value="#{nxd:typeInfo(currentDocument).getLayouts('summary', null)}"
+    cache="true">
+
+    <c:if test="#{not empty summaryLayouts}">
+
+      <c:if test="false">
+        Since 5.7: compatibility code for old layout contributions to the
+        "summary" document mode
+      </c:if>
+
+      <h:form id="document_view" enctype="multipart/form-data">
+        <a4j:outputPanel id="documentViewPanel" layout="block">
+          <nxl:documentLayout documentMode="summary" mode="view"
+            value="#{currentDocument}"
+            includeAnyMode="false" />
+        </a4j:outputPanel>
+      </h:form>
+
+    </c:if>
+
+    <c:if test="#{empty summaryLayouts}">
+      <a4j:outputPanel id="documentViewPanel" layout="block">
+        <nxl:documentLayout documentMode="grid_summary" mode="view"
+          value="#{currentDocument}" defaultLayout="grid_summary_layout"
+          includeAnyMode="false" />
+      </a4j:outputPanel>
+    </c:if>
+
+  </nxu:set>
+
+  </nxu:set>
+
+</div>
+</ui:composition>
