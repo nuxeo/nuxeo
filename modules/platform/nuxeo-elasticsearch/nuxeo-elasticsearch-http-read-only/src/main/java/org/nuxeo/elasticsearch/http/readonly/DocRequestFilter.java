@@ -58,7 +58,7 @@ public class DocRequestFilter {
     }
 
     protected @NotNull String getUrl() {
-        String url = "/" + indices + "/" + documentId;
+        String url = "/" + indices + "/_doc/" + documentId;
         if (rawQuery != null) {
             url += "?" + rawQuery;
         }
@@ -71,6 +71,6 @@ public class DocRequestFilter {
     }
 
     public String getCheckAccessUrl() {
-        return "/" + indices + "/" + documentId + "?fields=ecm:acl";
+        return "/" + indices + "/_doc/" + documentId + "?fields=ecm:acl";
     }
 }

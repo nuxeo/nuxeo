@@ -28,15 +28,15 @@ public class TestDocRequestFilter {
     public void testGet() {
         DocRequestFilter filter = new DocRequestFilter(TestSearchRequestFilter.getNonAdminPrincipal(), INDICES,
                 "123", null);
-        Assert.assertEquals(filter.getCheckAccessUrl(), "/nxutest/123?fields=ecm:acl");
-        Assert.assertEquals(filter.getUrl(), "/nxutest/123");
+        Assert.assertEquals(filter.getCheckAccessUrl(), "/nxutest/_doc/123?fields=ecm:acl");
+        Assert.assertEquals(filter.getUrl(), "/nxutest/_doc/123");
     }
 
     @Test
     public void testGetWithParams() {
         DocRequestFilter filter = new DocRequestFilter(TestSearchRequestFilter.getNonAdminPrincipal(), INDICES,
                 "123", "fields=title,content&pretty");
-        Assert.assertEquals(filter.getCheckAccessUrl(), "/nxutest/123?fields=ecm:acl");
-        Assert.assertEquals(filter.getUrl(), "/nxutest/123?fields=title,content&pretty");
+        Assert.assertEquals(filter.getCheckAccessUrl(), "/nxutest/_doc/123?fields=ecm:acl");
+        Assert.assertEquals(filter.getUrl(), "/nxutest/_doc/123?fields=title,content&pretty");
     }
 }
