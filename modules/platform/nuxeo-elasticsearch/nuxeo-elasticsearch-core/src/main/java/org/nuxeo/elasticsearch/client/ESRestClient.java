@@ -215,7 +215,10 @@ public class ESRestClient implements ESClient {
         }
     }
 
-    protected Response performRequestWithTracing(Request request) {
+    /**
+     * Performs an Elastic request using the low level client, exposed since 11.5 for internal use only.
+     */
+    public Response performRequestWithTracing(Request request) {
         try (Scope ignored = getScopedSpan("elastic" + request.getEndpoint(), request.toString())) {
             return performRequest(request);
         }
