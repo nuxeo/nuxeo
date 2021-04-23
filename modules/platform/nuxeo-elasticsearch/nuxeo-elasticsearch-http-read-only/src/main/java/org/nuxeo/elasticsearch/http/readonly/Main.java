@@ -32,12 +32,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.Response;
 import org.json.JSONException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.elasticsearch.api.ESClient;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.client.ESRestClient;
 import org.nuxeo.elasticsearch.http.readonly.filter.DefaultSearchRequestFilter;
 import org.nuxeo.elasticsearch.http.readonly.filter.RequestValidator;
 import org.nuxeo.elasticsearch.http.readonly.filter.SearchRequestFilter;
@@ -153,7 +160,7 @@ public class Main extends ModuleRoot {
             }
             req.init(getContext().getCoreSession(), indices, rawQuery, payload);
             log.debug(req);
-            return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
+            return getWithRestClient(req.getUrl(), req.getPayload());
         } catch (ReflectiveOperationException e) {
             log.error("Error when trying to get Search Request Filter for indice {}", indices, e);
             return null;
@@ -171,7 +178,7 @@ public class Main extends ModuleRoot {
         DefaultSearchRequestFilter req = new DefaultSearchRequestFilter();
         req.init(getContext().getCoreSession(), indices, uriInf.getRequestUri().getRawQuery(), null);
         log.debug(req);
-        return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
+        return getWithRestClient(req.getUrl(), req.getPayload());
     }
 
     /**
@@ -201,10 +208,10 @@ public class Main extends ModuleRoot {
                 uriInf.getRequestUri().getRawQuery());
         log.debug(req);
         if (!principal.isAdministrator()) {
-            String docAcl = HttpClient.get(getElasticsearchBaseUrl() + req.getCheckAccessUrl());
+            String docAcl = getWithRestClient(req.getCheckAccessUrl());
             validator.checkAccess(principal, docAcl);
         }
-        return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl());
+        return getWithRestClient(req.getUrl());
     }
 
     /**
@@ -236,4 +243,25 @@ public class Main extends ModuleRoot {
         return principal;
     }
 
+    protected String getWithRestClient(String endpoint) {
+        return getWithRestClient(endpoint, null);
+    }
+
+    protected String getWithRestClient(String endpoint, String payload) {
+        ESClient esClient = Framework.getService(ElasticSearchAdmin.class).getClient();
+        if (!(esClient instanceof ESRestClient)) {
+            throw new IllegalStateException("Passthrough works only with a RestClient");
+        }
+        ESRestClient client = (ESRestClient) esClient;
+        Request request = new Request("GET", endpoint);
+        if (payload != null) {
+            request.setJsonEntity(payload);
+        }
+        Response response = client.performRequestWithTracing(request);
+        try {
+            return EntityUtils.toString(response.getEntity());
+        } catch (IOException e) {
+            throw new NuxeoException("Cannot parse response: " + response, e);
+        }
+    }
 }
