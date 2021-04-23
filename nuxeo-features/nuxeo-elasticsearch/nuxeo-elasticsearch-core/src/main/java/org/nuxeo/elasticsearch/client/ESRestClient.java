@@ -198,7 +198,10 @@ public class ESRestClient implements ESClient {
         }
     }
 
-    protected Response performRequest(Request request) {
+    /**
+     * Performs an Elastic request using the low level client, exposed for internal use only.
+     */
+    public Response performRequest(Request request) {
         try {
             return lowLevelClient.performRequest(request);
         } catch (IOException e) {

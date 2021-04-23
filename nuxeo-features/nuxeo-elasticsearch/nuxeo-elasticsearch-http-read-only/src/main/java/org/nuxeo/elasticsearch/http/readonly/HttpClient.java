@@ -37,7 +37,9 @@ import org.apache.http.util.EntityUtils;
  * Http client that handle GET request with a body.
  *
  * @since 7.3
+ * @deprecated since 11.5 in favor of elastic rest client
  */
+@Deprecated
 public class HttpClient {
     private static final String UTF8_CHARSET = "UTF-8";
 
