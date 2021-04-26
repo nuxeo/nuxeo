@@ -17,7 +17,7 @@
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
 
-package org.nuxeo.log4j2;
+package org.nuxeo.log4j;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,6 +46,8 @@ public final class MaskSensitiveDataRewritePolicy implements RewritePolicy {
     protected static final Pattern GCP_KEY_PATTERN = Pattern.compile(
             "(AIza[0-9A-Za-z-_]{3})[0-9A-Za-z-_]{28}([0-9A-Za-z-_]{4})");
 
+    protected static final Pattern PASSWORD_PATTERN = Pattern.compile("(?i)(\\S*password\\S*)=([^\\s,]+)");
+
     @Override
     public LogEvent rewrite(LogEvent source) {
         Message msg = source.getMessage();
@@ -71,6 +73,10 @@ public final class MaskSensitiveDataRewritePolicy implements RewritePolicy {
         Matcher gcpMatcher = GCP_KEY_PATTERN.matcher(msg);
         if (gcpMatcher.find()) {
             msg = gcpMatcher.replaceAll("$1-GCP_KEY-$2");
+        }
+        Matcher passwordMatcher = PASSWORD_PATTERN.matcher(msg);
+        if (passwordMatcher.find()) {
+            msg = passwordMatcher.replaceAll("$1=***");
         }
         return msg;
     }

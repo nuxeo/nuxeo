@@ -17,7 +17,7 @@
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
 
-package org.nuxeo.log4j2;
+package org.nuxeo.log4j;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -90,6 +90,28 @@ public class TestMaskSensitiveDataRewritePolicy {
 
         testStr = "Should replace this UnionPay 817199 9900000000021 card";
         assertEquals("Should replace this UnionPay 8171-CRED-CARD-XXXX card", policy.maskSensitive(testStr));
+    }
+
+    // NXP-30304
+    @Test
+    public void testMaskSensitivePassword() {
+        String testStr = "Should replace this password=secret";
+        assertEquals("Should replace this password=***", policy.maskSensitive(testStr));
+
+        testStr = "Should replace this something.password=secret";
+        assertEquals("Should replace this something.password=***", policy.maskSensitive(testStr));
+
+        testStr = "Should replace this password.something=secret";
+        assertEquals("Should replace this password.something=***", policy.maskSensitive(testStr));
+
+        testStr = "Should replace this something.password.something=secret";
+        assertEquals("Should replace this something.password.something=***", policy.maskSensitive(testStr));
+
+        testStr = "Should replace this password=secret, and this password=secret";
+        assertEquals("Should replace this password=***, and this password=***", policy.maskSensitive(testStr));
+
+        testStr = "Should replace this superPassword=secret";
+        assertEquals("Should replace this superPassword=***", policy.maskSensitive(testStr));
     }
 
     @Test
