@@ -9,12 +9,16 @@
         </MarkerPatternSelector>
       </PatternLayout>
     </Console>
-    <RollingFile name="FILE" fileName="${sys:nuxeo.log.dir}/console.log"
+    <RollingFile name="FILE-ORIGINAL" fileName="${sys:nuxeo.log.dir}/console.log"
                  filePattern="${sys:nuxeo.log.dir}/console-%d{yyyy-MM-dd}.log.gz" append="true">
       <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />
       <CronTriggeringPolicy schedule="0 0 0 * * ?" evaluateOnStartup="true" /> <!-- Rollover at midnight every day -->
       <DefaultRolloverStrategy />
     </RollingFile>
+    <Rewrite name="FILE">
+      <AppenderRef ref="FILE-ORIGINAL"/>
+      <MaskSensitiveData />
+    </Rewrite>
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="warn" />
