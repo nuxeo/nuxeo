@@ -143,17 +143,23 @@ void dockerPush(String image) {
   sh "docker push ${image}"
 }
 
-void dockerDeploy(String dockerRegistry, String imageName) {
-  String fullImageName = "${dockerNamespace}/${imageName}"
+void dockerPushFixedVersion() {
+  String fullImageName = "${dockerNamespace}/${NUXEO_IMAGE_NAME}"
   String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
   String latestInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
-  String fixedVersionPublicImage = "${dockerRegistry}/${fullImageName}:${VERSION}"
-  String latestPublicImage = "${dockerRegistry}/${fullImageName}:${DOCKER_TAG}"
-
   dockerPull(fixedVersionInternalImage)
   echo "Push ${latestInternalImage}"
   dockerTag(fixedVersionInternalImage, latestInternalImage)
   dockerPush(latestInternalImage)
+}
+
+void dockerDeploy(String dockerRegistry) {
+  String fullImageName = "${dockerNamespace}/${NUXEO_IMAGE_NAME}"
+  String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
+  String fixedVersionPublicImage = "${dockerRegistry}/${fullImageName}:${VERSION}"
+  String latestPublicImage = "${dockerRegistry}/${fullImageName}:${DOCKER_TAG}"
+
+  dockerPull(fixedVersionInternalImage)
   echo "Push ${fixedVersionPublicImage}"
   dockerTag(fixedVersionInternalImage, fixedVersionPublicImage)
   dockerPush(fixedVersionPublicImage)
@@ -585,6 +591,11 @@ pipeline {
           retry(2) {
             sh 'skaffold build -f docker/skaffold.yaml'
           }
+          script {
+            if (!isPullRequest()) {
+              dockerPushFixedVersion()
+            }
+          }
         }
       }
       post {
@@ -780,7 +791,7 @@ pipeline {
           Image tag: ${VERSION}
           """
           echo "Push Docker image to Docker registry ${PRIVATE_DOCKER_REGISTRY}"
-          dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
+          dockerDeploy("${PRIVATE_DOCKER_REGISTRY}")
         }
       }
       post {
