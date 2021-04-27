@@ -897,7 +897,7 @@ pipeline {
             string(name: 'NUXEO_CURRENT_VERSION', value: "${VERSION}"),
           ]
           build(
-            job: "nuxeo/LTS/nuxeo-hf-2021",
+            job: "nuxeo/lts/nuxeo-hf-2021",
             parameters: parameters,
             wait: false
           )
