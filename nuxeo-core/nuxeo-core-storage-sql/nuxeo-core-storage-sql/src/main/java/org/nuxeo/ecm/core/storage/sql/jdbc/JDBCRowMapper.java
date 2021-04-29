@@ -1133,7 +1133,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     v = null;
                 } else if (key.equals(Model.MAIN_MINOR_VERSION_KEY) || key.equals(Model.MAIN_MAJOR_VERSION_KEY)) {
                     // present if reset version (regular copy, not checkin)
-                    v = null;
+                    // reset the version to 0
+                    v = 0L;
                 } else {
                     throw new RuntimeException(column.toString());
                 }

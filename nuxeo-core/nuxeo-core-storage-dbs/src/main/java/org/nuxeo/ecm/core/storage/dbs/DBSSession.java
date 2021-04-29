@@ -792,9 +792,9 @@ public class DBSSession extends BaseSession {
         copy.put(KEY_BASE_VERSION_ID, null);
         copy.put(KEY_IS_CHECKED_IN, null);
         if (parentId != null) {
-            // reset version
-            copy.put(KEY_MAJOR_VERSION, null);
-            copy.put(KEY_MINOR_VERSION, null);
+            // reset version to 0
+            copy.put(KEY_MAJOR_VERSION, 0L);
+            copy.put(KEY_MINOR_VERSION, 0L);
         }
         if (TRUE.equals(copy.get(KEY_IS_RECORD))) {
             // unset record on the copy
