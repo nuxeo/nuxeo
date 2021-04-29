@@ -5563,4 +5563,33 @@ public class TestSQLRepositoryAPI {
         }
     }
 
+    // NXP-30250
+    @Test
+    public void testResetVersionCopyHierarchy() {
+        DocumentModel root = session.getRootDocument();
+        DocumentModel folder1 = session.createDocumentModel(root.getPathAsString(), "folder1", "Folder");
+        DocumentModel folder2 = session.createDocumentModel(root.getPathAsString(), "folder2", "Folder");
+        DocumentModel file = session.createDocumentModel(folder1.getPathAsString(), "file", "File");
+
+        folder1 = createChildDocument(folder1);
+        folder2 = createChildDocument(folder2);
+        file = createChildDocument(file);
+
+        session.save();
+
+        assertTrue(session.exists(new PathRef("/folder1/file")));
+        assertFalse(session.exists(new PathRef("/folder2/folder1")));
+        assertEquals(0L, file.getPropertyValue("uid:major_version"));
+        assertEquals(0L, file.getPropertyValue("uid:minor_version"));
+
+        session.copy(folder1.getRef(), folder2.getRef(), null);
+
+        assertTrue(session.exists(new PathRef("/folder1/file")));
+        assertTrue(session.exists(new PathRef("/folder2/folder1")));
+        assertTrue(session.exists(new PathRef("/folder2/folder1/file")));
+
+        DocumentModel copyFile = session.getDocument(new PathRef("/folder2/folder1/file"));
+        assertEquals(0L, copyFile.getPropertyValue("uid:major_version"));
+        assertEquals(0L, copyFile.getPropertyValue("uid:minor_version"));
+    }
 }
