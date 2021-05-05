@@ -104,6 +104,10 @@ public class BulkRunAction {
     @Param(name = "excludeDocs", required = false)
     protected StringList excludeDocs;
 
+    // @since 11.5
+    @Param(name = "queryLimit", required = false)
+    protected long queryLimit;
+
     @OperationMethod(asyncService = BulkService.class)
     public BulkStatus run() throws IOException, OperationException {
 
@@ -155,6 +159,9 @@ public class BulkRunAction {
         }
         if (batchSize > 0) {
             builder.batch(batchSize);
+        }
+        if (queryLimit > 0) {
+            builder.queryLimit(queryLimit);
         }
         String commandId;
         try {
