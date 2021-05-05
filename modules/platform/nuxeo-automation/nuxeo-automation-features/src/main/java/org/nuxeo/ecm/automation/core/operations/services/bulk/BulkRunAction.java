@@ -23,7 +23,10 @@ import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -40,6 +43,7 @@ import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.io.BulkParameters;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -51,8 +55,11 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
  */
 @Operation(id = BulkRunAction.ID, category = Constants.CAT_SERVICES, label = "Run a bulk command", addToStudio = true, description = "Run a bulk action on a set of documents expressed by a NXQL.")
 public class BulkRunAction {
+    private static final Logger log = LogManager.getLogger(BulkRunAction.class);
 
     public static final String ID = "Bulk.RunAction";
+
+    protected static final String WHERE_TOKEN = " WHERE ";
 
     @Context
     protected BulkService service;
@@ -94,6 +101,9 @@ public class BulkRunAction {
     @Param(name = "parameters", required = false)
     protected String parametersAsJson;
 
+    @Param(name = "excludeDocs", required = false)
+    protected StringList excludeDocs;
+
     @OperationMethod(asyncService = BulkService.class)
     public BulkStatus run() throws IOException, OperationException {
 
@@ -124,6 +134,10 @@ public class BulkRunAction {
             throw new NuxeoException("Query parameters could not be parsed", SC_BAD_REQUEST);
         }
 
+        if (excludeDocs != null && !excludeDocs.isEmpty()) {
+            query = addExcludeClause(query, excludeDocs);
+        }
+
         BulkCommand.Builder builder = new BulkCommand.Builder(action, query, session.getPrincipal().getName());
         try {
             builder.params(BulkParameters.paramsToMap(parametersAsJson));
@@ -144,10 +158,28 @@ public class BulkRunAction {
         }
         String commandId;
         try {
-            commandId = service.submit(builder.build());
+            BulkCommand command = builder.build();
+            log.debug("Submitting Bulk Command: {}", command);
+            commandId = service.submit(command);
         } catch (IllegalArgumentException e) {
             throw new NuxeoException(e.getMessage(), e, SC_BAD_REQUEST);
         }
-        return service.getStatus(commandId);
+        BulkStatus status = service.getStatus(commandId);
+        log.debug("Status: {}", status);
+        return status;
+    }
+
+    protected String addExcludeClause(String query, StringList excludeDocs) {
+        log.debug("Excluding doc ids: {} from query: {}", excludeDocs, query);
+        String ids = excludeDocs.stream().map(NXQL::escapeString).collect(Collectors.joining(","));
+        int wherePos = query.toUpperCase().indexOf(WHERE_TOKEN);
+        if (wherePos > 0) {
+            query = query.substring(0, wherePos) + WHERE_TOKEN + "(" + query.substring(wherePos + 7) + ") AND ";
+        } else {
+            query = query + WHERE_TOKEN;
+        }
+        query = query + "ecm:uuid NOT IN (" + ids + ")";
+        log.debug("Query rewritten: {}", query);
+        return query;
     }
 }
