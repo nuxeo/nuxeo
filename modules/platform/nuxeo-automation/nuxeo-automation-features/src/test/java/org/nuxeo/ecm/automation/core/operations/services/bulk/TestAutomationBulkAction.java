@@ -87,6 +87,15 @@ public class TestAutomationBulkAction {
 
     @Test
     public void testSetPropertyActionFromAutomation() throws Exception {
+        doTestSetPropertyActionFromAutomation("automation");
+    }
+
+    @Test
+    public void testSetPropertyActionFromAutomationUi() throws Exception {
+        doTestSetPropertyActionFromAutomation("automation-ui");
+    }
+
+    public void doTestSetPropertyActionFromAutomation(String action) throws Exception {
         // param for the automation operation
         HashMap<String, Serializable> automationParams = new HashMap<>();
         automationParams.put("properties", "dc:title=foo");
@@ -98,7 +107,7 @@ public class TestAutomationBulkAction {
         // param for the automation BulkRunAction operation
         Map<String, Serializable> bulkActionParam = new HashMap<>();
         String nxql = "SELECT * FROM ComplexDoc";
-        bulkActionParam.put("action", AutomationBulkAction.ACTION_NAME);
+        bulkActionParam.put("action", action);
         bulkActionParam.put("query", nxql);
         bulkActionParam.put("bucketSize", "10");
         bulkActionParam.put("batchSize", "5");
