@@ -20,14 +20,18 @@ package org.nuxeo.ecm.automation.core.operations.services.bulk;
 
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +43,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -293,4 +298,44 @@ public class TestBulkRunAction {
                     "Failed to invoke operation Bulk.RunAction, Unknown xpath unknown:path in command: "));
         }
     }
+
+    @Test
+    public void testExcludeDocs() throws Exception {
+        // List doc ids that match a query
+        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+        String nxql = String.format("SELECT * from ComplexDoc WHERE ecm:parentId='%s' AND ecm:isProxy = 0", model.getId());
+        List<String> ids = session.query(nxql).stream().map(DocumentModel::getId).collect(Collectors.toList());
+        assertTrue(ids.size() > 2);
+
+        // Build a bulk command based on the query but excluding 2 doc ids
+        Map<String, Serializable> params = new HashMap<>();
+        params.put("action", SetPropertiesAction.ACTION_NAME);
+        params.put("query", nxql);
+        StringList excludeDocs = new StringList();
+        excludeDocs.add(ids.get(0));
+        excludeDocs.add(ids.get(1));
+        params.put("excludeDocs", excludeDocs);
+        Map<String, Serializable> actionParams = new HashMap<>();
+        String title = "test exclude title";
+        actionParams.put("dc:title", title);
+        params.put("parameters", OBJECT_MAPPER.writeValueAsString(actionParams));
+
+        // Run the bulk command
+        BulkStatus runResult = (BulkStatus) service.run(ctx, BulkRunAction.ID, params);
+        assertNotNull(runResult);
+        String commandId = runResult.getId();
+        boolean waitResult = (boolean) service.run(ctx, BulkWaitForAction.ID, singletonMap("commandId", commandId));
+        assertTrue("Bulk action didn't finish", waitResult);
+        txFeature.nextTransaction();
+
+        // Check that exclude works as expected
+        for (DocumentModel child : session.query(nxql)) {
+            if (excludeDocs.contains(child.getId())) {
+                assertNotEquals(child.getId(), title, child.getTitle());
+            } else {
+                assertEquals(child.getId(), title, child.getTitle());
+            }
+        }
+    }
+
 }
