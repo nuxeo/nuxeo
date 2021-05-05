@@ -103,7 +103,6 @@ public class TestAutomationBulkAction {
         bulkActionParam.put("bucketSize", "10");
         bulkActionParam.put("batchSize", "5");
         bulkActionParam.put("parameters", OBJECT_MAPPER.writeValueAsString(actionParams));
-
         BulkStatus runResult = (BulkStatus) service.run(ctx, BulkRunAction.ID, bulkActionParam);
 
         assertNotNull(runResult);
