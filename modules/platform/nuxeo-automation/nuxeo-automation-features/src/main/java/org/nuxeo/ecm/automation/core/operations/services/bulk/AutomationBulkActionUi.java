@@ -19,12 +19,12 @@
 package org.nuxeo.ecm.automation.core.operations.services.bulk;
 
 /**
- * Bulk Action that runs an automation operation
+ * Bulk Action that runs an automation operation dedicated for UI
  *
- * @since 10.3
+ * @since 11.5
  */
-public class AutomationBulkAction extends AbstractAutomationBulkAction {
-    public static final String ACTION_NAME = "automation";
+public class AutomationBulkActionUi extends AutomationBulkAction {
+    public static final String ACTION_NAME = "automationUi";
 
     @Override
     protected String getActionName() {

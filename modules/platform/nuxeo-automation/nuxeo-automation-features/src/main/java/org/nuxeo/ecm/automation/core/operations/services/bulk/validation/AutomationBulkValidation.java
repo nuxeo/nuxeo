@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.automation.core.operations.services.bulk.validation;
 
-import static org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkAction.AutomationComputation.DOCS_INPUT_TYPE;
-import static org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkAction.AutomationComputation.DOC_INPUT_TYPE;
+import static org.nuxeo.ecm.automation.core.operations.services.bulk.AbstractAutomationBulkAction.AutomationComputation.DOCS_INPUT_TYPE;
+import static org.nuxeo.ecm.automation.core.operations.services.bulk.AbstractAutomationBulkAction.AutomationComputation.DOC_INPUT_TYPE;
 import static org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkAction.OPERATION_ID;
 import static org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkAction.OPERATION_PARAMETERS;
 
