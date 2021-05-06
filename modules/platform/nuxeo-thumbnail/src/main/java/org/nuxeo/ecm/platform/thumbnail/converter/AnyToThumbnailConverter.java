@@ -42,9 +42,15 @@ public class AnyToThumbnailConverter implements Converter {
 
     public static final String PDF_MIME_TYPE = "application/pdf";
 
-    public static final Pattern PDF_MIME_TYPE_PATTERN = Pattern.compile("application/.*pdf");
+    // take into account charset, possibly added by the AWS SDK when uploading to S3,
+    // resulting in "application/pdf; charset=UTF-8"
+    public static final Pattern PDF_MIME_TYPE_PATTERN = Pattern.compile("application/.*pdf.*");
 
     public static final String ANY_TO_PDF_CONVERTER_NAME = "any2pdf";
+
+    public static boolean isPDFMimeType(String mimeType) {
+        return PDF_MIME_TYPE_PATTERN.matcher(mimeType).matches();
+    }
 
     @Override
     public void init(ConverterDescriptor descriptor) {
@@ -67,7 +73,7 @@ public class AnyToThumbnailConverter implements Converter {
         ConversionService conversionService = Framework.getService(ConversionService.class);
 
         String converterName = null;
-        if ((mimeType.startsWith("image/") || PDF_MIME_TYPE_PATTERN.matcher(mimeType).matches())
+        if ((mimeType.startsWith("image/") || isPDFMimeType(mimeType))
                 && conversionService.isConverterAvailable(PDF_AND_IMAGE_TO_THUMBNAIL_CONVERTER_NAME, true)
                                     .isAvailable()) {
             converterName = PDF_AND_IMAGE_TO_THUMBNAIL_CONVERTER_NAME;
@@ -77,4 +83,5 @@ public class AnyToThumbnailConverter implements Converter {
         }
         return converterName == null ? null : conversionService.convert(converterName, blobHolder, parameters);
     }
+
 }
