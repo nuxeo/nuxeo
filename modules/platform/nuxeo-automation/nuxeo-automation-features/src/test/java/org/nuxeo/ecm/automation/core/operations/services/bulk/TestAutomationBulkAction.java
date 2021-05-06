@@ -87,18 +87,34 @@ public class TestAutomationBulkAction {
 
     @Test
     public void testSetPropertyActionFromAutomation() throws Exception {
-        doTestSetPropertyActionFromAutomation("automation");
+        String nxql = "SELECT * FROM ComplexDoc";
+        String title = "title set from automation";
+        doTestSetPropertyActionFromAutomation("automation", nxql, title);
+        for (DocumentModel doc : session.query(nxql)) {
+            assertEquals(title, doc.getTitle());
+        }
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.automation.features:test-configuration-service-contrib.xml")
     public void testSetPropertyActionFromAutomationUi() throws Exception {
-        doTestSetPropertyActionFromAutomation("automation-ui");
+        String nxql = "SELECT * FROM ComplexDoc WHERE ecm:isProxy = 0";
+        String title = "title set from automation UI";
+        doTestSetPropertyActionFromAutomation("automation-ui", nxql, title);
+        // The configuration service sets a queryLimit=3 for this operationId
+        int count = 0;
+        for (DocumentModel doc : session.query(nxql)) {
+            if (title.equals(doc.getTitle())) {
+                count++;
+            }
+        }
+        assertEquals(3, count);
     }
 
-    public void doTestSetPropertyActionFromAutomation(String action) throws Exception {
+    public void doTestSetPropertyActionFromAutomation(String action, String nxql, String title) throws Exception {
         // param for the automation operation
         HashMap<String, Serializable> automationParams = new HashMap<>();
-        automationParams.put("properties", "dc:title=foo");
+        automationParams.put("properties", "dc:title=" + title);
         // param for the automation bulk action
         HashMap<String, Serializable> actionParams = new HashMap<>();
         actionParams.put(AutomationBulkAction.OPERATION_ID, "Document.Update");
@@ -106,7 +122,6 @@ public class TestAutomationBulkAction {
 
         // param for the automation BulkRunAction operation
         Map<String, Serializable> bulkActionParam = new HashMap<>();
-        String nxql = "SELECT * FROM ComplexDoc";
         bulkActionParam.put("action", action);
         bulkActionParam.put("query", nxql);
         bulkActionParam.put("bucketSize", "10");
@@ -122,10 +137,6 @@ public class TestAutomationBulkAction {
         assertTrue("Bulk action didn't finish", waitResult);
 
         txFeature.nextTransaction();
-        for (DocumentModel doc : session.query(nxql)) {
-            assertEquals("foo", doc.getTitle());
-        }
-
     }
 
 }
