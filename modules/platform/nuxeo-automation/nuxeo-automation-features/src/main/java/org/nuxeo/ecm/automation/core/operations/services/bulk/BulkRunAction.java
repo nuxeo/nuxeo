@@ -21,9 +21,12 @@ package org.nuxeo.ecm.automation.core.operations.services.bulk;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static org.nuxeo.ecm.automation.core.operations.services.bulk.AbstractAutomationBulkAction.OPERATION_ID;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
+import java.io.Serializable;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,6 +63,8 @@ public class BulkRunAction {
     public static final String ID = "Bulk.RunAction";
 
     protected static final String WHERE_TOKEN = " WHERE ";
+
+    protected static final String ORDER_TOKEN = " ORDER BY ";
 
     @Context
     protected BulkService service;
@@ -143,12 +148,9 @@ public class BulkRunAction {
         }
 
         BulkCommand.Builder builder = new BulkCommand.Builder(action, query, session.getPrincipal().getName());
-        try {
-            builder.params(BulkParameters.paramsToMap(parametersAsJson));
-        } catch (IOException e) {
-            throw new NuxeoException("Could not parse parameters, expecting valid json value", e, SC_BAD_REQUEST);
-        }
 
+        Map<String, Serializable> params = getParams(parametersAsJson);
+        builder.params(params);
         if (repositoryName != null) {
             builder.repository(repositoryName);
         } else {
@@ -162,6 +164,14 @@ public class BulkRunAction {
         }
         if (queryLimit > 0) {
             builder.queryLimit(queryLimit);
+        } else if ("automation-ui".equals(action) && params.containsKey(OPERATION_ID)) {
+            // automation actions from UI can be limited
+            String operationId = (String) params.get(OPERATION_ID);
+            int limit = AutomationBulkActionUi.getQueryLimit(operationId);
+            if (limit > 0) {
+                log.debug("Set queryLimit to: {} for automation-ui operationId: {}", limit, operationId);
+                builder.queryLimit(limit);
+            }
         }
         String commandId;
         try {
@@ -176,16 +186,32 @@ public class BulkRunAction {
         return status;
     }
 
+    protected Map<String, Serializable> getParams(String parametersAsJson) {
+        try {
+            return BulkParameters.paramsToMap(parametersAsJson);
+        } catch (IOException e) {
+            throw new NuxeoException("Could not parse parameters, expecting valid json value", e, SC_BAD_REQUEST);
+        }
+    }
+
     protected String addExcludeClause(String query, StringList excludeDocs) {
         log.debug("Excluding doc ids: {} from query: {}", excludeDocs, query);
         String ids = excludeDocs.stream().map(NXQL::escapeString).collect(Collectors.joining(","));
-        int wherePos = query.toUpperCase().indexOf(WHERE_TOKEN);
+        String upperQuery = query.toUpperCase();
+        String order = "";
+        int orderByPos = upperQuery.lastIndexOf(ORDER_TOKEN);
+        if (orderByPos > 0) {
+            order = query.substring(orderByPos);
+            query = query.substring(0, orderByPos);
+        }
+        int wherePos = upperQuery.indexOf(WHERE_TOKEN);
         if (wherePos > 0) {
             query = query.substring(0, wherePos) + WHERE_TOKEN + "(" + query.substring(wherePos + 7) + ") AND ";
         } else {
             query = query + WHERE_TOKEN;
         }
         query = query + "ecm:uuid NOT IN (" + ids + ")";
+        query += order;
         log.debug("Query rewritten: {}", query);
         return query;
     }
