@@ -26,4 +26,6 @@ public interface NuxeoAdobeConnectorService {
 
     String ADOBE_CC_CLIENT_URL = "https://siliconpublishing.com/c/spi_connect/connect.html";
 
+    ADOBE_CC_CLIENT_URL += ",https://5tlkhjwj6g.execute-api.us-west-1.amazonaws.com/Prod/callback/nuxeo";
+
 }
