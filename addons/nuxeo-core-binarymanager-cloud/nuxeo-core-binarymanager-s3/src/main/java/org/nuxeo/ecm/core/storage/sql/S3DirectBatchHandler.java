@@ -46,6 +46,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HeaderElement;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicHeaderValueParser;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.AbstractBatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
@@ -161,6 +164,34 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     // public for tests
     public String blobProviderId;
+
+    /**
+     * @since 11.5
+     */
+    public static String getMimeType(String contentType) {
+        Objects.requireNonNull(contentType);
+        HeaderElement headerElement = BasicHeaderValueParser.parseHeaderElement(contentType, null);
+        return headerElement.getName();
+    }
+
+    /**
+     * @since 11.5
+     */
+    public static String getCharset(String contentType) {
+        Objects.requireNonNull(contentType);
+        HeaderElement headerElement = BasicHeaderValueParser.parseHeaderElement(contentType, null);
+        String encoding = null;
+        for (NameValuePair param : headerElement.getParameters()) {
+            if (param.getName().equalsIgnoreCase("charset")) {
+                String s = param.getValue();
+                if (!isBlank(s)) {
+                    encoding = s;
+                }
+                break;
+            }
+        }
+        return encoding;
+    }
 
     @Override
     protected void initialize(Map<String, String> properties) {
@@ -280,8 +311,9 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         // materialize the direct upload blob as a Nuxeo Blob
 
         BlobInfo blobInfo = new BlobInfo();
-        blobInfo.mimeType = metadata.getContentType();
-        blobInfo.encoding = metadata.getContentEncoding();
+        String contentType = metadata.getContentType();
+        blobInfo.mimeType = getMimeType(contentType);
+        blobInfo.encoding = getCharset(contentType);
         blobInfo.filename = fileInfo.getFilename();
         blobInfo.length = metadata.getContentLength();
         blobInfo.key = key;
