@@ -19,8 +19,8 @@
 package org.nuxeo.ecm.webengine.oauth2;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +31,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import com.google.api.client.auth.oauth2.Credential;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -41,6 +40,8 @@ import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
+
+import com.google.api.client.auth.oauth2.Credential;
 
 /**
  * WebEngine module to handle the OAuth2 callback
@@ -62,14 +63,14 @@ public class OAuth2Callback extends ModuleRoot {
      */
     @GET
     @Path("{serviceProviderName}/callback")
-    public Object doGet(@PathParam("serviceProviderName") String serviceProviderName)
-            throws IOException {
+    public Object doGet(@PathParam("serviceProviderName") String serviceProviderName) throws IOException {
 
         OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
         OAuth2ServiceProvider provider = registry.getProvider(serviceProviderName);
         if (provider == null) {
-            return Response.status(HttpServletResponse.SC_NOT_FOUND).entity(
-                    "No service provider called: \"" + serviceProviderName + "\".").build();
+            return Response.status(HttpServletResponse.SC_NOT_FOUND)
+                           .entity("No service provider called: \"" + serviceProviderName + "\".")
+                           .build();
         }
 
         Map<String, Object> args = new HashMap<>();
