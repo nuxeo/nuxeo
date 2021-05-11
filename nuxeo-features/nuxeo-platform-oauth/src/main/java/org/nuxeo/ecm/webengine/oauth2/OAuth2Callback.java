@@ -69,8 +69,7 @@ public class OAuth2Callback extends ModuleRoot {
         OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
         OAuth2ServiceProvider provider = registry.getProvider(serviceProviderName);
         if (provider == null) {
-            return Response.status(HttpServletResponse.SC_NOT_FOUND).entity(
-                    "No service provider called: \"" + serviceProviderName + "\".").build();
+            return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
         }
 
         Map<String, Object> args = new HashMap<>();
