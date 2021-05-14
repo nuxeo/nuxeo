@@ -61,6 +61,8 @@ public abstract class TestAbstractBlobStore {
 
     protected static final String ID3 = "id3";
 
+    protected static final String ID4 = "id4";
+
     protected static final String FOO = "foo";
 
     protected static final String BAR = "bar";
@@ -101,6 +103,20 @@ public abstract class TestAbstractBlobStore {
 
     public void waitForGCTimeThreshold() {
         // no wait by default
+    }
+
+    // later we check absence of GCed blob, so we must make sure that these are deleted
+    // this means waiting a bit to account for the cache layer whose storages has a time threshold
+    protected void waitForTimeResolution() {
+        PathStrategy cachePathStrategy = getCachePathStrategy();
+        if (cachePathStrategy != null) {
+            try {
+                Thread.sleep(LocalBlobGarbageCollector.TIME_RESOLUTION + 1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new NuxeoException();
+            }
+        }
     }
 
     // we can't check the size on files encrypted when stored
@@ -411,17 +427,7 @@ public abstract class TestAbstractBlobStore {
         assertBlob(key1, FOO);
         assertBlob(key2, "barbaz");
 
-        PathStrategy cachePathStrategy = getCachePathStrategy();
-        if (cachePathStrategy != null) {
-            // later we check absence of GCed blob (key2), so we must make sure that these are deleted
-            // this means waiting a bit to account for the cache layer whose storages has a time threshold
-            try {
-                Thread.sleep(LocalBlobGarbageCollector.TIME_RESOLUTION + 1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new NuxeoException();
-            }
-        }
+        waitForTimeResolution();
 
         // real GC
         assertFalse(gc.isInProgress());
@@ -430,6 +436,7 @@ public abstract class TestAbstractBlobStore {
         // when caching, create a tmp/other file in the cache that shouldn't disappear during GC
         Path cacheTmp = null;
         Path cacheOther = null;
+        PathStrategy cachePathStrategy = getCachePathStrategy();
         if (cachePathStrategy != null) {
             cacheTmp = cachePathStrategy.createTempFile();
             cacheOther = cachePathStrategy.getPathForKey(((AbstractBlobStore) bs).randomString());
@@ -453,6 +460,91 @@ public abstract class TestAbstractBlobStore {
         if (hasGCTimeThreshold()) {
             assertBlob(key3, "abcde");
         }
+
+        // cache tmp/other is still here
+        if (cacheTmp != null) {
+            assertTrue(Files.exists(cacheTmp));
+        }
+        if (cacheOther != null) {
+            assertTrue(Files.exists(cacheOther));
+        }
+    }
+
+    @Test
+    public void testGCWithConcurrentCreation() throws IOException {
+        // doesn't bring anything over the LocalBlobStore GC test;  avoid additional setup for this
+        assumeFalse("GC not tested in transactional blob store", bp.isTransactional());
+
+        // store blob
+        String key1 = bs.writeBlob(blobContext(ID1, FOO));
+        assertKey(ID1, key1);
+
+        // other blob we'll GC
+        String key2 = bs.writeBlob(blobContext(ID2, "barbaz"));
+        assertKey(ID2, key2);
+
+        long addNum = 0;
+        long addSize = 0;
+        String key3 = null;
+        if (hasGCTimeThreshold()) {
+            // sleep before GC to pass time threshold (in some implementations)
+            waitForGCTimeThreshold();
+            // create another binary after time threshold, it won't be GCed
+            key3 = bs.writeBlob(blobContext(ID3, "abcde"));
+            assertKey(ID3, key3);
+            addNum = 1;
+            addSize = 5;
+        }
+
+        waitForTimeResolution();
+
+        // GC start
+
+        BinaryGarbageCollector gc = bs.getBinaryGarbageCollector();
+        assertFalse(gc.isInProgress());
+        gc.start();
+        assertTrue(gc.isInProgress());
+        // when caching, create a tmp/other file in the cache that shouldn't disappear during GC
+        Path cacheTmp = null;
+        Path cacheOther = null;
+        PathStrategy cachePathStrategy = getCachePathStrategy();
+        if (cachePathStrategy != null) {
+            cacheTmp = cachePathStrategy.createTempFile();
+            cacheOther = cachePathStrategy.getPathForKey(((AbstractBlobStore) bs).randomString());
+            Files.createFile(cacheOther);
+        }
+        gc.mark(key1);
+        assertTrue(gc.isInProgress());
+
+        // add a blob while GC is in progress
+        String key4 = bs.writeBlob(blobContext(ID4, "xyzzy"));
+        assertKey(ID4, key4);
+
+        gc.stop(true);
+
+        assertFalse(gc.isInProgress());
+        BinaryManagerStatus status = gc.getStatus();
+        // filesystem-based GC uses real mark&sweep so will see the blob added during GC
+        boolean countBlobAddedDuringGC = status.numBinaries == 2 + addNum;
+        if (countBlobAddedDuringGC) {
+            addNum += 1;
+            addSize += 5;
+        }
+        assertEquals(1 + addNum, status.numBinaries);
+        assertEquals(1, status.numBinariesGC);
+        if (checkSizeOfGCedFiles()) {
+            assertEquals(3 + addSize, status.sizeBinaries);
+            assertEquals(6, status.sizeBinariesGC);
+        }
+        // check content, one blob gone
+        assertBlob(key1, FOO);
+        assertNoBlob(key2);
+        // if time threshold, other blob is still here
+        if (hasGCTimeThreshold()) {
+            assertBlob(key3, "abcde");
+        }
+        // blob added during GC is still here
+        assertBlob(key4, "xyzzy");
 
         // cache tmp/other is still here
         if (cacheTmp != null) {

@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -272,21 +273,34 @@ public class InMemoryBlobStore extends AbstractBlobStore {
         }
 
         @Override
-        public void removeUnmarkedBlobsAndUpdateStatus(boolean delete) {
+        public void computeToDelete() {
+            toDelete = new HashSet<>();
             for (Iterator<Entry<String, byte[]>> it = map.entrySet().iterator(); it.hasNext();) {
                 Entry<String, byte[]> es = it.next();
                 String key = es.getKey();
                 byte[] bytes = es.getValue();
-                if (marked.contains(key)) {
-                    status.sizeBinaries += bytes.length;
-                    status.numBinaries++;
-                } else {
-                    status.sizeBinariesGC += bytes.length;
-                    status.numBinariesGC++;
-                    if (delete) {
-                        it.remove();
-                        legalHold.remove(key);
-                    }
+                status.sizeBinaries += bytes.length;
+                status.numBinaries++;
+                toDelete.add(key);
+            }
+        }
+
+        @Override
+        public void removeUnmarkedBlobsAndUpdateStatus(boolean delete) {
+            for (String key : toDelete) {
+                byte[] bytes = map.get(key);
+                if (bytes == null) {
+                    // shouldn't happen except if blob concurrently removed
+                    continue;
+                }
+                int length = bytes.length;
+                status.sizeBinariesGC += length;
+                status.numBinariesGC++;
+                status.sizeBinaries -= length;
+                status.numBinaries--;
+                if (delete) {
+                    map.remove(key);
+                    legalHold.remove(key);
                 }
             }
         }

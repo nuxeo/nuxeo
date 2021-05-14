@@ -40,7 +40,6 @@ import java.security.cert.Certificate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -477,6 +476,20 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
         digests.forEach(this::removeBinary);
     }
 
+    /** @return object length, or -1 if missing */
+    protected long lengthOfBlob(String digest) {
+        String bucketKey = bucketNamePrefix + digest;
+        try {
+            ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, bucketKey);
+            return metadata.getContentLength();
+        } catch (AmazonServiceException e) {
+            if (isMissingKey(e)) {
+                return -1;
+            }
+            throw e;
+        }
+    }
+
     protected static boolean isMissingKey(AmazonClientException e) {
         if (e instanceof AmazonServiceException) {
             AmazonServiceException ase = (AmazonServiceException) e;
@@ -740,10 +753,9 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
         }
 
         @Override
-        public Set<String> getUnmarkedBlobs() {
+        public void computeToDelete() {
             // list S3 objects in the bucket
-            // record those not marked
-            Set<String> unmarked = new HashSet<>();
+            toDelete = new HashSet<>();
             ObjectListing list = null;
             do {
                 if (list == null) {
@@ -762,20 +774,29 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
                         continue;
                     }
                     long length = summary.getSize();
-                    if (marked.contains(digest)) {
-                        status.numBinaries++;
-                        status.sizeBinaries += length;
-                    } else {
-                        status.numBinariesGC++;
-                        status.sizeBinariesGC += length;
-                        // record file to delete
-                        unmarked.add(digest);
-                        marked.remove(digest); // optimize memory
-                    }
+                    status.sizeBinaries += length;
+                    status.numBinaries++;
+                    toDelete.add(digest);
                 }
             } while (list.isTruncated());
+        }
 
-            return unmarked;
+        @Override
+        protected void removeUnmarkedBlobsAndUpdateStatus(boolean delete) {
+            for (String digest : toDelete) {
+                long length = binaryManager.lengthOfBlob(digest);
+                if (length < 0) {
+                    // shouldn't happen except if blob concurrently removed
+                    continue;
+                }
+                status.sizeBinariesGC += length;
+                status.numBinariesGC++;
+                status.sizeBinaries -= length;
+                status.numBinaries--;
+                if (delete) {
+                    binaryManager.removeBinary(digest);
+                }
+            }
         }
     }
 
