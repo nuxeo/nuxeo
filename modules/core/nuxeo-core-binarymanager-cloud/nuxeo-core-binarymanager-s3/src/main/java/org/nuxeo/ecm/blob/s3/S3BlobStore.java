@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
@@ -359,6 +358,25 @@ public class S3BlobStore extends AbstractBlobStore {
             if (isMissingKey(e)) {
                 logTrace("<--", "missing");
                 return false;
+            }
+            throw e;
+        }
+    }
+
+    /** @return object length, or -1 if missing */
+    protected long lengthOfBlob(String key) {
+        String bucketKey = bucketPrefix + key;
+        try {
+            logTrace("-->", "getObjectMetadata");
+            logTrace("hnote right: " + bucketKey);
+            ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, bucketKey);
+            long length = metadata.getContentLength();
+            logTrace("<--", "exists (" + length + " bytes)");
+            return length;
+        } catch (AmazonServiceException e) {
+            if (isMissingKey(e)) {
+                logTrace("<--", "missing");
+                return -1;
             }
             throw e;
         }
@@ -826,11 +844,10 @@ public class S3BlobStore extends AbstractBlobStore {
         }
 
         @Override
-        public Set<String> getUnmarkedBlobsAndUpdateStatus() {
+        public void computeToDelete() {
             // list S3 objects in the bucket
-            // record those not marked
             boolean useDeDuplication = keyStrategy.useDeDuplication();
-            Set<String> unmarked = new HashSet<>();
+            toDelete = new HashSet<>();
             ObjectListing list = null;
             int prefixLength = bucketPrefix.length();
             logTrace("->", "listObjects");
@@ -852,24 +869,30 @@ public class S3BlobStore extends AbstractBlobStore {
                         }
                     }
                     long length = summary.getSize();
-                    if (marked.contains(key)) {
-                        status.numBinaries++;
-                        status.sizeBinaries += length;
-                    } else {
-                        status.numBinariesGC++;
-                        status.sizeBinariesGC += length;
-                        // record file to delete
-                        unmarked.add(key);
-                    }
+                    status.sizeBinaries += length;
+                    status.numBinaries++;
+                    toDelete.add(key);
                 }
             } while (list.isTruncated());
-            logTrace("<--", (status.numBinaries + status.numBinariesGC) + " objects");
-            return unmarked;
+            logTrace("<--", status.numBinaries + " objects");
         }
 
         @Override
-        public void removeBlobs(Set<String> keys) {
-            keys.forEach(S3BlobStore.this::deleteBlob);
+        public void removeUnmarkedBlobsAndUpdateStatus(boolean delete) {
+            for (String key : toDelete) {
+                long length = lengthOfBlob(key);
+                if (length < 0) {
+                    // shouldn't happen except if blob concurrently removed
+                    continue;
+                }
+                status.sizeBinariesGC += length;
+                status.numBinariesGC++;
+                status.sizeBinaries -= length;
+                status.numBinaries--;
+                if (delete) {
+                    deleteBlob(key);
+                }
+            }
         }
     }
 
