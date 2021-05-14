@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 
 /**
- * Basic implementation for a garbage collector recording marked blobs in memory.
+ * Basic implementation for a garbage collector recording marked or to-delete blobs in memory.
  */
 public abstract class AbstractBlobGarbageCollector implements BinaryGarbageCollector {
 
@@ -35,7 +35,11 @@ public abstract class AbstractBlobGarbageCollector implements BinaryGarbageColle
 
     protected BinaryManagerStatus status;
 
+    // kept for backward compat with old subclasses implementations
     protected Set<String> marked;
+
+    // new implementations must use this instead
+    protected Set<String> toDelete;
 
     @Override
     public boolean isInProgress() {
@@ -49,7 +53,27 @@ public abstract class AbstractBlobGarbageCollector implements BinaryGarbageColle
         }
         startTime = System.currentTimeMillis();
         status = new BinaryManagerStatus();
+        marked = null;
+        computeToDelete();
+        if (marked == null && toDelete == null) {
+            throw new IllegalStateException("New class must define 'toDelete'");
+        }
+        if (marked != null && toDelete != null) {
+            throw new IllegalStateException("New class must not define 'marked'");
+        }
+    }
+
+    /**
+     * Computes keys candidate for deletion.
+     * <p>
+     * Overrides should not call super (this allows detecting old implementations).
+     *
+     * @since 11.5
+     */
+    public void computeToDelete() {
+        // new implementations shouldn't do this, just keep marked null and define toDelete
         marked = new HashSet<>();
+        toDelete = null;
     }
 
     @Override
@@ -60,30 +84,38 @@ public abstract class AbstractBlobGarbageCollector implements BinaryGarbageColle
         try {
             removeUnmarkedBlobsAndUpdateStatus(delete);
         } finally {
+            marked = null;
+            toDelete = null;
             status.gcDuration = System.currentTimeMillis() - startTime;
             startTime = 0;
         }
     }
 
     public void removeUnmarkedBlobsAndUpdateStatus(boolean delete) {
+        // kept for backward compat, new implementations should override everything
         Set<String> unmarked = getUnmarkedBlobsAndUpdateStatus();
-        marked = null;
         if (delete) {
             removeBlobs(unmarked);
         }
     }
 
+    // kept for backward compat
     public Set<String> getUnmarkedBlobsAndUpdateStatus() {
         throw new UnsupportedOperationException();
     }
 
+    // kept for backward compat
     public void removeBlobs(Set<String> keys) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void mark(String digest) {
-        marked.add(digest);
+        if (marked != null) {
+            marked.add(digest);
+        } else {
+            toDelete.remove(digest);
+        }
     }
 
     @Override

@@ -228,6 +228,53 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
     }
 
+    /**
+     * NOTE THAT THIS TEST WILL REMOVE ALL FILES IN THE BUCKET!!!
+     */
+    @Test
+    public void testBinaryManagerGCWithConcurrentCreation() throws Exception {
+        Binary binary = binaryManager.getBinary(CONTENT_MD5);
+        assertTrue(binary instanceof LazyBinary);
+
+        // store binary
+        byte[] bytes = CONTENT.getBytes("UTF-8");
+        binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
+        assertNotNull(binary);
+        assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
+
+        // get binary
+        binary = binaryManager.getBinary(CONTENT_MD5);
+        assertNotNull(binary);
+        assertEquals(CONTENT, toString(binary.getStream()));
+
+        // another binary we'll GC
+        binaryManager.getBinary(Blobs.createBlob(CONTENT2));
+
+        assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5)), listObjects());
+
+        // GC start
+
+        BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
+        gc = binaryManager.getGarbageCollector();
+        gc.start();
+        gc.mark(CONTENT_MD5);
+
+        // add a binary while GC is in progress
+        binaryManager.getBinary(Blobs.createBlob(CONTENT3));
+
+        gc.stop(true);
+        BinaryManagerStatus status = gc.getStatus();
+        assertEquals(1, status.numBinaries);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(bytes.length, status.sizeBinaries);
+        }
+        assertEquals(1, status.numBinariesGC);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(CONTENT2.length(), status.sizeBinariesGC);
+        }
+        assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT3_MD5)), listObjects());
+    }
+
     protected static String toString(InputStream stream) throws IOException {
         return IOUtils.toString(stream, "UTF-8");
     }

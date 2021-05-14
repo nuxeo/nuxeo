@@ -38,7 +38,11 @@ public abstract class AbstractBinaryGarbageCollector<T extends CachingBinaryMana
 
     protected volatile long startTime;
 
+    // kept for backward compat with old subclasses implementations
     protected Set<String> marked;
+
+    // new implementations must use this instead
+    protected Set<String> toDelete;
 
     protected AbstractBinaryGarbageCollector(T binaryManager) {
         this.binaryManager = binaryManager;
@@ -51,11 +55,31 @@ public abstract class AbstractBinaryGarbageCollector<T extends CachingBinaryMana
         }
         startTime = System.currentTimeMillis();
         status = new BinaryManagerStatus();
-        marked = new HashSet<>();
+        marked = null;
+        computeToDelete();
+        if (marked == null && toDelete == null) {
+            throw new IllegalStateException("New class must define 'toDelete'");
+        }
+        if (marked != null && toDelete != null) {
+            throw new IllegalStateException("New class must not define 'marked'");
+        }
 
         // XXX : we should be able to do better
         // and only remove the cache entry that will be removed from S3
         binaryManager.fileCache.clear();
+    }
+
+    /**
+     * Computes keys candidate for deletion.
+     * <p>
+     * Overrides should not call super (this allows detecting old implementations).
+     *
+     * @since 11.5
+     */
+    public void computeToDelete() {
+        // new implementations shouldn't do this, just keep marked null and define toDelete
+        marked = new HashSet<>();
+        toDelete = null;
     }
 
     @Override
@@ -64,23 +88,34 @@ public abstract class AbstractBinaryGarbageCollector<T extends CachingBinaryMana
             throw new RuntimeException("Not started");
         }
         try {
-            Set<String> unmarked = getUnmarkedBlobs();
-            marked = null;
-
-            if (delete) {
-                binaryManager.removeBinaries(unmarked);
-            }
+            removeUnmarkedBlobsAndUpdateStatus(delete);
         } finally {
+            marked = null;
+            toDelete = null;
             status.gcDuration = System.currentTimeMillis() - startTime;
             startTime = 0;
         }
     }
 
-    public abstract Set<String> getUnmarkedBlobs();
+    protected void removeUnmarkedBlobsAndUpdateStatus(boolean delete) {
+        // kept for backward compat, new implementations should override everything
+        Set<String> unmarked = getUnmarkedBlobs();
+        if (delete) {
+            binaryManager.removeBinaries(unmarked);
+        }
+    }
+
+    public Set<String> getUnmarkedBlobs() {
+        throw new UnsupportedOperationException();
+    }
 
     @Override
     public void mark(String digest) {
-        marked.add(digest);
+        if (marked != null) {
+            marked.add(digest);
+        } else {
+            toDelete.remove(digest);
+        }
     }
 
     @Override
