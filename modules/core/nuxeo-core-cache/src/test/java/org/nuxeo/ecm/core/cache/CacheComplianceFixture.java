@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,17 @@
 
 package org.nuxeo.ecm.core.cache;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -48,13 +52,13 @@ public class CacheComplianceFixture {
 
     @Inject
     @Named(CacheFeature.DEFAULT_TEST_CACHE_NAME)
-    Cache defaultCache;
+    protected Cache defaultCache;
 
     @Test
     public void getValue() throws IOException {
         String cachedVal = (String) defaultCache.get(CacheFeature.KEY);
-        Assert.assertTrue(defaultCache.hasEntry(CacheFeature.KEY));
-        Assert.assertEquals(CacheFeature.VAL, cachedVal);
+        assertTrue(defaultCache.hasEntry(CacheFeature.KEY));
+        assertEquals(CacheFeature.VAL, cachedVal);
     }
 
     @Test
@@ -62,13 +66,13 @@ public class CacheComplianceFixture {
         Assert.assertNotNull(defaultCache.get(CacheFeature.KEY));
         defaultCache.put("key2", "val2");
         Set<String> keys = defaultCache.keySet();
-        Assert.assertTrue(keys.contains("key2"));
+        assertTrue(keys.contains("key2"));
     }
 
     @Test
     public void keyNotExist() throws IOException {
-        Assert.assertNull(defaultCache.get("key-not-exist"));
-        Assert.assertFalse(defaultCache.hasEntry("key-not-exist"));
+        assertNull(defaultCache.get("key-not-exist"));
+        assertFalse(defaultCache.hasEntry("key-not-exist"));
     }
 
     @Test
@@ -76,7 +80,7 @@ public class CacheComplianceFixture {
         String val2 = "val2";
         defaultCache.put(CacheFeature.KEY, val2);
         val2 = (String) defaultCache.get(CacheFeature.KEY);
-        Assert.assertEquals("val2", val2);
+        assertEquals("val2", val2);
     }
 
     @Test
@@ -85,6 +89,7 @@ public class CacheComplianceFixture {
             defaultCache.put(null, "val-null");
             fail("Should raise exception !");
         } catch (Exception e) {
+            assertEquals("Can't put a null key for the cache 'default-test-cache'!", e.getMessage());
         }
     }
 
@@ -94,34 +99,32 @@ public class CacheComplianceFixture {
         // Default config test set the TTL to 1mn, so wait 1mn and 1s
         Thread.sleep(61000);
         String expiredVal = (String) defaultCache.get(CacheFeature.KEY);
-        Assert.assertNull(expiredVal);
+        assertNull(expiredVal);
     }
 
     @Test
     public void invalidateKey() throws IOException {
         Assert.assertNotNull(defaultCache.get(CacheFeature.KEY));
         defaultCache.invalidate(CacheFeature.KEY);
-        Assert.assertNull(defaultCache.get(CacheFeature.KEY));
+        assertNull(defaultCache.get(CacheFeature.KEY));
     }
 
     @Test
-    public void invalidateAll() throws IOException {
+    public void invalidateAll() {
         Assert.assertNotNull(defaultCache.get(CacheFeature.KEY));
         defaultCache.put("key2", "val2");
         Assert.assertNotNull(defaultCache.get("key2"));
         defaultCache.invalidateAll();
-        Assert.assertNull(defaultCache.get(CacheFeature.KEY));
-        Assert.assertNull(defaultCache.get("key2"));
+        assertNull(defaultCache.get(CacheFeature.KEY));
+        assertNull(defaultCache.get("key2"));
     }
 
     @Test
     public void hasMetrics() {
-        List<MetricName> expected = Arrays.asList("nuxeo.cache.read", "nuxeo.cache.hit", "nuxeo.cache.hit.ratio",
+        List<MetricName> expected = Stream.of("nuxeo.cache.read", "nuxeo.cache.hit", "nuxeo.cache.hit.ratio",
                 "nuxeo.cache.invalidation", "nuxeo.cache.size")
-                                          .stream()
                                           .map(name -> MetricName.build(name).tagged("cache", "default-test-cache"))
                                           .collect(Collectors.toList());
-        Assert.assertTrue(
-                SharedMetricRegistries.getOrCreate(MetricsService.class.getName()).getNames().containsAll(expected));
+        assertTrue(SharedMetricRegistries.getOrCreate(MetricsService.class.getName()).getNames().containsAll(expected));
     }
 }
