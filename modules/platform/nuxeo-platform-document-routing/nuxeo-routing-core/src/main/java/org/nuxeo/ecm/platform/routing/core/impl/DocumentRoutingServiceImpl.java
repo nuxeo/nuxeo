@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ import com.google.common.cache.CacheBuilder;
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements DocumentRoutingService {
 
-    private static Logger log = LogManager.getLogger(DocumentRoutingServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(DocumentRoutingServiceImpl.class);
 
     /** Routes in any state (model or not). */
     private static final String AVAILABLE_ROUTES_QUERY = String.format("SELECT * FROM %s",
@@ -323,7 +323,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     /**
      * @since 7.4
      */
-    private class CompleteTaskRunner extends UnrestrictedSessionRunner {
+    private static class CompleteTaskRunner extends UnrestrictedSessionRunner {
 
         String routeId;
 
@@ -438,7 +438,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         int maxDepth = 0;
         for (DocumentRouteTableElement element : elements) {
             int d = element.getDepth();
-            maxDepth = d > maxDepth ? d : maxDepth;
+            maxDepth = Math.max(d, maxDepth);
         }
         table.setMaxDepth(maxDepth);
         for (DocumentRouteTableElement element : elements) {
@@ -500,11 +500,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             statesString.deleteCharAt(statesString.length() - 1);
             statesString.append(") AND");
         }
-        String query = String.format("SELECT * FROM DocumentRoute WHERE " + statesString.toString()
-                + " docri:participatingDocuments/* = '%s'"
+        String query = String.format(
+                "SELECT * FROM DocumentRoute WHERE " + statesString + " docri:participatingDocuments/* = '%s'"
                 // ordering by dc:created makes sure that
                 // a sub-workflow is listed under its parent
-                + " ORDER BY dc:created", attachedDocId);
+                        + " ORDER BY dc:created",
+                attachedDocId);
         UnrestrictedQueryRunner queryRunner = new UnrestrictedQueryRunner(session, query);
         list = queryRunner.runQuery();
         List<DocumentRoute> routes = new ArrayList<>();
@@ -888,7 +889,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     /**
      * @since 7.1
      */
-    private final class WfCleaner extends UnrestrictedSessionRunner {
+    private static final class WfCleaner extends UnrestrictedSessionRunner {
 
         private static final String WORKFLOWS_QUERY = "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState IN ('done', 'canceled')";
 
@@ -924,7 +925,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         }
     }
 
-    class UnrestrictedQueryRunner extends UnrestrictedSessionRunner {
+    static class UnrestrictedQueryRunner extends UnrestrictedSessionRunner {
 
         String query;
 
