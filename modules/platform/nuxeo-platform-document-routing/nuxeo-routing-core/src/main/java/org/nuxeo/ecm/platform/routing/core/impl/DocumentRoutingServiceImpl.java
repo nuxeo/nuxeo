@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ import com.google.common.cache.CacheBuilder;
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements DocumentRoutingService {
 
-    private static Logger log = LogManager.getLogger(DocumentRoutingServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(DocumentRoutingServiceImpl.class);
 
     /** Routes in any state (model or not). */
     private static final String AVAILABLE_ROUTES_QUERY = String.format("SELECT * FROM %s",
@@ -160,7 +160,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     protected RepositoryInitializationHandler repositoryInitializationHandler;
 
-    private Cache<String, String> modelsChache;
+    private Cache<String, String> modelsCache;
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -320,7 +320,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     /**
      * @since 7.4
      */
-    private class CompleteTaskRunner extends UnrestrictedSessionRunner {
+    private static class CompleteTaskRunner extends UnrestrictedSessionRunner {
 
         String routeId;
 
@@ -435,7 +435,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         int maxDepth = 0;
         for (DocumentRouteTableElement element : elements) {
             int d = element.getDepth();
-            maxDepth = d > maxDepth ? d : maxDepth;
+            maxDepth = Math.max(d, maxDepth);
         }
         table.setMaxDepth(maxDepth);
         for (DocumentRouteTableElement element : elements) {
@@ -497,11 +497,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             statesString.deleteCharAt(statesString.length() - 1);
             statesString.append(") AND");
         }
-        String query = String.format("SELECT * FROM DocumentRoute WHERE " + statesString.toString()
-                + " docri:participatingDocuments/* = '%s'"
+        String query = String.format(
+                "SELECT * FROM DocumentRoute WHERE " + statesString + " docri:participatingDocuments/* = '%s'"
                 // ordering by dc:created makes sure that
                 // a sub-workflow is listed under its parent
-                + " ORDER BY dc:created", attachedDocId);
+                        + " ORDER BY dc:created",
+                attachedDocId);
         UnrestrictedQueryRunner queryRunner = new UnrestrictedQueryRunner(session, query);
         list = queryRunner.runQuery();
         List<DocumentRoute> routes = new ArrayList<>();
@@ -688,8 +689,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             throw new NuxeoException("Can not import document " + file);
         }
         // remove model from cache if any model with the same id existed
-        if (modelsChache != null) {
-            modelsChache.invalidate(doc.getName());
+        if (modelsCache != null) {
+            modelsCache.invalidate(doc.getName());
         }
 
         return doc.getAdapter(DocumentRoute.class);
@@ -702,7 +703,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        modelsChache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(10, TimeUnit.MINUTES).build();
+        modelsCache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(10, TimeUnit.MINUTES).build();
         repositoryInitializationHandler = new RouteModelsInitializator();
         repositoryInitializationHandler.install();
     }
@@ -787,8 +788,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public String getRouteModelDocIdWithId(CoreSession session, String id) {
-        if (modelsChache != null) {
-            String routeDocId = modelsChache.getIfPresent(id);
+        if (modelsCache != null) {
+            String routeDocId = modelsCache.getIfPresent(id);
             if (routeDocId != null) {
                 return routeDocId;
             }
@@ -807,10 +808,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             }
         }
         String routeDocId = routeIds.get(0);
-        if (modelsChache == null) {
-            modelsChache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(10, TimeUnit.MINUTES).build();
+        if (modelsCache == null) {
+            modelsCache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(10, TimeUnit.MINUTES).build();
         }
-        modelsChache.put(id, routeDocId);
+        modelsCache.put(id, routeDocId);
         return routeDocId;
     }
 
@@ -935,7 +936,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     /**
      * @since 7.1
      */
-    private final class WfCleaner extends UnrestrictedSessionRunner {
+    private static final class WfCleaner extends UnrestrictedSessionRunner {
 
         private static final String WORKFLOWS_QUERY = "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState IN ('done', 'canceled')";
 
@@ -971,7 +972,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         }
     }
 
-    class UnrestrictedQueryRunner extends UnrestrictedSessionRunner {
+    static class UnrestrictedQueryRunner extends UnrestrictedSessionRunner {
 
         String query;
 
@@ -1279,7 +1280,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public void invalidateRouteModelsCache() {
-        modelsChache.invalidateAll();
+        modelsCache.invalidateAll();
     }
 
     /**
