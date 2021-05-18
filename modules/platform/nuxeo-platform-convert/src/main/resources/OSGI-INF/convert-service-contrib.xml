@@ -62,9 +62,10 @@
     </converter>
 
     <converter name="image2pdf" class="org.nuxeo.ecm.platform.convert.plugins.Image2PDFConverter">
-      <sourceMimeType>image/jpeg</sourceMimeType>
-      <sourceMimeType>image/png</sourceMimeType>
-      <sourceMimeType>image/gif</sourceMimeType>
+      <sourceMimeType>image/*</sourceMimeType>
+      <sourceMimeType>application/illustrator</sourceMimeType>
+      <sourceMimeType>application/photoshop</sourceMimeType>
+      <sourceMimeType>application/postscript</sourceMimeType>
       <destinationMimeType>application/pdf</destinationMimeType>
       <parameters>
         <parameter name="CommandLineName">converter</parameter>
