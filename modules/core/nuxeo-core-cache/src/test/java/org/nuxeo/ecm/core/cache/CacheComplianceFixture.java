@@ -62,6 +62,13 @@ public class CacheComplianceFixture {
     }
 
     @Test
+    public void computeIfAbsent() {
+        assertNull(defaultCache.get("key2"));
+        assertEquals("val2", defaultCache.computeIfAbsent("key2", () -> "val2"));
+        assertEquals("val2", defaultCache.get("key2"));
+    }
+
+    @Test
     public void keySet() {
         Assert.assertNotNull(defaultCache.get(CacheFeature.KEY));
         defaultCache.put("key2", "val2");
