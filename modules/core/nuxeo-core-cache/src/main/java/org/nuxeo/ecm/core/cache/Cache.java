@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.cache;
 
 import java.io.Serializable;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * The nuxeo cache interface that define generic methods to use cache technologies
@@ -45,6 +46,23 @@ public interface Cache {
      * @since 6.0
      */
     Serializable get(String key);
+
+    /**
+     * Retrieves the value from the cache and returns it. If the associated value is null, retrieves it from the
+     * {@code supplier} and put it into the cache.
+     *
+     * @implNote The key must not be null
+     * @since 11.5
+     */
+    @SuppressWarnings("unchecked")
+    default <V extends Serializable> V computeIfAbsent(String key, Supplier<V> supplier) {
+        var value = (V) get(key);
+        if (value == null) {
+            value = supplier.get();
+            put(key, value);
+        }
+        return value;
+    }
 
     /**
      * Returns the set of all keys stored in the cache.

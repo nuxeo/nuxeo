@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +63,8 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.cache.Cache;
+import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -106,9 +107,6 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
 /**
  * The implementation of the routing service.
  */
@@ -148,6 +146,9 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     public static final String ROUTE_MODELS_IMPORTER_XP = "routeModelImporter";
 
+    /** @since 11.5 */
+    protected static final String WORKFLOW_MODELS_CACHE = "workflowModels";
+
     protected Map<String, String> typeToChain = new HashMap<>();
 
     protected Map<String, String> undoChainIdFromRunning = new HashMap<>();
@@ -160,7 +161,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     protected RepositoryInitializationHandler repositoryInitializationHandler;
 
-    private Cache<String, String> modelsCache;
+    private Cache modelsCache;
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -689,9 +690,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             throw new NuxeoException("Can not import document " + file);
         }
         // remove model from cache if any model with the same id existed
-        if (modelsCache != null) {
-            modelsCache.invalidate(doc.getName());
-        }
+        modelsCache.invalidate(doc.getName());
 
         return doc.getAdapter(DocumentRoute.class);
     }
@@ -703,9 +702,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        modelsCache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(10, TimeUnit.MINUTES).build();
         repositoryInitializationHandler = new RouteModelsInitializator();
         repositoryInitializationHandler.install();
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        modelsCache = Framework.getService(CacheService.class).getCache(WORKFLOW_MODELS_CACHE);
     }
 
     @Override
@@ -788,31 +791,22 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public String getRouteModelDocIdWithId(CoreSession session, String id) {
-        if (modelsCache != null) {
-            String routeDocId = modelsCache.getIfPresent(id);
-            if (routeDocId != null) {
-                return routeDocId;
+        return modelsCache.computeIfAbsent(id, () ->  {
+            String query = String.format(ROUTE_MODEL_DOC_ID_WITH_ID_QUERY, NXQL.escapeString(id));
+            List<String> routeIds = new ArrayList<>();
+            try (IterableQueryResult results = session.queryAndFetch(query, "NXQL")) {
+                if (results.size() == 0) {
+                    throw new NuxeoException("No route found for id: " + id);
+                }
+                if (results.size() != 1) {
+                    throw new NuxeoException("More than one route model found with id: " + id);
+                }
+                for (Map<String, Serializable> map : results) {
+                    routeIds.add(map.get("ecm:uuid").toString());
+                }
             }
-        }
-        String query = String.format(ROUTE_MODEL_DOC_ID_WITH_ID_QUERY, NXQL.escapeString(id));
-        List<String> routeIds = new ArrayList<>();
-        try (IterableQueryResult results = session.queryAndFetch(query, "NXQL")) {
-            if (results.size() == 0) {
-                throw new NuxeoException("No route found for id: " + id);
-            }
-            if (results.size() != 1) {
-                throw new NuxeoException("More than one route model found with id: " + id);
-            }
-            for (Map<String, Serializable> map : results) {
-                routeIds.add(map.get("ecm:uuid").toString());
-            }
-        }
-        String routeDocId = routeIds.get(0);
-        if (modelsCache == null) {
-            modelsCache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(10, TimeUnit.MINUTES).build();
-        }
-        modelsCache.put(id, routeDocId);
-        return routeDocId;
+            return routeIds.get(0);
+        });
     }
 
     @Override
