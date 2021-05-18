@@ -63,4 +63,15 @@ public class TestImageToPDF extends BaseConverterTest {
         Blob mainBlob = result.getBlob();
         assertEquals("hello.pdf", mainBlob.getFilename());
     }
+
+    // NXP-30402
+    @Test
+    public void testSourceMimeTypes() {
+        assertEquals(IMAGE_TO_PDF_CONVERTER, cs.getConverterName("image/jpeg", PDF_MIME_TYPE));
+        assertEquals(IMAGE_TO_PDF_CONVERTER, cs.getConverterName("image/png", PDF_MIME_TYPE));
+        assertEquals(IMAGE_TO_PDF_CONVERTER, cs.getConverterName("image/gif", PDF_MIME_TYPE));
+        assertEquals(IMAGE_TO_PDF_CONVERTER, cs.getConverterName("image/svg+xml", PDF_MIME_TYPE));
+        assertEquals(IMAGE_TO_PDF_CONVERTER, cs.getConverterName("image/tiff", PDF_MIME_TYPE));
+        assertEquals(IMAGE_TO_PDF_CONVERTER, cs.getConverterName("application/photoshop", PDF_MIME_TYPE));
+    }
 }
