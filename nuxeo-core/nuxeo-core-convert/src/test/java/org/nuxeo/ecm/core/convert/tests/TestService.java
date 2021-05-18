@@ -346,4 +346,15 @@ public class TestService {
         assertEquals("dummy.pdf", resultBlob.getFilename());
     }
 
+    // NXP-30332
+    @Test
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib8.xml")
+    public void testChainedConverterWildcard() {
+        Blob blob = Blobs.createBlob("dummy", "text/plain", null, "dummy");
+        BlobHolder result = cs.convert("dummyWildcardChain", new SimpleBlobHolder(blob), new HashMap<>());
+        Blob resultBlob = result.getBlob();
+        assertNotNull(resultBlob);
+        assertEquals("text/plain", resultBlob.getMimeType());
+        assertEquals("dummy", resultBlob.getFilename());
+    }
 }
