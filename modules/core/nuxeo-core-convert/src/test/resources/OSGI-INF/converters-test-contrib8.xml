@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.tests.8">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+             point="converter">
+
+    <converter name="dummyWildcard" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>text/*</sourceMimeType>
+    </converter>
+
+    <converter name="dummyTextPlain" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>text/plain</sourceMimeType>
+    </converter>
+
+    <converter name="dummyWildcardChain">
+      <conversionSteps>
+        <subconverter>dummyWildcard</subconverter>
+        <subconverter>dummyTextPlain</subconverter>
+      </conversionSteps>
+    </converter>
+
+  </extension>
+
+</component>
