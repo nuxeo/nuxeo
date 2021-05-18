@@ -78,15 +78,10 @@ public class ChainedConverter implements Converter {
 
     protected BlobHolder convertBasedSubConverters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
-        String srcMT = blobHolder.getBlob().getMimeType();
         BlobHolder result = blobHolder;
+        ConversionService conversionService = Framework.getService(ConversionService.class);
         for (String converterName : subConverters) {
-            ConverterDescriptor desc = ConversionServiceImpl.getConverterDescriptor(converterName);
-            if (!desc.getSourceMimeTypes().contains(srcMT)) {
-                throw new ConversionException("Conversion Chain is not well defined", blobHolder);
-            }
-            Converter converter = ConversionServiceImpl.getConverter(converterName);
-            result = converter.convert(result, parameters);
+            result = conversionService.convert(converterName, result, parameters);
             // Mark for deletion intermediate results
             if (subConverters.indexOf(converterName) != subConverters.size() - 1) {
                 result.getBlobs()
@@ -95,7 +90,6 @@ public class ChainedConverter implements Converter {
                       .filter(Objects::nonNull)
                       .forEach(file -> Framework.trackFile(file, file));
             }
-            srcMT = desc.getDestinationMimeType();
         }
         return result;
     }
