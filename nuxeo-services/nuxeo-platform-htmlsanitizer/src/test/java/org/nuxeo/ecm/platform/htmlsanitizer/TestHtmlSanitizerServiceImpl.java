@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.platform.htmlsanitizer;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import javax.inject.Inject;
 
@@ -54,16 +54,15 @@ public class TestHtmlSanitizerServiceImpl {
     // script tag is added here just to be sure sanitizer is not run
     public static final String WIKI_MARKUP = "<script></script>[image:http://server/path/image.jpg My Image]";
 
-    public static final String BAD_HTML5 =
-            "<video id=\"test\"><source src=\"test\" type=\"video/mp4\"/><img src=\"file://wrongpath\"/></video>";
+    public static final String BAD_HTML5 = "<video id=\"test\"><source src=\"test\" type=\"video/mp4\"/><img src=\"file://wrongpath\"/></video>";
 
     public static final String SANITIZED_HTML5 = "<video id=\"test\"><source src=\"test\" type=\"video/mp4\" /><img /></video>";
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     @Test
-    public void sanitizeNoteHtml() throws Exception {
+    public void sanitizeNoteHtml() {
         DocumentModel doc = session.createDocumentModel("/", "n", "Note");
         doc.setPropertyValue("note", BAD_HTML);
         doc.setPropertyValue("mime_type", "text/html");
@@ -80,7 +79,7 @@ public class TestHtmlSanitizerServiceImpl {
 
     // but text/xml notes must not be sanitized
     @Test
-    public void sanitizeNoteXml() throws Exception {
+    public void sanitizeNoteXml() {
         DocumentModel doc = session.createDocumentModel("/", "n", "Note");
         doc.setPropertyValue("note", XML);
         doc.setPropertyValue("mime_type", "text/xml");
@@ -97,7 +96,7 @@ public class TestHtmlSanitizerServiceImpl {
 
     // but text/plain notes must not be sanitized
     @Test
-    public void sanitizeNoteText() throws Exception {
+    public void sanitizeNoteText() {
         DocumentModel doc = session.createDocumentModel("/", "n", "Note");
         doc.setPropertyValue("note", NORMAL_TEXT);
         doc.setPropertyValue("mime_type", "text/plain");
@@ -114,7 +113,7 @@ public class TestHtmlSanitizerServiceImpl {
 
     // but text/markdown notes must not be sanitized
     @Test
-    public void sanitizeNoteMarkdown() throws Exception {
+    public void sanitizeNoteMarkdown() {
         DocumentModel doc = session.createDocumentModel("/", "n", "Note");
         doc.setPropertyValue("note", MARKDOWN_TEXT);
         doc.setPropertyValue("mime_type", "text/x-web-markdown");
@@ -131,7 +130,7 @@ public class TestHtmlSanitizerServiceImpl {
 
     // sanitize XML note if no mime_type defined
     @Test
-    public void sanitizeNullFilterField() throws Exception {
+    public void sanitizeNullFilterField() {
         DocumentModel doc = session.createDocumentModel("/", "n", "Note");
         doc.setPropertyValue("note", XML);
         doc.setPropertyValue("mime_type", null); // null filter field
@@ -141,7 +140,7 @@ public class TestHtmlSanitizerServiceImpl {
     }
 
     @Test
-    public void sanitizeWebPage() throws Exception {
+    public void sanitizeWebPage() {
 
         // Html page that must be sanitized
         DocumentModel doc = session.createDocumentModel("/", "wp", "WebPage");
@@ -174,12 +173,12 @@ public class TestHtmlSanitizerServiceImpl {
         doc4.setPropertyValue("webp:isRichtext", true);
         doc4 = session.createDocument(doc4);
         String webpage4 = (String) doc4.getPropertyValue("webp:content");
-        assertFalse(WIKI_MARKUP.equals(webpage4));
+        assertNotEquals(WIKI_MARKUP, webpage4);
         session.save();
     }
 
     @Test
-    public void sanitizeKeepLinkTargetBlank() throws Exception {
+    public void sanitizeKeepLinkTargetBlank() {
         String html = "<a href=\"foo\" target=\"_blank\">link</a>";
         String expected = "<a href=\"foo\" target=\"_blank\" rel=\"noopener noreferrer\">link</a>";
         HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
@@ -210,7 +209,7 @@ public class TestHtmlSanitizerServiceImpl {
     }
 
     @Test
-    public void sanitizeNoteHtml5() throws Exception {
+    public void sanitizeNoteHtml5() {
         DocumentModel doc = session.createDocumentModel("/", "n2", "Note");
         doc.setPropertyValue("note", BAD_HTML5);
         doc.setPropertyValue("mime_type", "text/html");
