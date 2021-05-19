@@ -200,25 +200,30 @@ public class DirectoryEntryResolver extends AbstractObjectResolver implements Ob
                 if (!entry.hasSchema(schema)) {
                     return null;
                 }
-                String result = (String) entry.getProperty(schema, idField);
-                if (hierarchical) {
-                    String parent = (String) entry.getProperty(schema, parentField);
-                    try (Session session = getDirectory().getSession()) {
-                        while (parent != null) {
-                            String finalParent = parent; // Effectively final
-                            entry = Framework.doPrivileged(() -> session.getEntry(finalParent));
-                            if (entry == null) {
-                                break;
-                            }
-                            result = parent + separator + result;
-                            parent = (String) entry.getProperty(schema, parentField);
-                        }
-                    }
-                }
-                return result;
+
+                return hierarchical ? getHierarchicalReference(entry) : (String) entry.getProperty(schema, idField);
             }
         }
         return null;
+    }
+
+    protected String getHierarchicalReference(DocumentModel entry) {
+        List<String> ids = new ArrayList<>();
+        ids.add((String) entry.getProperty(schema, idField));
+
+        String parent = (String) entry.getProperty(schema, parentField);
+        try (var session = getDirectory().getSession()) {
+            while (parent != null && !ids.contains(parent)) {
+                String finalParent = parent; // Effectively final
+                entry = Framework.doPrivileged(() -> session.getEntry(finalParent));
+                if (entry == null) {
+                    break;
+                }
+                ids.add(0, parent);
+                parent = (String) entry.getProperty(schema, parentField);
+            }
+        }
+        return String.join(separator, ids);
     }
 
     @Override
