@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.blob.s3;
 
-import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.blob.KeyStrategy.VER_SEP;
 
 import java.io.IOException;
@@ -237,13 +236,16 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
         if (StorageClass.Standard.toString().equals(storageClass)) {
             storageClass = null;
         }
+
+        // the object storage class can be Standard or Glacier.
+        // the Glacier Storage class can have one of these 3 states:
         // x-amz-restore absent
         // x-amz-restore: ongoing-request="true"
         // x-amz-restore: ongoing-request="false", expiry-date="Fri, 23 Dec 2012 00:00:00 GMT"
-        Boolean ongoingRestore = metadata.getOngoingRestore();
-        boolean downloadable = !TRUE.equals(ongoingRestore);
         Date date = metadata.getRestoreExpirationTime();
         Instant downloadableUntil = date == null ? null : date.toInstant();
+        boolean downloadable = storageClass == null || downloadableUntil != null;
+
         return new BlobStatus().withStorageClass(storageClass)
                                .withDownloadable(downloadable)
                                .withDownloadableUntil(downloadableUntil);
