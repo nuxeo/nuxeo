@@ -66,10 +66,7 @@ public class NuxeoDriveGroupUpdateListener implements PostCommitFilteringEventLi
     public void handleEvent(EventBundle events) {
         for (Event event : events) {
             EventContext context = event.getContext();
-            if (context == null) {
-                continue;
-            }
-            String groupName = (String) context.getProperty(UserManagerImpl.ID_PROPERTY_KEY);
+            String groupName = getGroupName(context);
             if (groupName == null) {
                 continue;
             }
@@ -77,6 +74,10 @@ public class NuxeoDriveGroupUpdateListener implements PostCommitFilteringEventLi
             List<String> groupNames = getAllGroupNames(groupName, context);
             handleUpdatedGroups(groupNames);
         }
+    }
+
+    protected String getGroupName(EventContext context) {
+        return context == null ? null : (String) context.getProperty(UserManagerImpl.ID_PROPERTY_KEY);
     }
 
     /**
