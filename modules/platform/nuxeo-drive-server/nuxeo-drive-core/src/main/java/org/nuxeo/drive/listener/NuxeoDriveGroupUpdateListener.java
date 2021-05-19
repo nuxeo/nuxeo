@@ -24,17 +24,16 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.drive.action.FireGroupUpdatedEventAction;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -106,28 +105,22 @@ public class NuxeoDriveGroupUpdateListener implements PostCommitFilteringEventLi
 
     protected void handleUpdatedGroups(List<String> groupNames) {
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-        for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            CoreInstance.doPrivileged(repositoryName, (CoreSession session) -> {
-                DocumentModelList impactedDocuments = getImpactedDocuments(session, groupNames);
-                impactedDocuments.forEach(doc -> fireGroupUpdatedEvent(session, doc));
-            });
-        }
+        BulkService bulkService = Framework.getService(BulkService.class);
+        String query = getImpactedDocumentQuery(groupNames);
+        repositoryManager.getRepositoryNames()
+                         .stream()
+                         .map(repositoryName -> new BulkCommand.Builder(FireGroupUpdatedEventAction.ACTION_NAME, query,
+                                 SecurityConstants.SYSTEM_USERNAME).repository(repositoryName).build())
+                         .forEach(bulkService::submit);
     }
 
     /**
-     * Returns the list of documents carrying an ACL impacted by one of the given group names.
+     * Returns a query listing the documents carrying an ACL impacted by one of the given group names.
      */
-    protected DocumentModelList getImpactedDocuments(CoreSession session, List<String> groupNames) {
+    protected String getImpactedDocumentQuery(List<String> groupNames) {
         String groups = groupNames.stream().map(NXQL::escapeString).collect(Collectors.joining(","));
-        String query = "SELECT * FROM Document WHERE ecm:isTrashed = 0 AND ecm:isVersion = 0 AND ecm:acl/*/principal IN ("
+        return "SELECT * FROM Document WHERE ecm:isTrashed = 0 AND ecm:isVersion = 0 AND ecm:acl/*/principal IN ("
                 + groups + ")";
-        return session.query(query);
-    }
-
-    protected void fireGroupUpdatedEvent(CoreSession session, DocumentModel source) {
-        EventContext context = new DocumentEventContext(session, session.getPrincipal(), source);
-        Event event = context.newEvent(NuxeoDriveEvents.GROUP_UPDATED);
-        Framework.getService(EventService.class).fireEvent(event);
     }
 
 }
