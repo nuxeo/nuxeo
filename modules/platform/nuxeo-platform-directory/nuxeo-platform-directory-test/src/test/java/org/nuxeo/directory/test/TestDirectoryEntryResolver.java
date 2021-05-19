@@ -421,6 +421,24 @@ public class TestDirectoryEntryResolver {
         }
     }
 
+    // NXP-30260
+    @Test
+    public void testGetRecursiveHierarchicalReference() {
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put(PARAM_DIRECTORY, HIERARCHICAL_DIRECTORY);
+        parameters.put(PARAM_PARENT_FIELD, "parent");
+        parameters.put(PARAM_SEPARATOR, "/");
+        derr.configure(parameters);
+
+        try (Session session = directoryService.open(HIERARCHICAL_DIRECTORY)) {
+            // level4 has level3 as parent, level3 has level4 as parent
+            // the reference computation should stop when it notices a parent recursion
+            DocumentModel leaf = session.getEntry("level4");
+            assertEquals("level3/level4", derr.getReference(leaf));
+        }
+    }
+
     private void checkMessage(DirectoryEntryResolver derr) {
         for (Locale locale : Arrays.asList(Locale.FRENCH, Locale.ENGLISH)) {
             String message = derr.getConstraintErrorMessage("abc123", locale);
