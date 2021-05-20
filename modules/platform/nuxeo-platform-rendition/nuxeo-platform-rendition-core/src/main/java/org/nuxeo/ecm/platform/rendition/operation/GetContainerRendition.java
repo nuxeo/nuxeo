@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.rendition.operation;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -52,7 +52,7 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 @Operation(id = GetContainerRendition.ID, category = Constants.CAT_BLOB, label = "Gets the folder's children or the collection's members default renditions", description = "Gets the list of blob of the folder's children or the collection's members default renditions. Returns a blob list file containing all the default rendition blobs.")
 public class GetContainerRendition {
 
-    private static final Log log = LogFactory.getLog(GetContainerRendition.class);
+    private static final Logger log = LogManager.getLogger(GetContainerRendition.class);
 
     public static final String ID = "Document.GetContainerRendition";
 
@@ -88,10 +88,7 @@ public class GetContainerRendition {
                 if (blob != null) {
                     blobs.add(blob);
                     if (limit > -1 && ++added >= limit) {
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format(
-                                    "Limit of %s reached, increase the limit parameter to get more results.", limit));
-                        }
+                        log.debug("Limit of {} reached, increase the limit parameter to get more results.", limit);
                         break;
                     }
                 }
@@ -112,10 +109,8 @@ public class GetContainerRendition {
             if (rendition != null) {
                 blob = rendition.getBlob();
                 if (blob == null) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Default rendition '%s' has an null Blob for document '%s'",
-                                rendition.getName(), doc.getPathAsString()));
-                    }
+                    log.debug("Default rendition '{}' has an null Blob for document '{}'", rendition::getName,
+                            doc::getPathAsString);
                 }
             }
         }
@@ -133,10 +128,7 @@ public class GetContainerRendition {
                 if (blob != null) {
                     blobs.add(blob);
                     if (limit > -1 && ++added >= limit) {
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format(
-                                    "Limit of %s reached, increase the limit parameter to get more results.", limit));
-                        }
+                        log.debug("Limit of {} reached, increase the limit parameter to get more results.", limit);
                         break;
                     }
                 }
