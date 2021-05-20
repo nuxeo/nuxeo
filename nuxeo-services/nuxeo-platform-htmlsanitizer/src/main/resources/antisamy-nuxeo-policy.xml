@@ -551,13 +551,6 @@
 
     <tag name="form" action="remove">
 
-      <attribute name="action">
-        <regexp-list>
-          <regexp name="onsiteURL" />
-          <regexp name="offsiteURL" />
-        </regexp-list>
-      </attribute>
-
       <attribute name="name" />
 
       <attribute name="autocomplete" />
