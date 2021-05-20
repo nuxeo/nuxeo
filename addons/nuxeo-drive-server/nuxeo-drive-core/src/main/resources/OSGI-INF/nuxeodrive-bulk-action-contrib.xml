@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.bulk.actions">
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="driveFireGroupUpdatedEvent" inputStream="bulk/driveFireGroupUpdatedEvent" bucketSize="100"
+      batchSize="10" httpEnabled="false" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service"
+    point="streamProcessor">
+    <streamProcessor name="driveFireGroupUpdatedEvent" class="org.nuxeo.drive.action.FireGroupUpdatedEventAction"
+      logConfig="bulk">
+      <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
+    </streamProcessor>
+  </extension>
+
+</component>
