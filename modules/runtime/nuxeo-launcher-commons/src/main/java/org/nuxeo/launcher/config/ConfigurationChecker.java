@@ -424,16 +424,23 @@ public class ConfigurationChecker {
      */
     protected Stream<Path> getJarsFromClasspathEntry(ConfigurationHolder configHolder, Path templatePath,
             String entry) {
-        var entryPath = Path.of(entry);
-        if (!entryPath.isAbsolute()) {
-            entryPath = templatePath.resolve(entryPath);
+        // don't use the Path API as * is a reserved character on Windows
+        var entryPath = entry.replace("/", File.separator);
+        if (!new File(entryPath).isAbsolute()) {
+            entryPath = templatePath.toString() + File.separator + entryPath;
         }
 
+        var slashIndex = entryPath.lastIndexOf(File.separator);
+        if (slashIndex == -1) {
+            return Stream.empty();
+        }
+        var parentDir = new File(entryPath.substring(0, slashIndex));
+
         // ugly trick mandatory to let the PathMatcher match on windows
-        var pattern = "glob:" + entryPath.toString().replaceAll("\\\\", "\\\\\\\\");
+        var pattern = "glob:" + entryPath.replaceAll("\\\\", "\\\\\\\\");
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher(pattern);
         FileFilter filter = f -> matcher.matches(f.toPath()) && f.toPath().startsWith(configHolder.getHomePath());
-        File[] matchingFiles = entryPath.getParent().toFile().listFiles(filter);
+        File[] matchingFiles = parentDir.listFiles(filter);
         if (matchingFiles != null) {
             var builder = Stream.<Path> builder();
             for (File file : matchingFiles) {
