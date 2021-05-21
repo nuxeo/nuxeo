@@ -50,6 +50,9 @@ public class BulkDownload {
 
     public static final String ID = "Blob.BulkDownload";
 
+    /** @since 11.5 */
+    protected static final String DOWNLOAD_REASON = "download";
+
     private static final Logger log = LogManager.getLogger(BulkDownload.class);
 
     @Context
@@ -68,10 +71,11 @@ public class BulkDownload {
                 log.trace("Not able to resolve blob");
                 return null;
             }
-            if (!downloadService.checkPermission(doc, null, blob, "download", Collections.emptyMap())) {
+            if (!downloadService.checkPermission(doc, null, blob, DOWNLOAD_REASON, Collections.emptyMap())) {
                 log.debug("Not allowed to bulk download blob for document {}", doc::getPathAsString);
                 return null;
             }
+            downloadService.logDownload(null, doc, null, blob.getFilename(), DOWNLOAD_REASON, null);
             return blob;
         }).filter(Objects::nonNull).collect(Collectors.toList());
 

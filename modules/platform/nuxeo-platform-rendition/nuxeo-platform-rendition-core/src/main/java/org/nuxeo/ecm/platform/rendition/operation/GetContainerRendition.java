@@ -39,10 +39,12 @@ import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.utils.BlobUtils;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Returns a Folderish Document or Collection default rendition.
@@ -111,6 +113,9 @@ public class GetContainerRendition {
                 if (blob == null) {
                     log.debug("Default rendition '{}' has an null Blob for document '{}'", rendition::getName,
                             doc::getPathAsString);
+                } else if ("download".equals(reason)) {
+                    Framework.getService(DownloadService.class)
+                             .logDownload(null, doc, null, blob.getFilename(), reason, null);
                 }
             }
         }
