@@ -31,9 +31,12 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.api.Framework;
 
@@ -47,6 +50,8 @@ import org.nuxeo.runtime.api.Framework;
 public class FileBlob extends AbstractBlob implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger log = LogManager.getLogger(FileBlob.class);
 
     protected File file;
 
@@ -203,7 +208,14 @@ public class FileBlob extends AbstractBlob implements Serializable {
         try {
             Files.move(path, destPath, ATOMIC_MOVE);
             file = dest;
-        } catch (AtomicMoveNotSupportedException e) {
+        } catch (AtomicMoveNotSupportedException | NoSuchFileException e) {
+            if (e instanceof NoSuchFileException) {
+                // NoSuchFileException has been observed in unexplained circumstances (NXP-30427),
+                // doing a copy + rename seems to be enough to work around the issue.
+                log.warn(
+                        "Unexpected NoSuchFileException, move from {} to {} will be done with a copy and atomic rename",
+                        file::getAbsolutePath, dest::getAbsolutePath);
+            }
             // Do a copy through a tmp file on the same filesystem then atomic rename
             Path tmp = Files.createTempFile(destPath.getParent(), null, null);
             try {
