@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,8 @@
 package org.nuxeo.elasticsearch.test.nxql;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -42,7 +41,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
@@ -68,9 +66,6 @@ public class TestCompareCoreWithES {
     protected ElasticSearchAdmin esa;
 
     @Inject
-    protected ElasticSearchIndexing esi;
-
-    @Inject
     protected TrashService trashService;
 
     private String proxyPath;
@@ -89,7 +84,7 @@ public class TestCompareCoreWithES {
             doc.setPropertyValue("dc:subjects",
                     (i % 2 == 0) ? new String[] { "Subjects1" } : new String[] { "Subjects1", "Subjects2" });
             doc.setPropertyValue("relatedtext:relatedtextresources",
-                    (Serializable) Arrays.asList(Collections.singletonMap("relatedtextid", "123")));
+                    (Serializable) List.of(Map.of("relatedtextid", "123")));
             doc = session.createDocument(doc);
         }
         for (int i = 5; i < 10; i++) {
@@ -134,12 +129,12 @@ public class TestCompareCoreWithES {
     }
 
     @Before
-    public void setupIndex() throws Exception {
+    public void setupIndex() {
         esa.initIndexes(true);
     }
 
     @After
-    public void cleanWorkingDocuments() throws Exception {
+    public void cleanWorkingDocuments() {
         // prevent NXP-14686 bug that prevent cleanupSession to remove version
         session.removeDocument(new PathRef(proxyPath));
     }
@@ -163,13 +158,13 @@ public class TestCompareCoreWithES {
         return sb.toString();
     }
 
-    protected void assertSameDocumentLists(DocumentModelList expected, DocumentModelList actual) throws Exception {
+    protected void assertSameDocumentLists(DocumentModelList expected, DocumentModelList actual) {
         Assert.assertEquals(expected.size(), actual.size());
         // quick check for some props for better failure messages
         for (int i = 0; i < expected.size(); i++) {
             DocumentModel expecteDdoc = expected.get(i);
             DocumentModel actualDoc = actual.get(i);
-            for (String xpath : Arrays.asList("dc:title", "dc:nature", "dc:rights", "dc:subjects",
+            for (String xpath : List.of("dc:title", "dc:nature", "dc:rights", "dc:subjects",
                     "relatedtext:relatedtextresources")) {
                 Serializable expectedValue = getProperty(expecteDdoc, xpath);
                 Serializable actualValue = getProperty(actualDoc, xpath);
@@ -187,7 +182,7 @@ public class TestCompareCoreWithES {
             value = "__NOTFOUND__";
         }
         if (value instanceof Object[]) {
-            value = (Serializable) Arrays.asList(((Object[]) value));
+            value = (Serializable) List.of(((Object[]) value));
         }
         if (value instanceof List && ((List<?>) value).isEmpty()) {
             value = null;
@@ -195,13 +190,14 @@ public class TestCompareCoreWithES {
         return value;
     }
 
+    @SuppressWarnings("unused")
     protected void dump(DocumentModelList docs) {
         for (DocumentModel doc : docs) {
             System.out.println(doc);
         }
     }
 
-    protected void compareESAndCore(String nxql) throws Exception {
+    protected void compareESAndCore(String nxql) {
 
         DocumentModelList coreResult = session.query(nxql);
         NxQueryBuilder nxQueryBuilder = new NxQueryBuilder(session).nxql(nxql).limit(30);
@@ -224,7 +220,7 @@ public class TestCompareCoreWithES {
         }
     }
 
-    protected void testQueries(String[] testQueries) throws Exception {
+    protected void testQueries(String[] testQueries) {
         for (String nxql : testQueries) {
             // System.out.println("test " + nxql);
             compareESAndCore(nxql);
@@ -232,20 +228,20 @@ public class TestCompareCoreWithES {
     }
 
     @Test
-    public void testSimpleSearchWithSort() throws Exception {
+    public void testSimpleSearchWithSort() {
         testQueries(new String[] { "select * from Document order by dc:title, dc:created",
                 "select * from Document where ecm:isTrashed = 0 order by dc:title",
                 "select * from File order by dc:title", });
     }
 
     @Test
-    public void testSearchOnProxies() throws Exception {
+    public void testSearchOnProxies() {
         testQueries(new String[] { "select * from Document where ecm:isProxy=0 order by dc:title",
                 "select * from Document where ecm:isProxy=1 order by dc:title", });
     }
 
     @Test
-    public void testSearchOnVersions() throws Exception {
+    public void testSearchOnVersions() {
         testQueries(new String[] { "select * from Document where ecm:isVersion = 0 order by dc:title",
                 "select * from Document where ecm:isVersion = 1 order by dc:title",
                 "select * from Document where ecm:isCheckedInVersion = 0 order by dc:title",
@@ -257,7 +253,7 @@ public class TestCompareCoreWithES {
     }
 
     @Test
-    public void testSearchOnTypes() throws Exception {
+    public void testSearchOnTypes() {
         testQueries(new String[] { "select * from File order by dc:title", "select * from Folder order by dc:title",
                 "select * from Note order by dc:title",
                 "select * from Note where ecm:primaryType IN ('Note', 'Folder') order by dc:title",
@@ -266,7 +262,7 @@ public class TestCompareCoreWithES {
     }
 
     @Test
-    public void testSearchWithLike() throws Exception {
+    public void testSearchWithLike() {
         // Validate that NXP-14338 is fixed
         testQueries(new String[] { "SELECT * FROM Document WHERE dc:title LIKE 'nomatch%'",
                 "SELECT * from Document WHERE dc:title LIKE 'File%' ORDER BY dc:title",
@@ -276,7 +272,7 @@ public class TestCompareCoreWithES {
     }
 
     @Test
-    public void testSearchWithStartsWith() throws Exception {
+    public void testSearchWithStartsWith() {
         testQueries(new String[] {
                 // Note that there are differnces between ES and VCS:
                 // ES version document has a path and is searchable with startswith
@@ -286,7 +282,7 @@ public class TestCompareCoreWithES {
     }
 
     @Test
-    public void testSearchWithAncestorId() throws Exception {
+    public void testSearchWithAncestorId() {
         DocumentModel folder = session.getDocument(new PathRef("/folder"));
         Assert.assertNotNull(folder);
         String fid = folder.getId();
