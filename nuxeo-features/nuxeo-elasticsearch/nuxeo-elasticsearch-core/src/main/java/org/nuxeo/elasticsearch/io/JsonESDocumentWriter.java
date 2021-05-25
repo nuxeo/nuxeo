@@ -92,6 +92,9 @@ public class JsonESDocumentWriter {
             jg.writeStringField("ecm:versionLabel", doc.getVersionLabel());
             jg.writeStringField("ecm:versionVersionableId", doc.getVersionSeriesId());
         }
+        if (doc.isProxy()) {
+            jg.writeStringField("ecm:proxyVersionableId", doc.getVersionSeriesId());
+        }
         jg.writeBooleanField("ecm:isCheckedIn", !doc.isCheckedOut());
         jg.writeBooleanField("ecm:isProxy", doc.isProxy());
         jg.writeBooleanField("ecm:isTrashed", doc.isTrashed());

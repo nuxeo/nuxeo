@@ -240,6 +240,15 @@ public class TestCompareCoreWithES {
                 "select * from Document where ecm:isProxy=1 order by dc:title", });
     }
 
+    // NXP-30266
+    @Test
+    public void testSearchOnProxyVersionableId() throws Exception {
+        DocumentModel proxy = session.getDocument(new PathRef(proxyPath));
+        String versionableId = proxy.getVersionSeriesId();
+        testQueries(new String[] { "select * from Document where ecm:isProxy=1 and ecm:proxyVersionableId = '"
+                + versionableId + "' order by dc:title" });
+    }
+
     @Test
     public void testSearchOnVersions() throws Exception {
         testQueries(new String[] { "select * from Document where ecm:isVersion = 0 order by dc:title",
