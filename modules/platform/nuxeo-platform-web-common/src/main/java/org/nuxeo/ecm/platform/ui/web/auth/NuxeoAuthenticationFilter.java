@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.platform.ui.web.auth;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.CALLBACK_URL_PARAMETER;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
@@ -87,6 +88,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -343,6 +345,8 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     public void doFilterInternal(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+
+        checkRequestedURL(request);
 
         if (bypassAuth((HttpServletRequest) request)) {
             chain.doFilter(request, response);
@@ -1142,6 +1146,27 @@ public class NuxeoAuthenticationFilter implements Filter {
                 return DIRECTORY_ERROR_PRINCIPAL;
             }
             return null;
+        }
+    }
+
+    /**
+     * Checks if the {@value NXAuthConstants#REQUESTED_URL} request parameter is an absolute URL, in which case, throws
+     * a NuxeoException with a 400 status code.
+     *
+     * @since 11.5
+     */
+    protected void checkRequestedURL(ServletRequest request) {
+        String requestedURL = request.getParameter(REQUESTED_URL);
+        if (requestedURL == null) {
+            return;
+        }
+        try {
+            if (URI.create(requestedURL).isAbsolute()) {
+                throw new NuxeoException(SC_BAD_REQUEST);
+            }
+        } catch (IllegalArgumentException e) {
+            // malformed URI
+            throw new NuxeoException(SC_BAD_REQUEST);
         }
     }
 
