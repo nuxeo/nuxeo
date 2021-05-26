@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
@@ -84,6 +85,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.Event;
@@ -1071,6 +1073,38 @@ public class TestNuxeoAuthenticationFilter {
                 filter.getLogoutRedirectURL("http://localhost:8080/nuxeo/redirect", baseURL, null));
         assertEquals("nuxeo://redirect", filter.getLogoutRedirectURL("nuxeo://redirect", baseURL, null));
         assertEquals("nxdrive://redirect", filter.getLogoutRedirectURL("nxdrive://redirect", baseURL, null));
+    }
+
+    // NXP-29872
+    @Test
+    public void testCheckRequestedURL() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        // no parameter
+        filter.checkRequestedURL(request);
+
+        // invalid parameter
+        when(request.getParameter(eq(REQUESTED_URL))).thenReturn(":joe");
+        try {
+            filter.checkRequestedURL(request);
+            fail("Invalid requestedUrl parameter should have thrown a NuxeoException");
+        } catch (NuxeoException e) {
+            assertEquals(400, e.getStatusCode());
+        }
+
+        // acceptable parameter
+        when(request.getParameter(eq(REQUESTED_URL))).thenReturn("ui/");
+        filter.checkRequestedURL(request);
+
+        // malicious redirect
+
+        when(request.getParameter(eq(REQUESTED_URL))).thenReturn("https://yogosha.com");
+        try {
+            filter.checkRequestedURL(request);
+            fail("Bad requestedUrl parameter should have thrown a NuxeoException");
+        } catch (NuxeoException e) {
+            assertEquals(400, e.getStatusCode());
+        }
     }
 
 }
