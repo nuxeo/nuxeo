@@ -68,6 +68,7 @@ import org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -91,6 +92,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Deploy("org.nuxeo.elasticsearch.core:pageprovider-search-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.core:test-directory-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
+@ConsoleLogLevelThreshold("ERROR")
 public class RestESDocumentsTest extends BaseTest {
 
     private static final Logger log = LogManager.getLogger(RestESDocumentsTest.class);
