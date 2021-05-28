@@ -286,6 +286,8 @@ public class RestESDocumentsTest extends BaseTest {
         Assert.assertEquals(0, esa.getPendingWorkerCount());
         esa.refresh();
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        // Wait more
+        txFeature.nextTransaction();
     }
 
     /**
