@@ -38,6 +38,8 @@ import java.util.stream.StreamSupport;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -91,6 +93,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class RestESDocumentsTest extends BaseTest {
 
+    private static final Logger log = LogManager.getLogger(RestESDocumentsTest.class);
+
     public static final String QUERY = "select * from Document where ecm:isTrashed = 0";
 
     public static final String TEST_MIME_TYPE = "text/plain";
@@ -125,6 +129,7 @@ public class RestESDocumentsTest extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
+            log.error("Response: {}", node);
             // Verify results
             assertEquals(20, getLogEntries(node).size());
             // And verify contributed aggregates
