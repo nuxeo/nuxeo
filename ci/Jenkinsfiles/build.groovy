@@ -239,20 +239,16 @@ def buildUnitTestStage(env) {
               retry(2) {
                 sh """
                   mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} \
-                    -T4C install -DskipTests \
-                    -pl modules/platform/nuxeo-elasticsearch/nuxeo-elasticsearch-core \
-                    -am
+                    -T4C install -DskipTests
                 """
                 sh """
-                  mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} \
+                  mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
                     -Dcustom.environment=${env} \
                     -Dcustom.environment.log.dir=target-${env} \
                     -Dnuxeo.test.core=${testCore} \
                     -Dnuxeo.test.redis.host=${redisHost} \
                     ${kafkaOptions} \
-                    test \
-                    -pl modules/platform/nuxeo-elasticsearch/nuxeo-elasticsearch-core \
-                    -Dtest=RestESDocumentsTest
+                    test
                 """
               }
 
