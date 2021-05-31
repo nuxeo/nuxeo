@@ -22,6 +22,7 @@ import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static org.nuxeo.ecm.automation.core.operations.services.bulk.AbstractAutomationBulkAction.OPERATION_ID;
+import static org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkActionUi.ACTION_NAME;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -164,12 +165,12 @@ public class BulkRunAction {
         }
         if (queryLimit > 0) {
             builder.queryLimit(queryLimit);
-        } else if ("automation-ui".equals(action) && params.containsKey(OPERATION_ID)) {
+        } else if (ACTION_NAME.equals(action) && params.containsKey(OPERATION_ID)) {
             // automation actions from UI can be limited
             String operationId = (String) params.get(OPERATION_ID);
             int limit = AutomationBulkActionUi.getQueryLimit(operationId);
             if (limit > 0) {
-                log.debug("Set queryLimit to: {} for automation-ui operationId: {}", limit, operationId);
+                log.debug("Set queryLimit to: {} for {} operationId: {}", limit, ACTION_NAME, operationId);
                 builder.queryLimit(limit);
             }
         }

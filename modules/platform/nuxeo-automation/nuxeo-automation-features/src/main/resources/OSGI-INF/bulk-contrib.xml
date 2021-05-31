@@ -7,7 +7,7 @@
     <action name="automation" inputStream="bulk/automation" bucketSize="100" batchSize="10" httpEnabled="true"
       validationClass="org.nuxeo.ecm.automation.core.operations.services.bulk.validation.AutomationBulkValidation" />
 
-    <action name="automation-ui" inputStream="bulk/automationUi" bucketSize="100" batchSize="10" httpEnabled="true"
+    <action name="automationUi" inputStream="bulk/automationUi" bucketSize="100" batchSize="10" httpEnabled="true"
       validationClass="org.nuxeo.ecm.automation.core.operations.services.bulk.validation.AutomationBulkValidation" />
   </extension>
 
@@ -18,7 +18,7 @@
       <policy name="default" maxRetries="3" delay="1s" continueOnFailure="true" />
     </streamProcessor>
 
-    <streamProcessor name="automation-ui"
+    <streamProcessor name="automationUi"
       class="org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkActionUi" defaultConcurrency="2"
       defaultPartitions="2">
       <policy name="default" maxRetries="3" delay="1s" continueOnFailure="true" />

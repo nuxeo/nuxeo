@@ -22,6 +22,7 @@ import static java.util.Collections.singletonMap;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkActionUi.ACTION_NAME;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -100,7 +101,7 @@ public class TestAutomationBulkAction {
     public void testSetPropertyActionFromAutomationUi() throws Exception {
         String nxql = "SELECT * FROM ComplexDoc WHERE ecm:isProxy = 0";
         String title = "title set from automation UI";
-        doTestSetPropertyActionFromAutomation("automation-ui", nxql, title);
+        doTestSetPropertyActionFromAutomation(ACTION_NAME, nxql, title);
         // The configuration service sets a queryLimit=3 for this operationId
         int count = 0;
         for (DocumentModel doc : session.query(nxql)) {
