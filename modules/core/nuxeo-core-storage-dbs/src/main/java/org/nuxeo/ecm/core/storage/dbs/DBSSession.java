@@ -703,6 +703,7 @@ public class DBSSession extends BaseSession {
         case KEY_IS_RECORD:
         case KEY_RETAIN_UNTIL:
         case KEY_HAS_LEGAL_HOLD:
+        case KEY_PROXY_IDS:
             return true;
         }
         return false;
