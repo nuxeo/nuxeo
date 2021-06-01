@@ -125,7 +125,6 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.RetentionExpiredFinderListener;
-import org.nuxeo.ecm.core.storage.sql.IgnorePostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -3629,6 +3628,54 @@ public class TestSQLRepositoryAPI {
         // check visible from live doc
         doc = session.getDocument(doc.getRef());
         assertEquals("the title again", doc.getProperty("dublincore", "title"));
+    }
+
+    // NXP-30449
+    @Test
+    public void testDeleteWorkingCopyOfProxyLiveAfterRestore() {
+        DocumentModel root = session.getRootDocument();
+        // create a document and version it to 0.1
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "proxy_test", "File");
+        doc.setProperty("dublincore", "title", "the title");
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+        doc = session.createDocument(doc);
+        session.save();
+
+        // create live proxy
+        DocumentModel proxy = session.createProxy(doc.getRef(), root.getRef());
+        assertTrue(proxy.isProxy());
+        assertFalse(proxy.isVersion());
+        assertFalse(proxy.isImmutable());
+        session.save();
+
+        // check we can't delete the working copy
+        try {
+            session.removeDocument(doc.getRef());
+            fail("Remove document targeted by a proxy should have failed");
+        } catch (DocumentExistsException e) {
+            assertEquals(String.format("Cannot remove %s, subdocument %s is the target of proxy %s", doc.getId(),
+                    doc.getId(), proxy.getId()), e.getMessage());
+        }
+
+        // do change on working copy and version it to 0.2
+        doc.setProperty("dublincore", "title", "new the title");
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+        doc = session.saveDocument(doc);
+
+        // restore to version 0.1
+        VersionModel versionModel = new VersionModelImpl();
+        versionModel.setLabel("0.1");
+        DocumentModel v1 = session.getDocumentWithVersion(doc.getRef(), versionModel);
+        doc = session.restoreToVersion(doc.getRef(), v1.getRef());
+
+        // check again we can't delete the working copy
+        try {
+            session.removeDocument(doc.getRef());
+            fail("Remove document targeted by a proxy should have failed");
+        } catch (DocumentExistsException e) {
+            assertEquals(String.format("Cannot remove %s, subdocument %s is the target of proxy %s", doc.getId(),
+                    doc.getId(), proxy.getId()), e.getMessage());
+        }
     }
 
     @Test
