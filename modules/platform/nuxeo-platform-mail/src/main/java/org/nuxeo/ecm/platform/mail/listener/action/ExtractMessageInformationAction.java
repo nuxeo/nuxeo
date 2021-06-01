@@ -332,7 +332,11 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             String s = null;
             for (int i = 0; i < mp.getCount(); i++) {
                 BodyPart bodyPart = mp.getBodyPart(i);
-                if (Part.INLINE.equals(bodyPart.getDisposition())) {
+                String contentType = bodyPart.getContentType();
+                // some mail clients don't set the "Content-Disposition: inline" body part header for inline images,
+                // let's also check the Content-Type header
+                if (Part.INLINE.equals(bodyPart.getDisposition())
+                        || contentType != null && contentType.startsWith("image/")) {
                     getAttachmentParts(bodyPart, defaultFilename, mimeService, context);
                 } else {
                     s = getText(bodyPart, defaultFilename, mimeService, context);
