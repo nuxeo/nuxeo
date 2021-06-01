@@ -56,8 +56,10 @@ pipeline {
   environment {
     // force ${HOME}=/root - for an unexplained reason, ${HOME} is resolved as /home/jenkins though sh 'env' shows HOME=/root
     HOME = '/root'
-    MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
-    MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true'
+    // set Xmx lower than pod memory limit of 3Gi, to leave some memory for javadoc command
+    MAVEN_OPTS = "$MAVEN_OPTS -Xms1g -Xmx2g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+    // set Xmx/Xms to 1g for javadoc command, to avoid the pod being OOMKilled with an exit code 137
+    MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true -DadditionalJOption=-J-Xmx1g -DadditionalJOption=-J-Xms1g'
     VERSION = getVersion()
     // jx step helm install's --name and --namespace options require alphabetic chars to be lowercase
     PREVIEW_NAMESPACE = "nuxeo-preview-${BRANCH_NAME.toLowerCase()}"

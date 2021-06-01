@@ -62,7 +62,8 @@ String getMavenFailArgs() {
 }
 
 String getMavenJavadocArgs() {
-  return isPullRequest() ? ' ' : '-Pjavadoc'
+  // set Xmx/Xms to 1g for javadoc command, to avoid the pod being OOMKilled with an exit code 137
+  return isPullRequest() ? ' ' : '-Pjavadoc  -DadditionalJOption=-J-Xmx1g -DadditionalJOption=-J-Xms1g'
 }
 
 def isPullRequest() {
