@@ -345,4 +345,13 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
         testGroupChanges(syncRoot, "defaultSyncRootFolderItemFactory", GROUP_1, true);
     }
 
+    @Override
+    protected void commitAndWaitForAsyncCompletion() {
+        // wait for the NuxeoDriveGroupUpdateListener asynchronous listener
+        super.commitAndWaitForAsyncCompletion();
+        // wait again for the NuxeoDriveVirtualEventLogger asynchronous listener, triggered by the
+        // FireGroupUpdatedEventAction bulk action, itself submitted by the NuxeoDriveGroupUpdateListener
+        txFeature.nextTransaction();
+    }
+
 }
