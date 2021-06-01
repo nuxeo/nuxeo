@@ -28,11 +28,13 @@ import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.HTML_TEXT_PROP
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PARENT_PATH_KEY;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.junit.Before;
@@ -85,7 +87,7 @@ public class TestMailInjection {
     }
 
     @Test
-    public void testMailUnicityCheck() throws Exception {
+    public void testMailUnicityCheck() throws FileNotFoundException, MessagingException {
         assertNotNull(session.getDocument(new PathRef("/mailFolder1")));
         assertNotNull(session.getDocument(new PathRef("/mailFolder2")));
         injectEmail("data/test_mail.eml", mailFolder1.getPathAsString());
@@ -110,7 +112,7 @@ public class TestMailInjection {
     }
 
     @Test
-    public void testMailImageCheck() throws Exception {
+    public void testMailImageCheck() throws FileNotFoundException, MessagingException {
         assertNotNull(session.getDocument(new PathRef("/mailFolder1")));
         assertNotNull(session.getDocument(new PathRef("/mailFolder2")));
         injectEmail("data/test_image.eml", mailFolder1.getPathAsString());
@@ -120,7 +122,8 @@ public class TestMailInjection {
         assertEquals(1, children.size());
         DocumentModel mail = children.get(0);
         String html = (String) mail.getPropertyValue(HTML_TEXT_PROPERTY_NAME);
-        assertTrue(html.contains(String.format("/nuxeo/nxfile/default/%s/files:files/0/file/bmkkflcpoiogbdgk.png", mail.getId())));
+        assertTrue(html.contains(
+                String.format("/nuxeo/nxfile/default/%s/files:files/0/file/bmkkflcpoiogbdgk.png", mail.getId())));
         Blob imageBlob = (Blob) mail.getPropertyValue("files/0/file");
         assertEquals("bmkkflcpoiogbdgk.png", imageBlob.getFilename());
 
@@ -130,10 +133,11 @@ public class TestMailInjection {
         mail = children.get(0);
         html = (String) mail.getPropertyValue(HTML_TEXT_PROPERTY_NAME);
         assertTrue(html.contains(String.format("/nuxeo/nxfile/default/%s/files:files/0/file/logo.gif", mail.getId())));
-        assertTrue(html.contains(String.format("/nuxeo/nxfile/default/%s/files:files/1/file/background.gif", mail.getId())));
+        assertTrue(html.contains(
+                String.format("/nuxeo/nxfile/default/%s/files:files/1/file/background.gif", mail.getId())));
     }
 
-    private void injectEmail(String filePath, String parentPath) throws Exception {
+    private void injectEmail(String filePath, String parentPath) throws FileNotFoundException, MessagingException {
         MessageActionPipe pipe = mailService.getPipe("nxmail");
         assertNotNull(pipe);
         Visitor visitor = new Visitor(pipe);
@@ -150,7 +154,7 @@ public class TestMailInjection {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testBadMailAddress() throws Exception {
+    public void testBadMailAddress() throws FileNotFoundException, MessagingException {
         injectEmail("data/test_bad_mail_address.eml", mailFolder1.getPathAsString());
         DocumentModelList children = session.getChildren(mailFolder1.getRef());
         assertNotNull(children);
@@ -169,7 +173,7 @@ public class TestMailInjection {
     }
 
     @SuppressWarnings("resource") // test
-    private Message getSampleMessage(String filePath) throws Exception {
+    private Message getSampleMessage(String filePath) throws FileNotFoundException, MessagingException {
         InputStream stream = new FileInputStream(getTestMailSource(filePath));
         return new MimeMessage(null, stream);
     }
