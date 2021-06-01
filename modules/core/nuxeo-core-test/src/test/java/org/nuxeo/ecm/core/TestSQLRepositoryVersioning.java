@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.VersionNotModifiableException;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -729,6 +730,35 @@ public class TestSQLRepositoryVersioning {
         lastVersionDocument = session.getLastDocumentVersion(copy.getRef());
         assertNotNull(lastVersionDocument);
         assertEquals("fileCopied", lastVersionDocument.getName());
+    }
+
+    // NXP-30449
+    @Test
+    public void testPublishingRestoreDeleteWorkingCopy() {
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc.setPropertyValue("dc:title", "v0.1");
+        doc = session.createDocument(doc);
+        checkVersions(doc);
+
+        // publish - version 0.1 will have a proxy
+        session.publishDocument(doc, folder);
+        checkVersions(doc, "0.1");
+
+        // make a change and version again
+        doc.setPropertyValue("dc:title", "v0.2");
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+        doc = session.saveDocument(doc);
+
+        // restore to version 0.1
+        VersionModel versionModel = new VersionModelImpl();
+        versionModel.setLabel("0.1");
+        DocumentModel v1 = session.getDocumentWithVersion(doc.getRef(), versionModel);
+        doc = session.restoreToVersion(doc.getRef(), v1.getRef());
+
+        // check that we can delete the working copy
+        session.removeDocument(doc.getRef());
     }
 
     @Test

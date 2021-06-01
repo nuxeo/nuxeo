@@ -688,6 +688,8 @@ public class DBSSession extends BaseSession {
         case KEY_PRIMARY_TYPE:
         case KEY_ACP:
         case KEY_READ_ACL:
+            // these are proxy-specific
+        case KEY_PROXY_IDS:
             // these are version-specific
         case KEY_VERSION_CREATED:
         case KEY_VERSION_DESCRIPTION:
