@@ -113,10 +113,22 @@ public class TestMailInjection {
     }
 
     @Test
-    public void testMailImageCheck() throws FileNotFoundException, MessagingException {
+    public void testMailImageContentDisposition() throws FileNotFoundException, MessagingException {
+        testMailImage("data/test_image.eml", "data/test_sample_message.eml");
+    }
+
+    // NXP-30062
+    @Test
+    public void testMailImageNoContentDisposition() throws FileNotFoundException, MessagingException {
+        testMailImage("data/test_image_no_content_disposition.eml",
+                "data/test_sample_message_no_content_disposition.eml");
+    }
+
+    protected void testMailImage(String emailPath1, String emailPath2)
+            throws FileNotFoundException, MessagingException {
         assertNotNull(session.getDocument(new PathRef("/mailFolder1")));
         assertNotNull(session.getDocument(new PathRef("/mailFolder2")));
-        injectEmail("data/test_image.eml", mailFolder1.getPathAsString());
+        injectEmail(emailPath1, mailFolder1.getPathAsString());
         DocumentModelList children = session.getChildren(mailFolder1.getRef());
         assertNotNull(children);
         assertTrue(!children.isEmpty());
@@ -128,7 +140,7 @@ public class TestMailInjection {
         Blob imageBlob = (Blob) mail.getPropertyValue("files/0/file");
         assertEquals("bmkkflcpoiogbdgk.png", imageBlob.getFilename());
 
-        injectEmail("data/test_sample_message.eml", mailFolder2.getPathAsString());
+        injectEmail(emailPath2, mailFolder2.getPathAsString());
         children = session.getChildren(mailFolder2.getRef());
         assertEquals(1, children.size());
         mail = children.get(0);
