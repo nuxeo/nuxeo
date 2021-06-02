@@ -257,6 +257,9 @@ public class StandaloneUpdateService implements PackageUpdateService {
     public PackageDefinition loadPackageFromZip(File file) throws PackageException {
         try (ZipFile zip = new ZipFile(file)) {
             ZipEntry mfEntry = zip.getEntry(LocalPackage.MANIFEST);
+            if (mfEntry == null) {
+                throw new PackageException("Missing '" + LocalPackage.MANIFEST + "' file in zip: " + file);
+            }
             try (InputStream mfStream = zip.getInputStream(mfEntry)) {
                 return loadPackage(mfStream);
             }
