@@ -1183,7 +1183,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             String repoName = getRepositoryName();
             boolean postFilterPolicies = !securityService.arePoliciesExpressibleInQuery(repoName);
             boolean postFilterFilter = filter != null && !(filter instanceof FacetFilter);
-            boolean postFilter = postFilterPolicies || postFilterFilter;
+            // force post-filtering if we SELECT something different than '*' or 'ecm:uuid'
+            // as the backend won't do the filtering
+            String[] querySplit = query.split("\\s");
+            boolean postFilterWhat = !("*".equals(querySplit[1]) || NXQL.ECM_UUID.equals(querySplit[1]));
+            boolean postFilter = postFilterPolicies || postFilterFilter || postFilterWhat;
             String[] principals = getPrincipalsToCheck();
             String[] permissions = securityService.getPermissionsToCheck(permission);
             Collection<Transformer> transformers = getPoliciesQueryTransformers(queryType);
@@ -1212,7 +1216,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             int n = 0;
             DocumentModelListImpl docs = new DocumentModelListImpl();
             for (DocumentModel model : dms) {
-                if (postFilterPolicies) {
+                if (postFilterPolicies || postFilterWhat) {
                     if (!hasPermission(model.getRef(), permission)) {
                         continue;
                     }

@@ -3537,11 +3537,7 @@ public class TestSQLRepositoryQuery {
         String nxql = "SELECT dc:subjects/*1 FROM File WHERE ecm:name = 'doc1' AND dc:subjects/*1 IS NULL";
         DocumentModelList dml = session.query(nxql, null, 10, 0, true);
         assertEquals(0, dml.size()); // null docs filtered out
-        if (isDBS() && !isDBSMem()) {
-            assertEquals(0, dml.totalSize()); // 0 instead of -1 because DocumentModelList is weird
-        } else {
-            assertEquals(1, dml.totalSize());
-        }
+        assertEquals(0, dml.totalSize());
 
         IterableQueryResult res = session.queryAndFetch(nxql, NXQL.NXQL);
         assertEquals(1, res.size());
@@ -4000,6 +3996,37 @@ public class TestSQLRepositoryQuery {
         dml = session.query(q);
         assertEquals(1, dml.size());
         assertEquals(doc.getId(), dml.get(0).getId());
+    }
+
+    // NXP-30434
+    @Test
+    public void testQueryCollection() {
+        DocumentModel file1 = session.createDocumentModel("/", "testfile1", "File");
+        file1 = session.createDocument(file1);
+        ACP acp = file1.getACP();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("bob", "Read", true));
+        file1.setACP(acp, true);
+        DocumentModel file2 = session.createDocumentModel("/", "testfile2", "File");
+        file2 = session.createDocument(file2);
+        DocumentModel collection = session.createDocumentModel("/", "collection", "Collection");
+        collection.setPropertyValue("collection:documentIds",
+                (Serializable) Arrays.asList(file1.getId(), file2.getId()));
+        collection = session.createDocument(collection);
+        acp = collection.getACP();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("bob", "Read", true));
+        collection.setACP(acp, true);
+        session.save();
+
+        try (CloseableCoreSession bobSession = coreFeature.openCoreSession("bob")) {
+            assertTrue(bobSession.exists(file1.getRef()));
+            assertFalse(bobSession.exists(file2.getRef()));
+            assertTrue(bobSession.exists(collection.getRef()));
+
+            List<DocumentModel> docs = bobSession.query(String.format(
+                    "SELECT collection:documentIds/* FROM Document WHERE ecm:uuid = '%s'", collection.getId()));
+            assertEquals(1, docs.size());
+            assertEquals(file1.getId(), docs.get(0).getId());
+        }
     }
 
 }
