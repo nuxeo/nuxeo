@@ -236,6 +236,27 @@ public class BatchUploadFixture extends BaseTest {
         }
     }
 
+    @Test
+    public void testBatchExecuteWithUnknownFileIdx() throws IOException {
+        String batchId;
+        String json = "{\"params\":{";
+        json += "\"document\":\"some document\"";
+        json += "}}";
+
+        // Get a batchId
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            batchId = node.get("batchId").asText();
+        }
+
+        // Omit to upload a file, the fileIdx "0" will be inexistent then;
+        // and ensure to hit a HTTP 404 error and not HTTP 500 as it was before NXP-30348.
+        try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
+                "upload/" + batchId + "/0/execute/Blob.Attach", json)) {
+            assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        }
+    }
+
     /**
      * tests if the X-File-Type header is obeyed on multipart file upload (NXP-22408)
      */

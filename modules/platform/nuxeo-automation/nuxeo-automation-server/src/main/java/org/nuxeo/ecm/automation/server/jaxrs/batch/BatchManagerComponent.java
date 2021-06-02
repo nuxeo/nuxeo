@@ -33,6 +33,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -320,7 +322,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
                     "Unable to find batch associated with id '%s' or file associated with index '%s'", batchId,
                     fileIndex);
             log.error(message);
-            throw new NuxeoException(message);
+            throw new NuxeoException(message, SC_NOT_FOUND);
         }
         return execute(blob, chainOrOperationId, session, contextParams, operationParams);
     }
