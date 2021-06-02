@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Thierry Delprat <tdelprat@nuxeo.com>
  *     Antoine Taillefer <ataillefer@nuxeo.com>
+ *     Mickaël Schoentgen
  *
  */
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
@@ -31,6 +32,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -319,7 +322,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
                     "Unable to find batch associated with id '%s' or file associated with index '%s'", batchId,
                     fileIndex);
             log.error(message);
-            throw new NuxeoException(message);
+            throw new NuxeoException(message, SC_NOT_FOUND);
         }
         return execute(blob, chainOrOperationId, session, contextParams, operationParams);
     }
