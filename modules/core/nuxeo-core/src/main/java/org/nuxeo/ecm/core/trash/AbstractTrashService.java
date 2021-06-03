@@ -255,7 +255,7 @@ public abstract class AbstractTrashService implements TrashService {
             throw new UnsupportedOperationException("Empty trash can only be performed on a Folderish document");
         }
         CoreSession session = parent.getCoreSession();
-        if (!session.hasPermission(parent.getParentRef(), SecurityConstants.REMOVE_CHILDREN)) {
+        if (!session.hasPermission(parent.getRef(), SecurityConstants.REMOVE_CHILDREN)) {
             return;
         }
         try (IterableQueryResult result = session.queryAndFetch(String.format(TRASHED_QUERY, parent.getId()),
