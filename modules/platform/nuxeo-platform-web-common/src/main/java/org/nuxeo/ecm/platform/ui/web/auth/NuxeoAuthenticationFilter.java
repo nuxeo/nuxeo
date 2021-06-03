@@ -250,9 +250,17 @@ public class NuxeoAuthenticationFilter implements Filter {
         // used in exception handler and tests
         httpRequest.setAttribute(LOGINCONTEXT_KEY, loginContext);
 
-        // store user ident
         boolean createSession = needSessionSaving(userIdent);
-        HttpSession session = httpRequest.getSession(createSession);
+        // we have successfully authenticated a user, first invalidate the HTTP session that may be created
+        // while the user was not authenticated (at the login page for instance)
+        HttpSession session = httpRequest.getSession(false);
+        if (session != null) {
+            service.invalidateSession(httpRequest);
+            createSession = true; // we had a session, re-create one
+        }
+
+        session = httpRequest.getSession(createSession);
+        // store user ident
         if (session != null) {
             session.setAttribute(USERIDENT_KEY, cachableUserIdent);
         }

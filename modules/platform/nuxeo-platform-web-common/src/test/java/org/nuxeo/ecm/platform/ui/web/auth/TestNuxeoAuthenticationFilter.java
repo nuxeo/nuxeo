@@ -798,6 +798,9 @@ public class TestNuxeoAuthenticationFilter {
 
         // redirect was called
         verify(response).sendRedirect(eq("http://localhost:8080/nuxeo/mystart/foo"));
+
+        // make sure the session was invalidated with a successful authentication
+        verify(session).invalidate();
     }
 
     /**
