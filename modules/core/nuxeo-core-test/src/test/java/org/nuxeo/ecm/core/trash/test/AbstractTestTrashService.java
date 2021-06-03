@@ -47,6 +47,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -69,6 +72,9 @@ public abstract class AbstractTestTrashService {
 
     @Inject
     protected TransactionalFeature transactionalFeature;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     protected DocumentModel fold;
 
@@ -233,6 +239,38 @@ public abstract class AbstractTestTrashService {
         assertFalse(session.isTrashed(doc2.getRef()));
         assertFalse(session.isTrashed(doc3.getRef()));
 
+    }
+
+    // NXP-30417
+    @Test
+    public void testTrashPurgeDocumentsUnderWithPermission() {
+        DocumentModel fold1 = session.createDocumentModel("/", "fold1", "Folder");
+        fold1 = session.createDocument(fold1);
+        DocumentModel fold2 = session.createDocumentModel("/fold1", "fold2", "Folder");
+        fold2 = session.createDocument(fold2);
+        ACP acp = fold2.getACP();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("bob", "ReadWrite", true));
+        fold2.setACP(acp, true);
+        DocumentModel doc1 = session.createDocumentModel("/fold1/fold2", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        transactionalFeature.nextTransaction();
+
+        CoreSession bobSession = coreFeature.getCoreSession("bob");
+        assertFalse(bobSession.exists(fold1.getRef()));
+        assertTrue(bobSession.exists(fold2.getRef()));
+        assertTrue(bobSession.exists(doc1.getRef()));
+
+        trashService.trashDocument(doc1);
+        transactionalFeature.nextTransaction();
+
+        assertTrue(trashService.isTrashed(bobSession, doc1.getRef()));
+
+        // fetch and purge fold2 with bob
+        fold2 = bobSession.getDocument(fold2.getRef());
+        trashService.purgeDocumentsUnder(fold2);
+        transactionalFeature.nextTransaction();
+
+        assertFalse(session.exists(doc1.getRef()));
     }
 
     @Test
