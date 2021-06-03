@@ -34,6 +34,7 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.work.WorkComputation;
@@ -65,7 +66,7 @@ public class WorkManagerRunWorkInFailure {
 
     public static final String ID = "WorkManager.RunWorkInFailure";
 
-    protected static final long DEFAULT_TIMEOUT_SECONDS = 120L;
+    protected static final long DEFAULT_TIMEOUT_SECONDS = 3600L;
 
     protected static final long ASSIGNMENT_TIMEOUT_SECONDS = 60L;
 
@@ -73,33 +74,50 @@ public class WorkManagerRunWorkInFailure {
 
     protected volatile long countSuccess;
 
+    protected volatile long countFiltered;
+
     @Param(name = "timeoutSeconds", required = false)
     protected long timeout = DEFAULT_TIMEOUT_SECONDS;
 
+    // @since 11.5
+    @Param(name = "dryRun", required = false)
+    protected boolean dryRun = false;
+
+    // @since 11.5
+    @Param(name = "categoryFilter", required = false)
+    protected StringList categoryFilter;
+
     @OperationMethod
     public Blob run() throws IOException, InterruptedException, TimeoutException {
+        log.warn("Reprocessing Works in DLQ: dryRun: {}, categoryFilter: {}, timeout after: {}s", dryRun, categoryFilter, timeout);
         StreamManager streamManager = Framework.getService(StreamService.class).getStreamManager();
         Settings settings = new Settings(1, 1, WorkManagerImpl.DEAD_LETTER_QUEUE_CODEC, getComputationPolicy());
         StreamProcessor processor = streamManager.registerAndCreateProcessor("RunWorkInFailure", getTopology(),
                 settings);
+        boolean timeoutDuringProcessing;
         try {
             countTotal = 0;
             countSuccess = 0;
+            countFiltered = 0;
             processor.start();
             processor.waitForAssignments(Duration.ofSeconds(ASSIGNMENT_TIMEOUT_SECONDS));
-            if (!processor.drainAndStop(getTimeout())) {
-                throw new TimeoutException();
-            }
+            timeoutDuringProcessing = !processor.drainAndStop(getTimeout());
         } finally {
             processor.shutdown();
         }
-        return buildResult();
+        Blob result = buildResult();
+        log.warn("Reprocessing status: {}, timeout: {}", result.getString(), timeoutDuringProcessing);
+        if (timeoutDuringProcessing) {
+            throw new TimeoutException();
+        }
+        return result;
     }
 
-    private Blob buildResult() throws IOException {
+    protected Blob buildResult() throws IOException {
         Map<String, Object> result = new HashMap<>();
         result.put("total", countTotal);
         result.put("success", countSuccess);
+        result.put("filtered", countFiltered);
         return Blobs.createJSONBlobFromValue(result);
     }
 
@@ -130,21 +148,40 @@ public class WorkManagerRunWorkInFailure {
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            context.askForCheckpoint();
+            if (dryRun) {
+                context.cancelAskForCheckpoint();
+            } else {
+                context.askForCheckpoint();
+            }
             Work work = WorkComputation.deserialize(record.getData());
-            log.info("Trying to run Work from DLQ: " + work.getCategory() + ":" + work.getId());
+            if (toBeSkipped(work)) {
+                return;
+            }
+            log.info("Trying to reprocess work: {} with category: {}", work::getId, work::getCategory);
             try {
-                // Using a non RUNNING state to prevent the Work to go in the DLQ
-                work.setWorkInstanceState(Work.State.UNKNOWN);
-                new WorkHolder(work).run();
-                cleanup(work, null);
-                log.info(work.getId() + ": Success.");
+                if (!dryRun) {
+                    // Using a non RUNNING state to prevent the Work to go in the DLQ
+                    work.setWorkInstanceState(Work.State.UNKNOWN);
+                    new WorkHolder(work).run();
+                    cleanup(work, null);
+                    log.info("Work: {} successfully reprocessed", work::getId);
+                }
                 countSuccess++;
             } catch (Exception e) {
                 cleanup(work, e);
-                log.error(work.getId() + ": Failure, skipping.", e);
+                log.error("Fail to reprocess work: {} with category: {}", work.getId(), work.getCategory(), e);
             }
             countTotal++;
+        }
+
+        protected boolean toBeSkipped(Work work) {
+            if (categoryFilter == null || categoryFilter.isEmpty() || categoryFilter.contains(work.getCategory())) {
+                log.debug("Keep work: {} with category: {}", work::getId, work::getCategory);
+                return false;
+            }
+            log.info("Skipping work: {} with category: {}", work::getId, work::getCategory);
+            countFiltered++;
+            return true;
         }
 
         protected void cleanup(Work work, Exception exception) {
