@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2020 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -227,6 +227,27 @@ public class BatchUploadFixture extends BaseTest {
 
         if (noDrop) {
             assertBatchExists(batchId);
+        }
+    }
+
+    @Test
+    public void testBatchExecuteWithUnknownFileIdx() throws IOException {
+        String batchId;
+        String json = "{\"params\":{";
+        json += "\"document\":\"some document\"";
+        json += "}}";
+
+        // Get a batchId
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            batchId = node.get("batchId").asText();
+        }
+
+        // Omit to upload a file, the fileIdx "0" will be inexistent then;
+        // and ensure to hit a HTTP 404 error and not HTTP 500 as it was before NXP-30348.
+        try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
+                "upload/" + batchId + "/0/execute/Blob.Attach", json)) {
+            assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
         }
     }
 
