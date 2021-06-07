@@ -199,12 +199,10 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
     }
 
     protected void buildQuery(CoreSession coreSession) {
-        List<SortInfo> sort = null;
         List<QuickFilter> quickFilters = getQuickFilters();
         String quickFiltersClause = "";
 
         if (quickFilters != null && !quickFilters.isEmpty()) {
-            sort = new ArrayList<>();
             for (QuickFilter quickFilter : quickFilters) {
                 String clause = quickFilter.getClause();
                 if (clause != null) {
@@ -214,15 +212,13 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
                         quickFiltersClause = clause;
                     }
                 }
-                sort.addAll(quickFilter.getSortInfos());
             }
-        } else if (sortInfos != null) {
-            sort = sortInfos;
         }
 
+        List<SortInfo> sortInfos = getSortInfos();
         SortInfo[] sortArray = null;
-        if (sort != null) {
-            sortArray = sort.toArray(new SortInfo[] {});
+        if (sortInfos != null) {
+            sortArray = sortInfos.toArray(SortInfo[]::new);
         }
 
         String newQuery;

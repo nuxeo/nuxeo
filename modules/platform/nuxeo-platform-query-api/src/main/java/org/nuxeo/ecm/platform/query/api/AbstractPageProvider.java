@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.NotImplementedException;
@@ -286,20 +287,29 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     @Override
     public List<SortInfo> getSortInfos() {
-        // break reference
-        List<SortInfo> res = new ArrayList<>();
+        // explicit sort infos?
         if (sortInfos != null) {
-            res.addAll(sortInfos);
+            return List.copyOf(sortInfos);
         }
-        return res;
+
+        // quick filters sort infos?
+        if (quickFilters != null && !quickFilters.isEmpty()) {
+            List<SortInfo> qfSortInfos = quickFilters.stream()
+                                                     .map(QuickFilter::getSortInfos)
+                                                     .flatMap(List::stream)
+                                                     .collect(Collectors.toList());
+            if (!qfSortInfos.isEmpty()) {
+                return qfSortInfos;
+            }
+        }
+
+        // use page provider definition sort infos if any
+        return definition != null ? definition.getSortInfos() : List.of();
     }
 
     @Override
     public SortInfo getSortInfo() {
-        if (sortInfos != null && !sortInfos.isEmpty()) {
-            return sortInfos.get(0);
-        }
-        return null;
+        return getSortInfos().stream().findFirst().orElse(null);
     }
 
     protected boolean sortInfoChanged(List<SortInfo> oldSortInfos, List<SortInfo> newSortInfos) {
