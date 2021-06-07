@@ -293,8 +293,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
             if (maxResultsStr != null) {
                 if (DEFAULT_NAVIGATION_RESULTS_KEY.equals(maxResultsStr)) {
                     ConfigurationService cs = Framework.getService(ConfigurationService.class);
-                    maxResultsStr = cs.getString(DEFAULT_NAVIGATION_RESULTS_PROPERTY,
-                            DEFAULT_NAVIGATION_RESULTS_VALUE);
+                    maxResultsStr = cs.getString(DEFAULT_NAVIGATION_RESULTS_PROPERTY, DEFAULT_NAVIGATION_RESULTS_VALUE);
                 } else if (PAGE_SIZE_RESULTS_KEY.equals(maxResultsStr)) {
                     maxResultsStr = Long.valueOf(getPageSize()).toString();
                 }
@@ -367,7 +366,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
                                 String.format(
                                         "Current page %s is not the first one but " + "shows no result and there are "
                                                 + "no results => rewind to first page",
-                                                Long.valueOf(getCurrentPageIndex())));
+                                        Long.valueOf(getCurrentPageIndex())));
                     }
                     firstPage();
                 } else {
