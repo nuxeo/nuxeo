@@ -529,15 +529,25 @@ public class ConfigurationGenerator {
      */
     public void verifyInstallation() throws ConfigurationException {
         try {
-            Files.createDirectories(configHolder.getLogPath());
-            Files.createDirectories(configHolder.getPidDirPath());
-            Files.createDirectories(configHolder.getDataPath());
-            Files.createDirectories(configHolder.getTmpPath());
-            Files.createDirectories(configHolder.getPackagesPath());
+            createDirectoriesIfNotExist(configHolder.getLogPath());
+            createDirectoriesIfNotExist(configHolder.getPidDirPath());
+            createDirectoriesIfNotExist(configHolder.getDataPath());
+            createDirectoriesIfNotExist(configHolder.getTmpPath());
+            createDirectoriesIfNotExist(configHolder.getPackagesPath());
         } catch (IOException e) {
             throw new ConfigurationException("Unable to create server directories", e);
         }
         configChecker.verify(configHolder);
+    }
+
+    /**
+     * @since 11.5
+     */
+    protected void createDirectoriesIfNotExist(Path path) throws IOException {
+        // createDirectories throws an error if there's a symlink in the path, so check the existence
+        if (Files.notExists(path)) {
+            Files.createDirectories(path);
+        }
     }
 
     /**
