@@ -341,6 +341,20 @@ public class ConfigurationGeneratorTest {
         assertTrue(configHolder.getPropertyAsBoolean("property.for.direct.upload"));
     }
 
+    // NXP-30454
+    @Test
+    public void testSymlinkInConfigurationPath() throws Exception {
+        // create another directory for log
+        Path logDir = rule.getNuxeoHome().resolve("real-log");
+        Files.createDirectories(logDir);
+        // create a symlink targeting the log directory
+        Path logSymlink = rule.getNuxeoHome().resolve(Environment.DEFAULT_LOG_DIR);
+        Files.createSymbolicLink(logSymlink, logDir);
+        // load configuration and verifyInstallation
+        ConfigurationGenerator generator = generatorBuilder().init(true).build();
+        generator.verifyInstallation();
+    }
+
     protected ConfigurationGenerator.Builder generatorBuilder() {
         // protect System properties - putAll usage on purpose for loadConfiguration to work correctly
         var systemProperties = new Properties();
