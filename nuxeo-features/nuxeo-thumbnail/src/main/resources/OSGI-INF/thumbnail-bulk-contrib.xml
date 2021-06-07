@@ -4,7 +4,7 @@
   <require>org.nuxeo.ecm.core.bulk</require>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="recomputeThumbnails" bucketSize="100" batchSize="10" httpEnabled="false"/>
+    <action name="recomputeThumbnails" bucketSize="25" batchSize="1" httpEnabled="false"/>
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
