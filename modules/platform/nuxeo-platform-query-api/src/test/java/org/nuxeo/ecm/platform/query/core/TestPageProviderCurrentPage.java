@@ -20,10 +20,12 @@ package org.nuxeo.ecm.platform.query.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -32,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -43,6 +46,7 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 9.3 see NXP-23092
@@ -58,6 +62,9 @@ public class TestPageProviderCurrentPage {
     protected static final String DUMMY_FETCH_DOCUMENTS = "DUMMY_FETCH_DOCUMENTS";
 
     protected static final int SECOND_PAGE_NUM_DOCS = 25;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
 
     @Inject
     protected PageProviderService pps;
@@ -127,6 +134,104 @@ public class TestPageProviderCurrentPage {
         assertEquals(1, pp.getNumberOfPages());
         page = pp.getCurrentPage();
         assertEquals(prevId, ((DocumentModel) page.get(0)).getId());
+    }
+
+    // NXP-30360
+    @Deploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-quick-filter-contrib.xml")
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testPageProviderSortAndQuickFilter() {
+        DocumentModel rootFolder = session.createDocumentModel("/", "rootFolder", "Folder");
+        rootFolder = session.createDocument(rootFolder);
+        DocumentModel folder = session.createDocumentModel("/rootFolder", "folder", "Folder");
+        folder.setPropertyValue("dc:title", "Folder");
+        session.createDocument(folder);
+        DocumentModel file1 = session.createDocumentModel("/rootFolder", "file1", "File");
+        file1.setPropertyValue("dc:title", "File 1");
+        session.createDocument(file1);
+        DocumentModel file2 = session.createDocumentModel("/rootFolder", "file2", "File");
+        file2.setPropertyValue("dc:title", "File 2");
+        session.createDocument(file2);
+        transactionalFeature.nextTransaction();
+
+        var props = Map.of(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+        // default sort infos, no quick filter
+        PageProvider<?> pp = pps.getPageProvider("test_quick_filter", null, 0L, 0L, props, rootFolder.getId());
+        assertNotNull(pp);
+        List<DocumentModel> docs = (List<DocumentModel>) pp.getCurrentPage();
+        assertEquals(3, docs.size());
+        assertEquals("File 1", docs.get(0).getTitle());
+        assertEquals("File 2", docs.get(1).getTitle());
+        assertEquals("Folder", docs.get(2).getTitle());
+
+        // custom sort infos, no quick filter
+        var sortInfos = List.of(new SortInfo("dc:title", false));
+        pp = pps.getPageProvider("test_quick_filter", sortInfos, 0L, 0L, props, rootFolder.getId());
+        assertNotNull(pp);
+        docs = (List<DocumentModel>) pp.getCurrentPage();
+        assertEquals(3, docs.size());
+        assertEquals("Folder", docs.get(0).getTitle());
+        assertEquals("File 2", docs.get(1).getTitle());
+        assertEquals("File 1", docs.get(2).getTitle());
+
+        // custom sort infos, quick filter
+        var ppd = pps.getPageProviderDefinition("test_quick_filter");
+        pp = pps.getPageProvider("test_quick_filter", sortInfos, 0L, 0L, props, null, ppd.getQuickFilters(),
+                rootFolder.getId());
+        assertNotNull(pp);
+        docs = (List<DocumentModel>) pp.getCurrentPage();
+        assertEquals(2, docs.size());
+        assertEquals("File 2", docs.get(0).getTitle());
+        assertEquals("File 1", docs.get(1).getTitle());
+    }
+
+    // NXP-30360
+    @Deploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-quick-filter-contrib.xml")
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testPageProviderSortAndQuickFilterWithQueryAndFetch() {
+        DocumentModel rootFolder = session.createDocumentModel("/", "rootFolder", "Folder");
+        rootFolder = session.createDocument(rootFolder);
+        DocumentModel folder = session.createDocumentModel("/rootFolder", "folder", "Folder");
+        folder.setPropertyValue("dc:title", "Folder");
+        session.createDocument(folder);
+        DocumentModel file1 = session.createDocumentModel("/rootFolder", "file1", "File");
+        file1.setPropertyValue("dc:title", "File 1");
+        session.createDocument(file1);
+        DocumentModel file2 = session.createDocumentModel("/rootFolder", "file2", "File");
+        file2.setPropertyValue("dc:title", "File 2");
+        session.createDocument(file2);
+        transactionalFeature.nextTransaction();
+
+        var props = Map.of(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+        // default sort infos, no quick filter
+        PageProvider<?> pp = pps.getPageProvider("test_quick_filter_fetch", null, 0L, 0L, props, rootFolder.getId());
+        assertNotNull(pp);
+        List<Map<String, Serializable>> res = (List<Map<String, Serializable>>) pp.getCurrentPage();
+        assertEquals(3, res.size());
+        assertEquals("File 1", res.get(0).get("dc:title"));
+        assertEquals("File 2", res.get(1).get("dc:title"));
+        assertEquals("Folder", res.get(2).get("dc:title"));
+
+        // custom sort infos, no quick filter
+        var sortInfos = List.of(new SortInfo("dc:title", false));
+        pp = pps.getPageProvider("test_quick_filter_fetch", sortInfos, 0L, 0L, props, rootFolder.getId());
+        assertNotNull(pp);
+        res = (List<Map<String, Serializable>>) pp.getCurrentPage();
+        assertEquals(3, res.size());
+        assertEquals("Folder", res.get(0).get("dc:title"));
+        assertEquals("File 2", res.get(1).get("dc:title"));
+        assertEquals("File 1", res.get(2).get("dc:title"));
+
+        // custom sort infos, quick filter
+        var ppd = pps.getPageProviderDefinition("test_quick_filter_fetch");
+        pp = pps.getPageProvider("test_quick_filter_fetch", sortInfos, 0L, 0L, props, null, ppd.getQuickFilters(),
+                rootFolder.getId());
+        assertNotNull(pp);
+        res = (List<Map<String, Serializable>>) pp.getCurrentPage();
+        assertEquals(2, res.size());
+        assertEquals("File 2", res.get(0).get("dc:title"));
+        assertEquals("File 1", res.get(1).get("dc:title"));
     }
 
 }

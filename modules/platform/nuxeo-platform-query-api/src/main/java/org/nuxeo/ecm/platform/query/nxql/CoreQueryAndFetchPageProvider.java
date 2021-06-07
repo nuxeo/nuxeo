@@ -175,12 +175,11 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
     }
 
     protected void buildQuery() {
-        List<SortInfo> sort = null;
+        List<SortInfo> sort = new ArrayList<>();
         List<QuickFilter> quickFilters = getQuickFilters();
         String quickFiltersClause = "";
 
         if (quickFilters != null && !quickFilters.isEmpty()) {
-            sort = new ArrayList<>();
             for (QuickFilter quickFilter : quickFilters) {
                 String clause = quickFilter.getClause();
                 if (!quickFiltersClause.isEmpty() && clause != null) {
@@ -190,14 +189,13 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
                 }
                 sort.addAll(quickFilter.getSortInfos());
             }
-        } else if (sortInfos != null) {
-            sort = sortInfos;
         }
 
-        SortInfo[] sortArray = null;
-        if (sort != null) {
-            sortArray = sort.toArray(new SortInfo[] {});
+        if (sortInfos != null) {
+            sort.addAll(sortInfos);
         }
+
+        SortInfo[] sortArray = sort.toArray(SortInfo[]::new);
 
         String newQuery;
         PageProviderDefinition def = getDefinition();

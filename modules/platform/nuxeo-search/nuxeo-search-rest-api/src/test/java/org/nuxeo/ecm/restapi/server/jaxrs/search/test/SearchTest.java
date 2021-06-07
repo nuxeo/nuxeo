@@ -48,6 +48,7 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -67,6 +68,9 @@ public class SearchTest extends BaseTest {
 
     @Inject
     protected CoreFeature coreFeature;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
 
     protected static final String QUERY_EXECUTE_PATH = "search/lang/NXQL/execute";
 
@@ -346,6 +350,47 @@ public class SearchTest extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(nbResults, getLogEntries(node).size());
+        }
+    }
+
+    @Test
+    public void iCanPerformPageProviderWithQuickFilterAndSortInfo() throws IOException {
+        DocumentModel rootFolder = RestServerInit.getFolder(1, session);
+        DocumentModel folder = session.createDocumentModel(rootFolder.getPathAsString(), "folder", "Folder");
+        folder.setPropertyValue("dc:title", "Folder");
+        session.createDocument(folder);
+        transactionalFeature.nextTransaction();
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("ecm_path", "[\"" + rootFolder.getPathAsString() + "\"]");
+        queryParams.add("sortBy", "dc:title");
+        queryParams.add("sortOrder", "desc");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("default_search"), queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            List<JsonNode> entries = getLogEntries(node);
+            assertEquals(6, entries.size());
+            assertEquals("Note 4", entries.get(0).get("title").textValue());
+            assertEquals("Note 3", entries.get(1).get("title").textValue());
+            assertEquals("Note 2", entries.get(2).get("title").textValue());
+            assertEquals("Note 1", entries.get(3).get("title").textValue());
+            assertEquals("Note 0", entries.get(4).get("title").textValue());
+            assertEquals("Folder", entries.get(5).get("title").textValue());
+        }
+
+        queryParams.add("quickFilters", "noFolder");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("default_search"), queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            List<JsonNode> entries = getLogEntries(node);
+            assertEquals(5, entries.size());
+            assertEquals("Note 4", entries.get(0).get("title").textValue());
+            assertEquals("Note 3", entries.get(1).get("title").textValue());
+            assertEquals("Note 2", entries.get(2).get("title").textValue());
+            assertEquals("Note 1", entries.get(3).get("title").textValue());
+            assertEquals("Note 0", entries.get(4).get("title").textValue());
         }
     }
 
