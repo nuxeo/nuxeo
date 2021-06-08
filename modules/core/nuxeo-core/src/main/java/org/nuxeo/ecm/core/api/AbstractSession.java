@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.MAKE_RECORD;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.MANAGE_LEGAL_HOLD;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.SET_RETENTION;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_CHILDREN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_LIFE_CYCLE;
@@ -37,6 +36,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_SECURITY;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_VERSION;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SET_RETENTION;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNLOCK;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE;
@@ -113,7 +113,6 @@ import io.dropwizard.metrics5.Counter;
 import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
-
 import io.opencensus.trace.AttributeValue;
 import io.opencensus.trace.Span;
 import io.opencensus.trace.Tracing;
@@ -835,7 +834,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         DocumentRef parentRef = docModel.getParentRef();
         Map<String, Serializable> props = getContextMapEventInfo(docModel);
 
-        if (parentRef != null && EMPTY_PATH.equals(parentRef)) {
+        if (EMPTY_PATH.equals(parentRef)) {
             parentRef = null;
         }
         Document parent = fillCreateOptions(parentRef, name, props);
@@ -851,6 +850,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
 
         // create the document
+        @SuppressWarnings("unchecked")
         Document doc = getSession().importDocument(id, parentRef == null ? null : parent, name, typeName, props);
 
         if (typeName.equals(CoreSession.IMPORT_PROXY_TYPE)) {
@@ -1240,6 +1240,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                     postFilter ? 0 : offset);
 
             // get document list with total size
+            @SuppressWarnings("unchecked")
             PartialList<Document> pl = getSession().query(query, queryType, queryFilter, postFilter ? -1 : countUpTo);
             // convert to DocumentModelList
             DocumentModelListImpl dms = new DocumentModelListImpl(pl.size());
@@ -1315,6 +1316,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             Collection<Transformer> transformers = getPoliciesQueryTransformers(queryType);
 
             QueryFilter queryFilter = new QueryFilter(principal, principals, permissions, null, transformers, 0, 0);
+            @SuppressWarnings("unchecked")
             IterableQueryResult result = getSession().queryAndFetch(query, queryType, queryFilter, distinctDocuments,
                     params);
 
@@ -1389,8 +1391,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         SecurityService securityService = getSecurityService();
         NuxeoPrincipal principal = getPrincipal();
         String[] principals = getPrincipalsToCheck();
-        String permission = BROWSE;
-        String[] permissions = securityService.getPermissionsToCheck(permission);
+        String[] permissions = securityService.getPermissionsToCheck(BROWSE);
         Collection<Transformer> transformers = getPoliciesQueryTransformers(NXQL.NXQL);
         QueryFilter queryFilter = new QueryFilter(principal, principals, permissions, null, transformers, 0, 0);
 
@@ -1443,6 +1444,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // TODO must also check for proxies on live docs (NXP-22312)
         if (doc.isVersion()) {
             // TODO a hasProxies method would be more efficient
+            @SuppressWarnings("unchecked")
             Collection<Document> proxies = getSession().getProxies(doc, null);
             if (!proxies.isEmpty()) {
                 return "Proxy " + proxies.iterator().next().getUUID() + " targets version " + doc.getUUID();
@@ -1705,15 +1707,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         updateDocumentCountInc();
 
         // Notify that proxies have been updated
+        @SuppressWarnings("unchecked")
         List<Document> proxies = getSession().getProxies(doc);
-        if (proxies != null && !proxies.isEmpty()) {
-            proxies.forEach(proxy -> {
-                DocumentModel docProxy = readModel(proxy);
-                if (!docProxy.isImmutable()) {
-                    notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, docProxy, options, null, null, true, false);
-                }
-            });
-        }
+        proxies.forEach(proxy -> {
+            DocumentModel docProxy = readModel(proxy);
+            if (!docProxy.isImmutable()) {
+                notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, docProxy, options, null, null, true, false);
+            }
+        });
         return docModel;
     }
 
@@ -2045,6 +2046,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * Remove proxies for the same base document in the folder. doc may be a normal document or a proxy.
      */
     protected List<String> removeExistingProxies(Document doc, Document folder) {
+        @SuppressWarnings("unchecked")
         Collection<Document> otherProxies = getSession().getProxies(doc, folder);
         List<String> removedProxyIds = new ArrayList<>(otherProxies.size());
         for (Document otherProxy : otherProxies) {
@@ -2061,6 +2063,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @return the proxy if it was updated, or {@code null} if none or several were found
      */
     protected DocumentModel updateExistingProxies(Document doc, Document folder, Document target) {
+        @SuppressWarnings("unchecked")
         Collection<Document> proxies = getSession().getProxies(doc, folder);
         try {
             if (proxies.size() == 1) {
@@ -2082,6 +2085,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             checkPermission(folder, READ_CHILDREN);
         }
         Document doc = resolveReference(docRef);
+        @SuppressWarnings("unchecked")
         Collection<Document> children = getSession().getProxies(doc, folder);
         DocumentModelList docs = new DocumentModelListImpl();
         for (Document child : children) {
@@ -2159,7 +2163,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             throw new PropertyException("Document is not a record");
         }
         Calendar current = doc.getRetainUntil();
-        if (current!=null && retainUntil!=null && current.compareTo(retainUntil) == 0) {
+        if (current != null && retainUntil != null && current.compareTo(retainUntil) == 0) {
             // unchanged, don't do anything
             return;
         }
@@ -2202,11 +2206,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         DocumentModel docModel = readModel(doc);
         Map<String, Serializable> options = new HashMap<>();
         options.put("comment", StringUtils.defaultString(comment));
-        String beforeLegalHoldEvent = hold ? DocumentEventTypes.BEFORE_SET_LEGAL_HOLD : DocumentEventTypes.BEFORE_REMOVE_LEGAL_HOLD;
+        String beforeLegalHoldEvent = hold ? DocumentEventTypes.BEFORE_SET_LEGAL_HOLD
+                : DocumentEventTypes.BEFORE_REMOVE_LEGAL_HOLD;
         notifyEvent(beforeLegalHoldEvent, docModel, options, null, null, true, false);
         doc.setLegalHold(hold);
         docModel = readModel(doc);
-        String afterLegalHoldEvent = hold ? DocumentEventTypes.AFTER_SET_LEGAL_HOLD : DocumentEventTypes.AFTER_REMOVE_LEGAL_HOLD;
+        String afterLegalHoldEvent = hold ? DocumentEventTypes.AFTER_SET_LEGAL_HOLD
+                : DocumentEventTypes.AFTER_REMOVE_LEGAL_HOLD;
         notifyEvent(afterLegalHoldEvent, docModel, options, null, null, true, false);
     }
 
