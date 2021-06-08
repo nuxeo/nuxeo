@@ -1005,6 +1005,47 @@ public class TestAutomaticIndexing {
 
     }
 
+    // NXP-30219
+    @Test
+    public void shouldIndexUpdatedProxyAfterDocumentTrashed() throws Exception {
+        startTransaction();
+        DocumentModel folder1 = session.createDocumentModel("/", "testfolder1", "Folder");
+        folder1 = session.createDocument(folder1);
+
+        DocumentModel file1 = session.createDocumentModel("/", "testfile1", "File");
+        file1 = session.createDocument(file1);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // Create proxy
+        session.createProxy(file1.getRef(), folder1.getRef());
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // Now trash live document
+        trashService.trashDocument(file1);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
+        assertEquals(3, ret.totalSize());
+
+        // Check that live document was updated in ES
+        ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isProxy = 0 and ecm:isTrashed = 1"));
+        assertEquals(1, ret.totalSize());
+        assertTrue(ret.get(0).isTrashed());
+
+        // Check that proxy was updated in ES
+        ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isProxy = 1 and ecm:isTrashed = 1"));
+        assertEquals(1, ret.totalSize());
+        assertTrue(ret.get(0).isTrashed());
+    }
+
     @Test
     public void shouldIndexComplexCase() throws Exception {
         startTransaction();

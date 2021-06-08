@@ -2634,6 +2634,17 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             notifyEvent(DocumentEventTypes.BINARYTEXT_UPDATED, docModel, options, null, null, false, true);
         }
         doc.setSystemProp(systemProperty, value);
+
+        // Notify that proxies have been updated
+        @SuppressWarnings("unchecked")
+        List<Document> proxies = getSession().getProxies(doc);
+        proxies.forEach(proxy -> {
+            DocumentModel docProxy = readModel(proxy);
+            if (!docProxy.isImmutable()) {
+                notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, docProxy, new HashMap<>(), null, null, true,
+                        false);
+            }
+        });
     }
 
     @Override
