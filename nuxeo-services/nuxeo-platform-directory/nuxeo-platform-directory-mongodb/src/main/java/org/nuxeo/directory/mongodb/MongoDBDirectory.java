@@ -58,6 +58,16 @@ public class MongoDBDirectory extends AbstractDirectory {
     public static final String DIRECTORY_CONNECTION_PREFIX = "directory/";
 
     /**
+     * @since 11.5
+     */
+    public static final String ACE_INFO_COLLECTION = "aceinfo";
+
+    /**
+     * @since 11.5
+     */
+    public static final String ACE_INFO_ID = "aceinfo:id";
+
+    /**
      * @since 10.10-HF16
      */
     protected String databaseID;
@@ -145,6 +155,11 @@ public class MongoDBDirectory extends AbstractDirectory {
         if (isMultiTenant()) {
             collection.createIndex(Indexes.hashed(TENANT_ID_FIELD));
         }
+
+        if (isACEInfo()) {
+            collection.createIndex(Indexes.ascending(ACE_INFO_ID));
+        }
+
         if (loadData) {
             loadData();
         }
@@ -187,6 +202,10 @@ public class MongoDBDirectory extends AbstractDirectory {
      */
     protected MongoCollection<Document> getCountersCollection() {
         return countersCollection;
+    }
+
+    protected boolean isACEInfo() {
+        return ACE_INFO_COLLECTION.equals(collection.getNamespace().getCollectionName());
     }
 
 }
