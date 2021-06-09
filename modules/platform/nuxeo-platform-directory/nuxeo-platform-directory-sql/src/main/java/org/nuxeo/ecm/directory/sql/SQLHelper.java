@@ -175,7 +175,7 @@ public class SQLHelper {
                     missingColumns.add(column);
 
                     if (breakAtFirstMissing) {
-                        return Set.of();
+                        return missingColumns;
                     }
                 }
             }
