@@ -47,10 +47,14 @@ public class TriggerMetadataMappingOnDocument {
     @Param(name = "metadataMappingId", required = true, description = "The metadata mapping id to apply on the input document.")
     protected String metadataMappingId;
 
+    /** @since 11.5 */
+    @Param(name = "save", required = false, values = "true")
+    protected boolean save = true;
+
     @OperationMethod
     public void run(DocumentModel document) {
         binaryMetadataService.writeMetadata(document, metadataMappingId);
-        if (document.getId() != null) { // if not called during creation
+        if (document.getId() != null && save) { // if not called during creation and asked
             document.getCoreSession().saveDocument(document);
         }
     }
