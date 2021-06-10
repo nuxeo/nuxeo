@@ -83,18 +83,19 @@ public class ShellExecutor implements Executor {
     public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params, EnvironmentDescriptor env) {
         String commandLine = cmdDesc.getCommand() + " " + String.join(" ", cmdDesc.getParametersString());
         try {
+            String dbgCommandLine = String.format("command: %s, parameters: %s", commandLine,
+                    params.getParameters()
+                          .entrySet()
+                          .stream()
+                          .map(e -> String.format("%s=%s", e.getKey(), e.getValue().getValue()))
+                          .collect(Collectors.joining(", ")));
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Running system command: %s with parameters: %s", commandLine,
-                        params.getParameters()
-                              .entrySet()
-                              .stream()
-                              .map(e -> String.format("%s=%s", e.getKey(), e.getValue().getValue()))
-                              .collect(Collectors.joining(", "))));
+                log.debug("Running system " + dbgCommandLine);
             }
             long t0 = System.currentTimeMillis();
             ExecResult res = exec1(cmdDesc, params, env);
             long t1 = System.currentTimeMillis();
-            return new ExecResult(commandLine, res.getOutput(), t1 - t0, res.getReturnCode());
+            return new ExecResult(dbgCommandLine, res.getOutput(), t1 - t0, res.getReturnCode());
         } catch (IOException e) {
             return new ExecResult(commandLine, e);
         }

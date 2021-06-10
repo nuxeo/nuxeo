@@ -20,36 +20,19 @@
  */
 package org.nuxeo.ecm.platform.thumbnail.listener;
 
-import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
-import org.nuxeo.ecm.core.api.versioning.VersioningService;
-import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
-import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Thumbnail listener handling creation and update document event to store doc thumbnail preview (only for DocType File)
@@ -58,72 +41,16 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class UpdateThumbnailListener implements PostCommitEventListener {
 
-    /** @since 11.1 **/
+    // @since 11.1
     private static final Logger log = LogManager.getLogger(UpdateThumbnailListener.class);
 
     public static final String THUMBNAIL_UPDATED = "thumbnailUpdated";
 
+    // @since 11.5
+    protected ThumbnailHelper thumbnailHelper = new ThumbnailHelper();
+
     protected void processDoc(CoreSession session, DocumentModel doc) {
-        Blob thumbnailBlob = getManagedThumbnail(doc);
-        if (thumbnailBlob == null) {
-            ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter.class);
-            if (thumbnailAdapter == null) {
-                return;
-            }
-            thumbnailBlob = thumbnailAdapter.computeThumbnail(session);
-        }
-        if (thumbnailBlob != null) {
-            if (!doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
-                doc.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
-            }
-            doc.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, (Serializable) thumbnailBlob);
-        } else {
-            if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
-                doc.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, null);
-                doc.removeFacet(ThumbnailConstants.THUMBNAIL_FACET);
-            }
-        }
-        if (doc.isDirty()) {
-            doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
-            doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
-            doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, Boolean.TRUE);
-            doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, Boolean.TRUE);
-            doc.putContextData("disableAuditLogger", Boolean.TRUE);
-            if (doc.isVersion()) {
-                doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
-            }
-            doc.putContextData(THUMBNAIL_UPDATED, true);
-            session.saveDocument(doc);
-            newTransaction();
-        }
-    }
-
-    protected void newTransaction() {
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        TransactionHelper.startTransaction();
-    }
-
-    private Blob getManagedThumbnail(DocumentModel doc) {
-        BlobHolder bh = doc.getAdapter(BlobHolder.class);
-        if (bh == null) {
-            return null;
-        }
-        Blob blob = bh.getBlob();
-        if (blob == null) {
-            return null;
-        }
-        BlobManager blobManager = Framework.getService(BlobManager.class);
-        try {
-            InputStream is = blobManager.getThumbnail(blob);
-            if (is == null) {
-                return null;
-            }
-            return Blobs.createBlob(is);
-        } catch (IOException e) {
-            throw new NuxeoException("Failed to get managed blob thumbnail", e);
-        }
+        thumbnailHelper.createThumbnailIfNeeded(session, doc);
     }
 
     @Override
@@ -142,7 +69,6 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
                 log.trace("Thumbnail computation is disabled for document {}", doc::getId);
                 continue;
             }
-
             if (doc instanceof DeletedDocumentModel) {
                 continue;
             }
@@ -152,6 +78,7 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             if (processedDocs.contains(doc.getId())) {
                 continue;
             }
+            thumbnailHelper.newTransaction();
             CoreSession repo = context.getCoreSession();
             processDoc(repo, doc);
             processedDocs.add(doc.getId());
