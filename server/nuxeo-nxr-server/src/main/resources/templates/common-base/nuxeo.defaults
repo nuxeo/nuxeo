@@ -92,6 +92,8 @@ nuxeo.work.queue.thumbnail.threads=4
 nuxeo.work.queue.video.threads=2
 # Number of threads for the pictureViews queue
 nuxeo.work.queue.picture.threads=2
+# Explicit timeout for thumbnail generation
+nuxeo.thumbnail.transaction.timeout.seconds=300
 
 ###
 # Elasticsearch
