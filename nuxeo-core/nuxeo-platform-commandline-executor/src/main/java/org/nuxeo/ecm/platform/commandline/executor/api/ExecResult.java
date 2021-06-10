@@ -59,8 +59,9 @@ public class ExecResult implements Serializable {
         this.returnCode = returnCode;
         success = returnCode == 0;
         if (!success) {
-            error = new CommandException(String.format("Error code %d return by command: %s\n%s", returnCode,
-                    commandLine, StringUtils.join(output, "\n  ")));
+            error = new CommandException(String.format("Error code %d%s after %.2fs for %s\noutput: %s", returnCode,
+                    isCommandInTimeout() ? " (timeout)" : "", execTime / 1000.0, commandLine,
+                    StringUtils.join(output, "\n  ")));
         } else {
             error = null;
         }
@@ -72,7 +73,7 @@ public class ExecResult implements Serializable {
         output = null;
         returnCode = 1;
         success = false;
-        this.error = new CommandException(String.format("Error while running command: %s", commandLine), error);
+        this.error = new CommandException(String.format("Error while running %s", commandLine), error);
     }
 
     public List<String> getOutput() {
