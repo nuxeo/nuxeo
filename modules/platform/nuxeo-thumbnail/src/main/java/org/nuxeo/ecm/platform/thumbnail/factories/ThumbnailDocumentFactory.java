@@ -95,7 +95,7 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
                 }
             }
         } catch (NuxeoException e) {
-            log.warn("Cannot compute document thumbnail", e);
+            log.warn("Cannot compute document thumbnail for: " + doc.getId(), e);
         }
         return thumbnailBlob;
     }
