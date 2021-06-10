@@ -156,7 +156,6 @@ public class TestCommands {
         result = cles.execCommand("tooLong", cles.getDefaultCmdParameters());
         assertFalse(result.isSuccessful());
         assertTrue(result.isCommandInTimeout());
-
         // Start a new transaction to prevent tx timeout during test tear down
         try {
             TransactionHelper.commitOrRollbackTransaction();

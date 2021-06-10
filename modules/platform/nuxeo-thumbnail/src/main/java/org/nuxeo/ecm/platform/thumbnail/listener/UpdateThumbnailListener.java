@@ -64,6 +64,12 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
 
     public static final String THUMBNAIL_UPDATED = "thumbnailUpdated";
 
+    public static final String THUMBNAIL_MAX_DURATION_PROPERTY = "nuxeo.thumbnail.listener.durationMaxSeconds";
+
+    public static final int DEFAULT_THUMBNAIL_MAX_DURATION_SECONDS = 300;
+
+    protected Integer transactionTimeout;
+
     protected void processDoc(CoreSession session, DocumentModel doc) {
         Blob thumbnailBlob = getManagedThumbnail(doc);
         if (thumbnailBlob == null) {
@@ -95,7 +101,6 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             }
             doc.putContextData(THUMBNAIL_UPDATED, true);
             session.saveDocument(doc);
-            newTransaction();
         }
     }
 
@@ -103,7 +108,16 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.commitOrRollbackTransaction();
         }
-        TransactionHelper.startTransaction();
+        TransactionHelper.startTransaction(getTransactionTimeout());
+        // timeout of command line executions will be aligned with the transaction timeout
+    }
+
+    protected int getTransactionTimeout() {
+        if (transactionTimeout == null) {
+            String maxDurationStr = Framework.getProperty(THUMBNAIL_MAX_DURATION_PROPERTY, String.valueOf(DEFAULT_THUMBNAIL_MAX_DURATION_SECONDS));
+            transactionTimeout = Integer.parseInt(maxDurationStr);
+        }
+        return transactionTimeout;
     }
 
     private Blob getManagedThumbnail(DocumentModel doc) {
@@ -142,7 +156,6 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
                 log.trace("Thumbnail computation is disabled for document {}", doc::getId);
                 continue;
             }
-
             if (doc instanceof DeletedDocumentModel) {
                 continue;
             }
@@ -152,6 +165,7 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             if (processedDocs.contains(doc.getId())) {
                 continue;
             }
+            newTransaction();
             CoreSession repo = context.getCoreSession();
             processDoc(repo, doc);
             processedDocs.add(doc.getId());
