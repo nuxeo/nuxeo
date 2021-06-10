@@ -214,8 +214,10 @@ public class ShellExecutor implements Executor {
             // out of transaction
             return timeout;
         }
-        // increment ttl because timeout 0s means no timeout
-        return Math.min(ttl + 1, timeout);
+        // try to keep 5s margin to avoid transaction timeout, minimum to 1s because 0 means no timeout
+        ttl = ttl <= 5 ? 1 : ttl - 5;
+        // take the minimum between transaction and explicit timeout
+        return Math.min(ttl, timeout);
     }
 
     /**
