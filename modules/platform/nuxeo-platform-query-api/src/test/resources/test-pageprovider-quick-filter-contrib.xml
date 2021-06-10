@@ -14,6 +14,9 @@
         <quickFilter name="noFolder">
           <clause>ecm:mixinType != 'Folderish'</clause>
         </quickFilter>
+        <quickFilter name="bySource">
+          <sort column="dc:source" ascending="true" />
+        </quickFilter>
       </quickFilters>
       <pageSize>20</pageSize>
     </coreQueryPageProvider>
@@ -27,6 +30,9 @@
       <quickFilters>
         <quickFilter name="noFolder">
           <clause>ecm:mixinType != 'Folderish'</clause>
+        </quickFilter>
+        <quickFilter name="bySource">
+          <sort column="dc:source" ascending="true" />
         </quickFilter>
       </quickFilters>
       <pageSize>20</pageSize>
