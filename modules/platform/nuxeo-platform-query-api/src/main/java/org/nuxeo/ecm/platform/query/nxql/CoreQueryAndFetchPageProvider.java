@@ -175,7 +175,6 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
     }
 
     protected void buildQuery() {
-        List<SortInfo> sort = new ArrayList<>();
         List<QuickFilter> quickFilters = getQuickFilters();
         String quickFiltersClause = "";
 
@@ -187,15 +186,14 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
                 } else {
                     quickFiltersClause = clause != null ? clause : "";
                 }
-                sort.addAll(quickFilter.getSortInfos());
             }
         }
 
+        List<SortInfo> sortInfos = getSortInfos();
+        SortInfo[] sortArray = null;
         if (sortInfos != null) {
-            sort.addAll(sortInfos);
+            sortArray = sortInfos.toArray(SortInfo[]::new);
         }
-
-        SortInfo[] sortArray = sort.toArray(SortInfo[]::new);
 
         String newQuery;
         PageProviderDefinition def = getDefinition();

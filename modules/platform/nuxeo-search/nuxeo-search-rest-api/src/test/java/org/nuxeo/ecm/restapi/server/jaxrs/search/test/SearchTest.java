@@ -353,6 +353,7 @@ public class SearchTest extends BaseTest {
         }
     }
 
+    // NXP-30360
     @Test
     public void iCanPerformPageProviderWithQuickFilterAndSortInfo() throws IOException {
         DocumentModel rootFolder = RestServerInit.getFolder(1, session);
