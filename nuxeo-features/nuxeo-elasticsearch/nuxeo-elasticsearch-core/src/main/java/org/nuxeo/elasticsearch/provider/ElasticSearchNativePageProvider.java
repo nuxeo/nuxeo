@@ -89,6 +89,7 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
         currentPageDocuments = new ArrayList<>();
         // Build the ES query
         QueryBuilder query = makeQueryBuilder();
+        List<SortInfo> sortInfos = getSortInfos();
         SortInfo[] sortArray = null;
         if (sortInfos != null) {
             sortArray = sortInfos.toArray(new SortInfo[sortInfos.size()]);

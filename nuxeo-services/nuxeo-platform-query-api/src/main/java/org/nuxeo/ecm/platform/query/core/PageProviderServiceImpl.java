@@ -112,9 +112,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
             pageProvider.setMaxPageSize(maxPageSize.longValue());
         }
 
-        if (sortInfos == null) {
-            pageProvider.setSortInfos(desc.getSortInfos());
-        } else {
+        if (sortInfos != null) {
             pageProvider.setSortInfos(sortInfos);
         }
 
