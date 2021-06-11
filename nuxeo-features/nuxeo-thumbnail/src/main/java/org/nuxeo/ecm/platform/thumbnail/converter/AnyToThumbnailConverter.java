@@ -48,6 +48,10 @@ public class AnyToThumbnailConverter implements Converter {
 
     public static final String ANY_TO_PDF_CONVERTER_NAME = "any2pdf";
 
+    public static final String OFFICE_TO_THUMBNAIL_CONVERTER_NAME = "officeToThumbnail";
+
+    public static final String OFFICE_TO_PNG_CONVERTER_NAME = "sofficeToPng";
+
     public static boolean isPDFMimeType(String mimeType) {
         return PDF_MIME_TYPE_PATTERN.matcher(mimeType).matches();
     }
@@ -76,6 +80,9 @@ public class AnyToThumbnailConverter implements Converter {
                 && conversionService.isConverterAvailable(PDF_AND_IMAGE_TO_THUMBNAIL_CONVERTER_NAME, true)
                                     .isAvailable()) {
             converterName = PDF_AND_IMAGE_TO_THUMBNAIL_CONVERTER_NAME;
+        } else if (conversionService.isSourceMimeTypeSupported(OFFICE_TO_PNG_CONVERTER_NAME, mimeType)
+                && conversionService.isConverterAvailable(OFFICE_TO_PNG_CONVERTER_NAME, true).isAvailable()) {
+            converterName = OFFICE_TO_THUMBNAIL_CONVERTER_NAME;
         } else if (conversionService.isSourceMimeTypeSupported(ANY_TO_PDF_CONVERTER_NAME, mimeType)
                 && conversionService.isConverterAvailable(ANY_TO_PDF_CONVERTER_NAME, true).isAvailable()) {
             converterName = ANY_TO_PDF_TO_THUMBNAIL_CONVERTER_NAME;
