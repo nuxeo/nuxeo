@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.query.api.PageProviderservice.quick.filter.testContrib">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="test_quick_filter">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ?
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <quickFilters>
+        <quickFilter name="noFolder">
+          <clause>ecm:mixinType != 'Folderish'</clause>
+        </quickFilter>
+        <quickFilter name="bySource">
+          <sort column="dc:source" ascending="true" />
+        </quickFilter>
+      </quickFilters>
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
+    <genericPageProvider name="test_quick_filter_fetch"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <pattern>
+        SELECT dc:title FROM Document WHERE ecm:parentId = ?
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <quickFilters>
+        <quickFilter name="noFolder">
+          <clause>ecm:mixinType != 'Folderish'</clause>
+        </quickFilter>
+        <quickFilter name="bySource">
+          <sort column="dc:source" ascending="true" />
+        </quickFilter>
+      </quickFilters>
+      <pageSize>20</pageSize>
+    </genericPageProvider>
+
+  </extension>
+
+</component>
