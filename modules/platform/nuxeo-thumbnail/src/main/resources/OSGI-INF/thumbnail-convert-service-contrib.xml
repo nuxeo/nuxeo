@@ -96,6 +96,76 @@
       <sourceMimeType>application/wordperfect</sourceMimeType>
     </converter>
 
+    <converter name="sofficeToPng" class="org.nuxeo.ecm.platform.convert.plugins.LibreOfficeConverter">
+      <destinationMimeType>image/png</destinationMimeType>
+
+      <parameters>
+        <parameter name="CommandLineName">soffice</parameter>
+        <parameter name="format">png</parameter>
+      </parameters>
+
+      <!-- Microsoft office documents -->
+      <sourceMimeType>application/msword</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </sourceMimeType>
+
+      <!-- OpenOffice.org 1.x documents -->
+      <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.draw</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.draw.template</sourceMimeType>
+
+      <!-- OpenOffice.org 2.x documents -->
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet-template
+      </sourceMimeType>
+      <sourceMimeType>application/vnd.oasis.opendocument.text</sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.text-template
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation-template
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.graphics
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.graphics-template
+      </sourceMimeType>
+
+      <!-- WordPerfect -->
+      <sourceMimeType>application/wordperfect</sourceMimeType>
+    </converter>
+
+    <converter name="officeToThumbnail">
+      <destinationMimeType>image/png</destinationMimeType>
+      <conversionSteps>
+        <subconverter>sofficeToPng</subconverter>
+        <subconverter>pdfAndImageToThumbnail</subconverter>
+      </conversionSteps>
+    </converter>
+
   </extension>
 
 </component>
