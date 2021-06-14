@@ -52,6 +52,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @Deploy("org.nuxeo.ecm.platform.restapi.server.routing")
 @Deploy("org.nuxeo.ecm.platform.restapi.server")
 @Deploy("org.nuxeo.ecm.platform.routing.default")
+@Deploy("org.nuxeo.ecm.platform.filemanager.api")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core")
 public class TaskObjectTest extends BaseTest {
 
     @Mock
