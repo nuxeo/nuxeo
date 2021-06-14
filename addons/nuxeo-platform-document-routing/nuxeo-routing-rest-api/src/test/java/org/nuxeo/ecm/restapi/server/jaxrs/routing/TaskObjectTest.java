@@ -19,7 +19,12 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.routing;
 
-import com.sun.jersey.core.util.MultivaluedMapImpl;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -39,11 +44,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import javax.ws.rs.core.MultivaluedMap;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verify;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 @RunWith(FeaturesRunner.class)
 @Features({ EmbeddedAutomationServerFeature.class, WorkflowFeature.class, MockitoFeature.class })
@@ -60,24 +61,31 @@ public class TaskObjectTest extends BaseTest {
     @Test
     public void shouldCallNonPaginatedMethodWhenNoParameter() {
         getResponse(BaseTest.RequestType.GET, "/task");
-        verify(routingService).getTasks(any(DocumentModel.class), anyString(), anyString(), anyString(), any(CoreSession.class));
+        verify(routingService).getTasks(any(DocumentModel.class), anyString(), anyString(), anyString(),
+                any(CoreSession.class));
     }
 
     @Test
     public void shouldCallNonPaginatedMethodWhenParameterIsFalse() {
-        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl() {{
-            add("isPaginated", "false");
-        }};
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl() {
+            {
+                add("isPaginated", "false");
+            }
+        };
         getResponse(BaseTest.RequestType.GET, "/task", queryParams);
-        verify(routingService).getTasks(any(DocumentModel.class), anyString(), anyString(), anyString(), any(CoreSession.class));
+        verify(routingService).getTasks(any(DocumentModel.class), anyString(), anyString(), anyString(),
+                any(CoreSession.class));
     }
 
     @Test
     public void shouldCallPaginatedMethodWhenParameterIsTrue() {
-        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl() {{
-            add("isPaginated", "true");
-        }};
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl() {
+            {
+                add("isPaginated", "true");
+            }
+        };
         getResponse(BaseTest.RequestType.GET, "/task", queryParams);
-        verify(routingService, Mockito.times(0)).getTasks(any(DocumentModel.class), anyString(), anyString(), anyString(), any(CoreSession.class));
+        verify(routingService, Mockito.times(0)).getTasks(any(DocumentModel.class), anyString(), anyString(),
+                anyString(), any(CoreSession.class));
     }
 }
