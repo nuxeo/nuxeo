@@ -338,6 +338,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending("rend:sourceId"));
         coll.createIndex(Indexes.ascending("rend:sourceVersionableId"));
         coll.createIndex(Indexes.ascending("drv:subscriptions.enabled"));
+        coll.createIndex(Indexes.ascending("collection:documentIds"));
         coll.createIndex(Indexes.ascending("collectionMember:collectionIds"));
         coll.createIndex(Indexes.ascending("nxtag:tags"));
         if (!isFulltextSearchDisabled()) {
