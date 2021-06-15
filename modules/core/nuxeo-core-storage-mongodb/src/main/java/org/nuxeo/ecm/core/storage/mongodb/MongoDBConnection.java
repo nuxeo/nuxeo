@@ -258,6 +258,9 @@ public class MongoDBConnection extends DBSConnectionBase {
         coll.createIndex(Indexes.ascending("collectionMember:collectionIds"));
         coll.createIndex(Indexes.ascending("nxtag:tags"));
         coll.createIndex(Indexes.ascending("coldstorage:beingRetrieved"));
+        // TODO remove it when PropertyCommentManager will be removed
+        coll.createIndex(Indexes.ascending("comment:parentId"));
+        coll.createIndex(Indexes.ascending("annotation:xpath"));
         if (!repository.isFulltextSearchDisabled()) {
             Bson indexKeys = Indexes.compoundIndex( //
                     Indexes.text(KEY_FULLTEXT_SIMPLE), //
