@@ -341,6 +341,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending("collection:documentIds"));
         coll.createIndex(Indexes.ascending("collectionMember:collectionIds"));
         coll.createIndex(Indexes.ascending("nxtag:tags"));
+        // TODO remove it when PropertyCommentManager will be removed
+        coll.createIndex(Indexes.ascending("comment:parentId"));
+        coll.createIndex(Indexes.ascending("annotation:xpath"));
         if (!isFulltextSearchDisabled()) {
             Bson indexKeys = Indexes.compoundIndex( //
                     Indexes.text(KEY_FULLTEXT_SIMPLE), //
