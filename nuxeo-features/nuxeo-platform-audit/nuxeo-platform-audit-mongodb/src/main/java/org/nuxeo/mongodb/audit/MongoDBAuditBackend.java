@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
 import static org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper.countDocuments;
 import static org.nuxeo.runtime.mongodb.MongoDBSerializationHelper.MONGODB_ID;
 
@@ -144,6 +145,9 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
         collection.createIndex(Indexes.ascending(LOG_EVENT_DATE)); // query by date range
         collection.createIndex(Indexes.ascending(LOG_EVENT_ID)); // query by type of event
         collection.createIndex(Indexes.ascending(LOG_DOC_PATH)); // query by path
+        collection.createIndex(Indexes.descending(LOG_ID)); // query by log id - sort
+        collection.createIndex(Indexes.compoundIndex( //
+                Indexes.ascending(LOG_REPOSITORY_ID), Indexes.descending(LOG_EVENT_DATE))); // query by drive - sort
         cursorService = new CursorService<>(doc -> {
             Object id = doc.remove(MONGODB_ID);
             if (id != null) {
