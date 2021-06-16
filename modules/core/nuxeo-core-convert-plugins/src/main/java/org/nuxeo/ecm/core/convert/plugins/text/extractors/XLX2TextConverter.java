@@ -55,7 +55,7 @@ public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Con
         try {
             Blob blob = blobHolder.getBlob();
 
-            if (blob.getLength() > maxSize4POI) {
+            if (blob.getLength() < 0 || blob.getLength() > maxSize4POI) {
                 return runFallBackConverter(blobHolder, "xl/");
             }
 
