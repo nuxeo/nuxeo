@@ -73,6 +73,7 @@ mail.transport.user=anonymous
 mail.transport.password=secret
 mail.transport.usetls=false
 mail.transport.auth=false
+mail.transport.ssl.protocol=
 # User who will receive mail
 mail.user=nobody
 # Enable debugging output from the javamail classes
