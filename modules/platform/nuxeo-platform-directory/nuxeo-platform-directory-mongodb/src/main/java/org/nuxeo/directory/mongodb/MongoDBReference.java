@@ -40,15 +40,16 @@ import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.DirectoryCSVLoader;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Reference;
+import org.nuxeo.ecm.directory.ReferenceDescriptor;
+import org.nuxeo.ecm.directory.Session;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Indexes;
 import com.mongodb.client.result.DeleteResult;
-import org.nuxeo.ecm.directory.ReferenceDescriptor;
-import org.nuxeo.ecm.directory.Session;
 
 /**
  * MongoDB implementation of a {@link Reference}
@@ -56,6 +57,36 @@ import org.nuxeo.ecm.directory.Session;
  * @since 9.1
  */
 public class MongoDBReference extends AbstractReference {
+
+    /**
+     * @since 11.5
+     */
+    public static final String GROUP_TO_GROUP_COLLECTION = "group2group";
+
+    /**
+     * @since 11.5
+     */
+    public static final String GROUP_TO_GROUP_CHILD_GROUP_ID = "childGroupId";
+
+    /**
+     * @since 11.5
+     */
+    public static final String GROUP_TO_GROUP_PARENT_GROUP_ID = "parentGroupId";
+
+    /**
+     * @since 11.5
+     */
+    public static final String USER_TO_GROUP_COLLECTION = "user2group";
+
+    /**
+     * @since 11.5
+     */
+    public static final String USER_TO_GROUP_GROUP_ID = "groupId";
+
+    /**
+     * @since 11.5
+     */
+    public static final String USER_TO_GROUP_USER_ID = "userId";
 
     protected String collection;
 
@@ -283,6 +314,7 @@ public class MongoDBReference extends AbstractReference {
     }
 
     protected void initialize(MongoDBSession session) {
+        createIndexes(session);
         if (dataFileName != null) {
             // fake schema for DirectoryCSVLoader.loadData
             SchemaImpl schema = new SchemaImpl(collection, null);
@@ -298,6 +330,26 @@ public class MongoDBReference extends AbstractReference {
             DirectoryCSVLoader.loadData(dataFileName, BaseDirectoryDescriptor.DEFAULT_DATA_FILE_CHARACTER_SEPARATOR,
                     schema, loader);
         }
+    }
+
+    protected void createIndexes(MongoDBSession session) {
+        var mongoCollection = getCollection(session);
+        if (isGroupToGroup()) {
+            mongoCollection.createIndex(Indexes.ascending(GROUP_TO_GROUP_CHILD_GROUP_ID));
+            mongoCollection.createIndex(Indexes.ascending(GROUP_TO_GROUP_PARENT_GROUP_ID));
+        }
+        if (isUserToGroup()) {
+            mongoCollection.createIndex(Indexes.ascending(USER_TO_GROUP_GROUP_ID));
+            mongoCollection.createIndex(Indexes.ascending(USER_TO_GROUP_USER_ID));
+        }
+    }
+
+    protected boolean isGroupToGroup() {
+        return GROUP_TO_GROUP_COLLECTION.equals(collection);
+    }
+
+    protected boolean isUserToGroup() {
+        return USER_TO_GROUP_COLLECTION.equals(collection);
     }
 
     protected MongoDBSession getMongoDBSession() {
