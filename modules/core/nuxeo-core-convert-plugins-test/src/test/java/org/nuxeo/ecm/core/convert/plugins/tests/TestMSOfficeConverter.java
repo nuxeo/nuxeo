@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.core.convert.plugins.tests;
 
+import java.io.IOException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -32,67 +33,67 @@ public class TestMSOfficeConverter extends SimpleConverterTest {
 
     // Word POI tests fails in surefire
     @Test
-    public void testWordConverter() throws Exception {
+    public void testWordConverter() throws IOException {
         doTestTextConverter("application/msword", "msoffice2text", "hello.doc");
     }
 
     @Test
-    public void testWordArabicConverter() throws Exception {
+    public void testWordArabicConverter() throws IOException {
         doTestArabicTextConverter("application/msword", "msoffice2text", "wikipedia-internet-ar.doc");
     }
 
     @Test
-    public void testPptConverter() throws Exception {
+    public void testPptConverter() throws IOException {
         doTestTextConverter("application/vnd.ms-powerpoint", "msoffice2text", "hello.ppt");
     }
 
     @Test
-    public void testXlsConverter() throws Exception {
+    public void testXlsConverter() throws IOException {
         doTestTextConverter("application/vnd.ms-excel", "xl2text", "hello.xls");
     }
 
     @Test
-    public void testDocxConverter() throws Exception {
+    public void testDocxConverter() throws IOException {
         doTestTextConverter("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx2text",
                 "hello.docx");
     }
 
     @Test
-    public void testRtfConverter() throws Exception {
+    public void testRtfConverter() throws IOException {
         doTestTextConverter("application/rtf", "rtf2text", "hello.rtf");
         doTestTextConverter("text/rtf", "rtf2text", "hello.rtf");
     }
 
     @Test
-    public void testPptxConverter() throws Exception {
+    public void testPptxConverter() throws IOException {
         doTestTextConverter("application/vnd.openxmlformats-officedocument.presentationml.presentation", "pptx2text",
                 "hello.pptx");
     }
 
     @Test
-    public void testXlsxConverter() throws Exception {
+    public void testXlsxConverter() throws IOException {
         doTestTextConverter("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlx2text",
                 "hello.xlsx");
     }
 
     @Test
-    public void testAnyToTextConverterWord() throws Exception {
+    public void testAnyToTextConverterWord() throws IOException {
         doTestAny2TextConverter("application/msword", "msoffice2text", "hello.doc");
     }
 
     @Test
-    public void testAnyToTextExcelConverter() throws Exception {
+    public void testAnyToTextExcelConverter() throws IOException {
         doTestAny2TextConverter("application/vnd.ms-excel", "xl2text", "hello.xls");
     }
 
     @Test
-    public void testAnyToTextDocxConverter() throws Exception {
+    public void testAnyToTextDocxConverter() throws IOException {
         doTestAny2TextConverter("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx2text",
                 "hello.docx");
     }
 
     @Test
-    public void testAnyToTextXlsxConverter() throws Exception {
+    public void testAnyToTextXlsxConverter() throws IOException {
         doTestAny2TextConverter("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlx2text",
                 "hello.xlsx");
     }
