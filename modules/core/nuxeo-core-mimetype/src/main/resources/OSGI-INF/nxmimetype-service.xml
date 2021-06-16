@@ -998,6 +998,19 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="video/MP2T" binary="true" iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/MP2T</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>mts</extension>
+        <extension>m2t</extension>
+        <extension>m2ts</extension>
+        <extension>ts</extension>
+        <extension>tsa</extension>
+        <extension>tsv</extension>
+      </extensions>
+    </mimetype>
 
     <mimetype normalized="video/quicktime" binary="true" iconPath="video.png">
       <mimetypes>
