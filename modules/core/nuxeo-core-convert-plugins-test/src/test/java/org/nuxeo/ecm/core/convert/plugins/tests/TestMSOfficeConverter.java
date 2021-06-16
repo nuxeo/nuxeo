@@ -20,10 +20,18 @@
 
 package org.nuxeo.ecm.core.convert.plugins.tests;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.FileInputStream;
 import java.io.IOException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -74,6 +82,34 @@ public class TestMSOfficeConverter extends SimpleConverterTest {
     public void testXlsxConverter() throws IOException {
         doTestTextConverter("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlx2text",
                 "hello.xlsx");
+    }
+
+    /**
+     * Tests XLSLX text converter fallback with blob length > max size for POI.
+     *
+     * @since 11.5
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.core.convert.plugins.test.test:test-convert-service-contrib.xml")
+    public void testXlsxConverterFallbackMaxSize() throws IOException {
+        doTestTextConverter("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlx2text",
+                "hello.xlsx");
+    }
+
+    /**
+     * Tests XLSLX text converter fallback with blob length == -1.
+     *
+     * @since 11.5
+     */
+    // NXP-30294
+    @Test
+    public void testXlsxConverterFallbackUnknownLength() throws IOException {
+        Blob blob = mock(Blob.class);
+        when(blob.getLength()).thenReturn(-1L);
+        when(blob.getMimeType()).thenReturn("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        when(blob.getStream()).then(
+                unused -> new FileInputStream(FileUtils.getResourceFileFromContext("test-docs/hello.xlsx")));
+        doTestTextConverterBlob("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlx2text", blob);
     }
 
     @Test
