@@ -67,6 +67,27 @@ public class MongoDBDirectory extends AbstractDirectory {
      */
     public static final String ACE_INFO_ID = "aceinfo:id";
 
+    /**
+     * @since 11.5
+     */
+    public static final String GROUP_DIRECTORY_COLLECTION = "groupDirectory";
+
+    /**
+     * @since 11.5
+     */
+    public static final String GROUP_DIRECTORY_GROUPNAME = "groupname";
+
+    /**
+     * @since 11.5
+     */
+    public static final String USER_DIRECTORY_COLLECTION = "userDirectory";
+
+    /**
+     * @since 11.5
+     */
+    public static final String USER_DIRECTORY_USERNAME = "username";
+
+
     protected MongoDatabase database;
 
     protected MongoCollection<Document> collection;
@@ -146,15 +167,25 @@ public class MongoDBDirectory extends AbstractDirectory {
         if (dropCollection) {
             collection.drop();
         }
+        createIndexes();
+
+        loadDataOnInit(collectionExists);
+
+    }
+
+    protected void createIndexes() {
         if (isMultiTenant()) {
             collection.createIndex(Indexes.hashed(TENANT_ID_FIELD));
         }
         if (isACEInfo()) {
             collection.createIndex(Indexes.ascending(ACE_INFO_ID));
         }
-
-        loadDataOnInit(collectionExists);
-
+        if (isGroupDirectory()) {
+            collection.createIndex(Indexes.ascending(GROUP_DIRECTORY_GROUPNAME));
+        }
+        if (isUserDirectory()) {
+            collection.createIndex(Indexes.ascending(USER_DIRECTORY_USERNAME));
+        }
     }
 
     @Override
@@ -198,6 +229,14 @@ public class MongoDBDirectory extends AbstractDirectory {
 
     protected boolean isACEInfo() {
         return ACE_INFO_COLLECTION.equals(collection.getNamespace().getCollectionName());
+    }
+
+    protected boolean isGroupDirectory() {
+        return GROUP_DIRECTORY_COLLECTION.equals(collection.getNamespace().getCollectionName());
+    }
+
+    protected boolean isUserDirectory() {
+        return USER_DIRECTORY_COLLECTION.equals(collection.getNamespace().getCollectionName());
     }
 
 }
