@@ -45,7 +45,7 @@ public abstract class AbstractConverterTest {
     /**
      * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
      */
-    @Deprecated
+    @Deprecated(since = "7.4")
     protected final boolean isWindows() {
         return SystemUtils.IS_OS_WINDOWS;
     }
@@ -60,7 +60,7 @@ public abstract class AbstractConverterTest {
         return new SimpleBlobHolder(blob);
     }
 
-    protected String doTestTextConverter(String srcMT, String converter, String fileName) throws Exception {
+    protected String doTestTextConverter(String srcMT, String converter, String fileName) throws IOException {
         ConversionService cs = Framework.getService(ConversionService.class);
         String converterName = cs.getConverterName(srcMT, "text/plain");
         assertEquals(converter, converterName);
@@ -82,7 +82,7 @@ public abstract class AbstractConverterTest {
         return textContent;
     }
 
-    protected String doTestAny2TextConverter(String srcMT, String converterName, String fileName) throws Exception {
+    protected String doTestAny2TextConverter(String srcMT, String converterName, String fileName) throws IOException {
         ConversionService cs = Framework.getService(ConversionService.class);
 
         BlobHolder hg;
@@ -102,7 +102,7 @@ public abstract class AbstractConverterTest {
         return textContent;
     }
 
-    protected String doTestArabicTextConverter(String srcMT, String converter, String fileName) throws Exception {
+    protected String doTestArabicTextConverter(String srcMT, String converter, String fileName) throws IOException {
         ConversionService cs = Framework.getService(ConversionService.class);
         assertTrue(cs.isConverterAvailable(converter).isAvailable());
 

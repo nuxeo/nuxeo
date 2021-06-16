@@ -25,11 +25,10 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -44,14 +43,12 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 
 public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Converter {
 
-    private static final Log log = LogFactory.getLog(XLX2TextConverter.class);
-
     private static final String CELL_SEP = " ";
 
     private static final String ROW_SEP = "\n";
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) {
 
         StringBuilder sb = new StringBuilder();
 
@@ -87,13 +84,10 @@ public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Con
 
     protected void appendTextFromCell(XSSFCell cell, StringBuilder sb) {
         String cellValue = null;
-        switch (cell.getCellType()) {
-        case NUMERIC:
+        if (CellType.NUMERIC.equals(cell.getCellType())) {
             cellValue = Double.toString(cell.getNumericCellValue()).trim();
-            break;
-        case STRING:
+        } else {
             cellValue = cell.getStringCellValue().trim();
-            break;
         }
 
         if (cellValue != null && cellValue.length() > 0) {
