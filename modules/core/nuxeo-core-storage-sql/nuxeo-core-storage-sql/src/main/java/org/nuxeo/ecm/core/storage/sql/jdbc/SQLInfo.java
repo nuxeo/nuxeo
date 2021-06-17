@@ -867,6 +867,10 @@ public class SQLInfo {
         maker.newColumn(Model.MAIN_KEY, type);
         maker.newFragmentFields();
         maker.postProcess();
+        // NXP-30243
+        if ("collection:documentIds".equals(tableName)) {
+            maker.table.addIndex(Model.COLL_TABLE_VALUE_KEY);
+        }
         // if (isMain)
         // maker.postProcessIdGeneration();
     }
