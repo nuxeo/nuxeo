@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@ public class SQLInfo {
 
     private final Map<String, String> deleteSqlMap; // statement
 
-    private Map<SelectionType, SQLInfoSelection> selections;
+    private final Map<SelectionType, SQLInfoSelection> selections;
 
     private String selectChildrenIdsAndTypesSql;
 
@@ -1030,9 +1030,7 @@ public class SQLInfo {
 
             // Build the exclude from copy part of the where clause
             SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-            String excludedTypes = schemaManager.getSpecialDocumentTypes()
-                                                .stream()
-                                                .collect(Collectors.joining("', '"));
+            String excludedTypes = String.join("', '", schemaManager.getSpecialDocumentTypes());
             if (!excludedTypes.isEmpty()) {
                 String excludeSpecialChildrenClause = " AND "
                         + table.getColumn(Model.MAIN_PRIMARY_TYPE_KEY).getQuotedName() + " NOT IN ('" + excludedTypes
@@ -1051,8 +1049,8 @@ public class SQLInfo {
             // now only complex properties include special children
             if (!excludedTypes.isEmpty()) {
                 String whereAndOr = where + " AND ( " + isComplexClause + " OR "
-                        + table.getColumn(Model.MAIN_PRIMARY_TYPE_KEY).getQuotedName() + " IN ('"
-                        + excludedTypes + "') )";
+                        + table.getColumn(Model.MAIN_PRIMARY_TYPE_KEY).getQuotedName() + " IN ('" + excludedTypes
+                        + "') )";
                 select.setWhere(whereAndOr);
             }
             selectComplexChildrenIdsAndTypesSqlIncludeSpecialChildren = select.getStatement();
@@ -1079,10 +1077,10 @@ public class SQLInfo {
         protected void postProcessDelete() {
             Delete delete = new Delete(table);
             String wheres = table.getColumns()
-                    .stream()
-                    .filter(col -> Model.MAIN_KEY.equals(col.getKey()))
-                    .map(col -> col.getQuotedName() + " = ?")
-                    .collect(Collectors.joining(" AND "));
+                                 .stream()
+                                 .filter(col -> Model.MAIN_KEY.equals(col.getKey()))
+                                 .map(col -> col.getQuotedName() + " = ?")
+                                 .collect(Collectors.joining(" AND "));
             delete.setWhere(wheres);
             deleteSqlMap.put(tableName, delete.getStatement());
         }
@@ -1205,8 +1203,8 @@ public class SQLInfo {
             Table table = database.getTable(type.tableName);
             String from = table.getQuotedName();
             Table hierTable = database.getTable(Model.HIER_TABLE_NAME);
-            Join join = new Join(Join.INNER, hierTable.getQuotedName(), null, null,
-                    hierTable.getColumn(Model.MAIN_KEY), table.getColumn(Model.MAIN_KEY));
+            Join join = new Join(Join.INNER, hierTable.getQuotedName(), null, null, hierTable.getColumn(Model.MAIN_KEY),
+                    table.getColumn(Model.MAIN_KEY));
             from += join.toSql(dialect);
 
             Column whatColumn = table.getColumn(Model.MAIN_KEY);
