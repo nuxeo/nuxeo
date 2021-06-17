@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,8 +80,6 @@ public class FulltextExtractorWork extends AbstractWork {
     protected static final String ANY2TEXT_CONVERTER = "any2text";
 
     protected static final int HTML_MAGIC_OFFSET = 8192;
-
-    protected static final String TEXT_HTML = "text/html";
 
     protected transient FulltextConfiguration fulltextConfiguration;
 
