@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +71,6 @@ import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.mongodb.MongoDBComponent;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
