@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.document;
 
-
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertyJsonWriter.OMIT_PHANTOM_SECURED_PROPERTY;
 
 import java.io.IOException;
