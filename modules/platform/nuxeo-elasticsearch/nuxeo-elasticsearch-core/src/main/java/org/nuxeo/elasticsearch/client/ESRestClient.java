@@ -32,6 +32,7 @@ import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.bulk.BulkShardRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
@@ -43,6 +44,7 @@ import org.elasticsearch.action.search.ClearScrollResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
+import org.elasticsearch.action.support.replication.ReplicationRequest;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.Response;
@@ -68,7 +70,11 @@ public class ESRestClient implements ESClient {
     // TODO: add security sanitizer to make sure all parameters used to build requests are clean
     private static final Log log = LogFactory.getLog(ESRestClient.class);
 
-    public static final String CREATE_INDEX_TIMEOUT = "60s";
+    // @since 11.5
+    public static final String LONG_TIMEOUT = "120s";
+
+    /** @deprecated use {@link #LONG_TIMEOUT} instead */
+    public static final String CREATE_INDEX_TIMEOUT = LONG_TIMEOUT;
 
     protected RestClient lowLevelClient;
 
@@ -172,7 +178,7 @@ public class ESRestClient implements ESClient {
         Response response;
         try {
             response = lowLevelClient.performRequest(
-                    new Request("DELETE", String.format("/%s?master_timeout=%ds", indexName, timeoutSecond)));
+                    new Request("DELETE", String.format("/%s?master_timeout=%ds&timeout=%ds", indexName, timeoutSecond, timeoutSecond)));
         } catch (IOException e) {
             if (e.getMessage() != null && e.getMessage().contains("illegal_argument_exception")) {
                 // when trying to delete an alias, throws the same exception than the transport client
@@ -188,7 +194,7 @@ public class ESRestClient implements ESClient {
 
     @Override
     public void createIndex(String indexName, String jsonSettings) {
-        Request request = new Request("PUT", "/" + indexName + "?timeout=" + CREATE_INDEX_TIMEOUT);
+        Request request = new Request("PUT", "/" + indexName + "?master_timeout=" + LONG_TIMEOUT + "&timeout=" + LONG_TIMEOUT);
         // since elastic 7 REST API needs an additional level
         request.setJsonEntity("{\"settings\": " + jsonSettings + "}");
         Response response = performRequestWithTracing(request);
@@ -307,6 +313,10 @@ public class ESRestClient implements ESClient {
     @Override
     public BulkResponse bulk(BulkRequest request) {
         try (Scope ignored = getScopedSpan("elastic/_bulk", "actions: " + request.numberOfActions())) {
+            if (BulkShardRequest.DEFAULT_TIMEOUT == request.timeout()) {
+                // use a longer timeout than the default one
+                request.timeout(LONG_TIMEOUT);
+            }
             return client.bulk(request, RequestOptions.DEFAULT);
         } catch (IOException e) {
             throw new NuxeoException(e);
@@ -316,6 +326,10 @@ public class ESRestClient implements ESClient {
     @Override
     public DeleteResponse delete(DeleteRequest request) {
         try {
+            if (ReplicationRequest.DEFAULT_TIMEOUT == request.timeout()) {
+                // use a longer timeout than the default one
+                request.timeout(LONG_TIMEOUT);
+            }
             return client.delete(request, RequestOptions.DEFAULT);
         } catch (IOException e) {
             throw new NuxeoException(e);
