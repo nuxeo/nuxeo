@@ -32,10 +32,12 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.local.LocalException;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.types.resolver.AbstractObjectResolver;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
@@ -173,7 +175,7 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
         }
         MutableBoolean validated = new MutableBoolean();
         resolve(value, context, (session, docRef) -> {
-            if (session.exists(docRef)) {
+            if (hasReadPermission(session, docRef)) {
                 validated.setTrue();
             }
         });
@@ -189,7 +191,7 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
     public Object fetch(Object value, Object context) {
         MutableObject<DocumentModel> docHolder = new MutableObject<>();
         resolve(value, context, (session, docRef) -> {
-            if (session.exists(docRef)) {
+            if (hasReadPermission(session, docRef)) {
                 DocumentModel doc = session.getDocument(docRef);
                 // detach because we're about to close the session
                 doc.detach(true);
@@ -197,6 +199,19 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
             }
         });
         return docHolder.getValue();
+    }
+
+    /**
+     * Checks directly the Read permission as {@link CoreSession#exists(DocumentRef)} relies on the Browse permission only.
+     * <p>
+     * A user can have Browse but not Read, thus the resolver won't be able to fetch the document.
+     */
+    protected boolean hasReadPermission(CoreSession session, DocumentRef docRef) {
+        try {
+            return session.hasPermission(docRef, SecurityConstants.READ);
+        } catch (IllegalArgumentException | DocumentNotFoundException e) {
+            return false;
+        }
     }
 
     /**
