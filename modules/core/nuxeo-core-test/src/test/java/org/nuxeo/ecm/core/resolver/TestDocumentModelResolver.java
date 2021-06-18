@@ -49,6 +49,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentModelResolver;
@@ -60,6 +63,7 @@ import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-document-resolver-contrib.xml")
@@ -70,6 +74,12 @@ public class TestDocumentModelResolver {
     protected static final String REPO_AND_ID_XPATH = "dr:docRepoAndIdRef";
 
     protected static final String REPO_AND_PATH_XPATH = "dr:docRepoAndPathRef";
+
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
 
     @Inject
     protected CoreSession session;
@@ -669,6 +679,32 @@ public class TestDocumentModelResolver {
         } finally {
             LoginComponent.popPrincipal();
         }
+    }
+
+    // NXP-30192
+    @Test
+    public void testFetchWithBrowseAndReadPermission() {
+        // document bob can only browse
+        DocumentModel barDoc = session.createDocumentModel("/", "bar", "TestResolver");
+        barDoc = session.createDocument(barDoc);
+        ACP acp = barDoc.getACP();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("bob", "Browse", true));
+        barDoc.setACP(acp, true);
+        // document bob can read
+        DocumentModel fooDoc = session.createDocumentModel("/", "foo", "TestResolver");
+        fooDoc.setPropertyValue(REPO_AND_ID_XPATH, barDoc.getRepositoryName() + ":" + barDoc.getId());
+        fooDoc = session.createDocument(fooDoc);
+        acp = fooDoc.getACP();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("bob", "Read", true));
+        fooDoc.setACP(acp, true);
+        transactionalFeature.nextTransaction();
+
+        CoreSession bobSession = coreFeature.getCoreSession("bob");
+        DocumentModel resolvedDoc = (DocumentModel) fooDoc.getProperty(REPO_AND_ID_XPATH)
+                                                          .getObjectResolver()
+                                                          .fetch(bobSession);
+        // bob cannot read the referenced document
+        assertNull(resolvedDoc);
     }
 
     private void checkMessage(DocumentModelResolver dmrr) {
