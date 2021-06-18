@@ -293,7 +293,6 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
         }
     }
 
-
     protected static final class REF {
 
         protected String repo;
