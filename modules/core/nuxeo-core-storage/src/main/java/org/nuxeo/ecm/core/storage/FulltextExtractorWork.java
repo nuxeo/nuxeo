@@ -23,11 +23,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -202,10 +201,7 @@ public class FulltextExtractorWork extends AbstractWork {
             List<String> strings = new StringsExtractor().findStrings(document, includedPaths, excludedPaths);
             // transform to text (remove HTML and entities)
             // we do this here rather than in the indexing backend (Elasticsearch) because it's more efficient here
-            // add space at beginning and end for simulated phrase search using LIKE "% foo bar %"
-            String text = strings.stream().map(this::stringToText).collect(Collectors.joining(" ", " ", " "));
-            // limit size
-            text = limitStringSize(text, fulltextConfiguration.fulltextFieldSizeLimit);
+            String text = joinText(strings, Function.identity(), fulltextConfiguration.fulltextFieldSizeLimit);
             String property = getFulltextPropertyName(SYSPROP_FULLTEXT_SIMPLE, indexName);
             for (DocumentRef docRef : docsToUpdate) {
                 session.setDocumentSystemProp(docRef, property, text);
@@ -217,7 +213,6 @@ public class FulltextExtractorWork extends AbstractWork {
         // we extract binary text even if fulltext search is disabled,
         // because it is still used to inject into external indexers like Elasticsearch
         BlobsExtractor blobsExtractor = new BlobsExtractor();
-        Map<Blob, String> blobsText = new IdentityHashMap<>();
         for (String indexName : fulltextConfiguration.indexNames) {
             if (!fulltextConfiguration.indexesAllBinary.contains(indexName)
                     && fulltextConfiguration.propPathsByIndexBinary.get(indexName) == null) {
@@ -228,14 +223,8 @@ public class FulltextExtractorWork extends AbstractWork {
             blobsExtractor.setExtractorProperties(fulltextConfiguration.propPathsByIndexBinary.get(indexName),
                     fulltextConfiguration.propPathsExcludedByIndexBinary.get(indexName),
                     fulltextConfiguration.indexesAllBinary.contains(indexName));
-            List<String> strings = new ArrayList<>();
-            for (Blob blob : blobsExtractor.getBlobs(document)) {
-                String string = blobsText.computeIfAbsent(blob, this::blobToText);
-                strings.add(string);
-            }
-            // add space at beginning and end for simulated phrase search using LIKE "% foo bar %"
-            String text = " " + String.join(" ", strings) + " ";
-            text = limitStringSize(text, fulltextConfiguration.fulltextFieldSizeLimit);
+            String text = joinText(blobsExtractor.getBlobs(document), this::blobToText,
+                    fulltextConfiguration.fulltextFieldSizeLimit);
             String property = getFulltextPropertyName(SYSPROP_FULLTEXT_BINARY, indexName);
             for (DocumentRef docRef : docsToUpdate) {
                 session.setDocumentSystemProp(docRef, property, text);
@@ -302,16 +291,23 @@ public class FulltextExtractorWork extends AbstractWork {
         }
     }
 
-    @SuppressWarnings("boxing")
-    protected String limitStringSize(String string, int maxSize) {
-        if (maxSize != 0 && string.length() > maxSize) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Fulltext extract of length: %s for document: %s truncated to length: %s",
-                        string.length(), docId, maxSize));
+    protected <O> String joinText(List<O> objects, Function<O, String> extractor, int maxSize) {
+        boolean limit = maxSize > 0;
+        // add space at beginning and end for simulated phrase search using LIKE "% foo bar %"
+        var builder = new StringBuilder(" ");
+        int size = maxSize - 1;
+        for (O object : objects) {
+            String string = extractor.apply(object);
+            size -= string.length();
+            if (limit && size <= 0) {
+                builder.append(string, 0, string.length() + size);
+                break;
+            } else {
+                builder.append(string).append(" ");
+                size -= 1;
             }
-            string = string.substring(0, maxSize);
         }
-        return string;
+        return builder.toString();
     }
 
     protected String getFulltextPropertyName(String name, String indexName) {
