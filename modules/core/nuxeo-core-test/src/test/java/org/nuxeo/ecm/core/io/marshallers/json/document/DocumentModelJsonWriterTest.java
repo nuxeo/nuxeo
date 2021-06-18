@@ -19,11 +19,14 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.document;
 
+import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertyJsonWriter.OMIT_PHANTOM_SECURED_PROPERTY;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -36,6 +39,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.registry.context.DepthValues;
@@ -48,6 +54,7 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
@@ -80,6 +87,12 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     private DocumentModel document;
+
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
 
     @Inject
     private CoreSession session;
@@ -551,6 +564,60 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
             }
         }
         json.properties(nbProperties);
+    }
+
+    // NXP-30192
+    @Test
+    public void testFetchDocumentListWithBrowsePermission() throws IOException {
+        // bob can read
+        DocumentModel file1 = session.createDocumentModel("/", "file1", "File");
+        file1 = session.createDocument(file1);
+        ACP acp = file1.getACP();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("bob", "Read", true));
+        file1.setACP(acp, true);
+        // bob can only browse
+        DocumentModel file2 = session.createDocumentModel("/", "file2", "File");
+        file2 = session.createDocument(file2);
+        acp = file2.getACP();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("bob", "Browse", true));
+        file2.setACP(acp, true);
+        // bob can read
+        DocumentModel file3 = session.createDocumentModel("/", "file3", "File");
+        file3 = session.createDocument(file3);
+        acp = file3.getACP();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("bob", "Read", true));
+        file3.setACP(acp, true);
+        // bob can read
+        DocumentModel refDoc = session.createDocumentModel("/", "refDoc", "RefDoc");
+        refDoc.setPropertyValue(PROP_DOC_PATH_REF_SIMPLE_LIST,
+                (Serializable) List.of(file1.getPathAsString(), file2.getPathAsString(), file3.getPathAsString()));
+        refDoc = session.createDocument(refDoc);
+        acp = refDoc.getACP();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("bob", "Read", true));
+        refDoc.setACP(acp, true);
+        transactionalFeature.nextTransaction();
+
+        CoreSession bobSession = coreFeature.getCoreSession("bob");
+        DocumentModel bobRefDoc = bobSession.getDocument(refDoc.getRef());
+        RenderingContext ctxDefault = CtxBuilder.properties("*")
+                                                .fetchInDoc(PROP_DOC_PATH_REF_SIMPLE_LIST)
+                                                .session(bobSession)
+                                                .get();
+        JsonAssert json = jsonAssert(bobRefDoc, ctxDefault);
+        assertNotNull(json);
+        json = json.has("properties." + PROP_DOC_PATH_REF_SIMPLE_LIST).isArray();
+        json.length(3);
+        // bob can read
+        JsonAssert child = json.get(0);
+        child.childrenContains("entity-type", "document");
+        child.childrenContains("path", "/file1");
+        // file bob can't read
+        child = json.get(1);
+        child.isEquals("/file2");
+        // bob can read
+        child = json.get(2);
+        child.childrenContains("entity-type", "document");
+        child.childrenContains("path", "/file3");
     }
 
 }
