@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,12 @@ public class ExportedZipImporter extends AbstractFileImporter {
 
     private static final Log log = LogFactory.getLog(ExportedZipImporter.class);
 
+    public static boolean isArchiveFileValid(File file) throws IOException {
+        try (ZipFile zipFile = getArchiveFileIfValid(file)) {
+            return zipFile != null;
+        }
+    }
+
     public static ZipFile getArchiveFileIfValid(File file) throws IOException {
         ZipFile zip;
 
@@ -89,11 +95,9 @@ public class ExportedZipImporter extends AbstractFileImporter {
         CoreSession session = context.getSession();
         Blob blob = context.getBlob();
         try (CloseableFile source = blob.getCloseableFile()) {
-            ZipFile zip = getArchiveFileIfValid(source.getFile());
-            if (zip == null) {
+            if (!isArchiveFileValid(source.getFile())) {
                 return null;
             }
-            zip.close();
 
             boolean importWithIds = false;
             DocumentReader reader = new NuxeoArchiveReader(source.getFile());
