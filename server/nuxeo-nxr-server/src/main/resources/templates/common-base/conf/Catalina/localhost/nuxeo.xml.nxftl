@@ -65,6 +65,9 @@
 <#if "${mail.transport.usetls}" == "true">
     mail.${mail.transport.protocol}.starttls.enable="${mail.transport.usetls}"
 </#if>
+<#if (mail.transport.ssl.protocol)?has_content>
+    mail.${mail.transport.protocol}.ssl.protocols="${mail.transport.ssl.protocol}"
+</#if>
   />
 
 </Context>
