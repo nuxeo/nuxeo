@@ -82,6 +82,25 @@ public abstract class AbstractConverterTest {
         return textContent;
     }
 
+    /**
+     * @since 11.5
+     */
+    protected String doTestTextConverterBlob(String srcMT, String converter, Blob blob) throws IOException {
+        ConversionService cs = Framework.getService(ConversionService.class);
+        String converterName = cs.getConverterName(srcMT, "text/plain");
+        assertEquals(converter, converterName);
+
+        BlobHolder hg = new SimpleBlobHolder(blob);
+
+        Map<String, Serializable> parameters = new HashMap<>();
+        BlobHolder result = cs.convert(converterName, hg, parameters);
+        assertNotNull(result);
+
+        String textContent = result.getBlob().getString();
+        checkTextConversion(textContent);
+        return textContent;
+    }
+
     protected String doTestAny2TextConverter(String srcMT, String converterName, String fileName) throws Exception {
         ConversionService cs = Framework.getService(ConversionService.class);
 
