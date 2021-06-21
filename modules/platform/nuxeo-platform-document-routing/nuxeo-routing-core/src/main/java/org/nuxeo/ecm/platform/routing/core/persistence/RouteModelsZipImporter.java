@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.platform.routing.core.persistence;
 
 import java.io.IOException;
-import java.util.zip.ZipFile;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CloseableFile;
@@ -51,11 +50,9 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
     @Override
     public DocumentModel createOrUpdate(FileImporterContext context) throws IOException {
         try (CloseableFile source = context.getBlob().getCloseableFile()) {
-            ZipFile zip = getArchiveFileIfValid(source.getFile());
-            if (zip == null) {
+            if (!isArchiveFileValid(source.getFile())) {
                 return null;
             }
-            zip.close();
 
             boolean overWrite = false;
             DocumentReader reader = new NuxeoArchiveReader(source.getFile());
