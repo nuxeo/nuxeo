@@ -201,9 +201,10 @@ def buildUnitTestStage(env) {
   def environment = "${env}UnitTests"
   def redisHost = "${TEST_REDIS_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
   def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
+  def containerName = isDev ? 'maven' : "maven-${env}"
   return {
     stage("Run ${env} unit tests") {
-      container("maven-${env}") {
+      container("${containerName}") {
         // TODO NXP-29512: on a PR, make the build continue even if there is a test error
         // on other environments than the dev one
         // to remove when all test environments will be mandatory
