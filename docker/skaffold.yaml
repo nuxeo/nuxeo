@@ -29,7 +29,7 @@ build:
           SCM_REF: "{{.GIT_COMMIT}}"
           VERSION: "{{.VERSION}}"
   cluster:
-    namespace: platform
+    namespace: $CURRENT_NAMESPACE
     dockerConfig:
       secretName: jenkins-docker-cfg
     resources:
