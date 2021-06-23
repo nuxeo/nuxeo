@@ -295,6 +295,7 @@ pipeline {
     // force ${HOME}=/root - for an unexplained reason, ${HOME} is resolved as /home/jenkins though sh 'env' shows HOME=/root
     HOME = '/root'
     HELMFILE_COMMAND = "helmfile --file ci/helm/helmfile.yaml --helm-binary /usr/bin/helm3"
+    SKAFFOLD_VERSION = 'v1.26.1'
     CURRENT_NAMESPACE = getCurrentNamespace()
     TEST_NAMESPACE_PREFIX = "$CURRENT_NAMESPACE-nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
@@ -552,21 +553,33 @@ pipeline {
       steps {
         setGitHubBuildStatus('docker/build', 'Build Docker image', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Build Docker image
-          ----------------------------------------
-          Image tag: ${VERSION}
-          """
-          echo "Build and push Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-          // fetch Nuxeo Tomcat Server with Maven
-          sh "mvn ${MAVEN_ARGS} -T4C -f docker/pom.xml process-resources"
-          retry(2) {
-            sh 'skaffold build -f docker/skaffold.yaml'
-          }
-          script {
-            if (!isPullRequest()) {
-              dockerPushFixedVersion()
+          dir('docker') {
+            echo """
+            ----------------------------------------
+            Build Docker image
+            ----------------------------------------
+            Image tag: ${VERSION}
+            """
+            echo 'Fetch locally built Nuxeo Tomcat Server with Maven'
+            sh "mvn ${MAVEN_ARGS} -T4C process-resources"
+
+            echo "Install recent version of skaffold: ${SKAFFOLD_VERSION}"
+            sh """
+              skaffold version
+              curl -Lo skaffold https://github.com/GoogleContainerTools/skaffold/releases/download/${SKAFFOLD_VERSION}/skaffold-linux-amd64 && \
+              install skaffold /usr/bin/
+              skaffold version
+            """
+
+            echo "Build and push Docker image to internal Docker registry ${DOCKER_REGISTRY}"
+            sh """
+              envsubst < skaffold.yaml > skaffold.yaml~gen
+              skaffold build -f skaffold.yaml~gen
+            """
+            script {
+              if (!isPullRequest()) {
+                dockerPushFixedVersion()
+              }
             }
           }
         }
