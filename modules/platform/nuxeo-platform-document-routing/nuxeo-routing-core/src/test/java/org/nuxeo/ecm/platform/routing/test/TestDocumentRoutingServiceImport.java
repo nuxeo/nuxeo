@@ -20,9 +20,11 @@
 package org.nuxeo.ecm.platform.routing.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.routing.core.persistence.RouteModelsZipImporter.WORKFLOW_KEY_VALUE_STORE;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +38,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.inject.Inject;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
@@ -45,6 +48,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -55,6 +59,8 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 
@@ -72,6 +78,8 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
     @Inject
     protected HotDeployer hotDeployer;
 
+    protected KeyValueStore workflowModelKV;
+
     @Override
     @Before
     public void setUp() throws Exception {
@@ -79,18 +87,26 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
 
         File runtimeHome = Framework.getRuntime().getHome();
         Framework.getResourceLoader().addURL(runtimeHome.toURI().toURL());
-        tmp = File.createTempFile("nuxeoRoutingTest", ".zip", runtimeHome);
+        // create a ZIP for the contrib
+        tmp = zipResource("/routes/myRoute");
         Path rpath = Paths.get(runtimeHome.getAbsolutePath()).relativize(Paths.get(tmp.getAbsolutePath()));
         Framework.getProperties().put(TMP_PATH_PROP, rpath.toString());
 
-        // create a ZIP for the contrib
-        try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(tmp))) {
-            URL url = getClass().getResource("/routes/myRoute");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-document-routing-model-contrib.xml");
+
+        workflowModelKV = Framework.getService(KeyValueService.class).getKeyValueStore(WORKFLOW_KEY_VALUE_STORE);
+    }
+
+    protected File zipResource(String resource) throws Exception {
+        File runtimeHome = Framework.getRuntime().getHome();
+        File file = File.createTempFile("nuxeoRoutingTest", ".zip", runtimeHome);
+        try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(file))) {
+            URL url = getClass().getResource(resource);
             File dir = new File(url.toURI().getPath());
             zipTree("", dir, false, zout);
             zout.finish();
         }
-        hotDeployer.deploy("org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-document-routing-model-contrib.xml");
+        return file;
     }
 
     protected void zipTree(String prefix, File root, boolean includeRoot, ZipOutputStream zout) throws IOException {
@@ -210,6 +226,65 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
         DocumentModel step2 = session.getDocument(new PathRef("/document-route-models-root/myRoute/Step2"));
         assertNotNull(step2);
         assertEquals("RouteNode", step2.getType());
+    }
+
+    // NXP-30170
+    @Test
+    public void testImportRouteModelUseKeyValueStore() throws Exception {
+        // DocumentRoute has been imported by RouteModelsInitializator - check KV
+        var zipDigest = getMD5Digest(tmp);
+        var kvDigest = workflowModelKV.getString("digest-myRoute");
+        assertEquals(zipDigest, kvDigest);
+
+        var myRoute = session.getDocument(new PathRef("/document-route-models-root/myRoute"));
+        var myRouteId = myRoute.getId();
+
+        // re-importing the same route doesn't overwrite the current document as digest hasn't changed
+        service.importAllRouteModels(session);
+
+        myRoute = session.getDocument(new PathRef("/document-route-models-root/myRoute"));
+        assertEquals(myRouteId, myRoute.getId());
+        assertEquals("myRoute", myRoute.getPropertyValue("dc:title"));
+
+        // removing the digest and importing again will overwrite the current document
+        workflowModelKV.put("digest-myRoute", (String) null);
+        service.importAllRouteModels(session);
+
+        myRoute = session.getDocument(new PathRef("/document-route-models-root/myRoute"));
+        assertNotEquals(myRouteId, myRoute.getId());
+        assertEquals("myRoute", myRoute.getPropertyValue("dc:title"));
+        myRouteId = myRoute.getId();
+        // check that KV has been filled again
+        kvDigest = workflowModelKV.getString("digest-myRoute");
+        assertEquals(zipDigest, kvDigest);
+
+        // importing a workflow with a different digest will overwrite the current document
+        // the key is _path_ in exported document, it is the same value for myRoute and myRouteBis
+        var myRouteBisFile = zipResource("/routes/myRouteBis");
+        Path rpath = Paths.get(Framework.getRuntime().getHome().getAbsolutePath())
+                          .relativize(Paths.get(myRouteBisFile.getAbsolutePath()));
+        Framework.getProperties().put(TMP_PATH_PROP, rpath.toString());
+
+        hotDeployer.undeploy(
+                "org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-document-routing-model-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-document-routing-model-contrib.xml");
+        workflowModelKV = Framework.getService(KeyValueService.class).getKeyValueStore(WORKFLOW_KEY_VALUE_STORE);
+
+        myRoute = session.getDocument(new PathRef("/document-route-models-root/myRoute"));
+        assertNotEquals(myRouteId, myRoute.getId());
+        assertEquals("myRouteBis", myRoute.getPropertyValue("dc:title"));
+        // check that KV has changed
+        zipDigest = getMD5Digest(myRouteBisFile);
+        kvDigest = workflowModelKV.getString("digest-myRoute");
+        assertEquals(zipDigest, kvDigest);
+    }
+
+    protected String getMD5Digest(File file) {
+        try (var in = new FileInputStream(file)) {
+            return DigestUtils.md5Hex(in);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
     }
 
 }
