@@ -28,10 +28,6 @@ build:
           BUILD_TAG: "{{.BUILD_TAG}}"
           SCM_REF: "{{.GIT_COMMIT}}"
           VERSION: "{{.VERSION}}"
-        # TODO NXP-28052: reuse cache when Dockerfile chown workaround is removed
-        # => when COPY --chown is fixed in Kaniko
-        # cache:
-        #   repo: ${DOCKER_REGISTRY}/nuxeo/nuxeo/cache
   cluster:
     namespace: platform
     dockerConfig:
