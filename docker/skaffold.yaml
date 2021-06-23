@@ -11,16 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-apiVersion: skaffold/v1beta14
+apiVersion: skaffold/v2beta17
 kind: Config
 build:
   tagPolicy:
     envTemplate:
-      template: "{{.DOCKER_REGISTRY}}/nuxeo/{{.IMAGE_NAME}}:{{.VERSION}}"
+      template: "{{.VERSION}}"
   artifacts:
-    - image: nuxeo
-      context: docker
+    - image: "$DOCKER_REGISTRY/nuxeo/nuxeo"
+      context: .
       kaniko:
+        useNewRun: true
+        singleSnapshot: true
+        snapshotMode: "time"
         buildArgs:
           BUILD_TAG: "{{.BUILD_TAG}}"
           SCM_REF: "{{.GIT_COMMIT}}"
@@ -33,3 +36,15 @@ build:
     namespace: platform
     dockerConfig:
       secretName: jenkins-docker-cfg
+    resources:
+      requests:
+        cpu: "1"
+        memory: "3Gi"
+      limits:
+        cpu: "2"
+        memory: "6Gi"
+    tolerations:
+      - key: team
+        operator: "Equal"
+        value: platform
+        effect: "NoSchedule"
