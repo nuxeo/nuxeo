@@ -303,10 +303,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
                 for (File f : file.listFiles()) {
                     deleteOld(f, minTime, depth + 1, delete);
                 }
-                if (depth > 0 && file.list().length == 0) {
-                    // empty directory
-                    file.delete();
-                }
+                // NXP-30465: do not delete empty directories
             } else if (file.isFile() && file.canWrite()) {
                 long lastModified = file.lastModified();
                 long length = file.length();
