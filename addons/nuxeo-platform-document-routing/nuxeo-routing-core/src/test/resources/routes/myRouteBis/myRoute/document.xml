@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="myRoute">
+  <system>
+    <type>DocumentRoute</type>
+    <path>myRoute</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>DocumentRoute</facet>
+    <facet>Orderable</facet>
+    <facet>StepFolder</facet>
+    <facet>FacetRoute1</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator/>
+    <dc:source/>
+    <dc:contributors/>
+    <dc:nature/>
+    <dc:created/>
+    <dc:description><![CDATA[]]></dc:description>
+    <dc:rights/>
+    <dc:subjects/>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format/>
+    <dc:issued/>
+    <dc:modified/>
+    <dc:language/>
+    <dc:coverage/>
+    <dc:expired/>
+    <dc:lastContributor/>
+    <dc:title><![CDATA[myRouteBis]]></dc:title>
+  </schema>
+  <schema xmlns:stepf="http://www.nuxeo.org/ecm/schemas/step_folder" name="step_folder">
+    <stepf:execution><![CDATA[graph]]></stepf:execution>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon/>
+    <common:icon-expanded/>
+  </schema>
+  <schema xmlns:docri="http://www.nuxeo.org/ecm/schemas/document_route_instance" name="document_route_instance">
+    <docri:variablesFacet><![CDATA[FacetRoute1]]></docri:variablesFacet>
+     <docri:availabilityFilter><![CDATA[filter@myRoute]]></docri:availabilityFilter>
+  </schema>
+</document>

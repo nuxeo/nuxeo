@@ -18,14 +18,20 @@
  */
 package org.nuxeo.ecm.platform.routing.core.persistence;
 
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.io.DocumentPipe;
@@ -37,6 +43,9 @@ import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.service.extension.ExportedZipImporter;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 
 /**
  * Imports a route document from a zip archive using the IO core service . Existing route model with the same path as
@@ -48,6 +57,9 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
 
     private static final long serialVersionUID = 1L;
 
+    /** @since 11.5 */
+    public static final String WORKFLOW_KEY_VALUE_STORE = "workflowModels";
+
     @Override
     public DocumentModel createOrUpdate(FileImporterContext context) throws IOException {
         try (CloseableFile source = context.getBlob().getCloseableFile()) {
@@ -57,35 +69,36 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
             }
             zip.close();
 
-            boolean overWrite = false;
-            DocumentReader reader = new NuxeoArchiveReader(source.getFile());
-            ExportedDocument root = reader.read();
+            KeyValueStore workflowKV = Framework.getService(KeyValueService.class)
+                                                .getKeyValueStore(WORKFLOW_KEY_VALUE_STORE);
             String parentPath = context.getParentPath();
-            PathRef rootRef = new PathRef(parentPath, root.getPath().toString());
-            ACP currentRouteModelACP = null;
             CoreSession session = context.getSession();
+
+            ExportedDocument rootDoc = getRootExportedDocument(source.getFile());
+            if (!DOCUMENT_ROUTE_DOCUMENT_TYPE.equals(rootDoc.getType())) {
+                return null;
+            }
+
+            Path rootPath = rootDoc.getPath();
+            String rootName = rootPath.lastSegment();
+            PathRef rootRef = new PathRef(parentPath, rootName);
+            String rootDigest = getMD5Digest(source.getFile());
+            String kvDigestKey = "digest-" + rootName;
+
+            ACP currentRouteModelACP = null;
             if (session.exists(rootRef)) {
                 DocumentModel target = session.getDocument(rootRef);
-                if (target.getPath().removeLastSegments(1).equals(new Path(parentPath))) {
-                    overWrite = true;
-                    // clean up existing route before import
-                    DocumentModel routeModel = session.getDocument(rootRef);
-                    currentRouteModelACP = routeModel.getACP();
-                    session.removeDocument(rootRef);
+                // check that the workflow to import has changed before continuing
+                if (rootDigest.equals(workflowKV.getString(kvDigestKey))) {
+                    return target;
                 }
+                // workflow has changed, backup the ACP and clean up the route before import
+                currentRouteModelACP = target.getACP();
+                session.removeDocument(rootRef);
             }
 
             DocumentWriter writer = new DocumentModelWriter(session, parentPath, 10);
-            reader.close();
-            reader = new NuxeoArchiveReader(source.getFile());
-
-            DocumentRef resultingRef;
-            if (context.isOverwrite() && overWrite) {
-                resultingRef = rootRef;
-            } else {
-                String rootName = root.getPath().lastSegment();
-                resultingRef = new PathRef(parentPath, rootName);
-            }
+            DocumentReader reader = new NuxeoArchiveReader(source.getFile());
 
             try {
                 DocumentPipe pipe = new DocumentPipeImpl(10);
@@ -97,11 +110,29 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
                 writer.close();
             }
 
-            DocumentModel newRouteModel = session.getDocument(resultingRef);
-            if (currentRouteModelACP != null && context.isOverwrite() && overWrite) {
+            workflowKV.put(kvDigestKey, rootDigest);
+
+            DocumentModel newRouteModel = session.getDocument(rootRef);
+            if (currentRouteModelACP != null && context.isOverwrite()) {
                 newRouteModel.setACP(currentRouteModelACP, true);
+                newRouteModel = session.saveDocument(newRouteModel);
             }
-            return session.saveDocument(newRouteModel);
+            return newRouteModel;
+        }
+    }
+
+    protected ExportedDocument getRootExportedDocument(File file) throws IOException {
+        DocumentReader reader = new NuxeoArchiveReader(file);
+        ExportedDocument root = reader.read();
+        reader.close();
+        return root;
+    }
+
+    protected String getMD5Digest(File file) {
+        try (InputStream in = new FileInputStream(file)) {
+            return DigestUtils.md5Hex(in);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
         }
     }
 

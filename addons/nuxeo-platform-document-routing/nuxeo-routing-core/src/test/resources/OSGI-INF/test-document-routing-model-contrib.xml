@@ -1,0 +1,7 @@
+<component name="org.nuxeo.ecm.platform.routing.model.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.routing.service" point="routeModelImporter">
+    <template-resource id="test" path="${nuxeo.routing.test.tmp.path}" />
+  </extension>
+
+</component>
