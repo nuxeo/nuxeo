@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="Task6cfb1ce0">
+  <system>
+    <type>RouteNode</type>
+    <path>myRoute/Step1</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>FacetNode1</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator/>
+    <dc:source/>
+    <dc:contributors/>
+    <dc:nature/>
+    <dc:created/>
+    <dc:description/>
+    <dc:rights/>
+    <dc:subjects/>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format/>
+    <dc:issued/>
+    <dc:modified/>
+    <dc:language/>
+    <dc:coverage/>
+    <dc:expired/>
+    <dc:lastContributor/>
+    <dc:title><![CDATA[Step1]]></dc:title>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon/>
+    <common:icon-expanded/>
+  </schema>
+  <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
+    <rnode:canceled/>
+    <rnode:variablesFacet><![CDATA[FacetNode1]]></rnode:variablesFacet>
+    <rnode:taskLayout/>
+    <rnode:taskButtons/>
+    <rnode:endDate/>
+    <rnode:taskDueDate/>
+    <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:inputChain/>
+    <rnode:taskDescription/>
+    <rnode:start><![CDATA[true]]></rnode:start>
+    <rnode:startDate/>
+    <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
+    <rnode:taskDocType><![CDATA[MyTaskDoc]]></rnode:taskDocType>
+    <rnode:taskNotificationTemplate/>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
+    <rnode:transitions>
+      <transition>
+        <chain><![CDATA[]]></chain>
+        <condition><![CDATA[]]></condition>
+        <name><![CDATA[toStep2Task1ce06cfb]]></name>
+        <targetId><![CDATA[Task6cee2342]]></targetId>
+        <label><![CDATA[toStep2]]></label>
+      </transition>
+    </rnode:transitions>
+    <rnode:nodeId><![CDATA[Task1ce06cfb]]></rnode:nodeId>
+    <rnode:taskDirective/>
+    <rnode:outputChain/>
+    <rnode:merge/>
+    <rnode:taskAssignees/>
+    <rnode:count/>
+    <rnode:taskAssigneesPermission/>
+    <rnode:button/>
+  </schema>
+</document>
