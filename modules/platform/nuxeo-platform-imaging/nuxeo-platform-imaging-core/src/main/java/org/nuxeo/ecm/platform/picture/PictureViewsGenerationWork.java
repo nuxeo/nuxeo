@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.event.Event;
@@ -43,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7
  * @deprecated since 11.1 use {@link RecomputeViewsAction} instead
  */
-@Deprecated
+@Deprecated(since = "11.1")
 public class PictureViewsGenerationWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
@@ -51,6 +52,8 @@ public class PictureViewsGenerationWork extends AbstractWork {
     public static final String CATEGORY_PICTURE_GENERATION = "pictureViewsGeneration";
 
     public static final String PICTURE_VIEWS_GENERATION_DONE_EVENT = "pictureViewsGenerationDone";
+
+    protected static final String NOTHING_TO_PROCESS_MESSAGE = "Nothing to process";
 
     protected final String xpath;
 
@@ -104,7 +107,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
 
         openSystemSession();
         if (!session.exists(new IdRef(docId))) {
-            setStatus("Nothing to process");
+            setStatus(NOTHING_TO_PROCESS_MESSAGE);
             return;
         }
 
@@ -123,14 +126,14 @@ public class PictureViewsGenerationWork extends AbstractWork {
             picture.fillPictureViews(blob, blob.getFilename(), title, null);
         } catch (DocumentNotFoundException e) {
             // a parent of the document may have been deleted.
-            setStatus("Nothing to process");
+            setStatus(NOTHING_TO_PROCESS_MESSAGE);
             return;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
 
         if (!session.exists(new IdRef(docId))) {
-            setStatus("Nothing to process");
+            setStatus(NOTHING_TO_PROCESS_MESSAGE);
             return;
         }
         setStatus("Saving");

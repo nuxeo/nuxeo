@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
@@ -69,9 +70,9 @@ public class RecomputeViewsAction implements StreamProcessorTopology {
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
-                .addComputation(RecomputeViewsComputation::new, //
-                        Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
-                .build();
+                       .addComputation(RecomputeViewsComputation::new, //
+                               Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
+                       .build();
     }
 
     public static class RecomputeViewsComputation extends AbstractBulkComputation {
@@ -118,7 +119,7 @@ public class RecomputeViewsAction implements StreamProcessorTopology {
                     // a parent of the document may have been deleted.
                     continue;
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new NuxeoException(e);
                 }
 
                 if (workingDocument.isVersion()) {
