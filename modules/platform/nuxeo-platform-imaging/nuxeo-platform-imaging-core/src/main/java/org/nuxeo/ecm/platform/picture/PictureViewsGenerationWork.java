@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2019 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2021 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7
  * @deprecated since 11.1 use {@link RecomputeViewsAction} instead
  */
-@Deprecated
+@Deprecated(since = "11.1")
 public class PictureViewsGenerationWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
