@@ -15,18 +15,14 @@
  *
  * Contributors:
  *     pierre
+ *     Antoine Taillefer<ataillefer@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.picture.recompute;
 
-import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
-import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTO_CHECKOUT;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
-import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_DISABLE_AUDIT;
-import static org.nuxeo.ecm.platform.picture.listener.PictureViewsGenerationListener.DISABLE_PICTURE_VIEWS_GENERATION_LISTENER;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -34,18 +30,15 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
+import org.nuxeo.ecm.platform.picture.PictureViewsHelper;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
@@ -78,6 +71,11 @@ public class RecomputeViewsAction implements StreamProcessorTopology {
 
         public static final String PICTURE_VIEWS_GENERATION_DONE_EVENT = "pictureViewsGenerationDone";
 
+        /**
+         * @since 11.5
+         */
+        protected PictureViewsHelper pictureViewsHelper = new PictureViewsHelper();
+
         protected String xpath;
 
         public RecomputeViewsComputation() {
@@ -94,46 +92,22 @@ public class RecomputeViewsAction implements StreamProcessorTopology {
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
             log.debug("Compute action: {} for doc ids: {}", ACTION_NAME, ids);
             for (String docId : ids) {
-
-                if (!session.exists(new IdRef(docId))) {
-                    log.debug("Doc id doesn't exist: {}", docId);
-                    continue;
-                }
-
-                DocumentModel workingDocument = session.getDocument(new IdRef(docId));
-                Property fileProp = workingDocument.getProperty(xpath);
-                Blob blob = (Blob) fileProp.getValue();
-                if (blob == null) {
-                    // do nothing
-                    log.debug("No blob for doc: {}", workingDocument);
-                    continue;
-                }
-
-                String title = workingDocument.getTitle();
-                try {
-                    PictureResourceAdapter picture = workingDocument.getAdapter(PictureResourceAdapter.class);
-                    log.debug("Fill picture views for doc: {}", workingDocument);
-                    picture.fillPictureViews(blob, blob.getFilename(), title, null);
-                } catch (DocumentNotFoundException e) {
-                    // a parent of the document may have been deleted.
-                    continue;
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                if (workingDocument.isVersion()) {
-                    workingDocument.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
-                }
-                workingDocument.putContextData("disableNotificationService", Boolean.TRUE);
-                workingDocument.putContextData(PARAM_DISABLE_AUDIT, Boolean.TRUE);
-                workingDocument.putContextData(DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
-                workingDocument.putContextData(DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, Boolean.TRUE);
-                session.saveDocument(workingDocument);
-
-                DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), workingDocument);
-                Event event = ctx.newEvent(PICTURE_VIEWS_GENERATION_DONE_EVENT);
-                Framework.getService(EventService.class).fireEvent(event);
+                pictureViewsHelper.newTransaction();
+                pictureViewsHelper.computePictureViews(session, docId, xpath, s -> {
+                });
+                fireEvent(session, session.getDocument(new IdRef(docId)), PICTURE_VIEWS_GENERATION_DONE_EVENT);
             }
         }
+
+        /**
+         * @since 11.5
+         */
+        protected void fireEvent(CoreSession session, DocumentModel document, String eventName) {
+            DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), document);
+            Event event = ctx.newEvent(eventName);
+            Framework.getService(EventService.class).fireEvent(event);
+        }
+
     }
+
 }
