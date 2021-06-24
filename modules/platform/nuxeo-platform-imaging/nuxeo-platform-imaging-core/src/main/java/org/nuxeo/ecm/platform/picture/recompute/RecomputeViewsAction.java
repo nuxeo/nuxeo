@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,9 +69,9 @@ public class RecomputeViewsAction implements StreamProcessorTopology {
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
-                .addComputation(RecomputeViewsComputation::new, //
-                        Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
-                .build();
+                       .addComputation(RecomputeViewsComputation::new, //
+                               Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
+                       .build();
     }
 
     public static class RecomputeViewsComputation extends AbstractBulkComputation {
