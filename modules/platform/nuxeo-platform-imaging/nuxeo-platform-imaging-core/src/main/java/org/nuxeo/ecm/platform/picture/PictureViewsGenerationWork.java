@@ -15,25 +15,16 @@
  *
  * Contributors:
  *     Thomas Roger
+ *     Antoine Taillefer<ataillefer@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.picture;
 
-import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
-import static org.nuxeo.ecm.platform.picture.listener.PictureViewsGenerationListener.DISABLE_PICTURE_VIEWS_GENERATION_LISTENER;
-
-import java.io.IOException;
-
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.AbstractWork;
-import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction;
 import org.nuxeo.runtime.api.Framework;
 
@@ -103,47 +94,10 @@ public class PictureViewsGenerationWork extends AbstractWork {
         setStatus("Extracting");
 
         openSystemSession();
-        if (!session.exists(new IdRef(docId))) {
-            setStatus("Nothing to process");
-            return;
-        }
 
-        DocumentModel workingDocument = session.getDocument(new IdRef(docId));
-        Property fileProp = workingDocument.getProperty(xpath);
-        Blob blob = (Blob) fileProp.getValue();
-        if (blob == null) {
-            // do nothing
-            return;
-        }
-
-        String title = workingDocument.getTitle();
-        setStatus("Generating views");
-        try {
-            PictureResourceAdapter picture = workingDocument.getAdapter(PictureResourceAdapter.class);
-            picture.fillPictureViews(blob, blob.getFilename(), title, null);
-        } catch (DocumentNotFoundException e) {
-            // a parent of the document may have been deleted.
-            setStatus("Nothing to process");
-            return;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        if (!session.exists(new IdRef(docId))) {
-            setStatus("Nothing to process");
-            return;
-        }
-        setStatus("Saving");
-        if (workingDocument.isVersion()) {
-            workingDocument.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
-        }
-        workingDocument.putContextData("disableNotificationService", Boolean.TRUE);
-        workingDocument.putContextData("disableAuditLogger", Boolean.TRUE);
-        workingDocument.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
-        workingDocument.putContextData(DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, Boolean.TRUE);
-        session.saveDocument(workingDocument);
-
-        setStatus("Done");
+        PictureViewsHelper pictureViewsHelper = new PictureViewsHelper();
+        pictureViewsHelper.newTransaction();
+        pictureViewsHelper.computePictureViews(session, docId, xpath, this::setStatus);
     }
 
     /**
