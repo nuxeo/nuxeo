@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Work generating the different picture views for a Picture.
@@ -123,7 +124,12 @@ public class PictureViewsGenerationWork extends AbstractWork {
         setStatus("Generating views");
         try {
             PictureResourceAdapter picture = workingDocument.getAdapter(PictureResourceAdapter.class);
-            picture.fillPictureViews(blob, blob.getFilename(), title, null);
+            TransactionHelper.commitOrRollbackTransaction();
+            try {
+                picture.fillPictureViews(blob, blob.getFilename(), title, null);
+            } finally {
+                TransactionHelper.startTransaction();
+            }
         } catch (DocumentNotFoundException e) {
             // a parent of the document may have been deleted.
             setStatus(NOTHING_TO_PROCESS_MESSAGE);

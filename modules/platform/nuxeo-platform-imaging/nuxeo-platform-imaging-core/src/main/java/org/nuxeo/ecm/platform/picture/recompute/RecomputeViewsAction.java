@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * BAF Computation that fills picture views for the blob property described by the given xpath.
@@ -114,7 +115,12 @@ public class RecomputeViewsAction implements StreamProcessorTopology {
                 try {
                     PictureResourceAdapter picture = workingDocument.getAdapter(PictureResourceAdapter.class);
                     log.debug("Fill picture views for doc: {}", workingDocument);
-                    picture.fillPictureViews(blob, blob.getFilename(), title, null);
+                    TransactionHelper.commitOrRollbackTransaction();
+                    try {
+                        picture.fillPictureViews(blob, blob.getFilename(), title, null);
+                    } finally {
+                        TransactionHelper.startTransaction();
+                    }
                 } catch (DocumentNotFoundException e) {
                     // a parent of the document may have been deleted.
                     continue;
