@@ -94,6 +94,8 @@ nuxeo.work.queue.thumbnail.enabled=true
 nuxeo.work.queue.thumbnail.threads=4
 # Explicit timeout for thumbnail generation
 nuxeo.thumbnail.transaction.timeout.seconds=300
+# Explicit timeout for picture views generation
+nuxeo.picture.views.transaction.timeout.seconds=300
 
 ###
 # Elasticsearch
