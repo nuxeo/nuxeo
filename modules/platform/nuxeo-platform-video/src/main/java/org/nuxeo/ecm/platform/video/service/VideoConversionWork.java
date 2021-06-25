@@ -103,13 +103,20 @@ public class VideoConversionWork extends AbstractWork {
         log.debug(String.format("Processing %s conversion of Video document %s.", conversionName, doc));
         setStatus("Transcoding");
         VideoService service = Framework.getService(VideoService.class);
-        TranscodedVideo transcodedVideo = service.convert(originalVideo, conversionName);
-        // Saving it to the document
-        setStatus("Saving");
-        doc = session.getDocument(new IdRef(docId));
-        saveNewTranscodedVideo(doc, transcodedVideo);
-        log.debug(String.format("End processing %s conversion of Video document %s.", conversionName, doc));
-        setStatus("Done");
+        TranscodedVideo transcodedVideo = null;
+        try {
+            transcodedVideo = service.convert(originalVideo, conversionName);
+        } catch (ConversionException e) {
+            log.warn(String.format("Cannot convert video %s on doc: %s, skipping.", conversionName, doc.getId()), e);
+        }
+        if (transcodedVideo != null) {
+            // Saving it to the document
+            setStatus("Saving");
+            doc = session.getDocument(new IdRef(docId));
+            saveNewTranscodedVideo(doc, transcodedVideo);
+            log.debug(String.format("End processing %s conversion of Video document %s.", conversionName, doc));
+            setStatus("Done");
+        }
     }
 
     @Override
