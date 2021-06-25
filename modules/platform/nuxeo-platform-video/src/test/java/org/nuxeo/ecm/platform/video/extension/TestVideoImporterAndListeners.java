@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -401,12 +403,11 @@ public class TestVideoImporterAndListeners {
         List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
                 TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(2, transcodedVideos.size());
-        Map<String, Serializable> conversion = transcodedVideos.get(0);
-        assertEquals("MP4 480p", conversion.get("name"));
-        assertTrue(((Blob) conversion.get("content")).getLength() > 0);
-        conversion = transcodedVideos.get(1);
-        assertEquals("WebM 480p", conversion.get("name"));
-        assertTrue(((Blob) conversion.get("content")).getLength() > 0);
+        Set<String> transcodedNames = transcodedVideos.stream().map(v -> (String) v.get("name")).collect(Collectors.toSet());
+        assertTrue(transcodedNames.toString(), transcodedNames.contains("MP4 480p"));
+        assertTrue(transcodedNames.toString(), transcodedNames.contains("WebM 480p"));
+        assertTrue(((Blob) transcodedVideos.get(0).get("content")).getLength() > 0);
+        assertTrue(((Blob) transcodedVideos.get(1).get("content")).getLength() > 0);
 
         // launching conversions on the same video shouldn't store duplicated transcoded videos
         VideoService videoService = Framework.getService(VideoService.class);
@@ -421,8 +422,9 @@ public class TestVideoImporterAndListeners {
 
         transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(2, transcodedVideos.size());
-        assertEquals("MP4 480p", transcodedVideos.get(0).get("name"));
-        assertEquals("WebM 480p", transcodedVideos.get(1).get("name"));
+        transcodedNames = transcodedVideos.stream().map(v -> (String) v.get("name")).collect(Collectors.toSet());
+        assertTrue(transcodedNames.toString(), transcodedNames.contains("MP4 480p"));
+        assertTrue(transcodedNames.toString(), transcodedNames.contains("WebM 480p"));
     }
 
     @Test
@@ -629,12 +631,12 @@ public class TestVideoImporterAndListeners {
         doc = session.getDocument(doc.getRef());
         transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(2, transcodedVideos.size());
-        assertEquals("MP4 480p", transcodedVideos.get(0).get("name"));
-        transcodedVideoBlob = (Blob) transcodedVideos.get(0).get("content");
-        assertEquals("video/mp4", transcodedVideoBlob.getMimeType());
-        assertEquals("WebM 480p", transcodedVideos.get(1).get("name"));
-        transcodedVideoBlob = (Blob) transcodedVideos.get(1).get("content");
-        assertEquals("video/webm", transcodedVideoBlob.getMimeType());
+        Set<String> transcodedNames = transcodedVideos.stream().map(v -> (String) v.get("name")).collect(Collectors.toSet());
+        Set<String> transcodedMimeTypes = transcodedVideos.stream().map(v -> ((Blob) v.get("content")).getMimeType()).collect(Collectors.toSet());
+        assertTrue(transcodedNames.toString(), transcodedNames.contains("MP4 480p"));
+        assertTrue(transcodedNames.toString(), transcodedNames.contains("WebM 480p"));
+        assertTrue(transcodedMimeTypes.toString(), transcodedMimeTypes.contains("video/mp4"));
+        assertTrue(transcodedMimeTypes.toString(), transcodedMimeTypes.contains("video/webm"));
     }
 
     // NXP-29966
@@ -689,12 +691,12 @@ public class TestVideoImporterAndListeners {
 
         transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(2, transcodedVideos.size());
-        assertEquals("MP4 480p", transcodedVideos.get(0).get("name"));
-        Blob transcodedVideoBlob = (Blob) transcodedVideos.get(0).get("content");
-        assertEquals("video/mp4", transcodedVideoBlob.getMimeType());
-        assertEquals("WebM 480p", transcodedVideos.get(1).get("name"));
-        transcodedVideoBlob = (Blob) transcodedVideos.get(1).get("content");
-        assertEquals("video/webm", transcodedVideoBlob.getMimeType());
+        Set<String> transcodedNames = transcodedVideos.stream().map(v -> (String) v.get("name")).collect(Collectors.toSet());
+        Set<String> transcodedMimeTypes = transcodedVideos.stream().map(v -> ((Blob) v.get("content")).getMimeType()).collect(Collectors.toSet());
+        assertTrue(transcodedNames.toString(), transcodedNames.contains("MP4 480p"));
+        assertTrue(transcodedNames.toString(), transcodedNames.contains("WebM 480p"));
+        assertTrue(transcodedMimeTypes.toString(), transcodedMimeTypes.contains("video/mp4"));
+        assertTrue(transcodedMimeTypes.toString(), transcodedMimeTypes.contains("video/webm"));
     }
 
     // NXP-29966
@@ -769,12 +771,11 @@ public class TestVideoImporterAndListeners {
 
         transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(2, transcodedVideos.size());
-        assertEquals("MP4 480p", transcodedVideos.get(0).get("name"));
-        Blob transcodedVideoBlob = (Blob) transcodedVideos.get(0).get("content");
-        assertEquals("video/mp4", transcodedVideoBlob.getMimeType());
-        assertEquals("WebM 480p", transcodedVideos.get(1).get("name"));
-        transcodedVideoBlob = (Blob) transcodedVideos.get(1).get("content");
-        assertEquals("video/webm", transcodedVideoBlob.getMimeType());
+        Set<String> transcodedNames = transcodedVideos.stream().map(v -> (String) v.get("name")).collect(Collectors.toSet());
+        Set<String> transcodedMimeTypes = transcodedVideos.stream().map(v -> ((Blob) v.get("content")).getMimeType()).collect(Collectors.toSet());
+        assertTrue(transcodedNames.toString(), transcodedNames.contains("MP4 480p"));
+        assertTrue(transcodedNames.toString(), transcodedNames.contains("WebM 480p"));
+        assertTrue(transcodedMimeTypes.toString(), transcodedMimeTypes.contains("video/mp4"));
     }
 
 }
