@@ -32,6 +32,18 @@ RUN mkdir -p /tmp/nuxeo-distribution \
   && chmod -R g+rwX $NUXEO_HOME
 
 # ------------------------------------------------------------------------
+# RPM download stage
+FROM centos:7 as rpm-download
+
+ARG EXIFTOOL_VERSION=12.25
+
+# Add Nexus Private Yum Release Repository
+COPY nuxeo-private.repo /etc/yum.repos.d/
+
+RUN yum install --downloadonly --downloaddir=/rpms \
+  perl-Image-ExifTool-$EXIFTOOL_VERSION
+
+# ------------------------------------------------------------------------
 # Target stage
 FROM centos:7
 LABEL maintainer="Nuxeo <packagers@nuxeo.com>"
@@ -40,7 +52,6 @@ ARG BUILD_TAG
 ARG SCM_REF
 ARG VERSION
 
-ARG EXIFTOOL_VERSION=12.25
 ARG LIBREOFFICE_VERSION=7.1.1
 
 LABEL org.nuxeo.build-tag=$BUILD_TAG
@@ -60,21 +71,17 @@ LABEL org.opencontainers.image.vendor="Nuxeo"
 RUN rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems \
   && rpm --install https://cdn.azul.com/zulu/bin/zulu-repo-1.0.0-1.noarch.rpm
 
+# Copy downloaded rpms
+COPY --from=rpm-download /rpms /tmp/rpms
+
 RUN yum -y update \
   && yum -y --setopt=skip_missing_names_on_install=False install \
     epel-release \
-    # install building tool (needed by exiftool installation)
-    make \
-    perl-devel \
     # install java first to provide it for depend packages (such as libreoffice)
     zulu11-jdk \
-  # install exiftool
-  && curl -f -L https://exiftool.org/Image-ExifTool-$EXIFTOOL_VERSION.tar.gz | tar -C /tmp -xzv \
-  && cd /tmp/Image-ExifTool-$EXIFTOOL_VERSION \
-  && perl Makefile.PL \
-  && make install \
-  && cd / \
-  && rm -rf /tmp/Image-ExifTool-$EXIFTOOL_VERSION \
+  # install downloaded rpms
+  && yum -y localinstall /tmp/rpms/* \
+  && rm -rf /tmp/rpms \
   # install libreoffice
   && curl -f -L https://packages.nuxeo.com/repository/document-foundation-raw/LibreOffice_${LIBREOFFICE_VERSION}_Linux_x86-64_rpm.tar.gz | tar -C /tmp -xzv \
   && yum -y localinstall /tmp/LibreOffice_${LIBREOFFICE_VERSION}*/RPMS/*.rpm \
@@ -92,8 +99,6 @@ RUN yum -y update \
     ufraw \
     unzip \
     wget \
-  # cleanup installation tools
-  && yum remove -y make perl-devel \
   && yum clean all
 
 # Remove setuid/setgid binaries from images for security

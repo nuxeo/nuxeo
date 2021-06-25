@@ -588,6 +588,13 @@ pipeline {
             ----------------------------------------
             Image tag: ${VERSION}
             """
+            withCredentials([usernamePassword(credentialsId: 'packages.nuxeo.com-auth', usernameVariable: 'YUM_REPO_USERNAME', passwordVariable: 'YUM_REPO_PASSWORD')]) {
+              sh """
+                envsubst < nuxeo-private.repo > nuxeo-private.repo~gen
+                mv nuxeo-private.repo~gen nuxeo-private.repo
+              """
+            }
+
             echo 'Fetch locally built Nuxeo Tomcat Server with Maven'
             sh "mvn ${MAVEN_ARGS} -T4C process-resources"
 
