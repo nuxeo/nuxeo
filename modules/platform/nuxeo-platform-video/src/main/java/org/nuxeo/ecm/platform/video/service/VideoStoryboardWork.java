@@ -76,6 +76,7 @@ public class VideoStoryboardWork extends AbstractWork {
     @Override
     public void work() {
         setProgress(Progress.PROGRESS_INDETERMINATE);
+        VideoHelper.newTransaction();
         openSystemSession();
 
         // get video blob

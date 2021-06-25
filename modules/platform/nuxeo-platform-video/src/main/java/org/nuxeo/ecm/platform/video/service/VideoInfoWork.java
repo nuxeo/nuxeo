@@ -77,6 +77,7 @@ public class VideoInfoWork extends AbstractWork {
     public void work() {
         setStatus("Updating video info");
         setProgress(Progress.PROGRESS_INDETERMINATE);
+        VideoHelper.newTransaction();
         openSystemSession();
 
         // get video blob and update video info
