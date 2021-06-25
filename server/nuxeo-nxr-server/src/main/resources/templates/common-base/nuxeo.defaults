@@ -97,6 +97,8 @@ nuxeo.work.queue.picture.threads=2
 nuxeo.thumbnail.transaction.timeout.seconds=300
 # Explicit timeout for picture views generation
 nuxeo.picture.views.transaction.timeout.seconds=300
+# Explicit timeout for video generation
+nuxeo.video.transaction.timeout.seconds=600
 
 ###
 # Elasticsearch
