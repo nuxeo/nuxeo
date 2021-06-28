@@ -40,6 +40,7 @@
             <configuration>
               <targets>
                 <target>prepare-environment</target>
+                <target>activate-custom-template</target>
                 <target>start</target>
               </targets>
             </configuration>
