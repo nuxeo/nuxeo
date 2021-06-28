@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.listeners.disable">
+
+  <require>org.nuxeo.ecm.platform.picture.listeners</require>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="pictureChangedListener" enabled="false" />
+    <listener name="pictureViewsGenerationListener" enabled="false" />
+  </extension>
+
+</component>
