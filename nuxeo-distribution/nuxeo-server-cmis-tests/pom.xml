@@ -38,6 +38,7 @@
               <buildFile>${basedir}/itests.xml</buildFile>
               <targets>
                 <target>prepare-environment</target>
+                <target>activate-custom-template</target>
                 <target>start</target>
               </targets>
             </configuration>
