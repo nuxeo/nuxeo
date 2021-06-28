@@ -14,6 +14,17 @@
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
+  <target name="activate-custom-template">
+    <echo level="info">Activate "custom" template to disable picture listeners</echo>
+    <copy todir="${out.dir}/tomcat/templates/custom" verbose="true" overwrite="true">
+      <fileset dir="templates/custom" />
+    </copy>
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.templates" />
+      <param name="value" value="default,custom" />
+    </antcall>
+  </target>
+
   <target name="run-cmis-tests" depends="_init">
     <for list="AtomPub" param="cmisBinding">
       <!-- list="AtomPub,Browser" -->
