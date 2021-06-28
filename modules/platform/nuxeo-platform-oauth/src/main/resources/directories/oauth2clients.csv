@@ -1,2 +1,3 @@
 name,clientId,redirectURIs,autoGrant
+"Nuxeo Drive","nuxeo-drive","nxdrive://authorize",true
 "Nuxeo Mobile","nuxeo-mobile","nuxeo://authorize",true
