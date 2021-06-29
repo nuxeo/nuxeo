@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -43,6 +44,7 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoDocument;
+import org.nuxeo.ecm.platform.video.VideoHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -87,31 +89,23 @@ public class VideoConversionWork extends AbstractWork {
         setProgress(Progress.PROGRESS_INDETERMINATE);
         DocumentModel doc;
         Video originalVideo;
-        try {
-            openSystemSession();
-            doc = session.getDocument(new IdRef(docId));
-            originalVideo = getVideoToConvert(doc);
-            Blob originalBlob;
-            if (originalVideo == null || (originalBlob = originalVideo.getBlob()) == null
-                    || originalBlob.getLength() == 0) {
-                resetTranscodedVideos(doc);
-                return;
-            }
-            commitOrRollbackTransaction();
-        } finally {
-            cleanUp(true, null);
+        VideoHelper.newTransaction();
+        openSystemSession();
+        doc = session.getDocument(new IdRef(docId));
+        originalVideo = getVideoToConvert(doc);
+        Blob originalBlob;
+        if (originalVideo == null || (originalBlob = originalVideo.getBlob()) == null
+                || originalBlob.getLength() == 0) {
+            resetTranscodedVideos(doc);
+            return;
         }
-
         // Perform the actual conversion
         log.debug(String.format("Processing %s conversion of Video document %s.", conversionName, doc));
         setStatus("Transcoding");
         VideoService service = Framework.getService(VideoService.class);
         TranscodedVideo transcodedVideo = service.convert(originalVideo, conversionName);
-
         // Saving it to the document
-        startTransaction();
         setStatus("Saving");
-        openSystemSession();
         doc = session.getDocument(new IdRef(docId));
         saveNewTranscodedVideo(doc, transcodedVideo);
         log.debug(String.format("End processing %s conversion of Video document %s.", conversionName, doc));

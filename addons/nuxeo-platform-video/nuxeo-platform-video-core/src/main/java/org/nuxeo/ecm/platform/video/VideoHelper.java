@@ -51,6 +51,7 @@ import org.nuxeo.ecm.platform.video.convert.StoryboardConverter;
 import org.nuxeo.ecm.platform.video.service.Configuration;
 import org.nuxeo.ecm.platform.video.service.VideoService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Helper class to factorize logic than can be either called from the UI or from core event listener.
@@ -67,6 +68,16 @@ public class VideoHelper {
     public static final String MISSING_PREVIEW_PICTURE = "preview/missing-video-preview.jpeg";
 
     public static final String FFMPEG_INFO_COMMAND_LINE = "ffmpeg-info";
+
+    /**
+     * @since 11.5
+     */
+    public static final String VIDEO_TX_TIMEOUT_PROPERTY = "nuxeo.video.transaction.timeout.seconds";
+
+    /**
+     * @since 11.5
+     */
+    public static final int DEFAULT_TX_TIMEOUT_SECONDS = 600;
 
     /**
      * @since 7.4
@@ -253,6 +264,33 @@ public class VideoHelper {
         } catch (CommandNotAvailable | CommandException | IOException e) {
             throw new NuxeoException(e);
         }
+    }
+
+    /**
+     * Commits and starts a new transaction with a custom timeout.
+     *
+     * @since 11.5
+     */
+    public static void newTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Commit and start transaction with timeout " + getTransactionTimeout() + "s");
+        }
+        TransactionHelper.startTransaction(getTransactionTimeout());
+        // timeout of command line executions will be aligned with the transaction timeout
+    }
+
+    /**
+     * Transaction timeout for video conversion in seconds.
+     *
+     * @since 11.5
+     */
+    public static int getTransactionTimeout() {
+        String maxDurationStr = Framework.getProperty(VIDEO_TX_TIMEOUT_PROPERTY,
+                String.valueOf(DEFAULT_TX_TIMEOUT_SECONDS));
+        return Integer.parseInt(maxDurationStr);
     }
 
 }
