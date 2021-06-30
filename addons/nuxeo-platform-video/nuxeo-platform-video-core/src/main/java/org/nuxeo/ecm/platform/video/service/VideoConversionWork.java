@@ -112,6 +112,8 @@ public class VideoConversionWork extends AbstractWork {
         if (transcodedVideo != null) {
             // Saving it to the document
             setStatus("Saving");
+            // read invalidations to avoid concurrent exception
+            session.save();
             doc = session.getDocument(new IdRef(docId));
             saveNewTranscodedVideo(doc, transcodedVideo);
             log.debug(String.format("End processing %s conversion of Video document %s.", conversionName, doc));
