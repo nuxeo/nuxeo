@@ -23,16 +23,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -49,8 +49,6 @@ import org.nuxeo.ecm.core.blob.binary.LazyBinary;
  * @since 7.10
  */
 public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryManager> {
-
-    private static final Log log = LogFactory.getLog(AbstractTestCloudBinaryManager.class);
 
     protected abstract T getBinaryManager() throws IOException;
 
@@ -94,19 +92,17 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
     }
 
     @Test
-    public void testStoreFile() throws Exception {
+    public void testStoreFile() throws IOException {
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
         assertTrue(binary instanceof LazyBinary);
         if (binary.getStream() != null) {
             // the tests have already been run
             // make sure we delete it from the bucket first
             removeObject(CONTENT_MD5);
-            // XXX binaryManager.removeBinary(CONTENT_MD5);
             binaryManager.fileCache.clear();
         }
 
         // store binary
-        CONTENT.getBytes("UTF-8");
         binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
 
@@ -135,7 +131,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
     }
 
     @Test
-    public void testAsBlobProvider() throws Exception {
+    public void testAsBlobProvider() {
         // to acquire the BinaryGarbageCollector, the BlobManagerComponent only has a BlobProvider
         if (binaryManager instanceof BlobProvider) {
             BinaryManager bm = ((BlobProvider) binaryManager).getBinaryManager();
@@ -148,12 +144,12 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
      * NOTE THAT THIS TEST WILL REMOVE ALL FILES IN THE BUCKET!!!
      */
     @Test
-    public void testBinaryManagerGC() throws Exception {
+    public void testBinaryManagerGC() throws IOException {
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
         assertTrue(binary instanceof LazyBinary);
 
         // store binary
-        byte[] bytes = CONTENT.getBytes("UTF-8");
+        byte[] bytes = CONTENT.getBytes(StandardCharsets.UTF_8);
         binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
         assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
@@ -184,7 +180,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         BinaryManagerStatus status = gc.getStatus();
         assertEquals(2, status.numBinaries);
         if (isStorageSizeSameAsOriginalSize()) {
-            assertEquals(bytes.length + CONTENT3.length(), status.sizeBinaries);
+            assertEquals((long) bytes.length + CONTENT3.length(), status.sizeBinaries);
         }
         assertEquals(1, status.numBinariesGC);
         if (isStorageSizeSameAsOriginalSize()) {
@@ -201,7 +197,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         status = gc.getStatus();
         assertEquals(2, status.numBinaries);
         if (isStorageSizeSameAsOriginalSize()) {
-            assertEquals(bytes.length + CONTENT3.length(), status.sizeBinaries);
+            assertEquals((long) bytes.length + CONTENT3.length(), status.sizeBinaries);
         }
         assertEquals(1, status.numBinariesGC);
         if (isStorageSizeSameAsOriginalSize()) {
@@ -228,14 +224,16 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
 
     /**
      * NOTE THAT THIS TEST WILL REMOVE ALL FILES IN THE BUCKET!!!
+     *
+     * @throws IOException
      */
     @Test
-    public void testBinaryManagerGCWithConcurrentCreation() throws Exception {
+    public void testBinaryManagerGCWithConcurrentCreation() throws IOException {
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
         assertTrue(binary instanceof LazyBinary);
 
         // store binary
-        byte[] bytes = CONTENT.getBytes("UTF-8");
+        byte[] bytes = CONTENT.getBytes(StandardCharsets.UTF_8);
         binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
         assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
@@ -253,7 +251,6 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         // GC start
 
         BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
-        gc = binaryManager.getGarbageCollector();
         gc.start();
         gc.mark(CONTENT_MD5);
 
@@ -274,7 +271,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
     }
 
     protected static String toString(InputStream stream) throws IOException {
-        return IOUtils.toString(stream, "UTF-8");
+        return IOUtils.toString(stream, StandardCharsets.UTF_8);
     }
 
 }

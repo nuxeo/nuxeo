@@ -57,12 +57,12 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
 
     private static final Log log = LogFactory.getLog(AzureBinaryManager.class);
 
-    private final static String STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=%s;" + "AccountName=%s;"
+    private static final String STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=%s;" + "AccountName=%s;"
             + "AccountKey=%s";
 
     public static final String ENDPOINT_PROTOCOL_PROPERTY = "endpointProtocol";
 
-    public final static String SYSTEM_PROPERTY_PREFIX = "nuxeo.storage.azure";
+    public static final String SYSTEM_PROPERTY_PREFIX = "nuxeo.storage.azure";
 
     public static final String ACCOUNT_NAME_PROPERTY = "account.name";
 
@@ -150,7 +150,7 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
 
             CloudBlockBlob signedBlob = new CloudBlockBlob(blockBlobReference.getUri(),
                     new StorageCredentialsSharedAccessSignature(sas));
-            return signedBlob.getQualifiedUri();
+            return signedBlob.getSnapshotQualifiedUri();
         } catch (URISyntaxException | InvalidKeyException | StorageException e) {
             throw new IOException(e);
         }

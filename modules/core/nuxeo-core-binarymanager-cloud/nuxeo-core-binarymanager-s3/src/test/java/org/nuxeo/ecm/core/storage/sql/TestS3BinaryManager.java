@@ -42,6 +42,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 import org.nuxeo.ecm.blob.s3.S3TestHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -58,7 +59,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.SdkBaseException;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 
@@ -100,7 +100,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() throws IOException {
         removeObjects();
     }
 
@@ -110,7 +110,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
     }
 
     @Test
-    public void testS3BinaryManagerOverwrite() throws Exception {
+    public void testS3BinaryManagerOverwrite() throws IOException {
         // store binary
         Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
@@ -126,7 +126,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
     }
 
     @Test
-    public void testS3MaxConnections() throws Exception {
+    public void testS3MaxConnections() throws IOException {
         PROPERTIES.put(S3BinaryManager.CONNECTION_MAX_PROPERTY, "1");
         PROPERTIES.put(S3BinaryManager.CONNECTION_RETRY_PROPERTY, "0");
         PROPERTIES.put(S3BinaryManager.CONNECTION_TIMEOUT_PROPERTY, "5000"); // 5s
@@ -141,7 +141,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         }
     }
 
-    protected void doTestS3MaxConnections() throws Exception {
+    protected void doTestS3MaxConnections() throws IOException {
         // store binary
         binaryManager.getBinary(Blobs.createBlob(CONTENT));
 
@@ -256,7 +256,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     @Override
     @Test
-    public void testBinaryManagerGC() throws Exception {
+    public void testBinaryManagerGC() throws IOException {
         if (binaryManager.bucketNamePrefix.isEmpty()) {
             // no additional test if no bucket name prefix
             super.testBinaryManagerGC();
@@ -296,26 +296,26 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
     }
 
     @Test
-    public void test1KB() throws SdkBaseException, InterruptedException, IOException {
+    public void test1KB() throws IOException {
         test(1024);
     }
 
     @Test
-    public void test1MB() throws SdkBaseException, InterruptedException, IOException {
+    public void test1MB() throws IOException {
         test(1024 * 1024);
     }
 
     @Test
-    public void test5MB() throws SdkBaseException, InterruptedException, IOException {
+    public void test5MB() throws IOException {
         test(5 * 1024 * 1024);
     }
 
     @Test
-    public void test20MB() throws SdkBaseException, InterruptedException, IOException {
+    public void test20MB() throws IOException {
         test(20 * 1024 * 1024);
     }
 
-    protected void test(int size) throws SdkBaseException, InterruptedException, IOException {
+    protected void test(int size) throws IOException {
         Blob blob = new ByteArrayBlob(generateRandomBytes(size));
         binaryManager.writeBlob(blob);
     }
@@ -327,7 +327,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
     }
 
     @Test
-    public void testDifferentDigestAlgorithm() throws Exception {
+    public void testDifferentDigestAlgorithm() throws IOException {
         Binary binary = binaryManager3.getBinary(CONTENT4_SHA256);
         assertTrue(binary instanceof LazyBinary);
         if (binary.getStream() != null) {
@@ -363,9 +363,9 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         Map<String, String> properties2 = new HashMap<>(PROPERTIES);
         String prefix = properties2.get(S3BinaryManager.BUCKET_PREFIX_PROPERTY);
         properties2.put(S3BinaryManager.BUCKET_PREFIX_PROPERTY, prefix + "transient/");
-        S3BinaryManager binaryManager2 = new S3BinaryManager();
-        binaryManager2.initialize("repo2", properties2);
-        return binaryManager2;
+        S3BinaryManager binaryManager = new S3BinaryManager();
+        binaryManager.initialize("repo2", properties2);
+        return binaryManager;
     }
 
     /** Other binary manager with a different digest algorithm. */
@@ -373,10 +373,10 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         Map<String, String> properties3 = new HashMap<>(PROPERTIES);
         String prefix = properties3.get(S3BinaryManager.BUCKET_PREFIX_PROPERTY);
         properties3.put(S3BinaryManager.BUCKET_PREFIX_PROPERTY, prefix + "withsha/");
-        properties3.put(S3BinaryManager.DIGEST_ALGORITHM_PROPERTY, "SHA-256");
-        S3BinaryManager binaryManager3 = new S3BinaryManager();
-        binaryManager3.initialize("repo3", properties3);
-        return binaryManager3;
+        properties3.put(AbstractCloudBinaryManager.DIGEST_ALGORITHM_PROPERTY, "SHA-256");
+        S3BinaryManager binaryManager = new S3BinaryManager();
+        binaryManager.initialize("repo3", properties3);
+        return binaryManager;
     }
 
 }

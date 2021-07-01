@@ -25,9 +25,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 import com.microsoft.azure.storage.ResultContinuation;
 import com.microsoft.azure.storage.ResultSegment;
@@ -41,8 +40,6 @@ import com.microsoft.azure.storage.blob.ListBlobItem;
  * @since 7.10
  */
 public class AzureGarbageCollector extends AbstractBinaryGarbageCollector<AzureBinaryManager> {
-
-    private static final Log log = LogFactory.getLog(AzureGarbageCollector.class);
 
     private static final Pattern MD5_RE = Pattern.compile("[0-9a-f]{32}");
 
@@ -65,16 +62,11 @@ public class AzureGarbageCollector extends AbstractBinaryGarbageCollector<AzureB
                 lbs = binaryManager.container.listBlobsSegmented(binaryManager.prefix, false,
                         EnumSet.noneOf(BlobListingDetails.class), null, continuationToken, null, null);
             } catch (StorageException e) {
-                throw new RuntimeException(e);
+                throw new NuxeoException(e);
             }
 
-            for (ListBlobItem item : lbs.getResults()) {
-
-                if (!(item instanceof CloudBlockBlob)) {
-                    // ignore subdirectories
-                    continue;
-                }
-
+            // ignore subdirectories by considering only instances of CloudBlockBlob
+            lbs.getResults().stream().filter(CloudBlockBlob.class::isInstance).forEach(item -> {
                 CloudBlockBlob blob = (CloudBlockBlob) item;
 
                 String name = blob.getName();
@@ -83,7 +75,7 @@ public class AzureGarbageCollector extends AbstractBinaryGarbageCollector<AzureB
                 if (!isMD5(digest)) {
                     // ignore files that cannot be MD5 digests for
                     // safety
-                    continue;
+                    return;
                 }
 
                 long length = blob.getProperties().getLength();
@@ -97,7 +89,7 @@ public class AzureGarbageCollector extends AbstractBinaryGarbageCollector<AzureB
                     // record file to delete
                     unmarked.add(digest);
                 }
-            }
+            });
 
             continuationToken = lbs.getContinuationToken();
         } while (lbs.getHasMoreResults());
