@@ -171,4 +171,30 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
     public void removeBinaries(Collection<String> digests) {
         digests.forEach(this::removeBinary);
     }
+
+    /**
+     * @since 11.5
+     * @return the length of the blob with the given {@code digest}, or -1 if missing
+     */
+    protected long lengthOfBlob(String digest) throws URISyntaxException, StorageException {
+        try {
+            CloudBlockBlob blob = container.getBlockBlobReference(prefix + digest);
+            blob.downloadAttributes();
+            return blob.getProperties().getLength();
+        } catch (StorageException e) {
+            if (isMissingKey(e)) {
+                return -1;
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * @since 11.5
+     */
+    protected static boolean isMissingKey(StorageException e) {
+        return (e.getHttpStatusCode() == 404) || "BlobNotFound".equals(e.getErrorCode())
+                || "The specified blob does not exist.".equals(e.getMessage());
+    }
+
 }

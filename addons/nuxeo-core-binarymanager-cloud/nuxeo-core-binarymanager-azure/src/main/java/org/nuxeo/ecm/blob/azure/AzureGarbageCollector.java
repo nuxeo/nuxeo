@@ -22,12 +22,12 @@ package org.nuxeo.ecm.blob.azure;
 import java.net.URISyntaxException;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 import com.microsoft.azure.storage.ResultContinuation;
 import com.microsoft.azure.storage.ResultSegment;
@@ -55,9 +55,12 @@ public class AzureGarbageCollector extends AbstractBinaryGarbageCollector<AzureB
         return "azure:" + binaryManager.container.getName();
     }
 
+    /**
+     * @since 11.5
+     */
     @Override
-    public Set<String> getUnmarkedBlobs() {
-        Set<String> unmarked = new HashSet<>();
+    public void computeToDelete() {
+        toDelete = new HashSet<>();
         ResultContinuation continuationToken = null;
         ResultSegment<ListBlobItem> lbs;
         do {
@@ -88,23 +91,38 @@ public class AzureGarbageCollector extends AbstractBinaryGarbageCollector<AzureB
                 }
 
                 long length = blob.getProperties().getLength();
-                if (marked.contains(digest)) {
-                    status.numBinaries++;
-                    status.sizeBinaries += length;
-                    marked.remove(digest); // optimize memory
-                } else {
-                    status.numBinariesGC++;
-                    status.sizeBinariesGC += length;
-                    // record file to delete
-                    unmarked.add(digest);
-                }
+                status.sizeBinaries += length;
+                status.numBinaries++;
+                toDelete.add(digest);
             }
 
             continuationToken = lbs.getContinuationToken();
         } while (lbs.getHasMoreResults());
-        marked = null; // help GC
+    }
 
-        return unmarked;
+    /**
+     * @since 11.5
+     */
+    @Override
+    protected void removeUnmarkedBlobsAndUpdateStatus(boolean delete) {
+        for (String digest : toDelete) {
+            try {
+                long length = binaryManager.lengthOfBlob(digest);
+                if (length < 0) {
+                    // shouldn't happen except if blob concurrently removed
+                    continue;
+                }
+                status.sizeBinariesGC += length;
+                status.numBinariesGC++;
+                status.sizeBinaries -= length;
+                status.numBinaries--;
+                if (delete) {
+                    binaryManager.removeBinary(digest);
+                }
+            } catch (URISyntaxException | StorageException e) {
+                throw new NuxeoException(e);
+            }
+        }
     }
 
     public static boolean isMD5(String digest) {
