@@ -46,6 +46,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,6 +57,7 @@ import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 import org.nuxeo.ecm.blob.AbstractTestCloudBinaryManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
@@ -91,7 +94,9 @@ import com.microsoft.azure.storage.core.Utility;
 @Features(RuntimeFeature.class)
 public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<AzureBinaryManager> {
 
-    protected final static List<String> PARAMETERS = Arrays.asList(AzureBinaryManager.ACCOUNT_KEY_PROPERTY,
+    private static final Logger log = LogManager.getLogger(TestAzureBinaryManager.class);
+
+    protected static final List<String> PARAMETERS = Arrays.asList(AzureBinaryManager.ACCOUNT_KEY_PROPERTY,
             AzureBinaryManager.ACCOUNT_NAME_PROPERTY, AzureBinaryManager.CONTAINER_PROPERTY);
 
     protected static Map<String, String> properties = new HashMap<>();
@@ -101,15 +106,11 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
     @BeforeClass
     public static void initialize() {
         AbstractCloudBinaryManager bm = new AzureBinaryManager();
-        PARAMETERS.forEach(s -> {
-            properties.put(s, Framework.getProperty(bm.getSystemPropertyName(s)));
-        });
+        PARAMETERS.forEach(s -> properties.put(s, Framework.getProperty(bm.getSystemPropertyName(s))));
 
         // Ensure mandatory parameters are set
-        PARAMETERS.forEach(s -> {
-            assumeFalse(isBlank(properties.get(s)));
-        });
-        properties.put("prefix", PREFIX);
+        PARAMETERS.forEach(s -> assumeFalse(isBlank(properties.get(s))));
+        properties.put(AzureBinaryManager.PREFIX_PROPERTY, PREFIX);
     }
 
     @AfterClass
@@ -169,12 +170,12 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
         headers.setContentType("text/plain");
 
         String something = blockBlobReference.generateSharedAccessSignature(policy, headers, null);
-        System.out.println(something);
+        log.debug(something);
 
         CloudBlockBlob blob = new CloudBlockBlob(blockBlobReference.getUri(),
                 new StorageCredentialsSharedAccessSignature(something));
 
-        System.out.println(blob.getQualifiedUri());
+        log.debug(blob.getSnapshotQualifiedUri());
     }
 
     protected String getContentTypeHeader(Blob blob) {
@@ -203,7 +204,7 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
         Blob blob = Blobs.createBlob(CONTENT2);
         String contentMd5;
         try (InputStream is = blob.getStream()) {
-            StreamMd5AndLength md5 = Utility.analyzeStream(is, blob.getLength(), 2 * Constants.MB, true, true);
+            StreamMd5AndLength md5 = Utility.analyzeStream(is, blob.getLength(), 2L * Constants.MB, true, true);
             contentMd5 = md5.getMd5();
         }
 
@@ -212,27 +213,31 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
 
     @Override
     @Test
-    public void testBinaryManagerGC() throws Exception {
+    public void testBinaryManagerGC() throws IOException {
         if (binaryManager.prefix.isEmpty()) {
             // no additional test if no bucket name prefix
             super.testBinaryManagerGC();
             return;
         }
 
-        // create a md5-looking extra file at the root
         String name1 = "12345678901234567890123456789012";
-        try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
-            CloudBlockBlob blob = binaryManager.container.getBlockBlobReference(name1);
-            blob.upload(in, 1);
-        }
-        // create a md5-looking extra file in a "subdirectory" of the prefix
         String name2 = binaryManager.prefix + "subfolder/12345678901234567890123456789999";
-        try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
-            CloudBlockBlob blob = binaryManager.container.getBlockBlobReference(name2);
-            blob.upload(in, 1);
+        try {
+            // create a md5-looking extra file at the root
+            try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
+                CloudBlockBlob blob = binaryManager.container.getBlockBlobReference(name1);
+                blob.upload(in, 1);
+            }
+            // create a md5-looking extra file in a "subdirectory" of the prefix
+            try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
+                CloudBlockBlob blob = binaryManager.container.getBlockBlobReference(name2);
+                blob.upload(in, 1);
+            }
+            // check that the files are here
+            assertEquals(new HashSet<>(Arrays.asList(name1, name2)), listAllObjects());
+        } catch (URISyntaxException | StorageException e) {
+            throw new NuxeoException(e);
         }
-        // check that the files are here
-        assertEquals(new HashSet<>(Arrays.asList(name1, name2)), listAllObjects());
 
         // run base test with the prefix
         super.testBinaryManagerGC();
@@ -244,19 +249,21 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
     }
 
     @Test
-    public void testRemoteURI() throws Exception {
+    public void testRemoteURI() throws IOException {
         Blob blob = Blobs.createBlob(CONTENT);
         Binary binary = binaryManager.getBinary(blob);
         BlobInfo blobInfo = new BlobInfo();
-        blobInfo.digest = binary.getDigest();
+        String digest = binary.getDigest();
+        blobInfo.digest = digest;
         blobInfo.length = Long.valueOf(blob.getLength());
         blobInfo.filename = "caf\u00e9 corner.txt";
         blobInfo.mimeType = "text/plain";
-        ManagedBlob mb = new SimpleManagedBlob(blobInfo );
-        URI uri = binaryManager.getRemoteUri(binary.getDigest(), mb, null);
-        String string = uri.toASCIIString();
-        // %-escaped version
-        assertTrue(string, string.contains("filename*%3DUTF-8%27%27caf%C3%A9%20corner.txt"));
+        ManagedBlob mb = new SimpleManagedBlob(blobInfo);
+        URI uri = binaryManager.getRemoteUri(digest, mb, null);
+        String uriString = uri.toASCIIString();
+        assertEquals(String.format("https://%s.blob.core.windows.net/%s/%s",
+                properties.get(AzureBinaryManager.ACCOUNT_NAME_PROPERTY),
+                properties.get(AzureBinaryManager.CONTAINER_PROPERTY), digest), uriString);
     }
 
 }
