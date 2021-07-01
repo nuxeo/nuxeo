@@ -35,6 +35,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -118,6 +120,39 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
         // Cleanup keys
         Properties props = Framework.getProperties();
         PARAMETERS.forEach(props::remove);
+    }
+
+    @After
+    public void tearDown() {
+        removeObjects();
+    }
+
+    /**
+     * Removes all objects in the container, not only those under the configured prefix.
+     *
+     * @since 11.5
+     */
+    @Override
+    protected void removeObjects() {
+        removeBinaries(listAllObjects());
+    }
+
+    /**
+     * @since 11.5
+     */
+    protected void removeBinaries(Collection<String> digests) {
+        digests.forEach(this::removeBinary);
+    }
+
+    /**
+     * @since 11.5
+     */
+    protected void removeBinary(String digest) {
+        try {
+            binaryManager.container.getBlockBlobReference(digest).delete();
+        } catch (StorageException | URISyntaxException e) {
+            log.error("Unable to remove binary: {}", digest, e);
+        }
     }
 
     @Override
@@ -258,7 +293,8 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
         blobInfo.length = Long.valueOf(blob.getLength());
         blobInfo.filename = "caf\u00e9 corner.txt";
         blobInfo.mimeType = "text/plain";
-        ManagedBlob mb = new SimpleManagedBlob(blobInfo);
+        blobInfo.key = digest;
+        ManagedBlob mb = new SimpleManagedBlob("unusedBlobProviderId", blobInfo);
         URI uri = binaryManager.getRemoteUri(digest, mb, null);
         String uriString = uri.toASCIIString();
         assertEquals(String.format("https://%s.blob.core.windows.net/%s/%s",
