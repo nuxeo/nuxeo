@@ -35,6 +35,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,6 +47,9 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -91,6 +95,8 @@ import com.microsoft.azure.storage.core.Utility;
 @Features(RuntimeFeature.class)
 public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<AzureBinaryManager> {
 
+    private static final Logger log = LogManager.getLogger(TestAzureBinaryManager.class);
+
     protected final static List<String> PARAMETERS = Arrays.asList(AzureBinaryManager.ACCOUNT_KEY_PROPERTY,
             AzureBinaryManager.ACCOUNT_NAME_PROPERTY, AzureBinaryManager.CONTAINER_PROPERTY);
 
@@ -117,6 +123,39 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
         // Cleanup keys
         Properties props = Framework.getProperties();
         PARAMETERS.forEach(props::remove);
+    }
+
+    @After
+    public void tearDown() {
+        removeObjects();
+    }
+
+    /**
+     * Removes all objects in the container, not only those under the configured prefix.
+     *
+     * @since 11.5
+     */
+    @Override
+    protected void removeObjects() {
+        removeBinaries(listAllObjects());
+    }
+
+    /**
+     * @since 11.5
+     */
+    protected void removeBinaries(Collection<String> digests) {
+        digests.forEach(this::removeBinary);
+    }
+
+    /**
+     * @since 11.5
+     */
+    protected void removeBinary(String digest) {
+        try {
+            binaryManager.container.getBlockBlobReference(digest).delete();
+        } catch (StorageException | URISyntaxException e) {
+            log.error("Unable to remove binary: {}", digest, e);
+        }
     }
 
     @Override
@@ -247,13 +286,15 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
     public void testRemoteURI() throws Exception {
         Blob blob = Blobs.createBlob(CONTENT);
         Binary binary = binaryManager.getBinary(blob);
-        BlobInfo blobInfo = new BlobInfo();;
-        blobInfo.digest = binary.getDigest();
+        BlobInfo blobInfo = new BlobInfo();
+        String digest = binary.getDigest();
+        blobInfo.digest = digest;
         blobInfo.length = Long.valueOf(blob.getLength());
         blobInfo.filename = "caf\u00e9 corner.txt";
         blobInfo.mimeType = "text/plain";
-        ManagedBlob mb = new SimpleManagedBlob(blobInfo );
-        URI uri = binaryManager.getRemoteUri(binary.getDigest(), mb, null);
+        blobInfo.key = digest;
+        ManagedBlob mb = new SimpleManagedBlob("unusedBlobProviderId", blobInfo);
+        URI uri = binaryManager.getRemoteUri(digest, mb, null);
         String string = uri.toASCIIString();
         // %-escaped version
         assertTrue(string, string.contains("filename*%3DUTF-8%27%27caf%C3%A9%20corner.txt"));
