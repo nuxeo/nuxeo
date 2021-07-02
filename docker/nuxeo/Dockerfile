@@ -4,6 +4,7 @@
 #
 # It uses a multi-stage build to copy and unzip the Nuxeo server ZIP file.
 
+ARG BASE_IMAGE
 # ------------------------------------------------------------------------
 # Build stage
 FROM azul/zulu-openjdk:11 as builder
@@ -32,21 +33,8 @@ RUN mkdir -p /tmp/nuxeo-distribution \
   && chmod -R g+rwX $NUXEO_HOME
 
 # ------------------------------------------------------------------------
-# RPM download stage
-FROM centos:7 as rpm-download
-
-ARG EXIFTOOL_VERSION=12.25
-
-# Add Nexus Private Yum Release Repository
-COPY nuxeo-private.repo /etc/yum.repos.d/
-
-RUN yum install --downloadonly --downloaddir=/rpms \
-  perl-Image-ExifTool-$EXIFTOOL_VERSION
-
-# ------------------------------------------------------------------------
 # Target stage
-FROM centos:7
-LABEL maintainer="Nuxeo <packagers@nuxeo.com>"
+FROM $BASE_IMAGE
 
 ARG BUILD_TAG
 ARG SCM_REF
@@ -58,51 +46,8 @@ LABEL org.nuxeo.build-tag=$BUILD_TAG
 LABEL org.nuxeo.scm-ref=$SCM_REF
 LABEL org.nuxeo.version=$VERSION
 # Override parent ones
-LABEL org.label-schema.build-date=""
-LABEL org.label-schema.license="Apache 2.0"
 LABEL org.label-schema.name="Nuxeo Server"
-LABEL org.label-schema.vendor="Nuxeo"
-LABEL org.opencontainers.image.created=""
-LABEL org.opencontainers.image.licenses="Apache 2.0"
 LABEL org.opencontainers.image.title="Nuxeo Server"
-LABEL org.opencontainers.image.vendor="Nuxeo"
-
-# Configure Zulu Repository
-RUN rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems \
-  && rpm --install https://cdn.azul.com/zulu/bin/zulu-repo-1.0.0-1.noarch.rpm
-
-# Copy downloaded rpms
-COPY --from=rpm-download /rpms /tmp/rpms
-
-RUN yum -y update \
-  && yum -y --setopt=skip_missing_names_on_install=False install \
-    epel-release \
-    # install java first to provide it for depend packages (such as libreoffice)
-    zulu11-jdk \
-  # install downloaded rpms
-  && yum -y localinstall /tmp/rpms/* \
-  && rm -rf /tmp/rpms \
-  # install libreoffice
-  && curl -f -L https://packages.nuxeo.com/repository/document-foundation-raw/LibreOffice_${LIBREOFFICE_VERSION}_Linux_x86-64_rpm.tar.gz | tar -C /tmp -xzv \
-  && yum -y localinstall /tmp/LibreOffice_${LIBREOFFICE_VERSION}*/RPMS/*.rpm \
-  && ln -s /opt/libreoffice$(echo $LIBREOFFICE_VERSION | cut -f 1,2 -d ".")/program/soffice /usr/bin/soffice \
-  && rm -rf /tmp/LibreOffice_${LIBREOFFICE_VERSION}* \
-  && yum -y --setopt=skip_missing_names_on_install=False install \
-    ghostscript \
-    ImageMagick-6.9.10.68-3.el7 \
-    less \
-    libwpd-tools \
-    # required by exiftool to extract binary metadata from open office document
-    perl-Archive-Zip \
-    poppler-utils \
-    tar \
-    ufraw \
-    unzip \
-    wget \
-  && yum clean all
-
-# Remove setuid/setgid binaries from images for security
-RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
 
 # Add a nuxeo user with a fixed UID
 # We chose an arbitrary UID that doesn't conflict with possibly existing users

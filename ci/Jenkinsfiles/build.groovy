@@ -143,29 +143,31 @@ void dockerPush(String image) {
   sh "docker push ${image}"
 }
 
-void dockerPushFixedVersion() {
-  String fullImageName = "${dockerNamespace}/${NUXEO_IMAGE_NAME}"
-  String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
-  String latestInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
-  dockerPull(fixedVersionInternalImage)
-  echo "Push ${latestInternalImage}"
-  dockerTag(fixedVersionInternalImage, latestInternalImage)
-  dockerPush(latestInternalImage)
+void dockerPullPush(String from, String... tos) {
+  echo "Pull ${from}"
+  dockerPull(from)
+  for (String to : tos) {
+    echo "Push ${to}"
+    dockerTag(from, to);
+    dockerPush(to)
+  }
 }
 
-void dockerDeploy(String dockerRegistry) {
-  String fullImageName = "${dockerNamespace}/${NUXEO_IMAGE_NAME}"
+void dockerPushFixedVersion(String imageName) {
+  String fullImageName = "${dockerNamespace}/${imageName}"
+  String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
+  String latestInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
+
+  dockerPullPush(fixedVersionInternalImage, latestInternalImage)
+}
+
+void dockerDeploy(String dockerRegistry, String imageName) {
+  String fullImageName = "${dockerNamespace}/${imageName}"
   String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
   String fixedVersionPublicImage = "${dockerRegistry}/${fullImageName}:${VERSION}"
   String latestPublicImage = "${dockerRegistry}/${fullImageName}:${DOCKER_TAG}"
 
-  dockerPull(fixedVersionInternalImage)
-  echo "Push ${fixedVersionPublicImage}"
-  dockerTag(fixedVersionInternalImage, fixedVersionPublicImage)
-  dockerPush(fixedVersionPublicImage)
-  echo "Push ${latestPublicImage}"
-  dockerTag(fixedVersionInternalImage, latestPublicImage)
-  dockerPush(latestPublicImage)
+  dockerPullPush(fixedVersionInternalImage, fixedVersionPublicImage, latestPublicImage)
 }
 
 void helmfileTemplate(namespace, environment, outputDir) {
@@ -309,6 +311,7 @@ pipeline {
     TEST_KAFKA_K8S_OBJECT = 'kafka'
     TEST_KAFKA_PORT = '9092'
     TEST_KAFKA_POD_NAME = "${TEST_KAFKA_K8S_OBJECT}-0"
+    BASE_IMAGE_NAME = 'nuxeo-base'
     NUXEO_IMAGE_NAME = 'nuxeo'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     MAVEN_ARGS = getMavenArgs()
@@ -581,40 +584,48 @@ pipeline {
       steps {
         setGitHubBuildStatus('docker/build', 'Build Docker image', 'PENDING')
         container('maven') {
-          dir('docker') {
-            echo """
-            ----------------------------------------
-            Build Docker image
-            ----------------------------------------
-            Image tag: ${VERSION}
-            """
+          echo """
+          ----------------------------------------
+          Build Docker image
+          ----------------------------------------
+          Image tag: ${VERSION}
+          """
+
+          echo "Install recent version of skaffold: ${SKAFFOLD_VERSION}"
+          sh """
+            skaffold version
+            curl -Lo skaffold https://github.com/GoogleContainerTools/skaffold/releases/download/${SKAFFOLD_VERSION}/skaffold-linux-amd64 && \
+            install skaffold /usr/bin/
+            skaffold version
+          """
+
+          dir('docker/nuxeo-base') {
             withCredentials([usernamePassword(credentialsId: 'packages.nuxeo.com-auth', usernameVariable: 'YUM_REPO_USERNAME', passwordVariable: 'YUM_REPO_PASSWORD')]) {
               sh """
-                envsubst < nuxeo-private.repo > nuxeo-private.repo~gen
-                mv nuxeo-private.repo~gen nuxeo-private.repo
+                mkdir -p target
+                envsubst < nuxeo-private.repo > target/nuxeo-private.repo
               """
             }
-
-            echo 'Fetch locally built Nuxeo Tomcat Server with Maven'
-            sh "mvn ${MAVEN_ARGS} -T4C process-resources"
-
-            echo "Install recent version of skaffold: ${SKAFFOLD_VERSION}"
-            sh """
-              skaffold version
-              curl -Lo skaffold https://github.com/GoogleContainerTools/skaffold/releases/download/${SKAFFOLD_VERSION}/skaffold-linux-amd64 && \
-              install skaffold /usr/bin/
-              skaffold version
-            """
-
-            echo "Build and push Docker image to internal Docker registry ${DOCKER_REGISTRY}"
+            echo "Build and push Base Docker image to internal Docker registry ${DOCKER_REGISTRY}"
             sh """
               envsubst < skaffold.yaml > skaffold.yaml~gen
               skaffold build -f skaffold.yaml~gen
             """
-            script {
-              if (!isPullRequest()) {
-                dockerPushFixedVersion()
-              }
+          }
+          dir('docker/nuxeo') {
+            echo 'Fetch locally built Nuxeo Tomcat Server with Maven'
+            sh "mvn ${MAVEN_ARGS} -T4C process-resources"
+
+            echo "Build and push Nuxeo Docker image to internal Docker registry ${DOCKER_REGISTRY}"
+            sh """
+              envsubst < skaffold.yaml > skaffold.yaml~gen
+              skaffold build -f skaffold.yaml~gen
+            """
+          }
+          script {
+            if (!isPullRequest()) {
+              dockerPushFixedVersion("${BASE_IMAGE_NAME}")
+              dockerPushFixedVersion("${NUXEO_IMAGE_NAME}")
             }
           }
         }
@@ -811,8 +822,9 @@ pipeline {
           ----------------------------------------
           Image tag: ${VERSION}
           """
-          echo "Push Docker image to Docker registry ${PRIVATE_DOCKER_REGISTRY}"
-          dockerDeploy("${PRIVATE_DOCKER_REGISTRY}")
+          echo "Push Docker images to Docker registry ${PRIVATE_DOCKER_REGISTRY}"
+          dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${BASE_IMAGE_NAME}")
+          dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
         }
       }
       post {

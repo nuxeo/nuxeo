@@ -46,17 +46,22 @@ void dockerPush(String image) {
   sh "docker push ${image}"
 }
 
+void dockerPullPush(String from, String... tos) {
+  echo "Pull ${from}"
+  dockerPull(from)
+  for (String to : tos) {
+    echo "Push ${to}"
+    dockerTag(from, to);
+    dockerPush(to)
+  }
+}
+
 void promoteDockerImage(String dockerRegistry, String imageName, String buildVersion, String releaseVersion, String latestVersion) {
   String buildImage = "${dockerRegistry}/${DOCKER_NAMESPACE}/${imageName}:${buildVersion}"
-  dockerPull(buildImage)
-
   String releaseImage = "${dockerRegistry}/${DOCKER_NAMESPACE}/${imageName}:${releaseVersion}"
-  dockerTag(buildImage, releaseImage)
-  dockerPush(releaseImage)
-
   String latestImage = "${dockerRegistry}/${DOCKER_NAMESPACE}/${imageName}:${latestVersion}"
-  dockerTag(buildImage, latestImage)
-  dockerPush(latestImage)
+
+  dockerPullPush(buildImage, releaseImage, latestImage)
 }
 
 pipeline {
@@ -76,6 +81,7 @@ pipeline {
     MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true -P-nexus,nexus-private'
     CONNECT_PROD_URL = 'https://connect.nuxeo.com/nuxeo'
     DOCKER_NAMESPACE = 'nuxeo'
+    BASE_IMAGE_NAME = 'nuxeo-base'
     NUXEO_IMAGE_NAME = 'nuxeo'
     SLACK_CHANNEL = 'platform-notifs'
     REFERENCE_BRANCH = '2021'
@@ -215,9 +221,11 @@ pipeline {
         container('maven') {
           echo """
           -----------------------------------------------
-          Tag Docker image with version ${RELEASE_VERSION} and ${LATEST_VERSION}
+          Tag Docker images with version ${RELEASE_VERSION} and ${LATEST_VERSION}
           -----------------------------------------------
           """
+          promoteDockerImage("${PRIVATE_DOCKER_REGISTRY}", "${BASE_IMAGE_NAME}", "${params.BUILD_VERSION}",
+                  "${RELEASE_VERSION}", "${LATEST_VERSION}")
           promoteDockerImage("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}", "${params.BUILD_VERSION}",
             "${RELEASE_VERSION}", "${LATEST_VERSION}")
         }

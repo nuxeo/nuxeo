@@ -3,7 +3,7 @@
 Nuxeo provides a ready to use Docker image that is pushed to our Docker registry. To pull the image, run:
 
 ```bash
-docker pull <DOCKER_REGISTRY>/nuxeo:<TAG>
+docker pull <DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG>
 ```
 
 ## Disclaimer
@@ -29,7 +29,7 @@ Based on CentOS 7, it includes:
 As it contains some non-free codecs, FFmpeg isn't part of the Nuxeo image. However, you can build a custom Docker image, based on the Nuxeo one, including the `ffmpeg` package provided by [RPM Fusion](https://rpmfusion.org/), see the `Dockerfile` sample  below. The resulting `ffmpeg` binary embeds all the codecs required for Nuxeo video conversions.
 
 ```Dockerfile
-FROM <DOCKER_REGISTRY>/nuxeo:<TAG>
+FROM <DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG>
 
 # we need to be root to run yum commands
 USER 0
@@ -53,15 +53,21 @@ There are several ways to build the image, depending on the context:
 
 ### With Maven
 
-To build the `nuxeo/nuxeo` image locally, run:
+To build the `nuxeo/nuxeo` image locally, you need to have built the `nuxeo/nuxeo-base:latest-lts` image first, see its [README](../nuxeo-base/README.md), then run:
 
 ```bash
 mvn -nsu install
 ```
 
+To build the `nuxeo/nuxeo` image locally by leveraging the `nuxeo/nuxeo-base:<TAG>` from another registry, run:
+
+```bash
+mvn -nsu -Ddocker.base.image=<DOCKER_REGISTRY>/nuxeo/nuxeo-base:<TAG> install
+```
+
 ### With Skaffold
 
-We use Skaffold to build the image as part of the [nuxeo](http://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/nuxeo/) pipeline in our Jenkins CI/CD platform.
+We use Skaffold to build the image as part of the [nuxeo](https://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/lts/job/nuxeo/) pipeline in our Jenkins CI/CD platform.
 
 This requires to:
 
@@ -80,10 +86,10 @@ To build the `nuxeo/nuxeo` image with Skaffold, you first need to fetch the Nuxe
 mvn -nsu process-resources
 ```
 
-Then, from the root directory, run:
+Then, from the module directory, run:
 
 ```bash
-skaffold build -f docker/skaffold.yaml
+skaffold build -f skaffold.yaml
 ```
 
 ### With Docker
@@ -97,7 +103,7 @@ mvn -nsu process-resources
 Then, run:
 
 ```bash
-docker build -t nuxeo/nuxeo:latest .
+docker build --build-arg BASE_IMAGE=<DOCKER_REGISTRY>/nuxeo/nuxeo-base:<TAG> -t nuxeo/nuxeo:latest .
 ```
 
 ## Run the Image
@@ -108,7 +114,7 @@ To run a container from the `nuxeo/nuxeo` image built locally, run:
 docker run -it -p 8080:8080 nuxeo/nuxeo:latest
 ```
 
-To pull the `nuxeo/nuxeo` image from our Docker regsitry and run a container from it, run:
+To pull the `nuxeo/nuxeo` image from our Docker registry and run a container from it, run:
 
 ```bash
 docker run -it -p 8080:8080 <DOCKER_REGISTRY>/nuxeo/nuxeo:latest
@@ -135,7 +141,7 @@ We provide a utility script to install remote Nuxeo packages from [Nuxeo Connect
 For instance, you can use this script in the following `Dockerfile`:
 
 ```Dockerfile
-FROM <DOCKER_REGISTRY>/nuxeo:<TAG>
+FROM <DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG>
 
 ARG CLID
 ARG CONNECT_URL

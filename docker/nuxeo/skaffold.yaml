@@ -25,6 +25,7 @@ build:
         singleSnapshot: true
         snapshotMode: "time"
         buildArgs:
+          BASE_IMAGE: "$DOCKER_REGISTRY/nuxeo/nuxeo-base:$VERSION"
           BUILD_TAG: "{{.BUILD_TAG}}"
           SCM_REF: "{{.GIT_COMMIT}}"
           VERSION: "{{.VERSION}}"
