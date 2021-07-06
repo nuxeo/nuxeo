@@ -141,6 +141,9 @@ public class BulkServiceImpl implements BulkService {
                 command.setBatchSize(adminService.getBatchSize(command.getAction()));
             }
         }
+        if (Duration.ZERO.equals(command.getBatchTransactionTimeout())) {
+            command.setBatchTransactionTimeout(adminService.getBatchTransactionTimeout(command.getAction()));
+        }
         if (command.getQueryLimit() == null) {
             command.setQueryLimit(adminService.getQueryLimit(command.getAction()));
         }
