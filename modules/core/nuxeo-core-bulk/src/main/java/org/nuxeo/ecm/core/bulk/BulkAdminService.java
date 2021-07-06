@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -38,6 +39,13 @@ public interface BulkAdminService {
     int getBucketSize(String action);
 
     int getBatchSize(String action);
+
+    /**
+     * Returns the transaction timeout to use to process a batch.
+     *
+     * @since 11.5
+     */
+    Duration getBatchTransactionTimeout(String action);
 
     /**
      * Returns the default query limit for the bulk action.
