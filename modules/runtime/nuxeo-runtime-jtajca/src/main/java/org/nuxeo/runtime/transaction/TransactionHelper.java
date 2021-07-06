@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAResource;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
@@ -54,7 +54,7 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
  */
 public class TransactionHelper {
 
-    private static final Log log = LogFactory.getLog(TransactionHelper.class);
+    private static final Logger log = LogManager.getLogger(TransactionHelper.class);
 
     private static final Field GERONIMO_TRANSACTION_TIMEOUT_FIELD = FieldUtils.getField(
             org.apache.geronimo.transaction.manager.TransactionImpl.class, "timeout", true);
@@ -271,9 +271,7 @@ public class TransactionHelper {
             return false;
         }
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("Starting transaction");
-            }
+            log.debug("Starting transaction");
             ut.begin();
             return true;
         } catch (NotSupportedException | SystemException e) {
@@ -379,7 +377,7 @@ public class TransactionHelper {
         try {
             tm.setTransactionTimeout(timeout);
         } catch (SystemException e) {
-            log.error("Unable to set transaction timeout: " + timeout, e);
+            log.error("Unable to set transaction timeout: {}", timeout, e);
             return false;
         }
         try {
@@ -407,9 +405,7 @@ public class TransactionHelper {
         try {
             int status = ut.getStatus();
             if (status == Status.STATUS_ACTIVE) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Committing transaction");
-                }
+                log.debug("Committing transaction");
                 try {
                     ut.commit();
                 } catch (HeuristicRollbackException | HeuristicMixedException e) {
@@ -429,14 +425,10 @@ public class TransactionHelper {
                     throw new TransactionRuntimeException(msg, e);
                 }
             } else if (status == Status.STATUS_MARKED_ROLLBACK) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cannot commit transaction because it is marked rollback only");
-                }
+                log.debug("Cannot commit transaction because it is marked rollback only");
                 ut.rollback();
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cannot commit transaction with unknown status: " + status);
-                }
+                log.debug("Cannot commit transaction with unknown status: {}", status);
             }
         } catch (SystemException e) {
             thrown = new TransactionRuntimeException(e);
@@ -509,11 +501,9 @@ public class TransactionHelper {
      * @return {@code true} if the transaction was successfully marked rollback only, {@code false} otherwise
      */
     public static boolean setTransactionRollbackOnly() {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting transaction as rollback only");
-            if (log.isTraceEnabled()) {
-                log.trace("Rollback stack trace", new Throwable("Rollback stack trace"));
-            }
+        log.debug("Setting transaction as rollback only");
+        if (log.isTraceEnabled()) {
+            log.trace("Rollback stack trace", new Throwable("Rollback stack trace"));
         }
         UserTransaction ut = NuxeoContainer.getUserTransaction();
         if (ut == null) {
@@ -578,7 +568,6 @@ public class TransactionHelper {
     public static void runWithoutTransaction(Runnable runnable) {
         runWithoutTransaction(() -> { runnable.run(); return null; });
     }
-
 
     /**
      * Calls the given {@link Supplier} without a transactional context.
