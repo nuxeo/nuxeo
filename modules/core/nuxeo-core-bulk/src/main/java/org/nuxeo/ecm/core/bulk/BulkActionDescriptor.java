@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.bulk;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
+import java.time.Duration;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -35,6 +37,9 @@ public class BulkActionDescriptor implements Descriptor {
     public static final Integer DEFAULT_BUCKET_SIZE = 100;
 
     public static final Integer DEFAULT_BATCH_SIZE = 25;
+
+    // @since 11.5
+    protected static final Duration DEFAULT_BATCH_TRANSACTION_TIMEOUT = Duration.ZERO;
 
     // @since 11.1
     @XNode("@enabled")
@@ -52,6 +57,9 @@ public class BulkActionDescriptor implements Descriptor {
 
     @XNode("@batchSize")
     public Integer batchSize = DEFAULT_BATCH_SIZE;
+
+    @XNode("@batchTransactionTimeout")
+    public Duration batchTransactionTimeout = DEFAULT_BATCH_TRANSACTION_TIMEOUT;
 
     @XNode("@httpEnabled")
     public Boolean httpEnabled = Boolean.FALSE;
@@ -81,6 +89,11 @@ public class BulkActionDescriptor implements Descriptor {
 
     public Integer getBatchSize() {
         return batchSize;
+    }
+
+    // @since 11.5
+    public Duration getBatchTransactionTimeout() {
+        return batchTransactionTimeout;
     }
 
     // @since 11.4
@@ -118,5 +131,4 @@ public class BulkActionDescriptor implements Descriptor {
     public String getInputStream() {
         return defaultIfBlank(inputStream, name);
     }
-
 }

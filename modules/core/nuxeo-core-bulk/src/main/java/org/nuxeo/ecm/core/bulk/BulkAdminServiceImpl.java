@@ -100,6 +100,11 @@ public class BulkAdminServiceImpl implements BulkAdminService {
     }
 
     @Override
+    public Duration getBatchTransactionTimeout(String action) {
+        return descriptors.get(action).getBatchTransactionTimeout();
+    }
+
+    @Override
     public Long getQueryLimit(String action) {
         return descriptors.get(action).getDefaultQueryLimit();
     }

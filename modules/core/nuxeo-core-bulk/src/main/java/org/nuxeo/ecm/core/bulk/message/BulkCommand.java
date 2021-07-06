@@ -18,9 +18,11 @@
  */
 package org.nuxeo.ecm.core.bulk.message;
 
+import static java.util.Objects.requireNonNullElse;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +64,10 @@ public class BulkCommand implements Serializable {
 
     protected int batchSize;
 
+    // @since 11.5
+    @Nullable
+    protected Long batchTransactionTimeout;
+
     // @since 11.1
     @Nullable
     protected String scroller;
@@ -90,6 +96,7 @@ public class BulkCommand implements Serializable {
         this.action = builder.action;
         this.bucketSize = builder.bucketSize;
         this.batchSize = builder.batchSize;
+        this.batchTransactionTimeout = builder.batchTransactionTimeout;
         this.params = builder.params;
         this.scroller = builder.scroller;
         this.genericScroller = BooleanUtils.toBoolean(builder.genericScroller);
@@ -156,6 +163,15 @@ public class BulkCommand implements Serializable {
     }
 
     /**
+     * Precision is second.
+     *
+     * @since 11.5
+     */
+    public Duration getBatchTransactionTimeout() {
+        return Duration.ofSeconds(requireNonNullElse(batchTransactionTimeout, 0L));
+    }
+
+    /**
      * When greater than 0, the limit applied to the query results
      *
      * @since 11.4
@@ -191,6 +207,15 @@ public class BulkCommand implements Serializable {
         this.bucketSize = bucketSize;
     }
 
+    /**
+     * Precision is second.
+     *
+     * @since 11.5
+     */
+    public void setBatchTransactionTimeout(Duration timeout) {
+        this.batchTransactionTimeout = timeout.toSeconds();
+    }
+
     public void setRepository(String repository) {
         this.repository = repository;
     }
@@ -213,6 +238,8 @@ public class BulkCommand implements Serializable {
         protected int bucketSize;
 
         protected int batchSize;
+
+        protected Long batchTransactionTimeout;
 
         protected String scroller;
 
@@ -335,6 +362,16 @@ public class BulkCommand implements Serializable {
                         String.format("Bucket size: %d must be greater or equals to batch size: %d", size, batchSize));
             }
             this.batchSize = size;
+            return this;
+        }
+
+        /**
+         * Precision is second.
+         *
+         * @since 11.5
+         */
+        public Builder batchTransactionTimeout(Duration timeout) {
+            this.batchTransactionTimeout = timeout.toSeconds();
             return this;
         }
 
