@@ -171,7 +171,7 @@
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
     <aws.version>1.11.878</aws.version>
     <gcp.version>1.76.0</gcp.version>
-    <azure.version>3.1.0</azure.version>
+    <azure.version>8.6.6</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
     <jackson.version>2.9.10</jackson.version>
     <bouncycastle.version>1.60</bouncycastle.version>
