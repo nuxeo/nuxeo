@@ -130,14 +130,10 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
     protected Set<String> listObjects() {
         Set<String> digests = new HashSet<>();
         binaryManager.container.listBlobs(PREFIX, false).forEach(lb -> {
-            try {
-                if (lb instanceof CloudBlockBlob) { // ignore subdirectories
-                    String name = ((CloudBlockBlob) lb).getName();
-                    String digest = name.substring(PREFIX.length());
-                    digests.add(digest);
-                }
-            } catch (URISyntaxException e) {
-                // Do nothing.
+            if (lb instanceof CloudBlockBlob) { // ignore subdirectories
+                String name = ((CloudBlockBlob) lb).getName();
+                String digest = name.substring(PREFIX.length());
+                digests.add(digest);
             }
         });
         return digests;
@@ -146,12 +142,8 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
     protected Set<String> listAllObjects() {
         Set<String> names = new HashSet<>();
         binaryManager.container.listBlobs("", true).forEach(lb -> {
-            try {
-                String name = ((CloudBlockBlob) lb).getName();
-                names.add(name);
-            } catch (URISyntaxException e) {
-                // Do nothing.
-            }
+            String name = ((CloudBlockBlob) lb).getName();
+            names.add(name);
         });
         return names;
     }
