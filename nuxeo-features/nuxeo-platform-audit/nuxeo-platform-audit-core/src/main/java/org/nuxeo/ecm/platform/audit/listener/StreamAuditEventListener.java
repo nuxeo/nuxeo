@@ -23,6 +23,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -66,6 +67,8 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
     public static final String DEFAULT_LOG_CONFIG = "audit";
 
     public static final String STREAM_NAME = "audit";
+
+    protected static final AtomicInteger writeCounter = new AtomicInteger(0);
 
     @Override
     public void handleEvent(Event event) {
@@ -120,16 +123,28 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
             return;
         }
         LogAppender<Record> appender = getLogManager().getAppender(STREAM_NAME);
-        entries.get().forEach(entry -> writeEntry(appender, entry));
+        // all log entries for a transaction goes to the same partition preserving ordering
+        String partitionKey = getPartitionKey();
+        entries.get().forEach(entry -> writeEntry(appender, partitionKey, entry));
     }
 
+    protected String getPartitionKey() {
+        // ok because atomic integer wraps on overflow
+        return String.valueOf(writeCounter.incrementAndGet());
+    }
+
+    // @deprecated since 11.5, it always writes to the same partition
     protected void writeEntry(LogAppender<Record> appender, LogEntry entry) {
+        writeEntry(appender, "0", entry);
+    }
+
+    protected void writeEntry(LogAppender<Record> appender, String partitionKey, LogEntry entry) {
         String json = asJson(entry);
         if (json == null) {
             return;
         }
         long timestamp = getTimestampForEntry(entry);
-        appender.append(0, new Record(String.valueOf(entry.getId()), json.getBytes(UTF_8),
+        appender.append(partitionKey, new Record(partitionKey, json.getBytes(UTF_8),
                 Watermark.ofTimestamp(timestamp).getValue()));
     }
 
