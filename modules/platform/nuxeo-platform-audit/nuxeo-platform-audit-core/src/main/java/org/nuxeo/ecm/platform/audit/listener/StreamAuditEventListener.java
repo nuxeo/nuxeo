@@ -23,6 +23,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -61,6 +62,8 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
     public static final String STREAM_AUDIT_ENABLED_PROP = "nuxeo.stream.audit.enabled";
 
     public static final String STREAM_NAME = "audit/audit";
+
+    protected static final AtomicInteger writeCounter = new AtomicInteger(0);
 
     @Deprecated
     // @deprecated since 11.1 log config is not needed anymore
@@ -118,23 +121,34 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
         if (entries.get().isEmpty()) {
             return;
         }
+        // all log entries for a transaction goes to the same partition preserving ordering
+        String partitionKey = getPartitionKey();
         StreamManager streamManager = getStreamManager();
         for (LogEntry entry : entries.get()) {
             if (entry != null) {
-                Record record = recordOf(entry);
+                Record record = recordOf(partitionKey, entry);
                 streamManager.append(STREAM_NAME, record);
             }
         }
     }
 
+    protected String getPartitionKey() {
+        // ok because atomic integer wraps on overflow
+        return String.valueOf(writeCounter.incrementAndGet());
+    }
+
+    // @deprecated since 11.5, it always writes to the same partition entry id being unset at this stage
     protected Record recordOf(LogEntry entry) {
+        return recordOf(String.valueOf(entry.getId()), entry);
+    }
+
+    protected Record recordOf(String partitionKey, LogEntry entry) {
         String json = asJson(entry);
         if (json == null) {
             return null;
         }
         long timestamp = getTimestampForEntry(entry);
-        return new Record(String.valueOf(entry.getId()), json.getBytes(UTF_8),
-                Watermark.ofTimestamp(timestamp).getValue());
+        return new Record(partitionKey, json.getBytes(UTF_8), Watermark.ofTimestamp(timestamp).getValue());
     }
 
     protected long getTimestampForEntry(LogEntry entry) {
