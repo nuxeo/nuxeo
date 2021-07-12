@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ public class RenditionTest extends BaseTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CloseableClientResponse response = getResponse(RequestType.GET,
-                "path" + doc.getPathAsString() + "/@rendition/dummyRendition")) {
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString()
+                + "/@rendition/dummyRendition")) {
             assertEquals(200, response.getStatus());
             assertEquals("adoc", response.getEntity(String.class));
         }
@@ -65,8 +65,8 @@ public class RenditionTest extends BaseTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CloseableClientResponse response = getResponse(RequestType.GET,
-                "path" + doc.getPathAsString() + "/@rendition/unexistingRendition")) {
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString()
+                + "/@rendition/unexistingRendition")) {
             assertEquals(500, response.getStatus()); // should be 404?
         }
     }
