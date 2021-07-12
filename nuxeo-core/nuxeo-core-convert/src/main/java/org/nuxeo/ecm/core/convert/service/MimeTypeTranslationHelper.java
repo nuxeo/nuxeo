@@ -132,12 +132,12 @@ public class MimeTypeTranslationHelper {
      * <p>
      * Finds the converter names based on the following algorithm:
      * <ul>
-     * <li>Find the converters exactly matching the given {@code sourceMimeType}</li>
+     * <li>Find the converters exactly matching the given {@code sourceMimeType} and matching the given {@code
+     * destinationMimeType}</li>
      * <li>If no converter found, find the converters matching a wildcard subtype based on the {@code sourceMimeType},
-     * such has "image/*"</li>
+     * such has "image/*", and matching the given {@code destinationMimeType}</li>
      * <li>If no converter found and {@code allowWildcard} is {@code true}, find the converters matching a wildcard
-     * source mime type "*"</li>
-     * <li>Then, filter only the converters matching the given {@code destinationMimeType}</li>
+     * source mime type "*" and matching the given {@code destinationMimeType}</li>
      * </ul>
      *
      * @param allowWildcard {@code true} to allow returning converters with '*' as source mime type.
@@ -147,21 +147,18 @@ public class MimeTypeTranslationHelper {
         // remove content type parameters if any
         String srcMimeType = parseMimeType(sourceMimeType);
 
-        List<ConvertOption> cos = srcMappings.getOrDefault(srcMimeType, Collections.emptyList());
-        if (cos.isEmpty()) {
+        List<String> converterNames = doGetConverterNames(srcMimeType, destinationMimeType);
+        if (converterNames.isEmpty()) {
             // use a mime type with a wildcard sub type
-            cos = srcMappings.getOrDefault(computeMimeTypeWithWildcardSubType(srcMimeType), Collections.emptyList());
+            converterNames = doGetConverterNames(computeMimeTypeWithWildcardSubType(srcMimeType), destinationMimeType);
         }
 
-        if (cos.isEmpty() && allowWildcard) {
+        if (converterNames.isEmpty() && allowWildcard) {
             // use a wildcard mime type
-            cos = srcMappings.getOrDefault(ANY_MIME_TYPE, Collections.emptyList());
+            converterNames = doGetConverterNames(ANY_MIME_TYPE, destinationMimeType);
         }
 
-        return cos.stream()
-                  .filter(co -> destinationMimeType == null || destinationMimeType.equals(co.mimeType))
-                  .map(co -> co.converter)
-                  .collect(Collectors.toList());
+        return converterNames;
     }
 
     /**
@@ -198,6 +195,20 @@ public class MimeTypeTranslationHelper {
      */
     protected String computeMimeTypeWithWildcardSubType(String mimeType) {
         return mimeType != null ? mimeType.replaceAll("(.*)/(.*)", "$1/" + ANY_MIME_TYPE) : null;
+    }
+
+    /**
+     * Returns the list of converter names matching exactly the given {@code sourceMimeType} and {@code
+     * destinationMimeType}.
+     *
+     * @since 11.5
+     */
+    protected List<String> doGetConverterNames(String sourceMimeType, String destinationMimeType) {
+        return srcMappings.getOrDefault(sourceMimeType, Collections.emptyList())
+                          .stream()
+                          .filter(co -> destinationMimeType == null || destinationMimeType.equals(co.mimeType))
+                          .map(co -> co.converter)
+                          .collect(Collectors.toList());
     }
 
     /**
