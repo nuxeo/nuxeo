@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.tests.9">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+      point="converter">
+
+    <converter name="tiff2Png" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>image/tiff</sourceMimeType>
+      <destinationMimeType>image/png</destinationMimeType>
+    </converter>
+
+    <converter name="image2Pdf" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>image/*</sourceMimeType>
+      <destinationMimeType>application/pdf</destinationMimeType>
+    </converter>
+  </extension>
+
+</component>

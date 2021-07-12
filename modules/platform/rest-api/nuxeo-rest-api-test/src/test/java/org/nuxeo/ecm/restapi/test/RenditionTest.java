@@ -21,11 +21,19 @@ package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -42,6 +50,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.platform.rendition.api")
 @Deploy("org.nuxeo.ecm.platform.rendition.core")
 @Deploy("org.nuxeo.ecm.platform.restapi.test:renditions-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.convert")
+@Deploy("org.nuxeo.ecm.platform.thumbnail")
 public class RenditionTest extends BaseTest {
 
     @Test
@@ -55,6 +65,24 @@ public class RenditionTest extends BaseTest {
                 + "/@rendition/dummyRendition")) {
             assertEquals(200, response.getStatus());
             assertEquals("adoc", response.getEntity(String.class));
+        }
+    }
+
+    // NXP-30483
+    @Test
+    public void shouldRetrieveTheImageToPdfRendition() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "adoc", "File");
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"), "image/jpeg",
+                                     StandardCharsets.UTF_8.name(), "test.jpg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc.putContextData(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION, true); // not useful for us
+        doc = session.createDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                                                            "path" + doc.getPathAsString() + "/@rendition/pdf")) {
+            assertEquals(200, response.getStatus());
         }
     }
 
