@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.convert.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -86,8 +85,8 @@ public class MimeTypeTranslationHelper {
      * <p>
      * Follows the algorithm of {@link #getConverterNames(String, String, boolean)}.
      *
-     * @since 11.1
      * @see #getConverterNames(String, String, boolean)
+     * @since 11.1
      */
     public String getConverterName(String sourceMimeType, String destinationMimeType, boolean allowWildcard) {
         List<String> converterNames = getConverterNames(sourceMimeType, destinationMimeType, allowWildcard);
@@ -95,8 +94,8 @@ public class MimeTypeTranslationHelper {
     }
 
     /**
-     * Returns {@code true} if the given {@code mimeTypes} has a compatible mime type with {@code mimeType},
-     * {@code false} otherwise.
+     * Returns {@code true} if the given {@code mimeTypes} has a compatible mime type with {@code mimeType}, {@code
+     * false} otherwise.
      * <p>
      * The {@code mimeTypes} list has a compatible mime type if:
      * <ul>
@@ -147,15 +146,15 @@ public class MimeTypeTranslationHelper {
         // remove content type parameters if any
         String srcMimeType = parseMimeType(sourceMimeType);
 
-        List<ConvertOption> cos = srcMappings.getOrDefault(srcMimeType, Collections.emptyList());
+        List<ConvertOption> cos = srcMappings.getOrDefault(srcMimeType, List.of());
         if (cos.isEmpty()) {
             // use a mime type with a wildcard sub type
-            cos = srcMappings.getOrDefault(computeMimeTypeWithWildcardSubType(srcMimeType), Collections.emptyList());
+            cos = srcMappings.getOrDefault(computeMimeTypeWithWildcardSubType(srcMimeType), List.of());
         }
 
         if (cos.isEmpty() && allowWildcard) {
             // use a wildcard mime type
-            cos = srcMappings.getOrDefault(ANY_MIME_TYPE, Collections.emptyList());
+            cos = srcMappings.getOrDefault(ANY_MIME_TYPE, List.of());
         }
 
         return cos.stream()
