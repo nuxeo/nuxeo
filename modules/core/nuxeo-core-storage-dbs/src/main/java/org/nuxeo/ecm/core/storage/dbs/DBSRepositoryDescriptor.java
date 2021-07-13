@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
  *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.storage.dbs;
+
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -111,7 +113,7 @@ public class DBSRepositoryDescriptor implements Cloneable {
 
     /** @since 8.10 */
     public boolean isCacheEnabled() {
-        return defaultFalse(cacheEnabled);
+        return isTrue(cacheEnabled);
     }
 
     /** @since 8.10 */
@@ -141,7 +143,7 @@ public class DBSRepositoryDescriptor implements Cloneable {
 
     /** @since 9.1 */
     public boolean isChangeTokenEnabled() {
-        return defaultFalse(changeTokenEnabled);
+        return isTrue(changeTokenEnabled);
     }
 
     /** @since 9.1 */
@@ -204,9 +206,4 @@ public class DBSRepositoryDescriptor implements Cloneable {
             changeTokenEnabled = other.changeTokenEnabled;
         }
     }
-
-    private static boolean defaultFalse(Boolean bool) {
-        return Boolean.TRUE.equals(bool);
-    }
-
 }
