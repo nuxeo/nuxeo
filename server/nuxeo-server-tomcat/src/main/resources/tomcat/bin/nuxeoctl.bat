@@ -175,7 +175,7 @@ echo Could not find java.exe in the path, the environment or the registry
 goto END
 
 :FIND_JAVA_HOME
-%JAVA% -XshowSettings:properties -version 2>&1 | find "java.home" | "%NUXEO_HOME%\bin\repl.bat" "^ *java.home = (.*)" "set JAVA_HOME=$1"  | "%NUXEO_HOME%\bin\repl.bat" "\\jre$" "" > "%NUXEO_HOME%\bin\java-home.bat"
+"%JAVA%" -XshowSettings:properties -version 2>&1 | find "java.home" | "%NUXEO_HOME%\bin\repl.bat" "^ *java.home = (.*)" "set JAVA_HOME=$1"  | "%NUXEO_HOME%\bin\repl.bat" "\\jre$" "" > "%NUXEO_HOME%\bin\java-home.bat"
 call "%NUXEO_HOME%\bin\java-home.bat"
 goto HAS_JAVA_HOME
 
