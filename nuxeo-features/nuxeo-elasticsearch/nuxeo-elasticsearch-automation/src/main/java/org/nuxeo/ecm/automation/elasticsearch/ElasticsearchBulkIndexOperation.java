@@ -75,8 +75,10 @@ public class ElasticsearchBulkIndexOperation {
 
     protected String submitBulkCommand(String nxql, boolean syncAlias) {
         String username = session.getPrincipal().getName();
+        String repository = session.getRepositoryName();
         return bulkService.submit(
-                new BulkCommand.Builder(IndexAction.ACTION_NAME, nxql).param(INDEX_UPDATE_ALIAS_PARAM, syncAlias)
+                new BulkCommand.Builder(IndexAction.ACTION_NAME, nxql).repository(repository)
+                                                                      .param(INDEX_UPDATE_ALIAS_PARAM, syncAlias)
                                                                       .user(username)
                                                                       .build());
     }
