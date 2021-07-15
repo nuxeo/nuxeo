@@ -58,6 +58,10 @@ public class PropertyDescriptor implements Descriptor {
     @XNode("@fallback")
     protected String fallback;
 
+    // @since 2021.8
+    @XNode("@indexOrder")
+    protected String indexOrder;
+
     @XNode("@remove")
     public boolean remove;
 
@@ -93,6 +97,13 @@ public class PropertyDescriptor implements Descriptor {
         return REMOVED.equalsIgnoreCase(deprecation);
     }
 
+    /**
+     * @since 11.5
+     */
+    public String getIndexOrder() {
+        return indexOrder;
+    }
+
     public String getFallback() {
         return fallback;
     }
@@ -106,6 +117,7 @@ public class PropertyDescriptor implements Descriptor {
         merged.secured = requireNonNullElse(other.secured, secured);
         merged.deprecation = requireNonNullElse(other.deprecation, deprecation);
         merged.fallback = requireNonNullElse(other.fallback, fallback);
+        merged.indexOrder = requireNonNullElse(other.indexOrder, indexOrder);
         return merged;
     }
 

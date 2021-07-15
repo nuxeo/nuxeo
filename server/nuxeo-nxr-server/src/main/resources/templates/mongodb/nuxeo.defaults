@@ -15,6 +15,9 @@ nuxeo.mongodb.keystore.path=
 nuxeo.mongodb.keystore.password=
 nuxeo.mongodb.keystore.type=
 
+# indexes creation
+nuxeo.db.indexes.create=true
+
 nuxeo.quartz.enable=true
 
 ## MongoDB directories activation
