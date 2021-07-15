@@ -59,6 +59,10 @@ public class PropertyDescriptor {
     @XNode("@fallback")
     protected String fallback;
 
+    // @since 11.5
+    @XNode("@indexOrder")
+    protected String indexOrder;
+
     public String getId() {
         return schema + ':' + name;
     }
@@ -88,6 +92,13 @@ public class PropertyDescriptor {
 
     public boolean isRemoved() {
         return REMOVED.equalsIgnoreCase(deprecation);
+    }
+
+    /**
+     * @since 11.5
+     */
+    public String getIndexOrder() {
+        return indexOrder;
     }
 
     public String getFallback() {

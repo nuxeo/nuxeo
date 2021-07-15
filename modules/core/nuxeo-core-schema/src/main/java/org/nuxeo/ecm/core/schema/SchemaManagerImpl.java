@@ -760,6 +760,16 @@ public class SchemaManagerImpl implements SchemaManager {
                        .map(PropertyDescriptor::getFallback);
     }
 
+    @Override
+    public List<PropertyIndexOrder> getIndexedProperties(String schema) {
+        return propertyCharacteristics.getOrDefault(schema, Map.of())
+                                      .values()
+                                      .stream()
+                                      .map(p -> new PropertyIndexOrder(p.getName(), p.getIndexOrder()))
+                                      .filter(PropertyIndexOrder::isIndexNotNone)
+                                      .collect(Collectors.toList());
+    }
+
     protected boolean checkPropertyCharacteristic(String schema, String path, Predicate<PropertyDescriptor> predicate) {
         Map<String, PropertyDescriptor> properties = propertyCharacteristics.getOrDefault(schema, Map.of());
         // iterate on path to check if a parent matches the given predicate
