@@ -381,6 +381,8 @@ public class NxQueryBuilder {
         for (SortBuilder<?> sortBuilder : getSortBuilders()) {
             request.sort(sortBuilder);
         }
+        // Ask for total hits
+        request.trackTotalHits(true);
         // Add Aggregate
         for (AbstractAggregationBuilder<?> aggregate : getEsAggregates()) {
             request.aggregation(aggregate);
