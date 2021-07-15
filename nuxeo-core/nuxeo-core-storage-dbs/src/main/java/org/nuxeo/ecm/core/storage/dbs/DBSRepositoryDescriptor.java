@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -164,6 +166,14 @@ public class DBSRepositoryDescriptor implements Cloneable {
     /** @since 9.1 */
     public void setChangeTokenEnabled(boolean enabled) {
         this.changeTokenEnabled = Boolean.valueOf(enabled);
+    }
+
+    @XNode("createIndexes")
+    protected Boolean createIndexes;
+
+    /** @since 11.5 */
+    public boolean isCreateIndexes() {
+        return isTrue(createIndexes);
     }
 
     @Override
