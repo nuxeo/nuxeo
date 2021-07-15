@@ -132,7 +132,7 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"cardinal_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"cardinal\":{\"cardinality\":{\"field\":\"dc:source\"}}}}}}",
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"cardinal_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"cardinal\":{\"cardinality\":{\"field\":\"dc:source\"}}}}}}",
                 request.toString());
     }
 
@@ -155,7 +155,7 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"asc\"},{\"_key\":\"asc\"}],\"include\":\"bar*\",\"exclude\":\"foo*\"}}}}}}", //
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"asc\"},{\"_key\":\"asc\"}],\"include\":\"bar*\",\"exclude\":\"foo*\"}}}}}}", //
                 request.toString());
     }
 
@@ -174,7 +174,7 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"trashed_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"trashed\":{\"terms\":{\"field\":\"ecm:isTrashed\",\"size\":2,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}}}}", //
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"trashed_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"trashed\":{\"terms\":{\"field\":\"ecm:isTrashed\",\"size\":2,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}}}}", //
                 request.toString());
     }
 
@@ -190,7 +190,7 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
         assertEqualsEvenUnderWindows(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"fulltext_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"fulltext\":{\"terms\":{\"field\":\"all_field\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}}}}",
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"fulltext_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"fulltext\":{\"terms\":{\"field\":\"all_field\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}}}}",
                 request.toString());
     }
 
@@ -210,7 +210,7 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"significant_terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"jlh\":{}}}}}}}",
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"significant_terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"jlh\":{}}}}}}}",
                 request.toString());
     }
 
@@ -233,7 +233,7 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"range\":{\"field\":\"common:size\",\"ranges\":[{\"key\":\"small\",\"to\":2048.0},{\"key\":\"medium\",\"from\":2048.0,\"to\":6144.0},{\"key\":\"big\",\"from\":6144.0}],\"keyed\":false}}}}}}",
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"range\":{\"field\":\"common:size\",\"ranges\":[{\"key\":\"small\",\"to\":2048.0},{\"key\":\"medium\",\"from\":2048.0,\"to\":6144.0},{\"key\":\"big\",\"from\":6144.0}],\"keyed\":false}}}}}}",
                 request.toString());
     }
 
@@ -256,7 +256,7 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_range\":{\"field\":\"dc:created\",\"ranges\":[{\"key\":\"10monthAgo\",\"to\":\"now-10M/M\"},{\"key\":\"1monthAgo\",\"from\":\"now-10M/M\",\"to\":\"now-1M/M\"},{\"key\":\"thisMonth\",\"from\":\"now-1M/M\"}],\"keyed\":false}}}}}}",
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_range\":{\"field\":\"dc:created\",\"ranges\":[{\"key\":\"10monthAgo\",\"to\":\"now-10M/M\"},{\"key\":\"1monthAgo\",\"from\":\"now-10M/M\",\"to\":\"now-1M/M\"},{\"key\":\"thisMonth\",\"from\":\"now-1M/M\"}],\"keyed\":false}}}}}}",
                 request.toString());
     }
 
@@ -275,7 +275,7 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
         assertEqualsEvenUnderWindows(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"size_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"size\":{\"histogram\":{\"field\":\"common:size\",\"interval\":1024.0,\"offset\":0.0,\"order\":{\"_key\":\"asc\"},\"keyed\":false,\"min_doc_count\":0,\"extended_bounds\":{\"min\":0.0,\"max\":10240.0}}}}}}}",
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"size_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"size\":{\"histogram\":{\"field\":\"common:size\",\"interval\":1024.0,\"offset\":0.0,\"order\":{\"_key\":\"asc\"},\"keyed\":false,\"min_doc_count\":0,\"extended_bounds\":{\"min\":0.0,\"max\":10240.0}}}}}}}",
                 request.toString());
     }
 
@@ -296,7 +296,7 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
         assertEqualsEvenUnderWindows(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"range\":{\"common:size\":{\"from\":2048,\"to\":3072,\"include_lower\":true,\"include_upper\":false,\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"size_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"size\":{\"histogram\":{\"field\":\"common:size\",\"interval\":1024.0,\"offset\":0.0,\"order\":{\"_key\":\"asc\"},\"keyed\":false,\"min_doc_count\":0,\"extended_bounds\":{\"min\":0.0,\"max\":10240.0}}}}}}}",
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"range\":{\"common:size\":{\"from\":2048,\"to\":3072,\"include_lower\":true,\"include_upper\":false,\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"size_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"size\":{\"histogram\":{\"field\":\"common:size\",\"interval\":1024.0,\"offset\":0.0,\"order\":{\"_key\":\"asc\"},\"keyed\":false,\"min_doc_count\":0,\"extended_bounds\":{\"min\":0.0,\"max\":10240.0}}}}}}}",
                 request.toString());
     }
 
@@ -319,7 +319,7 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"range\":{\"dc:created\":{\"from\":1470009600000,\"to\":1472688000000,\"include_lower\":true,\"include_upper\":false,\"format\":\"epoch_millis\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_histogram\":{\"field\":\"dc:created\",\"format\":\"yyy-MM\",\"time_zone\":\"UTC\",\"interval\":\"month\",\"offset\":0,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}],\"keyed\":false,\"min_doc_count\":0}}}}}}",
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"range\":{\"dc:created\":{\"from\":1470009600000,\"to\":1472688000000,\"include_lower\":true,\"include_upper\":false,\"format\":\"epoch_millis\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_histogram\":{\"field\":\"dc:created\",\"format\":\"yyy-MM\",\"time_zone\":\"UTC\",\"interval\":\"month\",\"offset\":0,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}],\"keyed\":false,\"min_doc_count\":0}}}}}}",
                 request.toString());
     }
 
@@ -341,7 +341,7 @@ public class TestAggregates {
         assertTrue(request.toString(),
                 request.toString()
                        .startsWith(
-                               "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_histogram\":{\"field\":\"dc:created\",\"time_zone\":"));
+                               "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_histogram\":{\"field\":\"dc:created\",\"time_zone\":"));
         assertTrue(request.toString(),
                 request.toString()
                        .endsWith(
@@ -377,7 +377,7 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"terms\":{\"dc:source\":[\"foo\",\"bar\"],\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}},\"nature_filter\":{\"filter\":{\"bool\":{\"must\":[{\"terms\":{\"dc:source\":[\"foo\",\"bar\"],\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"aggregations\":{\"nature\":{\"terms\":{\"field\":\"dc:nature\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}}}}",
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"terms\":{\"dc:source\":[\"foo\",\"bar\"],\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}},\"nature_filter\":{\"filter\":{\"bool\":{\"must\":[{\"terms\":{\"dc:source\":[\"foo\",\"bar\"],\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"aggregations\":{\"nature\":{\"terms\":{\"field\":\"dc:nature\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}}}}",
                 request.toString());
     }
 
@@ -397,7 +397,7 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"significant_terms\":{\"field\":\"prefix:foo.bar\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"jlh\":{}}}}}}}",
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"track_total_hits\":2147483647,\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"significant_terms\":{\"field\":\"prefix:foo.bar\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"jlh\":{}}}}}}}",
                 request.toString());
     }
 
