@@ -145,6 +145,9 @@ VOLUME /tmp
 
 ENV PATH $NUXEO_HOME/bin:$PATH
 
+# Set an UTF-8 LANG
+ENV LANG en_US.utf8
+
 EXPOSE 8080
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nuxeoctl", "console"]
