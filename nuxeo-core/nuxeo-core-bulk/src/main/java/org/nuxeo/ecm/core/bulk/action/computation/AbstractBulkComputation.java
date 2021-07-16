@@ -95,10 +95,13 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
             delta.setProcessingStartTime(Instant.now());
             delta.setProcessed(bucket.getIds().size());
             startBucket(record.getKey());
-            for (List<String> batch : Lists.partition(bucket.getIds(), command.getBatchSize())) {
-                processBatchOfDocuments(batch);
+            try {
+                for (List<String> batch : Lists.partition(bucket.getIds(), command.getBatchSize())) {
+                    processBatchOfDocuments(batch);
+                }
+            } finally {
+                delta.setProcessingEndTime(Instant.now());
             }
-            delta.setProcessingEndTime(Instant.now());
             endBucket(context, delta);
         } else {
             if (isAbortedCommand(bucket.getCommandId())) {
