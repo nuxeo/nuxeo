@@ -135,7 +135,6 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker impleme
         } finally {
             isEnlisted.set(false);
             getAllCommands().clear();
-            useSyncIndexing.set(null);
         }
     }
 
