@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import static org.nuxeo.ecm.core.api.CoreSession.BINARY_FULLTEXT_MAIN_KEY;
-import static org.nuxeo.ecm.core.model.Session.PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -46,6 +45,7 @@ import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.ScrollResult;
@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -876,9 +877,7 @@ public class SessionImpl implements Session {
                                                     .map(info -> info.id)
                                                     .collect(Collectors.toSet());
         if (!undeletableIds.isEmpty()) {
-            // in tests we may want to delete everything
-            boolean allowDeleteUndeletable = Framework.isBooleanPropertyTrue(PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS);
-            if (!allowDeleteUndeletable) {
+            if (!BaseSession.canDeleteUndeletable(NuxeoPrincipal.getCurrent())) {
                 if (undeletableIds.contains(id)) {
                     throw new DocumentExistsException("Cannot remove " + id + ", it is under retention / hold");
                 } else {
