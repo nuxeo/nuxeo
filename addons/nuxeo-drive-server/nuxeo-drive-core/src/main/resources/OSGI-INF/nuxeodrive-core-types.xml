@@ -4,6 +4,8 @@
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
     point="schema">
     <schema name="driveroot" prefix="drv" src="schema/driveroot.xsd" />
+
+    <property schema="driveroot" name="subscriptions/*/enabled" indexOrder="ascending" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
