@@ -18,14 +18,18 @@
  */
 package org.nuxeo.ecm.core.security;
 
+import static org.nuxeo.ecm.core.model.Session.PROP_RETENTION_COMPLIANCE_MODE_ENABLED;
+
 import java.util.Arrays;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Security policy that prevents deletion of a document when it is under retention or has a legal hold.
@@ -41,7 +45,7 @@ public class RetentionAndHoldSecurityPolicy extends AbstractSecurityPolicy {
             // not checking REMOVE, ignore
             return Access.UNKNOWN;
         }
-        if (!doc.isUnderRetentionOrLegalHold()) {
+        if (!doc.isUnderRetentionOrLegalHold() || BaseSession.canDeleteUndeletable(NuxeoPrincipal.getCurrent())) {
             return Access.UNKNOWN;
         }
         return Access.DENY;
@@ -50,7 +54,8 @@ public class RetentionAndHoldSecurityPolicy extends AbstractSecurityPolicy {
     @Override
     public boolean isRestrictingPermission(String permission) {
         // the important aspect is that we don't restrict BROWSE
-        return permission.equals(SecurityConstants.REMOVE);
+        return permission.equals(SecurityConstants.REMOVE)
+                && Framework.isBooleanPropertyTrue(PROP_RETENTION_COMPLIANCE_MODE_ENABLED);
     }
 
     @Override

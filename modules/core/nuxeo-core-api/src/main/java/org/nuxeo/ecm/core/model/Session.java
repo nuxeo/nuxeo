@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.query.QueryFilter;
 
 /**
@@ -283,6 +284,21 @@ public interface Session<T extends QueryFilter> {
      * @since 11.1
      */
     String PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS = "org.nuxeo.core.allowDeleteUndeletableDocuments";
+
+    /**
+     * Property to enable retention compliance mode. By default, retention runs in governance mode.
+     * <p>
+     * Compliance mode is the strictest where nobody can delete documents under retention or legal hold.
+     * <p>
+     * Governance (or standard) mode is less strict and allows users member of the
+     * {@link SecurityConstants#RECORDS_CLEANER_GROUP} group to delete records.
+     * <p>
+     * See <a href="https://doc.nuxeo.com/nxdoc/nuxeo-retention-installation/#nuxeo-server.">Nuxeo Retention
+     * Documentation</a> for further details.
+     *
+     * @since 11.5
+     */
+    String PROP_RETENTION_COMPLIANCE_MODE_ENABLED = "nuxeo.retention.compliance.enabled";
 
     /*
      * ----- Transaction management -----

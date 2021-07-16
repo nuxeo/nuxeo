@@ -33,10 +33,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.blob.BlobDispatcher.BlobDispatch;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.BlobAccessor;
 import org.nuxeo.ecm.core.model.Repository;
@@ -155,8 +157,10 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     public String writeBlob(Blob blob, Document doc, String xpath) throws IOException {
         if (blob == null) {
             if (MAIN_BLOB_XPATH.equals(xpath) && doc.isUnderRetentionOrLegalHold()) {
-                throw new DocumentSecurityException(
-                        "Cannot delete blob from document " + doc.getUUID() + ", it is under retention / hold");
+                if (!BaseSession.canDeleteUndeletable(NuxeoPrincipal.getCurrent())) {
+                    throw new DocumentSecurityException(
+                            "Cannot delete blob from document " + doc.getUUID() + ", it is under retention / hold");
+                }
             }
             return null;
         }
