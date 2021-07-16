@@ -100,17 +100,14 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
             }
             delta.setProcessingEndTime(Instant.now());
             endBucket(context, delta);
-            context.askForCheckpoint();
         } else {
             if (isAbortedCommand(bucket.getCommandId())) {
                 log.debug("Skipping aborted command: {}", bucket.getCommandId());
-                context.askForCheckpoint();
             } else {
-                // this requires a manual intervention, the kv store might have been lost
-                throw new IllegalStateException(String.format("Unknown command: %s, offset: %s, record: %s.",
-                        bucket.getCommandId(), context.getLastOffset(), record));
+                log.warn("Skipping unknown command: {}, offset: {}.",bucket.getCommandId(), context.getLastOffset());
             }
         }
+        context.askForCheckpoint();
     }
 
     protected boolean isAbortedCommand(String commandId) {
