@@ -11,6 +11,9 @@
     <schema name="l10nvocabulary" src="directoryschema/l10nvocabulary.xsd"/>
     <schema name="l10nxvocabulary" src="directoryschema/l10nxvocabulary.xsd"/>
     <schema name="documentsLists" src="directoryschema/documentsLists.xsd" />
+
+    <property schema="user" name="username" indexOrder="ascending" />
+    <property schema="group" name="groupname" indexOrder="ascending" />
   </extension>
 
 </component>
