@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class ElasticSearchInlineListener extends IndexingCommandsStacker implements EventListener, Synchronization {
 
-    private static final Log log = LogFactory.getLog(ElasticSearchInlineListener.class);
+    private static final Logger log = LogManager.getLogger(ElasticSearchInlineListener.class);
 
     protected static ThreadLocal<Map<String, IndexingCommands>> transactionCommands = ThreadLocal.withInitial(
             HashMap::new);
@@ -128,9 +128,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker impleme
             }
             List<IndexingCommand> commandList = new ArrayList<>();
             for (IndexingCommands cmds : getAllCommands().values()) {
-                for (IndexingCommand cmd : cmds.getCommands()) {
-                    commandList.add(cmd);
-                }
+                commandList.addAll(cmds.getCommands());
             }
             ElasticSearchIndexing esi = Framework.getService(ElasticSearchIndexing.class);
             esi.runIndexingWorker(commandList);
@@ -144,19 +142,14 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker impleme
     protected boolean registerSynchronization(Synchronization sync) {
         try {
             TransactionManager tm = TransactionHelper.lookupTransactionManager();
-            if (tm != null) {
-                if (tm.getTransaction() != null) {
-                    tm.getTransaction().registerSynchronization(sync);
-                    return true;
-                }
-                if (!Framework.isTestModeSet()) {
-                    log.error("Unable to register synchronization : no active transaction");
-                }
-                return false;
-            } else {
-                log.error("Unable to register synchronization : no TransactionManager");
-                return false;
+            if (tm.getTransaction() != null) {
+                tm.getTransaction().registerSynchronization(sync);
+                return true;
             }
+            if (!Framework.isTestModeSet()) {
+                log.error("Unable to register synchronization : no active transaction");
+            }
+            return false;
         } catch (NamingException | IllegalStateException | SystemException | RollbackException e) {
             log.error("Unable to register synchronization", e);
             return false;
