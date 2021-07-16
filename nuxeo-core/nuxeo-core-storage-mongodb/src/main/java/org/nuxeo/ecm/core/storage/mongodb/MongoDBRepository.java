@@ -390,18 +390,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
                                  : Indexes.descending(p.getPath()))
                          .forEach(i -> coll.createIndex(i, new IndexOptions().background(true)));
         });
-        // TODO configure these from somewhere else
-        coll.createIndex(Indexes.descending("dc:modified"));
-        coll.createIndex(Indexes.ascending("rend:renditionName"));
-        coll.createIndex(Indexes.ascending("rend:sourceId"));
-        coll.createIndex(Indexes.ascending("rend:sourceVersionableId"));
-        coll.createIndex(Indexes.ascending("drv:subscriptions.enabled"));
-        coll.createIndex(Indexes.ascending("collection:documentIds"));
-        coll.createIndex(Indexes.ascending("collectionMember:collectionIds"));
-        coll.createIndex(Indexes.ascending("nxtag:tags"));
-        // TODO remove it when PropertyCommentManager will be removed
-        coll.createIndex(Indexes.ascending("comment:parentId"));
-        coll.createIndex(Indexes.ascending("annotation:xpath"));
     }
 
     /**
