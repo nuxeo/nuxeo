@@ -63,16 +63,13 @@ public class TestAction {
         comp.init(context);
 
         // submit a record with an unknown command id
-        try {
-            comp.processRecord(context, "i1", record1);
-            fail("Expecting failure");
-        } catch (IllegalStateException e) {
-            // expected
-        }
+        comp.processRecord(context, "i1", record1);
 
+        // no output
         assertEquals(0, context.getRecords("o1").size());
-        assertFalse(context.requireCheckpoint());
 
+        // the record is skipped
+        assertTrue(context.requireCheckpoint());
         comp.destroy();
     }
 
