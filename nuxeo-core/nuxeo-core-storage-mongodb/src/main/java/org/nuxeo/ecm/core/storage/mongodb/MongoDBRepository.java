@@ -82,8 +82,6 @@ import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
-import org.nuxeo.ecm.core.schema.PropertyIndexOrder;
-import org.nuxeo.ecm.core.schema.PropertyIndexOrder.IndexOrder;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
@@ -368,44 +366,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_STATUS));
 
         // create contributed indexes
-        Set<String> mongoDBIndexedKeys = coll.listIndexes()
-                                             .map(d -> d.get("key", Document.class))
-                                             .into(new ArrayList<>())
-                                             .stream()
-                                             // exclude compound indexes
-                                             .filter(d -> d.size() == 1)
-                                             .flatMap(d -> d.keySet().stream())
-                                             .collect(Collectors.toSet());
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        MongoDBIndexCreator mongoDBIndexCreator = new MongoDBIndexCreator(schemaManager, coll);
         // lookup the schemas used in documents
-        Stream.of(schemaManager.getDocumentTypes()).flatMap(d -> d.getSchemas().stream()).forEach(schema -> {
-            String prefix = schema.getNamespace().hasPrefix() ? schema.getNamespace().prefix : schema.getName();
-            schemaManager.getIndexedProperties(schema.getName())
-                         .stream()
-                         .filter(PropertyIndexOrder::isIndexNotNone)
-                         .map(p -> p.replacePath(path -> prefix + ':' + pathToIndexKey(path)))
-                         // keep only the ones that don't already exist
-                         .filter(p -> !mongoDBIndexedKeys.contains(p.getPath()))
-                         .map(p -> p.getIndexOrder() == IndexOrder.ASCENDING ? Indexes.ascending(p.getPath())
-                                 : Indexes.descending(p.getPath()))
-                         .forEach(i -> coll.createIndex(i, new IndexOptions().background(true)));
-        });
-    }
-
-    /**
-     * Converts the given Nuxeo {@code path} to MongoDB identifier.
-     * <p>
-     * For example:
-     * <ul>
-     * <li>dc:title -&gt; dc:title</li>
-     * <li>file:content/data -&gt; file:content.data</li>
-     * <li>files:files/&#42;/data -&gt; files:files.data</li>
-     * </ul>
-     *
-     * @since 11.5
-     */
-    public String pathToIndexKey(String path) {
-        return path.replaceAll("/(\\*/)?", ".");
+        Stream.of(schemaManager.getDocumentTypes())
+              .flatMap(d -> d.getSchemas().stream())
+              .forEach(mongoDBIndexCreator::createIndexes);
     }
 
     protected void initSettings() {
