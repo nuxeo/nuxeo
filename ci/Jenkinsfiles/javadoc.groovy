@@ -42,6 +42,12 @@ void setGitHubBuildStatus(String context, String message, String state) {
   }
 }
 
+String getCurrentNamespace() {
+  container('maven') {
+    return sh(returnStdout: true, script: "kubectl get pod ${NODE_NAME} -ojsonpath='{..namespace}'")
+  }
+}
+
 String getVersion() {
   return "${BRANCH_NAME}-" + readMavenPom().getVersion()
 }
@@ -54,6 +60,7 @@ pipeline {
     timeout(time: 1, unit: 'HOURS')
   }
   environment {
+    CURRENT_NAMESPACE = getCurrentNamespace()
     // force ${HOME}=/root - for an unexplained reason, ${HOME} is resolved as /home/jenkins though sh 'env' shows HOME=/root
     HOME = '/root'
     // set Xmx lower than pod memory limit of 3Gi, to leave some memory for javadoc command

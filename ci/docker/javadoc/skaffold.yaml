@@ -27,7 +27,7 @@ build:
         buildContext:
           localDir: {}
   cluster:
-    namespace: platform
+    namespace: $CURRENT_NAMESPACE
     dockerConfig:
       secretName: jenkins-docker-cfg
     tolerations:
