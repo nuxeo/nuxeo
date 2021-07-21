@@ -182,7 +182,10 @@ pipeline {
           Image tag: ${VERSION}"""
           sh "mv target/site/apidocs ci/docker/javadoc/apidocs"
           dir('ci/docker/javadoc') {
-            sh "skaffold build -f skaffold.yaml"
+            sh '''
+              envsubst < skaffold.yaml > skaffold.yaml~gen
+              skaffold build -f skaffold.yaml~gen
+            '''
           }
 
           echo """
