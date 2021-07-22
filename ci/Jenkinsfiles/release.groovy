@@ -70,10 +70,6 @@ pipeline {
     label 'jenkins-nuxeo-platform-lts-2021'
   }
 
-  parameters {
-    string(name: 'BUILD_VERSION', defaultValue: '', description: 'Version of the Nuxeo Server build to promote')
-  }
-
   environment {
     CURRENT_VERSION = getCurrentVersion()
     RELEASE_VERSION = getReleaseVersion("${CURRENT_VERSION}")
