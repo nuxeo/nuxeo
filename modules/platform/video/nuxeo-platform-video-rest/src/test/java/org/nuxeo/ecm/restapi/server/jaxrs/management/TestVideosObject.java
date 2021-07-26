@@ -85,8 +85,8 @@ public class TestVideosObject extends ManagementBaseTest {
         doc.setPropertyValue("file:content", (Serializable) blob);
         doc.putContextData(VideoChangedListener.DISABLE_VIDEO_CONVERSIONS_GENERATION_LISTENER, true);
         doc = session.createDocument(doc);
+        session.save();
         docRef = doc.getRef();
-
     }
 
     @Test
