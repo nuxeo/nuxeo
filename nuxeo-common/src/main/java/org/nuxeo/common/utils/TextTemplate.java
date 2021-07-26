@@ -104,7 +104,9 @@ public class TextTemplate {
      */
     private static final Pattern PATTERN = Pattern.compile("(?<!\\$)\\$\\{(?<" + PATTERN_GROUP_DECRYPT + ">#)?" //
             + "(?<" + PATTERN_GROUP_VAR + ">[a-zA-Z_0-9\\-\\.]+)" // embeddedVar
-            + "(:=(?<" + PATTERN_GROUP_DEFAULT + ">.*))?\\}"); // defaultValue
+            + "(:=(?<" + PATTERN_GROUP_DEFAULT + ">" // defaultValue
+            + "([^{}]*|\\{[^{}]*\\})" // no braces or one balanced set
+            + "))?\\}");
 
     private final CryptoProperties vars;
 

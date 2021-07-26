@@ -147,6 +147,13 @@ public class TestTextTemplate {
     }
 
     @Test
+    public void testParameterExpansionExtraBrace() {
+        TextTemplate tt = new TextTemplate();
+        // check behavior when there's another closing brace further in the line
+        assertEquals("deffoo bar}", tt.processText("${foo:=deffoo} bar}"));
+    }
+
+    @Test
     public void testEscapeVariable() {
         TextTemplate templates = new TextTemplate();
         templates.setVariable("pfouh", "bar");
