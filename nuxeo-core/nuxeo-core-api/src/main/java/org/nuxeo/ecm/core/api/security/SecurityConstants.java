@@ -57,6 +57,12 @@ public interface SecurityConstants {
     @Deprecated
     String MEMBERS = "members";
 
+    /**
+     * Name of the user group allowed to remove records if retention mode is not in compliance mode.
+     * @since 11.5
+     */
+    String RECORDS_CLEANER_GROUP = "NuxeoRecordCleaners";
+
     String EVERYONE = "Everyone";
 
     String EVERYTHING = "Everything";

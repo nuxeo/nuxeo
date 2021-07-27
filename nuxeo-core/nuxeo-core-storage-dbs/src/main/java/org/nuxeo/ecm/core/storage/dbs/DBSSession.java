@@ -117,6 +117,7 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -959,9 +960,7 @@ public class DBSSession extends BaseSession {
 
         // if a subdocument is under retention / hold, removal fails
         if (!undeletableIds.isEmpty()) {
-            // in tests we may want to delete everything
-            boolean allowDeleteUndeletable = Framework.isBooleanPropertyTrue(PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS);
-            if (!allowDeleteUndeletable) {
+            if (!BaseSession.canDeleteUndeletable(ClientLoginModule.getCurrentPrincipal())) {
                 if (undeletableIds.contains(rootId)) {
                     throw new DocumentExistsException("Cannot remove " + rootId + ", it is under retention / hold");
                 } else {
@@ -1469,15 +1468,17 @@ public class DBSSession extends BaseSession {
 
         DBSDocumentState docState = transaction.getStateForUpdate(id);
 
-        Calendar retainUntil = (Calendar) docState.get(KEY_RETAIN_UNTIL);
-        if (retainUntil != null && Calendar.getInstance().before(retainUntil)) {
-            throw new DocumentExistsException("Cannot remove " + id + ", it is under retention / hold");
-        }
-        if (TRUE.equals(docState.get(KEY_HAS_LEGAL_HOLD))) {
-            throw new DocumentExistsException("Cannot remove " + id + ", it is under retention / hold");
-        }
-        if (TRUE.equals(docState.get(KEY_IS_RETENTION_ACTIVE))) {
-            throw new DocumentExistsException("Cannot remove " + id + ", it is under active retention");
+        if (!BaseSession.canDeleteUndeletable(ClientLoginModule.getCurrentPrincipal())) {
+            Calendar retainUntil = (Calendar) docState.get(KEY_RETAIN_UNTIL);
+            if (retainUntil != null && Calendar.getInstance().before(retainUntil)) {
+                throw new DocumentExistsException("Cannot remove " + id + ", it is under retention / hold");
+            }
+            if (TRUE.equals(docState.get(KEY_HAS_LEGAL_HOLD))) {
+                throw new DocumentExistsException("Cannot remove " + id + ", it is under retention / hold");
+            }
+            if (TRUE.equals(docState.get(KEY_IS_RETENTION_ACTIVE))) {
+                throw new DocumentExistsException("Cannot remove " + id + ", it is under active retention");
+            }
         }
 
         // notify blob manager before removal
