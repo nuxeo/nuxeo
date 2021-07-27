@@ -17,7 +17,7 @@ gulp.task('transpile', function () {
   var traceur = path.join('node_modules', 'traceur', 'traceur'),
       out = path.join('app', 'app-build.js');
   return gulp.src('app/app.js', {read:false})
-    .pipe($.shell(['node ' + traceur + ' --modules=instantiate --experimental --out '+ out + ' <%= file.path %>']));
+    .pipe($.shell(['node ' + traceur + ' --modules=inline --experimental --out '+ out + ' <%= file.path %>']));
 });
 
 gulp.task('jshint', function () {

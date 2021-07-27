@@ -67,27 +67,9 @@
     <button id="close" style="display:none"><fmt:message bundle="${messages}" key="command.close" /></button>
     <div id="console" class="console"></div>
   </div>
-  <script>register(System);</script>
+  <script src="config.jsp"></script>
   <!-- build:js scripts/app.js -->
   <script src="app-build.js"></script>
   <!-- endbuild -->
-  <script>
-    var nuxeo = nuxeo || {};
-    nuxeo.spreadsheet = {
-      language: '<%= selectedLanguage %>',
-      labels: {
-        "saving": "<fmt:message bundle="${messages}" key="message.spreadsheet.saving" />",
-        "failedSave": "<fmt:message bundle="${messages}" key="message.spreadsheet.failedSave" />",
-        "upToDate": "<fmt:message bundle="${messages}" key="message.spreadsheet.upToDate" />",
-        "rowsSaved": "<fmt:message bundle="${messages}" key="message.spreadsheet.rowsSaved" />",
-        "autoSave": "<fmt:message bundle="${messages}" key="message.spreadsheet.autoSave" />"
-      }
-    };
-    var contextPath = '<%= request.getContextPath() %>';
-    System.import('app')
-      .then(function(app) { return app.run(contextPath); })
-      .then(function() { window.nuxeoSpreadsheetReady = true; })
-      .catch(console.error.bind(console));
-  </script>
 </body>
 </html>
