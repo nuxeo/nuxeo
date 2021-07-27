@@ -23,6 +23,8 @@
   <script src="bower_components/es6-module-loader/dist/es6-module-loader.js"></script>
   <script src="bower_components/system.js/lib/extension-register.js"></script>
   <!-- endbuild -->
+  <!-- Content security policy (needs Nuxeo.UI.config.expressions.eval = false) -->
+  <!-- meta http-equiv="Content-Security-Policy" content="img-src data: blob: *; default-src blob: *; script-src data: * 'nonce-dummy'; style-src 'unsafe-inline' *; font-src data: *" -->
 </head>
 <body>
 <div id="header">
@@ -45,14 +47,8 @@
   <button id="close" style="display:none">Close</button>
   <div id="console" class="console"></div>
 </div>
-<script>register(System);</script>
 <!-- build:js scripts/app.js -->
 <script src="app-build.js"></script>
 <!-- endbuild -->
-<script>
-  System.import('app')
-    .then(function(app) { app.run(); })
-    .catch(console.error.bind(console));
-</script>
 </body>
 </html>

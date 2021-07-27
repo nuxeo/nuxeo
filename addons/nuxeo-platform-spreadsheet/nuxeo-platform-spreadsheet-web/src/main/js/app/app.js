@@ -185,10 +185,12 @@ const getParameters = () =>
     }
   });
 
-const run = (baseURL = '/nuxeo') => getParameters().then((params = {}) => {
-  // traceur doesn't properly support the spread operator in this scenario, otherwise: _run({baseURL, ...params}));
-  params.baseURL = baseURL;
-  _run(params);
-});
+// run
+getParameters().then((params) => {
+  params = params || {};
+  params.baseURL = (nuxeo.spreadsheet && nuxeo.spreadsheet.baseUrl) || '/nuxeo';
+  return _run(params);
+})
+.then(() => { window.nuxeoSpreadsheetReady = true; })
+.catch(console.error.bind(console));
 
-export {run};
