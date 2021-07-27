@@ -19,12 +19,12 @@
 package org.nuxeo.ecm.core.model;
 
 import java.util.HashMap;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -147,6 +147,31 @@ public abstract class BaseSession implements Session<QueryFilter> {
                 throw new IllegalArgumentException("Negative ACL not allowed: " + ace);
             }
         }
+    }
+
+    /**
+     * Can undeletable documents be deleted. Undeletable documents are documents under legal hold or retention.They are
+     * deletable only if on of these conditions is true:
+     * <ul>
+     * <li>{@link Session#PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS} is true for unit tests purpose</li>
+     * <li>Retention is active in governance mode and the principal is member of
+     * {@link SecurityConstants#RECORDS_CLEANER_GROUP}</li>
+     * </ul>
+     *
+     * @param principal the Nuxeo principal
+     * @return {@code true} if undeletable documents can be deleted, {@code false} otherwise
+     * @since 11.5
+     */
+    public static boolean canDeleteUndeletable(NuxeoPrincipal principal) {
+        if (Framework.isBooleanPropertyTrue(PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS)) {
+            return true;
+        }
+        if (principal == null) { // happens in some unit tests
+            return false;
+        }
+        boolean governanceMode = !Framework.isBooleanPropertyTrue(PROP_RETENTION_COMPLIANCE_MODE_ENABLED);
+        boolean recordCleaner = principal.getGroups().contains(SecurityConstants.RECORDS_CLEANER_GROUP);
+        return governanceMode && recordCleaner;
     }
 
     /**
