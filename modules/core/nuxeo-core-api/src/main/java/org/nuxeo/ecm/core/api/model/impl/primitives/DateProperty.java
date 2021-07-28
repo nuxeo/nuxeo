@@ -60,7 +60,11 @@ public class DateProperty extends ScalarProperty {
             if (string.length() == 0) {
                 return null;
             }
-            return (Calendar) field.getType().decode(value.toString());
+            try {
+                return (Calendar) field.getType().decode(value.toString());
+            } catch (NumberFormatException e) {
+                throw new PropertyConversionException(value.getClass(), Calendar.class, e.getMessage());
+            }
         }
         throw new PropertyConversionException(value.getClass(), Calendar.class);
     }
