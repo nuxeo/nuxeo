@@ -314,7 +314,9 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         CSVImportLog importLog = importLogs.get(0);
         assertEquals(2, importLog.getLine());
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
-        assertEquals("Unable to create document: For input string: \"10/0\"", importLog.getMessage());
+        assertEquals("Unable to create document: "
+                + "Property Conversion failed from class java.lang.String to class java.util.Calendar: "
+                + "For input string: \"10/0\"", importLog.getMessage());
         importLog = importLogs.get(1);
         assertEquals(3, importLog.getLine());
         assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
