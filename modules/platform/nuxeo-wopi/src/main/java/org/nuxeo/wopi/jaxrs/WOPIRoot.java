@@ -24,6 +24,8 @@ import static org.nuxeo.wopi.Headers.PROOF;
 import static org.nuxeo.wopi.Headers.PROOF_OLD;
 import static org.nuxeo.wopi.Headers.TIMESTAMP;
 
+import java.util.function.Supplier;
+
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
@@ -63,28 +65,33 @@ public class WOPIRoot extends ModuleRoot {
     @Path("/files/{fileId}")
     public Object filesResource(@PathParam("fileId") FileInfo fileInfo) {
         // prefix thread name for logging purpose
-        prefixThreadName();
+        return prefixThreadName(() -> {
+            // verify proof key
+            verifyProofKey();
 
-        // verify proof key
-        verifyProofKey();
+            // flag the request as originating from a WOPI client for locking policy purpose
+            LockHelper.flagWOPIRequest();
+            RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> LockHelper.unflagWOPIRequest());
 
-        // flag the request as originating from a WOPI client for locking policy purpose
-        LockHelper.flagWOPIRequest();
-        RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> LockHelper.unflagWOPIRequest());
-
-        WebContext context = getContext();
-        context.setRepositoryName(fileInfo.repositoryName);
-        CoreSession session = context.getCoreSession();
-        DocumentModel doc = getDocument(session, fileInfo.docId);
-        Blob blob = getBlob(doc, fileInfo.xpath);
-        return newObject("wopiFiles", session, doc, blob, fileInfo.xpath);
+            WebContext context = getContext();
+            context.setRepositoryName(fileInfo.repositoryName);
+            CoreSession session = context.getCoreSession();
+            DocumentModel doc = getDocument(session, fileInfo.docId);
+            Blob blob = getBlob(doc, fileInfo.xpath);
+            return newObject("wopiFiles", session, doc, blob, fileInfo.xpath);
+        });
     }
 
-    protected void prefixThreadName() {
+    protected <T> T prefixThreadName(Supplier<T> supplier) {
         Thread currentThread = Thread.currentThread();
         String threadName = currentThread.getName();
         if (!threadName.startsWith(THREAD_NAME_PREFIX)) {
             currentThread.setName(THREAD_NAME_PREFIX + threadName);
+        }
+        try {
+            return supplier.get();
+        } finally {
+            currentThread.setName(threadName);
         }
     }
 
