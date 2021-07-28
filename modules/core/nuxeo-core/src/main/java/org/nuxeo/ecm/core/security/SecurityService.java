@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -98,6 +99,9 @@ public class SecurityService extends DefaultComponent {
 
     public boolean checkPermission(Document doc, NuxeoPrincipal principal, String permission) {
         if (principal.isAdministrator()) {
+            if (SecurityConstants.REMOVE.equals(permission) && doc.isUnderRetentionOrLegalHold()) {
+                return BaseSession.canDeleteUndeletable(principal);
+            }
             return true;
         }
         // fully check each ACE in turn
@@ -130,6 +134,9 @@ public class SecurityService extends DefaultComponent {
     public Collection<String> filterGrantedPermissions(Document doc, NuxeoPrincipal principal,
             Collection<String> permissions) {
         if (principal.isAdministrator()) {
+            if (doc.isUnderRetentionOrLegalHold() && !BaseSession.canDeleteUndeletable(principal)) {
+                permissions.remove(SecurityConstants.REMOVE);
+            }
             return permissions;
         }
 
