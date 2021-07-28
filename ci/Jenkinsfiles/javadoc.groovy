@@ -57,7 +57,7 @@ pipeline {
     label 'jenkins-nuxeo-package-11'
   }
   options {
-    timeout(time: 1, unit: 'HOURS')
+    timeout(time: 3, unit: 'HOURS')
   }
   environment {
     CURRENT_NAMESPACE = getCurrentNamespace()
@@ -131,7 +131,7 @@ pipeline {
           Build Javadoc
           ----------------------------------------"""
           echo "MAVEN_OPTS=$MAVEN_OPTS"
-          sh "mvn ${MAVEN_ARGS} -V -T4C -Pjavadoc -DskipTests install"
+          sh "mvn ${MAVEN_ARGS} -V -Pjavadoc -DskipTests install"
           sh "mvn ${MAVEN_ARGS} -f server/pom.xml -Pjavadoc -DskipTests install"
         }
       }
