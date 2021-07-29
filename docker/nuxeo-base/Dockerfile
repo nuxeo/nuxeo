@@ -71,6 +71,8 @@ RUN yum -y update \
     ufraw \
     unzip \
     wget \
+    # Add CJK fonts
+    google-noto-cjk-fonts \
   && yum clean all
 
 # Remove setuid/setgid binaries from images for security
