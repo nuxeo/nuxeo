@@ -21,6 +21,7 @@
 package org.nuxeo.ecm.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
@@ -224,6 +225,39 @@ public class TestRetentionRemove {
             checkRemoveBlob(documentModelUnderRetention, notAdminSession, false);
             checkRemoveDocument(documentModelUnderLegalHold, notAdminSession, false);
             checkRemoveDocument(documentModelUnderRetention, notAdminSession, false);
+        } finally {
+            ctx.logout();
+        }
+    }
+
+    @Test
+    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    public void iDoNotHaveRemovePermissionInCompliance() throws LoginException {
+        assertFalse(session.hasPermission(documentModelUnderLegalHold.getRef(), REMOVE));
+        assertFalse(session.hasPermission(documentModelUnderRetention.getRef(), REMOVE));
+        LoginContext ctx = Framework.loginAsUser(JOHN);
+        try (CloseableCoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName())) {
+            assertFalse(notAdminSession.hasPermission(documentModelUnderLegalHold.getRef(), REMOVE));
+            assertFalse(notAdminSession.hasPermission(documentModelUnderRetention.getRef(), REMOVE));
+            ClientLoginModule.getCurrentPrincipal().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
+            assertFalse(notAdminSession.hasPermission(documentModelUnderLegalHold.getRef(), REMOVE));
+            assertFalse(notAdminSession.hasPermission(documentModelUnderRetention.getRef(), REMOVE));
+        } finally {
+            ctx.logout();
+        }
+    }
+
+    @Test
+    public void iHaveRemovePermissionInGovernance() throws LoginException {
+        assertFalse(session.hasPermission(documentModelUnderLegalHold.getRef(), REMOVE));
+        assertFalse(session.hasPermission(documentModelUnderRetention.getRef(), REMOVE));
+        LoginContext ctx = Framework.loginAsUser(JOHN);
+        try (CloseableCoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName())) {
+            assertFalse(notAdminSession.hasPermission(documentModelUnderLegalHold.getRef(), REMOVE));
+            assertFalse(notAdminSession.hasPermission(documentModelUnderRetention.getRef(), REMOVE));
+            ClientLoginModule.getCurrentPrincipal().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
+            assertTrue(notAdminSession.hasPermission(documentModelUnderLegalHold.getRef(), REMOVE));
+            assertTrue(notAdminSession.hasPermission(documentModelUnderRetention.getRef(), REMOVE));
         } finally {
             ctx.logout();
         }
