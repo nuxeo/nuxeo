@@ -50,7 +50,7 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
  *
  * @since 11.5
  */
-abstract public class AbstractAutomationBulkAction implements StreamProcessorTopology {
+public abstract class AbstractAutomationBulkAction implements StreamProcessorTopology {
 
     private static final Logger log = LogManager.getLogger(AbstractAutomationBulkAction.class);
 
@@ -58,7 +58,7 @@ abstract public class AbstractAutomationBulkAction implements StreamProcessorTop
 
     public static final String OPERATION_PARAMETERS = "parameters";
 
-    abstract protected String getActionName();
+    protected abstract String getActionName();
 
     protected String getActionFullName() {
         return "bulk/" + getActionName();
@@ -67,9 +67,10 @@ abstract public class AbstractAutomationBulkAction implements StreamProcessorTop
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
-                .addComputation(() -> new AutomationComputation(getActionFullName()), Arrays.asList(INPUT_1 + ":" + getActionFullName(), //
-                        OUTPUT_1 + ":" + STATUS_STREAM))
-                .build();
+                       .addComputation(() -> new AutomationComputation(getActionFullName()),
+                               Arrays.asList(INPUT_1 + ":" + getActionFullName(), //
+                                       OUTPUT_1 + ":" + STATUS_STREAM))
+                       .build();
     }
 
     public static class AutomationComputation extends AbstractBulkComputation {
@@ -133,7 +134,7 @@ abstract public class AbstractAutomationBulkAction implements StreamProcessorTop
 
         protected void checkOperation(String operationId) {
             if (StringUtils.isBlank(operationId)) {
-                log.warn("No operationId provided skipping command: " + getCurrentCommand().getId());
+                log.warn("No operationId provided skipping command: {}", getCurrentCommand().getId());
                 return;
             }
             try {
@@ -144,25 +145,25 @@ abstract public class AbstractAutomationBulkAction implements StreamProcessorTop
                 } else if (DOCS_INPUT_TYPE.equals(inputType)) {
                     inputType = DOCS_INPUT_TYPE;
                 } else {
-                    log.warn(String.format("Unsupported operation input type %s for command: %s", inputType,
-                            getCurrentCommand().getId()));
+                    log.warn("Unsupported operation input type: {} for command: {}", inputType,
+                            getCurrentCommand().getId());
                     return;
                 }
             } catch (OperationNotFoundException e) {
-                log.warn(String.format("Operation '%s' not found, skipping command: %s", operationId,
-                        getCurrentCommand().getId()));
+                log.warn("Operation: '{}' not found, skipping command: {}", operationId, getCurrentCommand().getId());
                 return;
             }
             this.operationId = operationId;
         }
 
+        @SuppressWarnings("unchecked")
         protected void checkParams(Serializable serializable) {
             if (serializable == null) {
                 params = null;
             } else if (serializable instanceof HashMap) {
                 params = (Map<String, ?>) serializable;
             } else {
-                log.warn("Unknown operation parameters type: " + serializable.getClass() + " for command: " + command);
+                log.warn("Unknown operation parameters type: {} for command: {}", serializable.getClass(), command);
                 operationId = null;
             }
         }

@@ -26,7 +26,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  *
  * @since 11.5
  */
-public class AutomationBulkActionUi extends AutomationBulkAction {
+public class AutomationBulkActionUi extends AbstractAutomationBulkAction {
 
     public static final String ACTION_NAME = "automationUi";
 

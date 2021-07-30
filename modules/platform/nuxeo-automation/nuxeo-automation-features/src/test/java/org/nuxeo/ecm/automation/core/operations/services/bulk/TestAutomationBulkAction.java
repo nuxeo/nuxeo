@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,9 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.bulk;
 
-import static java.util.Collections.singletonMap;
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkActionUi.ACTION_NAME;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -90,7 +88,7 @@ public class TestAutomationBulkAction {
     public void testSetPropertyActionFromAutomation() throws Exception {
         String nxql = "SELECT * FROM ComplexDoc";
         String title = "title set from automation";
-        doTestSetPropertyActionFromAutomation("automation", nxql, title);
+        doTestSetPropertyActionFromAutomation(AutomationBulkAction.ACTION_NAME, nxql, title);
         for (DocumentModel doc : session.query(nxql)) {
             assertEquals(title, doc.getTitle());
         }
@@ -101,7 +99,7 @@ public class TestAutomationBulkAction {
     public void testSetPropertyActionFromAutomationUi() throws Exception {
         String nxql = "SELECT * FROM ComplexDoc WHERE ecm:isProxy = 0";
         String title = "title set from automation UI";
-        doTestSetPropertyActionFromAutomation(ACTION_NAME, nxql, title);
+        doTestSetPropertyActionFromAutomation(AutomationBulkActionUi.ACTION_NAME, nxql, title);
         // The configuration service sets a queryLimit=3 for this operationId
         int count = 0;
         for (DocumentModel doc : session.query(nxql)) {
@@ -114,27 +112,27 @@ public class TestAutomationBulkAction {
 
     public void doTestSetPropertyActionFromAutomation(String action, String nxql, String title) throws Exception {
         // param for the automation operation
-        HashMap<String, Serializable> automationParams = new HashMap<>();
+        var automationParams = new HashMap<>();
         automationParams.put("properties", "dc:title=" + title);
         // param for the automation bulk action
-        HashMap<String, Serializable> actionParams = new HashMap<>();
+        var actionParams = new HashMap<>();
         actionParams.put(AutomationBulkAction.OPERATION_ID, "Document.Update");
         actionParams.put(AutomationBulkAction.OPERATION_PARAMETERS, automationParams);
 
         // param for the automation BulkRunAction operation
-        Map<String, Serializable> bulkActionParam = new HashMap<>();
+        var bulkActionParam = new HashMap<String, Serializable>();
         bulkActionParam.put("action", action);
         bulkActionParam.put("query", nxql);
         bulkActionParam.put("bucketSize", "10");
         bulkActionParam.put("batchSize", "5");
         bulkActionParam.put("parameters", OBJECT_MAPPER.writeValueAsString(actionParams));
-        BulkStatus runResult = (BulkStatus) service.run(ctx, BulkRunAction.ID, bulkActionParam);
+        var runResult = (BulkStatus) service.run(ctx, BulkRunAction.ID, bulkActionParam);
 
         assertNotNull(runResult);
         // runResult is a json containing commandId
         String commandId = runResult.getId();
 
-        boolean waitResult = (boolean) service.run(ctx, BulkWaitForAction.ID, singletonMap("commandId", commandId));
+        var waitResult = (boolean) service.run(ctx, BulkWaitForAction.ID, Map.of("commandId", commandId));
         assertTrue("Bulk action didn't finish", waitResult);
 
         txFeature.nextTransaction();
