@@ -32,6 +32,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.avro.reflect.AvroDefault;
 import org.apache.avro.reflect.AvroEncode;
 import org.apache.avro.reflect.Nullable;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -471,22 +472,36 @@ public class BulkStatus implements AsyncStatus<String> {
      * An error occurred during the processing
      */
     public void inError(String message) {
-        inError(message, SC_INTERNAL_SERVER_ERROR);
+        inError(1, message, SC_INTERNAL_SERVER_ERROR);
     }
 
     /**
      * An error occurred during the processing
-     * 
+     */
+    public void inError(long count, String message) {
+        inError(count, message, SC_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * An error occurred during the processing
+     *
      * @since 11.5
      */
     public void inError(String message, int code) {
-        if (isDelta()) {
-            errorCount = 1;
-        } else {
-            errorCount++;
+        inError(1, message, code);
+    }
+
+    /**
+     * An error occurred during the processing
+     */
+    public void inError(long count, String message, int code) {
+        this.errorCount += count;
+        if (StringUtils.isBlank(this.errorMessage)) {
+            this.errorMessage = message;
         }
-        this.errorMessage = message;
-        this.errorCode = code;
+        if (this.errorCode == null) {
+            this.errorCode = code;
+        }
     }
 
     @Override

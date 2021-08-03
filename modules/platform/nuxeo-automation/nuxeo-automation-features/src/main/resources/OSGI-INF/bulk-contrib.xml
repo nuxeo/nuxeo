@@ -22,6 +22,7 @@
       class="org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkActionUi" defaultConcurrency="2"
       defaultPartitions="2">
       <policy name="default" maxRetries="3" delay="1s" continueOnFailure="true" />
+      <option name="failOnError">false</option>
     </streamProcessor>
   </extension>
 
