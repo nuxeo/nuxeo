@@ -16,31 +16,31 @@
  * Contributors:
  *      Nelson Silva
  */
-package org.nuxeo.ecm.webengine.oauth2;
+ org.nuxeo.ecm.webengine.oauth2;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
+ java.io.IOException;
+ java.util.Map;
+ java.util.HashMap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
+ javax.servlet.http.HttpServletRequest;
+ javax.servlet.http.HttpServletResponse;
+ javax.ws.rs.GET;
+ javax.ws.rs.Path;
+ javax.ws.rs.PathParam;
+ javax.ws.rs.Produces;
+ javax.ws.rs.core.Context;
+ javax.ws.rs.core.Response;
 
-import com.google.api.client.auth.oauth2.Credential;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
-import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
-import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
-import org.nuxeo.runtime.api.Framework;
+ com.google.api.client.auth.oauth2.Credential;
+ org.apache.commons.logging.Log;
+ org.apache.commons.logging.LogFactory;
+ org.nuxeo.ecm.core.api.NuxeoException;
+ org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+ org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
+ org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
+ org.nuxeo.ecm.webengine.model.WebObject;
+ org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+ org.nuxeo.runtime.api.Framework;
 
 /**
  * WebEngine module to handle the OAuth2 callback
@@ -48,38 +48,38 @@ import org.nuxeo.runtime.api.Framework;
 @Path("/oauth2")
 @Produces("text/html;charset=UTF-8")
 @WebObject(type = "oauth2")
-public class OAuth2Callback extends ModuleRoot {
+ OAuth2Callback extends ModuleRoot {
 
     @Context
-    private HttpServletRequest request;
+     HttpServletRequest request;
 
-    Credential credential;
+    credential
 
-    private static final Log log = LogFactory.getLog(OAuth2Callback.class);
+     Log log = LogFactory.getLog(OAuth2Callback.class);
 
     /**
      * @return the rendered page.
      */
     @GET
     @Path("{serviceProviderName}/callback")
-    public Object doGet(@PathParam("serviceProviderName") String serviceProviderName)
-            throws IOException {
+    doGet(@PathParam("serviceProviderName") String serviceProviderName)
+            IOException {
 
         OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
         OAuth2ServiceProvider provider = registry.getProvider(serviceProviderName);
-        if (provider == null) {
-            return Response.status(HttpServletResponse.SC_NOT_FOUND).entity(
+         (provider == null) {
+             Response.status(HttpServletResponse.SC_NOT_FOUND).entity(
                     "No service provider called: \"" + serviceProviderName + "\".").build();
         }
 
         Map<String, Object> args = new HashMap<>();
 
-        new UnrestrictedSessionRunner(ctx.getCoreSession()) {
+         UnrestrictedSessionRunner(ctx.getCoreSession()) {
             @Override
-            public void run() {
-                try {
+             run() {
+                 {
                     credential = provider.handleAuthorizationCallback(request);
-                } catch (NuxeoException e) {
+                }  (NuxeoException e) {
                     log.error("Authorization request failed", e);
                     args.put("error", "Authorization request failed");
                 }
@@ -88,6 +88,6 @@ public class OAuth2Callback extends ModuleRoot {
 
         String token = (credential == null) ? "" : credential.getAccessToken();
         args.put("token", token);
-        return getView("index").args(args);
+         getView("index").args(args);
     }
 }
