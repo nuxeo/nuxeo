@@ -1320,7 +1320,7 @@ public class DBSSession extends BaseSession {
     @Override
     public ACP getACP(Document doc) {
         State state = transaction.getStateForRead(doc.getUUID());
-        return memToAcp(state.get(KEY_ACP));
+        return memToAcp(doc.getUUID(), state.get(KEY_ACP));
     }
 
     @Override
@@ -1390,7 +1390,7 @@ public class DBSSession extends BaseSession {
         return (Serializable) aclList;
     }
 
-    protected static ACP memToAcp(Serializable acpSer) {
+    protected static ACP memToAcp(String docId, Serializable acpSer) {
         if (acpSer == null) {
             return null;
         }
@@ -1408,9 +1408,15 @@ public class DBSSession extends BaseSession {
             ACL acl = new ACLImpl(name);
             for (Serializable aceSer : aceList) {
                 State aceMap = (State) aceSer;
+                var granted = (Boolean) aceMap.get(KEY_ACE_GRANT);
+                if (granted == null) {
+                    log.warn(
+                            "An ACE with grant=null has been detected on document: {}, ace: {}, defaulting to grant=false",
+                            docId, aceMap);
+                    granted = Boolean.FALSE;
+                }
                 String username = (String) aceMap.get(KEY_ACE_USER);
                 String permission = (String) aceMap.get(KEY_ACE_PERMISSION);
-                boolean granted = (boolean) aceMap.get(KEY_ACE_GRANT);
                 String creator = (String) aceMap.get(KEY_ACE_CREATOR);
                 Calendar begin = (Calendar) aceMap.get(KEY_ACE_BEGIN);
                 Calendar end = (Calendar) aceMap.get(KEY_ACE_END);
