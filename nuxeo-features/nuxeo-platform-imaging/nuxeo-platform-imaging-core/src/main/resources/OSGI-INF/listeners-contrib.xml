@@ -7,6 +7,7 @@
       class="org.nuxeo.ecm.platform.picture.listener.PictureChangedListener" priority="20">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
+      <event>aboutToCheckIn</event>
     </listener>
 
     <!-- deprecated since 7.2 -->
