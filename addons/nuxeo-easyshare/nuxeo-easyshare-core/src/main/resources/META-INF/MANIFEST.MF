@@ -10,4 +10,4 @@ Nuxeo-Component: OSGI-INF/extensions.xml, OSGI-INF/easyshare-contrib.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: nuxeo-easyshare-core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-
+Nuxeo-AllowOverride: true
