@@ -21,6 +21,9 @@
 package org.nuxeo.common;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
@@ -34,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Environment {
 
-    private static Log logger = LogFactory.getLog(Environment.class);
+    private static final Log logger = LogFactory.getLog(Environment.class);
 
     /**
      * Constants that identifies possible hosts for the framework.
@@ -150,6 +153,12 @@ public class Environment {
     // Handy parameter to distinguish from (Server)home
     private File runtimeHome = null;
 
+    // since 11.5
+    protected String distributionVersion;
+
+    // since 11.5
+    protected String distributionDate;
+
     public static final String SERVER_STATUS_KEY = "server.status.key";
 
     public static final String DISTRIBUTION_NAME = "org.nuxeo.distribution.name";
@@ -175,6 +184,11 @@ public class Environment {
      * @since 11.5
      */
     public static final String DISTRIBUTION_HOTFIX = "org.nuxeo.distribution.hotfix";
+
+    /**
+     * @since 11.5
+     */
+    public static final String DISTRIBUTION_PROPERTY_FILE = "distribution.properties";
 
     /**
      * @since 7.10
@@ -695,4 +709,42 @@ public class Environment {
         }
         return null;
     }
+
+    /**
+     * @return the version of the Nuxeo distribution
+     * @since 11.5
+     */
+    public String getDistributionVersion() {
+        if (distributionVersion == null) {
+            getDistributionInfo();
+        }
+        return distributionVersion;
+     }
+
+    /**
+     * @return the build date of the Nuxeo distribution
+     * @since 11.5
+     */
+    public String getDistributionDate() {
+        if (distributionDate == null) {
+            getDistributionInfo();
+        }
+        return distributionDate;
+    }
+
+    protected void getDistributionInfo() {
+        Properties distProps = new Properties();
+        String propFile = getConfig().toPath().resolve(DISTRIBUTION_PROPERTY_FILE).toString();
+        try (InputStream in = new FileInputStream(propFile)) {
+            distProps.load(in);
+        } catch (IOException e) {
+            logger.warn("Cannot read distribution property file " + propFile + ": " + e.getMessage());
+            distributionVersion = "unknown";
+            distributionDate = "unknown";
+            return;
+        }
+        distributionVersion = distProps.getProperty(DISTRIBUTION_VERSION, "unknown");
+        distributionDate = distProps.getProperty(DISTRIBUTION_DATE, "unknown");
+    }
+
 }

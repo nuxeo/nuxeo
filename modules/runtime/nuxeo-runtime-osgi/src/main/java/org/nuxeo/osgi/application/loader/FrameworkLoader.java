@@ -42,6 +42,7 @@ import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.SystemBundle;
 import org.nuxeo.osgi.SystemBundleFile;
+import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
@@ -393,6 +394,8 @@ public class FrameworkLoader {
         msg.append(hr).append(newline);
         msg.append("= Starting Nuxeo Framework").append(newline);
         msg.append(hr).append(newline);
+        msg.append("  * Distribution Version = ").append(env.getDistributionVersion()).append(newline);
+        msg.append("  * Distribution Date = ").append(env.getDistributionDate()).append(newline);
         msg.append("  * Server home = ").append(env.getServerHome()).append(newline);
         msg.append("  * Runtime home = ").append(env.getRuntimeHome()).append(newline);
         msg.append("  * Data Directory = ").append(env.getData()).append(newline);
