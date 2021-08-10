@@ -22,11 +22,23 @@ package org.nuxeo.ecm.platform.usermanager.exceptions;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
 public class UserAlreadyExistsException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
+    private static final String message = "User already exists";
 
+    public UserAlreadyExistsException() {
+        super(message);
+        this.statusCode = SC_CONFLICT;
+    }
+
+    public UserAlreadyExistsException(Throwable cause) {
+        super(message, cause);
+        this.statusCode = SC_CONFLICT;
+    }
 }
