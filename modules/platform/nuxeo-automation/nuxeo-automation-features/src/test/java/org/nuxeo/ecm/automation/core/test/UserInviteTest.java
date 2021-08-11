@@ -18,12 +18,15 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.Collections;
 
 import javax.inject.Inject;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +39,8 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -53,6 +58,9 @@ public class UserInviteTest {
 
     @Inject
     CoreSession session;
+
+    @Inject
+    UserManager um;
 
     protected OperationContext ctx;
 
@@ -78,6 +86,23 @@ public class UserInviteTest {
         String invitationId = (String) service.run(ctx, UserInvite.ID, Collections.emptyMap());
 
         DocumentModel doc = session.getDocument(new IdRef(invitationId));
-        Assert.assertEquals(user.getName(), doc.getPropertyValue("userinfo:login"));
+        assertEquals(user.getName(), doc.getPropertyValue("userinfo:login"));
+    }
+
+    @Test
+    public void testInviteExistingUserException() throws Exception {
+        // Given a user
+        NuxeoPrincipal testUser = new NuxeoPrincipalImpl("testUser");
+        um.createUser(testUser.getModel());
+
+        // When trying to invite the existing user
+        ctx.setInput(testUser);
+        try {
+            service.run(ctx, UserInvite.ID, Collections.emptyMap());
+            fail("User.Invite should have failed with an existent user");
+        } catch (UserAlreadyExistsException e) {
+            // Should return the UserAlreadyExists Exception
+            assertEquals(SC_CONFLICT, e.getStatusCode());
+        }
     }
 }
