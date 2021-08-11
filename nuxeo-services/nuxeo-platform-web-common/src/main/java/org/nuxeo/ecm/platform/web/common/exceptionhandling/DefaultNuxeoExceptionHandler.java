@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.web.common.exceptionhandling;
 
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS_LOGIN;
@@ -186,7 +187,12 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 response.reset();
                 response.setStatus(status);
                 String errorPage = defaultString(handler.getPage(), parameters.getDefaultErrorPage());
-                if (isNotBlank(errorPage)) {
+                String accept = request.getHeader("Accept");
+                // client request application/json or missing config / unit tests
+                // do a JSON output, it's a borderline case for an exception during filters cleanup
+                if ((accept != null && accept.contains(MediaType.APPLICATION_JSON)) || isBlank(errorPage)) {
+                    writeExceptionAsJson(response, status, unwrappedException);
+                } else {
                     RequestDispatcher requestDispatcher = request.getRequestDispatcher(errorPage);
                     if (requestDispatcher != null) {
                         requestDispatcher.forward(request, response);
@@ -194,10 +200,6 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                         log.error("Cannot forward to error page, no RequestDispatcher found for errorPage=" + errorPage
                                 + " handler=" + handler);
                     }
-                } else {
-                    // missing config or unit tests
-                    // do a minimal output here, it's a borderline case for an exception during filters cleanup
-                    writeExceptionAsJson(response, status, unwrappedException);
                 }
                 parameters.getListener().responseComplete();
             } else if (!DownloadHelper.isClientAbortError(t)){

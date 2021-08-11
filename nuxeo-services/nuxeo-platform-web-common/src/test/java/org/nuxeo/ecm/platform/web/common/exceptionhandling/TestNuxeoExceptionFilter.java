@@ -169,6 +169,7 @@ public class TestNuxeoExceptionFilter {
 
         verify(request, atLeastOnce()).getAttribute(anyString());
         verify(request, atLeastOnce()).setAttribute(anyString(), any());
+        verify(request, atLeastOnce()).getHeader(anyString());
         verifyNoMoreInteractions(request);
 
         verify(response).isCommitted();
