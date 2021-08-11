@@ -23,12 +23,21 @@
  * This pipeline is intended to be executed on Pull Requests only
  */
 
+def abortRunningBuilds() {
+  // see https://issues.jenkins.io/browse/JENKINS-43353
+  def buildNumber = BUILD_NUMBER as int
+  if (buildNumber > 1) {
+    milestone(buildNumber - 1)
+  }
+  milestone(buildNumber)
+}
+abortRunningBuilds()
+
 repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
 
 properties([
   [$class: 'GithubProjectProperty', projectUrlStr: repositoryUrl],
   [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5']],
-  disableConcurrentBuilds(),
 ])
 
 void setGitHubBuildStatus(String context, String message, String state) {

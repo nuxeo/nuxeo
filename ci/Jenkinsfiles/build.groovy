@@ -18,6 +18,16 @@
  *     Thomas Roger <troger@nuxeo.com>
  */
 
+def abortRunningBuilds() {
+  // see https://issues.jenkins.io/browse/JENKINS-43353
+  def buildNumber = BUILD_NUMBER as int
+  if (buildNumber > 1) {
+    milestone(buildNumber - 1)
+  }
+  milestone(buildNumber)
+}
+abortRunningBuilds()
+
 dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
 testEnvironments = [
@@ -29,7 +39,6 @@ testEnvironments = [
 properties([
   [$class: 'GithubProjectProperty', projectUrlStr: repositoryUrl],
   [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5']],
-  disableConcurrentBuilds(),
 ])
 
 void setGitHubBuildStatus(String context, String message, String state) {
