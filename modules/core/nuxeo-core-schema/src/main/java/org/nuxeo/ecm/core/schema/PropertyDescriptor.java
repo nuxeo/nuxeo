@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019-2021 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.ecm.core.schema;
-
-import static java.util.Objects.requireNonNullElse;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -103,9 +101,9 @@ public class PropertyDescriptor implements Descriptor {
         PropertyDescriptor merged = new PropertyDescriptor();
         merged.schema = schema;
         merged.name = name;
-        merged.secured = requireNonNullElse(other.secured, secured);
-        merged.deprecation = requireNonNullElse(other.deprecation, deprecation);
-        merged.fallback = requireNonNullElse(other.fallback, fallback);
+        merged.secured = other.secured != null ? other.secured : secured;
+        merged.deprecation = other.deprecation != null ? other.deprecation : deprecation;
+        merged.fallback = other.fallback != null ? other.fallback : fallback;
         return merged;
     }
 
