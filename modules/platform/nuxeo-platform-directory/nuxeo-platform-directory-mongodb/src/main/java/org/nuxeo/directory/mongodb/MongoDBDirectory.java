@@ -30,8 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bson.Document;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.storage.mongodb.MongoDBIndexCreator;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Reference;
@@ -58,6 +56,37 @@ public class MongoDBDirectory extends AbstractDirectory {
      * @since 10.10
      */
     public static final String DIRECTORY_CONNECTION_PREFIX = "directory/";
+
+    /**
+     * @since 11.5
+     */
+    public static final String ACE_INFO_COLLECTION = "aceinfo";
+
+    /**
+     * @since 11.5
+     */
+    public static final String ACE_INFO_ID = "aceinfo:id";
+
+    /**
+     * @since 11.5
+     */
+    public static final String GROUP_DIRECTORY_COLLECTION = "groupDirectory";
+
+    /**
+     * @since 11.5
+     */
+    public static final String GROUP_DIRECTORY_GROUPNAME = "groupname";
+
+    /**
+     * @since 11.5
+     */
+    public static final String USER_DIRECTORY_COLLECTION = "userDirectory";
+
+    /**
+     * @since 11.5
+     */
+    public static final String USER_DIRECTORY_USERNAME = "username";
+
 
     protected MongoDatabase database;
 
@@ -148,9 +177,15 @@ public class MongoDBDirectory extends AbstractDirectory {
         if (isMultiTenant()) {
             collection.createIndex(Indexes.hashed(TENANT_ID_FIELD));
         }
-        var schemaManager = Framework.getService(SchemaManager.class);
-        var mongoDBIndexCreator = new MongoDBIndexCreator(schemaManager, collection);
-        mongoDBIndexCreator.createIndexes(schemaManager.getSchema(descriptor.schemaName));
+        if (isACEInfo()) {
+            collection.createIndex(Indexes.ascending(ACE_INFO_ID));
+        }
+        if (isGroupDirectory()) {
+            collection.createIndex(Indexes.ascending(GROUP_DIRECTORY_GROUPNAME));
+        }
+        if (isUserDirectory()) {
+            collection.createIndex(Indexes.ascending(USER_DIRECTORY_USERNAME));
+        }
     }
 
     @Override
@@ -191,4 +226,17 @@ public class MongoDBDirectory extends AbstractDirectory {
     protected MongoCollection<Document> getCountersCollection() {
         return countersCollection;
     }
+
+    protected boolean isACEInfo() {
+        return ACE_INFO_COLLECTION.equals(collection.getNamespace().getCollectionName());
+    }
+
+    protected boolean isGroupDirectory() {
+        return GROUP_DIRECTORY_COLLECTION.equals(collection.getNamespace().getCollectionName());
+    }
+
+    protected boolean isUserDirectory() {
+        return USER_DIRECTORY_COLLECTION.equals(collection.getNamespace().getCollectionName());
+    }
+
 }
