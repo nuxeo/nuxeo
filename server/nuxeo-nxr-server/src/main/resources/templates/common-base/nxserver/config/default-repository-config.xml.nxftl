@@ -151,7 +151,6 @@
         <invalidatorClass>org.nuxeo.ecm.core.storage.dbs.DBSPubSubInvalidator</invalidatorClass>
       </clustering>
       <changeTokenEnabled>${nuxeo.changetoken.enabled}</changeTokenEnabled>
-      <createIndexes>${nuxeo.db.indexes.create}</createIndexes>
     </repository>
   </extension>
 

@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
-import static org.apache.commons.lang3.BooleanUtils.isNotFalse;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
 import java.util.ArrayList;
@@ -154,14 +153,6 @@ public class DBSRepositoryDescriptor implements Cloneable {
 
     @XNode("pool")
     public PoolConfiguration pool;
-
-    @XNode("createIndexes")
-    protected Boolean createIndexes;
-
-    /** @since 11.5 */
-    public boolean isCreateIndexes() {
-        return isNotFalse(createIndexes);
-    }
 
     @Override
     public DBSRepositoryDescriptor clone() {
