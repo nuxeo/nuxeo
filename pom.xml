@@ -3016,6 +3016,13 @@
         <groupId>com.fasterxml.jackson.jaxrs</groupId>
         <artifactId>jackson-jaxrs-json-provider</artifactId>
         <version>${jackson.version}</version>
+        <!-- Exclude dependency causing conflict with Tomcat -->
+        <exclusions>
+          <exclusion>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>net.sf.ezmorph</groupId>
@@ -5534,6 +5541,12 @@
                   <exclude>org.codehaus.woodstox:woodstox-core-asl</exclude>
                 </excludes>
                 <message>org.codehaus.woodstox:woodstox-core-asl must not be used, use com.fasterxml.woodstox:woodstox-core instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>jakarta.activation:jakarta.activation-api</exclude> <!-- part of the default Nuxeo Tomcat server -->
+                </excludes>
+                <message>jakarta.activation:jakarta.activation-api must not be used, it's already part of the default Nuxeo Tomcat server</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>
