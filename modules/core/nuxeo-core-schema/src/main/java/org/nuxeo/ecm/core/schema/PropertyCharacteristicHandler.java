@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.schema;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -57,7 +56,7 @@ public interface PropertyCharacteristicHandler {
     boolean isRemoved(String schema, String path);
 
     /**
-     * The returned paths are not Nuxeo xpath as they don't have the schema prefix.
+     * The returned path are not Nuxeo xpath as they don't have the schema prefix.
      *
      * @param schema the schema name (not the prefix)
      * @return a {@link Set} holding the deprecated property path
@@ -65,7 +64,7 @@ public interface PropertyCharacteristicHandler {
     Set<String> getDeprecatedProperties(String schema);
 
     /**
-     * The returned paths are not Nuxeo xpath as they don't have the schema prefix.
+     * The returned path are not Nuxeo xpath as they don't have the schema prefix.
      *
      * @param schema the schema name (not the prefix)
      * @return a {@link Set} holding the removed property path
@@ -81,15 +80,4 @@ public interface PropertyCharacteristicHandler {
      * @return fallback associated to this property if exist
      */
     Optional<String> getFallback(String schema, String path);
-
-    /**
-     * Returns the indexed property paths.
-     * <p>
-     * The returned paths are not Nuxeo xpath as they don't have the schema prefix.
-     *
-     * @param schema the schema name (not the prefix)
-     * @return a {@link List} holding the indexed property paths.
-     * @since 11.5
-     */
-    List<PropertyIndexOrder> getIndexedProperties(String schema);
 }
