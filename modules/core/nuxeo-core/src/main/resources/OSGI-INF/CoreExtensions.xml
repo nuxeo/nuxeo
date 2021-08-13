@@ -31,10 +31,8 @@
     <schema name="collectionMember" src="schema/collectionMember.xsd"
       prefix="collectionMember" isVersionWritable="true"/>
 
-    <property schema="collection" name="documentIds" indexOrder="ascending" />
-    <property schema="collectionMember" name="collectionIds" indexOrder="ascending" />
     <property schema="dublincore" name="created" secured="true" />
-    <property schema="dublincore" name="modified" secured="true" indexOrder="descending" />
+    <property schema="dublincore" name="modified" secured="true" />
     <property schema="dublincore" name="creator" secured="true" />
     <property schema="dublincore" name="contributors" secured="true" />
     <property schema="dublincore" name="lastContributor" secured="true" />
