@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019-2021 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,6 +94,7 @@ public class PropertyDescriptor {
         return fallback;
     }
 
+    @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
