@@ -152,14 +152,13 @@ public class TypeService extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
-        schemaManager.registerPropertyCharacteristics(
-                getDescriptors(computeSchemaExtensionPoint(PropertyDescriptor.class)));
+        schemaManager.registerSecuredProperty(getDescriptors(computeSchemaExtensionPoint(PropertyDescriptor.class)));
         schemaManager.flushPendingsRegistration();
     }
 
     @Override
     public void stop(ComponentContext context) {
-        schemaManager.clearPropertyCharacteristics();
+        schemaManager.clearSecuredProperty();
     }
 
     @Override

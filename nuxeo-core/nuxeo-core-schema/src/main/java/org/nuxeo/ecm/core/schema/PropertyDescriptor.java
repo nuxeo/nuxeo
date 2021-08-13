@@ -45,10 +45,6 @@ public class PropertyDescriptor implements Descriptor {
     @XNode("@secured")
     public Boolean secured;
 
-    // @since 11.5
-    @XNode("@indexOrder")
-    protected String indexOrder;
-
     @XNode("@remove")
     public boolean remove;
 
@@ -69,13 +65,6 @@ public class PropertyDescriptor implements Descriptor {
         return Boolean.TRUE.equals(secured);
     }
 
-    /**
-     * @since 11.5
-     */
-    public String getIndexOrder() {
-        return indexOrder;
-    }
-
     @Override
     public Descriptor merge(Descriptor o) {
         PropertyDescriptor other = (PropertyDescriptor) o;
@@ -83,7 +72,6 @@ public class PropertyDescriptor implements Descriptor {
         merged.schema = schema;
         merged.name = name;
         merged.secured = other.secured != null ? other.secured : secured;
-        merged.indexOrder = other.indexOrder !=  null ? other.indexOrder : indexOrder;
         return merged;
     }
 
