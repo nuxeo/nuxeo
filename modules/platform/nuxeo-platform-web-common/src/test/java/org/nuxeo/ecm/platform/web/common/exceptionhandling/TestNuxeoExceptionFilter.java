@@ -133,8 +133,8 @@ public class TestNuxeoExceptionFilter {
     @ConsoleLogLevelThreshold("FATAL")
     @LogCaptureFeature.FilterOn(logLevel = "ERROR")
     public void testRuntimeException() throws IOException, ServletException {
-        doTestException(new RuntimeException("oops"), SC_INTERNAL_SERVER_ERROR, "Internal Server Error",
-                "oops", "java.lang.RuntimeException: oops");
+        doTestException(new RuntimeException("oops"), SC_INTERNAL_SERVER_ERROR, "Internal Server Error", "oops",
+                "java.lang.RuntimeException: oops");
     }
 
     @SuppressWarnings("resource")
