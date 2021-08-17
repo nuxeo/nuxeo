@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -166,6 +167,20 @@ public class UserGroupTest extends BaseUserTest {
 
         um.deleteUser("newuser");
         assertNull(um.getPrincipal("newuser"));
+    }
+
+    @Test
+    public void itReturnsA409OnAlreadyExistentUser() throws Exception {
+        // Given an existent user
+        NuxeoPrincipal user1 = new NuxeoPrincipalImpl("existentuser");
+        um.createUser(user1.getModel());
+        nextTransaction();
+
+        // When I try to recreate the same user and POST it on the user endpoint
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/user", getPrincipalAsJson(user1))) {
+            // Then it returns the JSON
+            assertEquals(SC_CONFLICT, response.getStatus());
+        }
     }
 
     @Test

@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.usermanager;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 
 import java.util.List;
 
@@ -31,6 +30,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -69,7 +69,7 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
     private void checkPrincipalDoesNotAlreadyExists(NuxeoPrincipal principal, UserManager um) {
         NuxeoPrincipal user = um.getPrincipal(principal.getName());
         if (user != null) {
-            throw new NuxeoException("User already exists", SC_CONFLICT);
+            throw new UserAlreadyExistsException();
         }
     }
 
