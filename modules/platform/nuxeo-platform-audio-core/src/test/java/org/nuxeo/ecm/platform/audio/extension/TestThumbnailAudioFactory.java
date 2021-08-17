@@ -18,6 +18,11 @@
  */
 package org.nuxeo.ecm.platform.audio.extension;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.nuxeo.ecm.platform.audio.extension.ThumbnailAudioFactory.APIC;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -39,6 +44,7 @@ import org.jaudiotagger.tag.id3.framebody.FrameBodyAPIC;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -66,24 +72,62 @@ public class TestThumbnailAudioFactory {
     protected ThumbnailService thumbnailService;
 
     @Test
-    public void testComputeThumbnail() throws IOException, CannotReadException, TagException, ReadOnlyFileException,
-            InvalidAudioFrameException, CannotWriteException {
+    public void testComputeThumbnail() throws CannotWriteException, CannotReadException, TagException,
+            InvalidAudioFrameException, ReadOnlyFileException, IOException {
+        Blob blob = getBlob("/test-data/snow.jpg", "image/jpeg");
+        DocumentModel doc = session.createDocumentModel("/", "testAudio", "Audio");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        session.createDocument(doc);
+        Blob thumbnail = thumbnailService.computeThumbnail(doc, session);
+        assertNotNull(thumbnail);
+        assertEquals("image/jpeg", thumbnail.getMimeType());
+        assertEquals("test_thumbnail.jpg", thumbnail.getFilename());
+    }
+
+    @Test
+    public void testComputeThumbnailWithMissingMimeType() throws CannotWriteException, CannotReadException,
+            TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
+        Blob blob = getBlob("/test-data/snow.jpg", null);
+        DocumentModel doc = session.createDocumentModel("/", "testAudio", "Audio");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        session.createDocument(doc);
+        Blob thumbnail = thumbnailService.computeThumbnail(doc, session);
+        assertNotNull(thumbnail);
+        assertEquals("image/jpeg", thumbnail.getMimeType());
+        assertEquals("test_thumbnail.jpg", thumbnail.getFilename());
+    }
+
+    @Test
+    public void testComputeThumbnailWithoutThumbnail() throws IOException, CannotWriteException, CannotReadException,
+            TagException, InvalidAudioFrameException, ReadOnlyFileException {
+        Blob blob = getBlob(null, null);
+        DocumentModel doc = session.createDocumentModel("/", "testAudio", "Audio");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        session.createDocument(doc);
+        Blob thumbnail = thumbnailService.computeThumbnail(doc, session);
+        assertNull(thumbnail);
+    }
+
+    public Blob getBlob(String thumbnailFilePath, String thumbnailMimeType) throws CannotReadException, TagException,
+            InvalidAudioFrameException, ReadOnlyFileException, IOException, CannotWriteException {
         // create an audio file with an empty picture frame
         File file = FileUtils.getResourceFileFromContext("test-data/test.mp3");
         AudioFile audioFile = AudioFileIO.read(file);
         AbstractID3v2Tag tag = new ID3v24Tag();
-        AbstractID3v2Frame frame = new ID3v24Frame("APIC");
+        AbstractID3v2Frame frame = new ID3v24Frame(APIC);
         FrameBodyAPIC frameBody = new FrameBodyAPIC();
         frameBody.setDescription("description");
+        if (thumbnailFilePath != null) {
+            frameBody.setImageData(getClass().getResourceAsStream(thumbnailFilePath).readAllBytes());
+            if (thumbnailMimeType != null) {
+                frameBody.setMimeType(thumbnailMimeType);
+            }
+        }
         frame.setBody(frameBody);
         tag.setFrame(frame);
         audioFile.setTag(tag);
         audioFile.commit();
-
-        DocumentModel doc = session.createDocumentModel("/", "testAudio", "Audio");
-        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob(file));
-        session.createDocument(doc);
-        thumbnailService.computeThumbnail(doc, session);
+        return Blobs.createBlob(file, "audio/mp3", null, "test.mp3");
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ package org.nuxeo.ecm.platform.audio.extension;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Iterator;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
@@ -41,7 +41,12 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
+import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
+import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Audio thumbnail factory
@@ -49,6 +54,8 @@ import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
  * @since 5.7
  */
 public class ThumbnailAudioFactory implements ThumbnailFactory {
+
+    public static final String APIC = "APIC";
 
     private static final Log log = LogFactory.getLog(ThumbnailAudioFactory.class);
 
@@ -80,27 +87,44 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
     @Override
     public Blob computeThumbnail(DocumentModel doc, CoreSession session) {
         Blob thumbnailBlob = null;
-        BlobHolder bh = doc.getAdapter(BlobHolder.class);
-        Blob fileBlob;
+
+        Blob audioBlob = doc.getAdapter(BlobHolder.class).getBlob();
+
         try {
             // Get the cover art of the audio file if ID3v2 exist
-            try (InputStream in = bh.getBlob().getStream()) {
-                fileBlob = Blobs.createBlob(in);
-            }
-            MP3File file = new MP3File(fileBlob.getFile());
-            if (file.hasID3v2Tag()) {
+            MP3File mp3File = new MP3File(audioBlob.getFile());
+            if (mp3File.hasID3v2Tag()) {
                 @SuppressWarnings("unchecked")
-                Iterator<AbstractID3v2Frame> it = file.getID3v2Tag().getFrameOfType("APIC");
+                Iterator<AbstractID3v2Frame> it = mp3File.getID3v2Tag().getFrameOfType(APIC);
                 if (it != null && it.hasNext()) {
                     AbstractID3v2Frame frame = it.next();
                     FrameBodyAPIC framePic = (FrameBodyAPIC) frame.getBody();
                     byte[] imageData = framePic.getImageData();
-                    if (imageData != null) {
+                    if (imageData != null && imageData.length > 0) {
                         thumbnailBlob = Blobs.createBlob(imageData);
+
+                        MimetypeRegistry registry = Framework.getService(MimetypeRegistry.class);
+                        String thumbnailMimetype = framePic.getMimeType();
+                        if (thumbnailMimetype == null || "null".equals(thumbnailMimetype)) {
+                            thumbnailMimetype = registry.getMimetypeFromBlob(thumbnailBlob);
+
+                        }
+                        thumbnailBlob.setMimeType(thumbnailMimetype);
+
+                        String baseName = FilenameUtils.getBaseName(audioBlob.getFilename());
+
+                        MimetypeEntry mimetypeEntry = registry.getMimetypeEntryByMimeType(thumbnailMimetype);
+                        if (mimetypeEntry != null && !mimetypeEntry.getExtensions().isEmpty()) {
+                            String fileExtension = mimetypeEntry.getExtensions().get(0);
+                            thumbnailBlob.setFilename(String.format("%s_thumbnail.%s", baseName, fileExtension));
+                        } else {
+                            thumbnailBlob.setFilename(String.format("%s_thumbnail", baseName));
+                        }
                     }
                 }
             }
-        } catch (IOException | TagException | InvalidAudioFrameException | ReadOnlyFileException e) {
+        } catch (IOException | TagException | InvalidAudioFrameException | ReadOnlyFileException
+                | MimetypeNotFoundException | MimetypeDetectionException e) {
             log.warn("Unable to get the audio file cover art", e);
         }
         return thumbnailBlob;
