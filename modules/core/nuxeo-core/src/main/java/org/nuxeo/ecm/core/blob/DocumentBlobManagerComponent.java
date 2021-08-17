@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -382,21 +384,33 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         // do the GC in a long-running transaction to avoid timeouts
         return runInTransaction(() -> {
             List<BinaryGarbageCollector> gcs = getGarbageCollectors();
+            // check whether two GCs share storage
+            Set<String> ids = gcs.stream().map(BinaryGarbageCollector::getId).collect(toSet());
+            boolean sharedStorage = ids.size() < gcs.size();
             // start gc
             long start = System.currentTimeMillis();
             for (BinaryGarbageCollector gc : gcs) {
                 gc.start();
             }
-            BiConsumer<String, String> markerCallback = (key, repositoryName) -> {
-                BlobProvider blobProvider = getBlobProvider(key, repositoryName);
-                BinaryGarbageCollector gc = blobProvider.getBinaryGarbageCollector();
-                if (gc != null) {
+            BiConsumer<String, String> markerCallback;
+            if (sharedStorage) {
+                // mark in all GCs, as the blob may be visible from several blob providers
+                markerCallback = (key, repositoryName) -> {
                     String skey = stripBlobKeyPrefix(key);
-                    gc.mark(skey);
-                } else {
-                    log.error("Unknown binary manager for key: " + key);
-                }
-            };
+                    gcs.forEach(gc -> gc.mark(skey));
+                };
+            } else {
+                markerCallback = (key, repositoryName) -> {
+                    BlobProvider blobProvider = getBlobProvider(key, repositoryName);
+                    BinaryGarbageCollector gc = blobProvider.getBinaryGarbageCollector();
+                    if (gc != null) {
+                        String skey = stripBlobKeyPrefix(key);
+                        gc.mark(skey);
+                    } else {
+                        log.error("Unknown binary manager for key: " + key);
+                    }
+                };
+            }
             // in all repositories, mark referenced binaries
             RepositoryService repositoryService = Framework.getService(RepositoryService.class);
             for (String repositoryName : repositoryService.getRepositoryNames()) {

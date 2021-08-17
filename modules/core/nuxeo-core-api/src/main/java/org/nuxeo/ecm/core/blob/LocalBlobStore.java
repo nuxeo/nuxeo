@@ -26,6 +26,8 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -247,6 +249,12 @@ public class LocalBlobStore extends AbstractBlobStore {
 
         protected BinaryManagerStatus status;
 
+        // for tests, to simulate behavior of other GCs that don't use on-disk marking
+        public volatile boolean markInMemory;
+
+        // for tests
+        protected Set<String> toDelete;
+
         @Override
         public String getId() {
             return pathStrategy.dir.toUri().toString();
@@ -270,17 +278,43 @@ public class LocalBlobStore extends AbstractBlobStore {
             }
             startTime = System.currentTimeMillis();
             status = new BinaryManagerStatus();
+            if (markInMemory) {
+                toDelete = new HashSet<>();
+                computeToDelete(pathStrategy.dir.toFile(), startTime - TIME_RESOLUTION);
+            }
+        }
+
+        // for tests
+        protected void computeToDelete(File file, long minTime) {
+            if (file.isDirectory()) {
+                for (File f : file.listFiles()) {
+                    computeToDelete(f, minTime);
+                }
+            } else if (file.isFile() && file.canWrite()) {
+                long lastModified = file.lastModified();
+                if (lastModified == 0) {
+                    log.warn("GC cannot read last modified for file: {}", file);
+                } else if (lastModified < minTime) {
+                    status.sizeBinaries += file.length();
+                    status.numBinaries++;
+                    toDelete.add(file.getName());
+                }
+            }
         }
 
         @Override
         public void mark(String key) {
-            OptionalOrUnknown<Path> fileOpt = getStoredFile(key);
-            if (!fileOpt.isPresent()) {
-                log.warn("Unknown blob for key: " + key);
-                return;
+            if (markInMemory) {
+                toDelete.remove(key);
+            } else {
+                OptionalOrUnknown<Path> fileOpt = getStoredFile(key);
+                if (!fileOpt.isPresent()) {
+                    log.warn("Unknown blob for key: {}",  key);
+                    return;
+                }
+                // mark the blob by touching the file
+                touch(fileOpt.get().toFile());
             }
-            // mark the blob by touching the file
-            touch(fileOpt.get().toFile());
         }
 
         @Override
@@ -288,9 +322,43 @@ public class LocalBlobStore extends AbstractBlobStore {
             if (startTime == 0) {
                 throw new NuxeoException("Not started");
             }
-            deleteOld(pathStrategy.dir.toFile(), startTime - TIME_RESOLUTION, 0, delete);
+            if (markInMemory) {
+                removeUnmarkedBlobsAndUpdateStatus(delete);
+            } else {
+                deleteOld(pathStrategy.dir.toFile(), startTime - TIME_RESOLUTION, 0, delete);
+            }
             status.gcDuration = System.currentTimeMillis() - startTime;
             startTime = 0;
+            toDelete = null;
+        }
+
+        protected void removeUnmarkedBlobsAndUpdateStatus(boolean delete) {
+            for (String key : toDelete) {
+                OptionalOrUnknown<Path> fileOpt = getStoredFile(key);
+                if (!fileOpt.isPresent()) {
+                    // shouldn't happen except if blob concurrently removed
+                    continue;
+                }
+                Path path = fileOpt.get();
+                long length;
+                try {
+                    length = Files.size(path);
+                } catch (IOException e) {
+                    log.error(key, e);
+                    continue;
+                }
+                status.sizeBinariesGC += length;
+                status.numBinariesGC++;
+                status.sizeBinaries -= length;
+                status.numBinaries--;
+                if (delete) {
+                    try {
+                        Files.delete(path);
+                    } catch (IOException e) {
+                        log.error(key, e);
+                    }
+                }
+            }
         }
 
         protected void deleteOld(File file, long minTime, int depth, boolean delete) {
