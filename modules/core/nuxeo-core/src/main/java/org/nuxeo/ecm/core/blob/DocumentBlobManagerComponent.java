@@ -319,6 +319,10 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             log.error("No blob provider found for blob: " + blob.getKey());
             return;
         }
+        if (!blobProvider.isRecordMode()) {
+            log.debug("Blob provider of blob: " + blob.getKey() + " is not in record mode");
+            return;
+        }
         try {
             String key = stripBlobKeyPrefix(blob.getKey());
             BlobUpdateContext blobUpdateContext = new BlobUpdateContext(key);
