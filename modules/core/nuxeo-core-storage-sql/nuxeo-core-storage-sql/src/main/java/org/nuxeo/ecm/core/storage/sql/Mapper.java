@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PartialList;
@@ -231,9 +232,11 @@ public interface Mapper extends RowMapper {
     VCSInvalidations getClusterInvalidations(Serializable nodeId);
 
     /**
-     * Marks the binaries in use by passing them to the binary manager(s)'s GC mark() method.
+     * Marks the blobs in use by passing them to the provided callback (taking the blob key and the repository name).
+     *
+     * @since 2021.8
      */
-    void markReferencedBinaries();
+    void markReferencedBlobs(BiConsumer<String, String> markerCallback);
 
     /**
      * Cleans up (hard-delete) any rows that have been soft-deleted in the database.

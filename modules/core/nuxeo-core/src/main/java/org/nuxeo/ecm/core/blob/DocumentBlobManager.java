@@ -160,14 +160,4 @@ public interface DocumentBlobManager {
      */
     boolean isBinariesGarbageCollectionInProgress();
 
-    /**
-     * INTERNAL. Marks a binary as referenced during garbage collection. Called back by repository implementations
-     * during {@link #garbageCollectBinaries}.
-     *
-     * @param key the binary key
-     * @param repositoryName the repository name
-     * @since 7.4
-     */
-    void markReferencedBinary(String key, String repositoryName);
-
 }

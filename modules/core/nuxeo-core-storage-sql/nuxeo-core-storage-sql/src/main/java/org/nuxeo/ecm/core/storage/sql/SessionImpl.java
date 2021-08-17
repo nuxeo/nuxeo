@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -1229,8 +1230,8 @@ public class SessionImpl implements Session {
         requireReadAclsUpdate();
     }
 
-    public void markReferencedBinaries() {
-        mapper.markReferencedBinaries();
+    public void markReferencedBlobs(BiConsumer<String, String> markerCallback) {
+        mapper.markReferencedBlobs(markerCallback);
     }
 
     public int cleanupDeletedDocuments(int max, Calendar beforeTime) {

@@ -45,6 +45,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,7 +55,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.ScrollResultImpl;
-import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.ColumnType.WrappedId;
@@ -924,9 +924,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public void markReferencedBinaries() {
+    public void markReferencedBlobs(BiConsumer<String, String> markerCallback) {
         log.debug("Starting binaries GC mark");
-        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         String repositoryName = getRepositoryName();
         try (Statement st = connection.createStatement()) {
             int i = -1;
@@ -943,7 +942,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         n++;
                         String key = (String) col.getFromResultSet(rs, 1);
                         if (key != null) {
-                            blobManager.markReferencedBinary(key, repositoryName);
+                            markerCallback.accept(key, repositoryName);
                         }
                     }
                     if (logger.isLogEnabled()) {

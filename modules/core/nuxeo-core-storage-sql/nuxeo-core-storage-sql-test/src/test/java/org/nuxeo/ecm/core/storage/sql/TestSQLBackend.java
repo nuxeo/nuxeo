@@ -873,7 +873,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertFalse(gc.isInProgress());
         gc.start();
         assertTrue(gc.isInProgress());
-        repository.markReferencedBinaries();
+        repository.markReferencedBlobs((key, repositoryName) -> {
+            gc.mark(key);
+        });
         if (moreWork == 1) {
             // while GC is in progress
             // add a new binary

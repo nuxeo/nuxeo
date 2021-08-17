@@ -25,6 +25,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -386,12 +387,21 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             for (BinaryGarbageCollector gc : gcs) {
                 gc.start();
             }
+            BiConsumer<String, String> markerCallback = (key, repositoryName) -> {
+                BlobProvider blobProvider = getBlobProvider(key, repositoryName);
+                BinaryGarbageCollector gc = blobProvider.getBinaryGarbageCollector();
+                if (gc != null) {
+                    String skey = stripBlobKeyPrefix(key);
+                    gc.mark(skey);
+                } else {
+                    log.error("Unknown binary manager for key: " + key);
+                }
+            };
             // in all repositories, mark referenced binaries
-            // the marking itself will call back into the appropriate gc's mark method
             RepositoryService repositoryService = Framework.getService(RepositoryService.class);
             for (String repositoryName : repositoryService.getRepositoryNames()) {
                 Repository repository = repositoryService.getRepository(repositoryName);
-                repository.markReferencedBinaries();
+                repository.markReferencedBlobs(markerCallback);
             }
             // stop gc
             BinaryManagerStatus globalStatus = new BinaryManagerStatus();
@@ -433,18 +443,6 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
                 // go back to default transaction timeout
                 TransactionHelper.startTransaction();
             }
-        }
-    }
-
-    @Override
-    public void markReferencedBinary(String key, String repositoryName) {
-        BlobProvider blobProvider = getBlobProvider(key, repositoryName);
-        BinaryGarbageCollector gc = blobProvider.getBinaryGarbageCollector();
-        if (gc != null) {
-            key = stripBlobKeyPrefix(key);
-            gc.mark(key);
-        } else {
-            log.error("Unknown binary manager for key: " + key);
         }
     }
 

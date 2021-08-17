@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PartialList;
@@ -153,8 +154,8 @@ public class UnifiedCachingMapper extends UnifiedCachingRowMapper implements Cac
     }
 
     @Override
-    public void markReferencedBinaries() {
-        mapper.markReferencedBinaries();
+    public void markReferencedBlobs(BiConsumer<String, String> markerCallback) {
+        mapper.markReferencedBlobs(markerCallback);
     }
 
     @Override

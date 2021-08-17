@@ -67,11 +67,6 @@ public interface RepositoryManagement {
     void processClusterInvalidationsNext();
 
     /**
-     * Marks the binaries in use by passing them to the binary manager(s)'s GC mark() method.
-     */
-    void markReferencedBinaries();
-
-    /**
      * Cleans up (hard-deletes) any documents that have been soft-deleted in the database.
      *
      * @param max the maximum number of documents to delete at a time

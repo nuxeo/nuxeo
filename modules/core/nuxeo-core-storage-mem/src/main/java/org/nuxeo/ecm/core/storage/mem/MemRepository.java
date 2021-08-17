@@ -31,11 +31,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiConsumer;
 
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.lock.LockManager;
-import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepository;
@@ -166,14 +166,13 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void markReferencedBinaries() {
-        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
+    public void markReferencedBlobs(BiConsumer<String, String> markerCallback) {
         for (State state : states.values()) {
             Object blobKeys = state.get(KEY_BLOB_KEYS);
             if (blobKeys instanceof Object[]) {
                 for (Object v : (Object[]) blobKeys) {
                     if (v instanceof String) {
-                        blobManager.markReferencedBinary((String) v, repositoryName);
+                        markerCallback.accept((String) v, repositoryName);
                     }
                 }
             }

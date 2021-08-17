@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.storage.dbs;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -276,8 +277,8 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     @Override
-    public void markReferencedBinaries() {
-        repository.markReferencedBinaries();
+    public void markReferencedBlobs(BiConsumer<String, String> markerCallback) {
+        repository.markReferencedBlobs(markerCallback);
     }
 
     @Override

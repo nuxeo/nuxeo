@@ -27,13 +27,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
@@ -314,65 +314,64 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void markReferencedBinaries() {
-        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
+    public void markReferencedBlobs(BiConsumer<String, String> markerCallback) {
         Bson filter;
         Bson projection;
-        Consumer<Document> markReferencedBinaries;
+        Consumer<Document> markReferencedBlobs;
         if (supportsDenormalizedBlobKeys) {
             filter = Filters.exists(KEY_BLOB_KEYS, true);
             projection = Projections.fields(Projections.excludeId(), Projections.include(KEY_BLOB_KEYS));
-            markReferencedBinaries = doc -> markReferencedBinariesDenormalized(doc, blobManager);
+            markReferencedBlobs = doc -> markReferencedBlobsDenormalized(doc, markerCallback);
         } else {
             filter = new Document();
             projection = binaryKeys;
-            markReferencedBinaries = doc -> markReferencedBinaries(doc, blobManager);
+            markReferencedBlobs = doc -> markReferencedBlobs(doc, markerCallback);
         }
         log.trace("MongoDB: QUERY {} KEYS {}", filter, projection);
-        coll.find(filter).projection(projection).forEach(markReferencedBinaries);
+        coll.find(filter).projection(projection).forEach(markReferencedBlobs);
     }
 
-    protected void markReferencedBinariesDenormalized(Document ob, DocumentBlobManager blobManager) {
+    protected void markReferencedBlobsDenormalized(Document ob, BiConsumer<String, String> markReferencedBlob) {
         Object blobKeys = ob.get(KEY_BLOB_KEYS);
         if (blobKeys instanceof List) {
             for (Object v : (List<?>) blobKeys) {
                 if (v instanceof String) {
-                    blobManager.markReferencedBinary((String) v, repositoryName);
+                    markReferencedBlob.accept((String) v, repositoryName);
                 }
             }
         }
     }
 
-    protected void markReferencedBinaries(Document ob, DocumentBlobManager blobManager) {
+    protected void markReferencedBlobs(Document ob, BiConsumer<String, String> markerCallback) {
         for (var value : ob.values()) {
             if (value instanceof List) {
                 @SuppressWarnings("unchecked")
                 List<Object> list = (List<Object>) value;
                 for (Object v : list) {
                     if (v instanceof Document) {
-                        markReferencedBinaries((Document) v, blobManager);
+                        markReferencedBlobs((Document) v, markerCallback);
                     } else {
-                        markReferencedBinary(v, blobManager);
+                        markReferencedBlob(v, markerCallback);
                     }
                 }
             } else if (value instanceof Object[]) {
                 for (Object v : (Object[]) value) {
-                    markReferencedBinary(v, blobManager);
+                    markReferencedBlob(v, markerCallback);
                 }
             } else if (value instanceof Document) {
-                markReferencedBinaries((Document) value, blobManager);
+                markReferencedBlobs((Document) value, markerCallback);
             } else {
-                markReferencedBinary(value, blobManager);
+                markReferencedBlob(value, markerCallback);
             }
         }
     }
 
-    protected void markReferencedBinary(Object value, DocumentBlobManager blobManager) {
+    protected void markReferencedBlob(Object value, BiConsumer<String, String> markerCallback) {
         if (!(value instanceof String)) {
             return;
         }
         String key = (String) value;
-        blobManager.markReferencedBinary(key, repositoryName);
+        markerCallback.accept(key, repositoryName);
     }
 
 }

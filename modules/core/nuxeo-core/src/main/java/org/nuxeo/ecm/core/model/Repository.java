@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.core.model;
 
+import java.util.function.BiConsumer;
+
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -43,11 +45,11 @@ public interface Repository {
     }
 
     /**
-     * Marks the binaries in use by passing them to the binary manager(s)'s GC mark() method.
+     * Marks the blobs in use by passing them to the provided callback (taking the blob key and the repository name).
      *
-     * @since 7.4
+     * @since 2021.8
      */
-    void markReferencedBinaries();
+    void markReferencedBlobs(BiConsumer<String, String> markerCallback);
 
     /**
      * Gets the fulltext configuration for this repository.

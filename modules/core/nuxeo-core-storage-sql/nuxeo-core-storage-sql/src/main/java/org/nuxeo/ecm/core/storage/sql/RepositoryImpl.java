@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
 
 import javax.naming.NamingException;
 
@@ -508,9 +509,9 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
     }
 
     @Override
-    public void markReferencedBinaries() {
+    public void markReferencedBlobs(BiConsumer<String, String> markerCallback) {
         try (SessionImpl session = getConnection()) {
-            session.markReferencedBinaries();
+            session.markReferencedBlobs(markerCallback);
         }
     }
 

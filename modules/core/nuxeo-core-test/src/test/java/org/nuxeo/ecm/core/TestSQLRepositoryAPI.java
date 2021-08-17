@@ -4511,7 +4511,9 @@ public class TestSQLRepositoryAPI {
         assertFalse(gc.isInProgress());
         gc.start();
         assertTrue(gc.isInProgress());
-        repository.markReferencedBinaries();
+        repository.markReferencedBlobs((key, repositoryName) -> {
+            gc.mark(key);
+        });
         if (addDuringGC) {
             // while GC is in progress, add a new binary
             addBinary("MNO", "MNO");
