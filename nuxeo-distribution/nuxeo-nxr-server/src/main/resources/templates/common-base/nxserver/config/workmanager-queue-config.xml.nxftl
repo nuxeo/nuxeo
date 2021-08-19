@@ -27,7 +27,9 @@
       <category>permissionNotificationListener</category>
       <category>removeDocumentRoutesForDeletedDocument</category>
       <category>removeTasksForDeletedDocumentRoute</category>
+<#if "${nuxeo.work.queue.raclupdate.enabled}" != "true">
       <category>security</category>
+</#if>
       <category>storedRenditionsCleanup</category>
       <category>taggedVersionListener</category>
       <category>TransiantStorageGCWork</category>
@@ -46,6 +48,13 @@
     <queue id="updateThumbListener">
       <maxThreads>${nuxeo.work.queue.thumbnail.threads}</maxThreads>
       <category>updateThumbListener</category>
+    </queue>
+</#if>
+<#if "${nuxeo.work.queue.raclupdate.enabled}" == "true">
+    <queue id="raclupdate">
+      <name>Queue for DBS Read ACL update Works</name>
+      <maxThreads>${nuxeo.work.queue.raclupdate.threads}</maxThreads>
+      <category>security</category>
     </queue>
 </#if>
   </extension>
