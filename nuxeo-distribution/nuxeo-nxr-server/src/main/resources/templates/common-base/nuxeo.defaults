@@ -92,6 +92,9 @@ nuxeo.work.queue.common.threads=4
 # A dedicated queue for thumbnail
 nuxeo.work.queue.thumbnail.enabled=true
 nuxeo.work.queue.thumbnail.threads=4
+# Queue for DBS Read ACL Update
+nuxeo.work.queue.raclupdate.enabled=false
+nuxeo.work.queue.raclupdate.threads=4
 # Explicit timeout for thumbnail generation
 nuxeo.thumbnail.transaction.timeout.seconds=300
 # Explicit timeout for picture views generation
