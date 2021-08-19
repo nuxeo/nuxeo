@@ -172,6 +172,14 @@ elasticsearch.check.classpath=${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/
 elasticsearch.check.class=org.nuxeo.elasticsearch.ElasticSearchChecker
 # Nuxeo managing index alias
 elasticsearch.manageAlias.enabled=false
+# Bulk Index action, fetching content (bulk/index computation)
+elasticsearch.bulk.index.fetch.concurrency=4
+elasticsearch.bulk.index.fetch.partitions=12
+# Bulk Index action, submitting requests to elastic (bulk/bulkIndex computation)
+elasticsearch.bulk.index.submit.concurrency=2
+elasticsearch.bulk.index.submit.partitions=8
+
+
 
 # Kafka
 kafka.check.classpath=${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-{common,core-api,runtime-stream}*.jar
