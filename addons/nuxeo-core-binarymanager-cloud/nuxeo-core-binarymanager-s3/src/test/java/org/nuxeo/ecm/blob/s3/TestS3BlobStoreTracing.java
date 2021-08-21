@@ -99,6 +99,7 @@ public class TestS3BlobStoreTracing {
     protected static final List<String> BLOB_PROVIDER_IDS = Arrays.asList( //
             "s3", //
             "s3-other", //
+            "s3-subdirs", //
             "s3-sha256-async", //
             "s3-nocache", //
             "s3-managed", //
@@ -219,6 +220,17 @@ public class TestS3BlobStoreTracing {
         String key1 = bp.writeBlob(blobContext);
         assertEquals(FOO_MD5, key1);
         checkTrace("trace-write.txt");
+    }
+
+    @Test
+    public void testWriteSubDirs() throws IOException {
+        BlobProvider bp = getBlobProvider("s3-subdirs");
+
+        logTrace("== Write (subdirs) ==");
+        BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
+        String key1 = bp.writeBlob(blobContext);
+        assertEquals(FOO_MD5, key1);
+        checkTrace("trace-write-subdirs.txt");
     }
 
     @Test
@@ -354,6 +366,20 @@ public class TestS3BlobStoreTracing {
         Blob blob = bp.readBlob(blobInfo(key1));
         assertEquals(FOO, blob.getString());
         checkTrace("trace-read.txt");
+    }
+
+    @Test
+    public void testReadSubdirs() throws IOException {
+        BlobProvider bp = getBlobProvider("s3-subdirs");
+        BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
+        String key1 = bp.writeBlob(blobContext);
+        clearCache(bp);
+        clearTrace();
+
+        logTrace("== Read (subdirs) ==");
+        Blob blob = bp.readBlob(blobInfo(key1));
+        assertEquals(FOO, blob.getString());
+        checkTrace("trace-read-subdirs.txt");
     }
 
     @Test

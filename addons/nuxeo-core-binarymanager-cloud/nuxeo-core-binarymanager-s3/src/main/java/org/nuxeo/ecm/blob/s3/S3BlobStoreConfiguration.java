@@ -81,6 +81,8 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
     public static final String BUCKET_PREFIX_PROPERTY = "bucket_prefix";
 
+    public static final String BUCKET_SUB_DIRS_DEPTH_PROPERTY = "subDirsDepth";
+
     public static final String BUCKET_REGION_PROPERTY = "region";
 
     public static final String AWS_ID_PROPERTY = "awsid";
@@ -285,6 +287,14 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
             }
         }
         return value;
+    }
+
+    protected int getSubDirsDepth() {
+        int d = getIntProperty(BUCKET_SUB_DIRS_DEPTH_PROPERTY);
+        if (d < 0) {
+            d = 0;
+        }
+        return d;
     }
 
     protected AWSCredentialsProvider getAWSCredentialsProvider() {
