@@ -12,6 +12,12 @@
       <property name="bucket_prefix">other/</property>
     </blobprovider>
 
+    <blobprovider name="s3-subdirs">
+      <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
+      <property name="bucket_prefix">subdirs/</property>
+      <property name="subDirsDepth">2</property>
+    </blobprovider>
+
     <blobprovider name="s3-sha256-async">
       <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
       <property name="bucket_prefix">sha256/</property>

@@ -1,0 +1,13 @@
+@startuml
+participant Nuxeo order 1
+participant Cache order 2
+participant S3 order 3
+== Read (subdirs) ==
+Nuxeo <-- Cache: missing
+                                hnote right: acbd18db4cc2f85cedef654fccc4a4d8
+Nuxeo <- S3: read 3 bytes
+                                hnote right: subdirs/ac/bd/acbd18db4cc2f85cedef654fccc4a4d8
+                                hnote right of Cache: ${TMP}
+Cache --> Cache: rename
+                                hnote right of Cache: acbd18db4cc2f85cedef654fccc4a4d8
+@enduml

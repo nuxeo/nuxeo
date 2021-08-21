@@ -20,14 +20,17 @@ package org.nuxeo.ecm.blob.s3;
 
 import static org.apache.commons.io.output.NullOutputStream.NULL_OUTPUT_STREAM;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.DELIMITER;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.ALLOW_BYTE_RANGE;
 import static org.nuxeo.ecm.core.blob.KeyStrategy.VER_SEP;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Calendar;
 import java.util.Collections;
@@ -55,6 +58,9 @@ import org.nuxeo.ecm.core.blob.ByteRange;
 import org.nuxeo.ecm.core.blob.KeyStrategy;
 import org.nuxeo.ecm.core.blob.KeyStrategyDigest;
 import org.nuxeo.ecm.core.blob.KeyStrategyDocId;
+import org.nuxeo.ecm.core.blob.PathStrategy;
+import org.nuxeo.ecm.core.blob.PathStrategyFlat;
+import org.nuxeo.ecm.core.blob.PathStrategySubDirs;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.core.model.Repository;
@@ -112,6 +118,10 @@ public class S3BlobStore extends AbstractBlobStore {
 
     protected final String bucketPrefix;
 
+    protected final PathStrategy pathStrategy;
+
+    protected final boolean pathSeparatorIsBackslash;
+
     protected final boolean allowByteRange;
 
     // note, we may choose to not use versions even in a versioned bucket
@@ -136,6 +146,14 @@ public class S3BlobStore extends AbstractBlobStore {
         amazonS3 = config.amazonS3;
         bucketName = config.bucketName;
         bucketPrefix = config.bucketPrefix;
+        Path p = Paths.get(bucketPrefix);
+        int subDirsDepth = config.getSubDirsDepth();
+        if (subDirsDepth == 0) {
+            pathStrategy = new PathStrategyFlat(p);
+        } else {
+            pathStrategy = new PathStrategySubDirs(p, subDirsDepth);
+        }
+        pathSeparatorIsBackslash = FileSystems.getDefault().getSeparator().equals("\\");
         allowByteRange = config.getBooleanProperty(ALLOW_BYTE_RANGE);
         // don't use versions if we use deduplication (including managed case)
         useVersion = isBucketVersioningEnabled() && keyStrategy instanceof KeyStrategyDocId;
@@ -178,6 +196,15 @@ public class S3BlobStore extends AbstractBlobStore {
 
     protected boolean supportsAsyncDigest(Repository repository) {
         return repository.hasCapability(Repository.CAPABILITY_QUERY_BLOB_KEYS);
+    }
+
+    protected String bucketKey(String key) {
+        String path = pathStrategy.getPathForKey(key).toString();
+        if (pathSeparatorIsBackslash) {
+            // correct for our abuse of Path under Windows
+            path = path.replace("\\", DELIMITER);
+        }
+        return path;
     }
 
     @Override
@@ -241,7 +268,7 @@ public class S3BlobStore extends AbstractBlobStore {
     /** Writes a file with the given key and returns its version id. */
     protected String writeFile(String key, Path file, BlobContext blobContext, String fileTraceSource)
             throws IOException {
-        String bucketKey = bucketPrefix + key;
+        String bucketKey = bucketKey(key);
         long t0 = 0;
         if (log.isDebugEnabled()) {
             t0 = System.currentTimeMillis();
@@ -352,7 +379,7 @@ public class S3BlobStore extends AbstractBlobStore {
 
     /** @return object length, or -1 if missing */
     protected long lengthOfBlob(String key) {
-        String bucketKey = bucketPrefix + key;
+        String bucketKey = bucketKey(key);
         try {
             logTrace("-->", "getObjectMetadata");
             logTrace("hnote right: " + bucketKey);
@@ -377,11 +404,12 @@ public class S3BlobStore extends AbstractBlobStore {
         do {
             if (list == null) {
                 logTrace("->", "listObjects");
-                // use delimiter to avoid useless listing of objects in "subdirectories"
-                ListObjectsRequest listObjectsRequest = //
-                        new ListObjectsRequest().withBucketName(bucketName)
-                                                .withPrefix(bucketPrefix)
-                                                .withDelimiter(S3BlobStoreConfiguration.DELIMITER);
+                ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName)
+                                                                                .withPrefix(bucketPrefix);
+                if (config.getSubDirsDepth() == 0) {
+                    // use delimiter to avoid useless listing of objects in "subdirectories"
+                    listObjectsRequest.setDelimiter(DELIMITER);
+                }
                 list = amazonS3.listObjects(listObjectsRequest);
             } else {
                 list = amazonS3.listNextBatchOfObjects(list);
@@ -401,10 +429,11 @@ public class S3BlobStore extends AbstractBlobStore {
         do {
             if (vlist == null) {
                 logTrace("->", "listVersions");
-                ListVersionsRequest listVersionsRequest = //
-                        new ListVersionsRequest().withBucketName(bucketName)
-                                                 .withPrefix(bucketPrefix)
-                                                 .withDelimiter(S3BlobStoreConfiguration.DELIMITER);
+                ListVersionsRequest listVersionsRequest = new ListVersionsRequest().withBucketName(bucketName)
+                                                                                   .withPrefix(bucketPrefix);
+                if (config.getSubDirsDepth() == 0) {
+                    listVersionsRequest.setDelimiter(DELIMITER);
+                }
                 vlist = amazonS3.listVersions(listVersionsRequest);
             } else {
                 vlist = amazonS3.listNextBatchOfVersions(vlist);
@@ -444,7 +473,7 @@ public class S3BlobStore extends AbstractBlobStore {
             objectKey = key;
             versionId = null;
         }
-        String bucketKey = bucketPrefix + objectKey;
+        String bucketKey = bucketKey(objectKey);
         String debugKey = bucketKey + (versionId == null ? "" : "@" + versionId);
         String debugObject = "s3://" + bucketName + "/" + debugKey;
         try {
@@ -536,7 +565,7 @@ public class S3BlobStore extends AbstractBlobStore {
             sourceVersionId = sourceKey.substring(seppos + 1);
         }
         String sourceBucketName = sourceBlobStore.bucketName;
-        String sourceBucketKey = sourceBlobStore.bucketPrefix + sourceObjectKey;
+        String sourceBucketKey = sourceBlobStore.bucketKey(sourceObjectKey);
 
         if (key == null) {
             // fast digest compute or trigger async digest computation
@@ -553,7 +582,7 @@ public class S3BlobStore extends AbstractBlobStore {
             }
         }
 
-        String bucketKey = bucketPrefix + key;
+        String bucketKey = bucketKey(key);
 
         long t0 = 0;
         if (log.isDebugEnabled()) {
@@ -726,7 +755,7 @@ public class S3BlobStore extends AbstractBlobStore {
             objectKey = key.substring(0, seppos);
             versionId = key.substring(seppos + 1);
         }
-        String bucketKey = bucketPrefix + objectKey;
+        String bucketKey = bucketKey(objectKey);
         try {
             if (blobUpdateContext.updateRetainUntil != null) {
                 if (versionId == null) {
@@ -795,7 +824,7 @@ public class S3BlobStore extends AbstractBlobStore {
             objectKey = key.substring(0, seppos);
             versionId = key.substring(seppos + 1);
         }
-        String bucketKey = bucketPrefix + objectKey;
+        String bucketKey = bucketKey(objectKey);
         try {
             if (versionId == null) {
                 logTrace("->", "deleteObject");
@@ -840,15 +869,22 @@ public class S3BlobStore extends AbstractBlobStore {
             logTrace("->", "listObjects");
             do {
                 if (list == null) {
-                    // use delimiter to avoid useless listing of objects in "subdirectories"
-                    ListObjectsRequest listObjectsRequest = new ListObjectsRequest(bucketName, bucketPrefix, null,
-                            S3BlobStoreConfiguration.DELIMITER, null);
+                    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName)
+                                                                                    .withPrefix(bucketPrefix);
+                    if (config.getSubDirsDepth() == 0) {
+                        // use delimiter to avoid useless listing of objects in "subdirectories"
+                        listObjectsRequest.setDelimiter(DELIMITER);
+                    }
                     list = amazonS3.listObjects(listObjectsRequest);
                 } else {
                     list = amazonS3.listNextBatchOfObjects(list);
                 }
                 for (S3ObjectSummary summary : list.getObjectSummaries()) {
-                    String key = summary.getKey().substring(prefixLength);
+                    String path = summary.getKey().substring(prefixLength);
+                    String key = pathStrategy.getKeyForPath(path);
+                    if (key == null) {
+                        continue;
+                    }
                     if (useDeDuplication) {
                         if (!((KeyStrategyDigest) keyStrategy).isValidDigest(key)) {
                             // ignore files that cannot be digests, for safety
