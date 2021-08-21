@@ -1,0 +1,20 @@
+@startuml
+participant Nuxeo order 1
+participant Cache order 2
+participant S3 order 3
+== Write (subdirs) ==
+Nuxeo -> Cache: write 3 bytes
+                                hnote right: bin_${TMP1}.tmp
+Cache --> Cache: rename
+                                hnote right of Cache: ${TMP2}
+Nuxeo <-- Cache: missing
+                                hnote right: acbd18db4cc2f85cedef654fccc4a4d8
+Nuxeo --> S3: getObjectMetadata
+                                hnote right: subdirs/ac/bd/acbd18db4cc2f85cedef654fccc4a4d8
+Nuxeo <-- S3: missing
+Nuxeo -> S3: write 3 bytes
+                                hnote right: subdirs/ac/bd/acbd18db4cc2f85cedef654fccc4a4d8
+                                hnote right of Cache: ${TMP2}
+Cache --> Cache: rename
+                                hnote right of Cache: acbd18db4cc2f85cedef654fccc4a4d8
+@enduml

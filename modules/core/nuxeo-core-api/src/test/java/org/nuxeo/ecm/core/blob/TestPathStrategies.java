@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.blob;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -64,6 +65,7 @@ public class TestPathStrategies {
                 "hello world.bin" //
                 )) {
             assertEquals(key, ps.safePath(key));
+            assertEquals(key, ps.safePathInverse(key));
         }
 
         // encoded
@@ -80,7 +82,17 @@ public class TestPathStrategies {
             String key = table[i];
             String expected = table[i+1];
             assertEquals(expected, ps.safePath(key));
+            assertEquals(key, ps.safePathInverse(expected));
         }
+    }
+
+    @Test
+    public void testSafePathInverseInvalid() throws IOException {
+        Path dir = Files.createTempDirectory("tmp_");
+        PathStrategy ps = new PathStrategyFlat(dir);
+        assertNull(ps.safePathInverse("%foo%"));
+        assertNull(ps.safePathInverse("%foo%0"));
+        assertNull(ps.safePathInverse("%foo%xy"));
     }
 
     @Test

@@ -22,6 +22,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
@@ -81,6 +82,37 @@ public abstract class PathStrategy {
     }
 
     /**
+     * Inverse of {@link #safePath}.
+     *
+     * @param path the safe path
+     * @return the key, or {@code null} if the safe path is invalid
+     * @since 2021.8
+     */
+    protected String safePathInverse(String path) {
+        if (!path.startsWith("%")) {
+            return path;
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        char[] chars = path.toCharArray();
+        for (int i = 1; i < chars.length; i++) {
+            char c = chars[i];
+            if (c == '%') {
+                if (i + 3 > chars.length) {
+                    return null;
+                }
+                try {
+                    c = (char) Integer.parseInt(path.substring(i + 1, i + 3), 16);
+                    i += 2;
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
+            out.write(c);
+        }
+        return out.toString(UTF_8);
+    }
+
+    /**
      * Creates a temporary file in a location suitable for efficient move to the final path for any key.
      *
      * @return the temporary file
@@ -112,6 +144,17 @@ public abstract class PathStrategy {
      * @return the file for this key
      */
     public abstract Path getPathForKey(String key);
+
+    /**
+     * Gets the key for a given storage path.
+     *
+     * @param path the path
+     * @return the key
+     */
+    public String getKeyForPath(String path) {
+        path = path.substring(path.lastIndexOf("/") + 1);
+        return safePathInverse(path);
+    }
 
     /**
      * Does an atomic move from source to dest.
