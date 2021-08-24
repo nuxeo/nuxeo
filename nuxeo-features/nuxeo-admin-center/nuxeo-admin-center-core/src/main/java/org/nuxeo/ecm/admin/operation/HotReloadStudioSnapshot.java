@@ -199,7 +199,7 @@ public class HotReloadStudioSnapshot {
         try {
             PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
             String packageId = remotePkg.getId();
-            LocalPackage pkg = pus.getPackage(packageId);
+            LocalPackage pkg = pus.getActivePackage(remotePkg.getName());
 
             // Uninstall and/or remove if needed
             if (pkg != null) {
