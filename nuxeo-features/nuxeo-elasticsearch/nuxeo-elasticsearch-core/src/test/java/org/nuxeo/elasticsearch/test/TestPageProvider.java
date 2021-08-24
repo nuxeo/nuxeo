@@ -52,7 +52,6 @@ import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider;
 import org.nuxeo.elasticsearch.query.PageProviderQueryBuilder;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -81,6 +80,9 @@ public class TestPageProvider {
 
     @Inject
     protected ElasticSearchService ess;
+
+    @Inject
+    protected PageProviderService pageProviderService;
 
     private int commandProcessed;
 
@@ -113,16 +115,14 @@ public class TestPageProvider {
 
     @Test
     public void ICanUseANativePageProvider() throws Exception {
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
-
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("NATIVE_PP_PATTERN");
+        PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NATIVE_PP_PATTERN");
         Assert.assertNotNull(ppdef);
 
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
-        PageProvider<?> pp = pps.getPageProvider("NATIVE_PP_PATTERN", ppdef, null, null, pageSize, 0L, props);
+        PageProvider<?> pp = pageProviderService.getPageProvider("NATIVE_PP_PATTERN", ppdef, null, null, pageSize, 0L,
+                props);
         Assert.assertNotNull(pp);
 
         // create 10 docs
@@ -155,17 +155,14 @@ public class TestPageProvider {
 
     @Test
     public void ICanUseANxqlPageProvider() throws Exception {
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
-
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("NXQL_PP_PATTERN");
+        PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NXQL_PP_PATTERN");
         Assert.assertNotNull(ppdef);
 
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
-        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN", ppdef,
-                null, null, pageSize, 0L, props);
+        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pageProviderService.getPageProvider(
+                "NXQL_PP_PATTERN", ppdef, null, null, pageSize, 0L, props);
         Assert.assertNotNull(pp);
 
         // create 10 docs
@@ -199,10 +196,10 @@ public class TestPageProvider {
         Assert.assertEquals("TestMe0", doc.getTitle());
 
         pageSize = 10000;
-        ppdef = pps.getPageProviderDefinition("NXQL_PP_PATTERN2");
+        ppdef = pageProviderService.getPageProviderDefinition("NXQL_PP_PATTERN2");
         Assert.assertNotNull(ppdef);
-        pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN2", ppdef, null, null, pageSize, 0L,
-                props);
+        pp = (ElasticSearchNxqlPageProvider) pageProviderService.getPageProvider("NXQL_PP_PATTERN2", ppdef, null, null,
+                pageSize, 0L, props);
         Assert.assertNotNull(pp);
         p = pp.getCurrentPage();
         Assert.assertEquals(10, pp.getResultsCount());
@@ -214,15 +211,12 @@ public class TestPageProvider {
 
     @Test
     public void ICanUseANxqlPageProviderWithParameters() throws Exception {
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
-
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("nxql_search");
+        PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("nxql_search");
         Assert.assertNotNull(ppdef);
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
-        PageProvider<?> pp = pps.getPageProvider("nxql_search", ppdef, null, null, pageSize, 0L, props);
+        PageProvider<?> pp = pageProviderService.getPageProvider("nxql_search", ppdef, null, null, pageSize, 0L, props);
         startTransaction();
         // create 10 docs
         for (int i = 0; i < 10; i++) {
@@ -278,10 +272,7 @@ public class TestPageProvider {
 
     @Test
     public void ICanUseANxqlPageProviderWithFixedPart() throws Exception {
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
-
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("NXQL_PP_FIXED_PART");
+        PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NXQL_PP_FIXED_PART");
         Assert.assertNotNull(ppdef);
         HashMap<String, Serializable> props = new HashMap<>();
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
@@ -289,7 +280,8 @@ public class TestPageProvider {
         model.setProperty("advanced_search", "source_agg", sources);
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
-        PageProvider<?> pp = pps.getPageProvider("NXQL_PP_FIXED_PART", ppdef, model, null, pageSize, 0L, props);
+        PageProvider<?> pp = pageProviderService.getPageProvider("NXQL_PP_FIXED_PART", ppdef, model, null, pageSize, 0L,
+                props);
         // create 10 docs
         startTransaction();
         for (int i = 0; i < 10; i++) {
@@ -317,14 +309,11 @@ public class TestPageProvider {
 
     @Test
     public void ICanUseInvalidPageProvider() {
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
-
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("INVALID_PP");
+        PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("INVALID_PP");
         Assert.assertNotNull(ppdef);
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<?> pp = pps.getPageProvider("INVALID_PP", ppdef, null, null, 0L, 0L, props);
+        PageProvider<?> pp = pageProviderService.getPageProvider("INVALID_PP", ppdef, null, null, 0L, 0L, props);
         assertNotNull(pp);
         logFeature.hideWarningFromConsoleLog();
         List<?> p = pp.getCurrentPage();
@@ -337,8 +326,7 @@ public class TestPageProvider {
     @Test
     public void testNativePredicateIn() {
         QueryBuilder qb;
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        WhereClauseDefinition whereClause = pps.getPageProviderDefinition("TEST_IN").getWhereClause();
+        WhereClauseDefinition whereClause = pageProviderService.getPageProviderDefinition("TEST_IN").getWhereClause();
         DocumentModel model = session.createDocumentModel("/", "doc", "File");
         model.setPropertyValue("dc:subjects", new String[] { "foo", "bar" });
 
@@ -403,8 +391,8 @@ public class TestPageProvider {
     @Test
     public void testNativePredicateInIntegers() {
         QueryBuilder qb;
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        WhereClauseDefinition whereClause = pps.getPageProviderDefinition("TEST_IN_INTEGERS").getWhereClause();
+        WhereClauseDefinition whereClause = pageProviderService.getPageProviderDefinition("TEST_IN_INTEGERS")
+                                                               .getWhereClause();
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         @SuppressWarnings("boxing")
         Integer[] array1 = new Integer[] { 1, 2, 3 };
@@ -468,9 +456,8 @@ public class TestPageProvider {
     @Test
     public void testNativePredicateInStringList() {
         QueryBuilder qb;
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
-        WhereClauseDefinition whereClause = pps.getPageProviderDefinition("ADVANCED_SEARCH").getWhereClause();
+        WhereClauseDefinition whereClause = pageProviderService.getPageProviderDefinition("ADVANCED_SEARCH")
+                                                               .getWhereClause();
         String[] params = { "foo" };
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] arrayString = new String[] { "1", "2", "3" };
@@ -540,10 +527,8 @@ public class TestPageProvider {
     @Test
     public void testNativePredicateIsNull() {
         QueryBuilder qb;
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
-
-        WhereClauseDefinition whereClause = pps.getPageProviderDefinition("ADVANCED_SEARCH").getWhereClause();
+        WhereClauseDefinition whereClause = pageProviderService.getPageProviderDefinition("ADVANCED_SEARCH")
+                                                               .getWhereClause();
         String[] params = { "foo" };
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         model.setPropertyValue("search:title", "bar");
@@ -724,10 +709,8 @@ public class TestPageProvider {
     @Test
     public void testNativeFulltext() {
         QueryBuilder qb;
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
-
-        WhereClauseDefinition whereClause = pps.getPageProviderDefinition("ADVANCED_SEARCH").getWhereClause();
+        WhereClauseDefinition whereClause = pageProviderService.getPageProviderDefinition("ADVANCED_SEARCH")
+                                                               .getWhereClause();
         String[] params = { "foo" };
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         model.setPropertyValue("search:fulltext_all", "you know for search");
@@ -779,8 +762,7 @@ public class TestPageProvider {
 
     @Test
     public void testNxqlPredicateWithHint() {
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("NXQL_WITH_HINT");
+        PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NXQL_WITH_HINT");
         Assert.assertNotNull(ppdef);
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
@@ -788,8 +770,8 @@ public class TestPageProvider {
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         model.setProperty("advanced_search", "fulltext_all", "you know");
         model.setProperty("advanced_search", "description", "for search");
-        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_WITH_HINT", ppdef,
-                model, null, pageSize, 0L, props);
+        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pageProviderService.getPageProvider(
+                "NXQL_WITH_HINT", ppdef, model, null, pageSize, 0L, props);
         Assert.assertNotNull(pp);
         pp.getCurrentPage(); // This is needed to build the nxql query
         String esquery = pp.getCurrentQueryAsEsBuilder().toString();
@@ -844,8 +826,7 @@ public class TestPageProvider {
 
     @Test
     public void testNxqlPredicateWithHintInParameter() {
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("NXQL_WITH_HINT_IN_PARAMETER");
+        PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NXQL_WITH_HINT_IN_PARAMETER");
         Assert.assertNotNull(ppdef);
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
@@ -853,8 +834,8 @@ public class TestPageProvider {
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         model.setProperty("advanced_search", "fulltext_all", "you know");
         model.setProperty("advanced_search", "description", "for search");
-        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_WITH_HINT", ppdef,
-                model, null, pageSize, 0L, props);
+        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pageProviderService.getPageProvider(
+                "NXQL_WITH_HINT", ppdef, model, null, pageSize, 0L, props);
         Assert.assertNotNull(pp);
         pp.getCurrentPage(); // This is needed to build the nxql query
         String esquery = pp.getCurrentQueryAsEsBuilder().toString();
@@ -909,13 +890,12 @@ public class TestPageProvider {
 
     @Test
     public void testMaxResultWindow() throws Exception {
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("NXQL_PP_PATTERN");
+        PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NXQL_PP_PATTERN");
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 2;
-        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN", ppdef,
-                null, null, pageSize, 0L, props);
+        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pageProviderService.getPageProvider(
+                "NXQL_PP_PATTERN", ppdef, null, null, pageSize, 0L, props);
         pp.setMaxResultWindow(6);
         Assert.assertEquals(6, pp.getMaxResultWindow());
         // create 10 docs
@@ -966,11 +946,11 @@ public class TestPageProvider {
         waitForCompletion();
         startTransaction();
 
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("NXQL_PP_UNLIMITED");
+        PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NXQL_PP_UNLIMITED");
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<?> pp = pps.getPageProvider("NXQL_PP_UNLIMITED", ppdef, null, null, null, 0L, props);
+        PageProvider<?> pp = pageProviderService.getPageProvider("NXQL_PP_UNLIMITED", ppdef, null, null, null, 0L,
+                props);
         List<?> page = pp.getCurrentPage();
         // here we test that ES doesn't throw an exception + we're able to retrieve something
         assertFalse(page.isEmpty());
@@ -979,14 +959,13 @@ public class TestPageProvider {
     @Test
     public void ICanUseANxqlPageProviderWithUnrestrictedSession() throws Exception {
 
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("UNRESTRICTED_PP");
+        PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("UNRESTRICTED_PP");
 
         HashMap<String, Serializable> props = new HashMap<>();
         try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
             props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) bobSession);
-            ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("UNRESTRICTED_PP",
-                    ppdef, null, null, null, 0L, props);
+            ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pageProviderService.getPageProvider(
+                    "UNRESTRICTED_PP", ppdef, null, null, null, 0L, props);
 
             startTransaction();
             for (int i = 0; i < 10; i++) {

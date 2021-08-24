@@ -43,7 +43,6 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -70,26 +69,25 @@ public class TestPageProviderService {
     @Inject
     protected CoreSession coreSession;
 
+    @Inject
+    protected PageProviderService pageProviderService;
+
     @Test
     public void testRegistration() throws Exception {
-        PageProviderService service = Framework.getService(PageProviderService.class);
-        assertNotNull(service);
+        assertNull(pageProviderService.getPageProviderDefinition(FOO));
 
-        assertNull(service.getPageProviderDefinition(FOO));
-
-        PageProviderDefinition def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+        PageProviderDefinition def = pageProviderService.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
         assertNotNull(def);
         assertEquals(CURRENT_DOCUMENT_CHILDREN, def.getName());
         assertNull(def.getWhereClause());
-        assertEquals("SELECT * FROM Document WHERE ecm:parentId = ? AND "
-                + "ecm:isVersion = 0 AND ecm:mixinType != "
+        assertEquals("SELECT * FROM Document WHERE ecm:parentId = ? AND " + "ecm:isVersion = 0 AND ecm:mixinType != "
                 + "'HiddenInNavigation' AND ecm:isTrashed = 0", def.getPattern());
         assertEquals(1, def.getSortInfos().size());
         assertEquals("dc:title", def.getSortInfos().get(0).getSortColumn());
         assertTrue(def.getSortInfos().get(0).getSortAscending());
         assertNull(def.getSearchDocumentType());
 
-        def = service.getPageProviderDefinition("ADVANCED_SEARCH");
+        def = pageProviderService.getPageProviderDefinition("ADVANCED_SEARCH");
         assertNotNull(def);
         assertEquals("ADVANCED_SEARCH", def.getName());
         assertEquals("ecm:parentId = ?", def.getWhereClause().getFixedPart());
@@ -99,7 +97,7 @@ public class TestPageProviderService {
         assertTrue(def.getSortInfos().get(0).getSortAscending());
         assertEquals("AdvancedSearch", def.getSearchDocumentType());
 
-        def = service.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
+        def = pageProviderService.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(def);
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", def.getName());
         assertEquals(
@@ -113,8 +111,7 @@ public class TestPageProviderService {
 
         // test override
         deployer.deploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-override-contrib.xml");
-        service = Framework.getService(PageProviderService.class);
-        def = service.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
+        def = pageProviderService.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(def);
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", def.getName());
         assertNull(def.getWhereClause().getFixedPart());
@@ -132,41 +129,33 @@ public class TestPageProviderService {
      */
     @Test
     public void testRegistrationOverrideEnable() throws Exception {
-        PageProviderService service = Framework.getService(PageProviderService.class);
-        assertNotNull(service);
+        assertNull(pageProviderService.getPageProviderDefinition(FOO));
 
-        assertNull(service.getPageProviderDefinition(FOO));
-
-        PageProviderDefinition def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+        PageProviderDefinition def = pageProviderService.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
         assertNotNull(def);
         assertEquals(CURRENT_DOCUMENT_CHILDREN, def.getName());
         assertEquals(2, def.getPageSize());
 
         // test override when disabling page provider
         deployer.deploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-override-contrib.xml");
-        service = Framework.getService(PageProviderService.class);
-        def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+        def = pageProviderService.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
         assertNull(def);
 
         // test override again after, changed page size
         deployer.deploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-override-contrib2.xml");
-        service = Framework.getService(PageProviderService.class);
-        def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+        def = pageProviderService.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
         assertEquals(CURRENT_DOCUMENT_CHILDREN, def.getName());
         assertEquals(20, def.getPageSize());
     }
 
     @Test
     public void testQuery() throws Exception {
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        assertNotNull(pps);
-
-        PageProviderDefinition ppd = pps.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+        PageProviderDefinition ppd = pageProviderService.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
         ppd.setPattern("SELECT * FROM Document");
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) coreSession);
-        PageProvider<?> pp = pps.getPageProvider(CURRENT_DOCUMENT_CHILDREN, ppd, null, null, Long.valueOf(1),
-                Long.valueOf(0), props);
+        PageProvider<?> pp = pageProviderService.getPageProvider(CURRENT_DOCUMENT_CHILDREN, ppd, null, null,
+                Long.valueOf(1), Long.valueOf(0), props);
 
         assertNotNull(pp);
 
@@ -178,30 +167,24 @@ public class TestPageProviderService {
     @Test
     @SuppressWarnings("unchecked")
     public void testMergedProperties() throws Exception {
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        assertNotNull(pps);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put("myprop", "foo");
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) pps.getPageProvider(CURRENT_DOCUMENT_CHILDREN,
-                null, null, null, props);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                CURRENT_DOCUMENT_CHILDREN, null, null, null, props);
         assertTrue(pp.getProperties().containsKey("myprop"));
         assertTrue(pp.getProperties().containsKey("dummy"));
     }
 
     @Test
     public void testRegistrationNames() throws Exception {
-        PageProviderService service = Framework.getService(PageProviderService.class);
-        assertNotNull(service);
-        Set<String> ppNames = service.getPageProviderDefinitionNames();
+        Set<String> ppNames = pageProviderService.getPageProviderDefinitionNames();
         assertFalse(ppNames.isEmpty());
         assertTrue(ppNames.contains(CURRENT_DOCUMENT_CHILDREN));
     }
 
     @Test
     public void testPageSizeOptions() {
-        PageProviderService service = Framework.getService(PageProviderService.class);
-        assertNotNull(service);
-        PageProviderDefinition def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+        PageProviderDefinition def = pageProviderService.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
         assertNotNull(def);
         List<Long> options = def.getPageSizeOptions();
         assertEquals(4, options.size());
@@ -210,7 +193,7 @@ public class TestPageProviderService {
         assertEquals(15L, options.get(2).longValue());
         assertEquals(20L, options.get(3).longValue());
 
-        def = service.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
+        def = pageProviderService.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(def);
         options = def.getPageSizeOptions();
         assertEquals(7, options.size());
