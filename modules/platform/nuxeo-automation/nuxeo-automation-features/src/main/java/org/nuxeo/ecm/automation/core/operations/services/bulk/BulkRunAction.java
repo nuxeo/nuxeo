@@ -25,9 +25,9 @@ import static org.nuxeo.ecm.automation.core.operations.services.bulk.AbstractAut
 import static org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkActionUi.ACTION_NAME;
 
 import java.io.IOException;
-import java.util.stream.Collectors;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

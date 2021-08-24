@@ -311,8 +311,8 @@ public class SearchObject extends QueryExecutor {
         DocumentModel searchDocumentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(), null,
                 namedParametersProps);
 
-        return queryByLang(query, pageSize, currentPageIndex, currentPageOffset, maxResults, sortInfo,
-                props, searchDocumentModel, parameters);
+        return queryByLang(query, pageSize, currentPageIndex, currentPageOffset, maxResults, sortInfo, props,
+                searchDocumentModel, parameters);
     }
 
     protected DocumentModelList querySavedSearchByPageProvider(String pageProviderName, Long pageSize,
