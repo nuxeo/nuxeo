@@ -8,7 +8,8 @@
       validationClass="org.nuxeo.ecm.automation.core.operations.services.bulk.validation.AutomationBulkValidation" />
 
     <action name="automationUi" inputStream="bulk/automationUi" bucketSize="100" batchSize="10" httpEnabled="true"
-      validationClass="org.nuxeo.ecm.automation.core.operations.services.bulk.validation.AutomationBulkValidation" />
+      validationClass="org.nuxeo.ecm.automation.core.operations.services.bulk.validation.AutomationBulkValidation"
+      defaultScroller="elastic" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
