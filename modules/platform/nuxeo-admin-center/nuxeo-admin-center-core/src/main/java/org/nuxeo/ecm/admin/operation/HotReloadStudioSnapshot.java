@@ -192,7 +192,7 @@ public class HotReloadStudioSnapshot {
         boolean useCompatReload = Framework.isBooleanPropertyTrue(ReloadService.USE_COMPAT_HOT_RELOAD);
         if (!useCompatReload) {
             log.info("Use hot reload update mechanism");
-            ReloadHelper.hotReloadPackage(remotePkg.getId());
+            ReloadHelper.hotReloadPackage(remotePkg);
             return jsonHelper(SUCCESS, "Studio package installed.", null);
         }
         // Install

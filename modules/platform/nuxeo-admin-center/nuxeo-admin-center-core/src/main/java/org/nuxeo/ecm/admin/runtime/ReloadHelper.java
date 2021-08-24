@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.connector.ConnectServerError;
+import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.update.LocalPackage;
@@ -56,9 +57,9 @@ public class ReloadHelper {
 
     private static final Logger log = LogManager.getLogger(ReloadHelper.class);
 
-    public static synchronized void hotReloadPackage(String packageId) {
-        log.info("Reload Studio package with id={}", packageId);
-        LocalPackage pkg = null;
+    public static synchronized void hotReloadPackage(DownloadablePackage remotePkg) {
+        log.info("Reload Studio package with id={}", remotePkg);
+        LocalPackage localPkg = null;
         InstallTask installTask = null;
         try {
             ReloadService reloadService = Framework.getService(ReloadService.class);
@@ -67,14 +68,14 @@ public class ReloadHelper {
             PackageManager pm = Framework.getService(PackageManager.class);
 
             PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
-            pkg = pus.getPackage(packageId);
+            localPkg = pus.getActivePackage(remotePkg.getName());
 
-            // Remove package from PackageUpdateService and get its bundleName to hot reload it
-            if (pkg != null) {
-                if (pkg.getPackageState().isInstalled()) {
-                    if (pkg.getUninstallFile().exists()) {
+            // Remove same package from PackageUpdateService and get its bundleName to hot reload it
+            if (localPkg != null) {
+                if (localPkg.getPackageState().isInstalled()) {
+                    if (localPkg.getUninstallFile().exists()) {
                         // get the bundle symbolic names to hot reload
-                        UninstallTask uninstallTask = (UninstallTask) pkg.getUninstallTask();
+                        UninstallTask uninstallTask = (UninstallTask) localPkg.getUninstallTask();
                         // in our hot reload case, we just care about the bundle
                         // so get the rollback commands and then the target
                         uninstallTask.getCommands()
@@ -87,36 +88,36 @@ public class ReloadHelper {
                                      .forEachOrdered(reloadContext::undeploy);
                     } else {
                         log.warn("Unable to uninstall previous bundle because {} doesn't exist",
-                                pkg.getUninstallFile());
+                                localPkg.getUninstallFile());
                     }
                 }
                 // remove the package from package update service, unless download will fail
-                pus.removePackage(pkg.getId());
+                pus.removePackage(localPkg.getId());
             }
 
             // Download
             List<String> messages = new ArrayList<>();
-            DownloadingPackage downloadingPkg = pm.download(packageId);
+            DownloadingPackage downloadingPkg = pm.download(remotePkg.getId());
             while (!downloadingPkg.isCompleted()) {
-                log.trace("Downloading studio snapshot package: {}", packageId);
+                log.trace("Downloading studio snapshot package: {}", remotePkg);
                 if (isNotEmpty(downloadingPkg.getErrorMessage())) {
                     messages.add(downloadingPkg.getErrorMessage());
                 }
                 Thread.sleep(100); // NOSONAR (we want the whole hot-reload to be synchronized)
             }
 
-            log.info("Installing {}", packageId);
-            pkg = pus.getPackage(packageId);
-            if (pkg == null || PackageState.DOWNLOADED != pkg.getPackageState()) {
-                NuxeoException nuxeoException = new NuxeoException(
-                        String.format("Error while downloading studio snapshot: %s, package Id: %s", pkg, packageId));
+            log.info("Installing {}", remotePkg);
+            localPkg = pus.getPackage(remotePkg.getId());
+            if (localPkg == null || PackageState.DOWNLOADED != localPkg.getPackageState()) {
+                NuxeoException nuxeoException = new NuxeoException(String.format(
+                        "Error while downloading studio snapshot: %s, package Id: %s", localPkg, remotePkg));
                 messages.forEach(nuxeoException::addInfo);
                 throw nuxeoException;
             }
 
             // get bundles to deploy
-            installTask = (InstallTask) pkg.getInstallTask();
-            pus.setPackageState(pkg, PackageState.INSTALLING);
+            installTask = (InstallTask) localPkg.getInstallTask();
+            pus.setPackageState(localPkg, PackageState.INSTALLING);
 
             // in our hot reload case, we just care about the bundle
             // so get the update commands and then the file
@@ -131,12 +132,12 @@ public class ReloadHelper {
             ReloadResult result = reloadService.reloadBundles(reloadContext);
 
             // set package as started
-            pus.setPackageState(pkg, PackageState.STARTED);
+            pus.setPackageState(localPkg, PackageState.STARTED);
             // we need to write uninstall.xml otherwise next hot reload will fail :/
             // as we don't use the install task, commandLogs is empty
             // fill it with deployed bundles
-            String id = pkg.getId();
-            Version version = pkg.getVersion();
+            String id = localPkg.getId();
+            Version version = localPkg.getVersion();
             result.deployedFilesAsStream()
                   // first convert it to UpdateOptions
                   .map(f -> UpdateOptions.newInstance(id, f, f.getParentFile()))
@@ -152,9 +153,9 @@ public class ReloadHelper {
             Thread.currentThread().interrupt();
             throw new NuxeoException("Error while downloading studio snapshot", e);
         } finally {
-            if (pkg != null && installTask != null) {
+            if (localPkg != null && installTask != null) {
                 // write the log
-                File file = pkg.getData().getEntry(LocalPackage.UNINSTALL);
+                File file = localPkg.getData().getEntry(LocalPackage.UNINSTALL);
                 try {
                     installTask.writeLog(file);
                 } catch (PackageException e) {
