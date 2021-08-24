@@ -211,4 +211,11 @@ public interface PageProviderService extends Serializable {
      */
     Set<String> getPageProviderDefinitionNames();
 
+    /**
+     * Returns the {@link PageProviderType} of the given page provider.
+     *
+     * @since 2021.8
+     */
+    PageProviderType getPageProviderType(PageProvider<?> pageProvider);
+
 }

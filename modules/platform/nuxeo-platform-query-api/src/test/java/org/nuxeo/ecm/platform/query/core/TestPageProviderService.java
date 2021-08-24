@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderType;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -203,6 +204,16 @@ public class TestPageProviderService {
         assertEquals(30L, options.get(4).longValue());
         assertEquals(40L, options.get(5).longValue());
         assertEquals(50L, options.get(6).longValue());
+    }
+
+    /**
+     * @since 2021.8
+     */
+    @Test
+    public void testPageProviderType() {
+        PageProvider<?> pageProvider = pageProviderService.getPageProvider(CURRENT_DOCUMENT_CHILDREN, null, null, null,
+                null);
+        assertEquals(PageProviderType.DEFAULT, pageProviderService.getPageProviderType(pageProvider));
     }
 
 }

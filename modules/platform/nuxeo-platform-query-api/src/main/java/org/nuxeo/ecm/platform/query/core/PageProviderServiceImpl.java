@@ -32,6 +32,7 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderClassReplacerDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderType;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -50,6 +51,11 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
 
     // @since 6.0
     public static final String REPLACER_EP = "replacers";
+
+    /**
+     * @since 2021.8
+     */
+    public static final String ELASTICSEARCH_NXQL_PAGE_PROVIDER_CLASS_NAME = "org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider";
 
     protected PageProviderRegistry providerReg = new PageProviderRegistry();
 
@@ -291,6 +297,18 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     @Override
     public Set<String> getPageProviderDefinitionNames() {
         return Collections.unmodifiableSet(providerReg.providers.keySet());
+    }
+
+    @Override
+    public PageProviderType getPageProviderType(PageProvider<?> pageProvider) {
+        try {
+            if (Class.forName(ELASTICSEARCH_NXQL_PAGE_PROVIDER_CLASS_NAME).isInstance(pageProvider)) {
+                return PageProviderType.ELASTIC;
+            }
+        } catch (ClassNotFoundException e) {
+            // just return default
+        }
+        return PageProviderType.DEFAULT;
     }
 
 }

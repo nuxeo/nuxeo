@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderType;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -976,6 +977,15 @@ public class TestPageProvider {
         startTransaction();
         List<DocumentModel> docs = pp.getCurrentPage();
         assertEquals(10, docs.size());
+    }
+
+    /**
+     * @since 2021.8
+     */
+    @Test
+    public void testPageProviderType() {
+        PageProvider<?> pageProvider = pageProviderService.getPageProvider("NXQL_PP_PATTERN", null, null, null, null);
+        assertEquals(PageProviderType.ELASTIC, pageProviderService.getPageProviderType(pageProvider));
     }
 
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {
