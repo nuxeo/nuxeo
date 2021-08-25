@@ -161,6 +161,7 @@ public class SecurityService extends DefaultComponent {
             if (doc.isUnderRetentionOrLegalHold() && !BaseSession.canDeleteUndeletable(principal)) {
                 permissions.remove(SecurityConstants.REMOVE);
             }
+            return permissions;
         }
 
         String[] additionalPrincipals = getPrincipalsToCheck(principal);
