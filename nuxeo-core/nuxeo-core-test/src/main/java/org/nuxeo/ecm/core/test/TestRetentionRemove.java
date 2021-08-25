@@ -24,6 +24,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.RECORDS_CLEANER_GROUP;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
@@ -32,8 +34,12 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 import static org.nuxeo.ecm.core.model.Session.PROP_RETENTION_COMPLIANCE_MODE_ENABLED;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,6 +62,7 @@ import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -88,6 +95,14 @@ public class TestRetentionRemove {
         for (String permission : permissions) {
             acl.add(new ACE(username, permission, true));
         }
+        session.setACP(documentModel.getRef(), acp, false);
+        session.save();
+    }
+
+    protected void blockPermissionInheritance(DocumentModel documentModel) {
+        ACP acp = documentModel.getACP();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE(EVERYONE, EVERYTHING, false));
         session.setACP(documentModel.getRef(), acp, false);
         session.save();
     }
@@ -235,6 +250,15 @@ public class TestRetentionRemove {
     public void iDoNotHaveRemovePermissionInCompliance() throws LoginException {
         assertFalse(session.hasPermission(documentModelUnderLegalHold.getRef(), REMOVE));
         assertFalse(session.hasPermission(documentModelUnderRetention.getRef(), REMOVE));
+        // check that other permissions are still granted to admin
+        List<String> allPermissions = new ArrayList<String>(
+                Arrays.asList(Framework.getService(PermissionProvider.class).getPermissions()));
+        Collection<String> adminPermissions = session.filterGrantedPermissions(session.getPrincipal(),
+                documentModelUnderLegalHold.getRef(), allPermissions);
+        assertTrue(adminPermissions.contains(READ));
+        assertTrue(adminPermissions.contains(WRITE));
+        assertFalse(adminPermissions.contains(REMOVE));
+
         LoginContext ctx = Framework.loginAsUser(JOHN);
         try (CloseableCoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName())) {
             assertFalse(notAdminSession.hasPermission(documentModelUnderLegalHold.getRef(), REMOVE));
@@ -268,6 +292,7 @@ public class TestRetentionRemove {
         addPermission(session.getRootDocument(), JOHN, REMOVE_CHILDREN);
         folder = session.createDocumentModel("/", "myFolder", "Folder");
         folder = session.createDocument(folder);
+        blockPermissionInheritance(folder);
         // Make a document under legal hold and another one under retention
         documentModelUnderLegalHold = createFileDocument(session, folder);
         documentModelUnderRetention = createFileDocument(session, folder);
