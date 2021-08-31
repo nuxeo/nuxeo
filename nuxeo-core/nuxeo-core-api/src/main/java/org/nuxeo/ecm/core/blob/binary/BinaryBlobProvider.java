@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.DownloadBlobGuard;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
@@ -105,13 +106,15 @@ public class BinaryBlobProvider implements BlobProvider {
             throw new IOException("Unknown binary: " + digest);
         }
         long length;
-        if (blobInfo.length == null) {
-            log.debug("Missing blob length for: " + blobInfo.key);
-            // to avoid crashing, get the length from the binary's file (may be costly)
+        if (blobInfo.length != null) {
+            length = blobInfo.length;
+        } else if (DownloadBlobGuard.isEnable()) {
+            length = -1;
+        } else {
+            log.info("Missing content length for blob key: " + blobInfo.key
+                    + ", get the length from the binary's file (may be costly)");
             File file = binary.getFile();
             length = file == null ? -1 : file.length();
-        } else {
-            length = blobInfo.length.longValue();
         }
         BinaryBlob blob = new BinaryBlob(binary, blobInfo.key, blobInfo.filename, blobInfo.mimeType, blobInfo.encoding,
                 null, blobInfo.digest, length);

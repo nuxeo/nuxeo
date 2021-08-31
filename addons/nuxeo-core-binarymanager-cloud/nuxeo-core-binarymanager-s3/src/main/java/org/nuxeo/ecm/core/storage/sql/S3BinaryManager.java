@@ -477,7 +477,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
     }
 
     /** @return object length, or -1 if missing */
-    protected long lengthOfBlob(String digest) {
+    public long lengthOfBlob(String digest) {
         String bucketKey = bucketNamePrefix + digest;
         try {
             ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, bucketKey);
