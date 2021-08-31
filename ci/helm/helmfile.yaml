@@ -1,0 +1,15 @@
+repositories:
+- name: bitnami
+  url: https://charts.bitnami.com/bitnami
+
+helmDefaults:
+  timeout: 300
+  wait: true
+
+releases:
+- name: redis
+  chart: bitnami/redis
+  version: 11.2.1
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  values:
+  - values/values-redis.yaml.gotmpl
