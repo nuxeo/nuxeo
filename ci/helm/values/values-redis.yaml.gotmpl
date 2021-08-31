@@ -1,0 +1,37 @@
+image:
+  tag: "6.0.8"
+cluster:
+  enabled: false
+usePassword: false
+master:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "16Mi"
+    limits:
+      cpu: "200m"
+      memory: "64Mi"
+  podLabels:
+    {{- if (env "BRANCH_NAME") }}
+    branch: {{ env "BRANCH_NAME" | quote }}
+    {{- end }}
+    resource: pod
+    team: platform
+    usage: utests
+  service:
+    labels:
+      {{- if (env "BRANCH_NAME") }}
+      branch: {{ env "BRANCH_NAME" | quote }}
+      {{- end }}
+      resource: service
+      team: platform
+      usage: utests
+  persistence:
+    enabled: false
+  tolerations:
+    - key: team
+      operator: Equal
+      value: platform
+      effect: NoSchedule
+  nodeSelector:
+    team: platform
