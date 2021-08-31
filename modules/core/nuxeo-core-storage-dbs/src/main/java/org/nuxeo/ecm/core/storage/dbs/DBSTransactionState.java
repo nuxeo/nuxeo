@@ -77,6 +77,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.ecm.core.api.impl.DownloadBlobGuard;
 import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
@@ -1236,6 +1237,7 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
             undoLog = null;
         }
         connection.commit();
+        DownloadBlobGuard.disable();
     }
 
     /**
@@ -1249,6 +1251,7 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
             undoLog = null;
         }
         connection.rollback();
+        DownloadBlobGuard.disable();
     }
 
     protected void clearTransient() {
@@ -1280,11 +1283,14 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
         }
         markIndexingInProgress(dirtyIds);
         List<Work> works = new ArrayList<>(dirtyIds.size());
+        boolean okToDownloadBlob = !DownloadBlobGuard.isEnable();
         for (String id : dirtyIds) {
             boolean updateSimpleText = docsWithDirtyStrings.contains(id);
-            boolean updateBinaryText = docsWithDirtyBinaries.contains(id);
-            Work work = new FulltextExtractorWork(repository.getName(), id, updateSimpleText, updateBinaryText, true);
-            works.add(work);
+            boolean updateBinaryText = okToDownloadBlob && docsWithDirtyBinaries.contains(id);
+            if (updateSimpleText || updateBinaryText) {
+                Work work = new FulltextExtractorWork(repository.getName(), id, updateSimpleText, updateBinaryText, true);
+                works.add(work);
+            }
         }
         return works;
     }

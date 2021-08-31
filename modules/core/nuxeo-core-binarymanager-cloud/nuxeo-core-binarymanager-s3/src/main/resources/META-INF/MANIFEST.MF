@@ -3,4 +3,5 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.binarymanager.s3;singleton:=true
 Nuxeo-Component: OSGI-INF/s3binarymanager-managment-contrib.xml,
  OSGI-INF/s3web-request-controller-contrib.xml,
- OSGI-INF/configuration-properties.xml
+ OSGI-INF/configuration-properties.xml,
+ OSGI-INF/bulk-config.xml
