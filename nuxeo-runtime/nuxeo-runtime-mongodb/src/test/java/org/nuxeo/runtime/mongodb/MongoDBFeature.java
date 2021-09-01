@@ -18,12 +18,15 @@
  */
 package org.nuxeo.runtime.mongodb;
 
+import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.runtime.mongodb.IgnoreNoMongoDB.CORE_MONGODB;
+import static org.nuxeo.runtime.mongodb.IgnoreNoMongoDB.CORE_PROPERTY;
+
 import java.io.IOException;
 import java.net.URL;
 
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.URLStreamRef;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -40,7 +43,6 @@ import com.mongodb.MongoClient;
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.runtime.mongodb")
 @Deploy("org.nuxeo.runtime.mongodb.test")
-@ConditionalIgnoreRule.Ignore(condition = IgnoreNoMongoDB.class, cause = "Needs a MongoDB server!")
 public class MongoDBFeature implements RunnerFeature {
 
     public static final String MONGODB_SERVER_PROPERTY = "nuxeo.test.mongodb.server";
@@ -58,6 +60,14 @@ public class MongoDBFeature implements RunnerFeature {
         }
         Framework.getProperties().setProperty(name, value);
         return value;
+    }
+
+    @Override
+    public void initialize(FeaturesRunner runner) throws Exception {
+        // For some unknown reason, using @ConditionalIgnoreRule.Ignore(condition = IgnoreNoMongoDB.class)
+        // as a class annotation on this feature doesn't work locally nor in the Platform CI.
+        // Using the annotation on a given test class or test class method doesn't work either.
+        assumeTrue(CORE_MONGODB.equals(System.getProperty(CORE_PROPERTY)));
     }
 
     @Override
