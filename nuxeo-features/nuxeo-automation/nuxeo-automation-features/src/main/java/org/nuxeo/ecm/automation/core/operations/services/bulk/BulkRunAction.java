@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Automation operation that can run an http enabled Bulk Action.
@@ -126,7 +127,8 @@ public class BulkRunAction {
             throw new NuxeoException("Query parameters could not be parsed", SC_BAD_REQUEST);
         }
 
-        BulkCommand.Builder builder = new BulkCommand.Builder(action, query).user(userName);
+        String scroller = Framework.getService(PageProviderService.class).getPageProviderType(provider).toString();
+        BulkCommand.Builder builder = new BulkCommand.Builder(action, query).user(userName).scroller(scroller);
         try {
             builder.params(BulkParameters.paramsToMap(parametersAsJson));
         } catch (IOException e) {
