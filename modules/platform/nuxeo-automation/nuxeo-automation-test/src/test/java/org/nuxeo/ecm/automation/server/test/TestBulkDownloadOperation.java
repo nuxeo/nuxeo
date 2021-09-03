@@ -23,12 +23,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -125,4 +129,41 @@ public class TestBulkDownloadOperation {
         }
     }
 
+    /**
+     * @since 2021.8
+     */
+    @Test
+    public void iCanAvoidZippingSingleZipInput() throws OperationException, IOException {
+        // Make a doc holding a zip blob
+        DocumentModel doc = session.createDocumentModel("/", "TestAlreadyZippedFile", "File");
+        doc.setProperty("dublincore", "title", "TestTitle");
+
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test.zip"), "application/zip");
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        bh.setBlob(blob);
+        doc = session.createDocument(doc);
+
+        coreFeature.waitForAsyncCompletion();
+
+        // Call the BulkDownload operation
+        OperationChain chain = new OperationChain("test-chain");
+        chain.add(BulkDownload.ID);
+
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(List.of(doc));
+            blob = (Blob) automationService.run(ctx, BulkDownload.ID);
+        }
+
+        // Check the content is the same / wasn't rezipped
+        try (CloseableFile source = blob.getCloseableFile(); ZipFile zip = new ZipFile(source.getFile())) {
+            int elements = 0;
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                assertEquals("chocolAt.txt", entry.getName());
+                elements++;
+            }
+            assertEquals(elements, 1);
+        }
+    }
 }

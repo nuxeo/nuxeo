@@ -86,6 +86,14 @@ public class BulkDownload {
 
         String filename = StringUtils.isNotBlank(this.fileName) ? this.fileName
                 : String.format("BlobListZip-%s-%s", UUID.randomUUID(), session.getPrincipal().getName());
+
+        if (blobs.size() == 1) {
+            Blob blob = blobs.get(0);
+            if ("application/zip".equals(blob.getMimeType())) {
+                blob.setFilename(filename);
+                return blob;
+            }
+        }
         return BlobUtils.zip(blobs, filename);
     }
 
