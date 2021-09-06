@@ -696,22 +696,6 @@ public class TestConnectBroker {
     }
 
     @Test
-    public void testPersistPendingCommand_appendReadOnlyFile() throws Exception {
-        // Given an exiting path for pending commands
-        File file = connectBroker.getPendingFile().toFile();
-        assertThat(file.createNewFile()).isTrue();
-        assertThat(file.setReadOnly()).isTrue();
-
-        try {
-            // When persist new pending commands
-            connectBroker.persistCommand("myCommand");
-            fail();
-        } catch (IllegalStateException e) {
-            // Then an exception is raised
-        }
-    }
-
-    @Test
     public void testExecutePending_resumeCommands() throws Exception {
         // Given an exiting path for pending commands
         Path path = connectBroker.getPendingFile();
