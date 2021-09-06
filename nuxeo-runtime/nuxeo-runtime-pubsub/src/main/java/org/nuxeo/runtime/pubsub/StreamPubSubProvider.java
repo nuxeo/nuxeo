@@ -142,7 +142,12 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
         }
     }
 
-    protected String getNodeId() {
+    /**
+     * Returns the cluster node id.
+     *
+     * @since 2021.8
+     */
+    public static String getNodeId() {
         String nodeId = Framework.getProperty(NODE_ID_PROP);
         if (StringUtils.isBlank(nodeId)) {
             return String.valueOf(RANDOM.nextLong());

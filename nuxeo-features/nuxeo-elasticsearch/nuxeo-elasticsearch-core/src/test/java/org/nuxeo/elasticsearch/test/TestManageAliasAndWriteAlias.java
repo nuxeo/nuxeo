@@ -22,9 +22,13 @@ package org.nuxeo.elasticsearch.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -36,6 +40,8 @@ import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.core.IncrementalIndexNameGenerator;
+import org.nuxeo.elasticsearch.core.ReindexingMessage;
+import org.nuxeo.elasticsearch.core.ReindexingState;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -90,6 +96,7 @@ public class TestManageAliasAndWriteAlias {
         String index = esa.getIndexNameForRepository(repo);
         assertTrue(esa.getClient().indexExists(index));
         assertEquals(index, esa.getWriteIndexName(index));
+        assertNull(esa.getSecondaryWriteIndexName(index));
         assertFalse(esa.getClient().aliasExists(index));
     }
 
@@ -111,10 +118,11 @@ public class TestManageAliasAndWriteAlias {
         String searchIndex = esa.getClient().getFirstIndexForAlias(alias);
         String writeIndex = esa.getClient().getFirstIndexForAlias(writeAlias);
         assertEquals(searchIndex, writeIndex);
+        assertNull(esa.getSecondaryWriteIndexName(alias));
         assertTrue("Expecting an index", esa.getClient().indexExists(searchIndex));
         assertTrue(writeIndex, writeIndex.startsWith("nxutestalias-0"));
         assertTrue(esa.getClient().mappingExists(alias, ElasticSearchConstants.DOC_TYPE));
-        assertEquals(repo, esa.getRepositoryForIndex(searchIndex));
+        assertEquals(repo, esa.getRepositoryForIndex(alias));
         // recreate repo the alias are in sync
         esa.dropAndInitRepositoryIndex(repo);
 
@@ -122,6 +130,7 @@ public class TestManageAliasAndWriteAlias {
         String newIndex = new IncrementalIndexNameGenerator().getNextIndexName(alias, writeIndex);
         assertEquals(newIndex, esa.getClient().getFirstIndexForAlias(alias));
         assertEquals(newIndex, esa.getClient().getFirstIndexForAlias(writeAlias));
+        assertNull(esa.getSecondaryWriteIndexName(alias));
         // same alias
         assertEquals("nxutestalias-write", writeAlias);
     }
@@ -140,13 +149,16 @@ public class TestManageAliasAndWriteAlias {
         String writeIndex = esa.getClient().getFirstIndexForAlias(writeAlias);
         String searchIndex = esa.getClient().getFirstIndexForAlias(searchAlias);
         assertNotEquals(searchIndex, writeIndex);
-        assertEquals(repo, esa.getRepositoryForIndex(searchIndex));
+        assertEquals(repo, esa.getRepositoryForIndex(searchAlias));
+        // secondary write index is only set with bulk reindexing
+        assertNull(esa.getSecondaryWriteIndexName(searchAlias));
 
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         String searchIndexUpdated = esa.getClient().getFirstIndexForAlias(searchAlias);
         writeIndex = esa.getClient().getFirstIndexForAlias(writeAlias);
         assertNotEquals(searchIndex, searchIndexUpdated);
         assertEquals(searchIndexUpdated, writeIndex);
+        assertNull(esa.getSecondaryWriteIndexName(searchAlias));
         assertEquals(repo, esa.getRepositoryForIndex(searchIndexUpdated));
     }
 
@@ -163,4 +175,20 @@ public class TestManageAliasAndWriteAlias {
         assertEquals("i-manage-my-alias-alone", writeIndex);
     }
 
+    @Test
+    public void testReindexingMessageSerialization() throws IOException {
+        ReindexingMessage source = new ReindexingMessage(null, "indexName", "secondIndex", ReindexingState.START);
+        ReindexingMessage dest = serializeAndDeserialize(source);
+        assertEquals(source, dest);
+
+        source = new ReindexingMessage(null, "indexName", null, ReindexingState.END);
+        dest = serializeAndDeserialize(source);
+        assertEquals(source, dest);
+    }
+
+    protected ReindexingMessage serializeAndDeserialize(ReindexingMessage message) throws IOException {
+        ByteArrayOutputStream baout = new ByteArrayOutputStream();
+        message.serialize(baout);
+        return ReindexingMessage.deserialize(new ByteArrayInputStream(baout.toByteArray()));
+    }
 }
