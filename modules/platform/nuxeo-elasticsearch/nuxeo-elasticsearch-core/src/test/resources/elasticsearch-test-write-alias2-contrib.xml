@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.test.write.index2.contrib">
+  <extension point="elasticSearchIndex" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <elasticSearchIndex name="nxutestalias" repository="test" manageAlias="true" type="doc" />
+  </extension>
+</component>

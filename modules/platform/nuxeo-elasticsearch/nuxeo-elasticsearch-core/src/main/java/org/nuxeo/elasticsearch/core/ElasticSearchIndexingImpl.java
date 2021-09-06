@@ -167,6 +167,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         int bulkSize = 0;
         final int maxBulkSize = getMaxBulkSize();
         for (IndexingCommand cmd : cmds) {
+            String secondaryIndex = getSecondaryWriteIndexForRepository(cmd.getRepositoryName());
             if (cmd.getType() == Type.DELETE || cmd.getType() == Type.UPDATE_DIRECT_CHILDREN) {
                 continue;
             }
@@ -179,6 +180,16 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                 if (idxRequest != null) {
                     bulkSize += idxRequest.source().length();
                     bulkRequest.add(idxRequest);
+                    if (secondaryIndex != null) {
+
+                        IndexRequest idxRequestBis = new IndexRequest(secondaryIndex).id(
+                                cmd.getTargetDocumentId()).source(idxRequest.source(), XContentType.JSON);
+                        if (useExternalVersion && cmd.getOrder() > 0) {
+                            idxRequestBis.versionType(VersionType.EXTERNAL).version(cmd.getOrder());
+                        }
+                        bulkSize += idxRequestBis.source().length();
+                        bulkRequest.add(idxRequestBis);
+                    }
                 }
             } catch (BlobNotFoundException be) {
                 log.info("Ignore indexing command in bulk, blob does not exists anymore: " + cmd);
@@ -289,15 +300,24 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             log.info("Cancel indexing command because target document does not exists anymore: " + cmd);
             return;
         }
+        String repository = cmd.getRepositoryName();
+        processIndexRequest(cmd.getTargetDocumentId(), request);
+        String secondaryIndex = getSecondaryWriteIndexForRepository(repository);
+        if (secondaryIndex != null) {
+            request.index(secondaryIndex);
+            processIndexRequest(cmd.getTargetDocumentId(), request);
+        }
+    }
+
+    protected void processIndexRequest(String documentId, IndexRequest request) {
         if (log.isDebugEnabled()) {
             logDebugMessageTruncated(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s' -d '%s'",
-                    getWriteIndexForRepository(cmd.getRepositoryName()), cmd.getTargetDocumentId(),
-                    request.toString()), MAX_CURL_LINE);
+                    request.index(), documentId, request), MAX_CURL_LINE);
         }
         try {
             esa.getClient().index(request);
         } catch (ConcurrentUpdateException e) {
-            log.info("Ignore indexing of doc " + cmd.getTargetDocumentId()
+            log.info("Ignore indexing of doc " + documentId
                     + " a more recent version has already been indexed: " + e.getMessage());
         }
     }
@@ -320,7 +340,15 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processDeleteCommandNonRecursive(IndexingCommand cmd) {
-        String indexName = getWriteIndexForRepository(cmd.getRepositoryName());
+        String repository = cmd.getRepositoryName();
+        processDeleteCommandNonRecursive(cmd, getWriteIndexForRepository(repository));
+        String secondaryIndex = getSecondaryWriteIndexForRepository(repository);
+        if (secondaryIndex != null) {
+            processDeleteCommandNonRecursive(cmd, secondaryIndex);
+        }
+    }
+
+    void processDeleteCommandNonRecursive(IndexingCommand cmd, String indexName) {
         DeleteRequest request = new DeleteRequest(indexName, cmd.getTargetDocumentId());
         if (log.isDebugEnabled()) {
             log.debug(String.format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s'", indexName,
@@ -330,10 +358,19 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processDeleteCommandRecursive(IndexingCommand cmd) {
-        String indexName = getWriteIndexForRepository(cmd.getRepositoryName());
-        // we don't want to rely on target document because the document can be
+        String repository = cmd.getRepositoryName();
+        String indexName = getWriteIndexForRepository(repository);
+        processDeleteCommandRecursive(cmd, indexName);
+        String secondaryIndex = getSecondaryWriteIndexForRepository(repository);
+        if (secondaryIndex != null) {
+            processDeleteCommandRecursive(cmd, secondaryIndex);
+        }
+    }
+
+    void processDeleteCommandRecursive(IndexingCommand cmd, String indexName) {
+            // we don't want to rely on target document because the document can be
         // already removed
-        String docPath = getPathOfDocFromEs(cmd.getRepositoryName(), cmd.getTargetDocumentId());
+        String docPath = getPathOfDocFromEs(cmd.getRepositoryName(), indexName, cmd.getTargetDocumentId());
         if (docPath == null) {
             if (!Framework.isTestModeSet()) {
                 log.warn("Trying to delete a non existing doc: " + cmd.toString());
@@ -381,10 +418,21 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     /**
-     * Return the ecm:path of an ES document or null if not found.
+     * Returns the ecm:path of an ES document or null if not found.
      */
     String getPathOfDocFromEs(String repository, String docId) {
-        String indexName = getWriteIndexForRepository(repository);
+        return getPathOfDocFromEs(repository, null, docId);
+    }
+
+    /**
+     * Returns the ecm:path of an ES document or null if not found.
+     *
+     * @since 2021.12
+     */
+    protected String getPathOfDocFromEs(String repository, String indexName, String docId) {
+        if (indexName == null) {
+            indexName = getWriteIndexForRepository(repository);
+        }
         GetRequest request = new GetRequest(indexName, docId).fetchSourceContext(
                 new FetchSourceContext(true, new String[] { PATH_FIELD }, null));
         if (log.isDebugEnabled()) {
@@ -423,6 +471,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     protected String getWriteIndexForRepository(String repository) {
         return esa.getWriteIndexName(esa.getIndexNameForRepository(repository));
+    }
+
+    protected String getSecondaryWriteIndexForRepository(String repository) {
+        return esa.getSecondaryWriteIndexName(esa.getIndexNameForRepository(repository));
     }
 
     @Override
