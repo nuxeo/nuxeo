@@ -23,6 +23,7 @@ package org.nuxeo.elasticsearch.core;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,6 +50,10 @@ import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
+import org.nuxeo.runtime.pubsub.AbstractPubSubBroker;
+import org.nuxeo.runtime.pubsub.StreamPubSubProvider;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -62,6 +67,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     protected static final int TIMEOUT_DELETE_SECOND = 300;
 
+    public static final String ES_KV_STORE = "elastic";
+
     protected final AtomicInteger totalCommandProcessed = new AtomicInteger(0);
 
     protected final Map<String, String> indexNames = new HashMap<>();
@@ -69,6 +76,14 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     protected final Map<String, String> repoNames = new HashMap<>();
 
     protected final Map<String, String> writeIndexNames = new HashMap<>();
+
+    protected final Map<String, String> secondaryWriteIndexNames = new HashMap<>();
+
+    protected boolean useSecondaryWriteIndex = false;
+
+    protected final ReindexingPubSub reindexingPubSub;
+
+    public static final String REINDEXING_PUBSUB_TOPIC = "reindexing";
 
     protected final Map<String, ElasticSearchIndexConfig> indexConfig;
 
@@ -104,6 +119,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         checkConfig();
         connect();
         initializeIndexes();
+        reindexingPubSub = new ReindexingPubSub();
+        reindexingPubSub.initialize(REINDEXING_PUBSUB_TOPIC, StreamPubSubProvider.getNodeId());
     }
 
     protected void checkConfig() {
@@ -206,7 +223,13 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         if (log.isDebugEnabled()) {
             log.debug("Refreshing index associated with repo: " + repositoryName);
         }
-        getClient().refresh(getWriteIndexName(getIndexNameForRepository(repositoryName)));
+        String searchIndex = getIndexNameForRepository(repositoryName);
+        getClient().refresh(getWriteIndexName(searchIndex));
+        String secondaryWriteIndex = getSecondaryWriteIndexName(searchIndex);
+        if (secondaryWriteIndex != null) {
+            log.debug("Refreshing secondary write index " + secondaryWriteIndex);
+            getClient().refresh(secondaryWriteIndex);
+        }
         if (log.isDebugEnabled()) {
             log.debug("Refreshing index done");
         }
@@ -249,6 +272,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     @Override
     public String getWriteIndexName(String searchIndexName) {
         return writeIndexNames.getOrDefault(searchIndexName, searchIndexName);
+    }
+
+    @Override
+    public String getSecondaryWriteIndexName(String searchIndexName) {
+        return secondaryWriteIndexNames.get(searchIndexName);
     }
 
     @Override
@@ -345,12 +373,18 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     }
 
     @Override
+    public void initRepositoryIndexWithAliases(String repositoryName) {
+        useSecondaryWriteIndex = true;
+        dropAndInitRepositoryIndex(repositoryName, false);
+    }
+
+    @Override
     public List<String> getRepositoryNames() {
         return Collections.unmodifiableList(new ArrayList<>(indexNames.keySet()));
     }
 
     protected void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists) {
-        initIndex(conf, dropIfExists, true);
+        initIndex(conf, dropIfExists, false);
     }
 
     protected void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists, boolean syncAlias) {
@@ -370,22 +404,38 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         }
     }
 
-    protected void initWriteAlias(ElasticSearchIndexConfig conf, boolean dropIfExists) {
-        // init the write index and alias
+    protected void initWriteAlias(ElasticSearchIndexConfig conf, boolean create) {
         String writeAlias = conf.writeIndexOrAlias();
         String writeIndex = getClient().getFirstIndexForAlias(writeAlias);
-        String nextWriteIndex = conf.newWriteIndexForAlias(conf.getName(), writeIndex);
-        if (writeIndex != null && !dropIfExists) {
+        if (!create && writeIndex != null) {
             // alias exists make sure the index is well configured
             initIndex(writeIndex, conf, false);
-        } else {
-            // create a new write index and update the alias, we don't drop anything
-            if (getClient().indexExists(nextWriteIndex)) {
-                throw new IllegalStateException(
-                        String.format("New index name %s for the alias %s already exists", nextWriteIndex, writeAlias));
+            String secondary = getKvStore().getString(conf.getName());
+            if (secondary != null) {
+                secondaryWriteIndexNames.put(conf.getName(), writeIndex);
+                log.debug("Init index while reindexing is in progress with managed alias and double write");
             }
-            initIndex(nextWriteIndex, conf, false);
-            getClient().updateAlias(writeAlias, nextWriteIndex);
+            return;
+        }
+        // create a new write index and update the alias, we don't drop anything
+        String nextWriteIndex = conf.newWriteIndexForAlias(conf.getName(), writeIndex);
+        if (getClient().indexExists(nextWriteIndex)) {
+            throw new IllegalStateException(
+                    String.format("New index name: %s, for the alias: %s, already exists", nextWriteIndex, writeAlias));
+        }
+        initIndex(nextWriteIndex, conf, false);
+        getClient().updateAlias(writeAlias, nextWriteIndex);
+        if (useSecondaryWriteIndex && writeIndex != null) {
+            // we have 2 write indexes until alias are in sync
+            log.warn(String.format("Managed index aliases, new write index created : %s -> %s with secondary write index: %s",
+                    writeAlias, nextWriteIndex, writeIndex));
+            useSecondaryWriteIndex = false;
+            secondaryWriteIndexNames.put(conf.getName(), writeIndex);
+            // notify other nodes
+            reindexingPubSub.sendMessage(
+                    new ReindexingMessage(null, conf.getName(), writeIndex, ReindexingState.START));
+            // save into kv store for new worker nodes
+            getKvStore().put(conf.getName(), writeIndex);
         }
     }
 
@@ -408,8 +458,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 searchIndex = writeIndex;
             }
         }
-        log.info(String.format("Managed index aliases: Alias: %s ->  index: %s, alias: %s ->  index: %s", searchAlias,
-                searchIndex, writeAlias, writeIndex));
+        log.warn(String.format("Managed index aliases, search: %s -> %s, write: %s -> %s, secondary write index: %s", searchAlias,
+                searchIndex, writeAlias, writeIndex, secondaryWriteIndexNames.get(searchAlias)));
     }
 
     /**
@@ -424,10 +474,14 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         String writeAlias = conf.writeIndexOrAlias();
         String writeIndex = getClient().getFirstIndexForAlias(writeAlias);
         if (!writeIndex.equals(searchIndex)) {
-            log.warn(String.format("Updating search alias %s->%s (previously %s)", searchAlias, writeIndex,
-                    searchIndex));
+            log.warn(String.format(
+                    "Managed index aliases, updating search alias %s -> %s (old index: %s, can be deleted)",
+                    searchAlias, writeIndex, searchIndex));
             getClient().updateAlias(searchAlias, writeIndex);
             searchIndex = writeIndex;
+            secondaryWriteIndexNames.remove(conf.getName());
+            reindexingPubSub.sendMessage(new ReindexingMessage(null, conf.getName(), null, ReindexingState.END));
+            getKvStore().put(conf.getName(), (String) null);
         }
         if (searchIndex != null) {
             repoNames.put(searchIndex, conf.getRepositoryName());
@@ -568,12 +622,47 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     /**
      * Sets the {@link #hints} from the hint descriptors
-     * 
+     *
      * @since 10.10-HF17
      */
     public void setHints(Collection<ESHintQueryBuilderDescriptor> hintDescriptors) {
         hints = hintDescriptors.stream()
                                .collect(Collectors.toMap(ESHintQueryBuilderDescriptor::getName,
                                        ESHintQueryBuilderDescriptor::newInstance));
+    }
+
+    public class ReindexingPubSub extends AbstractPubSubBroker<ReindexingMessage> {
+
+        @Override
+        public ReindexingMessage deserialize(InputStream in) throws IOException {
+            return ReindexingMessage.deserialize(in);
+        }
+
+        @Override public void sendMessage(ReindexingMessage message) {
+            if (log.isDebugEnabled()) {
+                log.debug("sendMessage " + message);
+            }
+            super.sendMessage(message);
+        }
+
+        @Override
+        public void receivedMessage(ReindexingMessage message) {
+            if (log.isDebugEnabled()) {
+                log.debug("Receiving message " + message);
+            }
+            switch (message.state) {
+            case START:
+                secondaryWriteIndexNames.put(message.indexName, message.secondWriteIndexName);
+                break;
+            case END:
+            case ABORT:
+                secondaryWriteIndexNames.remove(message.indexName);
+                break;
+            }
+        }
+    }
+
+    protected KeyValueStore getKvStore() {
+        return Framework.getService(KeyValueService.class).getKeyValueStore(ES_KV_STORE);
     }
 }

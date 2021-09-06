@@ -78,6 +78,16 @@ public interface ElasticSearchAdmin {
     void dropAndInitRepositoryIndex(String repositoryName, boolean syncAlias);
 
     /**
+     * Creates a new index for the repository applying the mapping and settings.
+     * Update the write alias to point to this new index.
+     * The search alias is updated to the new index only for the initial creation.
+     * Otherwise, there are two write indexes until an explicit call to {@link #syncSearchAndWriteAlias(String)}.
+     *
+     * @since 2021.11
+     */
+    void initRepositoryIndexWithAliases(String repositoryName);
+
+    /**
      * List repository names that have Elasticsearch support.
      *
      * @since 7.1
@@ -120,6 +130,14 @@ public interface ElasticSearchAdmin {
      * @since 9.3
      */
     String getWriteIndexName(String searchIndexName);
+
+    /**
+     * Returns the secondary write index used during re-indexing with aliases.
+     *
+     * @return an index name or null if there is no re-indexing in progress.
+     * @since 2021.11
+     */
+    String getSecondaryWriteIndexName(String searchIndexName);
 
     /**
      * Make sure that the search alias point to the same index as the write alias.

@@ -271,6 +271,11 @@ public class ElasticSearchComponent extends DefaultComponent
     }
 
     @Override
+    public void initRepositoryIndexWithAliases(String repositoryName) {
+        esa.initRepositoryIndexWithAliases(repositoryName);
+    }
+
+    @Override
     public List<String> getRepositoryNames() {
         return esa.getRepositoryNames();
     }
@@ -298,6 +303,11 @@ public class ElasticSearchComponent extends DefaultComponent
     @Override
     public String getWriteIndexName(String searchIndexName) {
         return esa.getWriteIndexName(searchIndexName);
+    }
+
+    @Override
+    public String getSecondaryWriteIndexName(String searchIndexName) {
+        return esa.getSecondaryWriteIndexName(searchIndexName);
     }
 
     @Override
