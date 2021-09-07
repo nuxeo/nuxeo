@@ -176,4 +176,20 @@ public interface BlobManager {
      */
     String getBlobKeyReplacement(String blobProviderId, String key);
 
+    /**
+     * Marks the given blob for deletion at a later time.
+     *
+     * @param blobProviderId the blob provider id
+     * @param key the blob key
+     * @since 2021.9
+     */
+    void markBlobForDeletion(String blobProviderId, String key);
+
+    /**
+     * Deletes the blobs marked for deletion, if enough time has elapsed.
+     *
+     * @since 2021.9
+     */
+    void deleteBlobsMarkedForDeletion();
+
 }

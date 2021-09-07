@@ -18,4 +18,12 @@
     <object class="org.nuxeo.ecm.core.blob.BlobProviderDescriptor" />
   </extension-point>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Delay before a blob which has had its digest computed asynchronously is deleted.
+      @since 2021.9
+    </documentation>
+    <property name="nuxeo.blobmanager.delete.delay">1h</property>
+  </extension>
+
 </component>

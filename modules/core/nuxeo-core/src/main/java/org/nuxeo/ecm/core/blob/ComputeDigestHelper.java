@@ -93,8 +93,9 @@ public class ComputeDigestHelper {
         // replace blob key and digest in the repository
         replaceDigestAllRepositories();
 
-        // delete now unused blob
-        blobStore.deleteBlob(key);
+        // mark for deletion the blob which is now unused
+        // we don't want an immediate delete in case a concurrent process just got hold of its (old) key
+        blobManager.markBlobForDeletion(blobProviderId, key);
     }
 
     // unit tested

@@ -18,8 +18,4 @@ Nuxeo <-- S3: missing
 Nuxeo -> S3: copyObject
                                 hnote right: sha256/${TMP}-0 to sha256/2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae
 Nuxeo <-- S3: copied
-Nuxeo -> Cache: delete
-                                hnote right: ${TMP}-0
-Nuxeo -> S3: deleteObject
-                                hnote right: sha256/${TMP}-0
 @enduml

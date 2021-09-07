@@ -14,4 +14,19 @@
     </queue>
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService" point="schedule">
+    <schedule id="blobManagerDeleteMarkedBlobsSchedule">
+      <event>blobManagerDeleteMarkedBlobsEvent</event>
+      <!-- every 15 minutes -->
+      <cronExpression>0 0/15 * * * ?</cronExpression>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="blobManagerDeleteMarkedBlobsListener" async="true" postCommit="true"
+      class="org.nuxeo.ecm.core.blob.BlobDeleteListener">
+      <event>blobManagerDeleteMarkedBlobsEvent</event>
+    </listener>
+  </extension>
+
 </component>
