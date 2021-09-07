@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.blob.s3.test">
+
+  <require>org.nuxeo.ecm.core.blob.BlobManager</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.blobmanager.delete.delay">1ms</property>
+  </extension>
+
+</component>
