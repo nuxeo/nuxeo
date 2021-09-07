@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,10 +40,12 @@ import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
+import org.nuxeo.runtime.kv.KeyValueStoreProvider;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Implementation of the service managing the storage and retrieval of {@link Blob}s, through internally-registered
@@ -70,6 +73,12 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
     public static final String BLOB_KEY_REPLACEMENT_KV = "blobKeyReplacement";
 
     protected static final Duration BLOB_KEY_REPLACEMENT_TTL = Duration.ofHours(1);
+
+    protected static final String BLOB_DELETION_KV = "blobToDelete";
+
+    protected static final String BLOB_DELETION_DELAY_PROP = "nuxeo.blobmanager.delete.delay";
+
+    protected static final Duration BLOB_DELETION_DELAY_DEFAULT = Duration.ofHours(1);
 
     protected BlobProviderDescriptorRegistry blobProviderDescriptorsRegistry = new BlobProviderDescriptorRegistry();
 
@@ -309,6 +318,76 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
         }
         String newKey = kvStore.getString(blobProviderId + ':' + key);
         return newKey == null ? key : newKey;
+    }
+
+    protected KeyValueStore getBlobDeletionKeyValueStore() {
+        KeyValueService kvService = Framework.getService(KeyValueService.class);
+        return kvService == null ? null : kvService.getKeyValueStore(BLOB_DELETION_KV);
+    }
+
+    @Override
+    public void markBlobForDeletion(String blobProviderId, String key) {
+        KeyValueStore kvStore = getBlobDeletionKeyValueStore();
+        if (kvStore == null) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        // to mark a blob for deletion, we store in the key/value store
+        // a key which is the blob provider id + ":" + the blob key
+        // and a value which is an epoch time of when the marking is done
+        kvStore.put(blobProviderId + ':' + key, now);
+    }
+
+    @Override
+    public void deleteBlobsMarkedForDeletion() {
+        KeyValueStoreProvider kvStore = (KeyValueStoreProvider) getBlobDeletionKeyValueStore();
+        if (kvStore == null) {
+            return;
+        }
+        ConfigurationService confService = Framework.getService(ConfigurationService.class);
+        Duration delay = confService.getDuration(BLOB_DELETION_DELAY_PROP, BLOB_DELETION_DELAY_DEFAULT);
+        long maxTime = Instant.now().minus(delay).toEpochMilli();
+        kvStore.keyStream().forEach(k -> {
+            Long v = kvStore.getLong(k);
+            if (v == null) {
+                // already concurrently processed
+                return;
+            }
+            if (v > maxTime) {
+                log.debug("Blob marked for deletion is not old enough: {}", k);
+                return;
+            }
+            kvStore.put(k, (String) null);
+            deleteBlob(k);
+        });
+    }
+
+    /**
+     * Deletes a blob.
+     *
+     * @param k the blob provider id + ":" + the blob key
+     */
+    protected void deleteBlob(String k) {
+        int pos = k.indexOf(':');
+        if (pos == -1) {
+            log.debug("Invalid key for blob marked for deletion: {}", k);
+            return;
+        }
+        String blobProviderId = k.substring(0, pos);
+        String key = k.substring(pos + 1);
+
+        BlobProvider blobProvider = getBlobProvider(blobProviderId);
+        if (blobProvider == null) {
+            log.debug("Unknown blob provider for blob marked for deletion: {}", k);
+            return;
+        }
+        if (!(blobProvider instanceof BlobStoreBlobProvider)) {
+            log.debug("Invalid blob provider class: {} for blob marked for deletion: {}",
+                    blobProvider.getClass().getName(), k);
+            return;
+        }
+        BlobStore blobStore = ((BlobStoreBlobProvider) blobProvider).store;
+        blobStore.deleteBlob(key);
     }
 
 }

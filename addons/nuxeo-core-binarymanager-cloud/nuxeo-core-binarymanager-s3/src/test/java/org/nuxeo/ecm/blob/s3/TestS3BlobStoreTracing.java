@@ -511,7 +511,8 @@ public class TestS3BlobStoreTracing {
 
     @Test
     @Deploy("org.nuxeo.ecm.core:OSGI-INF/asyncdigest-listener-contrib.xml")
-    public void testCopyAsyncDigest() throws IOException {
+    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-asyncdigest-delete-delay-contrib.xml")
+    public void testCopyAsyncDigest() throws IOException, InterruptedException {
         // destination digest algorithm is not MD5, so async will be triggered
         BlobProvider bp1 = getBlobProvider("s3");
         BlobProvider bp2 = getBlobProvider("s3-sha256-async");
@@ -556,6 +557,14 @@ public class TestS3BlobStoreTracing {
         // check that writing the old blob immediately uses the new key
         String key4 = bp2.writeBlob(blob2);
         assertEquals(FOO_SHA256, key4);
+
+        clearTrace();
+        logTrace("== Copy (async delayed) ==");
+        // wait for delay to elapse (1ms in test XML config)
+        Thread.sleep(10);
+        // manually force delete, this is usually done by a scheduled listener
+        blobManager.deleteBlobsMarkedForDeletion();
+        checkTrace("trace-copy-async-delayed.txt");
     }
 
     @Test
