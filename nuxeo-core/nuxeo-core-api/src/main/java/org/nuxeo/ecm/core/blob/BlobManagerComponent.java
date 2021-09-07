@@ -30,8 +30,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
@@ -52,7 +52,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class BlobManagerComponent extends DefaultComponent implements BlobManager {
 
-    private static final Log log = LogFactory.getLog(BlobManagerComponent.class);
+    private static final Logger log = LogManager.getLogger(BlobManagerComponent.class);
 
     protected static final String XP = "configuration";
 
