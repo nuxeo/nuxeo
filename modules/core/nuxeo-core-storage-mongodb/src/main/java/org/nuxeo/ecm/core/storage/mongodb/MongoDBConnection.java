@@ -91,7 +91,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase.IdType;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
-import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ConditionalUpdates;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBOperators;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -489,27 +489,20 @@ public class MongoDBConnection extends DBSConnectionBase {
     }
 
     @Override
-    public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
-        List<Document> updates = converter.diffToBson(diff);
-        for (Document update : updates) {
+    public void updateState(String id, StateDiff diff, ConditionalUpdates conditionalUpdates) {
+        for (Document update : converter.diffToBson(diff)) {
             Document filter = new Document();
             converter.putToBson(filter, KEY_ID, id);
-            if (changeTokenUpdater == null) {
+            if (conditionalUpdates == null) {
                 log.trace("MongoDB: UPDATE {}: {}", id, update);
             } else {
                 // assume bson is identical to dbs internals
                 // condition works even if value is null
-                Map<String, Serializable> conditions = changeTokenUpdater.getConditions();
-                Map<String, Serializable> tokenUpdates = changeTokenUpdater.getUpdates();
-                if (update.containsKey(MONGODB_SET)) {
-                    ((Document) update.get(MONGODB_SET)).putAll(tokenUpdates);
-                } else {
-                    Document set = new Document();
-                    set.putAll(tokenUpdates);
-                    update.put(MONGODB_SET, set);
-                }
-                log.trace("MongoDB: UPDATE {}: IF {} THEN {}", id, conditions, update);
-                filter.putAll(conditions);
+                filter.putAll(conditionalUpdates.getConditions());
+                Document set = (Document) update.computeIfAbsent(MONGODB_SET, k -> new Document());
+                set.putAll(conditionalUpdates.getUpdates());
+                conditionalUpdates.finish();
+                log.trace("MongoDB: UPDATE {}: IF {} THEN {}", id, filter, update);
             }
             try {
                 UpdateResult w = updateMany(filter, update);

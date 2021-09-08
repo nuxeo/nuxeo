@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
-import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ConditionalUpdates;
 
 import com.google.common.cache.Cache;
 import com.google.common.collect.ImmutableMap;
@@ -194,8 +194,8 @@ public class DBSCachingConnection implements DBSConnection {
     }
 
     @Override
-    public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
-        connection.updateState(id, diff, changeTokenUpdater);
+    public void updateState(String id, StateDiff diff, ConditionalUpdates conditionalUpdates) {
+        connection.updateState(id, diff, conditionalUpdates);
         invalidate(id);
     }
 

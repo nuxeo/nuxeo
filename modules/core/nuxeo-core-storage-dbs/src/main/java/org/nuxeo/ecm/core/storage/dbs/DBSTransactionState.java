@@ -897,7 +897,7 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
                         }
                         // else there's already a create or an update in the undo log so original info is enough
                     }
-                    ChangeTokenUpdater changeTokenUpdater;
+                    ConditionalUpdates conditionalUpdates = null;
                     if (repository.isChangeTokenEnabled()) {
                         // increment system change token
                         Long base = (Long) docState.get(KEY_SYS_CHANGE_TOKEN);
@@ -905,14 +905,10 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
                         diff.put(KEY_SYS_CHANGE_TOKEN, DeltaLong.valueOf(base, 1));
                         // update change token if applicable (user change)
                         if (userChangeIds.contains(id)) {
-                            changeTokenUpdater = new ChangeTokenUpdater(docState);
-                        } else {
-                            changeTokenUpdater = null;
+                            conditionalUpdates = getConditionalUpdateForChangeToken(docState);
                         }
-                    } else {
-                        changeTokenUpdater = null;
                     }
-                    connection.updateState(id, diff, changeTokenUpdater);
+                    connection.updateState(id, diff, conditionalUpdates);
                 } finally {
                     docState.setNotDirty();
                 }
@@ -923,6 +919,34 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
         scheduleWork(works);
     }
 
+    protected ConditionalUpdates getConditionalUpdateForChangeToken(DBSDocumentState docState) {
+        ConditionalUpdates conditionalUpdates = new ConditionalUpdates();
+        // condition and update
+        Long oldToken = (Long) docState.getOriginalState().get(KEY_CHANGE_TOKEN);
+        Long newToken = updateChangeToken(oldToken);
+        conditionalUpdates.put(Map.of(KEY_CHANGE_TOKEN, oldToken), Map.of(KEY_CHANGE_TOKEN, newToken));
+        // callback
+        Runnable callback = () -> {
+            // also store the new token in the state (without marking dirty)
+            Long ot = (Long) conditionalUpdates.getUpdates().get(KEY_CHANGE_TOKEN);
+            docState.getState().put(KEY_CHANGE_TOKEN, ot);
+            // new conditional update
+            Long nt = updateChangeToken(ot);
+            conditionalUpdates.put(Map.of(KEY_CHANGE_TOKEN, ot), Map.of(KEY_CHANGE_TOKEN, nt));
+        };
+        conditionalUpdates.addCallback(callback);
+        return conditionalUpdates;
+    }
+
+    protected static Long updateChangeToken(Long changeToken) {
+        if (changeToken == null) {
+            // document without change token, just created
+            return INITIAL_CHANGE_TOKEN;
+        } else {
+            return BaseDocument.updateChangeToken(changeToken);
+        }
+    }
+
     /**
      * Logic to get the conditions to use to match and update a change token.
      * <p>
@@ -931,39 +955,51 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
      *
      * @since 9.1
      */
-    public static class ChangeTokenUpdater {
+    public static class ConditionalUpdates {
 
-        protected final DBSDocumentState docState;
+        protected final Map<String, Serializable> conditions = new HashMap<>();
 
-        protected Long oldToken;
+        protected final Map<String, Serializable> updates = new HashMap<>();
 
-        public ChangeTokenUpdater(DBSDocumentState docState) {
-            this.docState = docState;
-            oldToken = (Long) docState.getOriginalState().get(KEY_CHANGE_TOKEN);
+        protected final List<Runnable> callbacks = new ArrayList<>();
+
+        /**
+         * Puts condition and update.
+         */
+        public void put(Map<String, Serializable> condition, Map<String, Serializable> update) {
+            conditions.putAll(condition);
+            updates.putAll(update);
+        }
+
+        /**
+         * Adds a callback.
+         * <p>
+         * The callback is useful to 1. finish updating internal in-memory document state after an update is done, and
+         * 2. prepare a new condition/update if the conditional update is used again.
+         */
+        public void addCallback(Runnable callback) {
+            callbacks.add(callback);
         }
 
         /**
          * Gets the conditions to use to match a change token.
          */
         public Map<String, Serializable> getConditions() {
-            return Map.of(KEY_CHANGE_TOKEN, oldToken);
+            return conditions;
         }
 
         /**
          * Gets the updates to make to write the updated change token.
          */
         public Map<String, Serializable> getUpdates() {
-            Long newToken;
-            if (oldToken == null) {
-                // document without change token, just created
-                newToken = INITIAL_CHANGE_TOKEN;
-            } else {
-                newToken = BaseDocument.updateChangeToken(oldToken);
-            }
-            // also store the new token in the state (without marking dirty), for the next update
-            docState.getState().put(KEY_CHANGE_TOKEN, newToken);
-            oldToken = newToken;
-            return Map.of(KEY_CHANGE_TOKEN, newToken);
+            return updates;
+        }
+
+        /**
+         * To be called by the processor after each update.
+         */
+        public void finish() {
+            callbacks.forEach(Runnable::run);
         }
     }
 
