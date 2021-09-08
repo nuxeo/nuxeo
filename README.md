@@ -29,8 +29,8 @@ Building the Nuxeo Platform requires the following tools:
 Get the source code:
 
 ```shell
-git clone git@github.com:nuxeo/nuxeo.git
-cd nuxeo
+git clone git@github.com:nuxeo/nuxeo-lts.git
+cd nuxeo-lts
 ```
 
 Export the relevant options for the JVM running Maven:
