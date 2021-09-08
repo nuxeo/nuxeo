@@ -229,7 +229,9 @@ pipeline {
                   --type=kubernetes.io/dockerconfigjson --dry-run -o yaml | kubectl apply -f -"""
               // third build and deploy the chart
               sh """
-                jx step helm build --verbose
+                helm init --client-only --stable-repo-url=https://charts.helm.sh/stable
+                helm repo add jenkins-x https://jenkins-x-charts.github.io/v2/
+                helm dependency update .
                 APP_NAME=javadoc ORG=nuxeo jx preview \
                   --name javadoc \
                   --namespace ${PREVIEW_NAMESPACE} \
