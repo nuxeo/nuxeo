@@ -48,7 +48,7 @@ import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
-import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ConditionalUpdates;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.MetricRegistry;
@@ -219,8 +219,8 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     @Override
-    public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
-        repository.updateState(id, diff, changeTokenUpdater);
+    public void updateState(String id, StateDiff diff, ConditionalUpdates conditionalUpdates) {
+        repository.updateState(id, diff, conditionalUpdates);
         invalidate(id);
     }
 
