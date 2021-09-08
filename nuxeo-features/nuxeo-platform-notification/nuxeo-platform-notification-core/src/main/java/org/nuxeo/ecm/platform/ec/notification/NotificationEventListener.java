@@ -380,7 +380,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
      */
     private void gatherConcernedUsersForDocument(CoreSession coreSession, DocumentModel doc, List<Notification> notifs,
             Map<Notification, List<String>> targetUsers) {
-        if (doc.getPath().segmentCount() > 1) {
+        if (doc != null && doc.getPath() != null && doc.getPath().segmentCount() > 1) {
             log.debug("Searching document: " + doc.getName());
             getInterstedUsers(doc, notifs, targetUsers);
             if (doc.getParentRef() != null && coreSession.exists(doc.getParentRef())) {
