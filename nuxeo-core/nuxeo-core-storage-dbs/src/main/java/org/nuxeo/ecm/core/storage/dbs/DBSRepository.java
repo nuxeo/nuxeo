@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
-import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ConditionalUpdates;
 
 /**
  * Interface for a {@link Repository} for Document-Based Storage.
@@ -149,9 +149,9 @@ public interface DBSRepository extends Repository, LockManager {
      *
      * @param id the document id
      * @param diff the diff to apply
-     * @param changeTokenUpdater how to get and update the change token (may be {@code null})
+     * @param conditionalUpdates the conditional updates, or {@code null}
      */
-    void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater);
+    void updateState(String id, StateDiff diff, ConditionalUpdates conditionalUpdates);
 
     /**
      * Deletes a set of document.

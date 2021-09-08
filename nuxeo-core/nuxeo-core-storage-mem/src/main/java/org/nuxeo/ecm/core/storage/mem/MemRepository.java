@@ -70,7 +70,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession.OrderByComparator;
-import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ConditionalUpdates;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -180,7 +180,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
+    public void updateState(String id, StateDiff diff, ConditionalUpdates conditionalUpdates) {
         if (log.isTraceEnabled()) {
             log.trace("Mem: UPDATE " + id + ": " + diff);
         }
@@ -189,14 +189,14 @@ public class MemRepository extends DBSRepositoryBase {
             throw new ConcurrentUpdateException("Missing: " + id);
         }
         synchronized (state) {
-            // synchronization needed for atomic change token
-            if (changeTokenUpdater != null) {
-                for (Entry<String, Serializable> en : changeTokenUpdater.getConditions().entrySet()) {
+            // synchronization needed for atomic conditions
+            if (conditionalUpdates != null) {
+                for (Entry<String, Serializable> en : conditionalUpdates.getConditions().entrySet()) {
                     if (!Objects.equals(state.get(en.getKey()), en.getValue())) {
                         throw new ConcurrentUpdateException((String) state.get(KEY_ID));
                     }
                 }
-                for (Entry<String, Serializable> en : changeTokenUpdater.getUpdates().entrySet()) {
+                for (Entry<String, Serializable> en : conditionalUpdates.getUpdates().entrySet()) {
                     applyDiff(state, en.getKey(), en.getValue());
                 }
             }
