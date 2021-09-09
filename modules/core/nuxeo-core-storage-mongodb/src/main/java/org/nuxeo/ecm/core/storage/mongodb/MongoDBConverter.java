@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_INC;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_PULLALL;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_PUSH;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_SET;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_TYPE;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_UNSET;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.ONE;
 
@@ -100,7 +101,7 @@ public class MongoDBConverter {
      * <p>
      * We need a list because some cases need two operations to avoid conflicts.
      */
-    public List<Document> diffToBson(StateDiff diff) {
+    public ConditionsAndUpdates diffToBson(StateDiff diff) {
         UpdateBuilder updateBuilder = new UpdateBuilder();
         return updateBuilder.build(diff);
     }
@@ -298,6 +299,13 @@ public class MongoDBConverter {
         }
     }
 
+    public static class ConditionsAndUpdates {
+
+        public Document conditions = new Document();
+
+        public List<Document> updates = new ArrayList<>();
+    }
+
     /**
      * Update list builder to prevent several updates of the same field.
      * <p>
@@ -319,7 +327,7 @@ public class MongoDBConverter {
 
         protected final Document inc = new Document();
 
-        protected final List<Document> updates = new ArrayList<>(10);
+        protected final ConditionsAndUpdates conditionsAndUpdates = new ConditionsAndUpdates();
 
         protected Document update;
 
@@ -327,7 +335,7 @@ public class MongoDBConverter {
 
         protected Set<String> keys;
 
-        public List<Document> build(StateDiff diff) {
+        public ConditionsAndUpdates build(StateDiff diff) {
             processStateDiff(diff, null);
             newUpdate();
             for (Entry<String, Object> en : set.entrySet()) {
@@ -345,7 +353,7 @@ public class MongoDBConverter {
             for (Entry<String, Object> en : inc.entrySet()) {
                 update(MONGODB_INC, en.getKey(), en.getValue());
             }
-            return updates;
+            return conditionsAndUpdates;
         }
 
         protected void processStateDiff(StateDiff diff, String prefix) {
@@ -368,7 +376,7 @@ public class MongoDBConverter {
 
         protected void processListDiff(ListDiff listDiff, String prefix) {
             if (listDiff.diff != null) {
-                String elemPrefix = prefix == null ? "" : prefix + '.';
+                String elemPrefix = prefix + '.';
                 int i = 0;
                 for (Object value : listDiff.diff) {
                     String name = elemPrefix + i;
@@ -380,6 +388,11 @@ public class MongoDBConverter {
                     }
                     i++;
                 }
+                // in order to protect against concurrent deletions of the array
+                // which would make an update on foo.0.bar create a sub-document
+                // instead of addressing the array element foo.0,
+                // we add a condition on the type of what we're updating
+                conditionsAndUpdates.conditions.put(prefix, new Document(MONGODB_TYPE, "array"));
             }
             if (listDiff.rpush != null) {
                 Object pushed;
@@ -415,7 +428,7 @@ public class MongoDBConverter {
         }
 
         protected void newUpdate() {
-            updates.add(update = new Document());
+            conditionsAndUpdates.updates.add(update = new Document());
             prefixKeys = new HashSet<>();
             keys = new HashSet<>();
         }

@@ -92,6 +92,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase.IdType;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ConditionalUpdates;
+import org.nuxeo.ecm.core.storage.mongodb.MongoDBConverter.ConditionsAndUpdates;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBOperators;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -490,18 +491,21 @@ public class MongoDBConnection extends DBSConnectionBase {
 
     @Override
     public void updateState(String id, StateDiff diff, ConditionalUpdates conditionalUpdates) {
-        for (Document update : converter.diffToBson(diff)) {
-            Document filter = new Document();
+        ConditionsAndUpdates conditionsAndUpdates = converter.diffToBson(diff);
+        for (Document update : conditionsAndUpdates.updates) {
+            Document filter = new Document(conditionsAndUpdates.conditions);
             converter.putToBson(filter, KEY_ID, id);
-            if (conditionalUpdates == null) {
-                log.trace("MongoDB: UPDATE {}: {}", id, update);
-            } else {
+            if (conditionalUpdates != null) {
                 // assume bson is identical to dbs internals
                 // condition works even if value is null
                 filter.putAll(conditionalUpdates.getConditions());
                 Document set = (Document) update.computeIfAbsent(MONGODB_SET, k -> new Document());
                 set.putAll(conditionalUpdates.getUpdates());
                 conditionalUpdates.finish();
+            }
+            if (filter.size() == 1) {
+                log.trace("MongoDB: UPDATE {}: {}", id, update);
+            } else {
                 log.trace("MongoDB: UPDATE {}: IF {} THEN {}", id, filter, update);
             }
             try {

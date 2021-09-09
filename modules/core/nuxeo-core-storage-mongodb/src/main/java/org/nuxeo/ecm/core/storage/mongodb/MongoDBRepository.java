@@ -89,6 +89,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     public static final String MONGODB_META = "$meta";
 
+    public static final String MONGODB_TYPE = "$type";
+
     public static final String MONGODB_TEXT_SCORE = "textScore";
 
     public static final String FULLTEXT_INDEX_NAME = "fulltext";

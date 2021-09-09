@@ -28,7 +28,7 @@ public class TestMongoUpdateConflict {
     @Test
     public void testEmpty() throws Exception {
         UpdateBuilder ulb = newUpdateBuilder();
-        assertEquals(1, ulb.updates.size());
+        assertEquals(1, ulb.conditionsAndUpdates.updates.size());
     }
 
     @Test
@@ -36,7 +36,7 @@ public class TestMongoUpdateConflict {
         UpdateBuilder ub = newUpdateBuilder();
         ub.update(MONGODB_SET, "foo.0.bar", "val");
         ub.update(MONGODB_SET, "foo.0.zoo", "val");
-        assertEquals(1, ub.updates.size());
+        assertEquals(1, ub.conditionsAndUpdates.updates.size());
     }
 
     @Test
@@ -44,7 +44,7 @@ public class TestMongoUpdateConflict {
         UpdateBuilder ub = newUpdateBuilder();
         ub.update(MONGODB_SET, "foo.0.bar.zoo.x", "val");
         ub.update(MONGODB_SET, "foo.0.bar.zoo.y", "val");
-        assertEquals(1, ub.updates.size());
+        assertEquals(1, ub.conditionsAndUpdates.updates.size());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class TestMongoUpdateConflict {
         UpdateBuilder ub = newUpdateBuilder();
         ub.update(MONGODB_SET, "foo.0.bar.zoo.x", "val");
         ub.update(MONGODB_SET, "foo.0.bar.z", "val");
-        assertEquals(1, ub.updates.size());
+        assertEquals(1, ub.conditionsAndUpdates.updates.size());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class TestMongoUpdateConflict {
         ub.update(MONGODB_SET, "foo.bar", "val");
         ub.update(MONGODB_SET, "bar.foo", "val");
         ub.update(MONGODB_SET, "zz", "val");
-        assertEquals(1, ub.updates.size());
+        assertEquals(1, ub.conditionsAndUpdates.updates.size());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class TestMongoUpdateConflict {
         UpdateBuilder ub = newUpdateBuilder();
         ub.update(MONGODB_SET, "foo.0.bar", "val");
         ub.update(MONGODB_SET, "foo.0.bar", "val2");
-        assertEquals(2, ub.updates.size());
+        assertEquals(2, ub.conditionsAndUpdates.updates.size());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class TestMongoUpdateConflict {
         UpdateBuilder ub = newUpdateBuilder();
         ub.update(MONGODB_SET, "foo", "val");
         ub.update(MONGODB_SET, "foo", "val2");
-        assertEquals(2, ub.updates.size());
+        assertEquals(2, ub.conditionsAndUpdates.updates.size());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class TestMongoUpdateConflict {
         UpdateBuilder ub = newUpdateBuilder();
         ub.update(MONGODB_SET, "foo.0.bar", "val");
         ub.update(MONGODB_SET, "foo.0.bar.zoo", "val");
-        assertEquals(2, ub.updates.size());
+        assertEquals(2, ub.conditionsAndUpdates.updates.size());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class TestMongoUpdateConflict {
         UpdateBuilder ub = newUpdateBuilder();
         ub.update(MONGODB_SET, "foo.0.bar.zoo", "val");
         ub.update(MONGODB_SET, "foo.0.bar", "val");
-        assertEquals(2, ub.updates.size());
+        assertEquals(2, ub.conditionsAndUpdates.updates.size());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class TestMongoUpdateConflict {
         UpdateBuilder ub = newUpdateBuilder();
         ub.update(MONGODB_SET, "foo.0.bar.zoo", "val");
         ub.update(MONGODB_SET, "foo", "val");
-        assertEquals(2, ub.updates.size());
+        assertEquals(2, ub.conditionsAndUpdates.updates.size());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class TestMongoUpdateConflict {
         for (int i = 0; i < 10000; i++) {
             ub.update(MONGODB_SET, "foo." + i + ".bar.zoo", "val");
         }
-        assertEquals(1, ub.updates.size());
+        assertEquals(1, ub.conditionsAndUpdates.updates.size());
     }
 
 

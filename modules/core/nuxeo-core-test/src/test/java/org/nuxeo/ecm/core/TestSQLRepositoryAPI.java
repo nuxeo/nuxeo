@@ -64,6 +64,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.function.ThrowableRunnable;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
@@ -5421,6 +5422,101 @@ public class TestSQLRepositoryAPI {
             if (err.getSuppressed().length != 0) {
                 throw err;
             }
+        }
+    }
+
+    @Test
+    public void testConcurrentArrayUpdateAndRemove() {
+        DocumentModel doc = session.createDocumentModel("/", "document", "MyDocType2");
+        doc.setPropertyValue("cpxl:complexList",
+                (Serializable) List.of(Map.of("foo", "value-foo", "bar", "value-bar")));
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+        nextTransaction();
+
+        // run concurrently an array complex element update and an array removal
+        // but with removal executed first
+        try {
+            var barrier = new CyclicBarrier(2);
+            runConcurrently(() -> {
+                TransactionHelper.startTransaction();
+                DocumentModel document = session.getDocument(docRef);
+                // sync the two threads
+                barrier.await(5, TimeUnit.SECONDS);
+                document.setPropertyValue("cpxl:complexList", (Serializable) List.of());
+                // the removal should occur before the update
+                session.saveDocument(document);
+                session.save();
+                TransactionHelper.commitOrRollbackTransaction();
+                barrier.await(50, TimeUnit.SECONDS);
+            }, () -> {
+                TransactionHelper.startTransaction();
+                DocumentModel document = session.getDocument(docRef);
+                // sync the two threads
+                barrier.await(5, TimeUnit.SECONDS);
+                document.setPropertyValue("cpxl:complexList/0/foo", "updated");
+                // the update should occur after the removal
+                barrier.await(5, TimeUnit.SECONDS);
+                session.saveDocument(document);
+                session.save();
+                TransactionHelper.commitOrRollbackTransaction();
+            });
+        } catch (NuxeoException e) {
+            if (isDBS()) {
+                assertEquals("Exceptions in threads", e.getMessage());
+                Throwable[] s = e.getSuppressed();
+                assertEquals(1, s.length);
+                Throwable s0 = s[0];
+                assertTrue(s0 instanceof ConcurrentUpdateException);
+                assertTrue(s0.getMessage(), s0.getMessage().startsWith("Failed to save session"));
+                return;
+            } else {
+                throw e;
+            }
+        }
+        if (isDBS()) {
+            fail("expected ConcurrentUpdateException");
+        } else {
+            // VCS doesn't detect this kind of concurrent update
+            // the update to the complex element will just fail to do anything
+            // as the element is now gone
+            doc.refresh();
+            assertEquals(List.of(), doc.getPropertyValue("cpxl:complexList"));
+        }
+    }
+
+    @SafeVarargs
+    protected final void runConcurrently(ThrowableRunnable<Exception>... runnables) {
+        ExecutorService executor = Executors.newFixedThreadPool(runnables.length);
+        var exceptions = Collections.synchronizedList(new ArrayList<Exception>());
+
+        // convert throwable runnables to regular runnable
+        // and submit the to the executor
+        Arrays.stream(runnables).map(r -> (Runnable) () -> {
+            try {
+                r.run();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new NuxeoException("Interrupted", e);
+            } catch (Exception e) {
+                exceptions.add(e);
+            }
+        }).forEach(executor::submit);
+
+        // shutdown executor and wait for termination
+        executor.shutdown();
+        try {
+            assertTrue(executor.awaitTermination(50, TimeUnit.SECONDS));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new NuxeoException("Interrupted", e);
+        }
+
+        // rethrow any exception that occurred during thread execution
+        if (!exceptions.isEmpty()) {
+            var e = new NuxeoException("Exceptions in threads");
+            exceptions.forEach(e::addSuppressed);
+            throw e;
         }
     }
 
