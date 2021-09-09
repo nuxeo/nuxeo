@@ -7,8 +7,8 @@
     <coreQueryPageProvider name="document_picker">
       <trackUsage>true</trackUsage>
       <whereClause docType="AdvancedSearch">
-        <predicate parameter="dc:title" operator="FULLTEXT">
-          <field schema="advanced_search" name="title" />
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="advanced_search" name="fulltext_all" />
         </predicate>
         <fixedPart>
           ecm:mixinType = 'Picture' AND
