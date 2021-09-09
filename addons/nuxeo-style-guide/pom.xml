@@ -3,9 +3,8 @@
 
   <parent>
     <groupId>org.nuxeo</groupId>
-    <artifactId>nuxeo-ecm</artifactId>
+    <artifactId>nuxeo-addons-parent</artifactId>
     <version>10.10-HF53-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.style</groupId>
