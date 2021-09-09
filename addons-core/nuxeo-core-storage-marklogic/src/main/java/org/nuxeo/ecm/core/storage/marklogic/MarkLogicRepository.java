@@ -70,7 +70,7 @@ import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
-import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ConditionalUpdates;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicQueryBuilder.MarkLogicQuery;
 import org.nuxeo.runtime.api.Framework;
 
@@ -262,8 +262,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
-        // TODO changeTokenUpdater
+    public void updateState(String id, StateDiff diff, ConditionalUpdates conditionalUpdates) {
+        // TODO conditionalUpdates
         String patch = MarkLogicStateSerializer.serialize(diff);
         if (log.isTraceEnabled()) {
             log.trace("MarkLogic: UPDATE " + id + ": " + patch);
@@ -347,7 +347,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             throw new IllegalArgumentException("The second value should be a Collection");
         }
         Collection<?> values2 = (Collection<?>) value2;
-        
+
         MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(rangeElementIndexes);
         builder.eq(key1, value1);
         switch (operator) {

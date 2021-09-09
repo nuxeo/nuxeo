@@ -89,6 +89,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ConditionalUpdates;
+import org.nuxeo.ecm.core.storage.mongodb.MongoDBConverter.ConditionsAndUpdates;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
@@ -160,6 +161,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public static final String MONGODB_EACH = "$each";
 
     public static final String MONGODB_META = "$meta";
+
+    public static final String MONGODB_TYPE = "$type";
 
     public static final String MONGODB_TEXT_SCORE = "textScore";
 
@@ -587,20 +590,23 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void updateState(String id, StateDiff diff, ConditionalUpdates conditionalUpdates) {
-        for (Document update : converter.diffToBson(diff)) {
-            Document filter = new Document();
+        ConditionsAndUpdates conditionsAndUpdates = converter.diffToBson(diff);
+        for (Document update : conditionsAndUpdates.updates) {
+            Document filter = new Document(conditionsAndUpdates.conditions);
             converter.putToBson(filter, KEY_ID, id);
-            if (conditionalUpdates == null) {
-                if (log.isTraceEnabled()) {
-                    log.trace("MongoDB: UPDATE " + id + ": " + update);
-                }
-            } else {
+            if (conditionalUpdates != null) {
                 // assume bson is identical to dbs internals
                 // condition works even if value is null
                 filter.putAll(conditionalUpdates.getConditions());
                 Document set = (Document) update.computeIfAbsent(MONGODB_SET, k -> new Document());
                 set.putAll(conditionalUpdates.getUpdates());
                 conditionalUpdates.finish();
+            }
+            if (filter.size() == 1) {
+                if (log.isTraceEnabled()) {
+                    log.trace("MongoDB: UPDATE " + id + ": " + update);
+                }
+            } else {
                 if (log.isTraceEnabled()) {
                     log.trace("MongoDB: UPDATE " + id + ": IF " + filter + " THEN " + update);
                 }
