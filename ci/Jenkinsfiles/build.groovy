@@ -18,6 +18,14 @@
  *     Thomas Roger <troger@nuxeo.com>
  */
 
+// Always abort build if triggered by https://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/10.10/job/nuxeo/,
+// configured to build all pull requests in nuxeo/nuxeo (cannot filter on the ones targeting the 10.10 branch only).
+def abort() {
+  currentBuild.result = 'ABORTED'
+  error('Not building pull requests against the master branch.')
+}
+abort()
+
 dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo'
 testEnvironments = [
