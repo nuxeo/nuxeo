@@ -18,9 +18,13 @@
  */
 package org.nuxeo.ecm.platform.mail.adapter;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -34,6 +38,8 @@ import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
  * @since 5.7.3
  */
 public class MailMessageBlobHolder extends DocumentBlobHolder {
+
+    private static final Logger log = LogManager.getLogger(MailMessageBlobHolder.class);
 
     protected Pattern isHtmlPattern = Pattern.compile("(.*)<(html|head|body)>(.*)",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -63,8 +69,11 @@ public class MailMessageBlobHolder extends DocumentBlobHolder {
             blob = Blobs.createBlob(txt);
         }
         blob.setFilename(filename);
-        // set dummy digest to avoid comparison error
-        blob.setDigest("notInBinaryStore");
+        try {
+            blob.setDigest(DigestUtils.md5Hex(blob.getByteArray()));
+        } catch (IOException e) {
+            log.error("Failed to get blob's byte array", e);
+        }
         return blob;
     }
 }
