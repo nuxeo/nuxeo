@@ -43,6 +43,7 @@ public class ITLayoutDocumentValidationTest extends AbstractTest {
     }
 
     @Test
+    @Ignore("NXP-30564")
     public void testDocumentValidationInvalid() {
         ValidationPage page = get(ValidationPage.PAGE_PATH, ValidationPage.class);
         page.fillLayoutInvalid();
@@ -72,6 +73,7 @@ public class ITLayoutDocumentValidationTest extends AbstractTest {
     }
 
     @Test
+    @Ignore("NXP-30564")
     public void testDocumentValidationValid() {
         ValidationPage page = get(ValidationPage.PAGE_PATH, ValidationPage.class);
         page.fillLayoutValid();
