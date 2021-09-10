@@ -37,6 +37,7 @@ import java.net.SocketException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.Features;
@@ -57,6 +58,7 @@ import sun.net.www.http.HttpClient;
  *
  * @since 9.3
  */
+@Ignore("NXP-30564")
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 public class RetryPostTest {
