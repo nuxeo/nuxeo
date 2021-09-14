@@ -68,6 +68,10 @@ public class TransactionHelper {
     protected static final ExecutorService EXECUTOR = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 5, TimeUnit.SECONDS,
             new SynchronousQueue<>());
 
+    private static final String THREAD_NAME_PREFIX = "Nuxeo-";
+
+    private static final String THREAD_NAME_SUFFIX = "-runInTransaction";
+
     private TransactionHelper() {
         // utility class
     }
@@ -685,7 +689,8 @@ public class TransactionHelper {
         }
         // otherwise use a separate thread to get a separate transactional context
         try {
-            return EXECUTOR.submit(supplier::get).get();
+            String currentThreadName = Thread.currentThread().getName();
+            return EXECUTOR.submit(() -> nameTransactionThread(supplier, currentThreadName)).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // restore interrupted status
             throw new RuntimeException(e);
@@ -697,6 +702,24 @@ public class TransactionHelper {
                 throw new RuntimeException(cause);
             }
         }
+    }
+
+    protected static <R> R nameTransactionThread(Supplier<R> supplier, String callerThreadName) {
+        Thread currentThread = Thread.currentThread();
+        String originalThreadName = currentThread.getName();
+        if (!callerThreadName.startsWith(THREAD_NAME_PREFIX)) {
+            callerThreadName = THREAD_NAME_PREFIX + callerThreadName;
+        }
+        if (!callerThreadName.endsWith(THREAD_NAME_SUFFIX)) {
+            callerThreadName = callerThreadName + THREAD_NAME_SUFFIX;
+        }
+        currentThread.setName(callerThreadName);
+        try {
+            return supplier.get();
+        } finally {
+            currentThread.setName(originalThreadName);
+        }
+
     }
 
     /**
