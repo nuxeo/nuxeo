@@ -315,7 +315,7 @@ public class WebDavClientTest extends AbstractServerTest {
         String name = "newfile.bin";
         // The bin extension is not in the MimetypeRegistry, so the default mimetype is used
         String mimeType = MimetypeRegistry.DEFAULT_MIMETYPE;
-        byte[] bytes = new byte[] { 1, 2, 3, 4, 5 };
+        byte[] bytes = new byte[] { 0 };
         String expectedType = "File";
         doTestPutFile(name, bytes, mimeType, expectedType);
     }

@@ -37,6 +37,11 @@ public interface MimetypeRegistry {
 
     String DEFAULT_MIMETYPE = "application/octet-stream";
 
+    /**
+     * @since 2021.9
+     */
+    String XML_MIMETYPE = "text/xml";
+
     String PDF_MIMETYPE = "application/pdf";
 
     String PDF_EXTENSION = ".pdf";
