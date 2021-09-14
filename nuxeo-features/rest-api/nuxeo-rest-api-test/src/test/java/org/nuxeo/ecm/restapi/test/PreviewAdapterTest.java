@@ -138,7 +138,7 @@ public class PreviewAdapterTest extends BaseTest {
     @Test
     public void testUnknownMimeTypePreview() {
         DocumentModel doc = session.createDocumentModel("/", "adoc", "File");
-        Blob blob = Blobs.createBlob("Dummy", "application/octet-stream", null, "dummy");
+        Blob blob = Blobs.createBlob(new byte[] { 0 });
         doc.setPropertyValue("file:content", (Serializable) blob);
         doc = session.createDocument(doc);
         TransactionHelper.commitOrRollbackTransaction();

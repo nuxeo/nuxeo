@@ -118,8 +118,6 @@ public class TestMimetypeSniffing {
         assertEquals("application/visio", mimetypeRegistry.getMimetypeFromExtension("vst"));
         assertEquals("application/visio", mimetypeRegistry.getMimetypeFromExtension("vst"));
         assertEquals("application/visio", mimetypeRegistry.getMimetypeFromFilename("test-data/hello.vsd"));
-        assertEquals("application/visio",
-                mimetypeRegistry.getMimetypeFromFile(getFileFromResource("test-data/hello.vsd")));
     }
 
     // CSV file

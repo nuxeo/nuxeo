@@ -244,9 +244,13 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
                 }
                 for (int i = 0; i < n; i++) {
                     if (bytes[i] == 0) {
-                        mimeType = "application/octet-stream";
-                        break;
+                        return DEFAULT_MIMETYPE;
                     }
+                }
+                // MagicMatch wrongly parses XML with attributes in the xml declaration as text/plain
+                // MagicMatch is old and not maintained so this is a frugal effort to patch things up.
+                if (new String(bytes, java.nio.charset.StandardCharsets.UTF_8).startsWith("<?xml ")) {
+                    return XML_MIMETYPE;
                 }
             }
             return mimeType;

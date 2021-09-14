@@ -219,11 +219,6 @@ public class TestMimetypeRegistryService {
                 "default/mimetype");
         assertEquals("default/mimetype", mimetype);
 
-        // test ambiguous file extension with wordml sniffing
-        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("sample-wordml.xml", getWordMLBlob(),
-                "default/mimetype");
-        assertEquals("application/msword", mimetype);
-
         // test ambiguous file extension with empty file
         mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("sample-wordml.xml", Blobs.createBlob(""),
                 "default/mimetype");
@@ -337,6 +332,14 @@ public class TestMimetypeRegistryService {
         assertTrue(mimetypeRegistryService.isMimeTypeNormalized("text/plain"));
         assertFalse(mimetypeRegistryService.isMimeTypeNormalized("application/x-photoshop"));
         assertFalse(mimetypeRegistryService.isMimeTypeNormalized("image/photoshop"));
+    }
+
+    @Test
+    public void iCanDetectXMLwithAttributes() {
+        File file = FileUtils.getResourceFileFromContext("test-data/xmlSimple.bin");
+        assertEquals("text/xml", mimetypeRegistryService.getMimetypeFromFile(file));
+        file = FileUtils.getResourceFileFromContext("test-data/xml.bin");
+        assertEquals("text/xml", mimetypeRegistryService.getMimetypeFromFile(file));
     }
 
     protected void verifyNormalizedMimetype(String expectedNormalizedMimetype, String mimetype) {
