@@ -618,7 +618,7 @@ public abstract class AbstractWorkManagerTest {
     public void testFatWork() throws InterruptedException {
         FatWork fatWorkSlim = new FatWork("slim", 1_000);
         service.schedule(fatWorkSlim);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 200L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
 
         FatWork fatWork = new FatWork("fatty", 4_000_000);
