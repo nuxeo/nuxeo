@@ -9,6 +9,11 @@
       class="org.nuxeo.wopi.WOPIDiscoveryRefreshListener">
       <event>refreshWOPIDiscovery</event>
     </listener>
+    <listener name="wopiDirtyBlobListener" async="false" postCommit="false"
+              class="org.nuxeo.wopi.DirtyBlobListener">
+      <event>beforeDocumentModification</event>
+    </listener>
+
   </extension>
 
 </component>

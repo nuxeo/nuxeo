@@ -1243,6 +1243,42 @@ public class TestFilesEndpoint {
         }
     }
 
+    // NXP-30585
+    @Test
+    public void testItemVersionWithBlobUpdate() throws IOException {
+        // file:content
+        try (CloseableClientResponse response = get(johnToken, blobDocFileId)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("0", node.get("Version").asText());
+        }
+
+        DocumentModel doc = session.getDocument(blobDoc.getRef());
+        doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) Blobs.createBlob("foo"));
+        session.saveDocument(doc);
+        transactionalFeature.nextTransaction();
+
+        try (CloseableClientResponse response = get(johnToken, blobDocFileId)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("1", node.get("Version").asText());
+        }
+
+        // files:files/0/file
+        try (CloseableClientResponse response = get(johnToken, multipleBlobsDocAttachementId)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("0", node.get("Version").asText());
+        }
+
+        doc = session.getDocument(multipleBlobsDoc.getRef());
+        doc.setPropertyValue(FILES_FIRST_FILE_PROPERTY, (Serializable) Blobs.createBlob("foo"));
+        session.saveDocument(doc);
+        transactionalFeature.nextTransaction();
+
+        try (CloseableClientResponse response = get(johnToken, multipleBlobsDocAttachementId)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("1", node.get("Version").asText());
+        }
+    }
+
     protected void checkPostNotFound(Map<String, String> headers) {
         checkPostNotFound(headers, "");
     }
