@@ -16,7 +16,11 @@
       </#if>
 
       <#if isFolder>
+        <#if accessSecured>
+          <a class="action_bar" title="${docShare.title}" href="${basePath}/easyshare/${docShare.id}?a=${encryptedAccessCode}&s=${encryptedSalt}&j=${encryptedJSessionId}"> ${Context.getMessage("easyshare.label.backToTheRoot")}</a>
+        <#else>
           <a class="action_bar" title="${docShare.title}" href="${basePath}/easyshare/${docShare.id}"> ${Context.getMessage("easyshare.label.backToTheRoot")}</a>
+        </#if>
       </#if>
 
       <div class="shared-items">
@@ -24,12 +28,20 @@
           <#assign filename=This.getFileName(doc)>
 
           <#if doc.isFolder>
-          <a class="item" title="${filename}" href="${basePath}/easyshare/${docShare.id}/${doc.id}">
+            <#if accessSecured>
+              <a class="item" title="${filename}" href="${basePath}/easyshare/${docShare.id}/${doc.id}?a=${encryptedAccessCode}&s=${encryptedSalt}&j=${encryptedJSessionId}">
+            <#else>
+              <a class="item" title="${filename}" href="${basePath}/easyshare/${docShare.id}/${doc.id}">
+            </#if>
             <span class="document">
             <i class="icon-folder"></i>${doc.title}
             </span>
           <#else>
-          <a class="item" title="${filename}" target="_blank" href="${basePath}/easyshare/${docShare.id}/${doc.id}/${filename}">
+            <#if accessSecured>
+              <a class="item" title="${filename}" target="_blank" href="${basePath}/easyshare/${docShare.id}/${doc.id}/${filename}?a=${encryptedAccessCode}&s=${encryptedSalt}&j=${encryptedJSessionId}">
+            <#else>
+              <a class="item" title="${filename}" target="_blank" href="${basePath}/easyshare/${docShare.id}/${doc.id}/${filename}">
+            </#if>
             <span class="document">
             <i class="icon-file"></i>${doc.title}<#if filename != doc.title> - ${filename}</#if>
           </span>

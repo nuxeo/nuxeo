@@ -5,4 +5,6 @@
   <xs:element name="contactEmail" type="xs:string" />
   <xs:element name="shareComment" type="xs:string" />
   <xs:element name="hasNotification" type="xs:boolean" default="true" />
+  <xs:element name="accessCodeRequired" type="xs:boolean" default="false"/>
+  <xs:element name="accessCode" type="xs:string" />
 </xs:schema>
