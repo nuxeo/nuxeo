@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -106,22 +107,93 @@ public class AuthenticationTokensTest extends BaseTest {
     }
 
     @Test
-    public void itCanCreateTokens() throws Exception {
+    public void itCanCreateTextTokens() throws Exception {
         // acquire a token
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         params.put("application", Collections.singletonList("app"));
         params.put("deviceId", Collections.singletonList("device"));
         params.put("permission", Collections.singletonList("rw"));
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "/token", null, params, null, null)) {
+        String tokenId = null;
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/token", null, params, null, null,
+                new String[] { MediaType.TEXT_PLAIN })) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-            String tokenId = response.getEntity(String.class);
+            tokenId = response.getEntity(String.class);
             assertFalse(tokenId.isEmpty());
+            assertFalse(tokenId.startsWith("\""));
+            assertFalse(tokenId.endsWith("\""));
+            assertTrue(MediaType.TEXT_PLAIN_TYPE.isCompatible(response.getType()));
         }
 
         // check tokens for current user
         List<JsonNode> tokens = getTokens();
         assertEquals(1, tokens.size());
         JsonNode token = tokens.get(0);
+        assertEquals(tokenId, token.get("id").textValue());
+        assertEquals("app", token.get("application").textValue());
+        assertEquals("device", token.get("deviceId").textValue());
+        assertEquals("rw", token.get("permission").textValue());
+        assertFalse(token.get("creationDate").textValue().isEmpty());
+        assertFalse(token.get("username").textValue().isEmpty());
+    }
+
+    @Test
+    public void itCanCreateJSONTokens() throws Exception {
+        // acquire a token
+        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+        params.put("application", Collections.singletonList("app"));
+        params.put("deviceId", Collections.singletonList("device"));
+        params.put("permission", Collections.singletonList("rw"));
+        String tokenId = null;
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/token", null, params, null, null,
+                new String[] { MediaType.APPLICATION_JSON })) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            tokenId = response.getEntity(String.class);
+            assertFalse(tokenId.isEmpty());
+            assertTrue(tokenId.startsWith("\""));
+            assertTrue(tokenId.endsWith("\""));
+            assertTrue(MediaType.APPLICATION_JSON_TYPE.isCompatible(response.getType()));
+        }
+
+        // check tokens for current user
+        List<JsonNode> tokens = getTokens();
+        assertEquals(1, tokens.size());
+        JsonNode token = tokens.get(0);
+        assertEquals(tokenId.substring(1, tokenId.length() - 1), token.get("id").textValue());
+        assertEquals("app", token.get("application").textValue());
+        assertEquals("device", token.get("deviceId").textValue());
+        assertEquals("rw", token.get("permission").textValue());
+        assertFalse(token.get("creationDate").textValue().isEmpty());
+        assertFalse(token.get("username").textValue().isEmpty());
+    }
+
+    @Test
+    public void itCanCreateDetailedJSONTokens() throws Exception {
+        // acquire a token
+        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+        params.put("application", Collections.singletonList("app"));
+        params.put("deviceId", Collections.singletonList("device"));
+        params.put("permission", Collections.singletonList("rw"));
+        params.put("detail", Collections.singletonList("true"));
+        String tokenId = null;
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/token", null, params, null, null,
+                new String[] { MediaType.APPLICATION_JSON })) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode respToken = mapper.readTree(response.getEntityInputStream());
+            assertTrue(MediaType.APPLICATION_JSON_TYPE.isCompatible(response.getType()));
+            assertEquals("app", respToken.get("application").textValue());
+            assertEquals("device", respToken.get("deviceId").textValue());
+            assertEquals("rw", respToken.get("permission").textValue());
+            assertFalse(respToken.get("creationDate").textValue().isEmpty());
+            assertFalse(respToken.get("username").textValue().isEmpty());
+            assertFalse(respToken.get("id").textValue().isEmpty());
+            tokenId = respToken.get("id").textValue();
+        }
+
+        // check tokens for current user
+        List<JsonNode> tokens = getTokens();
+        assertEquals(1, tokens.size());
+        JsonNode token = tokens.get(0);
+        assertEquals(tokenId, token.get("id").textValue());
         assertEquals("app", token.get("application").textValue());
         assertEquals("device", token.get("deviceId").textValue());
         assertEquals("rw", token.get("permission").textValue());
