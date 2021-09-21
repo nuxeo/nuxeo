@@ -76,6 +76,7 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -2102,6 +2103,14 @@ public abstract class NuxeoLauncher {
                         configurationGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE,
                                 "true"));
                 return doStart(logProcessOutput);
+            }
+
+            // clean up temporary directory if needed
+            CryptoProperties userConfig = configurationGenerator.getUserConfig();
+            if (Boolean.parseBoolean(userConfig.getProperty("nuxeo.startup.clean.tmp.dir", "false"))) {
+                File tmpFile = new File(userConfig.getProperty(Environment.NUXEO_TMP_DIR));
+                log.info("Deleting content of temporary directory: " + tmpFile);
+                FileUtils.cleanDirectory(tmpFile);
             }
 
             start(logProcessOutput);
