@@ -49,5 +49,9 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <property schema="oauth2Token" name="accessToken" indexOrder="ascending" />
+    <property schema="oauth2Token" name="serviceName" indexOrder="ascending" />
+  </extension>
 
 </component>
