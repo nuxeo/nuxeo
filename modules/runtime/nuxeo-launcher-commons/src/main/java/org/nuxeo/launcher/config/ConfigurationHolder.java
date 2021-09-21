@@ -139,7 +139,7 @@ public class ConfigurationHolder {
         return getPropertyAsPath(Environment.NUXEO_PID_DIR);
     }
 
-    protected Path getTmpPath() {
+    public Path getTmpPath() {
         return getPropertyAsPath(Environment.NUXEO_TMP_DIR);
     }
 

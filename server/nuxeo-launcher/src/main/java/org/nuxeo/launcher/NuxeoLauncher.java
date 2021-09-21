@@ -35,6 +35,7 @@ import static org.nuxeo.launcher.config.ConfigurationConstants.ENV_NUXEO_ENVIRON
 import static org.nuxeo.launcher.config.ConfigurationConstants.ENV_NUXEO_PROFILES;
 import static org.nuxeo.launcher.config.ConfigurationConstants.FILE_NUXEO_CONF;
 import static org.nuxeo.launcher.config.ConfigurationConstants.FILE_NUXEO_DEFAULTS;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_STARTUP_CLEAN_TMP_DIRECTORY;
 import static org.nuxeo.launcher.config.ConfigurationConstants.TOMCAT_STARTUP_CLASS;
 
 import java.io.Console;
@@ -82,6 +83,7 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1679,6 +1681,15 @@ public class NuxeoLauncher {
                 configure();
                 configurationGenerator.verifyInstallation();
             }
+
+            // clean up temporary directory if needed
+            var configHolder = configurationGenerator.getConfigurationHolder();
+            if (configHolder.getPropertyAsBoolean(PARAM_STARTUP_CLEAN_TMP_DIRECTORY)) {
+                var tmpPath = configHolder.getTmpPath();
+                log.info("Deleting content of temporary directory: {}", tmpPath);
+                FileUtils.cleanDirectory(tmpPath.toFile());
+            }
+
             return start(logProcessOutput);
         } catch (ConfigurationException e) {
             throw new NuxeoLauncherException("Could not run configuration: " + e.getMessage(), EXIT_CODE_NOT_CONFIGURED,

@@ -58,6 +58,9 @@ public final class ConfigurationConstants {
 
     public static final String PARAM_LOOPBACK_URL = "nuxeo.loopback.url";
 
+    /** @since 2021.9 */
+    public static final String PARAM_STARTUP_CLEAN_TMP_DIRECTORY = "nuxeo.startup.clean.tmp.dir";
+
     public static final String PARAM_TEMPLATE_DBTYPE = "nuxeo.db.type";
 
     public static final String PARAM_TEMPLATES_FREEMARKER_EXTENSIONS = "nuxeo.freemarker_parsing_extensions";
