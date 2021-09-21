@@ -259,15 +259,6 @@ pipeline {
             **/target/failsafe-reports/*.xml,
             **/target/surefire-reports/*.xml
           '''
-          doArchiveArtifacts('''
-            **/target/failsafe-reports/*,
-            **/target/*.png,
-            **/target/screenshot*.html,
-            **/target/*.json,
-            **/target/results/result-*.html,
-            **/*.log,
-            **/nxserver/config/distribution.properties
-          ''')
         }
         success {
           setGitHubBuildStatus('addons/ftests', 'Addons ftests', 'SUCCESS')
