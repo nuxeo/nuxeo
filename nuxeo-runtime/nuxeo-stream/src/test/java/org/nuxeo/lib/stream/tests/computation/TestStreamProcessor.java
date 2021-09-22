@@ -292,6 +292,7 @@ public abstract class TestStreamProcessor {
         testComplexTopo(101, 8, 1);
     }
 
+    @Ignore("NXP-30564")
     @Test
     public void testComplexTopoManyRecordsOneThreadManyPartitions() throws Exception {
         testComplexTopo(100, 6, 8);
