@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.api.impl;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
@@ -31,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.local.DummyLoginFeature;
 import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
+import org.nuxeo.ecm.core.schema.PropertyCharacteristicHandler;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -200,6 +203,17 @@ public class TestDocumentModelWithSecuredProperty {
         doc.setProperty(SECURED_SCHEMA, "array", List.of("test secure1", "test secure2"));
         assertArrayEquals(new String[] { "test secure1", "test secure2" },
                 (String[]) doc.getProperty(SECURED_SCHEMA, "array"));
+    }
+
+    // NXP-30617
+    @Test
+    @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-documentmodel-secured-types-override-contrib.xml")
+    public void testOverrideSecuredProperty() {
+        var propertyCharacteristicHandler = Framework.getService(PropertyCharacteristicHandler.class);
+        // assert an overridden property and a non overridden property because the regression makes the property
+        // characteristics emptied and secured=false is the default
+        assertFalse(propertyCharacteristicHandler.isSecured("secured", "scalar"));
+        assertTrue(propertyCharacteristicHandler.isSecured("secured", "complex"));
     }
 
 }

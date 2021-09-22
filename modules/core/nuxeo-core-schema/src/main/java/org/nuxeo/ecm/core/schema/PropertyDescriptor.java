@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.schema;
 
-import static java.util.Objects.requireNonNullElse;
+import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -114,10 +114,10 @@ public class PropertyDescriptor implements Descriptor {
         PropertyDescriptor merged = new PropertyDescriptor();
         merged.schema = schema;
         merged.name = name;
-        merged.secured = requireNonNullElse(other.secured, secured);
-        merged.deprecation = requireNonNullElse(other.deprecation, deprecation);
-        merged.fallback = requireNonNullElse(other.fallback, fallback);
-        merged.indexOrder = requireNonNullElse(other.indexOrder, indexOrder);
+        merged.secured = firstNonNull(other.secured, secured);
+        merged.deprecation = firstNonNull(other.deprecation, deprecation);
+        merged.fallback = firstNonNull(other.fallback, fallback);
+        merged.indexOrder = firstNonNull(other.indexOrder, indexOrder);
         return merged;
     }
 
