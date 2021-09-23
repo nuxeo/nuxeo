@@ -43,6 +43,7 @@ import org.nuxeo.ecm.blob.CloudBlobStoreConfiguration;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.sql.S3Utils;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.aws.AWSConfigurationService;
 import org.nuxeo.runtime.aws.NuxeoAWSRegionProvider;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -340,6 +341,10 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         }
         if (socketTimeout >= 0) { // 0 is allowed
             clientConfiguration.setSocketTimeout(socketTimeout);
+        }
+        AWSConfigurationService service = Framework.getService(AWSConfigurationService.class);
+        if (service != null) {
+            service.configureSSL(clientConfiguration);
         }
         return clientConfiguration;
     }

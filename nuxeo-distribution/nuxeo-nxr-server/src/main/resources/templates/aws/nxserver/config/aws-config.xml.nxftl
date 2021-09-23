@@ -22,6 +22,24 @@
 <#elseif (nuxeo.s3storage.region)?has_content>
       <region>${nuxeo.s3storage.region}</region>
 </#if>
+<#if (nuxeo.aws.trustStorePath)?has_content>
+      <trustStorePath>${nuxeo.aws.trustStorePath}</trustStorePath>
+</#if>
+<#if (nuxeo.aws.trustStorePassword)?has_content>
+      <trustStorePassword>${nuxeo.aws.trustStorePassword}</trustStorePassword>
+</#if>
+<#if (nuxeo.aws.trustStoreType)?has_content>
+      <trustStoreType>${nuxeo.aws.trustStoreType}</trustStoreType>
+</#if>
+<#if (nuxeo.aws.keyStorePath)?has_content>
+      <keyStorePath>${nuxeo.aws.keyStorePath}</keyStorePath>
+</#if>
+<#if (nuxeo.aws.keyStorePassword)?has_content>
+      <keyStorePassword>${nuxeo.aws.keyStorePassword}</keyStorePassword>
+</#if>
+<#if (nuxeo.aws.keyStoreType)?has_content>
+      <keyStoreType>${nuxeo.aws.keyStoreType}</keyStoreType>
+</#if>
     </configuration>
   </extension>
 

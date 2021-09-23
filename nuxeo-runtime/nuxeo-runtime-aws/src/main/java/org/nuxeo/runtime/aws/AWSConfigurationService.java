@@ -19,6 +19,7 @@
  */
 package org.nuxeo.runtime.aws;
 
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 
 /**
@@ -45,6 +46,25 @@ public interface AWSConfigurationService {
      * @since 11.1
      */
     AWSCredentials getAWSCredentials(String id);
+
+    /**
+     * Enriches the given client configuration with an SSL socket factory from the default configuration.
+     *
+     * @param config the configuration to enrich
+     * @since 2021.10
+     */
+    default void configureSSL(ClientConfiguration config) {
+        configureSSL(null, config);
+    }
+
+    /**
+     * Enriches the given client configuration with an SSL socket factory from the given configuration.
+     *
+     * @param id the custom configuration id
+     * @param config the configuration to enrich
+     * @since 2021.10
+     */
+    void configureSSL(String id, ClientConfiguration config);
 
     /**
      * Gets the AWS Region for the default configuration.

@@ -13,6 +13,12 @@
           <accessKeyId>MY_ACCESS_KEY</accessKeyId>
           <secretKey>MY_SECRET_KEY</secretKey>
           <region>MY_REGION</region>
+          <trustStorePath>MY_TRUSTSTORE_PATH</trustStorePath>
+          <trustStorePassword>MY_TRUSTSTORE_PASSWORD</trustStorePassword>
+          <trustStoreType>MY_TRUSTSTORE_TYPE</trustStoreType>
+          <keyStorePath>MY_KEYSTORE_PATH</keyStorePath>
+          <keyStorePassword>MY_KEYSTORE_PASSWORD</keyStorePassword>
+          <keyStoreType>MY_KEYSTORE_TYPE</keyStoreType>
         </configuration>
       </code>
       If the configuration id is not present, "default" is used.

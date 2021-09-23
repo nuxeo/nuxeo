@@ -45,9 +45,63 @@ public class AWSConfigurationDescriptor implements Descriptor {
     @XNode("region")
     protected String region;
 
+    /** @since 2021.10 */
+    @XNode("trustStorePath")
+    protected String trustStorePath;
+
+    /** @since 2021.10 */
+    @XNode("trustStorePassword")
+    protected String trustStorePassword;
+
+    /** @since 2021.10 */
+    @XNode("trustStoreType")
+    protected String trustStoreType;
+
+    /** @since 2021.10 */
+    @XNode("keyStorePath")
+    protected String keyStorePath;
+
+    /** @since 2021.10 */
+    @XNode("keyStorePassword")
+    protected String keyStorePassword;
+
+    /** @since 2021.10 */
+    @XNode("keyStoreType")
+    protected String keyStoreType;
+
     @Override
     public String getId() {
         return id;
+    }
+
+    /** @since 2021.10 */
+    public String getTrustStorePath() {
+        return trustStorePath;
+    }
+
+    /** @since 2021.10 */
+    public String getTrustStorePassword() {
+        return trustStorePassword;
+    }
+
+    /** @since 2021.10 */
+    public String getTrustStoreType() {
+        return trustStoreType;
+    }
+
+    /** @since 2021.10 */
+    public String getKeyStorePath() {
+        return keyStorePath;
+    }
+
+    /** @since 2021.10 */
+    public String getKeyStorePassword() {
+        return keyStorePassword;
+    }
+
+    /** @since 2021.10 */
+    public String getKeyStoreType() {
+        return keyStoreType;
     }
 
     public String getAccessKeyId() {
@@ -74,6 +128,12 @@ public class AWSConfigurationDescriptor implements Descriptor {
         merged.secretKey = defaultString(other.secretKey, secretKey);
         merged.sessionToken = defaultString(other.sessionToken, sessionToken);
         merged.region = defaultString(other.region, region);
+        merged.trustStorePath = defaultString(other.trustStorePath, trustStorePath);
+        merged.trustStorePassword = defaultString(other.trustStorePassword, trustStorePassword);
+        merged.trustStoreType = defaultString(other.trustStoreType, trustStoreType);
+        merged.keyStorePath = defaultString(other.keyStorePath, keyStorePath);
+        merged.keyStorePassword = defaultString(other.keyStorePassword, keyStorePassword);
+        merged.keyStoreType = defaultString(other.keyStoreType, keyStoreType);
         return merged;
     }
 
