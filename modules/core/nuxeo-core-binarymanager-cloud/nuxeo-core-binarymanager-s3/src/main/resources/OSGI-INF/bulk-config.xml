@@ -4,13 +4,16 @@
   <require>org.nuxeo.runtime.stream.service</require>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="s3SetContentLength" bucketSize="100" batchSize="25" httpEnabled="true"/>
+    <action name="s3SetBlobLength" inputStream="bulk/s3SetBlobLength" bucketSize="100" batchSize="25" httpEnabled="true"
+      enabled="${binarymanager.bulk.s3SetBlobLength.enabled:=false}" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
-    <streamProcessor name="s3SetContentLength" class="org.nuxeo.ecm.core.bulk.S3SetContentLengthAction" logConfig="bulk"
-      defaultConcurrency="4" defaultPartitions="4">
-      <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
+    <streamProcessor name="s3SetBlobLength" class="org.nuxeo.ecm.core.bulk.S3SetBlobLengthAction"
+      defaultConcurrency="${binarymanager.bulk.s3SetBlobLength.concurrency:=2}"
+      defaultPartitions="${binarymanager.bulk.s3SetBlobLength.partitions:=4}"
+      enabled="${binarymanager.bulk.s3SetBlobLength.enabled:=false}">
+      <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="true" />
     </streamProcessor>
 
   </extension>

@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.bulk;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.bulk.S3SetContentLengthAction.ACTION_NAME;
+import static org.nuxeo.ecm.core.bulk.S3SetBlobLengthAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 
 import java.time.Duration;
@@ -48,8 +48,9 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3")
+@Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-bulk-contrib.xml")
 @RepositoryConfig(init = BlobDocumentSetRepositoryInit.class)
-public class TestSetContentLengthAction {
+public class TestSetBlobLengthAction {
 
     private static final Logger log = LogManager.getLogger(BulkScrollerComputation.class);
 
@@ -63,14 +64,15 @@ public class TestSetContentLengthAction {
     public TransactionalFeature txFeature;
 
     @Test
-    public void testSetContentLength() throws Exception {
+    public void testSetBlobLength() throws Exception {
         // Note that content length is updated only on S3BinaryManager
         String nxql = "SELECT * from File";
         dumpDocs("BEFORE", nxql);
-        String commandId = service.submit(new Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
-                                                                        .user("Administrator")
-                                                                        .param("force", true)
-                                                                        .build());
+        String commandId = service.submit(
+                new Builder(ACTION_NAME, nxql, "Administrator").repository(session.getRepositoryName())
+                                                               .param("force", true)
+                                                               .param("xpath", "content")
+                                                               .build());
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(60)));
         BulkStatus status = service.getStatus(commandId);
         log.info(status);
