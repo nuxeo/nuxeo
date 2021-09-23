@@ -22,8 +22,22 @@ package org.nuxeo.runtime.aws;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.runtime.aws.AWSConfigurationDescriptor.DEFAULT_CONFIG_ID;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+
+import javax.net.ssl.SSLContext;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.BasicSessionCredentials;
@@ -77,6 +91,61 @@ public class AWSConfigurationServiceImpl extends DefaultComponent implements AWS
             }
         }
         return null;
+    }
+
+    /**
+     * Configures a client configuration with a custom socket factory.
+     *
+     * @since 2021.10
+     */
+    @Override
+    public void configureSSL(String id, ClientConfiguration config) {
+        if (id == null) {
+            id = DEFAULT_CONFIG_ID;
+        }
+        SSLContext sslContext = getSSLContext(getDescriptor(XP_CONFIGURATION, id));
+        if (sslContext != null) {
+            SSLConnectionSocketFactory factory = new SSLConnectionSocketFactory(sslContext);
+            config.getApacheHttpClientConfig().setSslSocketFactory(factory);
+        }
+    }
+
+    protected SSLContext getSSLContext(AWSConfigurationDescriptor descriptor) {
+        try {
+            KeyStore trustStore = loadKeyStore(descriptor.trustStorePath, descriptor.trustStorePassword,
+                    descriptor.trustStoreType);
+            KeyStore keyStore = loadKeyStore(descriptor.keyStorePath, descriptor.keyStorePassword,
+                    descriptor.keyStoreType);
+            if (trustStore == null && keyStore == null) {
+                return null;
+            }
+
+            SSLContextBuilder sslContextBuilder = SSLContexts.custom();
+            if (trustStore != null) {
+                sslContextBuilder.loadTrustMaterial(trustStore, null);
+            }
+            if (keyStore != null) {
+                sslContextBuilder.loadKeyMaterial(keyStore, StringUtils.isBlank(descriptor.keyStorePassword) ? null
+                        : descriptor.keyStorePassword.toCharArray());
+            }
+            return sslContextBuilder.build();
+        } catch (GeneralSecurityException | IOException e) {
+            throw new RuntimeException("Cannot setup SSL context", e);
+        }
+    }
+
+    protected KeyStore loadKeyStore(String path, String password, String type)
+            throws GeneralSecurityException, IOException {
+        if (StringUtils.isBlank(path)) {
+            return null;
+        }
+        String keyStoreType = StringUtils.defaultIfBlank(type, KeyStore.getDefaultType());
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        char[] passwordChars = StringUtils.isBlank(password) ? null : password.toCharArray();
+        try (InputStream is = Files.newInputStream(Paths.get(path))) {
+            keyStore.load(is, passwordChars);
+        }
+        return keyStore;
     }
 
 }

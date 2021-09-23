@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.aws.AWSConfigurationService;
 import org.nuxeo.runtime.aws.NuxeoAWSRegionProvider;
 
 import com.amazonaws.AmazonClientException;
@@ -313,6 +314,11 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
         }
         if (socketTimeout >= 0) { // 0 is allowed
             clientConfiguration.setSocketTimeout(socketTimeout);
+        }
+
+        AWSConfigurationService service = Framework.getService(AWSConfigurationService.class);
+        if (service != null) {
+            service.configureSSL(clientConfiguration);
         }
 
         // set up encryption
