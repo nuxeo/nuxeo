@@ -84,6 +84,25 @@ public class TestAutoVersioning extends AbstractTestVersioning {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-always-minor.xml")
+    public void testDoNotVersionRecords() {
+        // No initial state defined by policy
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
+        // creation should create a version
+        doc.setPropertyValue("dc:title", "A");
+        doc = session.createDocument(doc);
+        assertFalse(doc.isCheckedOut());
+        assertEquals("0.1", doc.getVersionLabel());
+
+        session.makeRecord(doc.getRef());
+        // an edition should not create version since it is a record
+        doc.setPropertyValue("dc:title", "B");
+        doc = session.saveDocument(doc);
+        assertTrue(doc.isCheckedOut());
+        assertEquals("0.1+", doc.getVersionLabel());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-always-minor.xml")
     public void testAlwaysVersionMinor() {
         // No initial state defined by policy
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");

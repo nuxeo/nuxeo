@@ -1648,10 +1648,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             // compute auto versioning before update - here we create a version of document in order to save previous
             // state it's useful if we want to implement rules like create a version if last contributor is not the
             // same previous one. So we want to trigger this mechanism if and only if:
+            // - the document is not a record
             // - previous document is checkouted
             // - we don't ask for a version without updating the document (manual versioning only)
             // no need to fire event, as we use DocumentModel API it's already done
-            if (previousDocModel.isCheckedOut() && (!manualVersioning || dirty)) {
+            if (!docModel.isRecord() && previousDocModel.isCheckedOut() && (!manualVersioning || dirty)) {
                 getVersioningService().doAutomaticVersioning(previousDocModel, docModel, true);
             }
             // pre-save versioning
@@ -1689,7 +1690,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
             if (manualVersioning) {
                 checkedInDoc = getVersioningService().doPostSave(this, doc, versioningOption, checkinComment, options);
-            } else {
+            } else if(!docModel.isRecord()) {
                 // compute auto versioning - only if it is not deactivated by manual versioning
                 // no need to fire event, as we use DocumentModel API it's already done
                 getVersioningService().doAutomaticVersioning(previousDocModel, docModel, false);
