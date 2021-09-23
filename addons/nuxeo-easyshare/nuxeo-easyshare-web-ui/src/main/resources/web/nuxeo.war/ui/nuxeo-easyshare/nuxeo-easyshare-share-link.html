@@ -22,9 +22,11 @@ limitations under the License.
 -->
 <dom-module id="nuxeo-easyshare-share-link">
   <template>
-    <style>
-      :host {
-        display: inline-block;
+    <style include="nuxeo-action-button-styles iron-flex">
+      #permalinkCopy, #easyshareLinkCopy {
+        cursor: pointer;
+        color: var(--nuxeo-primary-color, #0066ff);
+        margin-left: 2em;
       }
 
       .heading {
@@ -32,91 +34,158 @@ limitations under the License.
         @apply --layout-center;
         @apply --layout-justified;
       }
+
+      .row {
+        @apply --layout-horizontal;
+        @apply --layout-justified;
+        align-items: center;
+      }
+
+      nuxeo-input {
+        flex: 1;
+      }
+
     </style>
     <nuxeo-connection id="nxcon"></nuxeo-connection>
 
-    <template is="dom-if" if="[[_isAvailable(document)]]">
-      <div class="action" on-tap="_toggleDialog">
-        <paper-icon-button id="shareBtn" icon="[[icon]]" noink></paper-icon-button>
-        <span class="label" hidden$="[[!showLabel]]">[[i18n('shareButton.tooltip')]]</span>
-      </div>
-      <nuxeo-tooltip for="shareBtn">[[i18n('shareButton.tooltip')]]</nuxeo-tooltip>
-    </template>
+    <dom-if if="[[_isAvailable(document)]]">
+      <template>
+        <div class="action" on-click="_toggleDialog">
+          <paper-icon-button icon="[[icon]]" noink></paper-icon-button>
+          <span class="label" hidden$="[[!showLabel]]">[[_label]]</span>
+        </div>
+        <nuxeo-tooltip>[[_label]]</nuxeo-tooltip>
+      </template>
+    </dom-if>
 
     <nuxeo-dialog id="dialog" with-backdrop>
       <div class="heading">
         <h2>[[i18n('shareButton.dialog.heading')]]</h2>
       </div>
-      <nuxeo-input id="permalink"
-                   label="[[i18n('easyshare.copy.label', document.properties.dc:title)]]"
-                   value="[[_buildPermalink(document)]]"
-                   autofocus
-                   readonly>
-      </nuxeo-input>
 
-      <template is="dom-if" if="[[_isEasyshare(document)]]">
-        <nuxeo-input id="easyshareLink"
-                     label="[[i18n('easysharefolder.share', document.properties.dc:title)]]"
-                     value="[[_buildEasysharelink(document)]]"
-                     autofocus
-                     readonly>
+      <div class="row">
+        <nuxeo-input id="permalink"
+          label="[[i18n('easyshare.copy.label', document.properties.dc:title)]]"
+          value="[[_buildPermalink(document)]]"
+          on-click="_copyPermalink"
+          autofocus
+          readonly>
         </nuxeo-input>
+        <span id="permalinkCopy" class="copyLink" on-click="_copyPermalink">[[i18n('shareButton.operation.copy')]]</span>
+      </div>
+      <template is="dom-if" if="[[_isEasyshare(document)]]">
+        <div class="row">
+          <nuxeo-input id="easyshareLink"
+            label="[[i18n('easysharefolder.share', document.properties.dc:title)]]"
+            value="[[_buildEasysharelink(document)]]"
+            on-click="_copyEasysharelink"
+            autofocus
+            readonly>
+          </nuxeo-input>
+          <span id="easyshareLinkCopy" class="copyLink" on-click="_copyEasysharelink">[[i18n('shareButton.operation.copy')]]</span>
+        </div>
       </template>
       <div class="buttons">
         <paper-button dialog-dismiss>[[i18n('shareButton.dialog.close')]]</paper-button>
       </div>
     </nuxeo-dialog>
+
   </template>
   <script>
-    Polymer({
-      is: 'nuxeo-easyshare-share-link',
-      behaviors: [Nuxeo.I18nBehavior],
-      properties: {
-        /**
-         * Input document.
-         */
-        document: {
-          type: Object
-        },
+    {
+      class EasyShareButton extends Polymer.mixinBehaviors([Nuxeo.I18nBehavior], Nuxeo.Element) {
 
-        /**
-         * Icon to use (iconset_name:icon_name).
-         */
-        icon: {
-          type: String,
-          value: 'nuxeo:share'
-        },
+        static get is() {
+          return 'nuxeo-easyshare-share-link';
+        }
 
-        /**
-         * `true` if the action should display the label, `false` otherwise.
-         */
-        showLabel: {
-          type: Boolean,
-          value: false,
-        },
-      },
+        static get properties() {
+          return {
+            /**
+             * Input document.
+             */
+            document: Object,
 
-      _toggleDialog: function() {
-        this.$.dialog.toggle();
-        this.$.permalink.inputElement.inputElement.select();
-      },
+            /**
+             * Icon to use (iconset_name:icon_name).
+             */
+            icon: {
+              type: String,
+              value: 'nuxeo:share',
+            },
 
-      _isAvailable: function(document) {
-        return document;
-      },
+            /**
+             * `true` if the action should display the label, `false` otherwise.
+             */
+            showLabel: {
+              type: Boolean,
+              value: false,
+            },
 
-      _isEasyshare: function(document) {
-        return document && document.type === 'EasyShareFolder';
-      },
+            _label: {
+              type: String,
+              computed: '_computeLabel(i18n)',
+            },
+          };
+        }
 
-      _buildPermalink: function(document) {
-        return document ? location.origin + location.pathname + '#!/doc/' + document.uid : '';
-      },
+        _isAvailable(document) {
+          return document;
+        }
 
-      _buildEasysharelink: function(document) {
-        var baseUrl = location.origin + this.$.nxcon.url;
-        return document ? baseUrl + '/site/easyshare/' + this.document.uid : '';
+        _isEasyshare(document) {
+          return document && document.type === 'EasyShareFolder';
+        }
+
+        _computeLabel() {
+          return this.i18n('shareButton.tooltip');
+        }
+
+        _toggleDialog() {
+          this.$.dialog.toggle();
+          this._selectPermalink('permalink');
+        }
+
+        _buildEasysharelink(document) {
+          return document ? `${location.origin + this.$.nxcon.url}/site/easyshare/${document.uid}` : '';
+        }
+
+        _buildPermalink(document) {
+          return document ? `${location.origin + location.pathname}#!/doc/${document.uid}` : '';
+        }
+
+        _copyPermalink() {
+          this._copylink('permalink')
+        }
+
+        _copyEasysharelink() {
+          this._copylink('easyshareLink')
+        }
+
+        _copylink(id) {
+          this._selectPermalink(id);
+          if (!window.document.execCommand('copy')) {
+            return;
+          }
+
+          const links = this.shadowRoot.querySelectorAll('.copyLink');
+          links.forEach((link) => {
+            if (link.id === `${id}Copy`) {
+              link.innerText = this.i18n('shareButton.operation.copied');
+            } else {
+              link.innerText = this.i18n('shareButton.operation.copy');
+            }
+          });
+        }
+
+        _selectPermalink(id) {
+          this.shadowRoot.querySelector(`#${id}`).$.paperInput.inputElement.inputElement.select();
+        }
+
       }
-    });
+
+      customElements.define(EasyShareButton.is, EasyShareButton);
+      Nuxeo.EasyShareButton = EasyShareButton;
+    }
   </script>
 </dom-module>
