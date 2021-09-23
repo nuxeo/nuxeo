@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.s3.bulk.test.config" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.storage.s3.bulk.config</require>
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="s3SetBlobLength" bucketSize="3" batchSize="2" httpEnabled="true" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="s3SetBlobLength" class="org.nuxeo.ecm.core.bulk.S3SetBlobLengthAction" logConfig="bulk"
+      defaultConcurrency="2" defaultPartitions="4">
+      <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
+    </streamProcessor>
+
+  </extension>
+
+</component>

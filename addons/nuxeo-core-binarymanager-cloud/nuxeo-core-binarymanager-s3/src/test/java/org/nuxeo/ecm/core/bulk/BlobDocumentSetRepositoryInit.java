@@ -22,13 +22,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.blob.binary.Binary;
-import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 
 
 /**
- * @since 2021.8
+ * @since 2021.9
  */
 public class BlobDocumentSetRepositoryInit implements RepositoryInit {
     @Override
@@ -48,11 +47,23 @@ public class BlobDocumentSetRepositoryInit implements RepositoryInit {
         doc.setProperty("file", "content", blob);
         doc = session.createDocument(doc);
 
+        doc.setPropertyValue("dc:title", "new title");
+        // create versions
+        session.checkIn(doc.getRef(), VersioningOption.MINOR, "testing version");
+        session.checkOut(doc.getRef());
+        session.checkIn(doc.getRef(), VersioningOption.MINOR, "another version");
+
         doc = session.createDocumentModel(folder.getPathAsString(), "file-missing-length", "File");
         blob = new MissingLengthBlob("A blob with a missing length");
         blob.setFilename("test_file_missing_length.doc");
         doc.setProperty("file", "content", blob);
         doc = session.createDocument(doc);
+
+        // create proxy
+        DocumentModel folder2 = session.createDocumentModel("/", "folder", "Folder");
+        folder2 = session.createDocument(folder2);
+        DocumentModel proxy = session.createProxy(doc.getRef(), folder2.getRef());
+        proxy = session.saveDocument(proxy);
 
         doc = session.createDocumentModel(folder.getPathAsString(), "file-zero-length", "File");
         blob = new ZeroLengthBlob("A blob with an invalid length of 0");
