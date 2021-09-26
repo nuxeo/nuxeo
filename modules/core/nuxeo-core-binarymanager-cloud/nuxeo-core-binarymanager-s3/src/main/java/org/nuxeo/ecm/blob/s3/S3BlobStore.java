@@ -127,7 +127,7 @@ public class S3BlobStore extends AbstractBlobStore {
     /** If true, include the object version in the key. */
     protected final boolean useVersion;
 
-    protected final boolean useAsyncDigest;
+    protected volatile Boolean useAsyncDigest;
 
     protected final BinaryGarbageCollector gc;
 
@@ -156,7 +156,6 @@ public class S3BlobStore extends AbstractBlobStore {
         allowByteRange = config.getBooleanProperty(ALLOW_BYTE_RANGE);
         // don't use versions if we use deduplication (including managed case)
         useVersion = keyStrategy instanceof KeyStrategyDocId && isBucketVersioningEnabled();
-        useAsyncDigest = config.digestConfiguration.digestAsync && supportsAsyncDigest();
         gc = new S3BlobGarbageCollector();
     }
 
@@ -195,6 +194,13 @@ public class S3BlobStore extends AbstractBlobStore {
 
     @Override
     public boolean useAsyncDigest() {
+        if (useAsyncDigest == null) {
+            synchronized (this) {
+                if (useAsyncDigest == null) {
+                    useAsyncDigest = config.digestConfiguration.digestAsync && supportsAsyncDigest();
+                }
+            }
+        }
         return useAsyncDigest;
     }
 

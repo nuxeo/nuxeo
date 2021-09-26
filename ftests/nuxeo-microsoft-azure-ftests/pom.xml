@@ -23,6 +23,11 @@
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>ant-assembly-maven-plugin</artifactId>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/itests.xml</buildFile>
+          </buildFiles>
+        </configuration>
         <executions>
           <execution>
             <id>start-tomcat</id>

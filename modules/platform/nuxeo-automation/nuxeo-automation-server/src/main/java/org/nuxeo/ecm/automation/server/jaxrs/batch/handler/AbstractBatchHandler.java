@@ -72,6 +72,7 @@ public abstract class AbstractBatchHandler implements BatchHandler {
             throw new NuxeoException("Missing configuration property: " + PROP_TRANSIENT_STORE_NAME);
         }
         transientStoreName = properties.get(PROP_TRANSIENT_STORE_NAME);
+        getTransientStore(); // force transient store initialization
     }
 
     @Override

@@ -206,6 +206,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         releaseTTL = config.getSecondLevelTTL() * 60;
         targetMaxSize = config.getTargetMaxSizeMB() * 1024L * 1024;
         absoluteMaxSize = config.getAbsoluteMaxSizeMB() * 1024L * 1024;
+        getBlobProvider(); // force explicit registration of the blob provider
     }
 
     protected KeyValueStore getKeyValueStore() {
