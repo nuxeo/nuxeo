@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -60,7 +61,16 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
 
     public static final String UNKNOWN_TRANSLATED_VALUE_LABEL = "unknown translated value";
 
+    /** @since 2021.10 */
+    public static final Pattern FORBIDDEN_CHARACTERS = Pattern.compile("^(=|\\+|-|@|\\t|\\r)+");
+
     protected static final Pattern NEWLINE = Pattern.compile("\\R");
+
+    /** @since 2021.10 */
+    protected Function<String, String> sanitizer = Function.<String> identity()
+                                                           .andThen(this::replaceNewline)
+                                                           .andThen(
+                                                                   DocumentPropertyCSVWriter::removeFirstForbiddenCharacter);
 
     public DocumentPropertyCSVWriter() {
         super();
@@ -94,16 +104,16 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
         if (type instanceof BinaryType) {
             writeUnsupported(type, printer);
         } else {
-            String valueAsString = null;
             if (value == null) {
                 printer.print(null);
             } else {
-                valueAsString = type.encode(value);
-                valueAsString = replaceNewline(valueAsString);
+                String valueAsString = type.encode(value);
+                valueAsString = sanitize(valueAsString);
                 printer.print(valueAsString);
             }
             Directory vocabulary = DocumentModelCSVHelper.getVocabulary(type);
             if (vocabulary != null) {
+                String valueAsString = value == null ? null : type.encode(value);
                 writeScalarVocabularyProperty(valueAsString, vocabulary, printer);
             }
         }
@@ -139,7 +149,7 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
             } else {
                 String value = Arrays.stream(array)
                                      .map(itemType::encode)
-                                     .map(this::replaceNewline)
+                                     .map(this::sanitize)
                                      .collect(Collectors.joining(LIST_DELIMITER));
                 printer.print(value);
                 if (vocabulary != null) {
@@ -180,13 +190,13 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
             try {
                 // Check if it comes from a l10nxvocabulary, and return this value if it exists,
                 // or else return the id
-                return replaceNewline((String) entry.getProperty(schema, "label_en"));
+                return sanitize((String) entry.getProperty(schema, "label_en"));
             } catch (PropertyNotFoundException e1) {
-                return replaceNewline(value);
+                return sanitize(value);
             }
         }
         Locale locale = lang != null ? Locale.forLanguageTag(lang) : ctx.getLocale();
-        return replaceNewline(I18NUtils.getMessageString("messages", label, new Object[0], locale));
+        return sanitize(I18NUtils.getMessageString("messages", label, new Object[0], locale));
     }
 
     protected void writeUnsupported(Type type, CSVPrinter printer) throws IOException {
@@ -203,6 +213,16 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
             value = m.replaceAll(Matcher.quoteReplacement(replacement));
         }
         return value;
+    }
+
+    /** @since 2021.10 */
+    public static String removeFirstForbiddenCharacter(String value) {
+        return FORBIDDEN_CHARACTERS.matcher(value).replaceFirst("");
+    }
+
+    /** @since 2021.10 */
+    protected String sanitize(String value) {
+        return sanitizer.apply(value);
     }
 
 }
