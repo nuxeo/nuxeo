@@ -69,7 +69,7 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
     @Before
     public void setup() {
         document = session.createDocumentModel("/", "myDoc", "File");
-        document.setPropertyValue("dc:description", "There is a , in the description");
+        document.setPropertyValue("dc:description", "There is a , in the description"); // NOSONAR
         document.setPropertyValue("dc:contributors", new String[] { "John", "Jane" });
         document.setPropertyValue("dc:nature", "article");
         document.setPropertyValue("dc:coverage", "europe/France");
@@ -86,7 +86,7 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
     }
 
     @Test
-    public void testDefault() throws Exception {
+    public void testDefault() throws IOException {
         RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
         renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, Arrays.asList("dublincore"));
         CSVAssert csv = csvAssert(document, renderingCtx);
@@ -110,7 +110,7 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         csv.has("dc:coverage[label]").isEquals("France");
         csv.has("isRecord").isTrue();
         String expectedRetainUntil = ((GregorianCalendar) retainUntil).toZonedDateTime().toString();
-        csv.has("retainUntil").isEquals(expectedRetainUntil );
+        csv.has("retainUntil").isEquals(expectedRetainUntil);
         csv.has("hasLegalHold").isTrue();
         csv.has("isUnderRetentionOrLegalHold").isTrue();
     }
@@ -137,7 +137,7 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.csv.export.test:OSGI-INF/doc-type-with-vocabulary-contrib.xml")
-    public void testVocabularyPropertyNotFound() throws Exception {
+    public void testVocabularyPropertyNotFound() throws IOException {
         RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
         renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, Collections.singletonList("coverage"));
         CSVAssert csv = csvAssert(document, renderingCtx);
@@ -146,7 +146,7 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
     }
 
     @Test
-    public void testNewlineReplacement() throws Exception {
+    public void testNewlineReplacement() throws IOException {
         document.setPropertyValue("dc:description", "There is a \n in the description");
         session.saveDocument(document);
 
