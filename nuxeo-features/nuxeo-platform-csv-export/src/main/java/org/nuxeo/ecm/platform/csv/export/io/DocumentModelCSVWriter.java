@@ -102,7 +102,8 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
         printer.print(isVersion || isProxy ? doc.getVersionSeriesId() : null);
         printer.print(doc.getChangeToken());
         printer.print(doc.getRef() != null && doc.isTrashed());
-        printer.print(doc.getTitle());
+        String sanitizedTitle = DocumentPropertyCSVWriter.removeFirstForbiddenCharacter(doc.getTitle());
+        printer.print(sanitizedTitle);
         printer.print(doc.getVersionLabel());
         Lock lock = doc.getLockInfo();
         if (lock != null) {
