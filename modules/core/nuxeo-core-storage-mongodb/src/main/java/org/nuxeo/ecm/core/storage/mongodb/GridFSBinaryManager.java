@@ -209,20 +209,22 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
     protected Binary getBinary(InputStream in) throws IOException {
         // save the file to GridFS
         String inputName = "tmp-" + System.nanoTime();
+        BsonValue id;
+        String digest;
         try (in; GridFSUploadStream uploadStream = gridFSBucket.openUploadStream(inputName)) {
-            BsonValue id = uploadStream.getId();
-            String digest = storeAndDigest(in, uploadStream);
-            // if the digest is already known then reuse it instead
-            GridFSFile dbFile = gridFSBucket.find(Filters.eq(METADATA_PROPERTY_FILENAME, digest)).first();
-            if (dbFile == null) {
-                // no existing file, set its filename as the digest
-                gridFSBucket.rename(id, digest);
-            } else {
-                // file already existed, no need for the temporary one
-                gridFSBucket.delete(id);
-            }
-            return new GridFSBinary(digest, blobProviderId, this);
+            id = uploadStream.getId();
+            digest = storeAndDigest(in, uploadStream);
         }
+        // if the digest is already known then reuse it instead
+        GridFSFile dbFile = gridFSBucket.find(Filters.eq(METADATA_PROPERTY_FILENAME, digest)).first();
+        if (dbFile == null) {
+            // no existing file, set its filename as the digest
+            gridFSBucket.rename(id, digest);
+        } else {
+            // file already existed, no need for the temporary one
+            gridFSBucket.delete(id);
+        }
+        return new GridFSBinary(digest, blobProviderId, this);
     }
 
     @Override
