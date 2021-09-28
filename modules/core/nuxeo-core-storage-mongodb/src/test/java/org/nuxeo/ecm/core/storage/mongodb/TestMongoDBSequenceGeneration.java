@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2020-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,8 @@ public class TestMongoDBSequenceGeneration {
         desc.sequenceBlockSize = 5;
 
         // clear counters
-        MongoDatabase database = connectionService.getDatabase(MongoDBRepository.REPOSITORY_CONNECTION_PREFIX + desc.name);
+        MongoDatabase database = connectionService.getDatabase(
+                MongoDBRepository.REPOSITORY_CONNECTION_PREFIX + desc.name);
         MongoCollection<Document> countersColl = database.getCollection(desc.name + ".counters");
         countersColl.deleteMany(new Document());
 
@@ -79,13 +80,13 @@ public class TestMongoDBSequenceGeneration {
         assertEquals(expected, conn.generateNewId());
     }
 
-    protected void setCounter(MongoDBConnection conn, long value) {
+    protected void setCounter(long value) {
         MongoCollection<Document> countersColl = repo.getCountersCollection();
         countersColl.updateOne(Filters.eq(MONGODB_ID, COUNTER_NAME_UUID),
                 Updates.set(COUNTER_FIELD, Long.valueOf(value)));
     }
 
-    protected long getCounter(MongoDBConnection conn) {
+    protected long getCounter() {
         Bson filter = Filters.eq(MONGODB_ID, COUNTER_NAME_UUID);
         MongoCollection<Document> countersColl = repo.getCountersCollection();
         return countersColl.find(filter).first().getLong(COUNTER_FIELD);
@@ -96,7 +97,7 @@ public class TestMongoDBSequenceGeneration {
         setUp(IdType.sequence);
 
         // fake a previous non-0 counter
-        setCounter(conn1, 100);
+        setCounter(100);
 
         assertNext("101", conn1);
         assertNext("102", conn1);
@@ -157,10 +158,10 @@ public class TestMongoDBSequenceGeneration {
         assertEquals(0x175083c01a809285L, v15);
         assertEquals(0xa40480120d0192e0L, v16);
 
-        setCounter(conn1, v0);
+        setCounter(v0);
 
         assertNext("fc00d76d31ac01b4", conn1);
-        assertEquals(v5, getCounter(conn1));
+        assertEquals(v5, getCounter());
         assertNext("b054aa496997b4b7", conn1);
         // switch to repo 2
         assertNext("1ed241e350e8144f", conn2);
@@ -169,7 +170,7 @@ public class TestMongoDBSequenceGeneration {
         assertNext("5dbd6c0bc403561e", conn1);
         assertNext("28991f9897f91732", conn1);
         assertNext("b9862d97a94d699c", conn1);
-        assertEquals(v10, getCounter(conn1));
+        assertEquals(v10, getCounter());
         // repo1 starting next block
         assertNext("a95e2f283fe7c78d", conn1);
         // switch to repo 2
@@ -177,7 +178,7 @@ public class TestMongoDBSequenceGeneration {
         assertNext("d1c77fc7067e6858", conn2);
         assertNext("fe2e55f1dff38288", conn2);
         // repo2 starting next block
-        assertEquals(v15, getCounter(conn1));
+        assertEquals(v15, getCounter());
         assertNext("a40480120d0192e0", conn2);
     }
 

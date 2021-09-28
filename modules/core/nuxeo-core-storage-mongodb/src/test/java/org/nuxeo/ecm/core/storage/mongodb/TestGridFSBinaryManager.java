@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -120,7 +121,7 @@ public class TestGridFSBinaryManager {
         assertEquals(binary.getDigest(), binary2.getDigest());
         String content;
         try (InputStream in = binary2.getStream()) {
-            content = IOUtils.toString(in, "UTF-8");
+            content = IOUtils.toString(in, UTF_8);
         }
         assertEquals(CONTENT, content);
     }
@@ -130,7 +131,6 @@ public class TestGridFSBinaryManager {
         GridFSBinaryManager binaryManager = getBinaryManager();
 
         // store binary
-        CONTENT.getBytes("UTF-8");
         Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
 
@@ -157,7 +157,7 @@ public class TestGridFSBinaryManager {
         GridFSBinaryManager binaryManager = getBinaryManager();
 
         // store binary
-        byte[] bytes = CONTENT.getBytes("UTF-8");
+        byte[] bytes = CONTENT.getBytes(UTF_8);
         Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
         assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
@@ -219,7 +219,7 @@ public class TestGridFSBinaryManager {
     }
 
     protected static String toString(InputStream stream) throws IOException {
-        return IOUtils.toString(stream, "UTF-8");
+        return IOUtils.toString(stream, UTF_8);
     }
 
     @Test
