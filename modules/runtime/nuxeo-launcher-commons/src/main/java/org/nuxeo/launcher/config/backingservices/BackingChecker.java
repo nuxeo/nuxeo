@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.function.UnaryOperator;
 
 import org.nuxeo.common.xmap.XMap;
@@ -62,11 +63,30 @@ public interface BackingChecker {
     }
 
     /**
+     * Creates a descriptor instance for the specified file and descriptor class. The last parameter is used to register
+     * the descriptor classes to XMap when the desired descriptor is an abstract class.
+     *
+     * @since 2021.10
+     */
+    default <T> T getDescriptor(ConfigurationHolder configHolder, String configName, Class<T> klass,
+            Class<?>... klasses) throws ConfigurationException {
+        return getDescriptor(configHolder, configName, klass, UnaryOperator.identity(), klasses);
+    }
+
+    /**
+     * @since 2021.10
+     */
+    default <T> T getDescriptor(ConfigurationHolder configHolder, String configName, Class<T> klass,
+            UnaryOperator<String> replacer) throws ConfigurationException {
+        return getDescriptor(configHolder, configName, klass, replacer, new Class[] {});
+    }
+
+    /**
      * Creates a descriptor instance for the specified file and descriptor class.
      */
     @SuppressWarnings("unchecked")
     default <T> T getDescriptor(ConfigurationHolder configHolder, String configName, Class<T> klass,
-            UnaryOperator<String> replacer) throws ConfigurationException {
+            UnaryOperator<String> replacer, Class<?>... klasses) throws ConfigurationException {
         Path configPath = configHolder.getConfigurationPath().resolve(configName);
         if (Files.notExists(configPath)) {
             throw new ConfigurationException(
@@ -74,6 +94,7 @@ public interface BackingChecker {
         }
         XMap xmap = new XMap();
         xmap.register(klass);
+        List.of(klasses).forEach(xmap::register);
         try {
             String content = Files.readString(configPath, StandardCharsets.UTF_8);
             content = replacer.apply(content);
