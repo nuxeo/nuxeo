@@ -56,6 +56,12 @@ public class DBSInvalidations implements SerializableAccumulableInvalidations {
     public DBSInvalidations() {
     }
 
+    /** Copy constructor. */
+    public DBSInvalidations(DBSInvalidations other) {
+        this.all = other.all;
+        this.ids = other.ids == null ? null : new HashSet<>(other.ids);
+    }
+
     public DBSInvalidations(boolean all) {
         this.all = all;
     }
