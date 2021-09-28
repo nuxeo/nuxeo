@@ -1,0 +1,10 @@
+<component name="org.nuxeo.gridfs.config.test">
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="test">
+      <class>org.nuxeo.ecm.core.storage.mongodb.GridFSBinaryManager</class>
+      <property name="bucket">${nuxeo.test.mongodb.gridfs.bucket:=test.fs}</property>
+    </blobprovider>
+  </extension>
+
+</component>
