@@ -283,13 +283,13 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     protected void sendInvalidationsToOther() {
+        DBSInvalidations invals;
         synchronized (invalidations) {
-            if (!invalidations.isEmpty()) {
-                if (clusterInvalidator != null) {
-                    clusterInvalidator.sendInvalidations(invalidations);
-                }
-                invalidations.clear();
-            }
+            invals = new DBSInvalidations(invalidations);
+            invalidations.clear();
+        }
+        if (!invals.isEmpty() && clusterInvalidator != null) {
+            clusterInvalidator.sendInvalidations(invals);
         }
     }
 
