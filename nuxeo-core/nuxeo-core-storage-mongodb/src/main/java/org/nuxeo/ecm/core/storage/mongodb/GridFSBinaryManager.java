@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
+import org.nuxeo.ecm.core.blob.binary.BinaryManagerRootDescriptor;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
@@ -115,6 +116,9 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
             throw new NuxeoException("Unable to initialize GridFS Binary Manager, properties " + SERVER_PROPERTY
                     + " and " + DBNAME_PROPERTY + " has been removed. Please configure a connection!");
         }
+        BinaryManagerRootDescriptor descriptor = new BinaryManagerRootDescriptor();
+        descriptor.digest = getDefaultDigestAlgorithm();
+        setDescriptor(descriptor);
 
         String namespace = properties.get(NAMESPACE);
         String bucket = properties.get(BUCKET_PROPERTY);
