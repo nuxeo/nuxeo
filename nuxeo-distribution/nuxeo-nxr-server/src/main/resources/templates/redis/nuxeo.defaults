@@ -32,3 +32,6 @@ nuxeo.work.queuing=redis
 nuxeo.lock.manager=redis
 # by default use the KeyValueBlobTransientStore from the common template
 #nuxeo.transientstore.provider=redis
+
+redis.check.classpath=${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-runtime-redis-*.jar
+redis.check.class=org.nuxeo.ecm.core.redis.RedisChecker
