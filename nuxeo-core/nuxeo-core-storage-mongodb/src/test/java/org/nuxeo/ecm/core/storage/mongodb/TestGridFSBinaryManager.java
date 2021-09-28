@@ -149,6 +149,14 @@ public class TestGridFSBinaryManager {
         assertEquals(1, listObjects().size());
     }
 
+    @Test
+    public void testWriteBlob() throws IOException {
+        GridFSBinaryManager binaryManager = getBinaryManager();
+
+        String key = binaryManager.writeBlob(Blobs.createBlob(CONTENT));
+        assertEquals(CONTENT_MD5, key);
+    }
+
     /**
      * NOTE THAT THIS TEST WILL REMOVE ALL FILES IN THE BUCKET!!!
      */
