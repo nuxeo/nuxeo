@@ -244,10 +244,8 @@ public class TestBulkProcessor {
         assertFalse(overlapCommands(
                 results.stream().filter(r -> "dummySequential".equals(r.getAction())).collect(Collectors.toList()),
                 true));
-        // concurrent commands must overlap
-        assertTrue(overlapCommands(
-                results.stream().filter(r -> "dummyConcurrent".equals(r.getAction())).collect(Collectors.toList()),
-                false));
+        // concurrent commands should overlap but not every time, so it cannot be tested in a reliable way, see
+        // NXP-29233
     }
 
     @Test
