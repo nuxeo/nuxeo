@@ -141,9 +141,9 @@ public class SubtypesJsonEnricherTest extends AbstractJsonWriterTest.Local<Docum
     @Test
     public void testLocalConfigurationSubtypesInheritance() throws IOException {
         DocumentModel ws = session.createDocumentModel("/", "ws", "Workspace");
-        session.createDocument(ws);
+        ws = session.createDocument(ws);
         DocumentModel subWS = session.createDocumentModel("/ws", "subws", "Workspace");
-        session.createDocument(subWS);
+        subWS = session.createDocument(subWS);
 
         // more than one subtypes
         assertSubtypes(subWS, -1);

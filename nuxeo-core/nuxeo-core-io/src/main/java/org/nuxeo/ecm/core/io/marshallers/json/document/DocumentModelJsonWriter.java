@@ -35,6 +35,10 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
+import org.nuxeo.common.function.ThrowableRunnable;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -106,7 +110,6 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  *             <-- additional property provided by extend() method
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2
@@ -144,6 +147,15 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
 
     @Override
     protected void writeEntityBody(DocumentModel doc, JsonGenerator jg) throws IOException {
+        if (doc.getSessionId() == null || doc.getId() == null) {
+            // do not try to re-attach a detached or non-existing document
+            doWriteEntityBody(doc, jg);
+        } else {
+            withDocumentAttached(doc, () -> doWriteEntityBody(doc, jg));
+        }
+    }
+
+    protected void doWriteEntityBody(DocumentModel doc, JsonGenerator jg) throws IOException {
         jg.writeStringField("repository", doc.getRepositoryName());
         jg.writeStringField("uid", doc.getId());
         jg.writeStringField("path", doc.getPathAsString());
@@ -178,7 +190,8 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
             Lock lock = doc.getLockInfo();
             if (lock != null) {
                 jg.writeStringField("lockOwner", lock.getOwner());
-                jg.writeStringField("lockCreated", ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated())));
+                jg.writeStringField("lockCreated",
+                        ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated())));
             }
         }
         if (doc.hasSchema("dublincore")) {
@@ -188,7 +201,7 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
             }
         }
 
-        String[] docSchemas  = doc.getSchemas();
+        String[] docSchemas = doc.getSchemas();
         try (Closeable resource = ctx.wrap().controlDepth().open()) {
             Set<String> schemas = ctx.getProperties();
             if (schemas.size() > 0) {
@@ -233,7 +246,6 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
             }
         }
         jg.writeEndArray();
-
     }
 
     private void writeSchemaProperties(JsonGenerator jg, DocumentModel doc, String schemaName) throws IOException {
@@ -255,6 +267,20 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
                     propertyWriter.write(property, Property.class, Property.class, APPLICATION_JSON_TYPE, out);
                 }
             }
+        }
+    }
+
+    protected void withDocumentAttached(DocumentModel doc, ThrowableRunnable<IOException> runnable) throws IOException {
+        String repositoryName = doc.getRepositoryName();
+        CoreSession currentSession = ctx.getSession(doc).getSession();
+        boolean sameRepository = currentSession.getRepositoryName().equals(repositoryName);
+        try (CloseableCoreSession session = sameRepository ? null : CoreInstance.openCoreSession(repositoryName)) {
+            if (session != null) {
+                // re-attach the document
+                doc.detach(false);
+                doc.attach(session.getSessionId());
+            }
+            runnable.run();
         }
     }
 
