@@ -27,7 +27,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -36,6 +35,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -622,6 +622,25 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
             child.childrenContains("entity-type", "document");
             child.childrenContains("path", "/file3");
         }
+    }
+
+    // NXP-30615
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test:OSGI-INF/other-repo.xml")
+    public void testMultiRepo() throws IOException {
+        // create a document in another repo
+        DocumentModel doc;
+        try (CloseableCoreSession secondSession = CoreInstance.openCoreSession("import")) {
+            doc = secondSession.createDocumentModel("/", "file", "File");
+            doc.setPropertyValue("dc:title", "bar foo");
+            doc = secondSession.createDocument(doc);
+        }
+
+        // write the document with the default session in ctx
+        // the session on the "import" repository is now closed
+        RenderingContext ctxDefault = CtxBuilder.properties("*").session(session).get();
+        JsonAssert json = jsonAssert(doc, ctxDefault);
+        assertNotNull(json);
     }
 
 }
