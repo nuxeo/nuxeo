@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.utils.DateUtils;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -618,6 +619,22 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         child = json.get(2);
         child.childrenContains("entity-type", "document");
         child.childrenContains("path", "/file3");
+    }
+
+    // NXP-30615
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test:OSGI-INF/other-repo.xml")
+    public void testMultiRepo() throws IOException {
+        // create a document in another repo
+        CoreSession secondSession = CoreInstance.getCoreSession("import");
+        DocumentModel doc = secondSession.createDocumentModel("/", "file", "File");
+        doc.setPropertyValue("dc:title", "bar foo");
+        doc = secondSession.createDocument(doc);
+
+        // write the document with the default session in ctx
+        RenderingContext ctxDefault = CtxBuilder.properties("*").session(session).get();
+        JsonAssert json = jsonAssert(doc, ctxDefault);
+        assertNotNull(json);
     }
 
 }
