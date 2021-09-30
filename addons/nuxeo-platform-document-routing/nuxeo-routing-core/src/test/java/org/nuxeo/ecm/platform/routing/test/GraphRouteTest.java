@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.routing.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
@@ -38,6 +39,7 @@ import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -71,8 +73,11 @@ import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+@Features(LogCaptureFeature.class)
 public class GraphRouteTest extends AbstractGraphRouteTest {
 
     protected static final String DUMMY_WF_VAR = "dummyWFVar";
@@ -86,6 +91,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @Inject
     protected RuntimeHarness harness;
+
+    @Inject
+    protected LogCaptureFeature.Result logResult;
 
     @Inject
     protected CoreSession session;
@@ -2185,6 +2193,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
      * @since 10.10
      */
     @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
     public void testGlobalVariableSecurity() {
         routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc.addFacet("FacetRoute1");
@@ -2203,12 +2212,18 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         Map<String, Object> vars = new HashMap<String, Object>();
         vars.put(Constants.VAR_WORKFLOW, m);
         vars.put(Constants.VAR_WORKFLOW_NODE, m);
-        try {
-            node.setAllVariables(vars, false);
-            fail("Global workflow variable assignement must be forbidden.");
-        } catch (DocumentRouteException e) {
-            // Expected
-        }
+
+        List<LogEvent> events = logResult.getCaughtEvents();
+        assertTrue(events.isEmpty());
+        // Setting  global not allowed variable goes through
+        node.setAllVariables(vars, false);
+        routeDoc = session.getDocument(routeDoc.getRef());
+        GraphRoute route = routeDoc.getAdapter(GraphRoute.class);
+        // but the global variable remained null
+        assertNull(route.getVariables().get("notAllowed"));
+        // and a warn was logged
+        events = logResult.getCaughtEvents();
+        assertEquals(1, events.size());
     }
 
 }

@@ -45,6 +45,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
@@ -87,6 +88,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -99,7 +101,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ EmbeddedAutomationServerFeature.class, WorkflowFeature.class, AuditFeature.class })
+@Features({ EmbeddedAutomationServerFeature.class, WorkflowFeature.class, AuditFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.platform.restapi.server.routing")
 @Deploy("org.nuxeo.ecm.automation.test")
@@ -121,6 +123,9 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
     @Inject
     protected EventService eventService;
+
+    @Inject
+    protected LogCaptureFeature.Result logResult;
 
     @Inject
     protected TransactionalFeature txFeature;
@@ -477,6 +482,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
      * Start ParallelDocumentReview workflow and try to set a global variable that you are not supposed to.
      */
     @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
     public void testSecurityCheckOnGlobalVariable() throws IOException {
 
         final String createdWorkflowInstanceId;
@@ -510,15 +516,24 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         }
 
         String out = getBodyWithSecurityViolationForStartReviewTaskCompletion(taskId);
+        List<LogEvent> events = logResult.getCaughtEvents();
+        assertTrue(events.isEmpty());
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review",
                 out)) {
-            // Missing required variables
-            assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            final String responseEntityType = node.get("entity-type").textValue();
-            final String responseMessage = node.get("message").textValue();
-            assertEquals("exception", responseEntityType);
-            assertEquals("You don't have the permission to set the workflow variable review_result", responseMessage);
+            // Security violation returns OK
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+        // but a warn was logged
+        events = logResult.getCaughtEvents();
+        assertEquals(1, events.size());
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "/workflow/" + createdWorkflowInstanceId)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode workflowInstance = mapper.readTree(response.getEntityInputStream());
+            JsonNode variables = workflowInstance.get("variables");
+            // and the global variable has not been modified
+            assertTrue(variables.get("review_result").isNull());
         }
     }
 
