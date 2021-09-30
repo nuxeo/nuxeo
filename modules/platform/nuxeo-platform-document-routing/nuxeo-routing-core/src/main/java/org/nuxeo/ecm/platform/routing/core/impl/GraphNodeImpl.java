@@ -31,8 +31,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -78,7 +78,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(GraphNodeImpl.class);
+    private static final Logger log = LogManager.getLogger(GraphNodeImpl.class);
 
     private static final String EXPR_PREFIX = "expr:";
 
@@ -357,8 +357,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                     if (!equality(value, oldValue)) {
                         if (!allowGlobalVariablesAssignement
                                 && (transientSchema == null || !transientSchema.hasField(key))) {
-                            throw new DocumentRouteException(String.format(
-                                    "You don't have the permission to set the workflow variable %s", key));
+                            log.warn("The workflow variable {} cannot be set within graph node {} completion",
+                                    () -> key, this::getId);
+                            continue;
                         }
                         changedGraphVariables.put(key, value);
                     }
