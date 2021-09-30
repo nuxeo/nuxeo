@@ -164,6 +164,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     public static final String MONGODB_TYPE = "$type";
 
+    public static final String MONGODB_EXISTS = "$exists";
+
     public static final String MONGODB_TEXT_SCORE = "textScore";
 
     private static final String FULLTEXT_INDEX_NAME = "fulltext";
@@ -245,6 +247,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll = database.getCollection(descriptor.name);
         countersColl = database.getCollection(descriptor.name + ".counters");
         settingsColl = database.getCollection(descriptor.name + ".settings");
+        Document buildInfo = database.runCommand(new Document("buildInfo", ONE));
+        String serverVersion = buildInfo.getString("version");
         Duration maxTime = mongoService.getConfig(databaseID).maxTime;
         if (maxTime == null) {
             maxTime = MAX_TIME_DEFAULT;
@@ -273,6 +277,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             idValuesKeys = Collections.emptySet();
         }
         converter = new MongoDBConverter(useCustomId ? null : KEY_ID, DBSSession.TRUE_OR_NULL_BOOLEAN_KEYS, idValuesKeys);
+        converter.setServerVersion(serverVersion);
         cursorService = new CursorService<>(ob -> (String) converter.getFromBson(ob, idKey, KEY_ID));
         initRepository(descriptor);
     }

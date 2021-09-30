@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.storage.mongodb;
 import static java.lang.Boolean.FALSE;
 import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_EACH;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_EXISTS;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_ID;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_INC;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_PULLALL;
@@ -72,6 +73,8 @@ public class MongoDBConverter {
     /** The keys whose values are ids and are stored as longs. */
     protected final Set<String> idValuesKeys;
 
+    protected boolean serverVersionBefore36;
+
     /**
      * Constructor for a converter that does not map the MongoDB native "_id".
      *
@@ -95,6 +98,10 @@ public class MongoDBConverter {
         this.idKey = idKey;
         this.trueOrNullBooleanKeys = trueOrNullBooleanKeys;
         this.idValuesKeys = idValuesKeys;
+    }
+
+    public void setServerVersion(String serverVersion) {
+        serverVersionBefore36 = serverVersion.compareTo("3.6") < 0;
     }
 
     /**
@@ -393,7 +400,15 @@ public class MongoDBConverter {
                 // which would make an update on foo.0.bar create a sub-document
                 // instead of addressing the array element foo.0,
                 // we add a condition on the type of what we're updating
-                conditionsAndUpdates.conditions.put(prefix, new Document(MONGODB_TYPE, "array"));
+                Document condition;
+                if (serverVersionBefore36) {
+                    // before 3.6 {$type: "array"} doesn't do what we want,
+                    // so we use a simple existence check which is good enough
+                    condition = new Document(MONGODB_EXISTS, ONE);
+                } else {
+                    condition = new Document(MONGODB_TYPE, "array");
+                }
+                conditionsAndUpdates.conditions.put(prefix, condition);
             }
             if (listDiff.rpush != null) {
                 Object pushed;
