@@ -19,10 +19,14 @@
 package org.nuxeo.ecm.directory.providers;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
@@ -34,6 +38,8 @@ import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
  * @since 10.2
  */
 public class DirectoryEntryPageProvider extends AbstractPageProvider<DirectoryEntry> {
+
+    protected boolean hasMoreResult;
 
     @Override
     public List<DirectoryEntry> getCurrentPage() {
@@ -49,11 +55,27 @@ public class DirectoryEntryPageProvider extends AbstractPageProvider<DirectoryEn
         Directory directory = (Directory) parameters[0];
 
         try (Session session = directory.getSession()) {
-            return session.query(Collections.emptyMap(), Collections.emptySet(), Collections.emptyMap(), false,
-                    (int) getPageSize(), (int) getCurrentPageOffset())
-                          .stream()
-                          .map(dir -> new DirectoryEntry(directory.getName(), dir))
-                          .collect(Collectors.toList());
+            long computedPageSize;
+            if (getPageSize() < 1) {
+                computedPageSize = 0;
+            } else {
+                computedPageSize = getPageSize() + 1;
+            }
+            DocumentModelList result = session.query(Collections.emptyMap(), Collections.emptySet(),
+                    Collections.emptyMap(), false, (int) computedPageSize, (int) getCurrentPageOffset());
+
+            hasMoreResult = computedPageSize == 0 ? false : result.size() > getPageSize();
+            Stream<DocumentModel> stream = result.stream();
+            if (getPageSize() > 0) {
+                stream = stream.limit(getPageSize());
+            }
+            return stream.map(dir -> new DirectoryEntry(directory.getName(), dir)).collect(Collectors.toList());
         }
     }
+
+    @Override
+    public boolean isNextPageAvailable() {
+        return hasMoreResult;
+    }
+
 }
