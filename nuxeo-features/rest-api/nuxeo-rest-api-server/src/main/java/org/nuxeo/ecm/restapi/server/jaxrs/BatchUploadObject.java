@@ -47,7 +47,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -294,7 +293,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
                 result.put("uploadedChunkIds", fileEntry.getOrderedChunkIndexes());
                 result.put("chunkCount", fileEntry.getChunkCount());
                 if (!fileEntry.isChunksCompleted()) {
-                    status = new ResumeIncompleteStatusType();
+                    status = Status.ACCEPTED;
                 }
             }
         }
@@ -365,7 +364,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         }
         StatusType status = Status.OK;
         if (fileEntry.isChunked() && !fileEntry.isChunksCompleted()) {
-            status = new ResumeIncompleteStatusType();
+            status = Status.ACCEPTED;
         }
         Map<String, Object> result = getFileInfo(fileEntry);
         return buildResponse(status, result);
@@ -596,26 +595,6 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             info.put("chunkCount", fileEntry.getChunkCount());
         }
         return info;
-    }
-
-    public final class ResumeIncompleteStatusType implements StatusType {
-
-        @Override
-        public int getStatusCode() {
-            return 308;
-        }
-
-        @Override
-        public String getReasonPhrase() {
-            return "Resume Incomplete";
-        }
-
-        @Override
-        public Family getFamily() {
-            // Technically we don't use 308 Resume Incomplete as a redirection but it is the default family for 3xx
-            // status codes defined by Response$Status
-            return Family.REDIRECTION;
-        }
     }
 
 }
