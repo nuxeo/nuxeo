@@ -72,6 +72,11 @@ public class JSONObjectBlobDecoder implements JSONBlobDecoder {
 
         String baseURL = VirtualHostHelper.getBaseURL(activeContext.getRequest());
         String path = url.replace(baseURL, "");
+        if (path.startsWith("http")) {
+            // the data URL does not target the current server, do nothing
+            return null;
+        }
+
         Blob blob = Framework.getService(DownloadService.class).resolveBlobFromDownloadUrl(path);
         if (blob == null) {
             // document does not exist / no READ permission / no blob
