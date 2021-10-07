@@ -476,6 +476,24 @@ public class DocumentUpdateBlobsTest extends BaseTest {
         }
     }
 
+    // NXP-30644
+    @Test
+    public void shouldIgnoreBlobDataURLDifferentCurrentServer() throws IOException {
+        assertBlobContent(file1Id, "foo");
+        JSONDocumentNode jsonFile1 = getJSONDocumentNode(file1Id);
+
+        JsonNode fakeBlob  = mapper.readTree("{ \"data\": \"http://fakeurl.com/nuxeo/foo/bar\" }");
+        jsonFile1.setPropertyValue(FILE_CONTENT_PROP, fakeBlob);
+
+        try (CloseableClientResponse response = putJSONDocument(file1Id, jsonFile1)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // ensure nothing has changed
+            transactionalFeature.nextTransaction();
+            assertBlobContent(file1Id, "foo");
+        }
+    }
+
     protected JSONDocumentNode getJSONDocumentNode(String docId) throws IOException {
         try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + docId, HEADERS)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -490,6 +508,7 @@ public class DocumentUpdateBlobsTest extends BaseTest {
     protected void assertBlobContent(String docId, String expectedContent) throws IOException {
         DocumentModel doc = session.getDocument(new IdRef(docId));
         Blob blob = (Blob) doc.getPropertyValue(FILE_CONTENT_PROP);
+        assertNotNull(blob);
         assertEquals(expectedContent, blob.getString());
     }
 
