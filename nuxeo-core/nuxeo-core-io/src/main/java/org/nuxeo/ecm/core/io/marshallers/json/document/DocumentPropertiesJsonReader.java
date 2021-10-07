@@ -148,7 +148,10 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
                 fillComplexProperty(property, jn);
             } else {
                 Blob blob = readEntity(Blob.class, Blob.class, jn);
-                property.setValue(blob);
+                if (blob != null) {
+                    // ignore null Blob here as the JSON value was not explicitly set to null
+                    property.setValue(blob);
+                }
             }
         }
         property.setForceDirty(false);

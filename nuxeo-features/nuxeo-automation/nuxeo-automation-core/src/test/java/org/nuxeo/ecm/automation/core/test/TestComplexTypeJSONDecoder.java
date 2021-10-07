@@ -212,7 +212,8 @@ public class TestComplexTypeJSONDecoder {
         // fake url
         String fakeURL = "http://fakeurl.com/nuxeo/foo/bar";
         String json = String.format(OBJECT_BLOB_JSON, fakeURL);
-        assertDecodeBlobObjectFail(json);
+        Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+        assertNull(blob);
 
         // unknown document
         String downloadURL = BASE_URL + downloadService.getDownloadUrl("test", "1", "file:content", "foo.txt");;
