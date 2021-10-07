@@ -5,7 +5,8 @@
 
   <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
     point="renditionDefinitions">
-    <renditionDefinition name="pdf">
+    <renditionDefinition name="pdf"
+      class="org.nuxeo.ecm.platform.rendition.extension.PdfAutomationRenditionProvider">
       <label>label.rendition.pdf</label>
       <icon>/icons/pdf.png</icon>
       <contentType>application/pdf</contentType>

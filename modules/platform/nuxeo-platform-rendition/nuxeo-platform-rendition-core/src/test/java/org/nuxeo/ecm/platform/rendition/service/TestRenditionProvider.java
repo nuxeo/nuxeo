@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.rendition.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import java.util.Collections;
@@ -117,6 +118,25 @@ public class TestRenditionProvider {
         assertNotNull(ren);
         Blob blob = ren.getBlob();
         assertEquals("application/pdf", blob.getMimeType());
+    }
+
+    /**
+     * @since 2021.10
+     */
+    @Test
+    public void testNonPdfRendition() {
+        DocumentModel file = session.createDocumentModel("/", "dummy-file", "File");
+        BlobHolder bh = file.getAdapter(BlobHolder.class);
+        Blob blob = Blobs.createBlob("Here are some octets!", "application/octet-stream");
+        blob.setFilename("dummy.fox");
+        bh.setBlob(blob);
+        file = session.createDocument(file);
+        Renderable renderable = file.getAdapter(Renderable.class);
+        assertNotNull(renderable);
+
+        List<RenditionDefinition> defs = renderable.getAvailableRenditionDefinitions();
+        assertEquals(4, defs.size());
+        assertTrue(defs.stream().noneMatch(def -> "pdf".equals(def.getName())));
     }
 
     @Test
