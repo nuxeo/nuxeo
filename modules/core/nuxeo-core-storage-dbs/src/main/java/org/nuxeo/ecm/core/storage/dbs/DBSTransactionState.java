@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_VERSION;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.INITIAL_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.INITIAL_SYS_CHANGE_TOKEN;
@@ -50,6 +51,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIE
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_SYS_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
+import static org.nuxeo.ecm.core.storage.dbs.action.UpdateReadAclsAction.UPDATE_READ_ACLS_ACTION;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -82,6 +84,9 @@ import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.ecm.core.query.QueryFilter;
@@ -97,6 +102,7 @@ import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.dbs.DBSConnection.DBSQueryOperator;
+import org.nuxeo.ecm.core.storage.dbs.action.UpdateReadAclsAction;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
@@ -565,10 +571,12 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
                 updateDocumentReadAcls(childId);
             }
 
-            // asynchronous work to do the whole tree
+            // bulk action to do the whole tree
             nxql = String.format("SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", id);
-            Work work = new FindReadAclsWork(repository.getName(), nxql, null);
-            Framework.getService(WorkManager.class).schedule(work);
+            BulkService service = Framework.getService(BulkService.class);
+            BulkCommand command = new BulkCommand.Builder(UPDATE_READ_ACLS_ACTION, nxql, SYSTEM_USERNAME).repository(
+                    session.getRepositoryName()).build();
+            service.submit(command);
         }
     }
 
@@ -576,7 +584,9 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
      * Work to find the ids of documents for which Read ACLs must be recomputed, and launch the needed update works.
      *
      * @since 9.10
+     * @deprecated since 2021.11 use {@link UpdateReadAclsAction} instead
      */
+    @Deprecated
     public static class FindReadAclsWork extends BatchFinderWork {
 
         private static final long serialVersionUID = 1L;
@@ -610,7 +620,9 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
      * Work to update the Read ACLs on a list of documents, without recursion.
      *
      * @since 9.10
+     * @deprecated since 2021.11 use {@link UpdateReadAclsAction} instead
      */
+    @Deprecated
     public static class UpdateReadAclsWork extends BatchProcessorWork {
 
         private static final long serialVersionUID = 1L;
