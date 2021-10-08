@@ -101,6 +101,7 @@ public class RuntimeStreamFeature implements RunnerFeature {
     protected void initChronicle(RuntimeHarness harness) throws Exception {
         log.debug("Deploy Chronicle config");
         harness.deployContrib(BUNDLE_TEST_NAME, "OSGI-INF/test-stream-chronicle-contrib.xml");
+        cleanupTopics = true;
     }
 
     protected void initKafka(RuntimeHarness harness) throws Exception {
