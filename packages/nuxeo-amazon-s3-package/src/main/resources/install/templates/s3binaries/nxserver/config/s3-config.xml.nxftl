@@ -25,6 +25,10 @@
       <property name="connection.timeout">${nuxeo.s3storage.connection.timeout}</property>
       <property name="socket.timeout">${nuxeo.s3storage.socket.timeout}</property>
       <property name="digestAsync">${nuxeo.core.blobstore.digestAsync}</property>
+      <property name="multipartCopyPartSize">${nuxeo.s3storage.multipart.copy.part.size}</property>
+      <property name="multipartCopyThreshold">${nuxeo.s3storage.multipart.copy.threshold}</property>
+      <property name="multipartUploadThreshold">${nuxeo.s3storage.multipart.upload.threshold}</property>
+      <property name="minimumUploadPartSize">${nuxeo.s3storage.minimum.upload.part.size}</property>
     </blobprovider>
   </extension>
 

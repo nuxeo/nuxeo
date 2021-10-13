@@ -1,13 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.storage.s3.config" version="1.0">
 
-  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-    <documentation>
-      The S3 multipart copy part size.
-
-      @since 11.1
-    </documentation>
-    <property name="nuxeo.s3.multipart.copy.part.size">5242880</property>
-  </extension>
+  <!--
+    The nuxeo.s3.multipart.copy.part.size ConfigurationService property is deprecated since 2021.11,
+    use the nuxeo.s3storage.multipart.copy.part.size nuxeo.conf property instead.
+  -->
 
 </component>
