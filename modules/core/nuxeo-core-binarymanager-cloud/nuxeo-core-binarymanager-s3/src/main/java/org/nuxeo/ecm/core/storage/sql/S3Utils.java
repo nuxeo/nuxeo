@@ -124,7 +124,6 @@ public class S3Utils {
      * @param targetKey the target key
      * @param targetSSEAlgorithm the target SSE Algorithm to use, or {@code null}
      * @param deleteSource whether to delete the source object if the copy is successful
-     *
      * @since 11.1
      * @deprecated since 11.2, use {@link com.amazonaws.services.s3.transfer.TransferManager#copy} instead
      */
@@ -132,9 +131,11 @@ public class S3Utils {
     public static ObjectMetadata copyFile(AmazonS3 amazonS3, ObjectMetadata objectMetadata, String sourceBucket,
             String sourceKey, String targetBucket, String targetKey, String targetSSEAlgorithm, boolean deleteSource) {
         if (objectMetadata.getContentLength() > NON_MULTIPART_COPY_MAX_SIZE) {
-            return copyFileMultipart(amazonS3, objectMetadata, sourceBucket, sourceKey, targetBucket, targetKey, targetSSEAlgorithm, deleteSource);
+            return copyFileMultipart(amazonS3, objectMetadata, sourceBucket, sourceKey, targetBucket, targetKey,
+                    targetSSEAlgorithm, deleteSource);
         } else {
-            return copyFileNonMultipart(amazonS3, objectMetadata, sourceBucket, sourceKey, targetBucket, targetKey, targetSSEAlgorithm, deleteSource);
+            return copyFileNonMultipart(amazonS3, objectMetadata, sourceBucket, sourceKey, targetBucket, targetKey,
+                    targetSSEAlgorithm, deleteSource);
         }
     }
 
@@ -220,8 +221,9 @@ public class S3Utils {
     }
 
     protected static List<PartETag> responsesToETags(List<CopyPartResult> responses) {
-        return responses.stream().map(response -> new PartETag(response.getPartNumber(), response.getETag())).collect(
-                Collectors.toList());
+        return responses.stream()
+                        .map(response -> new PartETag(response.getPartNumber(), response.getETag()))
+                        .collect(Collectors.toList());
     }
 
     /**
@@ -239,7 +241,8 @@ public class S3Utils {
     @Deprecated
     public static ObjectMetadata copyFile(AmazonS3 amazonS3, ObjectMetadata objectMetadata, String sourceBucket,
             String sourceKey, String targetBucket, String targetKey, boolean deleteSource) {
-        return copyFileNonMultipart(amazonS3, objectMetadata, sourceBucket, sourceKey, targetBucket, targetKey, null, deleteSource);
+        return copyFileNonMultipart(amazonS3, objectMetadata, sourceBucket, sourceKey, targetBucket, targetKey, null,
+                deleteSource);
     }
 
     /**
@@ -253,13 +256,13 @@ public class S3Utils {
      * @param targetKey the target key
      * @param targetSSEAlgorithm the target SSE Algorithm to use, or {@code null}
      * @param deleteSource whether to delete the source object if the copy is successful
-     *
      * @since 11.1
      * @deprecated since 11.2, use {@link com.amazonaws.services.s3.transfer.TransferManager#copy} instead
      */
     @Deprecated
-    public static ObjectMetadata copyFileNonMultipart(AmazonS3 amazonS3, ObjectMetadata objectMetadata, String sourceBucket,
-            String sourceKey, String targetBucket, String targetKey, String targetSSEAlgorithm, boolean deleteSource) {
+    public static ObjectMetadata copyFileNonMultipart(AmazonS3 amazonS3, ObjectMetadata objectMetadata,
+            String sourceBucket, String sourceKey, String targetBucket, String targetKey, String targetSSEAlgorithm,
+            boolean deleteSource) {
         CopyObjectRequest copyObjectRequest = new CopyObjectRequest(sourceBucket, sourceKey, targetBucket, targetKey);
         // server-side encryption
         if (targetSSEAlgorithm != null) {
@@ -280,7 +283,6 @@ public class S3Utils {
      * @param accessKeyId the AWS access key id
      * @param secretKey the secret key
      * @param sessionToken the session token (optional)
-     *
      * @since 10.10
      */
     public static AWSCredentialsProvider getAWSCredentialsProvider(String accessKeyId, String secretKey,
