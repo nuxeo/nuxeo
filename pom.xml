@@ -174,9 +174,9 @@
     <azure.version>8.6.6</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
     <jackson.version>2.9.10</jackson.version>
-    <jackson.databind.version>2.9.10.5</jackson.databind.version>
+    <jackson.databind.version>2.9.10.7</jackson.databind.version>
     <bouncycastle.version>1.60</bouncycastle.version>
-    <avro.version>1.8.2</avro.version>
+    <avro.version>1.9.2</avro.version>
     <xz.version>1.8</xz.version>
     <restlet.version>2.4.1</restlet.version>
 
@@ -3383,6 +3383,12 @@
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-json</artifactId>
         <version>${jersey.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.sun.jersey</groupId>

@@ -20,6 +20,7 @@ package org.nuxeo.lib.stream.codec;
 
 import java.io.IOException;
 
+import org.apache.avro.AvroRuntimeException;
 import org.apache.avro.Schema;
 import org.apache.avro.message.RawMessageDecoder;
 import org.apache.avro.message.RawMessageEncoder;
@@ -66,7 +67,7 @@ public class AvroBinaryCodec<T> implements Codec<T> {
     public T decode(byte[] data) {
         try {
             return decoder.decode(data, null);
-        } catch (IOException | IndexOutOfBoundsException e) {
+        } catch (IOException | IndexOutOfBoundsException | AvroRuntimeException e) {
             throw new IllegalArgumentException(e);
         }
     }

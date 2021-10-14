@@ -25,14 +25,14 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaNormalization;
+import org.apache.avro.SchemaParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import avro.shaded.com.google.common.collect.MapMaker;
 
 /**
  * Very simple SchemaStore that uses a file storage to persists its schemas.
@@ -47,7 +47,7 @@ public class FileAvroSchemaStore implements AvroSchemaStore {
 
     protected final Path schemaDirectoryPath;
 
-    protected final Map<Long, Schema> schemas = new MapMaker().makeMap();
+    protected final Map<Long, Schema> schemas = new ConcurrentHashMap<>();
 
     public FileAvroSchemaStore(Path schemaDirectoryPath) {
         this.schemaDirectoryPath = schemaDirectoryPath;
@@ -90,7 +90,7 @@ public class FileAvroSchemaStore implements AvroSchemaStore {
         try {
             Schema schema = new Schema.Parser().parse(schemaPath.toFile());
             addSchema(schema);
-        } catch (IOException e) {
+        } catch (IOException | SchemaParseException e) {
             log.error("Invalid schema file: " + schemaPath, e);
         }
     }
