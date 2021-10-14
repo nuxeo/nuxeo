@@ -136,9 +136,65 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
     public static final String DELIMITER = "/";
 
     /**
-     * The configuration property to define the multipart copy part size.
+     * The deprecated configuration property to define the multipart copy part size, for backward compatibility.
+     *
+     * @since 2021.11
      */
-    public static final String MULTIPART_COPY_PART_SIZE_PROPERTY = "nuxeo.s3.multipart.copy.part.size";
+    public static final String MULTIPART_COPY_PART_SIZE_CONFIGURATION_PROPERTY = "nuxeo.s3.multipart.copy.part.size";
+
+    /**
+     * The Framework property to define the multipart copy part size.
+     */
+    public static final String MULTIPART_COPY_PART_SIZE_PROPERTY = "nuxeo.s3storage.multipart.copy.part.size";
+
+    /**
+     * The default value for the multipart copy part size.
+     *
+     * @since 2021.11
+     */
+    public static final long MULTIPART_COPY_PART_SIZE_DEFAULT = 5L * 1024 * 1024; // 5 MB;
+
+    /**
+     * The Framework property to define the multipart copy threshold.
+     *
+     * @since 2021.11
+     */
+    public static final String MULTIPART_COPY_THRESHOLD_PROPERTY = "nuxeo.s3storage.multipart.copy.threshold";
+
+    /**
+     * The default value for the multipart copy threshold.
+     *
+     * @since 2021.11
+     */
+    public static final long MULTIPART_COPY_THRESHOLD_DEFAULT = 5L * 1024 * 1024 * 1024; // AWS SDK default = 5 GB
+
+    /**
+     * The Framework property to define the multipart upload threshold.
+     *
+     * @since 2021.11
+     */
+    public static final String MULTIPART_UPLOAD_THRESHOLD_PROPERTY = "nuxeo.s3storage.multipart.upload.threshold";
+
+    /**
+     * The default value for the multipart upload threshold.
+     *
+     * @since 2021.11
+     */
+    public static final long MULTIPART_UPLOAD_THRESHOLD_DEFAULT = 16L * 1024 * 1024; // AWS SDK default = 16 MB;
+
+    /**
+     * The Framework property to define the minimum upload part size.
+     *
+     * @since 2021.11
+     */
+    public static final String MINIMUM_UPLOAD_PART_SIZE_PROPERTY = "nuxeo.s3storage.minimum.upload.part.size";
+
+    /**
+     * The default value for the minimum upload part size.
+     *
+     * @since 2021.11
+     */
+    public static final long MINIMUM_UPLOAD_PART_SIZE_DEFAULT = 5L * 1024 * 1024; // AWS SDK default = 5 MB
 
     /**
      * Framework property to disable usage of the proxy environment variables ({@code nuxeo.http.proxy.*}) for the
@@ -239,6 +295,38 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
     public void close() {
         transferManager.shutdownNow();
+    }
+
+    /**
+     * @since 2021.11
+     */
+    public static long getMultipartCopyPartSize() {
+        // backward compatibility with configuration service property
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        if (configurationService != null) {
+            Optional<Long> optional = configurationService.getLong(MULTIPART_COPY_PART_SIZE_CONFIGURATION_PROPERTY);
+            if (optional.isPresent()) {
+                return optional.get();
+            }
+        }
+        // nuxeo.conf property
+        return getLongProperty(MULTIPART_COPY_PART_SIZE_PROPERTY, MULTIPART_COPY_PART_SIZE_DEFAULT);
+    }
+
+    /**
+     * @since 2021.11
+     */
+    public static long getLongProperty(String key, long defaultValue) {
+        String value = Framework.getProperty(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            log.error("Invalid framework property: {}={}, expecting a long value.", key, value, e);
+            return defaultValue;
+        }
     }
 
     @Override
@@ -421,23 +509,17 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
     }
 
     protected TransferManager createTransferManager() {
-        long minimumUploadPartSize = 5L * 1024 * 1024; // AWS SDK default = 5 MB
-        long multipartUploadThreshold = 16L * 1024 * 1024; // AWS SDK default = 16 MB
-        long multipartCopyThreshold = 5L * 1024 * 1024 * 1024; // AWS SDK default = 5 GB
-        long multipartCopyPartSize = 100L * 1024 * 1024; // AWS SDK default = 100 MB
-        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        if (configurationService != null) {
-            multipartCopyPartSize = configurationService.getLong(MULTIPART_COPY_PART_SIZE_PROPERTY,
-                    multipartCopyPartSize);
-        }
         // when the bucket has Object Lock active, uploads need to provide an MD5
         boolean alwaysCalculateMultipartMd5 = bucketRetentionMode != null;
         return TransferManagerBuilder.standard()
                                      .withS3Client(amazonS3)
-                                     .withMinimumUploadPartSize(Long.valueOf(minimumUploadPartSize))
-                                     .withMultipartUploadThreshold(Long.valueOf(multipartUploadThreshold))
-                                     .withMultipartCopyThreshold(Long.valueOf(multipartCopyThreshold))
-                                     .withMultipartCopyPartSize(Long.valueOf(multipartCopyPartSize))
+                                     .withMinimumUploadPartSize(Long.valueOf(getLongProperty(
+                                             MINIMUM_UPLOAD_PART_SIZE_PROPERTY, MINIMUM_UPLOAD_PART_SIZE_DEFAULT)))
+                                     .withMultipartUploadThreshold(Long.valueOf(getLongProperty(
+                                             MULTIPART_UPLOAD_THRESHOLD_PROPERTY, MULTIPART_UPLOAD_THRESHOLD_DEFAULT)))
+                                     .withMultipartCopyThreshold(Long.valueOf(getLongProperty(
+                                             MULTIPART_COPY_THRESHOLD_PROPERTY, MULTIPART_COPY_THRESHOLD_DEFAULT)))
+                                     .withMultipartCopyPartSize(Long.valueOf(getMultipartCopyPartSize()))
                                      .withAlwaysCalculateMultipartMd5(alwaysCalculateMultipartMd5)
                                      .build();
     }
