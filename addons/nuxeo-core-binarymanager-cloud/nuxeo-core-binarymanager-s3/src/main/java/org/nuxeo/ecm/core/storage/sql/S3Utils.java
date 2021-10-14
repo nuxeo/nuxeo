@@ -26,9 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration;
 import org.nuxeo.runtime.aws.NuxeoAWSCredentialsProvider;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -59,7 +58,9 @@ public class S3Utils {
      * if the configuration property {@value #MULTIPART_COPY_PART_SIZE_PROPERTY} is not defined.
      *
      * @since 11.1
+     * @deprecated since 2021.11, use {@link S3BlobStoreConfiguration#MULTIPART_COPY_PART_SIZE_DEFAULT} instead.
      */
+    @Deprecated
     public static final long MULTIPART_COPY_PART_SIZE_DEFAULT = 5L * 1024 * 1024; // 5 MB
 
     /**
@@ -72,7 +73,9 @@ public class S3Utils {
      * The configuration property to define the multipart copy part size.
      *
      * @since 11.1
+     * @deprecated since 2021.11, use {@link S3BlobStoreConfiguration#MULTIPART_COPY_PART_SIZE_PROPERTY} instead.
      */
+    @Deprecated
     public static final String MULTIPART_COPY_PART_SIZE_PROPERTY = "nuxeo.s3.multipart.copy.part.size";
 
     private S3Utils() {
@@ -200,18 +203,7 @@ public class S3Utils {
                                                                .withPartNumber(num + 1);
             copyResponses.add(amazonS3.copyPart(copyRequest));
         };
-        long partSize = MULTIPART_COPY_PART_SIZE_DEFAULT;
-        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        if (configurationService != null) {
-            String partSizeProp = configurationService.getProperty(MULTIPART_COPY_PART_SIZE_PROPERTY);
-            if (isNotBlank(partSizeProp)) {
-                try {
-                    partSize = Long.parseLong(partSizeProp);
-                } catch (NumberFormatException e) {
-                    // use default
-                }
-            }
-        }
+        long partSize = S3BlobStoreConfiguration.getMultipartCopyPartSize();
         processSlices(partSize, objectSize, partCopy);
 
         CompleteMultipartUploadRequest completeRequest = new CompleteMultipartUploadRequest(targetBucket, targetKey,
