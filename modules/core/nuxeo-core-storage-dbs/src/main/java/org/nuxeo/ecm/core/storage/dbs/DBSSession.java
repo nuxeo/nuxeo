@@ -22,6 +22,7 @@ import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.action.DeletionAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.api.AbstractSession.DISABLED_ISLATESTVERSION_PROPERTY;
 import static org.nuxeo.ecm.core.api.CoreSession.BINARY_FULLTEXT_MAIN_KEY;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG_LABEL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.INITIAL_CHANGE_TOKEN;
@@ -977,7 +978,7 @@ public class DBSSession extends BaseSession {
         // Check that the ids to remove is not only the root id
         if (removedIds.size() > 1) {
             String nxql = String.format("SELECT * FROM Document, Relation WHERE ecm:ancestorId = '%s'", rootId);
-            BulkCommand command = new BulkCommand.Builder(ACTION_NAME, nxql, principal.getName()).repository(
+            BulkCommand command = new BulkCommand.Builder(ACTION_NAME, nxql, SYSTEM_USERNAME).repository(
                     getRepositoryName()).build();
             Framework.getService(BulkService.class).submit(command);
         }

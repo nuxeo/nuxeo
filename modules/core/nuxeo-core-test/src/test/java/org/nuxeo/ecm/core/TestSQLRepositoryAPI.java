@@ -30,6 +30,7 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.INCREMENT_BEFORE_UPDATE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -1750,6 +1751,51 @@ public class TestSQLRepositoryAPI {
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
         assertFalse(session.exists(returnedChildDocs.get(1).getRef()));
 
+    }
+
+    @Test
+    public void testRemoveDocumentsTree() {
+        DocumentModel rootFolder = session.createDocumentModel("/", "folder", "Folder");
+        rootFolder = session.createDocument(rootFolder);
+        String firstUser = "mickey";
+
+        // set EVERYTHING ACL for first user on root folder
+        ACP acp = new ACPImpl();
+        acp.addACE(ACL.LOCAL_ACL, new ACE(firstUser, EVERYTHING, true));
+        rootFolder.setACP(acp, true);
+
+        // Create a hierarchy
+        int nbLevels = 2;
+        DocumentModel[] docs = new DocumentModel[nbLevels];
+        DocumentModel parent = rootFolder;
+        for (int level = 0; level < nbLevels; level++) {
+            docs[level] = session.createDocumentModel(parent.getPathAsString(), "folder-" + level, "Folder");
+            docs[level] = session.createDocument(docs[level]);
+            parent = docs[level];
+        }
+        session.save();
+
+        // Block permission on deepest doc for first user
+        ACP blockedACP = new ACPImpl();
+        ACL blockedACL = new ACLImpl();
+        blockedACL.add(new ACE(SecurityConstants.SYSTEM_USERNAME, "Everything", true));
+        blockedACL.add(ACE.BLOCK);
+        blockedACP.addACL(blockedACL);
+        docs[nbLevels - 1].setACP(blockedACP, true);
+        session.save();
+
+        CoreSession firstUserSession = CoreInstance.getCoreSession(session.getRepositoryName(), firstUser);
+        // remove tree
+        firstUserSession.removeDocument(docs[0].getRef());
+
+        // wait for asynchronous stuff to finish
+        coreFeature.waitForAsyncCompletion();
+
+        // Make sure the deepest document was removed despite permission was blocked
+        assertTrue(session
+                          .query(String.format("Select * From Document Where ecm:uuid = '%s'",
+                                  docs[nbLevels - 1].getRef()))
+                          .isEmpty());
     }
 
     /*
