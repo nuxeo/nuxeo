@@ -10,17 +10,20 @@
     <doctype name="ManagementRoot" extends="Folder">
       <schema name="dublincore" />
       <facet name="HiddenInNavigation" />
+      <facet name="SystemDocument" />
     </doctype>
 
     <doctype name="AdministrativeStatusContainer" extends="Folder">
       <schema name="dublincore" />
       <facet name="HiddenInNavigation" />
+      <facet name="SystemDocument" />
     </doctype>
 
     <doctype name="AdministrativeStatus" extends="Document">
       <schema name="dublincore" />
       <schema name="status" />
       <facet name="HiddenInNavigation" />
+      <facet name="SystemDocument" />
     </doctype>
   </extension>
 
