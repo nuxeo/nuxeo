@@ -79,6 +79,11 @@ public class RetentionExpiredAction implements StreamProcessorTopology {
             Collection<DocumentRef> refs = ids.stream().map(IdRef::new).collect(Collectors.toList());
             for (DocumentRef ref : refs) {
                 // sanity checks
+                if (!session.exists(ref)) {
+                    // document might have been deleted
+                    log.debug("Document: {} does not exist", ref);
+                    continue;
+                }
                 if (!session.isRecord(ref)) {
                     log.debug("Document: {} is not a record", ref);
                     continue;

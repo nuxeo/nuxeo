@@ -126,6 +126,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.security.RetentionExpiredAction.RetentionExpiredComputation;
 import org.nuxeo.ecm.core.security.RetentionExpiredFinderListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -4853,6 +4854,37 @@ public class TestSQLRepositoryAPI {
         try (CloseableCoreSession bobSession = openSessionAs("bob")) {
             assertTrue(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
         }
+        session.removeDocument(doc.getRef());
+    }
+
+    @Test
+    public void testRetentionExpiresOnInvalidDocs() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.makeRecord(doc.getRef());
+
+        // set retention to current time
+        Calendar now = Calendar.getInstance();
+        session.setRetainUntil(doc.getRef(), now, null);
+        session.save();
+
+        // Let's launch a computation with a valid and and invalid doc id
+        class DummyRetentionExpiredComputation extends RetentionExpiredComputation {
+            public boolean wentThrough(List<String> ids) {
+                try {
+                    super.compute(session, ids, null);
+                    return true;
+                } catch (NuxeoException e) {
+                    return false;
+                }
+            }
+        }
+        DummyRetentionExpiredComputation computation = new DummyRetentionExpiredComputation();
+        assertTrue(computation.wentThrough(Arrays.asList("foo", doc.getId())));
+
+        // valid doc has no retention anymore and can be deleted
+        doc = session.getDocument(doc.getRef());
+        assertNull(session.getRetainUntil(doc.getRef()));
         session.removeDocument(doc.getRef());
     }
 
