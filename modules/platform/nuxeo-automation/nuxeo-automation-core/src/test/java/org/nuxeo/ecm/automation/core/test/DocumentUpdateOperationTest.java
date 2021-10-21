@@ -21,7 +21,9 @@ package org.nuxeo.ecm.automation.core.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -52,6 +54,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.core:complexTypeContribs.xml")
 public class DocumentUpdateOperationTest {
 
     @Inject
@@ -97,5 +100,192 @@ public class DocumentUpdateOperationTest {
             assertEquals("Test", doc.getTitle());
             assertNotNull(doc.getPropertyValue("dc:issued"));
         }
+    }
+
+    // NXP-30623
+    @Test
+    public void shouldAppendToList() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc.setPropertyValue("dc:subjects", (Serializable) List.of("art/architecture"));
+        doc = session.createDocument(doc);
+
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(doc.getRef());
+            // Test adding a single property
+            var singleParam = Map.of("properties", "dc:subjects=sciences/astronomy", //
+                    "propertiesBehaviors", "dc:subjects=append_including_duplicates");
+            doc = (DocumentModel) service.run(ctx, UpdateDocument.ID, singleParam);
+            assertEquals(List.of("art/architecture", "sciences/astronomy"),
+                    List.of((String[]) doc.getPropertyValue("dc:subjects")));
+
+            // Test excluding a duplicate property
+            var dupeParamExclude = Map.of("properties", "dc:subjects=art/architecture", //
+                    "propertiesBehaviors", "dc:subjects=append_excluding_duplicates");
+            doc = (DocumentModel) service.run(ctx, UpdateDocument.ID, dupeParamExclude);
+            assertEquals(List.of("art/architecture", "sciences/astronomy"),
+                    List.of((String[]) doc.getPropertyValue("dc:subjects")));
+
+            // Test including a duplicate property
+            var dupeParamInclude = Map.of("properties", "dc:subjects=art/architecture", //
+                    "propertiesBehaviors", "dc:subjects=append_including_duplicates");
+            doc = (DocumentModel) service.run(ctx, UpdateDocument.ID, dupeParamInclude);
+            assertEquals(List.of("art/architecture", "sciences/astronomy", "art/architecture"),
+                    List.of((String[]) doc.getPropertyValue("dc:subjects")));
+
+            // Test adding multiple properties
+            var multipleParams = Map.of("properties", "dc:subjects=art/dance,society/minority,daily life/video games", //
+                    "propertiesBehaviors", "dc:subjects=append_excluding_duplicates");
+            doc = (DocumentModel) service.run(ctx, UpdateDocument.ID, multipleParams);
+            assertEquals(
+                    List.of("art/architecture", "sciences/astronomy", "art/architecture", "art/dance",
+                            "society/minority", "daily life/video games"),
+                    List.of((String[]) doc.getPropertyValue("dc:subjects")));
+        }
+
+    }
+
+    // NXP-30623
+    @Test
+    public void shouldReplaceList() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc.setPropertyValue("dc:subjects", (Serializable) List.of("art/architecture"));
+        doc = session.createDocument(doc);
+
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(doc.getRef());
+            // no propertiesBehavior
+            // => replace (default behavior)
+            var noBehaviorParam = Map.of("properties", "dc:subjects=sciences/astronomy");
+            doc = (DocumentModel) service.run(ctx, UpdateDocument.ID, noBehaviorParam);
+
+            assertEquals(List.of("sciences/astronomy"), List.of((String[]) doc.getPropertyValue("dc:subjects")));
+
+            // w/ propertiesBehavior to 'replace'
+            // => replace
+            var replaceParam = Map.of("properties", "dc:subjects=art/dance,society/minority", //
+                    "propertiesBehaviors", "dc:subjects=replace");
+            doc = (DocumentModel) service.run(ctx, UpdateDocument.ID, replaceParam);
+
+            assertEquals(List.of("art/dance", "society/minority"),
+                    List.of((String[]) doc.getPropertyValue("dc:subjects")));
+
+            // w/ propertiesBehavior to 'unknown'
+            // => replace (ignore behavior)
+            var unknownParam = Map.of("properties", "dc:subjects=sciences/astronomy", //
+                    "propertiesBehaviors", "dc:subjects=unknown");
+            doc = (DocumentModel) service.run(ctx, UpdateDocument.ID, unknownParam);
+
+            assertEquals(List.of("sciences/astronomy"), List.of((String[]) doc.getPropertyValue("dc:subjects")));
+        }
+    }
+
+    // NXP-30623
+    @Test
+    public void shouldAppendToComplexList() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        doc.addFacet("Addresses");
+        Map<String, Object> address = new HashMap<>();
+        address.put("streetNumber", "1bis");
+        address.put("streetName", "whatever");
+        address.put("zipCode", 75020);
+        doc.setPropertyValue("addr:addressesList", (Serializable) List.of(address));
+        doc = session.saveDocument(doc);
+
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(doc.getRef());
+
+            // Test adding a single property
+            var singleParam = Map.of("properties",
+                    "addr:addressesList=[{ \"streetNumber\": \"2\", \"streetName\": \"Baker\",\"zipCode\": 75000 }]",
+                    "propertiesBehaviors", "addr:addressesList=append_excluding_duplicates");
+            doc = (DocumentModel) service.run(ctx, UpdateDocument.ID, singleParam);
+
+            List<Map<String, Object>> addresses = (List<Map<String, Object>>) doc.getPropertyValue(
+                    "addr:addressesList");
+            assertNotNull(addresses);
+            assertEquals(2, addresses.size());
+            assertEquals("1bis", addresses.get(0).get("streetNumber"));
+            assertEquals(75020L, addresses.get(0).get("zipCode"));
+            assertEquals("2", addresses.get(1).get("streetNumber"));
+            assertEquals(75000L, addresses.get(1).get("zipCode"));
+
+            // Test excluding a duplicate property
+            var dupeParam = Map.of("properties",
+                    "addr:addressesList=[{ \"streetNumber\": \"2\", \"streetName\": \"Baker\",\"zipCode\": 75000 },{ \"streetNumber\": \"3\", \"streetName\": \"Baker\",\"zipCode\": 75000 }]",
+                    "propertiesBehaviors", "addr:addressesList=append_excluding_duplicates");
+            doc = (DocumentModel) service.run(ctx, UpdateDocument.ID, dupeParam);
+
+            List<Map<String, Object>> addresses2 = (List<Map<String, Object>>) doc.getPropertyValue(
+                    "addr:addressesList");
+            assertNotNull(addresses2);
+            assertEquals(3, addresses2.size());
+            assertEquals("1bis", addresses2.get(0).get("streetNumber"));
+            assertEquals(75020L, addresses2.get(0).get("zipCode"));
+            assertEquals("2", addresses2.get(1).get("streetNumber"));
+            assertEquals(75000L, addresses2.get(1).get("zipCode"));
+            assertEquals("3", addresses2.get(2).get("streetNumber"));
+        }
+
+    }
+
+    // NXP-30623
+    @Test
+    public void shouldReplaceComplexList() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        doc.addFacet("Addresses");
+        Map<String, Object> address = new HashMap<>();
+        address.put("streetNumber", "1bis");
+        address.put("streetName", "whatever");
+        address.put("zipCode", 75020);
+        doc.setPropertyValue("addr:addressesList", (Serializable) List.of(address));
+        doc = session.saveDocument(doc);
+
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(doc.getRef());
+            var singleParam = Map.of("properties",
+                    "addr:addressesList=[{ \"streetNumber\": \"2\", \"streetName\": \"Baker\",\"zipCode\": 75000 }]",
+                    "propertiesBehaviors", "addr:addressesList=replace");
+            doc = (DocumentModel) service.run(ctx, UpdateDocument.ID, singleParam);
+
+            List<Map<String, Object>> addresses = (List<Map<String, Object>>) doc.getPropertyValue(
+                    "addr:addressesList");
+            assertNotNull(addresses);
+            assertEquals(1, addresses.size());
+            assertEquals("2", addresses.get(0).get("streetNumber"));
+            assertEquals(75000L, addresses.get(0).get("zipCode"));
+        }
+    }
+
+    // NXP-30623
+    @Test
+    public void shouldAppendListWhenNull() throws Exception {
+        DocumentModel docNull = session.createDocumentModel("/", "file", "File");
+        docNull = session.createDocument(docNull);
+        docNull.addFacet("Addresses");
+        docNull = session.saveDocument(docNull);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(docNull.getRef());
+
+            // Test adding a simple property to empty list
+            var simpleParam = Map.of("properties", "dc:subjects=sciences/astronomy", //
+                    "propertiesBehaviors", "dc:subjects=append_excluding_duplicates");
+            docNull = (DocumentModel) service.run(ctx, UpdateDocument.ID, simpleParam);
+            assertEquals(List.of("sciences/astronomy"), List.of((String[]) docNull.getPropertyValue("dc:subjects")));
+
+            // Test adding a complex property to empty list
+            var complexParam = Map.of("properties",
+                    "addr:addressesList=[{ \"streetNumber\": \"2\", \"streetName\": \"Baker\",\"zipCode\": 75000 }]",
+                    "propertiesBehaviors", "addr:addressesList=append_excluding_duplicates");
+            docNull = (DocumentModel) service.run(ctx, UpdateDocument.ID, complexParam);
+
+            List<Map<String, Object>> addresses = (List<Map<String, Object>>) docNull.getPropertyValue(
+                    "addr:addressesList");
+            assertNotNull(addresses);
+            assertEquals(75000L, addresses.get(0).get("zipCode"));
+
+        }
+
     }
 }

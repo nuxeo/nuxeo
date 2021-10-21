@@ -46,6 +46,9 @@ public class UpdateDocument {
     @Param(name = "properties")
     protected Properties properties;
 
+    @Param(name = "propertiesBehaviors", required = false)
+    protected Properties propertiesBehaviors;
+
     @Param(name = "save", required = false, values = "true")
     protected boolean save = true;
 
@@ -58,7 +61,7 @@ public class UpdateDocument {
             // Check for dirty update
             doc.putContextData(CoreSession.CHANGE_TOKEN, changeToken);
         }
-        DocumentHelper.setProperties(session, doc, properties);
+        DocumentHelper.setProperties(session, doc, properties, propertiesBehaviors);
         if (save) {
             doc = session.saveDocument(doc); // may throw ConcurrentUpdateException if bad change token
         }

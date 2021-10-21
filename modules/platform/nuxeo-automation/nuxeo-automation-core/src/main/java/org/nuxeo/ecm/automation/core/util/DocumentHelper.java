@@ -24,8 +24,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -54,6 +57,17 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DocumentHelper {
+
+    private static final Logger log = LogManager.getLogger(DocumentHelper.class);
+
+    /** @since 2021.12 */
+    public static final String SET_PROPERTY_BEHAVIOR_APPEND_INCLUDING_DUPLICATES = "append_including_duplicates";
+
+    /** @since 2021.12 */
+    public static final String SET_PROPERTY_BEHAVIOR_APPEND_EXCLUDING_DUPLICATES = "append_excluding_duplicates";
+
+    /** @since 2021.12 */
+    public static final String SET_PROPERTY_BEHAVIOR_REPLACE = "replace";
 
     private DocumentHelper() {
     }
@@ -113,16 +127,25 @@ public class DocumentHelper {
 
     public static void setProperties(CoreSession session, DocumentModel doc, Properties properties)
             throws IOException, PropertyException {
+        setProperties(session, doc, properties, null);
+    }
+
+    /** @since 2021.12 */
+    public static void setProperties(CoreSession session, DocumentModel doc, Properties properties,
+                                     Properties propertiesBehaviors) throws IOException {
         if (properties instanceof DataModelProperties) {
             DataModelProperties dataModelProperties = (DataModelProperties) properties;
             for (Map.Entry<String, Serializable> entry : dataModelProperties.getMap().entrySet()) {
                 doc.setPropertyValue(entry.getKey(), entry.getValue());
             }
         }
+        if (propertiesBehaviors == null) {
+            propertiesBehaviors = new Properties();
+        }
         for (Map.Entry<String, String> entry : properties.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            setProperty(session, doc, key, value);
+            setProperty(session, doc, key, value, propertiesBehaviors.get(key));
         }
     }
 
@@ -144,6 +167,12 @@ public class DocumentHelper {
     public static void setProperty(CoreSession session, DocumentModel doc, String key, String value)
             throws IOException {
         setProperty(session, doc, key, value, false);
+    }
+
+    /** @since 2021.12 */
+    public static void setProperty(CoreSession session, DocumentModel doc, String key, String value, String behavior)
+            throws IOException {
+        setProperty(session, doc, key, value, behavior, false);
     }
 
     protected static void setLocalAcl(CoreSession session, DocumentModel doc, String value) {
@@ -276,10 +305,19 @@ public class DocumentHelper {
      */
     public static void setProperty(CoreSession session, DocumentModel doc, String key, String value,
             boolean decodeStringListAsJSON) throws IOException {
+        setProperty(session, doc, key, value, null, decodeStringListAsJSON);
+    }
+
+    /**
+     * @since 2021.12
+     */
+    public static void setProperty(CoreSession session, DocumentModel doc, String key, String value, String behavior,
+            boolean decodeStringListAsJSON) throws IOException {
+        Property p = doc.getProperty(key);
+        log.debug("Set property: {} with behavior: {}", p::getXPath, () -> behavior);
         if ("ecm:acl".equals(key)) {
             setLocalAcl(session, doc, value);
         }
-        Property p = doc.getProperty(key);
         if (value == null || value.length() == 0) {
             p.setValue(null);
             return;
@@ -287,15 +325,8 @@ public class DocumentHelper {
         Type type = p.getField().getType();
         if (!type.isSimpleType()) {
             if (type.isListType()) {
-                ListType ltype = (ListType) type;
-                if (ltype.isScalarList() && !decodeStringListAsJSON) {
-                    p.setValue(readStringList(value, (SimpleType) ltype.getFieldType()));
-                    return;
-                } else {
-                    Object val = ComplexTypeJSONDecoder.decodeList(ltype, value);
-                    p.setValue(val);
-                    return;
-                }
+                setListProperty(type, behavior, decodeStringListAsJSON, value, p);
+                return;
             } else if (type.isComplexType()) {
                 Object val = ComplexTypeJSONDecoder.decode((ComplexType) type, value);
                 p.setValue(val);
@@ -307,4 +338,55 @@ public class DocumentHelper {
         }
     }
 
+    /**
+     * @since 2021.12
+     */
+    protected static void setListProperty(Type type, String behavior, boolean decodeStringListAsJSON, String value,
+            Property p) throws IOException {
+        ListType ltype = (ListType) type;
+        Object val;
+        if (behavior == null || p.getValue() == null) {
+            behavior = SET_PROPERTY_BEHAVIOR_REPLACE;
+        }
+        if (ltype.isScalarList() && !decodeStringListAsJSON) {
+            val = readStringList(value, (SimpleType) ltype.getFieldType());
+            if (SET_PROPERTY_BEHAVIOR_APPEND_EXCLUDING_DUPLICATES.equals(behavior)) {
+                if (val == null) {
+                    log.debug("Value of property: {} not found", p::getXPath);
+                } else {
+                    List<Object> currentProps = new ArrayList<>(p.getValue(List.class));
+                    for (Object valueToSet : List.of((Object[]) val)) {
+                        if (!currentProps.contains(valueToSet)) {
+                            currentProps.add(valueToSet);
+                        }
+                    }
+                    p.setValue(currentProps);
+                }
+            } else if (SET_PROPERTY_BEHAVIOR_APPEND_INCLUDING_DUPLICATES.equals(behavior)) {
+                if (val == null) {
+                    log.debug("Value of property: {} not found", p::getXPath);
+                } else {
+                    List<Object> list = new ArrayList<>(p.getValue(List.class));
+                    list.addAll(List.of((Object[]) val));
+                    p.setValue(list);
+                }
+            } else {
+                p.setValue(val);
+            }
+        } else {
+            val = ComplexTypeJSONDecoder.decodeList(ltype, value);
+            if (SET_PROPERTY_BEHAVIOR_APPEND_INCLUDING_DUPLICATES.equals(behavior)) {
+                ((List<?>) val).forEach(p::addValue);
+            } else if (SET_PROPERTY_BEHAVIOR_APPEND_EXCLUDING_DUPLICATES.equals(behavior)) {
+                List<Object> currentProps = p.getValue(List.class);
+                for (Object valueToSet : (List<?>) val) {
+                    if (!currentProps.contains(valueToSet)) {
+                        p.addValue(valueToSet);
+                    }
+                }
+            } else {
+                p.setValue(val);
+            }
+        }
+    }
 }
