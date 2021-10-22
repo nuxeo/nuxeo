@@ -283,4 +283,36 @@ public class TestHtmlSanitizerServiceImpl {
         assertEquals(expected, res);
     }
 
+    // NXP-30668
+    @Test
+    public void testStyleTagsInAllTheWrongPlaces() {
+        String html = "<select><option><style><script>alert(1)</script></style></option></select>" //
+                + "<svg><style>.r { color: red }</style></svg>" //
+                + "<style>.b { color: blue }</style>" //
+                + "<style>#a { content: \"<!--\" }</style>" //
+                + "<style>#a { content: \"<![CDATA[\" }</style>" //
+                + "<style>#a { content: \"-->\" }</style>" //
+                + "<style>#a { content: \"]]>\" }</style>";
+        String expected = "<select><option><style></style></option></select>" //
+                + "<style></style>" //
+                + "<style></style>" //
+                + "<style></style>" //
+                + "<style></style>" //
+                + "<style></style>" //
+                + "<style></style>";
+
+        HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
+        String res = service.sanitizeString(html, null);
+        assertEquals(expected, res);
+    }
+
+    // NXP-30668
+    @Test
+    public void testSelectIsOdd() {
+        String html = "<select><option><xmp><script>alert(1)</script></xmp></option></select>";
+        String expected = "<select><option>&lt;script&gt;alert(1)&lt;/script&gt;</option></select>";
+        HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
+        String res = service.sanitizeString(html, null);
+        assertEquals(expected, res);
+    }
 }
