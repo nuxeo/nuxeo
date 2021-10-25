@@ -20,12 +20,16 @@
 package org.nuxeo.elasticsearch.test;
 
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -48,6 +52,8 @@ import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -967,6 +973,62 @@ public class TestAutomaticIndexing {
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         startTransaction();
+    }
+
+    @Test
+    public void testReadACLOnVersions() throws Exception {
+        startTransaction();
+        // NXP-30578 sticking to the scenario
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        // Give access to the data structure to user1
+        setPermission(folder, "user1", READ_WRITE);
+
+        Set<String> versionIds = new HashSet<>();
+        try (CloseableCoreSession user1Session = CoreInstance.openCoreSession(session.getRepositoryName(), "user1")) {
+            // Check in level 1
+            for (int i = 0; i < 5; i++) {
+                versionIds.add(versionDocument(user1Session, "/folder", "file" + i, "File"));
+            }
+            // Check in level 2
+            versionIds.add(versionDocument(user1Session, "/folder", "subfolder", "Folder"));
+            versionIds.add(versionDocument(user1Session, "/folder/subfolder", "file", "File"));
+        }
+
+        // Give access to the data structure to user2
+        setPermission(folder, "user2", READ);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // user1 can find the versions
+        versionIds.forEach(id -> assertCanQuery(id, "user1"));
+        // user2 can also find the versions even if they were checked in before he gets access to the live documents
+        versionIds.forEach(id -> assertCanQuery(id, "user2"));
+    }
+
+    protected void setPermission(DocumentModel doc, String user, String permission) {
+        ACP acp = doc.getACP();
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        ACE ace = new ACE(user, permission, true);
+        localACL.add(ace);
+        doc.setACP(acp, true);
+    }
+
+    protected String versionDocument(CoreSession userSession, String path, String name, String type) {
+        DocumentModel file = userSession.createDocumentModel(path, name, type);
+        file = userSession.createDocument(file);
+        DocumentRef versionRef = userSession.checkIn(file.getRef(), VersioningOption.MINOR, null);
+        return userSession.getDocument(versionRef).getId();
+    }
+
+    protected void assertCanQuery(String id, String userId) {
+        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "user1")) {
+            DocumentModelList result = ess.query(
+                    new NxQueryBuilder(userSession).nxql("SELECT * FROM Document WHERE ecm:uuid ='" + id + "'"));
+            Assert.assertEquals(1, result.totalSize());
+        }
     }
 
     @Test

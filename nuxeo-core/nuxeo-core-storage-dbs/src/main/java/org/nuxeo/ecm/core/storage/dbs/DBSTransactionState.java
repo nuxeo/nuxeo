@@ -508,12 +508,11 @@ public class DBSTransactionState {
      * Updates the Read ACLs recursively on a document.
      */
     public void updateTreeReadAcls(String id) {
-        // versions too XXX TODO
-
         save(); // flush everything to the database
 
         // update the doc itself
         updateDocumentReadAcls(id);
+        session.getVersionsIds(id).forEach(this::updateDocumentReadAcls);
 
         // check if we have a small enough number of descendants that we can process them synchronously
         int limit = getReadAclsAsyncThreshold();
@@ -521,7 +520,12 @@ public class DBSTransactionState {
         try (Stream<State> states = getDescendants(id, Collections.emptySet(), limit)) {
             states.forEach(state -> ids.add((String) state.get(KEY_ID)));
         }
-        if (limit == 0 || ids.size() < limit) {
+        // Only count versions if we are still under the threshold
+        if (isUnderSyncLimit(limit, ids)) {
+            repository.queryKeyValueWithOperator(KEY_IS_VERSION, true, KEY_VERSION_SERIES_ID, DBSQueryOperator.IN, ids,
+                    new HashSet<>()).forEach(state -> ids.add((String) state.get(KEY_ID)));
+        }
+        if (isUnderSyncLimit(limit, ids)) {
             // update all descendants synchronously
             ids.forEach(this::updateDocumentReadAcls);
         } else {
@@ -543,6 +547,10 @@ public class DBSTransactionState {
             Work work = new FindReadAclsWork(repository.getName(), nxql, null);
             Framework.getService(WorkManager.class).schedule(work);
         }
+    }
+
+    protected boolean isUnderSyncLimit(int limit, Set<String> ids) {
+        return limit == 0 || ids.size() < limit;
     }
 
     /**
