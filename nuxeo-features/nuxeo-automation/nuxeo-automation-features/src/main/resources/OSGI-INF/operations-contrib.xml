@@ -228,4 +228,8 @@
     </chain>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.ignore.empty.searchterm">true</property>
+  </extension>
+
 </component>

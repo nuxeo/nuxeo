@@ -35,6 +35,8 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import java.util.Collections;
 import java.util.Map;
@@ -118,6 +120,15 @@ public class DocumentPaginatedQuery {
 
         Long targetPage = currentPageIndex != null ? currentPageIndex.longValue() : null;
         Long targetPageSize = pageSize != null ? pageSize.longValue() : null;
+
+        // NXP-29097: handle empty "searchTerm" parameters in query (referenced by ? character)
+        // test if the query does not wait for any parameter, then it probably contains the searchTerm set to
+        // "", let's nullify "strParameters" variable
+        if (query.indexOf("?") == -1 && strParameters != null && strParameters.size() == 1
+                && Framework.getService(ConfigurationService.class)
+                            .isBooleanTrue("org.nuxeo.ignore.empty.searchterm")) {
+            strParameters = null;
+        }
 
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) PageProviderHelper.getPageProvider(session, def,
                 namedParameters, sortBy, sortOrder, targetPageSize, targetPage,

@@ -172,6 +172,27 @@ public class SearchOperationTest {
     }
 
     /**
+     * @since 2021.11
+     */
+    @Test
+    public void testQueryWithSearchTerm() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = new HashMap<>();
+
+        // first test, with search term set to an empty string
+        params.put("searchTerm", "");
+        params.put("query", "SELECT * FROM Workspace");
+        DocumentModelList list = (DocumentModelList) service.run(ctx, DocumentPaginatedQuery.ID, params);
+        assertEquals(5, list.size());
+
+        // second test, normal use of the operation with a searchTerm for the NXQL query
+        params.put("searchTerm", "WS2");
+        params.put("query", "SELECT * FROM Workspace WHERE dc:title = ?");
+        list = (DocumentModelList) service.run(ctx, DocumentPaginatedQuery.ID, params);
+        assertEquals(1, list.size());
+    }
+
+    /**
      * @since 8.2
      */
     @Test
