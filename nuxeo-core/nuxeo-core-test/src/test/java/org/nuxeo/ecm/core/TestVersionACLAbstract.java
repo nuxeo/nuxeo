@@ -23,11 +23,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -47,11 +51,13 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -174,6 +180,62 @@ public abstract class TestVersionACLAbstract {
     @Test
     public void testReadVersionPermissionOnFolder() {
         doTestReadVersionPermission(false);
+    }
+
+    @Test
+    public void isReadACLUpdatedOnVersion() {
+        testReadACLOnVersions();
+    }
+
+    @Test
+    @WithFrameworkProperty(name = DBSTransactionState.READ_ACL_ASYNC_THRESHOLD_PROPERTY, value = "10")
+    public void isFatReadACLUpdatedOnVersion() {
+        testReadACLOnVersions();
+    }
+
+    protected void testReadACLOnVersions() {
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        // Give access to the data structure to user1
+        setPermission(folder, "user1", READ_WRITE);
+
+        Set<String> versionIds = new HashSet<>();
+        try (CloseableCoreSession user1Session = CoreInstance.openCoreSession(session.getRepositoryName(), "user1")) {
+            // Check in level 1
+            for (int i = 0; i < 5; i++) {
+                versionIds.add(versionDocument(user1Session, "/folder", "file" + i, "File"));
+            }
+            // Check in level 2
+            versionIds.add(versionDocument(user1Session, "/folder", "subfolder", "Folder"));
+            versionIds.add(versionDocument(user1Session, "/folder/subfolder", "file", "File"));
+        }
+
+        // user1 can find the versions
+        versionIds.forEach(id -> assertCanQuery(true, id, "user1"));
+        // user2 cannot find the versions yet
+        versionIds.forEach(id -> assertCanQuery(false, id, "user2"));
+
+        // Give access to the data structure to user2
+        setPermission(folder, "user2", READ);
+        coreFeature.waitForAsyncCompletion();
+
+        // user2 can also find the versions even if they were checked in before he gets access to the live documents
+        versionIds.forEach(id -> assertCanQuery(true, id, "user2"));
+    }
+
+    protected String versionDocument(CoreSession coreSession, String path, String name, String type) {
+        DocumentModel file = coreSession.createDocumentModel(path, name, type);
+        file = coreSession.createDocument(file);
+        DocumentRef versionRef = coreSession.checkIn(file.getRef(), VersioningOption.MINOR, null);
+        return coreSession.getDocument(versionRef).getId();
+    }
+
+    protected void setPermission(DocumentModel doc, String user, String permission) {
+        ACP acp = doc.getACP();
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        ACE ace = new ACE(user, permission);
+        localACL.add(ace);
+        doc.setACP(acp, true);
     }
 
     protected void doTestReadVersionPermission(boolean aclOnDocument) {
