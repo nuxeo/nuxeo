@@ -826,7 +826,7 @@ public class MongoDBConnection extends DBSConnectionBase {
             } else if (manualProjection) {
                 totalSize = -1; // unknown due to manual projection
             } else {
-                totalSize = countDocuments(filter);
+                totalSize = countDocuments(filter); // will return -2 if time out during count (e.g. too many results)
             }
         } else if (countUpTo == 0) {
             // no count
@@ -839,6 +839,7 @@ public class MongoDBConnection extends DBSConnectionBase {
                 totalSize = -1; // unknown due to manual projection
             } else {
                 totalSize = countDocuments(filter, new CountOptions().limit(countUpTo + 1));
+                // will return -2 if time out during count (e.g. too many results)
             }
             if (totalSize > countUpTo) {
                 totalSize = -2; // truncated
@@ -1071,10 +1072,16 @@ public class MongoDBConnection extends DBSConnectionBase {
 
     protected long countDocuments(Bson filter, CountOptions options) {
         options.maxTime(getMaxTimeMs(), MILLISECONDS);
-        if (transactionStarted) {
-            return coll.countDocuments(clientSession, filter, options);
-        } else {
-            return coll.countDocuments(filter, options);
+        try {
+            if (transactionStarted) {
+                return coll.countDocuments(clientSession, filter, options);
+            } else {
+                return coll.countDocuments(filter, options);
+            }
+
+        } catch (MongoExecutionTimeoutException e) {
+            log.warn("MongoDB timed out when computing total count with filters {}", filter::toString);
+            return -2;
         }
     }
 
