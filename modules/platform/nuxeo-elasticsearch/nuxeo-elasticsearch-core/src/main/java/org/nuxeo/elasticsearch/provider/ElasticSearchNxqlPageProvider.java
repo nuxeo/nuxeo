@@ -96,7 +96,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
         // Build and execute the ES query
         ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
         try {
-            NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession()).nxql(query)
+            NxQueryBuilder nxQuery = getQueryBuilder(coreSession).nxql(query)
                                                                          .offset((int) getCurrentPageOffset())
                                                                          .limit(getLimit())
                                                                          .addAggregates(buildAggregates());
@@ -167,7 +167,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
         return coreSession;
     }
 
-    private List<AggregateEsBase<? extends Aggregation, ? extends Bucket>> buildAggregates() {
+    protected List<AggregateEsBase<? extends Aggregation, ? extends Bucket>> buildAggregates() {
         ArrayList<AggregateEsBase<? extends Aggregation, ? extends Bucket>> ret = new ArrayList<>(
                 getAggregateDefinitions().size());
         boolean skip = isSkipAggregates();
@@ -274,6 +274,14 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
      */
     public void setMaxResultWindow(long maxResultWindow) {
         this.maxResultWindow = maxResultWindow;
+    }
+
+    /**
+     *
+     * @since 2021.11
+     */
+    protected NxQueryBuilder getQueryBuilder(CoreSession session) {
+        return new NxQueryBuilder(session);
     }
 
 }

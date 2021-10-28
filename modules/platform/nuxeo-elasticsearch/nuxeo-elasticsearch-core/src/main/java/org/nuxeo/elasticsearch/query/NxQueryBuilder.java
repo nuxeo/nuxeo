@@ -65,41 +65,41 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NxQueryBuilder {
 
-    private static final int DEFAULT_LIMIT = 10;
+    protected static final int DEFAULT_LIMIT = 10;
 
-    private static final String AGG_FILTER_SUFFIX = "_filter";
+    protected static final String AGG_FILTER_SUFFIX = "_filter";
 
-    private final CoreSession session;
+    protected final CoreSession session;
 
-    private final List<SortInfo> sortInfos = new ArrayList<>();
+    protected final List<SortInfo> sortInfos = new ArrayList<>();
 
-    private final List<String> repositories = new ArrayList<>();
+    protected final List<String> repositories = new ArrayList<>();
 
-    private final List<AggregateEsBase<Aggregation, Bucket>> aggregates = new ArrayList<>();
+    protected final List<AggregateEsBase<Aggregation, Bucket>> aggregates = new ArrayList<>();
 
-    private int limit = DEFAULT_LIMIT;
+    protected int limit = DEFAULT_LIMIT;
 
-    private int offset = 0;
+    protected int offset = 0;
 
-    private String nxql;
+    protected String nxql;
 
-    private org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
+    protected org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
 
-    private boolean fetchFromElasticsearch = false;
+    protected boolean fetchFromElasticsearch = false;
 
-    private boolean searchOnAllRepo = false;
+    protected boolean searchOnAllRepo = false;
 
-    private String[] selectFields = { ElasticSearchConstants.ID_FIELD };
+    protected String[] selectFields = { ElasticSearchConstants.ID_FIELD };
 
-    private Map<String, Type> selectFieldsAndTypes;
+    protected Map<String, Type> selectFieldsAndTypes;
 
-    private boolean returnsDocuments = true;
+    protected boolean returnsDocuments = true;
 
-    private boolean esOnly = false;
+    protected boolean esOnly = false;
 
-    private List<String> highlightFields;
+    protected List<String> highlightFields;
 
-    private EsFetcher.HitDocConsumer hitDocConsumer;
+    protected EsFetcher.HitDocConsumer hitDocConsumer;
 
     protected boolean useUnrestrictedSession;
 
