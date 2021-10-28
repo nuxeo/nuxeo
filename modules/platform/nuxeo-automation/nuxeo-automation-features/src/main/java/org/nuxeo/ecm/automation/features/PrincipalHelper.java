@@ -103,7 +103,7 @@ public class PrincipalHelper {
             userManager.getPrincipal(groupId);
         } else {
             for (String u : group.getMemberUsers()) {
-                NuxeoPrincipal principal = userManager.getPrincipal(u);
+                NuxeoPrincipal principal = userManager.getPrincipal(u, false);
                 if (principal != null) {
                     collector.collect(principal);
                 }
@@ -126,7 +126,7 @@ public class PrincipalHelper {
                     NuxeoGroup group = userManager.getGroup(ace.getUsername());
                     if (group == null) {
                         // this may be a user
-                        collector.collect(userManager.getPrincipal(ace.getUsername()));
+                        collector.collect(userManager.getPrincipal(ace.getUsername(), false));
                     } else if (!ignoreGroups) {
                         if (resolveGroups) {
                             resolveGroups(group, collector);
