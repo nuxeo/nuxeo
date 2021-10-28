@@ -32,9 +32,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.blob.s3.S3BlobProviderFeature;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.core.bulk.computation.BulkScrollerComputation;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand.Builder;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -46,8 +47,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3")
+@Features({ CoreFeature.class, S3BlobProviderFeature.class })
 @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-bulk-contrib.xml")
 @RepositoryConfig(init = BlobDocumentSetRepositoryInit.class)
 public class TestSetBlobLengthAction {
@@ -86,7 +86,7 @@ public class TestSetBlobLengthAction {
         log.info("---------- " + title);
         for (DocumentModel child : session.query(nxql)) {
             Long length = null;
-            BinaryBlob blob = ((BinaryBlob) child.getPropertyValue("file:content"));
+            var blob = ((Blob) child.getPropertyValue("file:content"));
             if (blob != null) {
                 length = blob.getLength();
             }
