@@ -15,6 +15,8 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Represents trusted managed blob key computation with a fallback {@link KeyStrategy}
  *
@@ -39,10 +41,13 @@ public class KeyStrategyManaged implements KeyStrategy {
     }
 
     @Override
-    public BlobWriteContext getBlobWriteContext(BlobContext blobContext)  {
+    public BlobWriteContext getBlobWriteContext(BlobContext blobContext) {
         if (blobContext.blob instanceof ManagedBlob) {
-            // strip version id if part of file key
-            String key = ((ManagedBlob) blobContext.blob).getKey().split(String.valueOf(VER_SEP))[0];
+            ManagedBlob managedBlob = (ManagedBlob) blobContext.blob;
+            // strip blob provider id from the key
+            String key = StringUtils.removeStart(managedBlob.getKey(), managedBlob.getProviderId() + ':')
+                                    // strip version id if part of file key
+                                    .split(String.valueOf(VER_SEP))[0];
             return new BlobWriteContext(blobContext, null, () -> key, this);
         } else {
             return strategy.getBlobWriteContext(blobContext);
