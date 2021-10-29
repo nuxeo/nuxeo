@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.blob.s3;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.blob.s3.S3BlobProviderFeature.S3_DOC_TYPE;
 
 import java.io.IOException;
@@ -34,6 +33,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -67,8 +67,41 @@ public class TestS3BlobProviderWithDocument {
         txFeature.nextTransaction(); // avoid an error in FulltextExtractorWork -> ManagedBlob
 
         ManagedBlob blob = (ManagedBlob) doc.getPropertyValue(String.format("s3-%s:content", blobProviderId));
+        String digest = blob.getDigest(); // digest is the key
         assertEquals(blobProviderId, blob.getProviderId());
-        assertTrue(blob.getKey().startsWith(blobProviderId + ':'));
+        assertEquals(blobProviderId + ':' + digest, blob.getKey());
+        assertEquals(blobContent, blob.getString());
+    }
+
+    // NXP-30632
+    @Test
+    public void testMoveFromBlobProviderTestToBlobProviderOther() throws IOException {
+        testMoveFromTestToOther();
+    }
+
+    // NXP-30632
+    @Test
+    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-feature-blob-provider-s3-other-managed.xml")
+    public void testMoveFromBlobProviderTestToBlobProviderOtherWithManagedKey() throws IOException {
+        testMoveFromTestToOther();
+    }
+
+    protected void testMoveFromTestToOther() throws IOException {
+        String blobContent = "A simple blob";
+        DocumentModel doc = session.createDocumentModel("/", "document", S3_DOC_TYPE);
+        doc.setPropertyValue("s3-test:content", (Serializable) Blobs.createBlob(blobContent));
+        doc = session.createDocument(doc);
+
+        ManagedBlob blob = (ManagedBlob) doc.getPropertyValue("s3-test:content");
+        doc.setPropertyValue("s3-test:content", null);
+        doc.setPropertyValue("s3-other:content", (Serializable) blob);
+        doc = session.saveDocument(doc);
+        txFeature.nextTransaction(); // avoid an error in FulltextExtractorWork -> ManagedBlob
+
+        blob = (ManagedBlob & Serializable) doc.getPropertyValue("s3-other:content");
+        String digest = blob.getDigest(); // digest is the key
+        assertEquals("other", blob.getProviderId());
+        assertEquals("other:" + digest, blob.getKey());
         assertEquals(blobContent, blob.getString());
     }
 

@@ -10,6 +10,7 @@
       <property name="region">${nuxeo.test.s3storage.region}</property>
       <property name="bucket">${nuxeo.test.s3storage.provider.test.bucket}</property>
       <property name="bucket_prefix">${nuxeo.test.s3storage.provider.test.bucket_prefix}</property>
+      <property name="keyStrategy">managed</property>
     </blobprovider>
     <blobprovider name="other">
       <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
@@ -23,8 +24,8 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-    <schema name="s3-test" src="schemas/file.xsd"  prefix="s3-test" />
-    <schema name="s3-other" src="schemas/file.xsd"  prefix="s3-other" />
+    <schema name="s3-test" src="schemas/file.xsd" prefix="s3-test" />
+    <schema name="s3-other" src="schemas/file.xsd" prefix="s3-other" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
