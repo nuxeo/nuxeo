@@ -22,9 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.nuxeo.runtime.test.runner.Deploy;
 
-@Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-blob-provider-s3.xml")
 public class TestS3BlobStore extends TestS3BlobStoreAbstract {
 
     @Test

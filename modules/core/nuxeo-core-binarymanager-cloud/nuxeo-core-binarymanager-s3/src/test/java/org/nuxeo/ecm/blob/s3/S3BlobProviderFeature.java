@@ -150,7 +150,7 @@ public class S3BlobProviderFeature implements RunnerFeature {
             Bundle bundle = harness.getOSGiAdapter()
                                    .getRegistry()
                                    .getBundle("org.nuxeo.ecm.core.storage.binarymanager.s3.tests");
-            URL url = bundle.getEntry("OSGI-INF/test-feature-blob-provider-s3.xml");
+            URL url = bundle.getEntry("OSGI-INF/test-blob-provider-s3.xml");
             harness.getContext().deploy(new URLStreamRef(url));
         } catch (IOException e) {
             throw new NuxeoException(e);

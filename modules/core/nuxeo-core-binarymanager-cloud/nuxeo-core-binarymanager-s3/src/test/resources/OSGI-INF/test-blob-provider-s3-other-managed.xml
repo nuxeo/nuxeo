@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.blob.s3.other.managed.feature.test">
-  <require>org.nuxeo.ecm.blob.s3.feature.test</require>
+  <require>org.nuxeo.ecm.blob.s3.test</require>
 
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobprovider name="other">

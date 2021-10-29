@@ -80,7 +80,7 @@ public class TestS3BlobProviderWithDocument {
 
     // NXP-30632
     @Test
-    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-feature-blob-provider-s3-other-managed.xml")
+    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-blob-provider-s3-other-managed.xml")
     public void testMoveFromBlobProviderTestToBlobProviderOtherWithManagedKey() throws IOException {
         testMoveFromTestToOther();
     }
