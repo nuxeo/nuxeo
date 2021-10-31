@@ -35,16 +35,14 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.cluster.ClusterFeature;
-import org.nuxeo.runtime.stream.RuntimeStreamFeature;
+import org.nuxeo.ecm.core.event.CoreEventFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 
 @RunWith(FeaturesRunner.class)
-@Features({ ClusterFeature.class, RuntimeStreamFeature.class })
-@Deploy("org.nuxeo.ecm.core.event")
+@Features(CoreEventFeature.class)
 @Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-eventlistener.xml")
 public class TestSchedulerService {
 
@@ -182,4 +180,16 @@ public class TestSchedulerService {
         assertTrue(newCount >= 1);
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-with-start-delay-config.xml")
+    public void testSchedulerStartWithDelay() throws Exception {
+
+        waitUntilDummyEventListenerIsCalled(5); // wait 5 seconds for the event
+        long count = DummyEventListener.getCount();
+        assertTrue("count " + count, count == 0); // scheduler is started with a 10s delay, so no event is triggered
+
+        waitUntilDummyEventListenerIsCalled(10); // wait more
+        count = DummyEventListener.getCount();
+        assertTrue("count " + count, count >= 1);
+    }
 }

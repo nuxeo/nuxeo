@@ -33,6 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.event.CoreEventFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.runtime.stream.RuntimeStreamFeature;
@@ -43,9 +44,7 @@ import org.nuxeo.runtime.test.runner.RestartFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeStreamFeature.class, RestartFeature.class })
-@Deploy("org.nuxeo.runtime.jtajca")
-@Deploy("org.nuxeo.ecm.core.event")
+@Features({ CoreEventFeature.class, RestartFeature.class })
 @Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-default-workmanager-config.xml")
 @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-queue-config.xml")
 public class WorkManagerTXTest {

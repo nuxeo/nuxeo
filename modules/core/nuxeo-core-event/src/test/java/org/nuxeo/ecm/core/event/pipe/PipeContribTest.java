@@ -22,9 +22,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.event.CoreEventFeature;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
-import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -32,8 +32,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeStreamFeature.class)
-@Deploy("org.nuxeo.ecm.core.event")
+@Features(CoreEventFeature.class)
 @Deploy("org.nuxeo.ecm.core.event.test:test-DummyPipes.xml")
 public class PipeContribTest {
 

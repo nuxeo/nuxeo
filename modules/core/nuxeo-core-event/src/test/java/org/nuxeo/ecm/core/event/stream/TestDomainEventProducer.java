@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.event.CoreEventFeature;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
@@ -31,7 +32,6 @@ import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.Name;
-import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -43,9 +43,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 11.4
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeStreamFeature.class, TransactionalFeature.class })
-@Deploy("org.nuxeo.ecm.core.event")
-@Deploy("org.nuxeo.runtime.jtajca")
+@Features(CoreEventFeature.class)
 @Deploy("org.nuxeo.ecm.core.event:test-stream-domain-event-producer-contrib.xml")
 public class TestDomainEventProducer {
 

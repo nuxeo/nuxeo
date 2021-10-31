@@ -23,10 +23,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.event.CoreEventFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -45,9 +45,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature.Waiter;
  * @since 10.3
  */
 @Deploy("org.nuxeo.runtime.kv") // for stream work manager
-@Deploy("org.nuxeo.ecm.core.event")
-@Deploy("org.nuxeo.ecm.core.event.test")
-@Features({ RuntimeStreamFeature.class, TransactionalFeature.class })
+@Features(CoreEventFeature.class)
 public class WorkManagerFeature implements RunnerFeature {
 
     private static final Log log = LogFactory.getLog(WorkManagerFeature.class);

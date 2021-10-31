@@ -26,19 +26,17 @@ import javax.inject.Inject;
 import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.event.CoreEventFeature;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
-import org.nuxeo.runtime.stream.RuntimeStreamFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeStreamFeature.class, LogCaptureFeature.class })
-@Deploy("org.nuxeo.ecm.core.event")
+@Features({ CoreEventFeature.class, LogCaptureFeature.class })
 @LogCaptureFeature.FilterOn(loggerClass = WorkSchedulePath.class)
 public class WorkErrorsAreTracableTest {
 

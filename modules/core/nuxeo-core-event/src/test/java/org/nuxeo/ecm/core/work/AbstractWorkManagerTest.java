@@ -43,6 +43,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.event.CoreEventFeature;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.WorkFailureEventListener;
 import org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener;
@@ -71,9 +72,8 @@ import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeStreamFeature.class, FileEventsTrackingFeature.class })
+@Features({ CoreEventFeature.class, FileEventsTrackingFeature.class })
 @Deploy("org.nuxeo.runtime.kv")
-@Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-default-workmanager-config.xml")
 @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-queue-config.xml")
 public abstract class AbstractWorkManagerTest {

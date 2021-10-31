@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.local.DummyLoginFeature;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
+import org.nuxeo.ecm.core.event.CoreEventFeature;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryService;
@@ -89,7 +90,6 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.core.query")
 @Deploy("org.nuxeo.ecm.core.api")
-@Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.core")
 @Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.core.cache")
@@ -110,6 +110,7 @@ import com.google.inject.Binder;
         TransactionalFeature.class, //
         RuntimeStreamFeature.class, //
         DummyLoginFeature.class, //
+        CoreEventFeature.class, //
         WorkManagerFeature.class, //
         CoreBulkFeature.class })
 public class CoreFeature implements RunnerFeature {

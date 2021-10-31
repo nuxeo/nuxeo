@@ -22,7 +22,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.cluster.ClusterFeature;
+import org.nuxeo.ecm.core.event.CoreEventFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -39,10 +39,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 10.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(ClusterFeature.class)
-@Deploy("org.nuxeo.ecm.core.event")
+@Features(CoreEventFeature.class)
 @Deploy("org.nuxeo.ecm.core.event.test:test-jobfactory.xml") // jobs
 public class EventJobFactoryTest {
+
     @Inject
     private SchedulerService schedulerService;
 
