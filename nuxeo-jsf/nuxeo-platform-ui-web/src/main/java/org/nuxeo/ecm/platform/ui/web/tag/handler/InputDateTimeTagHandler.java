@@ -48,6 +48,11 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
     protected final String defaultTime;
 
     /**
+     * @since 10.10-HF54
+     */
+    protected final String timeFormat;
+
+    /**
      * @since 5.7.2
      */
     protected TagAttributes attributes;
@@ -56,6 +61,7 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         super(config);
         attributes = config.getTag().getAttributes();
         defaultTime = getValue(attributes, "defaultTime", "12:00");
+        timeFormat = getValue(attributes, "timeFormat", "HH:mm");
     }
 
     protected String getValue(TagAttributes attrs, String name, String defaultValue) {
@@ -156,7 +162,7 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
     }
 
     protected void setDefaultTime(UICalendar instance) {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat(timeFormat);
         format.setTimeZone(instance.getTimeZone());
         Date date;
         try {
