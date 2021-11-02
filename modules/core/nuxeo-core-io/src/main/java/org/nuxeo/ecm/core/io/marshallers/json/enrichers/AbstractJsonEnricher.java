@@ -86,8 +86,7 @@ public abstract class AbstractJsonEnricher<EntityType> extends AbstractJsonWrite
                 Thread.currentThread().interrupt();
                 throw new RuntimeException("interrupted", e); // NOSONAR
             } else {
-                // TODO collect exception and return it to the caller
-                log.info("Enricher: {} failed", name, e);
+                log.warn("The following error occured with enricher: {}", name, e);
             }
         }
     }
