@@ -30,6 +30,7 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.HEADER_PREFIX;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -900,6 +901,31 @@ public class DocumentBrowsingTest extends BaseTest {
                                                     .get(CollectionsJsonEnricher.NAME);
             assertEquals(1, collections.size());
             assertEquals("dummyCollection", collections.get(0).get("title").textValue());
+        }
+    }
+
+    @Test
+    public void iCanGetThePermissionsOnADocumentUnderRetention() throws Exception {
+        // Given an existing doc under retention as an admin
+        DocumentModel file = RestServerInit.getFile(0, session);
+        Calendar retainUntil = Calendar.getInstance();
+        retainUntil.add(Calendar.DAY_OF_MONTH, 5);
+        session.makeRecord(file.getRef());
+        session.setRetainUntil(file.getRef(), retainUntil, "any comment");
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        var headers = Map.of(MarshallingConstants.EMBED_ENRICHERS + ".document", BasePermissionsJsonEnricher.NAME);
+        // When i do a GET Request on the doc
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + file.getRepositoryName() + "/path" + file.getPathAsString(), headers)) {
+
+            // Then i get a list of permissions as an admin
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode permissions = node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("permissions");
+            assertNotNull(permissions);
+            assertTrue(permissions.isArray());
+            assertTrue(permissions.size() > 0);
         }
     }
 
