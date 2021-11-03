@@ -59,7 +59,7 @@ public class FailingEnricherTest extends AbstractJsonWriterTest.External<Documen
     }
 
     @Test
-    @LogCaptureFeature.FilterOn(logLevel = "INFO")
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
     public void test() throws IOException {
         // shouldn't throw
         DocumentModel root = session.getRootDocument();
@@ -71,7 +71,8 @@ public class FailingEnricherTest extends AbstractJsonWriterTest.External<Documen
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         // should log the exception
         assertEquals(1, caughtEvents.size());
-        assertEquals(String.format("Enricher: %s failed", FailingEnricher.NAME), caughtEvents.get(0));
+        assertEquals(String.format("The following error occured with enricher: %s", FailingEnricher.NAME),
+                caughtEvents.get(0));
         assertEquals(jsonExpected.toString(), jsonResult.toString());
     }
 
