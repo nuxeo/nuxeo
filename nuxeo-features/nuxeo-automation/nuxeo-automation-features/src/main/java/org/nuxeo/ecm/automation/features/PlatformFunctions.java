@@ -85,7 +85,7 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     public NuxeoPrincipal getPrincipal(String username) {
-        return getUserManager().getPrincipal(username);
+        return getUserManager().getPrincipal(username, false);
     }
 
     protected String getEmail(NuxeoPrincipal principal, String userSchemaName, String userEmailFieldName) {
@@ -96,9 +96,8 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     public String getEmail(String username) {
-        UserManager userManager = getUserManager();
-        return getEmail(userManager.getPrincipal(username), userManager.getUserSchemaName(),
-                userManager.getUserEmailField());
+        return getEmail(getPrincipal(username), getUserManager().getUserSchemaName(),
+                getUserManager().getUserEmailField());
     }
 
     public Set<NuxeoPrincipal> getPrincipalsFromGroup(String group) {
@@ -148,7 +147,6 @@ public class PlatformFunctions extends CoreFunctions {
         if (usernames == null) {
             return new StringList(0);
         }
-        UserManager userManager = getUserManager();
         StringList result = new StringList(usernames.size());
         String schemaName = getUserManager().getUserSchemaName();
         String fieldName = getUserManager().getUserEmailField();
@@ -156,10 +154,10 @@ public class PlatformFunctions extends CoreFunctions {
             NuxeoPrincipal principal = null;
             if (usePrefix) {
                 if (username.startsWith(NuxeoPrincipal.PREFIX)) {
-                    principal = userManager.getPrincipal(username.replace(NuxeoPrincipal.PREFIX, ""));
+                    principal = getPrincipal(username.replace(NuxeoPrincipal.PREFIX, ""));
                 }
             } else {
-                principal = userManager.getPrincipal(username);
+                principal = getPrincipal(username);
             }
             if (principal != null) {
                 String email = getEmail(principal, schemaName, fieldName);
