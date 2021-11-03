@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.blob.AbstractBlobGarbageCollector;
 import org.nuxeo.ecm.core.blob.AbstractBlobStore;
 import org.nuxeo.ecm.core.blob.BlobContext;
-import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobStore;
 import org.nuxeo.ecm.core.blob.BlobUpdateContext;
 import org.nuxeo.ecm.core.blob.BlobWriteContext;
@@ -148,6 +147,7 @@ public class S3BlobStore extends AbstractBlobStore {
         Path p = Paths.get(bucketPrefix);
         int subDirsDepth = config.getSubDirsDepth();
         if (subDirsDepth == 0) {
+            // pathStrategy is not used when subDirsDepth=0 because a bucketPrefix could be in the key - NXP-30632
             pathStrategy = new PathStrategyFlat(p);
         } else {
             pathStrategy = new PathStrategySubDirs(p, subDirsDepth);
@@ -212,6 +212,11 @@ public class S3BlobStore extends AbstractBlobStore {
     }
 
     protected String bucketKey(String key) {
+        // this allows to retrieve blobs created with a bucketPrefix in the key - NXP-30632
+        // this is a workaround for incorrectly written keys
+        if (config.getSubDirsDepth() == 0) {
+            return bucketPrefix + key;
+        }
         String path = pathStrategy.getPathForKey(key).toString();
         if (pathSeparatorIsBackslash) {
             // correct for our abuse of Path under Windows
@@ -894,7 +899,8 @@ public class S3BlobStore extends AbstractBlobStore {
                 }
                 for (S3ObjectSummary summary : list.getObjectSummaries()) {
                     String path = summary.getKey().substring(prefixLength);
-                    String key = pathStrategy.getKeyForPath(path);
+                    // do not use pathStrategy when subDirsDepth=0 - NXP-30632
+                    String key = config.getSubDirsDepth() == 0 ? path : pathStrategy.getKeyForPath(path);
                     if (key == null) {
                         continue;
                     }
