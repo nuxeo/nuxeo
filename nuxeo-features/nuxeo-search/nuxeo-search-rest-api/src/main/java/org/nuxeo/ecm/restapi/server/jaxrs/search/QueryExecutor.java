@@ -107,6 +107,9 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
     // @since 11.1
     public static final String SCROLL_PARAM = "scroll";
 
+    // @since 2021.12
+    public static final String QUERY_LIMIT_PARAM = "queryLimit";
+
     protected PageProviderService pageProviderService;
 
     protected boolean skipAggregates;
