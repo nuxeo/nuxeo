@@ -29,10 +29,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.nuxeo.ecm.core.bulk.BulkAdminService;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.io.BulkParameters;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand.Builder;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -50,11 +52,16 @@ public class BulkActionObject extends DefaultObject {
 
     protected String scroller = null;
 
+    protected long queryLimit;
+
     @Override
     public void initialize(Object... args) {
         query = (String) args[0];
-        if (args.length == 2 && args[1] != null) {
-            scroller = (String) args[1];
+        if (args.length > 1) {
+            scroller = (String) ObjectUtils.defaultIfNull(args[1], scroller);
+            if (args.length > 2) {
+                queryLimit = args[2] != null ? Long.parseLong((String) args[2]) : queryLimit;
+            }
         }
     }
 
@@ -76,11 +83,14 @@ public class BulkActionObject extends DefaultObject {
         String repository = getContext().getCoreSession().getRepositoryName();
         String username = getContext().getPrincipal().getName();
 
-        BulkCommand command = new BulkCommand.Builder(actionId, query).repository(repository)
-                                                                      .user(username)
-                                                                      .params(BulkParameters.paramsToMap(actionParams))
-                                                                      .scroller(scroller)
-                                                                      .build();
+        Builder builder = new BulkCommand.Builder(actionId, query).repository(repository)
+                                                                  .user(username)
+                                                                  .params(BulkParameters.paramsToMap(actionParams))
+                                                                  .scroller(scroller);
+        if (queryLimit > 0) {
+            builder.queryLimit(queryLimit);
+        }
+        BulkCommand command = builder.build();
 
         BulkService service = Framework.getService(BulkService.class);
         String commandId = service.submit(command);
