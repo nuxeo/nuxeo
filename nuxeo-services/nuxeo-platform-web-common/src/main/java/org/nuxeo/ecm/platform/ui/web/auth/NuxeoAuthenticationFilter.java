@@ -492,6 +492,9 @@ public class NuxeoAuthenticationFilter implements Filter {
                     if (cachableUserIdent.getUserInfo().getUserName().equals(getAnonymousId())) {
                         if (forceAnonymousLogin) {
                             cachableUserIdent = null;
+                            // We are going to ignore anonymous session to login
+                            // we don't need any more our anonymous session
+                            service.invalidateSession(request);
                         }
                     }
 
