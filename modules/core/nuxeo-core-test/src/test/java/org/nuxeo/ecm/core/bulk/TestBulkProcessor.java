@@ -124,21 +124,26 @@ public class TestBulkProcessor {
 
         // invalid query
         String nxql = "DROP DATABASE is not a valid NXQL command";
+        submitAndAssertAnInvalidNXQLQuery(nxql);
+
+        // query with error
+        nxql = "SELECT * FROM Document WHERE ecm:path = 'non/existing/path'";
+        submitAndAssertAnInvalidNXQLQuery(nxql);
+
+        // un-existing type
+        nxql = "SELECT * FROM Image";
+        submitAndAssertAnInvalidNXQLQuery(nxql);
+
+        // invalid IN operator
+        nxql = "SELECT * FROM Document WHERE ecm:primaryType IN (1, 2, 3)";
+        submitAndAssertAnInvalidNXQLQuery(nxql);
+    }
+
+    protected void submitAndAssertAnInvalidNXQLQuery(String nxql) throws InterruptedException {
         String commandId = service.submit(
                 new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").build());
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
         BulkStatus status = service.getStatus(commandId);
-        assertEquals(commandId, status.getId());
-        assertEquals(COMPLETED, status.getState());
-        assertEquals(0, status.getTotal());
-        assertTrue(status.hasError());
-        assertEquals(SC_BAD_REQUEST, status.getErrorCode());
-
-        // query with error
-        nxql = "SELECT * FROM Document WHERE ecm:path = 'non/existing/path'";
-        commandId = service.submit(new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").build());
-        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
-        status = service.getStatus(commandId);
         assertEquals(commandId, status.getId());
         assertEquals(COMPLETED, status.getState());
         assertEquals(0, status.getTotal());
