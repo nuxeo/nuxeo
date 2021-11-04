@@ -125,7 +125,8 @@ public class SearchObject extends QueryExecutor {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         String query = getQueryString(null, queryParams);
         String scrollName = queryParams.getFirst(SCROLL_PARAM);
-        return newObject("bulkAction", query, scrollName);
+        String queryLimit = queryParams.getFirst(QUERY_LIMIT_PARAM);
+        return newObject("bulkAction", query, scrollName, queryLimit);
     }
 
     @GET
@@ -158,7 +159,8 @@ public class SearchObject extends QueryExecutor {
         } else {
             scrollName = scrollParam;
         }
-        return newObject("bulkAction", query, scrollName);
+        String queryLimit = queryParams.getFirst(QUERY_LIMIT_PARAM);
+        return newObject("bulkAction", query, scrollName, queryLimit);
     }
 
     @GET

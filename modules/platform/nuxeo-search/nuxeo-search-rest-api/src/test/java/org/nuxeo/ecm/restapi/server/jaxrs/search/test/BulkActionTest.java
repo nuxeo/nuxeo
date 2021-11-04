@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -39,8 +40,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
-import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.bulk.action.SetPropertiesAction;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -171,6 +172,22 @@ public class BulkActionTest extends BaseTest {
     protected void testExecuteBulkAction(String searchEndpoint, MultivaluedMap<String, String> queryParams)
             throws Exception {
 
+        executeBulkAction(searchEndpoint, queryParams);
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET, searchEndpoint + "/execute",
+                queryParams)) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            List<JsonNode> noteNodes = getLogEntries(node);
+            for (JsonNode noteNode : noteNodes) {
+                assertEquals("bulk desc", noteNode.get("properties").get("dc:description").textValue());
+            }
+        }
+    }
+
+    protected BulkStatus executeBulkAction(String searchEndpoint, MultivaluedMap<String, String> queryParams)
+            throws IOException, InterruptedException {
         String actionId = SetPropertiesAction.ACTION_NAME;
         Map<String, String> params = Collections.singletonMap("dc:description", "bulk desc");
         String jsonParams = new ObjectMapper().writeValueAsString(params);
@@ -187,17 +204,7 @@ public class BulkActionTest extends BaseTest {
             BulkStatus status = bulkService.getStatus(commandId);
             assertNotNull(status);
             assertEquals(COMPLETED, status.getState());
-        }
-
-        try (CloseableClientResponse response = getResponse(RequestType.GET, searchEndpoint + "/execute",
-                queryParams)) {
-
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            List<JsonNode> noteNodes = getLogEntries(node);
-            for (JsonNode noteNode : noteNodes) {
-                assertEquals("bulk desc", noteNode.get("properties").get("dc:description").textValue());
-            }
+            return status;
         }
     }
 
@@ -207,6 +214,16 @@ public class BulkActionTest extends BaseTest {
         queryParams.add("query", "SELECT * FROM Document WHERE ecm:isVersion = 0");
         queryParams.add("scroll", "repository");
         testExecuteBulkAction("search", queryParams);
+    }
+
+    @Test
+    public void testExecuteBulkWithAQueryLimit() throws Exception {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("query", "SELECT * FROM Document WHERE ecm:isVersion = 0");
+        queryParams.add("queryLimit", "1");
+        BulkStatus status = executeBulkAction("search", queryParams);
+        assertEquals(1, status.getTotal());
+        assertEquals(true, status.isQueryLimitReached());
     }
 
 }
