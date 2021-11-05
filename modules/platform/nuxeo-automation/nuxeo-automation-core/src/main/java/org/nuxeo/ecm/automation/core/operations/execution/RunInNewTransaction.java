@@ -32,6 +32,8 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -79,8 +81,10 @@ public class RunInNewTransaction {
             return;
         }
         try {
+            NuxeoPrincipal principal = session.getPrincipal();
             TransactionHelper.runInNewTransaction(() -> {
                 try (OperationContext subctx = ctx.getSubContext(isolate)) {
+                    LoginComponent.pushPrincipal(principal);
                     try {
                         service.run(subctx, chainId, chainParameters);
                     } catch (OperationException e) {
@@ -90,6 +94,8 @@ public class RunInNewTransaction {
                             // just log, no rethrow
                             log.warn("Error while executing operation " + chainId, e);
                         }
+                    } finally {
+                        LoginComponent.popPrincipal();
                     }
                 }
             });
