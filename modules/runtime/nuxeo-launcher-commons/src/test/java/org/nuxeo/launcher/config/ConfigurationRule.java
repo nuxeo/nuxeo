@@ -20,6 +20,7 @@
 package org.nuxeo.launcher.config;
 
 import static org.nuxeo.common.function.ThrowableConsumer.asConsumer;
+import static org.nuxeo.common.function.ThrowableFunction.asFunction;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -139,7 +140,7 @@ public class ConfigurationRule extends TestWatcher {
      */
     public Optional<Path> getOptionalResourcePath(String resource) {
         return Optional.ofNullable(getClass().getClassLoader().getResource(baseDirectory + '/' + resource))
-                       .map(URL::getPath)
+                       .map(asFunction(URL::toURI))
                        .map(Path::of);
     }
 }

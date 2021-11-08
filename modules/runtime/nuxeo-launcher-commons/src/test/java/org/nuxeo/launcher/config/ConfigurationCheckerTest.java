@@ -20,13 +20,12 @@ package org.nuxeo.launcher.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assume.assumeFalse;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,9 +49,6 @@ public class ConfigurationCheckerTest {
 
     @Before
     public void setUp() throws Exception {
-        // NXP-23518, assume instead of ConditionalIgnoreRule to not import nuxeo-runtime-test that brings too much deps
-        assumeFalse(SystemUtils.IS_OS_WINDOWS);
-
         FakeCheck.reset();
         FakeCheck.setReady(true);
 
@@ -94,18 +90,20 @@ public class ConfigurationCheckerTest {
     @Test
     public void canReferenceGlobPatternInClasspathEntry() {
         Stream<Path> jars = checker.getJarsFromClasspathEntry(configHolder, backingPath,
-                bundles.resolve("versioned-*.jar").toString());
+                bundles.toString() + File.separator + "versioned-*.jar");
         assertEquals(1, jars.count());
 
-        jars = checker.getJarsFromClasspathEntry(configHolder, backingPath, bundles.resolve("other-*.jar").toString());
+        jars = checker.getJarsFromClasspathEntry(configHolder, backingPath,
+                bundles.toString() + File.separator + "other-*.jar");
         assertEquals(0, jars.count());
     }
 
     @Test
     public void canUseParametersInClasspath() {
         configHolder.put("backing.check.classpath", "${nuxeo.home}/nxserver/bundles/versioned-*.jar");
-        assertEquals(bundles.resolve("versioned-*.jar").toString(),
-                checker.getBackingCheckerClasspath(configHolder, "backing"));
+        // getBackingCheckerClasspath doesn't replace the separator on Windows, getJarsFromClasspathEntry does
+        assertEquals(bundles.toString() + File.separator + "versioned-*.jar",
+                checker.getBackingCheckerClasspath(configHolder, "backing").replace('/', File.separatorChar));
     }
 
     @Test
