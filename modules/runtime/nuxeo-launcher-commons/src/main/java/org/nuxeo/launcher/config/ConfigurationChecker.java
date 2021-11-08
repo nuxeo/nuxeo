@@ -387,7 +387,7 @@ public class ConfigurationChecker {
     protected URLClassLoader getBackingCheckerClassLoader(ConfigurationHolder configHolder, String checker) {
         Path templatePath = getTemplatePath(configHolder, checker);
         String classPath = getBackingCheckerClasspath(configHolder, checker);
-        URL[] urls = Stream.of(classPath.split(":"))
+        URL[] urls = Stream.of(classPath.split(":(?!\\\\)"))
                            .flatMap(e -> getJarsFromClasspathEntry(configHolder, templatePath, e))
                            .map(this::convertToJarFileURL)
                            .filter(Objects::nonNull)
