@@ -61,9 +61,15 @@ public class ESRestClientFactory implements ESClientFactory {
 
     public static final String DEFAULT_SOCKET_TIMEOUT_MS = "20000";
 
+    // @since 2021.12
+    public static final String DEFAULT_MAX_RETRY_TIMEOUT_MS = "30000";
+
     public static final String CONNECTION_TIMEOUT_MS_OPT = "connection.timeout.ms";
 
     public static final String SOCKET_TIMEOUT_MS_OPT = "socket.timeout.ms";
+
+    // @since 2021.12
+    public static final String MAX_RETRY_TIMEOUT_MS_OPT = "max.retry.timeout.ms";
 
     public static final String AUTH_USER_OPT = "username";
 
@@ -161,7 +167,7 @@ public class ESRestClientFactory implements ESClientFactory {
                                                                                                   .setSocketTimeout(
                                                                                                           getSocketTimeoutMs(
                                                                                                                   config)))
-                                              .setMaxRetryTimeoutMillis(getConnectTimeoutMs(config));
+                                              .setMaxRetryTimeoutMillis(getMaxRetryTimeoutMs(config));
         addClientCallback(config, builder);
         RestHighLevelClient client = new RestHighLevelClient(builder); // NOSONAR (factory)
         // checkConnection(client);
@@ -274,6 +280,11 @@ public class ESRestClientFactory implements ESClientFactory {
 
     protected int getSocketTimeoutMs(ElasticSearchClientConfig config) {
         return Integer.parseInt(config.getOption(SOCKET_TIMEOUT_MS_OPT, DEFAULT_SOCKET_TIMEOUT_MS));
+    }
+
+    // @since 2021.12
+    protected int getMaxRetryTimeoutMs(ElasticSearchClientConfig config) {
+        return Integer.parseInt(config.getOption(MAX_RETRY_TIMEOUT_MS_OPT, DEFAULT_MAX_RETRY_TIMEOUT_MS));
     }
 
     protected void checkConnection(RestHighLevelClient client) {
