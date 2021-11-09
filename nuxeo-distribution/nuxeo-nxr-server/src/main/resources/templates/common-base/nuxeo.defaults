@@ -156,6 +156,8 @@ elasticsearch.index.translog.durability=request
 elasticsearch.restClient.connectionTimeoutMs=30000
 # For the rest client, a maximum period, in milliseconds, of inactivity between two consecutive data packets
 elasticsearch.restClient.socketTimeoutMs=20000
+# For the rest client, a maximum timeout in milliseconds to honour in case of multiple retries of the same request
+elasticsearch.restClient.maxRetryTimeoutMs=60000
 # A username for client basic authentication
 elasticsearch.restClient.username=
 # A password for client basic authentication
