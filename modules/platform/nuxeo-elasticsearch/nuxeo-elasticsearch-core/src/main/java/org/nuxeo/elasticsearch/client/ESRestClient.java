@@ -367,6 +367,10 @@ public class ESRestClient implements ESClient {
     @Override
     public IndexResponse index(IndexRequest request) {
         try (Scope ignored = getScopedSpan("elastic/_index", request.toString())) {
+            if (IndexRequest.DEFAULT_TIMEOUT == request.timeout()) {
+                // use a longer timeout than the default one
+                request.timeout(LONG_TIMEOUT);
+            }
             return client.index(request, RequestOptions.DEFAULT);
         } catch (ElasticsearchStatusException e) {
             if (RestStatus.CONFLICT.equals(e.status())) {
