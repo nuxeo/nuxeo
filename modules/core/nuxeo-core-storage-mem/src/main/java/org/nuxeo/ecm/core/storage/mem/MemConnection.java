@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.mem;
 
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.core.storage.State.NOP;
+import static org.nuxeo.ecm.core.storage.dbs.DBSConnection.DBSQueryOperator.IN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -567,7 +569,23 @@ public class MemConnection extends DBSConnectionBase {
     @Override
     public List<State> queryKeyValueWithOperator(String key1, Object value1, String key2, DBSQueryOperator operator,
             Object value2, Set<String> ignored) {
-        throw new UnsupportedOperationException();
+        List<State> results = new ArrayList<>();
+        if (IN.equals(operator)) {
+            HashSet<Object> possibleValues = new HashSet<>((Collection<?>) value2);
+            states.forEach((id, state) -> {
+                if (ignored.contains(id)) {
+                    return;
+                }
+                if (state.get(key1) == value1) {
+                    if (possibleValues.contains(state.get(key2))) {
+                        results.add(state);
+                    }
+                }
+            });
+        } else {
+            throw new IllegalArgumentException(String.format("Unknown operator: %s", operator));
+        }
+        return results;
     }
 
 }

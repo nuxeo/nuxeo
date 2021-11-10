@@ -645,6 +645,19 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public void updateReadACLs(Collection<String> docIds) {
         getSession().updateReadACLs(docIds);
+        updateVersionsReadACLs(docIds);
+    }
+
+    protected void updateVersionsReadACLs(Collection<String> docIds) {
+        if (docIds.isEmpty()) {
+            return;
+        }
+        // update versions of the docs
+        String query = String.format("SELECT ecm:uuid FROM Document WHERE ecm:versionVersionableId IN ('%s')",
+                String.join("', '", docIds));
+        PartialList<Map<String, Serializable>> results = queryProjection(query, 0, 0);
+        List<String> versionIds = results.stream().map(m -> (String) m.get("ecm:uuid")).collect(Collectors.toList());
+        getSession().updateReadACLs(versionIds);
     }
 
     @Override

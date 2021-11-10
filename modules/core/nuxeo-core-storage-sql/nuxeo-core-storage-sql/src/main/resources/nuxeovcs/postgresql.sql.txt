@@ -928,6 +928,21 @@ BEGIN
     END IF;
   END LOOP;
   --
+  -- 3.2/ Mark all versions with the NULL marker
+  LOOP
+    UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (
+      SELECT v.id
+      FROM versions as v
+      JOIN hierarchy_read_acl AS r ON v.id = r.id
+      WHERE r.acl_id IS NOT NULL
+        AND v.versionableid IN (SELECT id FROM hierarchy_read_acl WHERE acl_id IS NULL));
+    GET DIAGNOSTICS update_count = ROW_COUNT;
+    RAISE DEBUG 'nx_update_read_acls mark % lines to udpate', update_count;
+    IF (update_count = 0) THEN
+      EXIT;
+    END IF;
+  END LOOP;
+  --
   -- 4/ Compute the new read ACLs for updated documents
   RAISE DEBUG 'nx_update_read_acls computing read acls ...';
   UPDATE hierarchy_read_acl SET acl_id = md5(nx_get_read_acl(id)) WHERE acl_id IS NULL;
