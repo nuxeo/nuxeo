@@ -54,7 +54,9 @@ public class CreateRelation {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
-        relations.addRelation(session, doc, object, predicate, outgoing);
+        // `outgoing` parameter indicates inverse relationship, which is
+        // the opposite of the outgoing value.
+        relations.addRelation(session, doc, object, predicate, !outgoing);
         return doc;
     }
 }

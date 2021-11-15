@@ -53,7 +53,9 @@ public class DeleteRelation {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
-        relations.deleteRelation(session, doc, object, predicate, outgoing);
+        DocumentModel from = outgoing ? doc : object;
+        DocumentModel to = outgoing ? object : doc;
+        relations.deleteRelation(session, from, to, predicate, true);
         return doc;
     }
 }

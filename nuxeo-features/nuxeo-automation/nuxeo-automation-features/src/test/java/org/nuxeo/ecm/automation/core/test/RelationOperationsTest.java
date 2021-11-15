@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
@@ -90,44 +91,168 @@ public class RelationOperationsTest {
     // ------ Tests comes here --------
 
     @Test
-    public void testRelationOperations() throws Exception {
+    public void testRelationOutboundOperation() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         OperationChain chain = new OperationChain("createRelation");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateRelation.ID).set("predicate", conformsTo).set("object", dst.getId());
+        chain.add(CreateRelation.ID).set("predicate", conformsTo).set("object", dst.getId()).set("outgoing", true);
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
 
         assertEquals(doc, src);
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(src);
         chain = new OperationChain("getRelation");
         chain.add(FetchContextDocument.ID);
-        chain.add(GetRelations.ID).set("predicate", conformsTo);
+        chain.add(GetRelations.ID).set("predicate", conformsTo).set("outgoing", true);
         DocumentModelList docs = (DocumentModelList) service.run(ctx, chain);
 
         assertEquals(1, docs.size());
         assertEquals(dst, docs.get(0));
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(src);
         chain = new OperationChain("getRelationWithGraphName");
         chain.add(FetchContextDocument.ID);
-        chain.add(GetRelations.ID).set("predicate", conformsTo).set("graphName", null);
+        chain.add(GetRelations.ID).set("predicate", conformsTo).set("graphName", null).set("outgoing", true);
         DocumentModelList docs2 = (DocumentModelList) service.run(ctx, chain);
 
         assertEquals(docs, docs2);
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(src);
         chain = new OperationChain("deleteRelation");
         chain.add(FetchContextDocument.ID);
-        chain.add(DeleteRelation.ID).set("predicate", conformsTo).set("object", dst.getId());
+        chain.add(DeleteRelation.ID).set("predicate", conformsTo).set("object", dst.getId()).set("outgoing", true);
         DocumentModel doc2 = (DocumentModel) service.run(ctx, chain);
 
         assertEquals(doc2, src);
 
+        ctx.clear();
+        ctx.setInput(src);
+        chain = new OperationChain("getRelation");
+        chain.add(FetchContextDocument.ID);
+        chain.add(GetRelations.ID).set("predicate", conformsTo);
+        DocumentModelList docs3 = (DocumentModelList) service.run(ctx, chain);
+
+        assertTrue(docs3.isEmpty());
     }
 
+    @Test
+    public void testRelationIncomingOperation() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+        OperationChain chain = new OperationChain("createRelation");
+        chain.add(FetchContextDocument.ID);
+        chain.add(CreateRelation.ID).set("predicate", conformsTo).set("object", dst.getId()).set("outgoing", false);
+        DocumentModel doc = (DocumentModel) service.run(ctx, chain);
+
+        assertEquals(doc, src);
+
+        ctx.clear();
+        ctx.setInput(src);
+        chain = new OperationChain("getRelation");
+        chain.add(FetchContextDocument.ID);
+        chain.add(GetRelations.ID).set("predicate", conformsTo).set("outgoing", false);
+        DocumentModelList docs = (DocumentModelList) service.run(ctx, chain);
+
+        assertEquals(1, docs.size());
+        assertEquals(dst, docs.get(0));
+
+        ctx.clear();
+        ctx.setInput(src);
+        chain = new OperationChain("getRelationWithGraphName");
+        chain.add(FetchContextDocument.ID);
+        chain.add(GetRelations.ID).set("predicate", conformsTo).set("graphName", null).set("outgoing", false);
+        DocumentModelList docs2 = (DocumentModelList) service.run(ctx, chain);
+
+        assertEquals(docs, docs2);
+
+        ctx.clear();
+        ctx.setInput(src);
+        chain = new OperationChain("deleteRelation");
+        chain.add(FetchContextDocument.ID);
+        chain.add(DeleteRelation.ID).set("predicate", conformsTo).set("object", dst.getId()).set("outgoing", false);
+        DocumentModel doc2 = (DocumentModel) service.run(ctx, chain);
+
+        assertEquals(doc2, src);
+
+        ctx.clear();
+        ctx.setInput(src);
+        chain = new OperationChain("getRelation");
+        chain.add(FetchContextDocument.ID);
+        chain.add(GetRelations.ID).set("predicate", conformsTo);
+        DocumentModelList docs3 = (DocumentModelList) service.run(ctx, chain);
+
+        assertTrue(docs3.isEmpty());
+    }
+
+    @Test
+    public void testRelationMismatchOperation() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+        OperationChain chain = new OperationChain("createRelation");
+        chain.add(FetchContextDocument.ID);
+        chain.add(CreateRelation.ID).set("predicate", conformsTo).set("object", dst.getId()).set("outgoing", true);
+        DocumentModel doc = (DocumentModel) service.run(ctx, chain);
+
+        assertEquals(doc, src);
+
+        ctx.clear();
+        ctx.setInput(src);
+        chain = new OperationChain("getRelation");
+        chain.add(FetchContextDocument.ID);
+        chain.add(GetRelations.ID).set("predicate", conformsTo).set("outgoing", true);
+        DocumentModelList docs = (DocumentModelList) service.run(ctx, chain);
+
+        assertEquals(1, docs.size());
+        assertEquals(dst, docs.get(0));
+
+        ctx.clear();
+        ctx.setInput(src);
+        chain = new OperationChain("getRelationWithGraphName");
+        chain.add(FetchContextDocument.ID);
+        chain.add(GetRelations.ID).set("predicate", conformsTo).set("graphName", null).set("outgoing", true);
+        DocumentModelList docs2 = (DocumentModelList) service.run(ctx, chain);
+
+        assertEquals(docs, docs2);
+
+        ctx.clear();
+        ctx.setInput(src);
+        chain = new OperationChain("deleteRelation");
+        chain.add(FetchContextDocument.ID);
+        chain.add(DeleteRelation.ID).set("predicate", conformsTo).set("object", dst.getId()).set("outgoing", false);
+        DocumentModel doc2 = (DocumentModel) service.run(ctx, chain);
+
+        assertEquals(doc2, src);
+
+        ctx.clear();
+        ctx.setInput(src);
+        chain = new OperationChain("getRelation");
+        chain.add(FetchContextDocument.ID);
+        chain.add(GetRelations.ID).set("predicate", conformsTo).set("outgoing", true);
+        DocumentModelList docs3 = (DocumentModelList) service.run(ctx, chain);
+
+        assertEquals(1, docs3.size());
+        assertEquals(dst, docs3.get(0));
+
+        ctx.clear();
+        ctx.setInput(src);
+        chain = new OperationChain("deleteRelation");
+        chain.add(FetchContextDocument.ID);
+        chain.add(DeleteRelation.ID).set("predicate", conformsTo).set("object", dst.getId()).set("outgoing", true);
+        DocumentModel doc3 = (DocumentModel) service.run(ctx, chain);
+
+        assertEquals(doc3, src);
+
+        ctx.clear();
+        ctx.setInput(src);
+        chain = new OperationChain("getRelation");
+        chain.add(FetchContextDocument.ID);
+        chain.add(GetRelations.ID).set("predicate", conformsTo).set("outgoing", true);
+        DocumentModelList docs4 = (DocumentModelList) service.run(ctx, chain);
+
+        assertTrue(docs4.isEmpty());
+    }
 }
