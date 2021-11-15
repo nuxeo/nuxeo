@@ -171,7 +171,7 @@ public class TestSQLRepositoryProperties {
         }
         Map<String, Serializable> map = new HashMap<>();
         for (int i = 0; i < values.length; i += 2) {
-            map.put((String) values[i], (Serializable) values[i+1]);
+            map.put((String) values[i], (Serializable) values[i + 1]);
         }
         return map;
     }
@@ -250,7 +250,7 @@ public class TestSQLRepositoryProperties {
     public void testDateArray() {
         assertNull(doc.getPropertyValue("tp:dateArray"));
         Calendar cal = Calendar.getInstance();
-        cal.set(2008, 6, 10);
+        cal.set(2008, Calendar.JULY, 10);
         Calendar[] values = { cal };
         doc.setPropertyValue("tp:dateArray", values);
         doc = session.saveDocument(doc);
@@ -318,7 +318,7 @@ public class TestSQLRepositoryProperties {
 
     @Test
     public void testArrayConcurrentPushToOneElement() throws InterruptedException {
-        doTestArrayConcurrentPush(Arrays.asList("aaa"));
+        doTestArrayConcurrentPush(Collections.singletonList("aaa"));
     }
 
     protected void doTestArrayConcurrentPush(List<String> start) throws InterruptedException {
@@ -403,7 +403,7 @@ public class TestSQLRepositoryProperties {
         nextTransaction();
         doc.refresh();
         Object[] array = (Object[]) doc.getPropertyValue("tp:stringArray");
-        assertEquals(Arrays.asList("baz"), Arrays.asList(array));
+        assertEquals(Collections.singletonList("baz"), Arrays.asList(array));
     }
 
     protected void removeValueFromDoc(String value, CyclicBarrier barrier, List<Exception> exc) {
@@ -442,7 +442,7 @@ public class TestSQLRepositoryProperties {
         Map<String, Serializable> item = new HashMap<>();
         item.put("string", "foo");
         Calendar cal = Calendar.getInstance();
-        cal.set(2008, 6, 10);
+        cal.set(2008, Calendar.JULY, 10);
         item.put("date", cal);
         item.put("int", 3L);
         values.add(item);
@@ -541,7 +541,8 @@ public class TestSQLRepositoryProperties {
     @Test
     public void testComplexListChangeAfterClear() {
         // complex list with one element
-        doc.setPropertyValue("tp:complexList", (Serializable) Arrays.asList(Collections.singletonMap("string", "foo")));
+        doc.setPropertyValue("tp:complexList",
+                (Serializable) Collections.singletonList(Collections.singletonMap("string", "foo")));
         doc = session.saveDocument(doc);
         session.save();
 
@@ -550,7 +551,8 @@ public class TestSQLRepositoryProperties {
         doc = session.saveDocument(doc);
         // don't save the session here
         // re-add one element (-> delete + insert in database)
-        doc.setPropertyValue("tp:complexList", (Serializable) Collections.singletonList(Collections.singletonMap("string", "bar")));
+        doc.setPropertyValue("tp:complexList",
+                (Serializable) Collections.singletonList(Collections.singletonMap("string", "bar")));
         doc = session.saveDocument(doc);
         session.save(); // save succeeds, no unique constraint problem
     }
@@ -570,7 +572,7 @@ public class TestSQLRepositoryProperties {
         assertEquals(1, dml.size());
 
         // on update
-        doc.setPropertyValue("tp:complexList", (Serializable) Arrays.asList(map("string", "foo")));
+        doc.setPropertyValue("tp:complexList", (Serializable) Collections.singletonList(map("string", "foo")));
         doc = session.saveDocument(doc);
         session.save();
         doc.setPropertyValue("tp:complexList", null);
@@ -587,10 +589,9 @@ public class TestSQLRepositoryProperties {
     public void testComplexListElementNullInStorage() {
         assumeTrue(coreFeature.getStorageConfiguration().isDBS());
 
-        doc.setPropertyValue("tp:complexList",
-                (Serializable) Arrays.asList( //
-                        Collections.singletonMap("string", "foo"), //
-                        Collections.singletonMap("string", "bar")));
+        doc.setPropertyValue("tp:complexList", (Serializable) Arrays.asList( //
+                Collections.singletonMap("string", "foo"), //
+                Collections.singletonMap("string", "bar")));
         doc = session.saveDocument(doc);
         String id = doc.getId();
         session.save();
@@ -600,10 +601,9 @@ public class TestSQLRepositoryProperties {
         StateDiff diff = new StateDiff();
         State state = new State();
         state.put("string", "bar");
-        diff.put("tp:complexList",
-                (Serializable) Arrays.asList( //
-                        null, // null as first element of the list
-                        state));
+        diff.put("tp:complexList", (Serializable) Arrays.asList( //
+                null, // null as first element of the list
+                state));
         changeDoc(id, diff);
 
         // check that we don't crash on read
@@ -657,7 +657,7 @@ public class TestSQLRepositoryProperties {
 
     @Test
     public void testComplexListPartialUpdate() {
-        List<Map<String, Serializable>> list = Arrays.asList(Collections.singletonMap("string", "foo"));
+        List<Map<String, Serializable>> list = Collections.singletonList(Collections.singletonMap("string", "foo"));
         doc.setPropertyValue("tp:complexList", (Serializable) list);
         doc = session.saveDocument(doc);
         session.save();
@@ -688,7 +688,7 @@ public class TestSQLRepositoryProperties {
 
     @Test
     public void testComplexListConcurrentPushToOneElement() throws InterruptedException {
-        doTestComplexListConcurrentPush(Arrays.asList("aaa"));
+        doTestComplexListConcurrentPush(Collections.singletonList("aaa"));
     }
 
     protected void doTestComplexListConcurrentPush(List<String> startStrings) throws InterruptedException {
@@ -719,7 +719,8 @@ public class TestSQLRepositoryProperties {
         nextTransaction();
         doc.refresh();
         @SuppressWarnings("unchecked")
-        List<Map<String, Serializable>> newList = (List<Map<String, Serializable>>) doc.getPropertyValue("tp:complexList");
+        List<Map<String, Serializable>> newList = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                "tp:complexList");
         Set<String> expected = new HashSet<>(startStrings);
         expected.add("ddd");
         expected.add("eee");
@@ -1549,7 +1550,7 @@ public class TestSQLRepositoryProperties {
 
         // check that we don't crash on read
         doc = session.getDocument(doc.getRef());
-        assertEquals(Arrays.asList("a"), Arrays.asList((Object[]) doc.getPropertyValue("dc:subjects")));
+        assertEquals(Collections.singletonList("a"), Arrays.asList((Object[]) doc.getPropertyValue("dc:subjects")));
         assertEquals("aa", doc.getPropertyValue("dc:title"));
         assertNull(doc.getPropertyValue("dc:contributors"));
     }
@@ -1567,12 +1568,13 @@ public class TestSQLRepositoryProperties {
     public void testComplexListArrayElementResetWithNull() {
         DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
         doc.setPropertyValue("complexlist",
-                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "foo" })));
+                (Serializable) Collections.singletonList(Collections.singletonMap("array", new String[] { "foo" })));
         doc = session.createDocument(doc);
         session.save();
 
         // set map value to null
-        doc.setPropertyValue("complexlist", (Serializable) Arrays.asList(Collections.singletonMap("array", null)));
+        doc.setPropertyValue("complexlist",
+                (Serializable) Collections.singletonList(Collections.singletonMap("array", null)));
         doc = session.saveDocument(doc);
         session.save();
 
@@ -1588,13 +1590,13 @@ public class TestSQLRepositoryProperties {
     public void testComplexListArrayElementResetWithEmptyArray() {
         DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
         doc.setPropertyValue("complexlist",
-                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "foo" })));
+                (Serializable) Collections.singletonList(Collections.singletonMap("array", new String[] { "foo" })));
         doc = session.createDocument(doc);
         session.save();
 
         // set map value to empty array
         doc.setPropertyValue("complexlist",
-                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] {})));
+                (Serializable) Collections.singletonList(Collections.singletonMap("array", new String[] {})));
         doc = session.saveDocument(doc);
         session.save();
 
@@ -1610,13 +1612,13 @@ public class TestSQLRepositoryProperties {
     public void testComplexListArrayElementModify() {
         DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
         doc.setPropertyValue("complexlist",
-                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "foo" })));
+                (Serializable) Collections.singletonList(Collections.singletonMap("array", new String[] { "foo" })));
         doc = session.createDocument(doc);
         session.save();
 
         // replace map value with new array of same size
         doc.setPropertyValue("complexlist",
-                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "bar" })));
+                (Serializable) Collections.singletonList(Collections.singletonMap("array", new String[] { "bar" })));
         doc = session.saveDocument(doc);
         session.save();
 
@@ -1632,13 +1634,13 @@ public class TestSQLRepositoryProperties {
     public void testComplexListArrayElementGrow() {
         DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
         doc.setPropertyValue("complexlist",
-                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "foo" })));
+                (Serializable) Collections.singletonList(Collections.singletonMap("array", new String[] { "foo" })));
         doc = session.createDocument(doc);
         session.save();
 
         // replace map value with new array of bigger size
-        doc.setPropertyValue("complexlist",
-                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "bar", "baz" })));
+        doc.setPropertyValue("complexlist", (Serializable) Collections.singletonList(
+                Collections.singletonMap("array", new String[] { "bar", "baz" })));
         doc = session.saveDocument(doc);
         session.save();
 
@@ -1654,14 +1656,14 @@ public class TestSQLRepositoryProperties {
     @Test
     public void testComplexListArrayElementShrink() {
         DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
-        doc.setPropertyValue("complexlist",
-                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "foo", "bar" })));
+        doc.setPropertyValue("complexlist", (Serializable) Collections.singletonList(
+                Collections.singletonMap("array", new String[] { "foo", "bar" })));
         doc = session.createDocument(doc);
         session.save();
 
         // replace map value with new array of smaller size
         doc.setPropertyValue("complexlist",
-                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "baz" })));
+                (Serializable) Collections.singletonList(Collections.singletonMap("array", new String[] { "baz" })));
         doc = session.saveDocument(doc);
         session.save();
 
@@ -1777,12 +1779,13 @@ public class TestSQLRepositoryProperties {
     @Test
     public void testSetComplexMapInList() {
         DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType2");
-        doc.setPropertyValue("cpxl:complexList", (Serializable) Arrays.asList(map("foo", "foo1", "bar", "bar1")));
+        doc.setPropertyValue("cpxl:complexList",
+                (Serializable) Collections.singletonList(map("foo", "foo1", "bar", "bar1")));
         doc = session.createDocument(doc);
         session.save();
 
         // update
-        List<Map<String, Serializable>> updateList = Arrays.asList(map("foo", "foo2"));
+        List<Map<String, Serializable>> updateList = Collections.singletonList(map("foo", "foo2"));
         doc.setPropertyValue("cpxl:complexList", (Serializable) updateList);
         doc = session.saveDocument(doc);
         session.save();
@@ -1793,9 +1796,9 @@ public class TestSQLRepositoryProperties {
                 "cpxl:complexList");
         List<Map<String, Serializable>> expectedList;
         if (schemaManager.getClearComplexPropertyBeforeSet()) {
-            expectedList = Arrays.asList(map("foo", "foo2", "bar", null));
+            expectedList = Collections.singletonList(map("foo", "foo2", "bar", null));
         } else {
-            expectedList = Arrays.asList(map("foo", "foo2", "bar", "bar1"));
+            expectedList = Collections.singletonList(map("foo", "foo2", "bar", "bar1"));
         }
         assertEquals(expectedList, updatedList);
     }
@@ -1816,7 +1819,7 @@ public class TestSQLRepositoryProperties {
     public void testSetDocumentSystemPropOnVersion() {
         // what we test
         List<String> stringSysProps = Arrays.asList("fulltextSimple", "fulltextBinary", "fulltextJobId");
-        List<String> booleanSysProps = Arrays.asList("isTrashed");
+        List<String> booleanSysProps = Collections.singletonList("isTrashed");
 
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
