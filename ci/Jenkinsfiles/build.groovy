@@ -972,7 +972,9 @@ pipeline {
     }
     unsuccessful {
       script {
-        if (!isPullRequest() && env.DRY_RUN != 'true') {
+        if (!isPullRequest()
+          && env.DRY_RUN != 'true'
+          && ![hudson.model.Result.ABORTED.toString(), hudson.model.Result.NOT_BUILT.toString()].contains(currentBuild.result)) {
           slackSend(channel: "${SLACK_CHANNEL}", color: 'danger', message: "Failed to build nuxeo/nuxeo-lts ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
         }
       }
