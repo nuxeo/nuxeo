@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.BlobNotFoundException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
@@ -725,38 +726,44 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             name = internalName(name);
             String xp = xpath == null ? name : xpath + '/' + name;
             Type type = property.getType();
-            if (type.isSimpleType()) {
-                // simple property
-                Object value = state.getSingle(name);
-                property.init((Serializable) value);
-            } else if (type.isComplexType()) {
-                // complex property
-                T childState = getChild(state, name, type);
-                readComplexProperty(childState, (ComplexProperty) property, xp);
-                ((ComplexProperty) property).removePhantomFlag();
-            } else {
-                ListType listType = (ListType) type;
-                if (listType.getFieldType().isSimpleType()) {
-                    // array
-                    Object[] array = state.getArray(name);
-                    array = typedArray(listType.getFieldType(), array);
-                    property.init(array);
+            try {
+                if (type.isSimpleType()) {
+                    // simple property
+                    Object value = state.getSingle(name);
+                    property.init((Serializable) value);
+                } else if (type.isComplexType()) {
+                    // complex property
+                    T childState = getChild(state, name, type);
+                    readComplexProperty(childState, (ComplexProperty) property, xp);
+                    ((ComplexProperty) property).removePhantomFlag();
                 } else {
-                    // complex list
-                    Field listField = listType.getField();
-                    List<T> childStates = getChildAsList(state, name);
-                    // TODO property.init(null) if null children in DBS
-                    List<Object> list = new ArrayList<>(childStates.size());
-                    int i = 0;
-                    for (T childState : childStates) {
-                        String xpi = xp + '/' + i++;
-                        ComplexProperty p = (ComplexProperty) complexProperty.getRoot().createProperty(property,
-                                listField, 0);
-                        readComplexProperty(childState, p, xpi);
-                        list.add(p.getValue());
+                    ListType listType = (ListType) type;
+                    if (listType.getFieldType().isSimpleType()) {
+                        // array
+                        Object[] array = state.getArray(name);
+                        array = typedArray(listType.getFieldType(), array);
+                        property.init(array);
+                    } else {
+                        // complex list
+                        Field listField = listType.getField();
+                        List<T> childStates = getChildAsList(state, name);
+                        // TODO property.init(null) if null children in DBS
+                        List<Object> list = new ArrayList<>(childStates.size());
+                        int i = 0;
+                        for (T childState : childStates) {
+                            String xpi = xp + '/' + i++;
+                            ComplexProperty p = (ComplexProperty) complexProperty.getRoot()
+                                                                                 .createProperty(property, listField,
+                                                                                         0);
+                            readComplexProperty(childState, p, xpi);
+                            list.add(p.getValue());
+                        }
+                        property.init((Serializable) list);
                     }
-                    property.init((Serializable) list);
                 }
+            } catch (ClassCastException e) {
+                throw new PropertyConversionException(
+                        String.format("Unable to read property: %s for document: %s", xp, getUUID()), e);
             }
         }
     }

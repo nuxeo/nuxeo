@@ -73,6 +73,7 @@ import org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
@@ -1796,6 +1797,40 @@ public class TestSQLRepositoryProperties {
             expectedList = Arrays.asList(map("foo", "foo2", "bar", "bar1"));
         }
         assertEquals(expectedList, updatedList);
+    }
+
+    // NXP-30550
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-schema-change-complex-to-list-original-contrib.xml")
+    public void testReadComplexListAfterSchemaChange() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType3");
+        doc.setPropertyValue("ctl:complex", (Serializable) map("foo", "foo1", "bar", "bar1"));
+        doc = session.createDocument(doc);
+        session.save();
+
+        // deploy contribution to change the schema
+        deployer.undeploy(
+                "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-schema-change-complex-to-list-original-contrib.xml");
+        deployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-schema-change-complex-to-list-final-contrib.xml");
+
+        // try to get the property
+        doc = session.getDocument(doc.getRef());
+        if (coreFeature.getStorageConfiguration().isDBS()) {
+            // changing the schema in DBS results in an error as the document is stored with the structure of the schema
+            try {
+                doc.getPropertyObjects("complexToList");
+                fail("Should throw PropertyConversionException");
+            } catch (PropertyConversionException e) {
+                assertEquals("Unable to read property: ctl:complex for document: " + doc.getId(), e.getMessage());
+                assertTrue(e.getCause() instanceof ClassCastException);
+            }
+        } else {
+            // changing the schema in VCS results in changing the Database schema, document is still readable
+            List<Property> properties = new ArrayList<>(doc.getPropertyObjects("complexToList"));
+            assertEquals(2, properties.size());
+            assertEquals("foo1", properties.get(0).getValue("0/foo"));
+            assertEquals("bar1", properties.get(0).getValue("0/bar"));
+        }
     }
 
     @Test
