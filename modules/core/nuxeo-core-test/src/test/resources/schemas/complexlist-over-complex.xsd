@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:nxs="http://www.nuxeo.org/ecm/schemas/complexlist/"
+           targetNamespace="http://www.nuxeo.org/ecm/schemas/complexlist/">
+
+   <xs:element name="complex" type="nxs:complexList"/>
+   <xs:element name="complex2" type="nxs:complexList"/>
+
+   <xs:complexType name="complexList">
+      <xs:sequence>
+         <xs:element name="item" type="nxs:complex" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+   </xs:complexType>
+
+   <xs:complexType name="complex">
+      <xs:sequence>
+         <xs:element name="foo" type="xs:string"/>
+         <xs:element name="bar" type="xs:string"/>
+      </xs:sequence>
+   </xs:complexType>
+
+</xs:schema>
