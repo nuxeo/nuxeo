@@ -32,11 +32,12 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.segment.io.SegmentIO.ACTIONS;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.Script;
-import org.nuxeo.segment.io.SegmentIO.ACTIONS;
 
 @XObject("mapper")
 public class SegmentIOMapper {
@@ -58,6 +59,8 @@ public class SegmentIOMapper {
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> parameters = new HashMap<String, String>();
 
+    private Class<?> klass;
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SegmentIOMapper) {
@@ -78,32 +81,43 @@ public class SegmentIOMapper {
         return ACTIONS.screen.name().equalsIgnoreCase(target);
     }
 
-    public Map<String, Serializable> getMappedData(Map<String, Object> context) {
+    public Class<?> getGroovyClazz() {
+        if (klass == null) {
+            synchronized (this) {
+                if (klass == null) {
+                    // Define Groovy class based on mapper contributions
+                    StringBuffer sb = new StringBuffer();
+                    for (String key : parameters.keySet()) {
+                        sb.append("mapping.put(\"");
+                        sb.append(key);
+                        sb.append("\", ");
+                        sb.append(parameters.get(key));
+                        sb.append(");\n");
+                    }
 
+                    if (groovyMapping != null && !groovyMapping.isEmpty()) {
+                        sb.append(groovyMapping);
+                    }
+                    try (GroovyClassLoader loader = new GroovyClassLoader(this.getClass().getClassLoader())) {
+                        klass = loader.parseClass(sb.toString());
+                    } catch (IOException e) {
+                        throw new NuxeoException(String.format("Error during Groovy script execution for the '%s' segmentIO mapper", name), e);
+                    }
+                }
+            }
+        }
+        return klass;
+    }
+
+    public Map<String, Serializable> getMappedData(Map<String, Object> context) {
         Map<String, Serializable> mapping = new HashMap<String, Serializable>();
         context.put("mapping", mapping);
 
-        StringBuffer sb = new StringBuffer();
-        for (String key : parameters.keySet()) {
-            sb.append("mapping.put(\"");
-            sb.append(key);
-            sb.append("\", ");
-            sb.append(parameters.get(key));
-            sb.append(");\n");
-        }
-
-        if (groovyMapping != null && !groovyMapping.isEmpty()) {
-            sb.append(groovyMapping);
-        }
-
+        // Execute Groovy script to generate the mapped data
         Binding binding = new Binding(context);
-        try (GroovyClassLoader loader = new GroovyClassLoader(this.getClass().getClassLoader())) {
-            Class<?> klass = loader.parseClass(sb.toString());
-            Script script = InvokerHelper.createScript(klass, binding);
-            script.run();
-        } catch (IOException e) {
-            log.error(String.format("Error during Groovy script execution for the '%s' segmentIO mapper", name), e);
-        }
+        Script script = InvokerHelper.createScript(getGroovyClazz(), binding);
+        script.run();
+
         return mapping;
     }
 
