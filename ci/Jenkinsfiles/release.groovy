@@ -260,6 +260,7 @@ pipeline {
                 jx step git credentials
                 git config credential.helper store
 
+                git pull --rebase origin ${REFERENCE_BRANCH}
                 git push origin ${REFERENCE_BRANCH}
               """
             }
