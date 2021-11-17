@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.picture;
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTO_CHECKOUT;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_DISABLE_AUDIT;
+import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 import static org.nuxeo.ecm.platform.picture.listener.PictureViewsGenerationListener.DISABLE_PICTURE_VIEWS_GENERATION_LISTENER;
 
 import java.io.IOException;
@@ -106,6 +107,7 @@ public class PictureViewsHelper {
         workingDocument.putContextData(PARAM_DISABLE_AUDIT, Boolean.TRUE);
         workingDocument.putContextData(DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
         workingDocument.putContextData(DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, Boolean.TRUE);
+        workingDocument.putContextData(DISABLE_DUBLINCORE_LISTENER, Boolean.TRUE);
         session.saveDocument(workingDocument);
 
         statusSetter.accept("Done");
