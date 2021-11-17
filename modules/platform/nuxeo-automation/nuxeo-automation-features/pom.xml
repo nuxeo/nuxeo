@@ -8,6 +8,7 @@
   <artifactId>nuxeo-automation-features</artifactId>
   <name>Nuxeo Automation Features</name>
   <description>Additional operations that expose some Nuxeo platform features</description>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
