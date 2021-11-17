@@ -232,6 +232,8 @@ pipeline {
         }
         unsuccessful {
           setGitHubBuildStatus('distribution/build', 'Build distribution', 'FAILURE')
+          // findText does mark the build in FAILURE but doesn't fail the stage nor stop the pipeline
+          error "Errors were found!"
         }
       }
     }
