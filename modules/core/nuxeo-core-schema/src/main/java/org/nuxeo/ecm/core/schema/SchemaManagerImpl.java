@@ -588,7 +588,11 @@ public class SchemaManagerImpl implements SchemaManager {
             if (dtd.append && dtds.containsKey(dtd.name)) {
                 newDtd = mergeDocumentTypeDescriptors(dtd, dtds.get(name));
             }
-            dtds.put(name, newDtd);
+            if (newDtd.enabled) {
+                dtds.put(name, newDtd);
+            } else {
+                dtds.remove(name);
+            }
         }
         // recompute all types, parents first
         documentTypes.clear();

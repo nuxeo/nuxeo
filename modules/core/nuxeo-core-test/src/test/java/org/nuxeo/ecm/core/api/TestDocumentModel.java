@@ -33,12 +33,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -47,6 +50,12 @@ public class TestDocumentModel {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected SchemaManager schemaManager;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     /**
      * Tests on a DocumentModel that hasn't been created in the session yet.
@@ -239,6 +248,14 @@ public class TestDocumentModel {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.copy(doc.getRef(), new PathRef("/"), "toto/tata");
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-doctype-disableable-contrib.xml")
+    public void testDocumentTypeDisabled() throws Exception {
+        assertNotNull(schemaManager.getDocumentType("disabledDoctype"));
+        hotDeployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-doctype-disableable-disable-contrib.xml");
+        assertNull(schemaManager.getDocumentType("disabledDoctype"));
     }
 
 }

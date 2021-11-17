@@ -68,6 +68,10 @@ public class DocumentTypeDescriptor {
     @XNode("@special")
     public Boolean special;
 
+    /** @since 2021.16 */
+    @XNode("@enabled")
+    public boolean enabled = true;
+
     @XNodeList(value = "subtypes/type", type = String[].class, componentType = String.class)
     public String[] subtypes = new String[0];
 
@@ -105,6 +109,7 @@ public class DocumentTypeDescriptor {
         clone.facets = facets;
         clone.prefetch = prefetch;
         clone.append = append;
+        clone.enabled = enabled;
         clone.special = special;
         clone.subtypes = subtypes;
         clone.forbiddenSubtypes = forbiddenSubtypes;
@@ -146,6 +151,8 @@ public class DocumentTypeDescriptor {
 
         // inherit the exclusion from copy
         special = special == null ? other.special : special;
+
+        enabled = other.enabled;
 
         // merge subtypes
         if (subtypes == null) {

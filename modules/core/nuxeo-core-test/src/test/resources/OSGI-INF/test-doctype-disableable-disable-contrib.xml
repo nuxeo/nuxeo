@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.tests.doctype.disable.override">
+  <require>org.nuxeo.ecm.core.tests.doctype.disable</require>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="disabledDoctype" append="true" enabled="false" />
+  </extension>
+</component>
