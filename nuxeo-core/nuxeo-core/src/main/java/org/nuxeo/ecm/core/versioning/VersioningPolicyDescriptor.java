@@ -19,7 +19,10 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +43,7 @@ public class VersioningPolicyDescriptor implements Serializable, Comparable<Vers
     protected String id;
 
     @XNode("@order")
-    protected int order;
+    protected Integer order;
 
     @XNode("@increment")
     protected VersioningOption increment;
@@ -59,7 +62,7 @@ public class VersioningPolicyDescriptor implements Serializable, Comparable<Vers
     }
 
     public int getOrder() {
-        return order;
+        return defaultIfNull(order, 20);
     }
 
     public VersioningOption getIncrement() {
@@ -79,21 +82,15 @@ public class VersioningPolicyDescriptor implements Serializable, Comparable<Vers
     }
 
     public void merge(VersioningPolicyDescriptor other) {
-        if (other.id != null) {
-            id = other.id;
-        }
-        order = other.order;
-        if (other.increment != null) {
-            increment = other.increment;
-        }
-        if (other.initialState != null) {
-            initialState = other.initialState;
-        }
+        id = defaultIfNull(other.id, id);
+        order = defaultIfNull(other.order, order);
+        increment = defaultIfNull(other.increment, increment);
+        initialState = defaultIfNull(other.initialState, initialState);
         filterIds.addAll(other.filterIds);
     }
 
     public int compareTo(VersioningPolicyDescriptor versioningPolicyDescriptor) {
-        return Integer.compare(order, versioningPolicyDescriptor.order);
+        return Integer.compare(getOrder(), versioningPolicyDescriptor.getOrder());
     }
 
     @Override
