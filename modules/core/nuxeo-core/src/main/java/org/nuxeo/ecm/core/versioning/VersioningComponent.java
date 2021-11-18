@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.RuntimeMessage.Level;
@@ -218,7 +219,15 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
             }
             break;
         case VERSIONING_POLICY_XP:
-            registerVersioningPolicy((VersioningPolicyDescriptor) contrib);
+            var policy = (VersioningPolicyDescriptor) contrib;
+            String componentName = contributor.getName().getName();
+            if (policy.getOrder() <= 10 && !componentName.startsWith("org.nuxeo")) {
+                throw new NuxeoException(
+                        "Versioning policies with order lower or equal to 10 are reserved for internal purpose, "
+                                + "please correct your policy with id: " + policy.getId() + " in component: "
+                                + componentName);
+            }
+            registerVersioningPolicy(policy);
             break;
         case VERSIONING_FILTER_XP:
             registerVersioningFilter((VersioningFilterDescriptor) contrib);
