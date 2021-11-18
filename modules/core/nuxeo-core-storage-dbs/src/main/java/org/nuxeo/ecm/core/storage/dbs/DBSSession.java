@@ -961,12 +961,13 @@ public class DBSSession extends BaseSession {
             }
         }
 
-        // if a proxy target is removed, check that all proxies to it
-        // are removed
+        // if a proxy target is removed, check that all proxies to it are removed
         for (Entry<String, Object[]> en : targetProxies.entrySet()) {
             String targetId = en.getKey();
             for (Object proxyId : en.getValue()) {
-                if (!removedIds.contains(proxyId)) {
+                var pId = (String) proxyId;
+                // check also existence of proxy if it has been removed but removed document wasn't updated
+                if (!removedIds.contains(pId) && transaction.exists(pId)) {
                     throw new DocumentExistsException("Cannot remove " + rootId + ", subdocument " + targetId
                             + " is the target of proxy " + proxyId);
                 }

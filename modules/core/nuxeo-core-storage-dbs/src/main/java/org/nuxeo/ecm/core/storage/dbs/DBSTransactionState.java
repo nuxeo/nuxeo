@@ -249,6 +249,15 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
     }
 
     /**
+     * Returns whether or not the document with given {@code id} exists in the storage.
+     *
+     * @since 2021.12
+     */
+    public boolean exists(String id) {
+        return connection.queryKeyValuePresence(KEY_ID, id, Set.of());
+    }
+
+    /**
      * Returns states and marks them transient, because they're about to be returned to user code (where they may be
      * modified).
      */
