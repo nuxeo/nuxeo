@@ -211,7 +211,15 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
             }
             break;
         case VERSIONING_POLICY_XP:
-            registerVersioningPolicy((VersioningPolicyDescriptor) contrib);
+            VersioningPolicyDescriptor policy = (VersioningPolicyDescriptor) contrib;
+            String componentName = contributor.getName().getName();
+            if (policy.getOrder() <= 10 && !componentName.startsWith("org.nuxeo")) {
+                String message = "Versioning policies with order lower or equal to 10 are reserved for internal purpose, "
+                        + "please correct your policy with id: " + policy.getId() + " in component: " + componentName;
+                log.warn(message);
+                Framework.getRuntime().getMessageHandler().addWarning(message);
+            }
+            registerVersioningPolicy(policy);
             break;
         case VERSIONING_FILTER_XP:
             registerVersioningFilter((VersioningFilterDescriptor) contrib);
