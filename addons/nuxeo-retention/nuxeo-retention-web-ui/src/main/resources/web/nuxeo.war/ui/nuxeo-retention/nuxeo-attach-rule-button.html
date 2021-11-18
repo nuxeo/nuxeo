@@ -27,7 +27,12 @@ limitations under the License.
       }
     </style>
 
-    <nuxeo-operation id="attachRuleOp" on-poll-start="_onPollStart" on-response="_onResponse">
+    <nuxeo-connection id="nx"></nuxeo-connection>
+    <nuxeo-operation id="waitEs"
+                     op="Elasticsearch.WaitForIndexing"
+                     params='{ "timeoutSecond": 5, "refresh": true }'>
+    </nuxeo-operation>
+    <nuxeo-operation id="attachRuleOp">
     </nuxeo-operation>
 
     <dom-if if="[[_isAvailable(provider, document)]]">
@@ -143,22 +148,52 @@ limitations under the License.
         this.$.dialog.toggle();
       },
 
+      _poll: function(status) {
+        return new Promise(function(resolve, reject) {
+          this.$.nx.request().then(function(request) {
+            const url = request._url + 'bulk/' + status.value.commandId;
+            const fn = function() {
+              this.$.nx
+                .http(url)
+                .then(function(res) {
+                  if (res.state !== 'ABORTED' && res.state !== 'COMPLETED') {
+                    window.setTimeout(function() {fn()}.bind(this), 1000, url);
+                  } else if (res.error) {
+                    reject(res);
+                  } else {
+                    this.$.waitEs.execute().then(function() {
+                      resolve(res);
+                    }.bind(this));
+                  }
+                }.bind(this))
+                .catch((error) => {
+                  reject(error);
+                });
+            }.bind(this);
+            fn();
+          }.bind(this));
+        }.bind(this));
+      },
+
       _attach: function() {
         if (this.provider) {
           this.$.attachRuleOp.op = 'Bulk.RunAction';
           this.$.attachRuleOp.input = this.provider;
-          this.$.attachRuleOp.async = true;
           this.$.attachRuleOp.params = {
             action: 'attachRetentionRule',
             parameters: JSON.stringify({ruleId: this.rule.uid}),
           };
-          this.$.attachRuleOp.execute().then(function() {
-            this._toggleDialog();
+          this.$.attachRuleOp.execute().then(function(status) {
+            this.fire('notify', { message: this.i18n('retention.rule.attachButton.bulk.poll') });
+            this._poll(status).then(function() {
+              this._toggleDialog();
+              this.fire('notify', { message: this.i18n('retention.rule.attachButton.attached') });
+              this.fire('refresh');
+            }.bind(this))
           }.bind(this));
         } else {
           this.$.attachRuleOp.op = 'Retention.AttachRule';
           this.$.attachRuleOp.input = this.document;
-          this.$.attachRuleOp.async = false;
           this.$.attachRuleOp.params = { 'rule': this.rule.uid };
           this.$.attachRuleOp.execute().then(function() {
             this.dispatchEvent(new CustomEvent('document-updated', {
@@ -168,15 +203,6 @@ limitations under the License.
             this._toggleDialog();
           }.bind(this));
         }
-      },
-
-      _onPollStart: function() {
-        this.fire('notify', { message: this.i18n('retention.rule.attachButton.bulk.poll') });
-      },
-
-      _onResponse: function() {
-        this.fire('notify', { message: this.i18n('retention.rule.attachButton.attached') });
-        this.fire('refresh');
       },
 
       _isValid: function() {

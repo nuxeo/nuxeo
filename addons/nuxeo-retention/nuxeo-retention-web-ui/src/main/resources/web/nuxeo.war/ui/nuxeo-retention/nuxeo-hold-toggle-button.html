@@ -23,14 +23,13 @@ limitations under the License.
       }
     </style>
 
-    <nuxeo-operation id="opHold"
-                     on-poll-start="_onHoldPollStart"
-                     on-response="_onHoldResponse">
+    <nuxeo-connection id="nx"></nuxeo-connection>
+    <nuxeo-operation id="waitEs"
+                     op="Elasticsearch.WaitForIndexing"
+                     params='{ "timeoutSecond": 5, "refresh": true }'>
     </nuxeo-operation>
-    <nuxeo-operation id="opUnhold"
-                     on-poll-start="_onUnholdPollStart"
-                     on-response="_onUnholdResponse">
-   </nuxeo-operation>
+    <nuxeo-operation id="opHold"></nuxeo-operation>
+    <nuxeo-operation id="opUnhold"></nuxeo-operation>
 
     <dom-if if="[[_isAvailable(provider, document)]]">
       <template>
@@ -124,23 +123,57 @@ limitations under the License.
         return this.provider || this.canSetLegalHold(this.document);
       },
 
+      _poll: function(status) {
+        return new Promise(function(resolve, reject) {
+          this.$.nx.request().then(function(request) {
+            const url = request._url + 'bulk/' + status.value.commandId;
+            const fn = function() {
+              this.$.nx
+                .http(url)
+                .then(function(res) {
+                  if (res.state !== 'ABORTED' && res.state !== 'COMPLETED') {
+                    window.setTimeout(function() {fn()}.bind(this), 1000, url);
+                  } else if (res.error) {
+                    reject(res);
+                  } else {
+                    this.$.waitEs.execute().then(function() {
+                      resolve(res);
+                    }.bind(this));
+                  }
+                }.bind(this))
+                .catch((error) => {
+                  reject(error);
+                });
+            }.bind(this);
+            fn();
+          }.bind(this));
+        }.bind(this));
+      },
+
       _hold: function() {
         if (this.provider) {
           this.$.opHold.op = 'Bulk.RunAction';
           this.$.opHold.input = this.provider;
-          this.$.opHold.async = true;
           this.$.opHold.params = {
             action: 'holdDocumentsAction',
-            parameters: JSON.stringify({description: this.description}),
           };
-          this.$.opHold.execute().then(function() {
-            this._toggleDialog();
+          if (this.description) {
+            this.$.opHold.params.parameters = JSON.stringify({description: this.description});
+          }
+          this.$.opHold.execute().then(function(status) {
+            this.fire('notify', { message: this.i18n('retention.holdToggleButton.bulk.hold.poll') });
+            this._poll(status).then(function() {
+              this._toggleDialog();
+              this.fire('notify', { message: this.i18n('retention.holdToggleButton.bulk.hold') });
+              this.fire('refresh');
+            }.bind(this))
           }.bind(this));
         } else {
           this.$.opHold.op = 'Document.Hold';
           this.$.opHold.input = this.document;
-          this.$.opHold.async = false;
-          this.$.opHold.params = { 'description': this.description };
+          if (this.description) {
+            this.$.opHold.params = { 'description': this.description };
+          }
           this.$.opHold.execute().then(function() {
             this._toggleDialog();
             this.dispatchEvent(new CustomEvent('document-updated', {
@@ -155,15 +188,19 @@ limitations under the License.
         if (this.provider) {
           this.$.opUnhold.op = 'Bulk.RunAction';
           this.$.opUnhold.input = this.provider;
-          this.$.opUnhold.async = true;
           this.$.opUnhold.params = {
             action: 'unholdDocumentsAction',
           };
-          this.$.opUnhold.execute();
+          this.$.opUnhold.execute().then(function(status) {
+            this.fire('notify', { message: this.i18n('retention.holdToggleButton.bulk.unhold.poll') });
+            this._poll(status).then(function() {
+              this.fire('notify', { message: this.i18n('retention.holdToggleButton.bulk.unhold') });
+              this.fire('refresh');
+            }.bind(this))
+          }.bind(this));
         } else {
           this.$.opUnhold.op = 'Document.Unhold';
           this.$.opUnhold.input = this.document;
-          this.$.opUnhold.async = false;
           this.$.opUnhold.params = {};
           this.$.opUnhold.execute().then(function() {
             this.dispatchEvent(new CustomEvent('document-updated', {
@@ -205,24 +242,6 @@ limitations under the License.
 
       _documentChanged: function() {
         this.hold = !!(this.document && this.document.hasLegalHold);
-      },
-
-      _onHoldPollStart: function() {
-        this.fire('notify', { message: this.i18n('retention.holdToggleButton.bulk.hold.poll') });
-      },
-
-      _onHoldResponse: function() {
-        this.fire('notify', { message: this.i18n('retention.holdToggleButton.bulk.hold') });
-        this.fire('refresh');
-      },
-
-      _onUnholdPollStart: function() {
-        this.fire('notify', { message: this.i18n('retention.holdToggleButton.bulk.unhold.poll') });
-      },
-
-      _onUnholdResponse: function() {
-        this.fire('notify', { message: this.i18n('retention.holdToggleButton.bulk.unhold') });
-        this.fire('refresh');
       },
 
     });
