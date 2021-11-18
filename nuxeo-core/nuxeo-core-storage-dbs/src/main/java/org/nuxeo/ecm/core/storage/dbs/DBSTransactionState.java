@@ -218,6 +218,15 @@ public class DBSTransactionState {
     }
 
     /**
+     * Returns whether or not the document with given {@code id} exists in the storage.
+     *
+     * @since 2021.12
+     */
+    public boolean exists(String id) {
+        return repository.queryKeyValuePresence(KEY_ID, id, Collections.emptySet());
+    }
+
+    /**
      * Returns states and marks them transient, because they're about to be returned to user code (where they may be
      * modified).
      */
