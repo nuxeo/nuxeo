@@ -82,6 +82,7 @@ public class FacetedTagService extends AbstractTagService {
 
     protected void saveDocument(CoreSession session, DocumentModel doc) {
         doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+        doc.putContextData(VersioningService.DISABLE_AUTOMATIC_VERSIONING, Boolean.TRUE);
         doc.putContextData(DISABLE_VERSIONING, Boolean.TRUE);
         doc.putContextData(DISABLE_DUBLINCORE_LISTENER, Boolean.TRUE);
         doc.putContextData(DISABLE_AUDIT_LOGGER, Boolean.TRUE);

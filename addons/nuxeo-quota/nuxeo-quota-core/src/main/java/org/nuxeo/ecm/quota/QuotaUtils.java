@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.quota;
 
+import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTOMATIC_VERSIONING;
 import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTO_CHECKOUT;
 import static org.nuxeo.ecm.core.api.versioning.VersioningService.VERSIONING_OPTION;
 import static org.nuxeo.ecm.platform.audit.service.NXAuditEventsService.DISABLE_AUDIT_LOGGER;
@@ -44,6 +45,7 @@ public class QuotaUtils {
             DISABLE_DUBLINCORE_LISTENER, //
             DISABLE_NOTIFICATION_SERVICE, //
             DISABLE_AUTO_CHECKOUT, //
+            DISABLE_AUTOMATIC_VERSIONING, //
             DISABLE_DOMAIN_LISTENER, //
             DISABLE_HTMLSANITIZER_LISTENER);
 
