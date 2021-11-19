@@ -147,6 +147,27 @@ public class TestSetPropertiesActionOptimizations {
         assertEquals(2, session.getVersions(note.getRef()).size());
     }
 
+    // NXP-30700
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.features.tests:test-bulk-disable-automatic-versioning-contrib.xml")
+    public void testDisableAutomaticVersioning() throws InterruptedException {
+        // the note is automatically checked in after update due to the default policy
+        assertEquals(1, session.getVersions(note.getRef()).size());
+        // check out the note in order to trigger the automatic versioning engine during the before to update stage
+        note.checkOut();
+        transactions.nextTransaction();
+        // should not create a new version
+        bulkService.submit(createBuilder().param(PARAM_VERSIONING_OPTION, NONE.toString()).build());
+        assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(60)));
+        transactions.nextTransaction();
+        assertEquals(1, session.getVersions(note.getRef()).size());
+        // should create a new version
+        bulkService.submit(createBuilder().build());
+        assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(60)));
+        transactions.nextTransaction();
+        assertEquals(3, session.getVersions(note.getRef()).size());
+    }
+
     protected BulkCommand.Builder createBuilder() {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * FROM Note where ecm:parentId='%s'", model.getId());

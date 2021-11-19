@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.bulk.action;
 
+import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
@@ -68,7 +69,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
         private static final Logger log = LogManager.getLogger(SetPropertyComputation.class);
 
-        protected VersioningOption versioningOption;
+        protected boolean disableVersioning;
 
         protected boolean disableAudit;
 
@@ -82,17 +83,20 @@ public class SetPropertiesAction implements StreamProcessorTopology {
             Serializable auditParam = command.getParam(PARAM_DISABLE_AUDIT);
             disableAudit = auditParam != null && Boolean.parseBoolean(auditParam.toString());
             Serializable versioningParam = command.getParam(PARAM_VERSIONING_OPTION);
-            versioningOption = VersioningOption.NONE.toString().equals(versioningParam) ? VersioningOption.NONE : null;
+            // here VersionOption=NONE means no version at all
+            // automatic versioning during before-update will be skipped for performance reason
+            disableVersioning = VersioningOption.NONE.toString().equals(versioningParam);
         }
 
         @Override
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
             for (DocumentModel doc : loadDocuments(session, ids)) {
                 if (disableAudit) {
-                    doc.putContextData(PARAM_DISABLE_AUDIT, Boolean.TRUE);
+                    doc.putContextData(PARAM_DISABLE_AUDIT, TRUE);
                 }
-                if (versioningOption != null) {
-                    doc.putContextData(VersioningService.VERSIONING_OPTION, versioningOption);
+                if (disableVersioning) {
+                    doc.putContextData(VersioningService.DISABLE_AUTOMATIC_VERSIONING, TRUE);
+                    doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
                 }
                 // update properties
                 for (Entry<String, Serializable> es : properties.entrySet()) {
