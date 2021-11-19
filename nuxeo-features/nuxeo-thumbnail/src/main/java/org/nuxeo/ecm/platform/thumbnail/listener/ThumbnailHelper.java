@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.platform.thumbnail.listener;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTOMATIC_VERSIONING;
 import static org.nuxeo.ecm.platform.thumbnail.listener.UpdateThumbnailListener.THUMBNAIL_UPDATED;
 
 import java.io.IOException;
@@ -95,6 +96,7 @@ public class ThumbnailHelper {
         }
         if (forceUpdate || doc.isDirty()) {
             doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
+            doc.putContextData(DISABLE_AUTOMATIC_VERSIONING, Boolean.TRUE);
             doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
             doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, Boolean.TRUE);
             doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, Boolean.TRUE);

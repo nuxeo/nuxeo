@@ -248,6 +248,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, TRUE);
         doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, TRUE);
         doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, TRUE);
+        doc.putContextData(VersioningService.DISABLE_AUTOMATIC_VERSIONING, TRUE);
     }
 
     protected void restoreEvents(DocumentModel doc) {
@@ -255,6 +256,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, null);
         doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, null);
         doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, null);
+        doc.putContextData(VersioningService.DISABLE_AUTOMATIC_VERSIONING, null);
     }
 
     @Override
