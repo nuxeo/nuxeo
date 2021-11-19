@@ -10,6 +10,12 @@
     <policy id="no-versioning-for-system-after-update" increment="NONE" order="1">
       <filter-id>system-document</filter-id>
     </policy>
+    <policy id="disable-versioning-before-update" beforeUpdate="true" increment="NONE" order="2">
+      <filter-id>disable-versioning</filter-id>
+    </policy>
+    <policy id="disable-versioning-after-update" increment="NONE" order="2">
+      <filter-id>disable-versioning</filter-id>
+    </policy>
     <policy id="note-as-wiki" increment="MINOR" order="50">
       <filter-id>note-filter</filter-id>
     </policy>
@@ -20,6 +26,9 @@
 
   <extension target="org.nuxeo.ecm.core.api.versioning.VersioningService" point="filters">
     <filter id="system-document" class="org.nuxeo.ecm.core.versioning.NoVersioningPolicyFilter" />
+    <filter id="disable-versioning">
+      <condition>#{currentDocument.contextData.DisableAutomaticVersioning}</condition>
+    </filter>
     <filter id="note-filter">
       <type>Note</type>
     </filter>
