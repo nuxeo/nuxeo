@@ -394,6 +394,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
         assertEquals(1, versions.size());
 
         // a real edition should version the note
+        testNote = session.getDocument(testNote.getRef());
         testNote.setPropertyValue("note:note", "new content");
         session.saveDocument(testNote);
 

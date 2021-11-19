@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.video.computation;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTOMATIC_VERSIONING;
 import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTO_CHECKOUT;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_DISABLE_AUDIT;
 import static org.nuxeo.ecm.platform.video.VideoConstants.TRANSCODED_VIDEOS_PROPERTY;
@@ -159,6 +160,7 @@ public class RecomputeTranscodedVideosComputation extends AbstractBulkComputatio
         doc.putContextData("disableNotificationService", Boolean.TRUE);
         doc.putContextData(PARAM_DISABLE_AUDIT, Boolean.TRUE);
         doc.putContextData(DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+        doc.putContextData(DISABLE_AUTOMATIC_VERSIONING, Boolean.TRUE);
         session.saveDocument(doc);
     }
 }

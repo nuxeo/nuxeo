@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.collections.core;
 
+import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTOMATIC_VERSIONING;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,6 +73,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         doc.putContextData(CollectionConstants.DISABLE_NOTIFICATION_SERVICE, true);
         doc.putContextData(CollectionConstants.DISABLE_AUDIT_LOGGER, true);
         doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, true);
+        doc.putContextData(DISABLE_AUTOMATIC_VERSIONING, true);
     }
 
     @Override

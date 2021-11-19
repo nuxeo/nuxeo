@@ -101,6 +101,7 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
                         collectionMember.putContextData(CollectionConstants.DISABLE_NOTIFICATION_SERVICE, true);
                         collectionMember.putContextData(CollectionConstants.DISABLE_AUDIT_LOGGER, true);
                         collectionMember.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, true);
+                        collectionMember.putContextData(VersioningService.DISABLE_AUTOMATIC_VERSIONING, true);
 
                         CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
                         collectionMemberAdapter.addToCollection(newCollectionId);

@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.video.computation;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTOMATIC_VERSIONING;
 import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTO_CHECKOUT;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_DISABLE_AUDIT;
 
@@ -124,6 +125,7 @@ public class RecomputeVideoInfoComputation extends AbstractBulkComputation {
             workingDocument.putContextData("disableNotificationService", Boolean.TRUE);
             workingDocument.putContextData(PARAM_DISABLE_AUDIT, Boolean.TRUE);
             workingDocument.putContextData(DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+            workingDocument.putContextData(DISABLE_AUTOMATIC_VERSIONING, Boolean.TRUE);
             session.saveDocument(workingDocument);
         }
     }
