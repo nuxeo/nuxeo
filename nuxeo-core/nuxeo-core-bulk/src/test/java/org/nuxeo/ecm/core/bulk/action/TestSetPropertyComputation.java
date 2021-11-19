@@ -60,8 +60,8 @@ public class TestSetPropertyComputation {
         values.add(new String[] { "true" });
         values.add(new ArrayList<>(singleton("tutu")));
         values.add(new ArrayList<>(singleton("true")));
-        testParamParsing(PARAM_DISABLE_AUDIT, values, false, null);
-        testParamParsing(PARAM_VERSIONING_OPTION, values, false, null);
+        testParamParsing(PARAM_DISABLE_AUDIT, values, false, false);
+        testParamParsing(PARAM_VERSIONING_OPTION, values, false, false);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class TestSetPropertyComputation {
         Collection<Serializable> values = new ArrayList<>();
         values.add("true");
         values.add(Boolean.TRUE);
-        testParamParsing(PARAM_DISABLE_AUDIT, values, true, null);
+        testParamParsing(PARAM_DISABLE_AUDIT, values, true, false);
     }
 
     @Test
@@ -77,17 +77,16 @@ public class TestSetPropertyComputation {
         Collection<Serializable> values = new ArrayList<>();
         values.add("NONE");
         values.add(VersioningOption.NONE.toString());
-        testParamParsing(PARAM_VERSIONING_OPTION, values, false, VersioningOption.NONE);
+        testParamParsing(PARAM_VERSIONING_OPTION, values, false, true);
     }
 
-    protected void testParamParsing(String param, Collection<Serializable> values, boolean audit,
-            VersioningOption versioning) {
+    protected void testParamParsing(String param, Collection<Serializable> values, boolean audit, boolean versioning) {
         for (Serializable value : values) {
             BulkCommand command = new Builder(ACTION_NAME, "useless").param(param, value).build();
             SetPropertyComputation computation = new TestableSetPropertyComputation(command);
             computation.startBucket(null);
             assertEquals(audit, computation.disableAudit);
-            assertEquals(versioning, computation.versioningOption);
+            assertEquals(versioning, computation.disableVersioning);
         }
     }
 

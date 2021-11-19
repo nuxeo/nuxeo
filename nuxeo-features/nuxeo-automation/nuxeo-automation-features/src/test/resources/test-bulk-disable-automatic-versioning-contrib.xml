@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.automation.features.operations.tests.bulk" version="1.0">
+
+  <require>org.nuxeo.ecm.core.versioning.default-policies</require>
+
+  <extension target="org.nuxeo.ecm.core.api.versioning.VersioningService" point="policies">
+    <policy id="note-before-minor" increment="MINOR" beforeUpdate="true" order="10">
+      <filter-id>note-filter</filter-id>
+    </policy>
+  </extension>
+
+</component>

@@ -67,6 +67,13 @@ public interface VersioningService {
     String CHECKIN_COMMENT = "CheckinComment";
 
     /**
+     * Context data to disable the automatic versioning engine.
+     *
+     * @since 2021.12
+     */
+    String DISABLE_AUTOMATIC_VERSIONING = "DisableAutomaticVersioning";
+
+    /**
      * Gets the version label to display for a given document.
      *
      * @param doc the document
