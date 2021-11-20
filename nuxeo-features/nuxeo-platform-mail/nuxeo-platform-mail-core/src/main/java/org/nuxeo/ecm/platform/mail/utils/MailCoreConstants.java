@@ -30,6 +30,11 @@ public final class MailCoreConstants {
 
     public static final String MAIL_MESSAGE_TYPE = "MailMessage";
 
+    /**
+     * @since 10.10-HF55
+     */
+    public static final String MAIL_MESSAGE_FACET = "MailMessage";
+
     public static final String MAIL_FOLDER_TYPE = "MailFolder";
 
     public static final String SENDER_PROPERTY_NAME = "mail:sender";
