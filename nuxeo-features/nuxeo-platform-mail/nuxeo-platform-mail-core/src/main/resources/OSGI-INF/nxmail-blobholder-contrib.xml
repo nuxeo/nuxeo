@@ -4,7 +4,7 @@
   <extension
     target="org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent"
     point="BlobHolderFactory">
-    <blobHolderFactory name="mailMessage" docType="MailMessage"
+    <blobHolderFactory name="mailMessage" facet="MailMessage"
       class="org.nuxeo.ecm.platform.mail.adapter.MailMessageBlobHolderfactory" />
   </extension>
 

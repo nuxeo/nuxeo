@@ -34,10 +34,9 @@ public class MailMessageBlobHolderfactory implements BlobHolderFactory {
 
     @Override
     public BlobHolder getBlobHolder(DocumentModel doc) {
-        String docType = doc.getType();
         BlobHolder blobHolder;
 
-        if (docType.equals(MailCoreConstants.MAIL_MESSAGE_TYPE)) {
+        if (doc.getFacets().contains(MailCoreConstants.MAIL_MESSAGE_FACET)) {
             blobHolder = new MailMessageBlobHolder(doc, MailCoreConstants.HTML_TEXT_PROPERTY_NAME, "body.html");
         } else {
             blobHolder = null;
