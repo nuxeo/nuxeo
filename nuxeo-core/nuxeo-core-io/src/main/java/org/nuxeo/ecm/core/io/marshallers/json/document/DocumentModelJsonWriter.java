@@ -147,7 +147,7 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
 
     @Override
     protected void writeEntityBody(DocumentModel doc, JsonGenerator jg) throws IOException {
-        if (doc.getSessionId() == null || doc.getId() == null) {
+        if (doc.getSessionId() == null || doc.getId() == null || doc.getRef() == null) {
             // do not try to re-attach a detached or non-existing document
             doWriteEntityBody(doc, jg);
         } else {
