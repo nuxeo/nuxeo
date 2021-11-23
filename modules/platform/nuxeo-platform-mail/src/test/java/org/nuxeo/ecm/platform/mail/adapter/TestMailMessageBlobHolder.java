@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.mail.adapter;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.mail.MailFeature;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -40,6 +42,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(MailFeature.class)
 public class TestMailMessageBlobHolder {
+
+    private static final String CUSTOM_MAIL_MESSAGE_TYPE = "CustomMailMessage";
 
     @Inject
     protected CoreSession session;
@@ -65,4 +69,20 @@ public class TestMailMessageBlobHolder {
         assertNotEquals("Digest of blobs should be different", blob1.getDigest(), blob2.getDigest());
     }
 
+    /**
+     * 
+     * @since 2021.13
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.mail.test:OSGI-INF/nxmail-core-contrib.xml")
+    public void testMailMessageBlobHolderFactory() {
+        DocumentModel mailMessage = session.createDocumentModel(MailCoreConstants.MAIL_MESSAGE_TYPE);
+        BlobHolder adapter = mailMessage.getAdapter(BlobHolder.class);
+        assertTrue(adapter instanceof MailMessageBlobHolder);
+
+        DocumentModel customMailMessage = session.createDocumentModel(CUSTOM_MAIL_MESSAGE_TYPE);
+        assertTrue(customMailMessage.getFacets().contains(MailCoreConstants.MAIL_MESSAGE_FACET));
+        adapter = customMailMessage.getAdapter(BlobHolder.class);
+        assertTrue(adapter instanceof MailMessageBlobHolder);
+    }
 }
