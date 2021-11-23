@@ -85,6 +85,12 @@ public class LoginScreenConfig {
     @XNode("removeNews")
     protected Boolean removeNews = false;
 
+    /**
+     * @since 2021.12
+     */
+    @XNode("displayMobileBanner")
+    protected Boolean displayMobileBanner = true;
+
     protected String headerStyle;
 
     protected String footerStyle;
@@ -273,6 +279,10 @@ public class LoginScreenConfig {
         return !(removeNews || StringUtils.isBlank(newsIframeUrl));
     }
 
+    public boolean getDisplayMobileBanner() {
+        return displayMobileBanner;
+    }
+
     public Boolean getFieldAutocomplete() {
         return fieldAutocomplete == null ? true : fieldAutocomplete;
     }
@@ -424,8 +434,11 @@ public class LoginScreenConfig {
         if (newConfig.loop != null) {
             loop = newConfig.loop;
         }
-        if (newConfig.removeNews) {
+        if (newConfig.removeNews != null) {
             removeNews = newConfig.removeNews;
+        }
+        if (newConfig.displayMobileBanner != null) {
+            displayMobileBanner = newConfig.displayMobileBanner;
         }
         if (newConfig.muted != null) {
             muted = newConfig.muted;
@@ -517,6 +530,7 @@ public class LoginScreenConfig {
             }
         }
         clone.removeNews = removeNews;
+        clone.displayMobileBanner = displayMobileBanner;
         if (videos != null) {
             clone.videos = new ArrayList<>();
             for (LoginVideo v : videos) {
