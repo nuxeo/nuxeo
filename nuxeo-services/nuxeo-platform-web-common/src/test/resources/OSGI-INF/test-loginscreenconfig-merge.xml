@@ -10,6 +10,7 @@
       <headerStyle>#DDDDDD</headerStyle>
       <newsIframeUrl></newsIframeUrl>
       <disableBackgroundSizeCover>true</disableBackgroundSizeCover>
+      <displayMobileBanner>false</displayMobileBanner>
 
       <loginProviders>
         <loginProvider name="google">

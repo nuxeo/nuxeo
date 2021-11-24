@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLink;
@@ -154,6 +155,25 @@ public class LoginScreenHelper {
                      .sorted((p1, p2) -> p2.compareTo(p1))
                      .map(LoginStartupPage::getPath)
                      .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns whether mobile app banner should be display or not. If the {@code displayMobileBanner} request parameter
+     * is used, then it overrides the {@link LoginScreenConfig#getDisplayMobileBanner()} configuration. If there is no
+     * {@link LoginScreenConfig}, the default value is {@code true}.
+     *
+     * @since 10.10-HF55
+     */
+    public static boolean getDisplayMobileBanner(HttpServletRequest request) {
+        String displayMobileBannerReqParam = request.getParameter("displayMobileBanner");
+        if (StringUtils.isNotBlank(displayMobileBannerReqParam)) {
+            return Boolean.parseBoolean(displayMobileBannerReqParam);
+        }
+        LoginScreenConfig config = getConfig();
+        if (config == null) {
+            return true;
+        }
+        return config.getDisplayMobileBanner();
     }
 
     /**
