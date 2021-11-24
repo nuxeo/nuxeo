@@ -96,6 +96,7 @@ public class TestLoginScreenConfig {
         assertEquals(3, config.getProviders().size());
         assertTrue(config.hasVideos());
         assertEquals(2, config.getVideos().size());
+        assertTrue(config.getDisplayMobileBanner());
 
         LoginVideo loginVideo = config.getVideos().get(0);
         assertTrue(isNotBlank(loginVideo.getType()));
@@ -152,6 +153,7 @@ public class TestLoginScreenConfig {
         assertNotNull(config.getProvider("facebook"));
         assertNotNull(config.getProvider("linkedin"));
         assertTrue(config.getDisplayNews());
+        assertTrue(config.getDisplayMobileBanner());
         assertNull(config.getDisableBackgroundSizeCover());
 
         assertEquals("XXXX", config.getProvider("google").getLink(null, null));
@@ -170,6 +172,7 @@ public class TestLoginScreenConfig {
         assertEquals("#DDDDDD", config.getHeaderStyle());
         assertEquals("Something", config.getFooterStyle());
         assertFalse(config.getDisplayNews());
+        assertFalse(config.getDisplayMobileBanner());
         assertEquals(2, config.getProviders().size());
         assertNotNull(config.getProvider("google"));
         assertNotNull(config.getProvider("linkedin"));

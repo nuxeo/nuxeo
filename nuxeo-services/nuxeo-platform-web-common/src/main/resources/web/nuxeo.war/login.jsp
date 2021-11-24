@@ -67,7 +67,7 @@ boolean hasVideos = screenConfig.hasVideos();
 String muted = screenConfig.getVideoMuted() ? "muted " : "";
 String loop = screenConfig.getVideoLoop() ? "loop " : "";
 
-boolean displayMobileBanner = !"false".equals(request.getParameter("displayMobileBanner"));
+boolean displayMobileBanner = LoginScreenHelper.getDisplayMobileBanner(request);
 %>
 
 <html>

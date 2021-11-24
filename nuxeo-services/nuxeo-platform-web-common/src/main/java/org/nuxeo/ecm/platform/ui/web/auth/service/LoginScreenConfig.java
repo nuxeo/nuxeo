@@ -88,6 +88,12 @@ public class LoginScreenConfig implements Serializable {
     @XNode("removeNews")
     protected Boolean removeNews = false;
 
+    /**
+     * @since 10.10-HF55
+     */
+    @XNode("displayMobileBanner")
+    protected Boolean displayMobileBanner = true;
+
     protected String headerStyle;
 
     protected String footerStyle;
@@ -276,6 +282,10 @@ public class LoginScreenConfig implements Serializable {
         return !(removeNews || StringUtils.isBlank(newsIframeUrl));
     }
 
+    public boolean getDisplayMobileBanner() {
+        return displayMobileBanner;
+    }
+
     public Boolean getFieldAutocomplete() {
         return fieldAutocomplete == null ? true : fieldAutocomplete;
     }
@@ -427,8 +437,11 @@ public class LoginScreenConfig implements Serializable {
         if (newConfig.loop != null) {
             loop = newConfig.loop;
         }
-        if (newConfig.removeNews) {
+        if (newConfig.removeNews != null) {
             removeNews = newConfig.removeNews;
+        }
+        if (newConfig.displayMobileBanner != null) {
+            displayMobileBanner = newConfig.displayMobileBanner;
         }
         if (newConfig.muted != null) {
             muted = newConfig.muted;
@@ -520,6 +533,7 @@ public class LoginScreenConfig implements Serializable {
             }
         }
         clone.removeNews = removeNews;
+        clone.displayMobileBanner = displayMobileBanner;
         if (videos != null) {
             clone.videos = new ArrayList<LoginVideo>();
             for (LoginVideo v : videos) {
