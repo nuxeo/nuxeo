@@ -147,4 +147,53 @@ public class ContributionFragmentTest {
         assertEquals(1, reg.getRegistry().size());
     }
 
+    @Test
+    public void testToMap() throws Exception {
+        MyRegistry reg = new MyRegistry();
+        MyContrib c1 = new MyContrib("c1");
+        c1.title = "c1 title";
+        reg.addContribution(c1);
+        MyContrib c11 = new MyContrib("c1");
+        c11.title = "c11 title";
+        c11.args = List.of("a", "b");
+        reg.addContribution(c11);
+
+        MyContrib c2 = new MyContrib("c2");
+        c2.title = "c2 title";
+        c2.args = List.of("a", "b");
+        reg.addContribution(c2);
+        MyContrib c21 = new MyContrib("c2");
+        c21.args = List.of("c", "d");
+        reg.addContribution(c21);
+
+        assertEquals("c1", reg.toMap().get("c1").getId());
+        assertEquals("c11 title", reg.toMap().get("c1").getTitle());
+        assertEquals(List.of("a", "b"), reg.toMap().get("c1").getArgs());
+
+        assertEquals("c2", reg.toMap().get("c2").getId());
+        assertNull(reg.toMap().get("c2").getTitle());
+        assertEquals(List.of("a", "b", "c", "d"), reg.toMap().get("c2").getArgs());
+
+        reg.removeContribution(c21);
+
+        assertEquals("c2", reg.toMap().get("c2").getId());
+        assertEquals("c2 title", reg.toMap().get("c2").getTitle());
+        assertEquals(List.of("a", "b"), reg.toMap().get("c2").getArgs());
+
+        reg.removeContribution(c2);
+        assertNull(reg.toMap().get("c2"));
+
+        assertEquals("c1", reg.toMap().get("c1").getId());
+        assertEquals("c11 title", reg.toMap().get("c1").getTitle());
+        assertEquals(List.of("a", "b"), reg.toMap().get("c1").getArgs());
+
+        assertEquals(1, reg.toMap().size());
+
+        // re-add a contribution
+        reg.addContribution(c2);
+        assertEquals("c2", reg.toMap().get("c2").getId());
+        assertEquals("c2 title", reg.toMap().get("c2").getTitle());
+        assertEquals(List.of("a", "b"), reg.toMap().get("c2").getArgs());
+    }
+
 }

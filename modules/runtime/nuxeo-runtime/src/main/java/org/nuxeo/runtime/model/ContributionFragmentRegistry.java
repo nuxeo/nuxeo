@@ -253,7 +253,7 @@ public abstract class ContributionFragmentRegistry<T> {
         }
 
         public boolean isEmpty() {
-            return next == null;
+            return next == null || prev == next && prev == this;
         }
 
         public T merge(ContributionFragmentRegistry<T> reg) {
