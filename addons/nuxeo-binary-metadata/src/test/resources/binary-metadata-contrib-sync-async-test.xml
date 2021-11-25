@@ -1,10 +1,9 @@
-<component name="org.nuxeo.binary.metadata.contribs.tests.async">
+<component name="org.nuxeo.binary.metadata.contribs.tests.sync.async">
 
   <require>org.nuxeo.binary.metadata.contribs.tests.pdf</require>
 
-  <extension target="org.nuxeo.binary.metadata"
-             point="metadataRules">
-    <rule id="default" order="0" enabled="true" async="true">
+  <extension target="org.nuxeo.binary.metadata" point="metadataRules">
+    <rule id="default" order="0" enabled="true" async="false">
       <metadataMappings>
         <metadataMapping-id>PDF</metadataMapping-id>
       </metadataMappings>
@@ -23,8 +22,7 @@
     </rule>
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-             point="filters">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
     <filter id="hasFileType">
       <rule grant="true">
         <type>File</type>

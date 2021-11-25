@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,15 @@
  * limitations under the License.
  *
  * Contributors:
- *     vpasquier <vpasquier@nuxeo.com>
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.binary.metadata.internals;
+
+import static java.lang.Boolean.TRUE;
+import static org.nuxeo.binary.metadata.api.BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER;
+import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTOMATIC_VERSIONING;
+import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTO_CHECKOUT;
+import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_DISABLE_AUDIT;
 
 import java.util.List;
 
@@ -27,29 +33,22 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Work handling binary metadata updates.
- *
- * @since 7.2
- * @deprecated since 2021.13, use {@link BinaryMetadataUpdateWork} instead
+ * @since 2021.13
  */
-@Deprecated
-public class BinaryMetadataWork extends AbstractWork {
+public class BinaryMetadataUpdateWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String BINARY_METADATA_WORK = BinaryMetadataUpdateWork.BINARY_METADATA_WORK;
+    protected static final String BINARY_METADATA_WORK = "binary_metadata_work";
 
-    public static final String BINARY_METADATA_WORK_TITLE = BinaryMetadataUpdateWork.BINARY_METADATA_WORK_TITLE;
+    protected static final String BINARY_METADATA_WORK_TITLE = "Binary Metadata Update Worker";
 
-    protected final List<MetadataMappingDescriptor> mappingDescriptors;
+    protected final List<MetadataMappingUpdate> metadataUpdates;
 
-    protected final String docId;
-
-    public BinaryMetadataWork(String repositoryName, String docId, List<MetadataMappingDescriptor> mappingDescriptors) {
+    public BinaryMetadataUpdateWork(String repositoryName, String docId, List<MetadataMappingUpdate> metadataUpdates) {
         super("BinaryMetadataUpdate|docId=" + docId);
         setDocument(repositoryName, docId);
-        this.mappingDescriptors = mappingDescriptors;
-        this.docId = docId;
+        this.metadataUpdates = metadataUpdates;
     }
 
     @Override
@@ -78,9 +77,18 @@ public class BinaryMetadataWork extends AbstractWork {
         }
         BinaryMetadataService binaryMetadataService = Framework.getService(BinaryMetadataService.class);
         DocumentModel workingDocument = session.getDocument(new IdRef(docId));
-        binaryMetadataService.handleUpdate(mappingDescriptors, workingDocument);
+        binaryMetadataService.applyUpdates(workingDocument, metadataUpdates);
+
+        workingDocument.putContextData(DISABLE_BINARY_METADATA_LISTENER, TRUE);
+        workingDocument.putContextData(DISABLE_AUTO_CHECKOUT, TRUE);
+        workingDocument.putContextData(DISABLE_AUTOMATIC_VERSIONING, TRUE);
+        workingDocument.putContextData(PARAM_DISABLE_AUDIT, TRUE);
+        workingDocument.putContextData("disableDublinCoreListener", TRUE);
+        workingDocument.putContextData("disableNotificationService", TRUE);
+        workingDocument.putContextData("disablePictureViewsGenerationListener", TRUE);
+        workingDocument.putContextData("disableThumbnailComputation", TRUE);
+        workingDocument.putContextData("disableVideoConversionsGenerationListener", TRUE);
         session.saveDocument(workingDocument);
         setStatus("Metadata Update Done");
     }
-
 }

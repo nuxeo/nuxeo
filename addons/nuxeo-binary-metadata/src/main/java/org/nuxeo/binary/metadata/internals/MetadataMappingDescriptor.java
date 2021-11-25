@@ -106,4 +106,10 @@ public class MetadataMappingDescriptor implements Serializable {
     public boolean isReadOnly() {
     	return Boolean.TRUE.equals(readOnly);
     }
+
+    @Override
+    public String toString() {
+        return "MetadataMappingDescriptor{id=" + id + ", processor=" + processor + ", blobXPath="
+                + blobXPath  + ", ignorePrefix=" + ignorePrefix + ", readOnly=" + readOnly + '}';
+    }
 }
