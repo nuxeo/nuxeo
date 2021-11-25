@@ -34,6 +34,12 @@ nuxeo.core.bulk.scroller.concurrencyMax=6
 nuxeo.core.bulk.status.concurrencyMax=4
 nuxeo.core.bulk.done.concurrencyMax=2
 
+# Scale some bulk actions
+nuxeo.bulk.action.csvExport.defaultConcurrency=4
+nuxeo.bulk.action.csvExport.defaultPartitions=8
+nuxeo.bulk.action.setProperties.defaultConcurrency=4
+nuxeo.bulk.action.setProperties.defaultPartitions=8
+
 # Scale audit writing
 nuxeo.stream.audit.batch.size=1000
 nuxeo.stream.audit.batch.threshold.ms=1000

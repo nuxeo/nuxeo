@@ -14,14 +14,16 @@
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="automation"
-      class="org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkAction" defaultConcurrency="2"
-      defaultPartitions="2">
-      <policy name="default" maxRetries="3" delay="1s" continueOnFailure="true" />
+      class="org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkAction"
+      defaultConcurrency="${nuxeo.bulk.action.automation.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.automation.defaultPartitions:=2}">
+    <policy name="default" maxRetries="3" delay="1s" continueOnFailure="true" />
     </streamProcessor>
 
     <streamProcessor name="automationUi"
-      class="org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkActionUi" defaultConcurrency="2"
-      defaultPartitions="2">
+      class="org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkActionUi"
+      defaultConcurrency="${nuxeo.bulk.action.automationUi.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.automationUi.defaultPartitions:=2}">
       <policy name="default" maxRetries="3" delay="1s" continueOnFailure="true" />
       <option name="failOnError">false</option>
     </streamProcessor>

@@ -8,7 +8,8 @@
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="recomputeVideoConversions" class="org.nuxeo.ecm.platform.video.action.RecomputeVideoConversionsAction"
-      defaultConcurrency="2" defaultPartitions="6">
+      defaultConcurrency="${nuxeo.bulk.action.recomputeVideoConversions.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.recomputeVideoConversions.defaultPartitions:=6}">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
     </streamProcessor>
   </extension>

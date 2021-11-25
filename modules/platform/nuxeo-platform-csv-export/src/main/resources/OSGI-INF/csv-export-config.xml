@@ -13,7 +13,8 @@
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <!-- CSV exporter processor -->
     <streamProcessor name="csvExport" class="org.nuxeo.ecm.platform.csv.export.action.CSVExportAction"
-      defaultConcurrency="2" defaultPartitions="2">
+      defaultConcurrency="${nuxeo.bulk.action.csvExport.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.csvExport.defaultPartitions:=2}">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
       <option name="produceImmediate">false</option>
     </streamProcessor>

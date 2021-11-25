@@ -15,7 +15,8 @@
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <!-- Update Read ACLs processor -->
     <streamProcessor name="updateReadAcls" class="org.nuxeo.ecm.core.storage.dbs.action.UpdateReadAclsAction"
-      defaultConcurrency="1" defaultPartitions="1">
+      defaultConcurrency="${nuxeo.bulk.action.updateReadAcls.defaultConcurrency:=1}"
+      defaultPartitions="${nuxeo.bulk.action.updateReadAcls.defaultPartitions:=1}">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
 

@@ -9,7 +9,8 @@
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="deletion" class="org.nuxeo.ecm.core.action.DeletionAction"
-      defaultConcurrency="2" defaultPartitions="2">
+      defaultConcurrency="${nuxeo.bulk.action.deletion.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.deletion.defaultPartitions:=2}">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true"/>
     </streamProcessor>
   </extension>

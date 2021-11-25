@@ -10,7 +10,8 @@
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="recomputeViews" class="org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction"
-      defaultConcurrency="2" defaultPartitions="6">
+      defaultConcurrency="${nuxeo.bulk.action.recomputeViews.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.recomputeViews.defaultPartitions:=6}">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
     </streamProcessor>
   </extension>
