@@ -19,9 +19,15 @@
 package org.nuxeo.binary.metadata.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +43,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 7.1
@@ -55,8 +62,121 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestBinaryMetadataSyncListener extends BaseBinaryMetadataTest {
 
+    @Inject
+    protected TransactionalFeature txFeature;
+
     @Test
-    public void testListener() throws Exception {
+    public void testListenerCreationRulesSync() throws Exception {
+        testListener(true);
+    }
+
+    @Test
+    public void testListenerUpdateRulesSync() throws Exception {
+        testListener(false);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-async-test.xml")
+    public void testListenerCreationRulesAsync() throws Exception {
+        testListener(true);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-async-test.xml")
+    public void testListenerUpdateRulesAsync() throws Exception {
+        testListener(false);
+    }
+
+    protected void testListener(boolean attachOnCreation) throws Exception {
+        // Test the following rule: 'If the attached binary is dirty and the document metadata are not dirty, the
+        // listener reads the metadata from attached binary to document.'
+        DocumentModel pdfDoc = createDocumentWithPDFBlob(attachOnCreation);
+
+        // Assert blob properties
+        Blob blob = (Blob) pdfDoc.getPropertyValue("file:content");
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(blob, true);
+        assertNotNull(blobProperties);
+        assertEquals("en-US", blobProperties.get("Language").toString());
+        assertEquals("OpenOffice.org 3.2", blobProperties.get("Producer").toString());
+        assertEquals(Arrays.asList("tag1", "tag2"), blobProperties.get("Keywords"));
+        assertEquals("Mirko Nasato", blobProperties.get("Author").toString());
+        assertEquals("No", blobProperties.get("Linearized").toString());
+        assertEquals("Writer", blobProperties.get("Creator").toString());
+
+        // Assert document properties
+        assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
+        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:source"));
+        assertEquals("Writer", pdfDoc.getPropertyValue("dc:coverage"));
+        assertEquals("Mirko Nasato", pdfDoc.getPropertyValue("dc:creator"));
+        // Test if description has been overridden by higher order contribution
+        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:description"));
+
+        // Test the following rule: 'If the attached binary is dirty and the document metadata are dirty, the listener
+        // writes the metadata from the document to the attached binary.'
+        File binary = FileUtils.getResourceFileFromContext("data/hello.pdf");
+        Blob fb = Blobs.createBlob(binary, "application/pdf");
+        pdfDoc.setPropertyValue("dc:description", "descriptionNotFromBlob");
+        DocumentHelper.addBlob(pdfDoc.getProperty("file:content"), fb);
+        session.saveDocument(pdfDoc);
+        pdfDoc = session.getDocument(pdfDoc.getRef());
+
+        txFeature.nextTransaction();
+
+        // Assert blob properties
+        blob = (Blob) pdfDoc.getPropertyValue("file:content");
+        blobProperties = binaryMetadataService.readMetadata(blob, true);
+        assertNotNull(blobProperties);
+        assertEquals("descriptionNotFromBlob", blobProperties.get("Producer").toString());
+
+        // Assert document properties
+        assertEquals("descriptionNotFromBlob", pdfDoc.getPropertyValue("dc:description"));
+
+        // Test the following rule: 'If the attached binary is not dirty and the document metadata are dirty, the
+        // listener writes the metadata from the document to the attached binary.'
+        pdfDoc.setPropertyValue("dc:description", "descriptionNotFromBlob-2");
+        session.saveDocument(pdfDoc);
+        pdfDoc = session.getDocument(pdfDoc.getRef());
+
+        txFeature.nextTransaction();
+
+        // Assert blob properties
+        blob = (Blob) pdfDoc.getPropertyValue("file:content");
+        blobProperties = binaryMetadataService.readMetadata(blob, true);
+        assertNotNull(blobProperties);
+        assertEquals("descriptionNotFromBlob-2", blobProperties.get("Producer").toString());
+
+        // Assert document properties
+        assertEquals("descriptionNotFromBlob-2", pdfDoc.getPropertyValue("dc:description"));
+    }
+
+    @Test
+    @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-sync-async-test.xml")
+    @Deploy("org.nuxeo.binary.metadata:disable-binary-metadata-work-test.xml")
+    public void testListenerCreationRulesSyncAsync() throws Exception {
+        testListenerRulesSyncAsync(true);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-sync-async-test.xml")
+    @Deploy("org.nuxeo.binary.metadata:disable-binary-metadata-work-test.xml")
+    public void testListenerUpdateRulesSyncAsync() throws Exception {
+        testListenerRulesSyncAsync(false);
+    }
+
+    public void testListenerRulesSyncAsync(boolean attachOnCreation) throws Exception {
+        DocumentModel pdfDoc = createDocumentWithPDFBlob(attachOnCreation);
+
+        // Test sync metadata have been update
+        assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
+        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:source"));
+
+        // Test async metadata have not been updated as the work is disabled
+        assertNull(pdfDoc.getPropertyValue("dc:coverage"));
+        assertNull(pdfDoc.getPropertyValue("dc:creator"));
+        assertNull(pdfDoc.getPropertyValue("dc:description"));
+    }
+
+    protected DocumentModel createDocumentWithPDFBlob(boolean attachOnCreation) throws IOException {
         // Create folder
         DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
         doc.setPropertyValue("dc:title", "Folder");
@@ -65,45 +185,23 @@ public class TestBinaryMetadataSyncListener extends BaseBinaryMetadataTest {
         // Create file
         doc = session.createDocumentModel("/folder", "file", "File");
         doc.setPropertyValue("dc:title", "file");
-        doc = session.createDocument(doc);
+        if (!attachOnCreation) {
+            doc = session.createDocument(doc);
+        }
 
         // Attach PDF
         File binary = FileUtils.getResourceFileFromContext("data/hello.pdf");
         Blob fb = Blobs.createBlob(binary, "application/pdf");
         DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
-        session.saveDocument(doc);
+        if (attachOnCreation) {
+            doc = session.createDocument(doc);
+        } else {
+            doc = session.saveDocument(doc);
+        }
 
-        DocumentModel pdfDoc = session.getDocument(doc.getRef());
+        txFeature.nextTransaction();
 
-        assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
-        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:source"));
-        assertEquals("Writer", pdfDoc.getPropertyValue("dc:coverage"));
-        assertEquals("Mirko Nasato", pdfDoc.getPropertyValue("dc:creator"));
-
-        // Test if description has been overriden by higher order contribution
-        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:description"));
-
-        // Test the following rule: 'If the attached binary is dirty and the document metadata are not dirty, the
-        // listener reads the metadata from attached binary to document.'
-
-        // Changing the title to see after if the blob title is well propagated.
-        pdfDoc.setPropertyValue("dc:title", "notFromBlob");
-        pdfDoc.setPropertyValue("file:content", null);
-        session.saveDocument(pdfDoc);
-
-        pdfDoc = session.getDocument(pdfDoc.getRef());
-
-        assertEquals("notFromBlob", pdfDoc.getPropertyValue("dc:title"));
-
-        // Updating only the blob and simulate the same change on dc:title -> title should not be dirty.
-        pdfDoc.setPropertyValue("dc:title", "notFromBlob");
-        DocumentHelper.addBlob(pdfDoc.getProperty("file:content"), fb);
-        session.saveDocument(pdfDoc);
-
-        pdfDoc = session.getDocument(pdfDoc.getRef());
-
-        // Confirm the blob was dirty but not metadata -> title should be updated properly.
-        assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
+        return session.getDocument(doc.getRef());
     }
 
     @Test

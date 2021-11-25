@@ -18,9 +18,12 @@
  */
 package org.nuxeo.binary.metadata.internals;
 
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -63,6 +66,13 @@ public class MetadataRuleDescriptor {
 
     public Boolean getIsAsync() {
         return isAsync;
+    }
+
+    /**
+     * @since 2021.13
+     */
+    public boolean isAsync() {
+        return isTrue(isAsync);
     }
 
     public List<String> getMetadataMappingIdDescriptors() {

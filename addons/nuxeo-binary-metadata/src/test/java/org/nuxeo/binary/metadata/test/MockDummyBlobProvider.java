@@ -29,6 +29,11 @@ import org.nuxeo.ecm.core.blob.ManagedBlob;
 public class MockDummyBlobProvider extends AbstractBlobProvider {
 
     @Override
+    public boolean supportsSync() {
+        return supportsUserUpdate();
+    }
+
+    @Override
     public InputStream getStream(ManagedBlob blob) throws IOException {
         return getClass().getResourceAsStream("/data/" + blob.getFilename());
     }

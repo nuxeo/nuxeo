@@ -68,14 +68,19 @@ public class BinaryMetadataConstants {
 
     /**
      * Constant map key to do the async update of given metadata listing.
+     *
+     * @deprecated since 2021.13, not used anymore
      */
+    @Deprecated
     public static final String ASYNC_MAPPING_RESULT = "asyncMappingResult";
 
     /**
      * Flag to execute the worker if async update should be done.
      *
      * @since 7.2
+     * @deprecated since 2021.13, not used anymore
      */
+    @Deprecated
     public static final String ASYNC_BINARY_METADATA_EXECUTE = "asyncExecute";
 
     /**

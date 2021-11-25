@@ -1,0 +1,9 @@
+<component name="org.nuxeo.binary.metadata.contribs.tests.disable.work">
+
+  <extension point="queues" target="org.nuxeo.ecm.core.work.service">
+    <queue id="binary_metadata_queue" queueing="false" processing="false">
+      <category>binary_metadata_work</category>
+    </queue>
+  </extension>
+
+</component>
