@@ -54,25 +54,29 @@
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <!-- SetProperty processor -->
     <streamProcessor name="setProperties" class="org.nuxeo.ecm.core.bulk.action.SetPropertiesAction" logConfig="bulk"
-      defaultConcurrency="2" defaultPartitions="2">
+      defaultConcurrency="${nuxeo.bulk.action.setProperties.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.setProperties.defaultPartitions:=2}">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
 
     <!-- SetSystemProperty processor -->
     <streamProcessor name="setSystemProperties" class="org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction"
-      logConfig="bulk" defaultConcurrency="2" defaultPartitions="2">
+      logConfig="bulk" defaultConcurrency="${nuxeo.bulk.action.setSystemProperties.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.setSystemProperties.defaultPartitions:=2}">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
 
     <!-- RemoveProxy processor -->
     <streamProcessor name="removeProxy" class="org.nuxeo.ecm.core.bulk.action.RemoveProxyAction" logConfig="bulk"
-      defaultConcurrency="2" defaultPartitions="2">
+      defaultConcurrency="${nuxeo.bulk.action.removeProxy.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.removeProxy.defaultPartitions:=2}">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
 
     <!-- Trash processor -->
     <streamProcessor name="trash" class="org.nuxeo.ecm.core.bulk.action.TrashAction" logConfig="bulk"
-      defaultConcurrency="1" defaultPartitions="1">
+      defaultConcurrency="${nuxeo.bulk.action.trash.defaultConcurrency:=1}"
+      defaultPartitions="${nuxeo.bulk.action.trash.defaultPartitions:=1}">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
 
