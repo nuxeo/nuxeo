@@ -30,14 +30,16 @@ import org.nuxeo.runtime.api.Framework;
  * Work handling binary metadata updates.
  *
  * @since 7.2
+ * @deprecated since 2021.13, use {@link BinaryMetadataUpdateWork} instead
  */
+@Deprecated(since = "2021.13")
 public class BinaryMetadataWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String BINARY_METADATA_WORK = "binary_metadata_work";
+    private static final String BINARY_METADATA_WORK = BinaryMetadataUpdateWork.BINARY_METADATA_WORK;
 
-    public static final String BINARY_METADATA_WORK_TITLE = "Binary Metadata Update Worker";
+    public static final String BINARY_METADATA_WORK_TITLE = BinaryMetadataUpdateWork.BINARY_METADATA_WORK_TITLE;
 
     protected final List<MetadataMappingDescriptor> mappingDescriptors;
 

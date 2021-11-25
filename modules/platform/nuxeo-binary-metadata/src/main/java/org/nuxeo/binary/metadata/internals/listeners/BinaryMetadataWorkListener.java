@@ -40,7 +40,9 @@ import org.nuxeo.runtime.api.Framework;
  * Event Context, a work should be executed.
  *
  * @since 7.2
+ * @deprecated since 2021.13, {@link BinaryMetadataSyncListener} now handles the async updates
  */
+@Deprecated(since = "2021.13")
 public class BinaryMetadataWorkListener implements EventListener {
 
     @Override

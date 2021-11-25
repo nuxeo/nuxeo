@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.binary.metadata.internals.MetadataMappingDescriptor;
+import org.nuxeo.binary.metadata.internals.MetadataMappingUpdate;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -135,6 +136,34 @@ public interface BinaryMetadataService {
     void writeMetadata(DocumentModel doc, String mappingDescriptorId);
 
     /**
+     * Returns the list of {@link MetadataMappingUpdate} to apply to the document and the blob according to following
+     * rules:
+     * <ul>
+     * <li>If creation, write metadata from Blob to doc.</li>
+     * <li>If Blob dirty and document metadata dirty, write metadata from doc to Blob.</li>
+     * <li>If Blob dirty and document metadata not dirty, write metadata from Blob to doc.</li>
+     * <li>If Blob not dirty and document metadata dirty, write metadata from doc to Blob.</li>
+     * </ul>
+     * In all cases, the metadata is never written from doc to Blob if {@code MetadataMappingDescriptor#isReadOnly()}
+     * returns true.
+     *
+     * @since 2021.13
+     */
+    List<MetadataMappingUpdate> getMetadataUpdates(DocumentModel doc, boolean creation);
+
+    /**
+     * Applies synchronously the given {@code mappingUpdates} computed by
+     * {@link #getMetadataUpdates(DocumentModel, boolean)} to the document.
+     * <p>
+     * The document is not saved in the session, it's up to the caller to deal with this.
+     * <p>
+     * Note: This is potentially a long processing.
+     *
+     * @since 2021.13
+     */
+    void applyUpdates(DocumentModel doc, List<MetadataMappingUpdate> mappingUpdates);
+
+    /**
      * Handle document and blob updates according to following rules in an event context:
      * <ul>
      * <li>Define if rule should be executed in async or sync mode.</li>
@@ -146,7 +175,11 @@ public interface BinaryMetadataService {
      * returns true.
      * <p>
      * The document is not saved in the session, it's up to the caller to deal with this.
+     *
+     * @deprecated since 2021.13, the listener and work now use {@link #getMetadataUpdates(DocumentModel, boolean)} and
+     *             {@link #applyUpdates(DocumentModel, List)}
      */
+    @Deprecated(since = "2021.13")
     void handleUpdate(List<MetadataMappingDescriptor> syncMappingDescriptors, DocumentModel doc);
 
     /**
@@ -161,7 +194,10 @@ public interface BinaryMetadataService {
      * returns true.
      * <p>
      * The document is not saved in the session, it's up to the caller to deal with this.
+     *
+     * @deprecated since 2021.13, the listener now uses {@link #getMetadataUpdates(DocumentModel, boolean)} and
+     *             {@link #applyUpdates(DocumentModel, List)}
      */
+    @Deprecated
     void handleSyncUpdate(DocumentModel doc);
-
 }

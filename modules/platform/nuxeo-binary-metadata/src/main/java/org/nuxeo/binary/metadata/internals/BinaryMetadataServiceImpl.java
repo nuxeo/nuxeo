@@ -20,6 +20,9 @@
  */
 package org.nuxeo.binary.metadata.internals;
 
+import static org.nuxeo.binary.metadata.internals.MetadataMappingUpdate.Direction.BLOB_TO_DOC;
+import static org.nuxeo.binary.metadata.internals.MetadataMappingUpdate.Direction.DOC_TO_BLOB;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -173,11 +176,13 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
     @Override
     public void writeMetadata(DocumentModel doc, String mappingDescriptorId) {
+        writeMetadata(doc, binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId));
+    }
+
+    public void writeMetadata(DocumentModel doc, MetadataMappingDescriptor mappingDescriptor) {
         // Creating mapping properties Map.
         Map<String, String> metadataMapping = new HashMap<>();
         List<String> blobMetadata = new ArrayList<>();
-        MetadataMappingDescriptor mappingDescriptor = binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap()
-                                                                                             .get(mappingDescriptorId);
         boolean ignorePrefix = mappingDescriptor.ignorePrefix();
         // Extract blob from the contributed xpath
         Blob blob = doc.getProperty(mappingDescriptor.getBlobXPath()).getValue(Blob.class);
@@ -239,6 +244,67 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     /*--------------------- Event Service --------------------------*/
 
     @Override
+    public List<MetadataMappingUpdate> getMetadataUpdates(DocumentModel doc, boolean creation) {
+        var actionContext = createActionContext(doc);
+        var ruleDescriptors = checkFilter(actionContext);
+
+        List<MetadataMappingUpdate> metadataUpdates = new ArrayList<>();
+        for (MetadataRuleDescriptor rules : ruleDescriptors) {
+            boolean async = rules.isAsync();
+            for (MetadataMappingDescriptor mapping : getMapping(rules.getMetadataMappingIdDescriptors())) {
+                Property fileProp = doc.getProperty(mapping.getBlobXPath());
+                Blob blob = fileProp.getValue(Blob.class);
+                if (blob == null) {
+                    continue;
+                }
+                if (creation) {
+                    // if creation and Blob not null, write metadata from Blob to doc
+                    metadataUpdates.add(new MetadataMappingUpdate(mapping, BLOB_TO_DOC, async));
+                } else if (isDirtyMapping(mapping, doc)) {
+                    // if document metadata dirty, write metadata from doc to Blob
+                    if (!mapping.isReadOnly()) {
+                        metadataUpdates.add(new MetadataMappingUpdate(mapping, DOC_TO_BLOB, async));
+                    }
+                } else if (fileProp.isDirty()) {
+                    // if Blob dirty and document metadata not dirty, write metadata from Blob to doc
+                    metadataUpdates.add(new MetadataMappingUpdate(mapping, BLOB_TO_DOC, async));
+                }
+            }
+        }
+        return metadataUpdates;
+    }
+
+    @Override
+    public void applyUpdates(DocumentModel doc, List<MetadataMappingUpdate> mappingUpdates) {
+        var blobManager = Framework.getService(BlobManager.class);
+        for (var mappingUpdate : mappingUpdates) {
+            var mapping = mappingUpdate.getMapping();
+            Property fileProp = doc.getProperty(mapping.getBlobXPath());
+            Blob blob = fileProp.getValue(Blob.class);
+            if (blob == null) {
+                log.warn("A binary metadata update has been requested on a null blob, mapping: {}", mapping);
+                continue;
+            }
+            switch (mappingUpdate.getDirection()) {
+                case BLOB_TO_DOC:
+                    log.debug("Write metadata from blob to doc: {} for mapping: {}", doc::getId, () -> mapping);
+                    writeMetadata(doc, mapping);
+                    break;
+                case DOC_TO_BLOB:
+                    var blobProvider = blobManager.getBlobProvider(blob);
+                    // do not write metadata in blobs from providers that don't support sync
+                    if (blobProvider == null || blobProvider.supportsSync()) {
+                        log.debug("Write metadata from doc: {} to blob for mapping: {}", doc::getId, () -> mapping);
+                        blob = writeMetadata(mapping.getProcessor(), blob, mapping.getId(), doc);
+                        fileProp.setValue(blob);
+                    }
+                    break;
+            }
+        }
+    }
+
+    @Override
+    @Deprecated
     public void handleSyncUpdate(DocumentModel doc) {
         List<MetadataMappingDescriptor> syncMappingDescriptors = getSyncMapping(doc);
         if (syncMappingDescriptors != null) {
@@ -247,6 +313,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     @Override
+    @Deprecated
     public void handleUpdate(List<MetadataMappingDescriptor> mappingDescriptors, DocumentModel doc) {
         for (MetadataMappingDescriptor mappingDescriptor : mappingDescriptors) {
             Property fileProp = doc.getProperty(mappingDescriptor.getBlobXPath());
@@ -313,7 +380,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
     /**
      * @return Dirty metadata from metadata mapping contribution and handle async processes.
+     * @deprecated since 2021.13, because only used by {@link #handleSyncUpdate(DocumentModel)}
      */
+    @Deprecated
     public List<MetadataMappingDescriptor> getSyncMapping(DocumentModel doc) {
         // Check if rules applying for this document.
         ActionContext actionContext = createActionContext(doc);
@@ -341,18 +410,18 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         return getMapping(syncMappingDescriptorIds);
     }
 
-    protected List<MetadataMappingDescriptor> getMapping(Set<String> mappingDescriptorIds) {
+    protected List<MetadataMappingDescriptor> getMapping(Collection<String> mappingDescriptorIds) {
+        var mappingDescriptors = binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap();
         // For each mapping descriptors, store mapping.
         List<MetadataMappingDescriptor> mappingResult = new ArrayList<>();
         for (String mappingDescriptorId : mappingDescriptorIds) {
-            if (!binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
+            if (!mappingDescriptors.containsKey(mappingDescriptorId)) {
                 log.warn(
                         "Missing binary metadata descriptor with id: {}. Or check your rule contribution with proper metadataMapping-id.",
                         mappingDescriptorId);
                 continue;
             }
-            mappingResult.add(
-                    binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId));
+            mappingResult.add(mappingDescriptors.get(mappingDescriptorId));
         }
         return mappingResult;
     }
@@ -361,18 +430,11 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
      * Maps inspector only.
      */
     protected boolean isDirtyMapping(MetadataMappingDescriptor mappingDescriptor, DocumentModel doc) {
-        Map<String, String> mappingResult = new HashMap<>();
-        for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor : mappingDescriptor.getMetadataDescriptors()) {
-            mappingResult.put(metadataDescriptor.getXpath(), metadataDescriptor.getName());
-        }
-        // Returning only dirty properties
-        HashMap<String, Object> resultDirtyMapping = new HashMap<>();
-        for (String metadata : mappingResult.keySet()) {
-            Property property = doc.getProperty(metadata);
-            if (property.isDirty()) {
-                resultDirtyMapping.put(mappingResult.get(metadata), doc.getPropertyValue(metadata));
-            }
-        }
-        return !resultDirtyMapping.isEmpty();
+        return mappingDescriptor.getMetadataDescriptors()
+                                .stream()
+                                .map(MetadataMappingDescriptor.MetadataDescriptor::getXpath)
+                                .distinct()
+                                .map(doc::getProperty)
+                                .anyMatch(Property::isDirty);
     }
 }

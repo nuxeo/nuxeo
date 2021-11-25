@@ -1,9 +1,9 @@
-<component name="org.nuxeo.binary.metadata.contribs.tests.async">
+<component name="org.nuxeo.binary.metadata.contribs.tests.sync.async">
 
   <require>org.nuxeo.binary.metadata.contribs.tests.pdf</require>
 
   <extension target="org.nuxeo.binary.metadata" point="metadataRules">
-    <rule id="default" order="0" enabled="true" async="true">
+    <rule id="default" order="0" enabled="true" async="false">
       <metadataMappings>
         <metadataMapping-id>PDF</metadataMapping-id>
       </metadataMappings>
