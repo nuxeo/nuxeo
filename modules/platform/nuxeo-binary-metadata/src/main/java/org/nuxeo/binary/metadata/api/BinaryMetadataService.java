@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ public interface BinaryMetadataService {
      * @param ignorePrefix Since 7.3
      * @return Extracted metadata.
      */
-    Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames,
-            boolean ignorePrefix);
+    Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames, boolean ignorePrefix);
 
     /**
      * Read and return metadata from a given binary and a given metadata list with Nuxeo default processor.
@@ -143,8 +142,8 @@ public interface BinaryMetadataService {
      * <li>If Blob dirty and document metadata not dirty, write metadata from Blob to doc.</li>
      * <li>If Blob not dirty and document metadata dirty, write metadata from doc to Blob.</li>
      * </ul>
-     * In all cases, the metadata is never written from doc to Blob if
-     * {@code MetadataMappingDescriptor#isReadOnly()} returns true.
+     * In all cases, the metadata is never written from doc to Blob if {@code MetadataMappingDescriptor#isReadOnly()}
+     * returns true.
      * <p>
      * The document is not saved in the session, it's up to the caller to deal with this.
      */
@@ -158,8 +157,8 @@ public interface BinaryMetadataService {
      * <li>If Blob dirty and document metadata not dirty, write metadata from Blob to doc.</li>
      * <li>If Blob not dirty and document metadata dirty, write metadata from doc to Blob.</li>
      * </ul>
-     * In all cases, the metadata is never written from doc to Blob if
-     * {@code MetadataMappingDescriptor#isReadOnly()} returns true.
+     * In all cases, the metadata is never written from doc to Blob if {@code MetadataMappingDescriptor#isReadOnly()}
+     * returns true.
      * <p>
      * The document is not saved in the session, it's up to the caller to deal with this.
      */

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-
 package org.nuxeo.binary.metadata.internals.listeners;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
@@ -56,7 +55,8 @@ public class BinaryMetadataWorkListener implements EventListener {
             Boolean execute = (Boolean) doc.getContextData(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EXECUTE);
             doc.putContextData(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EXECUTE, null);
             if (Boolean.TRUE.equals(execute) && !doc.isProxy()) {
-                List<MetadataMappingDescriptor> mappingDescriptors = (List<MetadataMappingDescriptor>) doc.getContextData(BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
+                List<MetadataMappingDescriptor> mappingDescriptors = (List<MetadataMappingDescriptor>) doc.getContextData(
+                        BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
                 doc.putContextData(BinaryMetadataConstants.ASYNC_MAPPING_RESULT, null);
                 BinaryMetadataWork work = new BinaryMetadataWork(doc.getRepositoryName(), doc.getId(),
                         mappingDescriptors);

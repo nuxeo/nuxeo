@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ package org.nuxeo.binary.metadata.internals;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -214,12 +213,12 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                 try {
                     if (doc.getProperty(property).isList()) {
                         if (!metadataIsArray) {
-                            metadataValue = Arrays.asList(metadataValue);
+                            metadataValue = List.of(metadataValue);
                         }
                     } else {
                         if (metadataIsArray) {
                             if (metadataValue instanceof Object[]) {
-                                metadataValue = Arrays.asList((Object[]) metadataValue);
+                                metadataValue = List.of((Object[]) metadataValue);
                             } else {
                                 metadataValue = metadataValue.toString();
                             }

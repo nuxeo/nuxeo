@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  */
 package org.nuxeo.binary.metadata.test;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -29,17 +28,17 @@ import org.nuxeo.ecm.core.blob.ManagedBlob;
 public class MockDummyBlobProvider extends AbstractBlobProvider {
 
     @Override
-    public InputStream getStream(ManagedBlob blob) throws IOException {
+    public InputStream getStream(ManagedBlob blob) {
         return getClass().getResourceAsStream("/data/" + blob.getFilename());
     }
 
     @Override
-    public Blob readBlob(BlobInfo blobInfo) throws IOException {
+    public Blob readBlob(BlobInfo blobInfo) {
         return null;
     }
 
     @Override
-    public String writeBlob(Blob blob) throws IOException {
+    public String writeBlob(Blob blob) {
         return null;
     }
 

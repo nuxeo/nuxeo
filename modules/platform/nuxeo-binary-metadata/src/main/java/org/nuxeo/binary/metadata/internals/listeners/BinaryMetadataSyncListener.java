@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-
 package org.nuxeo.binary.metadata.internals.listeners;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
@@ -32,10 +31,13 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Handle document and blob updates according to following rules in an event context: - Define if rule should be
- * executed in async or sync mode. - If Blob dirty and document metadata dirty, write metadata from doc to Blob. - If
- * Blob dirty and document metadata not dirty, write metadata from Blob to doc. - If Blob not dirty and document
- * metadata dirty, write metadata from doc to Blob.
+ * Handle document and blob updates according to following rules in an event context:
+ * <ul>
+ * <li>Define if rule should be executed in async or sync mode.
+ * <li>If Blob dirty and document metadata dirty, write metadata from doc to Blob.
+ * <li>If Blob dirty and document metadata not dirty, write metadata from Blob to doc.
+ * <li>If Blob not dirty and document metadata dirty, write metadata from doc to Blob.
+ * </ul>
  *
  * @since 7.1
  */
@@ -50,8 +52,8 @@ public class BinaryMetadataSyncListener implements EventListener {
         BinaryMetadataService binaryMetadataService = Framework.getService(BinaryMetadataService.class);
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        Boolean disable = (Boolean) event.getContext().getProperty(
-                BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER);
+        Boolean disable = (Boolean) event.getContext()
+                                         .getProperty(BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER);
         if (ABOUT_TO_CREATE.equals(event.getName()) && !doc.isProxy() && disable == null) {
             binaryMetadataService.writeMetadata(doc);
         } else if (BEFORE_DOC_UPDATE.equals(event.getName()) && !doc.isProxy() && disable == null) {

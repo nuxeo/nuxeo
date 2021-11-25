@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,9 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestBinaryMetadataAsyncListener extends BaseBinaryMetadataTest {
+
     @Inject
-    TransactionalFeature txFeature;
+    protected TransactionalFeature txFeature;
 
     @Test
     public void testListener() throws Exception {
@@ -79,7 +80,7 @@ public class TestBinaryMetadataAsyncListener extends BaseBinaryMetadataTest {
         assertEquals("Writer", pdfDoc.getPropertyValue("dc:coverage"));
         assertEquals("Mirko Nasato", pdfDoc.getPropertyValue("dc:creator"));
 
-        // Test if description has been overriden by higher order contribution
+        // Test if description has been overridden by higher order contribution
         assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:description"));
     }
 
