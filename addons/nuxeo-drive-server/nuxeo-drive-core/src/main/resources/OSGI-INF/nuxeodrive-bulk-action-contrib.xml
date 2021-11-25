@@ -9,7 +9,8 @@
   <extension target="org.nuxeo.runtime.stream.service"
     point="streamProcessor">
     <streamProcessor name="driveFireGroupUpdatedEvent" class="org.nuxeo.drive.action.FireGroupUpdatedEventAction"
-      logConfig="bulk">
+      logConfig="bulk" defaultConcurrency="${nuxeo.bulk.action.driveFireGroupUpdatedEvent.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.driveFireGroupUpdatedEvent.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
     </streamProcessor>
   </extension>

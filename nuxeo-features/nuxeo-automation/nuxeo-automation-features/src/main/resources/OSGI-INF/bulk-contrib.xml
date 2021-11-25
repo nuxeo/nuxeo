@@ -11,8 +11,9 @@
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="automation"
       class="org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkAction" logConfig="bulk"
-      defaultConcurrency="2" defaultPartitions="2">
-      <policy name="automation" maxRetries="3" delay="1s" continueOnFailure="true" />
+      defaultConcurrency="${nuxeo.bulk.action.automation.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.automation.defaultPartitions:=2}">
+    <policy name="automation" maxRetries="3" delay="1s" continueOnFailure="true" />
     </streamProcessor>
   </extension>
 

@@ -23,9 +23,9 @@
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
-    <streamProcessor name="retentionExpired"
-      class="org.nuxeo.ecm.core.security.RetentionExpiredAction"
-      logConfig="bulk" defaultConcurrency="1" defaultPartitions="1">
+    <streamProcessor name="retentionExpired" class="org.nuxeo.ecm.core.security.RetentionExpiredAction" logConfig="bulk"
+      defaultConcurrency="${nuxeo.bulk.action.retentionExpired.defaultConcurrency:=1}"
+      defaultPartitions="${nuxeo.bulk.action.retentionExpired.defaultPartitions:=1}">
       <!-- continue on failure, because failure to expire retention doesn't give us an inconsistent state -->
       <policy name="default" maxRetries="20" delay="1s" maxDelay="60s" continueOnFailure="true" />
     </streamProcessor>

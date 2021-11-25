@@ -17,36 +17,41 @@
   <extension target="org.nuxeo.runtime.stream.service"
     point="streamProcessor">
     <streamProcessor name="holdDocumentsAction"
-      class="org.nuxeo.retention.actions.HoldDocumentsAction"
-      logConfig="bulk" defaultConcurrency="2" defaultPartitions="4">
+      class="org.nuxeo.retention.actions.HoldDocumentsAction" logConfig="bulk"
+      defaultConcurrency="${nuxeo.bulk.action.holdDocumentsAction.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.holdDocumentsAction.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="1s"
         maxDelay="10s" continueOnFailure="true" />
       <option name="produceImmediate">false</option>
     </streamProcessor>
       <streamProcessor name="unholdDocumentsAction"
-      class="org.nuxeo.retention.actions.UnholdDocumentsAction"
-      logConfig="bulk" defaultConcurrency="2" defaultPartitions="4">
+      class="org.nuxeo.retention.actions.UnholdDocumentsAction" logConfig="bulk"
+        defaultConcurrency="${nuxeo.bulk.action.unholdDocumentsAction.defaultConcurrency:=2}"
+        defaultPartitions="${nuxeo.bulk.action.unholdDocumentsAction.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="1s"
         maxDelay="10s" continueOnFailure="true" />
       <option name="produceImmediate">false</option>
     </streamProcessor>
     <streamProcessor name="attachRetentionRule"
-      class="org.nuxeo.retention.actions.AttachRetentionRuleAction"
-      logConfig="bulk" defaultConcurrency="2" defaultPartitions="4">
-      <policy name="default" maxRetries="3" delay="1s"
+      class="org.nuxeo.retention.actions.AttachRetentionRuleAction" logConfig="bulk"
+      defaultConcurrency="${nuxeo.bulk.action.attachRetentionRule.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.attachRetentionRule.defaultPartitions:=4}">
+    <policy name="default" maxRetries="3" delay="1s"
         maxDelay="10s" continueOnFailure="true" />
       <option name="produceImmediate">false</option>
     </streamProcessor>
     <streamProcessor name="evalInputEventBasedRule"
-      class="org.nuxeo.retention.actions.EvalInputEventBasedRuleAction"
-      logConfig="bulk" defaultConcurrency="2" defaultPartitions="4">
+      class="org.nuxeo.retention.actions.EvalInputEventBasedRuleAction" logConfig="bulk"
+      defaultConcurrency="${nuxeo.bulk.action.evalInputEventBasedRule.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.evalInputEventBasedRule.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="1s"
         maxDelay="10s" continueOnFailure="true" />
       <option name="produceImmediate">false</option>
     </streamProcessor>
     <streamProcessor name="processRetentionEvent"
-      class="org.nuxeo.retention.actions.ProcessRetentionEventAction"
-      logConfig="bulk" defaultConcurrency="2" defaultPartitions="4">
+      class="org.nuxeo.retention.actions.ProcessRetentionEventAction" logConfig="bulk"
+      defaultConcurrency="${nuxeo.bulk.action.processRetentionEvent.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.processRetentionEvent.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="1s"
         maxDelay="10s" continueOnFailure="true" />
       <option name="produceImmediate">false</option>

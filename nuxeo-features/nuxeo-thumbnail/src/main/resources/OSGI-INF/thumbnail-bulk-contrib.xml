@@ -9,8 +9,9 @@
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="recomputeThumbnails"
-      class="org.nuxeo.ecm.platform.thumbnail.action.RecomputeThumbnailsAction" logConfig="bulk" defaultConcurrency="2"
-      defaultPartitions="6">
+      class="org.nuxeo.ecm.platform.thumbnail.action.RecomputeThumbnailsAction" logConfig="bulk"
+       defaultConcurrency="${nuxeo.bulk.action.recomputeThumbnails.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.recomputeThumbnails.defaultPartitions:=6}">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
       <option name="produceImmediate">false</option>
     </streamProcessor>

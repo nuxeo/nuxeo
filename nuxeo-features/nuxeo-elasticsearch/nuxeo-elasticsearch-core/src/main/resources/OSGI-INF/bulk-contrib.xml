@@ -12,11 +12,11 @@
       defaultConcurrency="2" defaultPartitions="4" enabled="${elasticsearch.enabled:=true}">
       <policy name="default" maxRetries="20" delay="1s" maxDelay="60s" continueOnFailure="false" />
       <!-- fetch content and build indexing requests -->
-      <computation name="index" concurrency="${elasticsearch.bulk.index.fetch.concurrency:=2}" />
-      <stream name="index" partitions="${elasticsearch.bulk.index.fetch.partitions:=4}" />
+      <computation name="index" concurrency="${nuxeo.bulk.action.reindex.index.concurrency:=2}" />
+      <stream name="index" partitions="${nuxeo.bulk.action.reindex.index.partitions:=4}" />
       <!-- submit requests to elastic -->
-      <computation name="bulkIndex" concurrency="${elasticsearch.bulk.index.submit.concurrency:=2}" />
-      <stream name="bulkIndex" partitions="${elasticsearch.bulk.index.submit.partitions:=4}" />
+      <computation name="bulkIndex" concurrency="${nuxeo.bulk.action.reindex.bulkIndex.concurrency:=2}" />
+      <stream name="bulkIndex" partitions="${nuxeo.bulk.action.reindex.bulkIndex.partitions:=4}" />
       <computation name="indexCompletion" concurrency="1" />
       <!-- optimal size of the elasticsearch bulk request -->
       <option name="esBulkSizeBytes">5242880</option>
