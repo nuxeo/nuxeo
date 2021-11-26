@@ -20,6 +20,8 @@ package org.nuxeo.ecm.blob.s3;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.nuxeo.ecm.core.model.Session.PROP_RETENTION_COMPLIANCE_MODE_ENABLED;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.RECORD;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,13 +57,12 @@ import com.amazonaws.services.s3.AmazonS3Builder;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder;
 import com.amazonaws.services.s3.model.CryptoConfiguration;
-import com.amazonaws.services.s3.model.DefaultRetention;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
 import com.amazonaws.services.s3.model.GetObjectLockConfigurationRequest;
 import com.amazonaws.services.s3.model.GetObjectLockConfigurationResult;
 import com.amazonaws.services.s3.model.ObjectLockConfiguration;
+import com.amazonaws.services.s3.model.ObjectLockEnabled;
 import com.amazonaws.services.s3.model.ObjectLockRetentionMode;
-import com.amazonaws.services.s3.model.ObjectLockRule;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
@@ -226,11 +227,11 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
     public final boolean metadataAddUsername;
 
     /**
-     * The retention mode with which the bucket is configured.
+     * Is Object Lock feature enabled at s3 level.
      *
-     * @since 11.4
+     * @since 2021.13
      */
-    public final ObjectLockRetentionMode bucketRetentionMode;
+    public final boolean s3RetentionEnabled;
 
     /**
      * The retention mode to use when setting the retention on an object.
@@ -280,8 +281,14 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         amazonS3 = getAmazonS3(s3Builder);
 
         metadataAddUsername = getBooleanProperty(METADATA_ADD_USERNAME_PROPERTY);
-        bucketRetentionMode = computeBucketRetentionMode();
-        retentionMode = bucketRetentionMode == null ? DEFAULT_RETENTION_MODE : bucketRetentionMode;
+
+        s3RetentionEnabled = isS3RetentionEnabled();
+        retentionMode = Framework.isBooleanPropertyTrue(PROP_RETENTION_COMPLIANCE_MODE_ENABLED)
+                ? ObjectLockRetentionMode.COMPLIANCE
+                : ObjectLockRetentionMode.GOVERNANCE;
+        if (!s3RetentionEnabled && Boolean.parseBoolean(properties.get(RECORD))) {
+            log.warn("Blob provider is configured for records but retention is not enabled on s3 bucket {}", bucketName);
+        }
 
         transferManager = createTransferManager();
 
@@ -520,7 +527,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
     protected TransferManager createTransferManager() {
         // when the bucket has Object Lock active, uploads need to provide an MD5
-        boolean alwaysCalculateMultipartMd5 = bucketRetentionMode != null;
+        boolean alwaysCalculateMultipartMd5 = s3RetentionEnabled;
         return TransferManagerBuilder.standard()
                                      .withS3Client(amazonS3)
                                      .withMinimumUploadPartSize(Long.valueOf(getLongProperty(
@@ -537,25 +544,23 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
     /** @deprecated since 11.4, unused */
     @Deprecated
     protected ObjectLockRetentionMode getRetentionMode() {
-        ObjectLockRetentionMode bucketRetentionMode = computeBucketRetentionMode();
-        return bucketRetentionMode == null ? DEFAULT_RETENTION_MODE : bucketRetentionMode;
+        return retentionMode;
     }
 
-    protected ObjectLockRetentionMode computeBucketRetentionMode() {
+    protected boolean isS3RetentionEnabled() {
         GetObjectLockConfigurationRequest request = new GetObjectLockConfigurationRequest().withBucketName(bucketName);
         GetObjectLockConfigurationResult result;
         try {
             result = amazonS3.getObjectLockConfiguration(request);
         } catch (AmazonServiceException e) {
             log.debug("Failed to get ObjectLockConfiguration for bucket: {}", bucketName, e);
-            return null;
+            return false;
         }
-        return Optional.ofNullable(result.getObjectLockConfiguration())
-                       .map(ObjectLockConfiguration::getRule)
-                       .map(ObjectLockRule::getDefaultRetention)
-                       .map(DefaultRetention::getMode)
-                       .map(ObjectLockRetentionMode::valueOf)
-                       .orElse(null);
+        ObjectLockConfiguration olc = result.getObjectLockConfiguration();
+        if (olc != null) {
+            return ObjectLockEnabled.ENABLED.toString().equals(olc.getObjectLockEnabled());
+        }
+        return false;
     }
 
     /**
