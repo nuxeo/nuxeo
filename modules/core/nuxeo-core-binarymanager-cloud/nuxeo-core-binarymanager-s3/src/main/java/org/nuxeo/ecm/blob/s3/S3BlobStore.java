@@ -775,41 +775,43 @@ public class S3BlobStore extends AbstractBlobStore {
         }
         String bucketKey = bucketKey(objectKey);
         try {
-            if (blobUpdateContext.updateRetainUntil != null) {
-                if (versionId == null) {
-                    throw new IOException("Cannot set retention on non-versioned blob");
+            if (config.s3RetentionEnabled) {
+                if (blobUpdateContext.updateRetainUntil != null) {
+                    if (versionId == null) {
+                        throw new IOException("Cannot set retention on non-versioned blob");
+                    }
+                    Calendar retainUntil = blobUpdateContext.updateRetainUntil.retainUntil;
+                    Date retainUntilDate = retainUntil == null ? null : retainUntil.getTime();
+                    ObjectLockRetention retention = new ObjectLockRetention();
+                    retention.withMode(config.retentionMode) //
+                             .withRetainUntilDate(retainUntilDate);
+                    SetObjectRetentionRequest request = new SetObjectRetentionRequest();
+                    request.withBucketName(bucketName) //
+                           .withKey(bucketKey)
+                           .withVersionId(versionId)
+                           .withRetention(retention);
+                    logTrace("->", "setObjectRetention");
+                    logTrace("hnote right: " + bucketKey + "@" + versionId);
+                    logTrace("rnote right: " + (retainUntil == null ? "null" : retainUntil.toInstant().toString()));
+                    amazonS3.setObjectRetention(request);
                 }
-                Calendar retainUntil = blobUpdateContext.updateRetainUntil.retainUntil;
-                Date retainUntilDate = retainUntil == null ? null : retainUntil.getTime();
-                ObjectLockRetention retention = new ObjectLockRetention();
-                retention.withMode(config.retentionMode) //
-                         .withRetainUntilDate(retainUntilDate);
-                SetObjectRetentionRequest request = new SetObjectRetentionRequest();
-                request.withBucketName(bucketName) //
-                       .withKey(bucketKey)
-                       .withVersionId(versionId)
-                       .withRetention(retention);
-                logTrace("->", "setObjectRetention");
-                logTrace("hnote right: " + bucketKey + "@" + versionId);
-                logTrace("rnote right: " + (retainUntil == null ? "null" : retainUntil.toInstant().toString()));
-                amazonS3.setObjectRetention(request);
-            }
-            if (blobUpdateContext.updateLegalHold != null) {
-                if (versionId == null) {
-                    throw new IOException("Cannot set legal hold on non-versioned blob");
+                if (blobUpdateContext.updateLegalHold != null) {
+                    if (versionId == null) {
+                        throw new IOException("Cannot set legal hold on non-versioned blob");
+                    }
+                    boolean hold = blobUpdateContext.updateLegalHold.hold;
+                    ObjectLockLegalHoldStatus status = hold ? ObjectLockLegalHoldStatus.ON : ObjectLockLegalHoldStatus.OFF;
+                    ObjectLockLegalHold legalHold = new ObjectLockLegalHold().withStatus(status);
+                    SetObjectLegalHoldRequest request = new SetObjectLegalHoldRequest();
+                    request.withBucketName(bucketName) //
+                           .withKey(bucketKey)
+                           .withVersionId(versionId)
+                           .withLegalHold(legalHold);
+                    logTrace("->", "setObjectLegalHold");
+                    logTrace("hnote right: " + bucketKey + "@" + versionId);
+                    logTrace("rnote right: " + status.toString());
+                    amazonS3.setObjectLegalHold(request);
                 }
-                boolean hold = blobUpdateContext.updateLegalHold.hold;
-                ObjectLockLegalHoldStatus status = hold ? ObjectLockLegalHoldStatus.ON : ObjectLockLegalHoldStatus.OFF;
-                ObjectLockLegalHold legalHold = new ObjectLockLegalHold().withStatus(status);
-                SetObjectLegalHoldRequest request = new SetObjectLegalHoldRequest();
-                request.withBucketName(bucketName) //
-                       .withKey(bucketKey)
-                       .withVersionId(versionId)
-                       .withLegalHold(legalHold);
-                logTrace("->", "setObjectLegalHold");
-                logTrace("hnote right: " + bucketKey + "@" + versionId);
-                logTrace("rnote right: " + status.toString());
-                amazonS3.setObjectLegalHold(request);
             }
             if (blobUpdateContext.restoreForDuration != null) {
                 Duration duration = blobUpdateContext.restoreForDuration.duration;
