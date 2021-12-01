@@ -7087,7 +7087,7 @@
     </repository>
     <repository>
       <id>hotfix-snapshots</id>
-      <url>https://maven.nuxeo.org/nexus/content/repositories/hotfix-snapshots</url>
+      <url>https://packages.nuxeo.com/repository/maven-hotfix-snapshots/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -7156,7 +7156,7 @@
     </repository>
     <snapshotRepository>
       <id>hotfix-snapshots</id>
-      <url>http://mavenin.nuxeo.com/nexus/content/repositories/hotfix-snapshots</url>
+      <url>https://packages.nuxeo.com/repository/maven-hotfix-snapshots/</url>
       <uniqueVersion>true</uniqueVersion>
     </snapshotRepository>
   </distributionManagement>
