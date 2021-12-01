@@ -35,6 +35,7 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -197,6 +198,20 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
     public static final long MINIMUM_UPLOAD_PART_SIZE_DEFAULT = 5L * 1024 * 1024; // AWS SDK default = 5 MB
 
     /**
+     * The Framework property to define the transfer manager thread pool size.
+     *
+     * @since 2021.11
+     */
+    public static final String TRANSFER_MANAGER_THREAD_POOL_SIZE_PROPERTY = "nuxeo.s3storage.transfer.manager.thread.pool.size";
+
+    /**
+     * The default value for the transfer manager thread pool size.
+     *
+     * @since 2021.11
+     */
+    public static final int TRANSFER_MANAGER_THREAD_POOL_SIZE_DEFAULT = 10;
+
+    /**
      * Framework property to disable usage of the proxy environment variables ({@code nuxeo.http.proxy.*}) for the
      * connection to the S3 endpoint.
      *
@@ -311,6 +326,22 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         }
         // nuxeo.conf property
         return getLongProperty(MULTIPART_COPY_PART_SIZE_PROPERTY, MULTIPART_COPY_PART_SIZE_DEFAULT);
+    }
+
+    /**
+     * @since 2021.11
+     */
+    public static int getIntProperty(String key, int defaultValue) {
+        String value = Framework.getProperty(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            log.error("Invalid framework property: {}={}, expecting an int value.", key, value, e);
+            return defaultValue;
+        }
     }
 
     /**
@@ -521,6 +552,9 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
                                              MULTIPART_COPY_THRESHOLD_PROPERTY, MULTIPART_COPY_THRESHOLD_DEFAULT)))
                                      .withMultipartCopyPartSize(Long.valueOf(getMultipartCopyPartSize()))
                                      .withAlwaysCalculateMultipartMd5(alwaysCalculateMultipartMd5)
+                                     .withExecutorFactory(() -> Executors.newFixedThreadPool(Integer.valueOf(
+                                             getIntProperty(TRANSFER_MANAGER_THREAD_POOL_SIZE_PROPERTY,
+                                                     TRANSFER_MANAGER_THREAD_POOL_SIZE_DEFAULT))))
                                      .build();
     }
 
