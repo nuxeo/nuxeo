@@ -20,8 +20,9 @@ package org.nuxeo.ecm.blob.s3;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.nuxeo.ecm.core.model.Session.PROP_RETENTION_COMPLIANCE_MODE_ENABLED;
+import static org.nuxeo.common.concurrent.ThreadFactories.newThreadFactory;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.RECORD;
+import static org.nuxeo.ecm.core.model.Session.PROP_RETENTION_COMPLIANCE_MODE_ENABLED;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +37,7 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -197,6 +199,20 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
      * @since 2021.11
      */
     public static final long MINIMUM_UPLOAD_PART_SIZE_DEFAULT = 5L * 1024 * 1024; // AWS SDK default = 5 MB
+
+    /**
+     * The Framework property to define the transfer manager thread pool size.
+     *
+     * @since 2021.14
+     */
+    public static final String TRANSFER_MANAGER_THREAD_POOL_SIZE_PROPERTY = "nuxeo.s3storage.transfer.manager.thread.pool.size";
+
+    /**
+     * The default value for the transfer manager thread pool size.
+     *
+     * @since 2021.14
+     */
+    public static final int TRANSFER_MANAGER_THREAD_POOL_SIZE_DEFAULT = 10;
 
     /**
      * Framework property to disable usage of the proxy environment variables ({@code nuxeo.http.proxy.*}) for the
@@ -538,6 +554,10 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
                                              MULTIPART_COPY_THRESHOLD_PROPERTY, MULTIPART_COPY_THRESHOLD_DEFAULT)))
                                      .withMultipartCopyPartSize(Long.valueOf(getMultipartCopyPartSize()))
                                      .withAlwaysCalculateMultipartMd5(alwaysCalculateMultipartMd5)
+                                     .withExecutorFactory(() -> Executors.newFixedThreadPool(
+                                             (int) getLongProperty(TRANSFER_MANAGER_THREAD_POOL_SIZE_PROPERTY,
+                                                     TRANSFER_MANAGER_THREAD_POOL_SIZE_DEFAULT),
+                                             newThreadFactory("s3-transfer-manager-worker")))
                                      .build();
     }
 
