@@ -333,7 +333,9 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             HashMap<String, AttributeValue> map = new HashMap<>();
             map.put("comp.name", AttributeValue.stringAttributeValue(computation.metadata().name()));
             map.put("comp.thread", AttributeValue.stringAttributeValue(Thread.currentThread().getName()));
-            map.put("record.last_offset", AttributeValue.stringAttributeValue(context.getLastOffset().toString()));
+            if (context.getLastOffset() != null) {
+                map.put("record.last_offset", AttributeValue.stringAttributeValue(context.getLastOffset().toString()));
+            }
             span.putAttributes(map);
             lastSpanContext = null;
         } else {
