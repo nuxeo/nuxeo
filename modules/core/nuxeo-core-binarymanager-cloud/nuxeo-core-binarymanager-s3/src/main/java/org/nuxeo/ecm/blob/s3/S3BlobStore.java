@@ -921,6 +921,18 @@ public class S3BlobStore extends AbstractBlobStore {
             logTrace("<--", status.numBinaries + " objects");
         }
 
+        /**
+         * @since 2021.13
+         */
+        @Override
+        public void mark(String key) {
+            int seppos = key.indexOf(VER_SEP);
+            if (seppos > 0) {
+                key = key.substring(0, seppos);
+            }
+            toDelete.remove(key);
+        }
+
         @Override
         public void removeUnmarkedBlobsAndUpdateStatus(boolean delete) {
             for (String key : toDelete) {
