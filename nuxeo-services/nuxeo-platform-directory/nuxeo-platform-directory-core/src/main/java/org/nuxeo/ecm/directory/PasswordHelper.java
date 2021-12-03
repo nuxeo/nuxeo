@@ -33,13 +33,22 @@ public class PasswordHelper {
 
     public static final String SSHA = "SSHA";
 
+    /**
+     * @since 10.10-HF56
+     */
+    public static final String SSHA512 = "SSHA512";
+
     public static final String SMD5 = "SMD5";
 
     private static final String HSSHA = "{SSHA}";
 
+    private static final String HSSHA512 = "{SSHA512}";
+
     private static final String HSMD5 = "{SMD5}";
 
     private static final String SHA1 = "SHA-1";
+
+    private static final String SHA512 = "SHA-512";
 
     private static final String MD5 = "MD5";
 
@@ -76,6 +85,9 @@ public class PasswordHelper {
         if (SSHA.equals(algorithm)) {
             digestalg = SHA1;
             prefix = HSSHA;
+        } else if (SSHA512.equals(algorithm)) {
+            digestalg = SHA512;
+            prefix = HSSHA512;
         } else if (SMD5.equals(algorithm)) {
             digestalg = MD5;
             prefix = HSMD5;
@@ -108,17 +120,24 @@ public class PasswordHelper {
             return false;
         }
         String digestalg;
+        String prefix;
         int len;
         if (hashedPassword.startsWith(HSSHA)) {
+            prefix = HSSHA;
             digestalg = SHA1;
             len = 20;
+        } else if (hashedPassword.startsWith(HSSHA512)) {
+            prefix = HSSHA512;
+            digestalg = SHA512;
+            len = 64;
         } else if (hashedPassword.startsWith(HSMD5)) {
+            prefix = HSMD5;
             digestalg = MD5;
             len = 16;
         } else {
             return hashedPassword.equals(password);
         }
-        String digest = hashedPassword.substring(6);
+        String digest = hashedPassword.substring(prefix.length());
 
         byte[] bytes = Base64.decodeBase64(digest);
         if (bytes == null) {
