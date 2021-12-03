@@ -103,6 +103,9 @@ public class AWSConfigurationServiceImpl extends DefaultComponent implements AWS
     }
 
     protected SSLContext getSSLContext(AWSConfigurationDescriptor descriptor) {
+        if (descriptor == null) {
+            return null;
+        }
         try {
             KeyStore trustStore = loadKeyStore(descriptor.trustStorePath, descriptor.trustStorePassword,
                     descriptor.trustStoreType);
