@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.core.io.archive.exporter">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that allows to not set the files count on the extra field of the zip file produced by NuxeoArchiveWriter.
+      This may be interesting if the archive would be opened by external software that doesn't support the produced
+      zip, such as Archive Utility on MacOS.
+      Performance could be impacted when reading an archive without this extra information.
+    </documentation>
+    <property name="nuxeo.core.io.archive.extra.files.count">true</property>
+  </extension>
+
+</component>
