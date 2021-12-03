@@ -34,3 +34,23 @@ bower_components
 node_modules
 .java-version
 
+# Nuxeo Addons
+addons/nuxeo-activity/
+addons/nuxeo-agenda/
+addons/nuxeo-api-playground/
+addons/nuxeo-business-days-management/
+addons/nuxeo-core-binarymanager-sql/
+addons/nuxeo-http-client/
+addons/nuxeo-javaagent/
+addons/nuxeo-logs-viewer/
+addons/nuxeo-media-publishing/
+addons/nuxeo-rating/
+addons/nuxeo-resources-compat/
+addons/nuxeo-review-workflows-dashboards/
+addons/nuxeo-sample-project/
+addons/nuxeo-session-inspector/
+addons/nuxeo-shell/
+addons/nuxeo-showcase-content-sample/
+addons/nuxeo-web-ui-itests/
+addons/nuxeo-web-ui/
+
