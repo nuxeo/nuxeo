@@ -30,9 +30,11 @@ public class TestPasswordHelper {
     public void testVerify() {
         assertTrue(PasswordHelper.verifyPassword("abcd", "abcd"));
         assertTrue(PasswordHelper.verifyPassword("abcd", "{SSHA}WPvqVeSt0Mr2llICYmAX9+pjtPH271eznDHvrw=="));
+        assertTrue(PasswordHelper.verifyPassword("abcd", "{SSHA512}fvQGuMZxhd1t6zFgNOv4vbp/SzW4mM/7NcOtEaM1xH+nj9OT7I/sTzOQfXTDY6JudwBLYAN9h7eCOEdMwRoHo1w3tNu0bIHV"));
         assertTrue(PasswordHelper.verifyPassword("abcd", "{SMD5}/wZ7JQUARlCBq4JFHI57AfbvV7OcMe+v"));
         assertFalse(PasswordHelper.verifyPassword("1234", "abcd"));
         assertFalse(PasswordHelper.verifyPassword("1234", "{SSHA}WPvqVeSt0Mr2llICYmAX9+pjtPH271eznDHvrw=="));
+        assertFalse(PasswordHelper.verifyPassword("1234", "{SSHA512}fvQGuMZxhd1t6zFgNOv4vbp/SzW4mM/7NcOtEaM1xH+nj9OT7I/sTzOQfXTDY6JudwBLYAN9h7eCOEdMwRoHo1w3tNu0bIHV"));
         assertFalse(PasswordHelper.verifyPassword("1234", "{SMD5}/wZ7JQUARlCBq4JFHI57AfbvV7OcMe+v"));
         assertFalse(PasswordHelper.verifyPassword(" abcd", "abcd"));
         assertFalse(PasswordHelper.verifyPassword("abcd", "{SSHA}WPvqVeS"));
@@ -51,6 +53,9 @@ public class TestPasswordHelper {
         assertTrue(PasswordHelper.verifyPassword(password, hashed));
         hashed = PasswordHelper.hashPassword(password, PasswordHelper.SSHA);
         assertTrue(hashed.startsWith("{SSHA}"));
+        assertTrue(PasswordHelper.verifyPassword(password, hashed));
+        hashed = PasswordHelper.hashPassword(password, PasswordHelper.SSHA512);
+        assertTrue(hashed.startsWith("{SSHA512}"));
         assertTrue(PasswordHelper.verifyPassword(password, hashed));
         hashed = PasswordHelper.hashPassword(password, PasswordHelper.SMD5);
         assertTrue(hashed.startsWith("{SMD5}"));
