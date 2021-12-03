@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.core.io.archive.exporter.disable.test">
+  <require>org.nuxeo.core.io.archive.exporter</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.core.io.archive.extra.files.count">false</property>
+  </extension>
+
+</component>

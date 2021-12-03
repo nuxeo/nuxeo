@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -69,7 +70,16 @@ public class TestExportedDocument {
 
     @Test
     public void testExportedDocument() throws Exception {
+        doTestExportedDocument();
+    }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-archive-exporter-extra-disable.xml")
+    public void testExportedDocumentWithoutExtraField() throws Exception {
+        doTestExportedDocument();
+    }
+
+    public void doTestExportedDocument() throws Exception {
         DocumentModel model = session.createDocumentModel("/", "myfile", "File");
         model.setPropertyValue("dc:title", "hello world");
         model.setPropertyValue("dc:description", "foo\nbar");

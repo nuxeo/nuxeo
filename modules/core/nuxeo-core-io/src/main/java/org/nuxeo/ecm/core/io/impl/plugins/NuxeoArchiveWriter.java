@@ -45,11 +45,16 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentWriter;
 import org.nuxeo.ecm.core.io.impl.DWord;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class NuxeoArchiveWriter extends AbstractDocumentWriter {
+
+    /** @since 2021.13 */
+    protected static final String ENABLE_EXTRA_FILES_COUNT_KEY = "nuxeo.core.io.archive.extra.files.count";
 
     protected ZipOutputStream out;
 
@@ -121,7 +126,9 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
             path += '/';
             ZipEntry entry = new ZipEntry(path);
             // store the number of child as an extra info on the entry
-            entry.setExtra(new DWord(doc.getFilesCount()).getBytes());
+            if (Framework.getService(ConfigurationService.class).isBooleanTrue(ENABLE_EXTRA_FILES_COUNT_KEY)) {
+                entry.setExtra(new DWord(doc.getFilesCount()).getBytes());
+            }
             out.putNextEntry(entry);
             out.closeEntry();
             // System.out.println(">> add entry: "+entry.getName());
