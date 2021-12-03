@@ -32,4 +32,5 @@ Nuxeo-Component: OSGI-INF/document-xml-exporter-service.xml,
  OSGI-INF/avro-factory-contrib.xml,
  OSGI-INF/download-service.xml,
  OSGI-INF/MarshallerRegistry.xml,
- OSGI-INF/marshallers-contrib.xml
+ OSGI-INF/marshallers-contrib.xml,
+ OSGI-INF/archive-exporter-contrib.xml

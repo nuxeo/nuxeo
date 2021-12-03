@@ -65,6 +65,14 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
 
     private boolean inMustBeClosed;
 
+    /**
+     * This field represents an entry backup to read on the next {@link #readOrderedStream()} call. It is filled in the
+     * case Nuxeo reads an archive produced while {@link NuxeoArchiveWriter#ENABLE_EXTRA_FILES_COUNT_KEY} was disabled.
+     *
+     * @since 2021.13
+     */
+    private ZipEntry extraEntry;
+
     private ZipFile zipFile;
 
     private List<String> zipIndex;
@@ -186,21 +194,21 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
         for (String childEntryName : childEntries) {
             int i = zipIndex.indexOf(childEntryName);
             idxname = zipIndex.remove(i);
-            entry = zipFile.getEntry(idxname);
-            name = entry.getName();
-            if (name.endsWith(ExportConstants.DOCUMENT_FILE)) {
-                xdoc.setDocument(loadXML(entry));
-            } else if (name.endsWith(".xml")) { // external doc file
-                xdoc.putDocument(FilenameUtils.getBaseName(entry.getName()), loadXML(entry));
-            } else { // should be a blob
-                xdoc.putBlob(FilenameUtils.getName(entry.getName()), createBlob(entry));
-            }
+            fillExportedDocument(xdoc, zipFile.getEntry(idxname));
         }
         return xdoc;
     }
 
     protected ExportedDocument readOrderedStream() throws IOException {
-        ZipEntry entry = in.getNextEntry();
+        // first read the backup in case extra field is disabled - NXP-30713
+        ZipEntry entry = extraEntry;
+        if (entry == null) {
+            // normal case
+            entry = in.getNextEntry();
+        } else {
+            // nullify the extra for next calls
+            extraEntry = null;
+        }
         if (entry == null) {
             return null;
         }
@@ -218,25 +226,41 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
                 throw new IOException("Invalid Nuxeo archive");
             }
         }
-        int count = getFilesCount(entry);
-        if (count == 0) {
+        Integer count = getFilesCount(entry);
+        if (count != null && count == 0) {
             return read(); // empty dir -> try next directory
         }
         String name = entry.getName();
         ExportedDocument xdoc = new ExportedDocumentImpl();
         xdoc.setPath(new Path(name).removeTrailingSeparator());
-        for (int i = 0; i < count; i++) {
+        if (count == null) {
+            // the count is not available, potentially because extra files count is disabled - NXP-30713
             entry = in.getNextEntry();
-            name = entry.getName();
-            if (name.endsWith(ExportConstants.DOCUMENT_FILE)) {
-                xdoc.setDocument(loadXML(entry));
-            } else if (name.endsWith(".xml")) { // external doc file
-                xdoc.putDocument(FilenameUtils.getBaseName(entry.getName()), loadXML(entry));
-            } else { // should be a blob
-                xdoc.putBlob(FilenameUtils.getName(entry.getName()), createBlob(entry));
+            while (entry != null && !entry.isDirectory() && entry.getName().startsWith(name)) {
+                fillExportedDocument(xdoc, entry);
+                // read next entry
+                entry = in.getNextEntry();
+            }
+            // we could have read one extra entry, backup it for the next #read call
+            extraEntry = entry;
+        } else {
+            // the count is available, read as many entries the information states it
+            for (int i = 0; i < count; i++) {
+                fillExportedDocument(xdoc, in.getNextEntry());
             }
         }
         return xdoc;
+    }
+
+    protected void fillExportedDocument(ExportedDocument xdoc, ZipEntry entry) throws IOException {
+        String name = entry.getName();
+        if (name.endsWith(ExportConstants.DOCUMENT_FILE)) {
+            xdoc.setDocument(loadXML(entry));
+        } else if (name.endsWith(".xml")) { // external doc file
+            xdoc.putDocument(FilenameUtils.getBaseName(entry.getName()), loadXML(entry));
+        } else { // should be a blob
+            xdoc.putBlob(FilenameUtils.getName(entry.getName()), createBlob(entry));
+        }
     }
 
     @Override
@@ -250,10 +274,10 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
         }
     }
 
-    private static int getFilesCount(ZipEntry entry) throws IOException {
+    private static Integer getFilesCount(ZipEntry entry) throws IOException {
         byte[] bytes = entry.getExtra();
         if (bytes == null) {
-            return 0;
+            return null;
         } else if (bytes.length != 4) {
             throw new IOException("Invalid Nuxeo Archive");
         } else {

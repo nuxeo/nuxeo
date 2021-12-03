@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.core.import.tests.facet" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="invoiceNew" prefix="iv" src="schema/invoiceNew.xsd" />
+    <schema name="new" prefix="nw" src="schema/new.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <facet name="Invoice">
+      <schema name="invoiceNew" />
+      <schema name="new" />
+    </facet>
+  </extension>
+
+</component>
