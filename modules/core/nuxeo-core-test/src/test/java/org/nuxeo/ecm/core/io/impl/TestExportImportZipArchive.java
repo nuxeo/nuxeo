@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,18 +64,18 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/import-docTypes.xml")
 public class TestExportImportZipArchive {
 
+    protected static final String XML_DATA = "\n    <nxdt:templateParams xmlns:nxdt=\"http://www.nuxeo.org/DocumentTemplate\">\n<nxdt:field name=\"htmlContent\" type=\"content\" source=\"htmlPreview\"></nxdt:field>\n   </nxdt:templateParams>\n    ";
+
     @Inject
     protected CoreSession session;
 
-    DocumentModel rootDocument;
+    protected DocumentModel rootDocument;
 
-    DocumentModel workspace;
+    protected DocumentModel workspace;
 
-    DocumentModel docToExport;
+    protected DocumentModel docToExport;
 
-    protected static final String XML_DATA = "\n    <nxdt:templateParams xmlns:nxdt=\"http://www.nuxeo.org/DocumentTemplate\">\n<nxdt:field name=\"htmlContent\" type=\"content\" source=\"htmlPreview\"></nxdt:field>\n   </nxdt:templateParams>\n    ";
-
-    private void createDocs() throws Exception {
+    private void createDocs() {
         rootDocument = session.getRootDocument();
         workspace = session.createDocumentModel(rootDocument.getPathAsString(), "ws1", "Workspace");
         workspace.setProperty("dublincore", "title", "test WS");
@@ -142,7 +142,7 @@ public class TestExportImportZipArchive {
         session.save();
         assertEquals(0, session.getChildren(session.getRootDocument().getRef()).size());
 
-        //NXP-14218: do not fail if a facet becomes unknown
+        // NXP-14218: do not fail if a facet becomes unknown
         SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
         FacetDescriptor fd = schemaManager.getFacetDescriptor("Invoice");
         schemaManager.unregisterFacet(fd);
