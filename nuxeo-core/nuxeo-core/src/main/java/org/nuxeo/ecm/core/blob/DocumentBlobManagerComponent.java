@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.blob;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -69,6 +70,13 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     protected static final String MAIN_BLOB_XPATH = "content";
 
     protected Deque<BlobDispatcherDescriptor> blobDispatcherDescriptorsRegistry = new LinkedList<>();
+
+    protected volatile List<BinaryGarbageCollector> garbageCollectors;
+
+    /**
+     * true when several blob providers share a same storage.
+     */
+    protected volatile boolean sharedStorage;
 
     @Override
     public void deactivate(ComponentContext context) {
@@ -361,22 +369,48 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     // find which GCs to use
     // only GC the binary managers to which we dispatch blobs
     protected List<BinaryGarbageCollector> getGarbageCollectors() {
-        List<BinaryGarbageCollector> gcs = new LinkedList<>();
-        for (String providerId : getBlobDispatcher().getBlobProviderIds()) {
-            BlobProvider blobProvider = getBlobProvider(providerId);
-            BinaryGarbageCollector gc = blobProvider.getBinaryGarbageCollector();
-            if (gc != null) {
-                gcs.add(gc);
+        if (garbageCollectors == null) {
+            synchronized (this) {
+                if (garbageCollectors == null) {
+                    List<BinaryGarbageCollector> gcs = new ArrayList<>();
+                    for (String providerId : getBlobDispatcher().getBlobProviderIds()) {
+                        BlobProvider blobProvider = getBlobProvider(providerId);
+                        BinaryGarbageCollector gc = blobProvider.getBinaryGarbageCollector();
+                        if (gc != null) {
+                            gcs.add(gc);
+                        }
+                    }
+                    long idCount = gcs.stream().map(BinaryGarbageCollector::getId).distinct().count();
+                    sharedStorage = idCount < gcs.size();
+                    garbageCollectors = gcs;
+                }
             }
         }
-        return gcs;
+        return garbageCollectors;
+    }
+
+    /**
+     * Get the list of garbage collectors.
+     *
+     * @param refresh if true the list is recomputed, use latest computation otherwise
+     * @return a list of garbage collectors
+     * @since 10.10-HF56
+     */
+    protected List<BinaryGarbageCollector> getGarbageCollectors(boolean refresh) {
+        if (refresh) {
+            synchronized (this) {
+                garbageCollectors = null;
+            }
+        }
+        return getGarbageCollectors();
     }
 
     @Override
     public BinaryManagerStatus garbageCollectBinaries(boolean delete) {
         // do the GC in a long-running transaction to avoid timeouts
         return runInTransaction(() -> {
-            List<BinaryGarbageCollector> gcs = getGarbageCollectors();
+            // Get a fresh list of collectors to initiate garbage collection
+            List<BinaryGarbageCollector> gcs = getGarbageCollectors(true);
             // start gc
             long start = System.currentTimeMillis();
             for (BinaryGarbageCollector gc : gcs) {
@@ -434,19 +468,27 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
 
     @Override
     public void markReferencedBinary(String key, String repositoryName) {
-        BlobProvider blobProvider = getBlobProvider(key, repositoryName);
-        BinaryGarbageCollector gc = blobProvider.getBinaryGarbageCollector();
-        if (gc != null) {
-            key = stripBlobKeyPrefix(key);
-            gc.mark(key);
+        final String skey = stripBlobKeyPrefix(key);
+        if (sharedStorage) {
+            // do not compute the list of GCs each time
+            // markReferencedBinary can be called million times on a large repository
+            List<BinaryGarbageCollector> gcs = getGarbageCollectors();
+            gcs.forEach(gc -> gc.mark(skey));
         } else {
-            log.error("Unknown binary manager for key: " + key);
+            BlobProvider blobProvider = getBlobProvider(key, repositoryName);
+            BinaryGarbageCollector gc = blobProvider.getBinaryGarbageCollector();
+            if (gc != null) {
+                gc.mark(skey);
+            } else {
+                log.error("Unknown binary manager for key: " + skey);
+            }
         }
     }
 
     @Override
     public boolean isBinariesGarbageCollectionInProgress() {
-        for (BinaryGarbageCollector gc : getGarbageCollectors()) {
+        // let's fetch a freshly computed list of GCs
+        for (BinaryGarbageCollector gc : getGarbageCollectors(true)) {
             if (gc.isInProgress()) {
                 return true;
             }
