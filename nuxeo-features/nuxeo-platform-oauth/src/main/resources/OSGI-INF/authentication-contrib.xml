@@ -19,4 +19,13 @@
 
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property to set the oauth2 token expiration duration. Default is 60 minutes.
+
+      @since 10.10-HF57
+    </documentation>
+    <property name="nuxeo.oauth2.token.expiration.duration">60m</property>
+  </extension>
+
 </component>
