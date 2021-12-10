@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_KEYS;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 
 import java.time.Duration;
@@ -39,6 +38,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.mongodb.MongoClientException;
 import com.mongodb.client.ClientSession;
@@ -118,6 +118,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
      * The value is {@code true} on new or migrated repositories.
      */
     protected static final String SETTING_DENORMALIZED_BLOB_KEYS = "denormalizedBlobKeys";
+
+    /** @since 2021.14 */
+    protected static final String GC_NO_CURSOR_TIMEOUT = "nuxeo.mongodb.gc.noCursorTimeout";
 
     /** The key to use to store the id in the database. */
     protected String idKey;
@@ -329,8 +332,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
             projection = binaryKeys;
             markReferencedBlobs = doc -> markReferencedBlobs(doc, markerCallback);
         }
+        boolean noCursorTimeout = Framework.getService(ConfigurationService.class).isBooleanTrue(GC_NO_CURSOR_TIMEOUT);
         log.trace("MongoDB: QUERY {} KEYS {}", filter, projection);
-        coll.find(filter).projection(projection).forEach(markReferencedBlobs);
+        coll.find(filter).noCursorTimeout(noCursorTimeout).projection(projection).forEach(markReferencedBlobs);
     }
 
     protected void markReferencedBlobsDenormalized(Document ob, BiConsumer<String, String> markReferencedBlob) {
