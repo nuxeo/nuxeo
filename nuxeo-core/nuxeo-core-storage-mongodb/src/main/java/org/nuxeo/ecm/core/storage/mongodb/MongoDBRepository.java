@@ -93,6 +93,7 @@ import org.nuxeo.ecm.core.storage.mongodb.MongoDBConverter.ConditionsAndUpdates;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.mongodb.DuplicateKeyException;
@@ -204,6 +205,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
      * The value is {@code true} on new or migrated repositories.
      */
     protected static final String SETTING_DENORMALIZED_BLOB_KEYS = "denormalizedBlobKeys";
+
+    /** @since 2021.14 */
+    protected static final String GC_NO_CURSOR_TIMEOUT = "nuxeo.mongodb.gc.noCursorTimeout";
 
     /** The key to use to store the id in the database. */
     protected String idKey;
@@ -1048,10 +1052,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
             projection = binaryKeys;
             markReferencedBinaries = doc -> markReferencedBinaries(doc, blobManager);
         }
+        boolean noCursorTimeout = Framework.getService(ConfigurationService.class).isBooleanTrue(GC_NO_CURSOR_TIMEOUT);
         if (log.isTraceEnabled()) {
             logQuery(filter, projection);
         }
-        coll.find(filter).projection(projection).forEach(markReferencedBinaries);
+        coll.find(filter).noCursorTimeout(noCursorTimeout).projection(projection).forEach(markReferencedBinaries);
     }
 
     protected void markReferencedBinariesDenormalized(Document ob, DocumentBlobManager blobManager) {

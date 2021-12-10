@@ -15,4 +15,13 @@
     <property name="nuxeo.mongodb.like.anchored">true</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property to disable the cursor timeout on the GC markReferencedBlobs query.
+
+      @since 2021.14
+    </documentation>
+    <property name="nuxeo.mongodb.gc.noCursorTimeout">false</property>
+  </extension>
+
 </component>
