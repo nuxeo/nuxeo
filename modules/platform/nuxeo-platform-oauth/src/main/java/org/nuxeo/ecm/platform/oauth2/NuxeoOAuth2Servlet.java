@@ -40,6 +40,7 @@ import static org.nuxeo.ecm.platform.oauth2.Constants.STATE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.TOKEN_SERVICE;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +62,7 @@ import org.nuxeo.ecm.platform.oauth2.request.TokenRequest;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -93,6 +95,11 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     public static final String ERROR_JSP_PAGE_PATH = "/oauth2error.jsp";
 
     public static final int ACCESS_TOKEN_EXPIRATION_TIME = 3600 * 1000;
+
+    /**
+     * @since 2021.14
+     */
+    public static final String ACCESS_TOKEN_EXPIRATION_DURATION_PROPERTY = "nuxeo.oauth2.token.expiration.duration";
 
     protected final OAuth2TokenStore tokenStore = new OAuth2TokenStore(TOKEN_SERVICE);
 
@@ -376,7 +383,11 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     protected void getAndSendToken(HttpServletResponse response, String clientId, String username) throws IOException {
         NuxeoOAuth2Token token = tokenStore.getToken(clientId, username);
         if (token == null) {
-            final NuxeoOAuth2Token newToken = new NuxeoOAuth2Token(ACCESS_TOKEN_EXPIRATION_TIME, clientId);
+            long expirationTime = Framework.getService(ConfigurationService.class)
+                                                   .getDuration(ACCESS_TOKEN_EXPIRATION_DURATION_PROPERTY)
+                                                   .map(Duration::toMillis)
+                                                   .orElse((long) ACCESS_TOKEN_EXPIRATION_TIME);
+            final NuxeoOAuth2Token newToken = new NuxeoOAuth2Token(expirationTime, clientId);
             TransactionHelper.runInTransaction(() -> tokenStore.store(username, newToken));
             token = newToken;
         } else if (token.isExpired()) {
