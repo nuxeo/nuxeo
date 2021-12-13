@@ -71,6 +71,7 @@ pipeline {
   }
 
   environment {
+    NUXEO_BUILD_VERSION = "${params.NUXEO_BUILD_VERSION}"
     CURRENT_VERSION = getCurrentVersion()
     RELEASE_VERSION = getReleaseVersion("${CURRENT_VERSION}")
     LATEST_VERSION = getLatestVersion("${RELEASE_VERSION}")
@@ -89,7 +90,7 @@ pipeline {
       steps {
         script {
           if (env.DRY_RUN != 'true') {
-            slackSend(channel: "${SLACK_CHANNEL}", color: '#0167FF', message: "Starting to release nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
+            slackSend(channel: "${SLACK_CHANNEL}", color: '#0167FF', message: "Starting to release nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}: ${BUILD_URL}")
           }
         }
       }
@@ -98,14 +99,14 @@ pipeline {
     stage('Check parameters') {
       steps {
         script {
-          if (params.BUILD_VERSION == '') {
+          if (NUXEO_BUILD_VERSION == '') {
             currentBuild.result = 'ABORTED';
             currentBuild.description = 'Missing required parameter BUILD_VERSION, aborting build.'
             error(currentBuild.description)
           }
           echo """
           ----------------------------------------
-          Build version:   ${params.BUILD_VERSION}
+          Build version:   ${NUXEO_BUILD_VERSION}
           Current version: ${CURRENT_VERSION}
           Release version: ${RELEASE_VERSION}
           ----------------------------------------
@@ -136,11 +137,11 @@ pipeline {
           script {
             echo """
             -------------------------------------------------
-            Release nuxeo-parent POM ${RELEASE_VERSION} from build ${params.BUILD_VERSION}
+            Release nuxeo-parent POM ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}
             -------------------------------------------------
             """
             sh """
-              git checkout v${params.BUILD_VERSION}
+              git checkout v${NUXEO_BUILD_VERSION}
 
               mvn ${MAVEN_ARGS} -f parent/pom.xml versions:set -DnewVersion=${RELEASE_VERSION} -DgenerateBackupPoms=false
               mvn ${MAVEN_ARGS} -f parent/pom.xml validate
@@ -220,9 +221,9 @@ pipeline {
           Tag Docker images with version ${RELEASE_VERSION} and ${LATEST_VERSION}
           -----------------------------------------------
           """
-          promoteDockerImage("${PRIVATE_DOCKER_REGISTRY}", "${BASE_IMAGE_NAME}", "${params.BUILD_VERSION}",
+          promoteDockerImage("${PRIVATE_DOCKER_REGISTRY}", "${BASE_IMAGE_NAME}", "${NUXEO_BUILD_VERSION}",
                   "${RELEASE_VERSION}", "${LATEST_VERSION}")
-          promoteDockerImage("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}", "${params.BUILD_VERSION}",
+          promoteDockerImage("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}", "${NUXEO_BUILD_VERSION}",
             "${RELEASE_VERSION}", "${LATEST_VERSION}")
         }
       }
@@ -269,20 +270,45 @@ pipeline {
       }
     }
 
+    stage('Trigger JSF UI release') {
+      when {
+        not {
+          environment name: 'DRY_RUN', value: 'true'
+        }
+      }
+      steps {
+        script {
+          def parameters = [
+            string(name: 'NUXEO_BUILD_VERSION', value: "${NUXEO_BUILD_VERSION}"),
+          ]
+          echo """
+          -----------------------------------------------------
+          Trigger JSF UI release with parameters: ${parameters}
+          -----------------------------------------------------
+          """
+          build(
+            job: "nuxeo/lts/release-nuxeo-jsf-ui-2021",
+            parameters: parameters,
+            wait: false
+          )
+        }
+      }
+    }
+
   }
   post {
     success {
       script {
         if (env.DRY_RUN != 'true') {
-          currentBuild.description = "Release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}"
-          slackSend(channel: "${SLACK_CHANNEL}", color: 'good', message: "Successfully released nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
+          currentBuild.description = "Release ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}"
+          slackSend(channel: "${SLACK_CHANNEL}", color: 'good', message: "Successfully released nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}: ${BUILD_URL}")
         }
       }
     }
     unsuccessful {
       script {
         if (env.DRY_RUN != 'true') {
-          slackSend(channel: "${SLACK_CHANNEL}", color: 'danger', message: "Failed to release nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${params.BUILD_VERSION}: ${BUILD_URL}")
+          slackSend(channel: "${SLACK_CHANNEL}", color: 'danger', message: "Failed to release nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}: ${BUILD_URL}")
         }
       }
     }

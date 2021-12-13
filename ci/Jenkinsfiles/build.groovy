@@ -931,16 +931,16 @@ pipeline {
         }
       }
       steps {
-        echo """
-        ----------------------------------------
-        Trigger hotfix package build
-        ----------------------------------------
-        """
         script {
           def parameters = [
             string(name: 'NUXEO_BRANCH', value: "${BRANCH_NAME}"),
-            string(name: 'NUXEO_CURRENT_VERSION', value: "${VERSION}"),
+            string(name: 'NUXEO_BUILD_VERSION', value: "${VERSION}"),
           ]
+          echo """
+          -----------------------------------------------------------
+          Trigger hotfix package build with parameters: ${parameters}
+          -----------------------------------------------------------
+          """
           build(
             job: "nuxeo/lts/nuxeo-hf-2021",
             parameters: parameters,
