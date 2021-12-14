@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,12 @@
  *     Anahide Tchertchian
  *
  */
-
 package org.nuxeo.common.utils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilterWriter;
@@ -45,8 +43,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
 
@@ -88,7 +86,7 @@ import freemarker.template.TemplateException;
  */
 public class TextTemplate {
 
-    private static final Log log = LogFactory.getLog(TextTemplate.class);
+    private static final Logger log = LogManager.getLogger(TextTemplate.class);
 
     private static final int MAX_RECURSION_LEVEL = 10;
 
@@ -108,8 +106,6 @@ public class TextTemplate {
             + "))?\\}");
 
     private final CryptoProperties vars;
-
-    private Properties processedVars;
 
     private boolean trim = false;
 
@@ -190,7 +186,7 @@ public class TextTemplate {
      */
     protected String processString(CryptoProperties props, String text) {
         Matcher m = PATTERN.matcher(text);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         while (m.find()) {
             String embeddedVar = m.group(PATTERN_GROUP_VAR);
             String value = props.getProperty(embeddedVar, keepEncryptedAsVar);
@@ -231,10 +227,6 @@ public class TextTemplate {
         return value.replaceAll("\\$\\$\\{", "\\${");
     }
 
-    private void preprocessVars() {
-        processedVars = preprocessVars(vars);
-    }
-
     public Properties preprocessVars(Properties unprocessedVars) {
         CryptoProperties newVars = new CryptoProperties(unprocessedVars);
         boolean doneProcessing = false;
@@ -263,7 +255,7 @@ public class TextTemplate {
             recursionLevel++;
             // Avoid infinite replacement loops
             if (!doneProcessing && recursionLevel > MAX_RECURSION_LEVEL) {
-                log.warn("Detected potential infinite loop when processing the following properties\n" + newVars);
+                log.warn("Detected potential infinite loop when processing the following properties:\n{}", newVars);
                 break;
             }
         }
@@ -289,7 +281,7 @@ public class TextTemplate {
             recursionLevel++;
             // Avoid infinite replacement loops
             if (!doneProcessing && recursionLevel > MAX_RECURSION_LEVEL) {
-                log.warn("Detected potential infinite loop when processing the following text\n" + text);
+                log.warn("Detected potential infinite loop when processing the following text:\n{}", text);
                 break;
             }
         }
@@ -319,10 +311,10 @@ public class TextTemplate {
     @SuppressWarnings("unchecked")
     public void initFreeMarker() {
         freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_30);
-        preprocessVars();
         freemarkerVars = new HashMap<>();
         Map<String, Object> currentMap;
         String currentString;
+        var processedVars = preprocessVars(vars);
         KEYS: for (String key : processedVars.stringPropertyNames()) {
             String value = processedVars.getProperty(key);
             if (value.startsWith("${") && value.endsWith("}")) {
@@ -344,8 +336,7 @@ public class TextTemplate {
                     // silently ignore known conflicts between Java properties and FreeMarker model
                     if (!key.startsWith("java.vendor") && !key.startsWith("file.encoding")
                             && !key.startsWith("audit.elasticsearch")) {
-                        log.warn(String.format("FreeMarker variables: ignored '%s' conflicting with '%s'", key,
-                                currentString));
+                        log.warn("FreeMarker variables: ignored '{}' conflicting with '{}'", key, currentString);
                     }
                     continue KEYS;
                 }
@@ -382,7 +373,8 @@ public class TextTemplate {
             super(out);
         }
 
-        public @Override void write(int b) throws IOException {
+        @Override
+        public void write(int b) throws IOException {
             if (b == DOLLAR_SIGN && last == DOLLAR_SIGN) {
                 return;
             }
@@ -413,8 +405,7 @@ public class TextTemplate {
      * @see TextTemplate#processText(InputStream, OutputStreamWriter)
      * @see TextTemplate#processFreemarker(File, File)
      */
-    public List<String> processDirectory(File in, File out) throws FileNotFoundException, IOException,
-            TemplateException {
+    public List<String> processDirectory(File in, File out) throws IOException, TemplateException {
         List<String> newFiles = new ArrayList<>();
         if (in.isFile()) {
             if (out.isDirectory()) {
@@ -451,7 +442,7 @@ public class TextTemplate {
             if (out.exists()) {
                 File backup = new File(out.getPath() + ".bak");
                 if (!backup.exists()) {
-                    log.debug("Backup " + out);
+                    log.debug("Backup: {}", out);
                     FileUtils.copyFile(out, backup);
                     newFiles.add(backup.getPath());
                 }
@@ -460,20 +451,20 @@ public class TextTemplate {
             }
             try {
                 if (processAsFreemarker) {
-                    log.debug("Process as FreeMarker " + in.getPath());
+                    log.debug("Process as FreeMarker: {}", in::getPath);
                     processFreemarker(in, out);
                 } else if (processAsText) {
-                    log.debug("Process as Text " + in.getPath());
+                    log.debug("Process as Text: {}", in::getPath);
                     try (InputStream is = new FileInputStream(in);
-                         OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(out), "UTF-8")) {
+                            OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(out), UTF_8)) {
                         processText(is, os);
                     }
                 } else {
-                    log.debug("Process as copy " + in.getPath());
+                    log.debug("Process as copy: {}", in::getPath);
                     FileUtils.copyFile(in, out);
                 }
             } catch (IOException | TemplateException e) {
-                log.error("Failure on " + in.getPath());
+                log.error("Failure on: {}", in::getPath);
                 throw e;
             }
         } else if (in.isDirectory()) {

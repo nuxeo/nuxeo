@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -72,8 +73,7 @@ public class TestTextTemplate {
 
     private TextTemplate getTextTemplateWithCryptoVariables() {
         CryptoProperties props = new CryptoProperties();
-        props.setProperty(Environment.CRYPT_KEY,
-                org.apache.commons.codec.binary.Base64.encodeBase64String("secret".getBytes()));
+        props.setProperty(Environment.CRYPT_KEY, Base64.encodeBase64String("secret".getBytes()));
         Map<String, String> testVariables = new HashMap<>();
         testVariables.put("var1", "{$$Ab5uGXsjB3DHqBfkn6LKuQ==}"); // "value1"
         testVariables.put("var2", "{$$36YqHApithKHOJ+UkfIDJQ==}"); // "value2"
@@ -140,8 +140,7 @@ public class TestTextTemplate {
         // TextTemplate with var "foo"
         tt = new TextTemplate(vars);
         assertEquals("bar", tt.processText("${foo:=baz}"));
-        assertEquals("<foo>${myUnresolvedExpression}</foo>",
-                tt.processText("<foo>${myUnresolvedExpression}</foo>"));
+        assertEquals("<foo>${myUnresolvedExpression}</foo>", tt.processText("<foo>${myUnresolvedExpression}</foo>"));
         vars.setProperty("myUnresolvedExpression", "");
         assertEquals("<foo></foo>", tt.processText("<foo>${myUnresolvedExpression}</foo>"));
     }
@@ -187,8 +186,7 @@ public class TestTextTemplate {
             textTemplate.processDirectory(failingFile, tmpdir);
             fail("File name is invalid the call should not success");
         } catch (IOException expected) {
-            String expectedMessage = "Extension only as a filename is not allowed: "
-                    + failingFile.getAbsolutePath();
+            String expectedMessage = "Extension only as a filename is not allowed: " + failingFile.getAbsolutePath();
             assertEquals(expectedMessage, expected.getMessage());
         }
 
