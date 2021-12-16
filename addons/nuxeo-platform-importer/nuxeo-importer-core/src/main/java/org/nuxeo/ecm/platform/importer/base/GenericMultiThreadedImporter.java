@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.platform.importer.base;
 
+import static org.nuxeo.common.concurrent.ThreadFactories.newThreadFactory;
+
 import org.javasimon.SimonManager;
 import org.javasimon.Stopwatch;
 import org.nuxeo.common.utils.ExceptionUtils;
@@ -257,33 +259,6 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         return rootImportTask;
     }
 
-    /**
-     * Creates non-daemon threads at normal priority.
-     */
-    public static class NamedThreadFactory implements ThreadFactory {
-
-        private final AtomicInteger threadNumber = new AtomicInteger();
-
-        private final ThreadGroup group;
-
-        private final String prefix;
-
-        public NamedThreadFactory(String prefix) {
-            SecurityManager sm = System.getSecurityManager();
-            group = sm == null ? Thread.currentThread().getThreadGroup() : sm.getThreadGroup();
-            this.prefix = prefix;
-        }
-
-        @Override
-        public Thread newThread(Runnable r) {
-            String name = prefix + threadNumber.incrementAndGet();
-            Thread thread = new Thread(group, r, name);
-            // do not set daemon
-            thread.setPriority(Thread.NORM_PRIORITY);
-            return thread;
-        }
-    }
-
     protected void doRun() throws IOException {
 
         targetContainer = getTargetContainer();
@@ -291,7 +266,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         nbCreatedDocsByThreads = new ConcurrentHashMap<String, Long>();
 
         importTP = new ThreadPoolExecutor(nbThreads, nbThreads, 500L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(queueSize), new NamedThreadFactory("Nuxeo-Importer-"));
+                new LinkedBlockingQueue<>(queueSize), newThreadFactory("Nuxeo-Importer"));
 
         initRootTask(importSource, targetContainer, skipRootContainerCreation, log, batchSize, jobName);
 

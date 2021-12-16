@@ -24,6 +24,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
+import static org.nuxeo.common.concurrent.ThreadFactories.newThreadFactory;
 
 import java.io.Console;
 import java.io.File;
@@ -103,7 +104,6 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.connect.ConnectBroker;
 import org.nuxeo.launcher.connect.ConnectRegistrationBroker;
 import org.nuxeo.launcher.connect.LauncherRestartException;
-import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 import org.nuxeo.launcher.info.CommandInfo;
 import org.nuxeo.launcher.info.CommandSetInfo;
@@ -613,8 +613,7 @@ public abstract class NuxeoLauncher {
 
     protected String pid;
 
-    private ExecutorService executor = Executors.newSingleThreadExecutor(
-            new DaemonThreadFactory("NuxeoProcessThread", false));
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(newThreadFactory("NuxeoProcessThread"));
 
     private ShutdownThread shutdownHook;
 

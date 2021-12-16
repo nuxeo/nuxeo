@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.management.statuses;
 
+import static org.nuxeo.common.concurrent.ThreadFactories.newThreadFactory;
 import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.ACTIVE;
 import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.PASSIVE;
 
@@ -26,7 +27,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -103,13 +103,8 @@ public class AdministrativeStatusManagerImpl implements AdministrativeStatusMana
 
         doNotifyAllStatuses();
 
-        scheduler = Executors.newScheduledThreadPool(1, new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, "Nuxeo-Administrative-Statuses-Notify-Scheduler");
-            }
-        });
-
+        scheduler = Executors.newScheduledThreadPool(1,
+                newThreadFactory("Nuxeo-Administrative-Statuses-Notify-Scheduler"));
         scheduler.scheduleAtFixedRate(new NotifyStatusesHandler(), 5, 5, TimeUnit.MINUTES);
     }
 

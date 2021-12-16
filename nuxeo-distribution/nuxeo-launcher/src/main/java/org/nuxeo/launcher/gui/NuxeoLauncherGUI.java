@@ -20,6 +20,8 @@
 
 package org.nuxeo.launcher.gui;
 
+import static org.nuxeo.common.concurrent.ThreadFactories.newThreadFactory;
+
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
@@ -51,7 +53,6 @@ import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.launcher.NuxeoLauncher;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.logs.LogsHandler;
 import org.nuxeo.launcher.gui.logs.LogsSource;
 import org.nuxeo.launcher.gui.logs.LogsSourceThread;
@@ -74,7 +75,7 @@ public class NuxeoLauncherGUI {
      * @since 5.6
      */
     protected ExecutorService newExecutor() {
-        return Executors.newCachedThreadPool(new DaemonThreadFactory("NuxeoLauncherGUITask"));
+        return Executors.newCachedThreadPool(newThreadFactory("NuxeoLauncherGUITask", true));
     }
 
     protected NuxeoLauncher launcher;
