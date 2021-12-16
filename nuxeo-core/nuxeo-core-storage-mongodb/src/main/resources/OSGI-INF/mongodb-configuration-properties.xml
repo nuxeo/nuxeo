@@ -19,7 +19,7 @@
     <documentation>
       Property to disable the cursor timeout on the GC markReferencedBlobs query.
 
-      @since 2021.14
+      @since 10.10-HF57
     </documentation>
     <property name="nuxeo.mongodb.gc.noCursorTimeout">false</property>
   </extension>
