@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.uidgen;
 
+import static org.nuxeo.common.concurrent.ThreadFactories.newThreadFactory;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -62,7 +64,7 @@ public class JPAUIDSequencerImpl extends AbstractUIDSequencer {
             tpe.shutdownNow();
         }
         tpe = new ThreadPoolExecutor(POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(QUEUE_SIZE));
+                new LinkedBlockingQueue<>(QUEUE_SIZE), newThreadFactory("jpa-uid-sequencer"));
     }
 
     /**

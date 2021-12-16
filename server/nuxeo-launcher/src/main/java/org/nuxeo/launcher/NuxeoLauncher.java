@@ -31,6 +31,7 @@ import static org.nuxeo.common.Environment.NUXEO_HOME;
 import static org.nuxeo.common.Environment.NUXEO_LOG_DIR;
 import static org.nuxeo.common.Environment.NUXEO_MP_DIR;
 import static org.nuxeo.common.Environment.NUXEO_TMP_DIR;
+import static org.nuxeo.common.concurrent.ThreadFactories.newThreadFactory;
 import static org.nuxeo.launcher.config.ConfigurationConstants.ENV_NUXEO_ENVIRONMENT;
 import static org.nuxeo.launcher.config.ConfigurationConstants.ENV_NUXEO_PROFILES;
 import static org.nuxeo.launcher.config.ConfigurationConstants.FILE_NUXEO_CONF;
@@ -111,7 +112,6 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.connect.ConnectBroker;
 import org.nuxeo.launcher.connect.ConnectRegistrationBroker;
 import org.nuxeo.launcher.connect.LauncherRestartException;
-import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 import org.nuxeo.launcher.info.CommandInfo;
 import org.nuxeo.launcher.info.CommandSetInfo;
@@ -559,8 +559,7 @@ public class NuxeoLauncher {
 
     protected ProcessManager processManager;
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor(
-            new DaemonThreadFactory("NuxeoProcessThread", false));
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(newThreadFactory("NuxeoProcessThread"));
 
     protected String[] params;
 

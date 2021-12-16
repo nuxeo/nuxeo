@@ -19,6 +19,7 @@
 package org.nuxeo.lib.stream.pattern.consumer.internals;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
+import static org.nuxeo.common.concurrent.ThreadFactories.newThreadFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,7 +66,7 @@ public abstract class AbstractCallablePool<T> implements AutoCloseable {
     }
 
     public CompletableFuture<List<T>> start() {
-        supplyThreadPool = Executors.newSingleThreadExecutor(new NamedThreadFactory(getThreadPrefix() + "Pool"));
+        supplyThreadPool = Executors.newSingleThreadExecutor(newThreadFactory(getThreadPrefix() + "Pool"));
         CompletableFuture<List<T>> ret = new CompletableFuture<>();
         CompletableFuture.supplyAsync(() -> {
             try {
@@ -87,7 +86,7 @@ public abstract class AbstractCallablePool<T> implements AutoCloseable {
     }
 
     protected List<T> runPool() throws InterruptedException {
-        threadPool = newFixedThreadPool(nbThreads, new NamedThreadFactory(getThreadPrefix()));
+        threadPool = newFixedThreadPool(nbThreads, newThreadFactory(getThreadPrefix()));
         log.warn("Start " + getThreadPrefix() + " Pool on " + nbThreads + " thread(s).");
         List<CompletableFuture<T>> futures = new ArrayList<>(nbThreads);
 
@@ -137,24 +136,6 @@ public abstract class AbstractCallablePool<T> implements AutoCloseable {
     public void close() {
         supplyThreadPool.shutdownNow();
         threadPool.shutdownNow();
-    }
-
-    protected static class NamedThreadFactory implements ThreadFactory {
-        protected final AtomicInteger count = new AtomicInteger(0);
-
-        protected final String prefix;
-
-        public NamedThreadFactory(String prefix) {
-            this.prefix = prefix;
-        }
-
-        @SuppressWarnings("NullableProblems")
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread t = new Thread(r, String.format("%s-%02d", prefix, count.getAndIncrement()));
-            t.setUncaughtExceptionHandler((t1, e) -> log.error("Uncaught exception: " + e.getMessage(), e));
-            return t;
-        }
     }
 
 }
