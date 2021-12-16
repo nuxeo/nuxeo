@@ -52,7 +52,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.launcher.config.backingservices.BackingChecker;
 
 import net.jodah.failsafe.Failsafe;
@@ -405,13 +404,12 @@ public class ConfigurationChecker {
     }
 
     /**
-     * Read the classpath parameter from the template and expand parameters with their value. It allow classpath of the
+     * Read the classpath parameter from the template and expand parameters with their value. It allows classpath of the
      * form ${nuxeo.home}/nxserver/bundles/...
      */
     protected String getBackingCheckerClasspath(ConfigurationHolder configHolder, String template) {
         String classPath = configHolder.getProperty(template + ".check.classpath");
-        TextTemplate templateParser = new TextTemplate(configHolder.userConfig);
-        return trimToEmpty(templateParser.processText(classPath));
+        return trimToEmpty(configHolder.instantiateTemplateParser().keepEncryptedAsVar(false).processText(classPath));
     }
 
     /**

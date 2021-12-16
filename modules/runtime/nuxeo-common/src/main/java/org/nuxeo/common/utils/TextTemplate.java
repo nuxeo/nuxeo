@@ -23,6 +23,7 @@ package org.nuxeo.common.utils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -43,6 +44,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.codec.Crypto;
@@ -51,6 +53,7 @@ import org.nuxeo.common.codec.CryptoProperties;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateMethodModelEx;
 
 /**
  * Text template processing.
@@ -299,6 +302,19 @@ public class TextTemplate {
         os.write(text);
     }
 
+    public InputStream processTextAsStream(InputStream in) throws IOException {
+        String text = IOUtils.toString(in, UTF_8);
+        text = processText(text);
+        return new ByteArrayInputStream(text.getBytes(UTF_8)) {
+
+            @Override
+            public void close() throws IOException {
+                super.close();
+                in.close();
+            }
+        };
+    }
+
     /**
      * Initialize FreeMarker data model from Java properties.
      * <p>
@@ -311,16 +327,27 @@ public class TextTemplate {
     @SuppressWarnings("unchecked")
     public void initFreeMarker() {
         freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_30);
+        // declare the decrypt method to be allowed to decrypt variables in nxftl
+        freemarkerConfiguration.setSharedVariable("decrypt", (TemplateMethodModelEx) arguments -> {
+            String value = StringUtils.defaultIfBlank(arguments.get(0).toString(), "");
+            // check if the given parameter is still a variable (ie: the parameter is an encrypted variable)
+            var matcher = PATTERN.matcher(value);
+            if (matcher.matches()) {
+                // retrieve the key and check it exists in variables
+                String key = matcher.group(PATTERN_GROUP_VAR);
+                if (vars.containsKey(key)) {
+                    // decrypt it
+                    value = vars.getProperty(key);
+                }
+            }
+            return value;
+        });
         freemarkerVars = new HashMap<>();
         Map<String, Object> currentMap;
         String currentString;
         var processedVars = preprocessVars(vars);
         KEYS: for (String key : processedVars.stringPropertyNames()) {
             String value = processedVars.getProperty(key);
-            if (value.startsWith("${") && value.endsWith("}")) {
-                // crypted variables have to be decrypted in freemarker vars
-                value = vars.getProperty(key, false);
-            }
             String[] keyparts = key.split("\\.");
             currentMap = freemarkerVars;
             currentString = "";
@@ -515,6 +542,18 @@ public class TextTemplate {
             this.keepEncryptedAsVar = keepEncryptedAsVar;
             freemarkerConfiguration = null;
         }
+    }
+
+    /**
+     * Whether to replace or not the variables which value is encrypted.
+     *
+     * @param keepEncryptedAsVar if {@code true}, the variables which value is encrypted won't be expanded
+     * @return this object to ease chaining
+     * @since 2021.14
+     */
+    public TextTemplate keepEncryptedAsVar(boolean keepEncryptedAsVar) {
+        setKeepEncryptedAsVar(keepEncryptedAsVar);
+        return this;
     }
 
 }

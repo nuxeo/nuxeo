@@ -21,6 +21,8 @@ package org.nuxeo.launcher.config;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_FREEMARKER_EXTENSIONS;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_PARSING_EXTENSIONS;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.CryptoProperties;
+import org.nuxeo.common.utils.TextTemplate;
 
 /**
  * Class used to hold the configuration for Nuxeo.
@@ -313,6 +316,20 @@ public class ConfigurationHolder {
                         .map(Path::toString)
                         .filter(DB_LIST::contains)
                         .reduce("unknown", (first, second) -> second);
+    }
+
+    /**
+     * @since 2021.14
+     */
+    public TextTemplate instantiateTemplateParser() {
+        TextTemplate templateParser = new TextTemplate(userConfig);
+        templateParser.setKeepEncryptedAsVar(true);
+        templateParser.setTrim(true);
+        templateParser.setTextParsingExtensions(
+                userConfig.getProperty(PARAM_TEMPLATES_PARSING_EXTENSIONS, "xml,properties,nx"));
+        templateParser.setFreemarkerParsingExtensions(
+                userConfig.getProperty(PARAM_TEMPLATES_FREEMARKER_EXTENSIONS, "nxftl"));
+        return templateParser;
     }
 
     protected void clear() {

@@ -30,9 +30,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.common.function.ThrowableConsumer.asConsumer;
 import static org.nuxeo.launcher.config.ConfigurationConstants.FILE_NUXEO_DEFAULTS;
 import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_FORCE_GENERATION;
-import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_FREEMARKER_EXTENSIONS;
 import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_NAME;
-import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_PARSING_EXTENSIONS;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -289,7 +287,7 @@ public class ConfigurationMarshaller {
         FilenameFilter filter = (dir, name) -> !FILE_NUXEO_DEFAULTS.equals(name)
                 // exclude nuxeo.ENVIRONMENT files
                 && !(name.startsWith("nuxeo.") && Files.exists(dir.toPath().resolve(FILE_NUXEO_DEFAULTS)));
-        TextTemplate templateParser = instantiateTemplateParser(configHolder);
+        TextTemplate templateParser = configHolder.instantiateTemplateParser();
 
         deleteTemplateFiles(configHolder);
         // add included templates directories
@@ -315,17 +313,6 @@ public class ConfigurationMarshaller {
             }
         }
         storeNewFilesList(configHolder, newFilesList);
-    }
-
-    protected TextTemplate instantiateTemplateParser(ConfigurationHolder configHolder) {
-        TextTemplate templateParser = new TextTemplate(configHolder.userConfig);
-        templateParser.setKeepEncryptedAsVar(true);
-        templateParser.setTrim(true);
-        templateParser.setTextParsingExtensions(
-                configHolder.getProperty(PARAM_TEMPLATES_PARSING_EXTENSIONS, "xml,properties,nx"));
-        templateParser.setFreemarkerParsingExtensions(
-                configHolder.getProperty(PARAM_TEMPLATES_FREEMARKER_EXTENSIONS, "nxftl"));
-        return templateParser;
     }
 
     /**

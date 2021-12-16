@@ -92,12 +92,15 @@ public interface BackingChecker {
             throw new ConfigurationException(
                     "Configuration file: " + configPath + " for class: " + klass.getSimpleName() + "doesn't exist");
         }
+        // retrieve template parser to decrypt properties
+        var templateParser = configHolder.instantiateTemplateParser().keepEncryptedAsVar(false);
         XMap xmap = new XMap();
         xmap.register(klass);
         List.of(klasses).forEach(xmap::register);
         try {
             String content = Files.readString(configPath, StandardCharsets.UTF_8);
             content = replacer.apply(content);
+            content = templateParser.processText(content);
             Object[] nodes = xmap.loadAll(new ByteArrayInputStream(content.getBytes()));
             for (Object node : nodes) {
                 if (node != null) {

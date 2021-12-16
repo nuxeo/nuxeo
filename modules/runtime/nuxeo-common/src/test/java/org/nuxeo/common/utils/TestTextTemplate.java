@@ -106,13 +106,19 @@ public class TestTextTemplate {
         try (BufferedReader reader = new BufferedReader(new FileReader(tmpFile))) {
             assertEquals(processedText, reader.readLine());
             assertEquals(processedText2, reader.readLine());
+            assertEquals("test1 succeed", reader.readLine());
+            assertEquals("test2 succeed", reader.readLine());
         }
 
         tt.setKeepEncryptedAsVar(true);
         tt.processFreemarker(ftl, tmpFile);
         try (BufferedReader reader = new BufferedReader(new FileReader(tmpFile))) {
-            assertEquals("Encrypted variables must be decrypted", processedText, reader.readLine());
+            assertEquals("Encrypted variables must not be replaced", templateText, reader.readLine());
             assertEquals("Encrypted #variables must be replaced", processedText2, reader.readLine());
+            assertEquals("Encrypted #variables in condition can not be evaluated without decrypt", "test1 failed",
+                    reader.readLine());
+            assertEquals("Encrypted #variables in condition can be evaluated with decrypt", "test2 succeed",
+                    reader.readLine());
         }
     }
 

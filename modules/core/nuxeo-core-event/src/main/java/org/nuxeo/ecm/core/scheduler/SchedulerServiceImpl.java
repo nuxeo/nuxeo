@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.DurationUtils;
+import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
@@ -90,7 +91,9 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
         File file = new File(Environment.getDefault().getConfig(), "quartz.properties");
         if (file.exists()) {
-            try (InputStream stream = new FileInputStream(file)) {
+            // variables in quartz.properties could be encrypted, use TextTemplate to decrypt/replace these variables
+            var textTemplate = new TextTemplate(Framework.getProperties());
+            try (InputStream stream = textTemplate.processTextAsStream(new FileInputStream(file))) {
                 schedulerFactory.initialize(stream);
             }
         } else {

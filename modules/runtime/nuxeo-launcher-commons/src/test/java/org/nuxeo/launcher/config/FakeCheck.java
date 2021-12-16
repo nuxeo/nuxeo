@@ -18,6 +18,8 @@
  */
 package org.nuxeo.launcher.config;
 
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.launcher.config.backingservices.BackingChecker;
 
 /**
@@ -25,9 +27,7 @@ import org.nuxeo.launcher.config.backingservices.BackingChecker;
  */
 public class FakeCheck implements BackingChecker {
 
-    static private int callCount;
-
-    private static boolean ready = true;
+    protected static int callCount;
 
     @Override
     public boolean accepts(ConfigurationHolder configHolder) {
@@ -37,7 +37,7 @@ public class FakeCheck implements BackingChecker {
     @Override
     public void check(ConfigurationHolder configHolder) throws ConfigurationException {
         callCount++;
-        if (!ready) {
+        if (!getDescriptor(configHolder, "fake-check-contrib.xml", FakeCheckDescriptor.class).isReady()) {
             throw new ConfigurationException("not ready");
         }
     }
@@ -50,8 +50,15 @@ public class FakeCheck implements BackingChecker {
         return callCount;
     }
 
-    public static void setReady(boolean ready) {
-        FakeCheck.ready = ready;
+    @XObject("fake")
+    protected static class FakeCheckDescriptor {
+
+        @XNode("@ready")
+        protected boolean ready;
+
+        public boolean isReady() {
+            return ready;
+        }
     }
 
 }

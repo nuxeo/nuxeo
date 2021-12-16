@@ -18,14 +18,18 @@
  */
 package org.nuxeo.launcher.config;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.nuxeo.common.Environment.CRYPT_KEY;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +38,8 @@ import org.junit.Test;
  * @since 9.2
  */
 public class ConfigurationCheckerTest {
+
+    protected static final String CRYPT_KEY_VALUE = Base64.encodeBase64String("secret".getBytes());
 
     /** @since 11.5 */
     @Rule
@@ -50,7 +56,6 @@ public class ConfigurationCheckerTest {
     @Before
     public void setUp() throws Exception {
         FakeCheck.reset();
-        FakeCheck.setReady(true);
 
         // init configuration and service
         configHolder = new ConfigurationHolder(rule.getNuxeoHome(), rule.getNuxeoConf());
@@ -106,6 +111,17 @@ public class ConfigurationCheckerTest {
                 checker.getBackingCheckerClasspath(configHolder, "backing").replace('/', File.separatorChar));
     }
 
+    // NXP-28880
+    @Test
+    public void canUseEncryptedParametersInClasspath() {
+        configHolder.put(CRYPT_KEY, CRYPT_KEY_VALUE);
+        configHolder.put("nuxeo.home.encrypted", encrypt(rule.getNuxeoHome().toString()));
+        configHolder.put("backing.check.classpath", "${nuxeo.home.encrypted}/nxserver/bundles/versioned-*.jar");
+        // getBackingCheckerClasspath doesn't replace the separator on Windows, getJarsFromClasspathEntry does
+        assertEquals(bundles.toString() + File.separator + "versioned-*.jar",
+                checker.getBackingCheckerClasspath(configHolder, "backing").replace('/', File.separatorChar));
+    }
+
     @Test
     public void backingCheckerAreCalled() throws Exception {
         assertEquals(0, FakeCheck.getCallCount());
@@ -114,9 +130,9 @@ public class ConfigurationCheckerTest {
     }
 
     @Test
-    public void checksAreRetried() {
+    public void backingCheckerAreRetried() {
         configHolder.put(ConfigurationChecker.PARAM_RETRY_POLICY_ENABLED, "true");
-        FakeCheck.setReady(false);
+        configHolder.put("backing.fake.check.ready", "false");
         assertThrows(ConfigurationException.class, () -> checker.checkBackingServices(configHolder));
         assertEquals(6, FakeCheck.getCallCount());
 
@@ -126,7 +142,31 @@ public class ConfigurationCheckerTest {
         assertEquals(1, FakeCheck.getCallCount());
     }
 
-    protected Path getTemplatePath(String templateName) {
-        return configHolder.getTemplatesPath().resolve(templateName);
+    // NXP-28880
+    @Test
+    public void backingCheckerCanReadDescriptorWithEncryptedParameters() throws Exception {
+        configHolder.put(CRYPT_KEY, CRYPT_KEY_VALUE);
+        configHolder.put("backing.fake.check.ready", encrypt("true"));
+        assertEquals(0, FakeCheck.getCallCount());
+        checker.checkBackingServices(configHolder);
+        assertEquals(1, FakeCheck.getCallCount());
+
+        FakeCheck.reset();
+
+        configHolder.put("backing.fake.check.ready", encrypt("false"));
+        assertEquals(0, FakeCheck.getCallCount());
+        assertThrows(ConfigurationException.class, () -> checker.checkBackingServices(configHolder));
+        assertEquals(1, FakeCheck.getCallCount());
+    }
+
+    protected String encrypt(String value) {
+        if (!configHolder.stringPropertyNames().contains(CRYPT_KEY)) {
+            throw new AssertionError("No CRYPT_KEY present in configuration, check your test");
+        }
+        try {
+            return configHolder.userConfig.getCrypto().encrypt(value.getBytes(UTF_8));
+        } catch (GeneralSecurityException e) {
+            throw new AssertionError("Unable to encrypt the value: " + value, e);
+        }
     }
 }
