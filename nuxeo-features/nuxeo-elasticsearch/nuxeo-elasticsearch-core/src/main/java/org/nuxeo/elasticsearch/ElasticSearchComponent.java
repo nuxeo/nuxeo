@@ -19,6 +19,7 @@
  */
 package org.nuxeo.elasticsearch;
 
+import static org.nuxeo.common.concurrent.ThreadFactories.newThreadFactory;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEXING_QUEUE_ID;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_ON_STARTUP_PROPERTY;
@@ -33,7 +34,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -365,7 +365,7 @@ public class ElasticSearchComponent extends DefaultComponent
 
     protected void initListenerThreadPool() {
         waiterExecutorService = MoreExecutors.listeningDecorator(
-                Executors.newCachedThreadPool(new NamedThreadFactory()));
+                Executors.newCachedThreadPool(newThreadFactory("waitForEsIndexing")));
     }
 
     protected void shutdownListenerThreadPool() {
@@ -571,14 +571,6 @@ public class ElasticSearchComponent extends DefaultComponent
     // misc ====================================================================
     protected boolean isReady() {
         return (esa != null) && esa.isReady();
-    }
-
-    protected static class NamedThreadFactory implements ThreadFactory {
-        @SuppressWarnings("NullableProblems")
-        @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "waitForEsIndexing");
-        }
     }
 
     @Override

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.redis.contribs;
 
+import static org.nuxeo.common.concurrent.ThreadFactories.newThreadFactory;
 import static redis.clients.jedis.Protocol.Keyword.MESSAGE;
 import static redis.clients.jedis.Protocol.Keyword.PMESSAGE;
 import static redis.clients.jedis.Protocol.Keyword.PSUBSCRIBE;
@@ -33,7 +34,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
@@ -65,10 +65,7 @@ public class RedisPubSubProvider extends AbstractPubSubProvider {
 
     protected static final String THREAD_NAME = "Nuxeo-PubSub-Redis";
 
-    protected static final AtomicInteger THREAD_NUMBER = new AtomicInteger();
-
-    protected static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool(
-            r -> new Thread(r, THREAD_NAME + "-" + THREAD_NUMBER.incrementAndGet()));
+    protected static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool(newThreadFactory(THREAD_NAME));
 
     protected Dispatcher dispatcher;
 

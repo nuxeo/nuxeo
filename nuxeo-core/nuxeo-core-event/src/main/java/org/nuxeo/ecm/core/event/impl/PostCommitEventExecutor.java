@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
+import static org.nuxeo.common.concurrent.ThreadFactories.newThreadFactory;
+
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -30,7 +32,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,40 +70,13 @@ public class PostCommitEventExecutor {
 
     protected final ExecutorService executor;
 
-    /**
-     * Creates non-daemon threads at normal priority.
-     */
-    private static class NamedThreadFactory implements ThreadFactory {
-
-        private final AtomicInteger threadNumber = new AtomicInteger();
-
-        private final ThreadGroup group;
-
-        private final String prefix;
-
-        public NamedThreadFactory(String prefix) {
-            SecurityManager sm = System.getSecurityManager();
-            group = sm == null ? Thread.currentThread().getThreadGroup() : sm.getThreadGroup();
-            this.prefix = prefix;
-        }
-
-        @Override
-        public Thread newThread(Runnable r) {
-            String name = prefix + threadNumber.incrementAndGet();
-            Thread thread = new Thread(group, r, name);
-            // do not set daemon
-            thread.setPriority(Thread.NORM_PRIORITY);
-            return thread;
-        }
-    }
-
     public PostCommitEventExecutor() {
         // use as much thread as needed up to MAX_POOL_SIZE
         // keep them alive a moment for reuse
         // have all threads torn down when there is no work to do
-        ThreadFactory threadFactory = new NamedThreadFactory("Nuxeo-Event-PostCommit-");
+        ThreadFactory threadFactory = newThreadFactory("Nuxeo-Event-PostCommit");
         executor = new ThreadPoolExecutor(0, MAX_POOL_SIZE, KEEP_ALIVE_TIME_SECOND, TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(), threadFactory);
+                new SynchronousQueue<>(), threadFactory);
         ((ThreadPoolExecutor) executor).allowCoreThreadTimeOut(true);
     }
 
