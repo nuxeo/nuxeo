@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,9 @@ public class OperationChain implements Serializable {
     protected String[] aliases;
 
     protected boolean isPublic; // whether this chain is visible to clients
+
+    /** @since 2021.16 */
+    protected boolean enabled;
 
     public OperationChain(String id) {
         this(id, Collections.emptyList());
@@ -95,6 +99,16 @@ public class OperationChain implements Serializable {
 
     public boolean isPublic() {
         return isPublic;
+    }
+
+    /** @since 2021.16 */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /** @since 2021.16 */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public void setPublic(boolean isPublic) {
@@ -168,5 +182,30 @@ public class OperationChain implements Serializable {
     @Override
     public String toString() {
         return "OperationChain [id=" + id + "]";
+    }
+
+    /** @since 2021.16 */
+    @Override
+    public OperationChain clone() {
+        OperationChain clone = new OperationChain(id, operations, chainParameters);
+        clone.enabled = enabled;
+        clone.description = description;
+        if (aliases != null) {
+            clone.aliases = Arrays.copyOf(aliases, aliases.length);
+        }
+        clone.isPublic = isPublic;
+        return clone;
+    }
+
+    /** @since 2021.16 */
+    public void merge(OperationChain other) {
+        enabled = other.enabled;
+        operations.clear();
+        operations.addAll(other.operations);
+        chainParameters.clear();
+        chainParameters.putAll(other.chainParameters);
+        description = other.description;
+        aliases = other.aliases;
+        isPublic = other.isPublic;
     }
 }

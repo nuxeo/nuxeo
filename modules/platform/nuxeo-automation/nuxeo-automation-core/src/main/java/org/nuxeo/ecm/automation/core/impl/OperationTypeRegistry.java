@@ -31,15 +31,6 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class OperationTypeRegistry extends ContributionFragmentRegistry<OperationType> {
 
-    /**
-     * Modifiable operation registry. Modifying the registry is using a lock and it's thread safe. Modifications are
-     * removing the cache.
-     */
-    protected final Map<String, OperationType> operations = new HashMap<>();
-
-    /**
-     * Read only cache for operation lookup. Thread safe. Not using synchronization if cache already created.
-     */
     protected volatile Map<String, OperationType> lookup;
 
     @Override
@@ -48,41 +39,36 @@ public class OperationTypeRegistry extends ContributionFragmentRegistry<Operatio
     }
 
     public synchronized void addContribution(OperationType op, boolean replace) throws OperationException {
-        if (!replace && operations.containsKey(op.getId())) {
+        if (!replace && !contribs.getOrDefault(op.getId(), new FragmentList<>()).isEmpty()) {
             throw new OperationException("An operation is already bound to: " + op.getId()
                     + ". Use 'replace=true' to replace an existing operation");
+        }
+        OperationType target = getContribution(op.getId());
+        if (target != null && !op.getClass().equals(target.getClass())) {
+            throw new UnsupportedOperationException("Can't merge operations with id: " + op.getId() + ". The type "
+                    + op.getClass() + " cannot be merged in " + target.getClass() + ".");
         }
         super.addContribution(op);
     }
 
     @Override
     public void contributionUpdated(String id, OperationType contrib, OperationType newOrigContrib) {
-        operations.put(id, contrib);
-        for (String alias : contrib.getAliases()) {
-            operations.put(alias, contrib);
-        }
         lookup = null;
     }
 
     @Override
     public void contributionRemoved(String id, OperationType origContrib) {
-        operations.remove(id);
         lookup = null;
     }
 
     @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
     public OperationType clone(OperationType orig) {
-        throw new UnsupportedOperationException();
+        return orig.clone();
     }
 
     @Override
     public void merge(OperationType src, OperationType dst) {
-        throw new UnsupportedOperationException();
+        dst.merge(src);
     }
 
     // API
@@ -95,7 +81,17 @@ public class OperationTypeRegistry extends ContributionFragmentRegistry<Operatio
         if (lookup == null) {
             synchronized (this) {
                 if (lookup == null) {
-                    lookup = new HashMap<>(operations);
+                    lookup = new HashMap<>();
+                    for (var operation : toMap().values()) {
+                        if (operation.isEnabled()) {
+                            lookup.put(operation.getId(), operation);
+                            if (operation.getAliases() != null) {
+                                for (String alias : operation.getAliases()) {
+                                    lookup.put(alias, operation);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

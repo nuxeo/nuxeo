@@ -18,6 +18,8 @@
  */
 package org.nuxeo.automation.scripting.internals;
 
+import java.util.Arrays;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -31,6 +33,9 @@ public class ScriptingOperationDescriptor {
 
     @XNode("@id")
     protected String id;
+
+    @XNode("@enabled")
+    protected boolean enabled = true;
 
     @XNode("inputType")
     protected String inputType;
@@ -76,6 +81,11 @@ public class ScriptingOperationDescriptor {
         return id;
     }
 
+    /** @since 2021.16 */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -100,6 +110,40 @@ public class ScriptingOperationDescriptor {
      */
     public void setContributingComponent(String contributingComponent) {
         this.contributingComponent = contributingComponent;
+    }
+
+    /** @since 2021.16 */
+    @Override
+    public ScriptingOperationDescriptor clone() {
+        ScriptingOperationDescriptor clone = new ScriptingOperationDescriptor();
+        clone.id = id;
+        clone.enabled = enabled;
+        clone.inputType = inputType;
+        clone.outputType = outputType;
+        clone.description = description;
+        clone.category = category;
+        if (aliases != null) {
+            clone.aliases = Arrays.copyOf(aliases, aliases.length);
+        }
+        if (params != null) {
+            clone.params = Arrays.copyOf(params, params.length);
+        }
+        clone.source = source;
+        clone.contributingComponent = contributingComponent;
+        return clone;
+    }
+
+    /** @since 2021.16 */
+    public void merge(ScriptingOperationDescriptor other) {
+        enabled = other.enabled;
+        inputType = other.inputType;
+        outputType = other.outputType;
+        description = other.description;
+        category = other.category;
+        aliases = other.aliases;
+        params = other.params;
+        source = other.source;
+        contributingComponent = other.contributingComponent;
     }
 
 }

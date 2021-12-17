@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -50,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ChainTypeImpl implements OperationType {
 
-    protected final OperationChain chain;
+    protected OperationChain chain;
 
     /**
      * The service that registered the operation.
@@ -307,21 +308,11 @@ public class ChainTypeImpl implements OperationType {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
-        }
         if (!(obj instanceof ChainTypeImpl)) {
             return false;
         }
         ChainTypeImpl other = (ChainTypeImpl) obj;
-        if (chain == null) {
-            if (other.chain != null) {
-                return false;
-            }
-        } else if (!chain.equals(other.chain)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(chain, other.chain);
     }
 
     public static ChainTypeImpl typeof(OperationChain chain, boolean replace) {
@@ -329,4 +320,27 @@ public class ChainTypeImpl implements OperationType {
                 OperationChainContribution.contribOf(chain, replace), null);
     }
 
+    @Override
+    public boolean isEnabled() {
+        return chain.isEnabled();
+    }
+
+    @Override
+    public ChainTypeImpl clone() {
+        ChainTypeImpl clone = new ChainTypeImpl(service, chain.clone(), contribution.clone(), contributingComponent);
+        if (methods != null) {
+            clone.methods = Arrays.copyOf(methods, methods.length);
+        }
+        return clone;
+    }
+
+    @Override
+    public void merge(OperationType other) {
+        var oc = (ChainTypeImpl) other;
+        chain.merge(oc.chain);
+        contribution.merge(oc.contribution);
+        contributingComponent = oc.getContributingComponent();
+        methods = other.getMethods().toArray(InvokableMethod[]::new);
+        service = other.getService();
+    }
 }
