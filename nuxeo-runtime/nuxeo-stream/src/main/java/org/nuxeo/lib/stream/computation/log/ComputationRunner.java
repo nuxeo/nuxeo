@@ -18,6 +18,7 @@
  */
 package org.nuxeo.lib.stream.computation.log;
 
+import java.nio.channels.ClosedByInterruptException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -63,6 +64,12 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     protected static final long STARVING_TIMEOUT_MS = 1000;
 
     protected static final long INACTIVITY_BREAK_MS = 100;
+
+    // @since 2021.13
+    protected static final int CHECKPOINT_MAX_RETRY = 3;
+
+    // @since 2021.13
+    protected static final int CHECKPOINT_PAUSE_MS = 30_000;
 
     private static final Log log = LogFactory.getLog(ComputationRunner.class);
 
@@ -130,6 +137,13 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     // @since 11.1
     protected boolean recordActivity;
 
+    // @since 2021.13
+    protected enum ReturnCode {
+        CHECKPOINT_ERROR,
+        INTERRUPTED,
+        TERMINATE
+    }
+
     @SuppressWarnings("unchecked")
     public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
             List<LogPartition> defaultAssignment, LogStreamManager streamManager, ComputationPolicy policy) {
@@ -174,51 +188,70 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     @Override
     public void run() {
         threadName = Thread.currentThread().getName();
-        boolean interrupted = false;
-        boolean normalTermination = false;
         computation = supplier.get();
         log.debug(metadata.name() + ": Init");
         registerMetrics();
+        ReturnCode returnCode = ReturnCode.TERMINATE;
+        computation.init(context);
+        log.debug(metadata.name() + ": Start");
         try {
-            computation.init(context);
-            log.debug(metadata.name() + ": Start");
-            processLoop();
-            normalTermination = true;
+            int i = 0;
+            do {
+                returnCode = runOnce();
+                if (ReturnCode.CHECKPOINT_ERROR.equals(returnCode)) {
+                    i++;
+                    if (i >= CHECKPOINT_MAX_RETRY) {
+                        log.error(metadata.name() + ": Terminate computation because too many checkpoint errors");
+                    } else {
+                        log.warn("Wait a bit after checkpoint error, retry #" + i);
+                        Thread.sleep(CHECKPOINT_PAUSE_MS);
+                    }
+                }
+            } while (ReturnCode.CHECKPOINT_ERROR.equals(returnCode) && i < CHECKPOINT_MAX_RETRY);
         } catch (InterruptedException e) {
-            interrupted = true; // Thread.currentThread().interrupt() in finally
-            // this is expected when the pool is shutdownNow
+            returnCode = ReturnCode.INTERRUPTED;
+        } finally {
+            try {
+                computation.destroy();
+                closeTailer();
+            } finally {
+                if (ReturnCode.INTERRUPTED.equals(returnCode)) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+
+    protected ReturnCode runOnce() {
+        try {
+            processLoop();
+        } catch (CheckPointException e) {
+            log.error(metadata.name() + ": Error during checkpoint, processing will be duplicated: " + e.getMessage(),
+                    e);
+            return ReturnCode.CHECKPOINT_ERROR;
+        } catch (InterruptedException e) {
+            // Abrupt shutdown, Thread.currentThread().interrupt() will be done after cleanup
             String msg = metadata.name() + ": Interrupted";
             if (log.isTraceEnabled()) {
                 log.debug(msg, e);
             } else {
                 log.debug(msg);
             }
+            return ReturnCode.INTERRUPTED;
         } catch (Exception e) {
-            if (Thread.currentThread().isInterrupted()) {
-                // this can happen when pool is shutdownNow throwing ClosedByInterruptException
+            if (e instanceof ClosedByInterruptException || Thread.currentThread().isInterrupted()) {
+                // ClosedByInterruptException can happen when pool is shutdownNow
                 log.info(metadata.name() + ": Interrupted", e);
-            } else {
-                log.error(metadata.name() + ": Exception in processLoop: " + e.getMessage(), e);
-                throw e;
+                return ReturnCode.INTERRUPTED;
             }
-        } finally {
-            try {
-                computation.destroy();
-                closeTailer();
-            } finally {
-                if (interrupted) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-            if (normalTermination || interrupted) {
-                log.debug(metadata.name() + ": Terminated");
-            } else {
-                // Terminating because of unexpected error in the ComputationRunner code
-                log.error(String.format("Terminate computation: %s due to previous failure", metadata.name()));
-                globalFailureCount.inc();
-                failureCount.inc();
-            }
+            log.error(metadata.name() + ": Terminate computation due to unexpected failure inside computation code: "
+                    + e.getMessage(), e);
+            globalFailureCount.inc();
+            failureCount.inc();
+            throw e;
         }
+        // normal termination because of stop/draining/fallback policy
+        return ReturnCode.TERMINATE;
     }
 
     protected void registerMetrics() {
@@ -336,33 +369,32 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         } catch (RebalanceException e) {
             // the revoke has done a checkpoint we can continue
         }
-        Record record;
-        if (logRecord != null) {
-            record = logRecord.message();
-            String stream = logRecord.offset().partition().name();
-            Record filteredRecord = streamManager.getFilter(stream).afterRead(record, logRecord.offset());
-            if (filteredRecord == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Filtering skip record: " + record);
-                }
-                return false;
-            } else if (filteredRecord != record) {
-                logRecord = new LogRecord<>(filteredRecord, logRecord.offset());
-                record = filteredRecord;
-            }
-            lastReadTime = System.currentTimeMillis();
-            inRecords++;
-            lowWatermark.mark(record.getWatermark());
-            context.setLastOffset(logRecord.offset());
-            String from = metadata.reverseMap(stream);
-            processRecordWithRetry(from, record);
-            checkRecordFlags(record);
-            checkSourceLowWatermark();
-            setThreadName("record");
-            checkpointIfNecessary();
-            return true;
+        if (logRecord == null) {
+            return false;
         }
-        return false;
+        Record record = logRecord.message();
+        String stream = logRecord.offset().partition().name();
+        Record filteredRecord = streamManager.getFilter(stream).afterRead(record, logRecord.offset());
+        if (filteredRecord == null) {
+            if (log.isDebugEnabled()) {
+                log.debug(metadata.name() + ": Filtering skip record: " + record);
+            }
+            return false;
+        } else if (filteredRecord != record) {
+            logRecord = new LogRecord<>(filteredRecord, logRecord.offset());
+            record = filteredRecord;
+        }
+        lastReadTime = System.currentTimeMillis();
+        inRecords++;
+        lowWatermark.mark(record.getWatermark());
+        context.setLastOffset(logRecord.offset());
+        String from = metadata.reverseMap(stream);
+        processRecordWithRetry(from, record);
+        checkRecordFlags(record);
+        checkSourceLowWatermark();
+        setThreadName("record");
+        checkpointIfNecessary();
+        return true;
     }
 
     protected void processRecordWithRetry(String from, Record record) {
@@ -380,16 +412,16 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected void processFallback(ComputationContextImpl context) {
         if (policy.continueOnFailure()) {
-            log.error(String.format("Skip record after failure: %s", context.getLastOffset()));
+            log.error(String.format("%s: Skip record after failure: %s", metadata.name(), context.getLastOffset()));
             context.askForCheckpoint();
             recordSkippedCount.inc();
         } else if (skipFailureForRecovery()) {
-            log.error(String.format("Skip record after failure instead of terminating because of recovery mode: %s",
-                    context.getLastOffset()));
+            log.error(String.format("%s: Skip record after failure instead of terminating because of recovery mode: %s",
+                    metadata.name(), context.getLastOffset()));
             context.askForCheckpoint();
             recordSkippedCount.inc();
         } else {
-            log.error(String.format("Terminate computation: %s due to previous failure", metadata.name()));
+            log.error(String.format("%s: Terminate computation due to previous failure", metadata.name()));
             context.cancelAskForCheckpoint();
             context.askForTermination();
             globalFailureCount.inc();
@@ -433,15 +465,18 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     protected void checkpointIfNecessary() {
-        if (context.requireCheckpoint()) {
-            boolean completed = false;
-            try {
-                checkpoint();
-                completed = true;
-            } finally {
-                if (!completed) {
-                    log.error(metadata.name() + ": CHECKPOINT FAILURE: Resume may create duplicates.");
-                }
+        if (!context.requireCheckpoint()) {
+            return;
+        }
+        try {
+            checkpoint();
+        } catch (Exception e) {
+            if (e instanceof InterruptedException || e instanceof ClosedByInterruptException
+                    || Thread.currentThread().isInterrupted()) {
+                throw e;
+            } else {
+                throw new CheckPointException(
+                        metadata.name() + ": CHECKPOINT FAILURE: Resuming with possible duplicate processing.", e);
             }
         }
     }
@@ -456,7 +491,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         context.removeCheckpointFlag();
         inCheckpointRecords = inRecords;
         setThreadName("checkpoint");
-        log.debug(metadata.name() + ": checkpoint done");
+        log.debug(metadata.name() + ": Checkpoint done");
     }
 
     protected void saveTimers() {
@@ -518,5 +553,11 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         lastTimerExecution = 0;
         assignmentLatch.countDown();
         // what about watermark ?
+    }
+
+    protected static class CheckPointException extends RuntimeException {
+        public CheckPointException(String message, Throwable e) {
+            super(message, e);
+        }
     }
 }
