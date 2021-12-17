@@ -316,7 +316,7 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
         assertEquals("Unable to create document: "
                 + "Property Conversion failed from class java.lang.String to class java.util.Calendar: "
-                + "For input string: \"10/0\"", importLog.getMessage());
+                + "Failed to parse ISO 8601 date: 10/01/2010", importLog.getMessage());
         importLog = importLogs.get(1);
         assertEquals(3, importLog.getLine());
         assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());

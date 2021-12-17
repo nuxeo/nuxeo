@@ -118,48 +118,72 @@ public class DateParser {
 
     private static int readYear(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 4) {
-            cal.set(Calendar.YEAR, Integer.parseInt(str.substring(off, off + 4)));
-            return off + 4;
+            try {
+                cal.set(Calendar.YEAR, Integer.parseInt(str.substring(off, off + 4)));
+                return off + 4;
+            } catch (NumberFormatException e) {
+                throw new ParseException("Invalid year in date '" + str + "'", off);
+            }
         }
         throw new ParseException("Invalid year in date '" + str + "'", off);
     }
 
     private static int readMonth(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
-            cal.set(Calendar.MONTH, Integer.parseInt(str.substring(off, off + 2)) - 1);
-            return off + 2;
+            try {
+                cal.set(Calendar.MONTH, Integer.parseInt(str.substring(off, off + 2)) - 1);
+                return off + 2;
+            } catch (NumberFormatException e) {
+                throw new ParseException("Invalid month in date '" + str + "'", off);
+            }
         }
         throw new ParseException("Invalid month in date '" + str + "'", off);
     }
 
     private static int readDay(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
-            cal.set(Calendar.DATE, Integer.parseInt(str.substring(off, off + 2)));
-            return off + 2;
+            try {
+                cal.set(Calendar.DATE, Integer.parseInt(str.substring(off, off + 2)));
+                return off + 2;
+            } catch (NumberFormatException e) {
+                throw new ParseException("Invalid day in date '" + str + "'", off);
+            }
         }
         throw new ParseException("Invalid day in date '" + str + "'", off);
     }
 
     private static int readHours(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
-            cal.set(Calendar.HOUR, Integer.parseInt(str.substring(off, off + 2)));
-            return off + 2;
+            try {
+                cal.set(Calendar.HOUR, Integer.parseInt(str.substring(off, off + 2)));
+                return off + 2;
+            } catch (NumberFormatException e) {
+                throw new ParseException("Invalid hours in date '" + str + "'", off);
+            }
         }
         throw new ParseException("Invalid hours in date '" + str + "'", off);
     }
 
     private static int readMinutes(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
-            cal.set(Calendar.MINUTE, Integer.parseInt(str.substring(off, off + 2)));
-            return off + 2;
+            try {
+                cal.set(Calendar.MINUTE, Integer.parseInt(str.substring(off, off + 2)));
+                return off + 2;
+            } catch (NumberFormatException e) {
+                throw new ParseException("Invalid minutes in date '" + str + "'", off);
+            }
         }
         throw new ParseException("Invalid minutes in date '" + str + "'", off);
     }
 
     private static int readSeconds(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
-            cal.set(Calendar.SECOND, Integer.parseInt(str.substring(off, off + 2)));
-            return off + 2;
+            try {
+                cal.set(Calendar.SECOND, Integer.parseInt(str.substring(off, off + 2)));
+                return off + 2;
+            } catch (NumberFormatException e) {
+                throw new ParseException("Invalid seconds in date '" + str + "'", off);
+            }
         }
         throw new ParseException("Invalid seconds in date '" + str + "'", off);
     }

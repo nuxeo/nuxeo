@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Map;
@@ -34,11 +35,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonFactoryProvider;
+import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -180,4 +183,71 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         assertNull(values.get("dv:multiWithDefault"));
     }
 
+    // NXP-30680
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
+    public void testSetScalarWithWrongTypeThrowsException() throws Exception {
+        testSetScalarWithWrongTypeThrowsException("{\"my:integer\": \"Some string\"}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:integer\": true}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:integer\": 12.34}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:integer\": {\"key\": true}}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:integer\": [0]}");
+
+        testSetScalarWithWrongTypeThrowsException("{\"my:long\": \"Some string\"}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:long\": true}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:long\": 12.34}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:long\": {\"key\": true}}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:long\": [0]}");
+
+        testSetScalarWithWrongTypeThrowsException("{\"my:boolean\": \"Some string\"}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:boolean\": 1234}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:boolean\": 12.34}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:boolean\": {\"key\": true}}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:boolean\": [0]}");
+
+        testSetScalarWithWrongTypeThrowsException("{\"my:double\": \"Some string\"}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:double\": true}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:double\": {\"key\": true}}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:double\": [0]}");
+
+        testSetScalarWithWrongTypeThrowsException("{\"my:date\": \"Some string\"}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:date\": true}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:date\": 1234}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:date\": 12.34}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:date\": {\"key\": true}}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:date\": [0]}");
+
+        testSetScalarWithWrongTypeThrowsException("{\"my:strings\": \"Some string\"}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:strings\": true}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:strings\": 1234}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:strings\": 12.34}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:strings\": {\"key\": true}}");
+
+        // complex
+        testSetScalarWithWrongTypeThrowsException("{\"my:name\": \"Some string\"}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:name\": true}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:name\": 1234}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:name\": 12.34}");
+        testSetScalarWithWrongTypeThrowsException("{\"my:name\": [0]}");
+    }
+
+    protected void testSetScalarWithWrongTypeThrowsException(String properties)
+            throws IOException {
+        String json = '{' + //
+                "\"entity-type\": \"document\", " + //
+                "\"type\": \"MyDocType\", " + //
+                "\"name\": \"myDoc\", " + //
+                "\"properties\": " + properties + " " + //
+                '}';
+        try (JsonParser jp = JsonFactoryProvider.get().createParser(json)) {
+            JsonNode jn = jp.readValueAsTree();
+
+            DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
+            reader.read(jn);
+            fail("Read should have failed due to wrong type");
+        } catch (NuxeoException e) {
+            assertTrue(e instanceof MarshallingException);
+            assertTrue(e.getMessage().startsWith("Wrong type for property:"));
+        }
+    }
 }

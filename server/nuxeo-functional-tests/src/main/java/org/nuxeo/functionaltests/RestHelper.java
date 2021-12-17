@@ -45,6 +45,7 @@ import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.blob.FileBlob;
+import org.nuxeo.client.objects.directory.Directory;
 import org.nuxeo.client.objects.directory.DirectoryEntry;
 import org.nuxeo.client.objects.operation.DocRef;
 import org.nuxeo.client.objects.user.Group;
@@ -495,11 +496,12 @@ public class RestHelper {
     /**
      * @since 9.10
      */
-    public static void updateDirectoryEntry(String directoryName, String entryId, Map<String, String> properties) {
-        DirectoryEntry entry = new DirectoryEntry();
+    public static void updateDirectoryEntry(String directoryName, String entryId, Map<String, ?> properties) {
+        // fetch the entry and update it because DirectoryEntry#putIdProperty doesn't respect id type - JAVACLIENT-226
+        Directory directory = CLIENT.directoryManager().directory(directoryName);
+        DirectoryEntry entry = directory.fetchEntry(entryId);
         entry.setProperties(properties);
-        entry.putIdProperty(entryId);
-        CLIENT.directoryManager().directory(directoryName).updateEntry(entry);
+        directory.updateEntry(entry);
     }
 
     /**

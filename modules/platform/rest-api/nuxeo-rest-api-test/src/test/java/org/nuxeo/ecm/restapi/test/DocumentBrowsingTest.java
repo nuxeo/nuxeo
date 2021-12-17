@@ -628,7 +628,21 @@ public class DocumentBrowsingTest extends BaseTest {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         }
     }
-    
+
+    // NXP-30680
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
+    public void iCantCreateADocumentWithAWrongPropertyType() {
+        DocumentModel folder = RestServerInit.getFolder(0, session);
+
+        String data = "{\"entity-type\": \"document\",\"type\": \"MyDocType\",\"name\":\"newName\",\"properties\": {\"my:integer\":\"Some string\"}}";
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path" + folder.getPathAsString(),
+                data)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        }
+    }
+
     // NXP-30052
     @Test
     public void iCantCreateADocumentWithNonExistingType() throws IOException {

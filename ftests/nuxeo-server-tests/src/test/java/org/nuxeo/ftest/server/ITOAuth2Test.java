@@ -404,7 +404,7 @@ public class ITOAuth2Test extends AbstractTest {
 
     protected void setAutoGrant(boolean autoGrant) {
         RestHelper.updateDirectoryEntry(OAUTH2CLIENT_DIRECTORY_NAME, oauth2ClientDirectoryEntryId,
-                Collections.singletonMap("autoGrant", String.valueOf(autoGrant)));
+                Collections.singletonMap("autoGrant", autoGrant));
     }
 
     protected OAuth2Token getOAuth2Token(String username, String password) throws IOException {
