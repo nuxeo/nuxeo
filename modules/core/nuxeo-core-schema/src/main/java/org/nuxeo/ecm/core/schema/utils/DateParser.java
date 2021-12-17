@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,11 +111,9 @@ public class DateParser {
         if (calendar == null) {
             return null;
         }
-        return String.format(W3C_DATE_FORMAT, calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DATE),
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND),
-                calendar.get(Calendar.MILLISECOND));
+        return String.format(W3C_DATE_FORMAT, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),
+                calendar.get(Calendar.SECOND), calendar.get(Calendar.MILLISECOND));
     }
 
     private static int readYear(Calendar cal, String str, int off) throws ParseException {
@@ -169,7 +167,7 @@ public class DateParser {
     /**
      * Return -1 if no more content to read or the offset of the expected TZ
      */
-    private static int readMilliseconds(Calendar cal, String str, int off) throws ParseException {
+    private static int readMilliseconds(Calendar cal, String str, int off) {
         int e = str.indexOf('Z', off);
         if (e == -1) {
             e = str.indexOf('+', off);
@@ -235,10 +233,8 @@ public class DateParser {
         int h = 0;
         int m = 0;
         int d = len - off;
-        /**
-         * We check here the different format of timezone * +02 (d=2 : doesn't seem to be in ISO-8601 but left for
-         * compat) * +02:00 (d=5) * +0200 (d=4)
-         */
+         // We check here the different format of timezone * +02 (d=2 : doesn't seem to be in ISO-8601 but left for
+         // compat) * +02:00 (d=5) * +0200 (d=4)
         if (d == 2) {
             h = Integer.parseInt(str.substring(off, off + 2));
         } else if (d == 5) {

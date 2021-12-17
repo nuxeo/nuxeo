@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2020 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -628,7 +628,7 @@ public class DocumentBrowsingTest extends BaseTest {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         }
     }
-
+    
     // NXP-30052
     @Test
     public void iCantCreateADocumentWithNonExistingType() throws IOException {

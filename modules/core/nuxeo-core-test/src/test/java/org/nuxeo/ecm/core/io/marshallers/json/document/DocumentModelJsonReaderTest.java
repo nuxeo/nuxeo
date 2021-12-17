@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2021 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  *     Nicolas Chapurlat
  *     Thomas Roger
  */
-
 package org.nuxeo.ecm.core.io.marshallers.json.document;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -92,7 +91,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
 
         DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
         DocumentModel noteDocument;
-        try (JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson)) {
+        try (JsonParser jp = JsonFactoryProvider.get().createParser(noteJson)) {
             JsonNode jn = jp.readValueAsTree();
             noteDocument = reader.read(jn);
         }
@@ -109,7 +108,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         // when I parse it it
         DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
         DocumentModel noteDocument;
-        try (JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson)) {
+        try (JsonParser jp = JsonFactoryProvider.get().createParser(noteJson)) {
             JsonNode jn = jp.readValueAsTree();
             noteDocument = reader.read(jn);
         }
@@ -118,8 +117,8 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         String[] schemas = noteDocument.getSchemas();
         assertEquals(1, schemas.length);
         assertEquals("defaultvalue", schemas[0]);
-        Map<String, Object> values = noteDocument.getDataModel("defaultvalue").getMap();
-        assertNull(null, values.get("dv:simpleWithoutDefault"));
+        Map<String, Object> values = noteDocument.getProperties("defaultvalue");
+        assertNull(values.get("dv:simpleWithoutDefault"));
         assertEquals("value", values.get("dv:simpleWithDefault"));
     }
 
@@ -131,13 +130,13 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         // when I parse it it
         DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
         DocumentModel noteDocument;
-        try (JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson)) {
+        try (JsonParser jp = JsonFactoryProvider.get().createParser(noteJson)) {
             JsonNode jn = jp.readValueAsTree();
             noteDocument = reader.read(jn);
         }
 
         // then the property with the default value must null
-        Map<String, Object> values = noteDocument.getDataModel("defaultvalue").getMap();
+        Map<String, Object> values = noteDocument.getProperties("defaultvalue");
         assertNull(values.get("dv:simpleWithDefault"));
     }
 
@@ -149,7 +148,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         // when I parse it
         DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
         DocumentModel noteDocument;
-        try (JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson)) {
+        try (JsonParser jp = JsonFactoryProvider.get().createParser(noteJson)) {
             JsonNode jn = jp.readValueAsTree();
             noteDocument = reader.read(jn);
         }
@@ -158,8 +157,8 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         String[] schemas = noteDocument.getSchemas();
         assertEquals(1, schemas.length);
         assertEquals("defaultvalue", schemas[0]);
-        Map<String, Object> values = noteDocument.getDataModel("defaultvalue").getMap();
-        assertNull(null, values.get("dv:multiWithoutDefault"));
+        Map<String, Object> values = noteDocument.getProperties("defaultvalue");
+        assertNull(values.get("dv:multiWithoutDefault"));
         assertArrayEquals(new String[] { "value1", "value2" }, (String[]) values.get("dv:multiWithDefault"));
     }
 
@@ -171,13 +170,13 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         // when I parse it
         DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
         DocumentModel noteDocument;
-        try (JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson)) {
+        try (JsonParser jp = JsonFactoryProvider.get().createParser(noteJson)) {
             JsonNode jn = jp.readValueAsTree();
             noteDocument = reader.read(jn);
         }
 
         // then the property with the default value must null
-        Map<String, Object> values = noteDocument.getDataModel("defaultvalue").getMap();
+        Map<String, Object> values = noteDocument.getProperties("defaultvalue");
         assertNull(values.get("dv:multiWithDefault"));
     }
 
