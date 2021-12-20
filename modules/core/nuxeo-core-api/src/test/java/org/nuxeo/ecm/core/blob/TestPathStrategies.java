@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.blob;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -28,7 +29,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
+import org.apache.commons.io.FileSystem;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.Features;
@@ -41,6 +44,12 @@ public class TestPathStrategies {
 
     private String stringify(Path file) {
         return file.toString().replace(File.separatorChar, '/');
+    }
+
+    private void assertLegalOnAllFileSystems(String fileName) {
+        Stream.of(FileSystem.values()).forEach(fs -> {
+            assertTrue(fs.isLegalFileName(fileName));
+        });
     }
 
     @Test
@@ -63,14 +72,13 @@ public class TestPathStrategies {
         for (String key : Arrays.asList( //
                 "foo.doc", //
                 "hello world.bin" //
-                )) {
+        )) {
             assertEquals(key, ps.safePath(key));
             assertEquals(key, ps.safePathInverse(key));
         }
 
         // encoded
-        String[] table = new String[] {
-                ".", "%.", //
+        String[] table = new String[] { ".", "%.", //
                 "..", "%..", //
                 "a/b", "%a%2fb", //
                 "a\\b", "%a%5cb", //
@@ -80,9 +88,32 @@ public class TestPathStrategies {
         };
         for (int i = 0; i < table.length; i += 2) {
             String key = table[i];
-            String expected = table[i+1];
+            String expected = table[i + 1];
             assertEquals(expected, ps.safePath(key));
             assertEquals(key, ps.safePathInverse(expected));
+            assertLegalOnAllFileSystems(expected);
+        }
+    }
+
+    @Test
+    public void testShortenedSafePath() throws IOException {
+        Path dir = Files.createTempDirectory("tmp_");
+        PathStrategy ps = new PathStrategyShortened(dir);
+
+        // encoded
+        String[] table = new String[] { ".", //
+                "..", //
+                "a/b", //
+                "a\\b", //
+                "100%", //
+                "50:50", //
+                "caf\u00e9", //
+                "LONG_0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", //
+                "VERYLONG_0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" };
+        for (int i = 0; i < table.length; i++) {
+            String key = table[i];
+            String expected = ps.safePath(key);
+            assertLegalOnAllFileSystems(expected);
         }
     }
 
@@ -93,6 +124,9 @@ public class TestPathStrategies {
         assertNull(ps.safePathInverse("%foo%"));
         assertNull(ps.safePathInverse("%foo%0"));
         assertNull(ps.safePathInverse("%foo%xy"));
+
+        PathStrategy pss = new PathStrategyShortened(dir);
+        assertThrows(UnsupportedOperationException.class, () -> pss.safePathInverse("foo"));
     }
 
     @Test
