@@ -63,7 +63,7 @@ public class DateProperty extends ScalarProperty {
             }
             try {
                 return (Calendar) field.getType().decode(value.toString());
-            } catch (NumberFormatException e) {
+            } catch (IllegalArgumentException e) {
                 throw new PropertyConversionException(value.getClass(), Calendar.class, e.getMessage());
             }
         }

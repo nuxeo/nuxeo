@@ -20,6 +20,12 @@
   <xs:element name="testDefault" type="xs:string" default="the default value"/>
   <xs:element name="testDefaultLong" type="xs:long" default="0"/>
 
+  <xs:element name="strings" type="nxs:stringList"/>
+
+  <xs:simpleType name="stringList">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
 </xs:schema>
 
 
