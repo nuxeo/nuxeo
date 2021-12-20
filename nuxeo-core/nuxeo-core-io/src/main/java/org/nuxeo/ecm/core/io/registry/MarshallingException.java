@@ -38,12 +38,33 @@ public class MarshallingException extends NuxeoException {
         super(message);
     }
 
+    /**
+     * @since 2021.14
+     */
+    public MarshallingException(String message, int statusCode) {
+        super(message, statusCode);
+    }
+
     public MarshallingException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * @since 2021.14
+     */
+    public MarshallingException(String message, Throwable cause, int statusCode) {
+        super(message, cause, statusCode);
+    }
+
     public MarshallingException(Throwable cause) {
         super(cause);
+    }
+
+    /**
+     * @since 2021.14
+     */
+    public MarshallingException(Throwable cause, int statusCode) {
+        super(cause, statusCode);
     }
 
 }
