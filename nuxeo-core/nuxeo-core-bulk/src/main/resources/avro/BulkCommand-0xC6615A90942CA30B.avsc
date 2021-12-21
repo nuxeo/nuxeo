@@ -1,0 +1,48 @@
+{
+  "type" : "record",
+  "name" : "BulkCommand",
+  "namespace" : "org.nuxeo.ecm.core.bulk.message",
+  "fields" : [ {
+    "name" : "id",
+    "type" : "string"
+  }, {
+    "name" : "action",
+    "type" : "string"
+  }, {
+    "name" : "query",
+    "type" : "string"
+  }, {
+    "name" : "queryLimit",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
+    "name" : "username",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "repository",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "bucketSize",
+    "type" : "int"
+  }, {
+    "name" : "batchSize",
+    "type" : "int"
+  }, {
+    "name" : "scroller",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "genericScroller",
+    "type" : "boolean",
+    "default" : false
+  }, {
+    "name" : "params",
+    "type" : [ "null", {
+      "type" : "string",
+      "CustomEncoding" : "MapAsJsonAsStringEncoding"
+    } ],
+    "default" : null
+  } ]
+}

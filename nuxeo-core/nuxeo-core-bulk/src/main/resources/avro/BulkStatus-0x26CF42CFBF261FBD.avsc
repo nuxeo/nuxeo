@@ -1,0 +1,83 @@
+{
+  "type" : "record",
+  "name" : "BulkStatus",
+  "namespace" : "org.nuxeo.ecm.core.bulk.message",
+  "fields" : [ {
+    "name" : "commandId",
+    "type" : "string"
+  }, {
+    "name" : "action",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "username",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "delta",
+    "type" : "boolean"
+  }, {
+    "name" : "errorCount",
+    "type" : "long"
+  }, {
+    "name" : "errorMessage",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "processed",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
+    "name" : "state",
+    "type" : [ "null", {
+      "type" : "enum",
+      "name" : "State",
+      "namespace" : "org.nuxeo.ecm.core.bulk.message.BulkStatus",
+      "symbols" : [ "UNKNOWN", "SCHEDULED", "SCROLLING_RUNNING", "RUNNING", "COMPLETED", "ABORTED" ]
+    } ],
+    "default" : null
+  }, {
+    "name" : "submitTime",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
+    "name" : "scrollStartTime",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
+    "name" : "scrollEndTime",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
+    "name" : "processingStartTime",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
+    "name" : "processingEndTime",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
+    "name" : "completedTime",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
+    "name" : "total",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
+    "name" : "processingDurationMillis",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
+    "name" : "queryLimitReached",
+    "type" : "boolean",
+    "default" : false
+  }, {
+    "name" : "result",
+    "type" : [ "null", {
+      "type" : "string",
+      "CustomEncoding" : "MapAsJsonAsStringEncoding"
+    } ],
+    "default" : null
+  } ]
+}
