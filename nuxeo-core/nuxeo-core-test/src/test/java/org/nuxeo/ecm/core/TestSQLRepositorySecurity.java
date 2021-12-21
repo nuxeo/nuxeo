@@ -900,9 +900,7 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // wait for asynchronous stuff to finish
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-        eventService.waitForAsyncCompletion();
+        coreFeature.waitForAsyncCompletion();
 
         // check that both users now have access to everything
         assertEquals(nbDocs, numberOfReadableDocuments(firstUser));
