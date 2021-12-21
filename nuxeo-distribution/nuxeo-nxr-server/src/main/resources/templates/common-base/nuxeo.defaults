@@ -309,3 +309,5 @@ nuxeo.bulk.action.trash.defaultConcurrency=1
 nuxeo.bulk.action.trash.defaultPartitions=1
 nuxeo.bulk.action.unholdDocumentsAction.defaultConcurrency=2
 nuxeo.bulk.action.unholdDocumentsAction.defaultPartitions=4
+nuxeo.bulk.action.updateReadAcls.defaultConcurrency=1
+nuxeo.bulk.action.updateReadAcls.defaultPartitions=1
