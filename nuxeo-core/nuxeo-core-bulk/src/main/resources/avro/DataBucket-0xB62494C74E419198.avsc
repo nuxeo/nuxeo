@@ -1,0 +1,30 @@
+{
+  "type" : "record",
+  "name" : "DataBucket",
+  "namespace" : "org.nuxeo.ecm.core.bulk.message",
+  "fields" : [ {
+    "name" : "commandId",
+    "type" : "string"
+  }, {
+    "name" : "count",
+    "type" : "long"
+  }, {
+    "name" : "data",
+    "type" : {
+      "type" : "bytes",
+      "java-class" : "[B"
+    }
+  }, {
+    "name" : "header",
+    "type" : {
+      "type" : "bytes",
+      "java-class" : "[B"
+    }
+  }, {
+    "name" : "footer",
+    "type" : {
+      "type" : "bytes",
+      "java-class" : "[B"
+    }
+  } ]
+}

@@ -4,6 +4,16 @@
   <require>org.nuxeo.runtime.stream.service</require>
 
   <!-- ======================================================================================= -->
+  <!-- Ensure backward/forward compatibility by registering schema evolution -->
+  <extension point="schema" target="org.nuxeo.runtime.avro">
+    <schema name="Record-10.10-HF01" file="avro/Record-0x77EACC1CE6E293FB.avsc " />
+    <schema name="BulkCommand-10.10-HF38" file="avro/BulkCommand-0xC6615A90942CA30B.avsc" />
+    <schema name="BulkStatus-10.10-HF38" file="avro/BulkStatus-0xD8A0F490388FE2A7.avsc" />
+    <schema name="BulkStatus-10.10-HF54" file="avro/BulkStatus-0x26CF42CFBF261FBD.avsc" />
+    <schema name="DataBucket-10.10-HF01" file="avro/DataBucket-0xB62494C74E419198.avsc" />
+  </extension>
+
+  <!-- ======================================================================================= -->
   <!-- Bulk Service configuration -->
 
   <!-- Initialize bulk service streams before action processors -->
