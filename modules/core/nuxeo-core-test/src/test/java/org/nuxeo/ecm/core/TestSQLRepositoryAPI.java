@@ -4984,7 +4984,12 @@ public class TestSQLRepositoryAPI {
         try {
             session.removeDocument(doc.getRef());
             fail("remove should fail");
+        } catch (DocumentSecurityException e) {
+            // Doc under retention or hold will cause this exception
+            assertEquals("Permission denied: cannot remove document " + doc.getId()
+                    + ", Missing permission 'Remove' on document " + doc.getId(), e.getMessage());
         } catch (DocumentExistsException e) {
+            // Descendants under retention or hold will cause this exception
             assertEquals("Cannot remove " + doc.getId() + ", it is under retention / hold", e.getMessage());
         }
 

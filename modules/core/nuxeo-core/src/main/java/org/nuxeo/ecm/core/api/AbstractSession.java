@@ -1476,9 +1476,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 return isAdministrator() ? null : "No working copy and not an Administrator";
             }
         } else {
-            if (isAdministrator()) {
-                return null; // ok
-            }
             if (!hasPermission(doc, REMOVE)) {
                 return "Missing permission '" + REMOVE + "' on document " + doc.getUUID();
             }
