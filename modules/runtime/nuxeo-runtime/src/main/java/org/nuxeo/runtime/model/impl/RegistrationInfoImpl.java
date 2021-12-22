@@ -58,7 +58,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 @XObject("component")
 public class RegistrationInfoImpl implements RegistrationInfo {
 
-    private static final Logger log = LogManager.getLogger(ComponentManager.class);
+    private static final Logger log = LogManager.getLogger(RegistrationInfoImpl.class);
 
     // Note: some of these instance variables are accessed directly from other
     // classes in this package.
