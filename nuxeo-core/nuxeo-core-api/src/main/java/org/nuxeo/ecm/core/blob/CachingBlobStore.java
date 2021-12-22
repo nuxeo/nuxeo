@@ -85,7 +85,7 @@ public class CachingBlobStore extends AbstractBlobStore {
         super(blobProviderId, name, store.getKeyStrategy());
         this.store = store;
         this.cacheConfig = config;
-        cacheStore = new LocalBlobStore(name, store.getKeyStrategy(), new PathStrategyFlat(config.dir));
+        cacheStore = new LocalBlobStore(name, store.getKeyStrategy(), new PathStrategyShortened(config.dir));
         gc = new CachingBinaryGarbageCollector();
     }
 

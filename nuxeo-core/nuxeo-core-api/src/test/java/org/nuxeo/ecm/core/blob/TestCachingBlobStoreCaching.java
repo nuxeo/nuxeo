@@ -54,11 +54,14 @@ public class TestCachingBlobStoreCaching {
 
     protected Path dir;
 
+    protected PathStrategy defaultPathStrategy;
+
     protected MutableClock clock;
 
     @Before
     public void setUp() throws IOException {
         dir = Files.createTempDirectory("testcachingblobstore.");
+        defaultPathStrategy = new PathStrategyShortened(dir);
     }
 
     @After
@@ -92,8 +95,9 @@ public class TestCachingBlobStoreCaching {
         return size;
     }
 
-    protected boolean exists(String path) {
-        return Files.exists(dir.resolve(path));
+    protected boolean exists(String key) {
+        // use default path strategy
+        return Files.exists(defaultPathStrategy.getPathForKey(key));
     }
 
     @Test
