@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.lifecycle;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -29,13 +30,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
@@ -49,13 +51,11 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.core.tests:LifeCycleManagerTestExtensions.xml")
 public class TestLifeCycleService {
 
+    @Inject
     private LifeCycleService lifeCycleService;
 
-    @Before
-    public void setUp() throws Exception {
-        lifeCycleService = Framework.getService(LifeCycleService.class);
-        assertNotNull(lifeCycleService);
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     /**
      * Tests the life cycles registration.
@@ -258,6 +258,14 @@ public class TestLifeCycleService {
 
         String destinationName = transition.getDestinationStateName();
         assertEquals("approved", destinationName);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.tests:test-dummy-lifecycle.xml")
+    public void testDisableLifeCycle() throws Exception {
+        assertNotNull(lifeCycleService.getLifeCycleByName("disableMe"));
+        hotDeployer.deploy("org.nuxeo.ecm.core.tests:test-dummy-lifecycle-disable.xml");
+        assertNull(lifeCycleService.getLifeCycleByName("disableMe"));
     }
 
 }

@@ -58,6 +58,10 @@ public class LifeCycleDescriptor {
     @XNode("@defaultInitial")
     private String defaultInitialStateName;
 
+    /** @since 2021.16 */
+    @XNode("@enabled")
+    private boolean enabled = true;
+
     @XNode("description")
     private String description;
 
@@ -79,6 +83,11 @@ public class LifeCycleDescriptor {
         return name;
     }
 
+    /** @since 2021.16 */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     public String getInitialStateName() {
         return initialStateName;
     }
@@ -96,4 +105,28 @@ public class LifeCycleDescriptor {
         return new LifeCycleTransitionConfiguration(transitions).getTransitions();
     }
 
+    /** @since 2021.16 */
+    @Override
+    public LifeCycleDescriptor clone() {
+        LifeCycleDescriptor clone = new LifeCycleDescriptor();
+        clone.name = name;
+        clone.enabled = enabled;
+        clone.initialStateName = initialStateName;
+        clone.defaultInitialStateName = defaultInitialStateName;
+        clone.description = description;
+        clone.states = states;
+        clone.transitions = transitions;
+        return clone;
+    }
+
+    /** @since 2021.16 */
+    public void merge(LifeCycleDescriptor other) {
+        // we merge based on name, so no name merging needed
+        enabled = other.enabled;
+        initialStateName = other.initialStateName;
+        defaultInitialStateName = other.defaultInitialStateName;
+        description = other.description;
+        states = other.states;
+        transitions = other.transitions;
+    }
 }

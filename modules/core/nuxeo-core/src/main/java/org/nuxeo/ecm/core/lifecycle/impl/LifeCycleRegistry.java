@@ -39,7 +39,7 @@ public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDes
 
     private static final Log log = LogFactory.getLog(LifeCycleRegistry.class);
 
-    protected Map<String, LifeCycle> lifeCycles = new HashMap<>();
+    protected volatile Map<String, LifeCycle> lookup;
 
     @Override
     public String getContributionId(LifeCycleDescriptor contrib) {
@@ -49,38 +49,33 @@ public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDes
     @Override
     public void contributionUpdated(String id, LifeCycleDescriptor contrib, LifeCycleDescriptor newOrigContrib) {
         log.info("Registering lifecycle: " + contrib.getName());
-        lifeCycles.put(contrib.getName(), getLifeCycle(contrib));
+        lookup = null;
     }
 
     @Override
     public void contributionRemoved(String id, LifeCycleDescriptor lifeCycleDescriptor) {
         log.info("Unregistering lifecycle: " + lifeCycleDescriptor.getName());
-        lifeCycles.remove(lifeCycleDescriptor.getName());
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
+        lookup = null;
     }
 
     @Override
     public LifeCycleDescriptor clone(LifeCycleDescriptor orig) {
-        throw new UnsupportedOperationException();
+        return orig.clone();
     }
 
     @Override
     public void merge(LifeCycleDescriptor src, LifeCycleDescriptor dst) {
-        throw new UnsupportedOperationException();
+        dst.merge(src);
     }
 
     // API
 
     public LifeCycle getLifeCycle(String name) {
-        return lifeCycles.get(name);
+        return lookup().get(name);
     }
 
     public Collection<LifeCycle> getLifeCycles() {
-        return lifeCycles.values();
+        return lookup().values();
     }
 
     /**
@@ -114,6 +109,22 @@ public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDes
             log.error(String.format("Default initial state %s not found on lifecycle %s", defaultInitialStateName, name));
         }
         return new LifeCycleImpl(name, defaultInitialStateName, initialStateNames, states, desc.getTransitions());
+    }
+
+    protected Map<String, LifeCycle> lookup() {
+        if (lookup == null) {
+            synchronized (this) {
+                if (lookup == null) {
+                    lookup = new HashMap<>();
+                    for (var desc : toMap().values()) {
+                        if (desc.isEnabled()) {
+                            lookup.put(desc.getName(), getLifeCycle(desc));
+                        }
+                    }
+                }
+            }
+        }
+        return lookup;
     }
 
 }

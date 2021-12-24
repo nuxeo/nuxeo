@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.lifecycle.test-dummy-lifecycle-disable">
+  <require>org.nuxeo.ecm.core.lifecycle.test-dummy-lifecycle</require>
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="lifecycle">
+    <lifecycle name="disableMe" enabled="false" />
+  </extension>
+</component>
