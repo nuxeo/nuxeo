@@ -42,6 +42,10 @@ public class FactoryBindingDescriptor {
     @XNode("@name")
     private String name;
 
+    /** @since 2021.16 */
+    @XNode("@enabled")
+    private boolean enabled = true;
+
     @XNode("@factoryName")
     private String factoryName;
 
@@ -72,6 +76,7 @@ public class FactoryBindingDescriptor {
     }
 
     public FactoryBindingDescriptor(FactoryBindingDescriptor toCopy) {
+        this.enabled = toCopy.enabled;
         this.name = toCopy.name;
         this.factoryName = toCopy.factoryName;
         this.targetType = toCopy.targetType;
@@ -79,6 +84,11 @@ public class FactoryBindingDescriptor {
         this.options = new HashMap<>(toCopy.options);
         this.template = toCopy.template.stream().map(TemplateItemDescriptor::new).collect(Collectors.toList());
         this.rootAcl = toCopy.rootAcl.stream().map(ACEDescriptor::new).collect(Collectors.toList());
+    }
+
+    /** @since 2021.16 */
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public String getFactoryName() {
@@ -134,6 +144,7 @@ public class FactoryBindingDescriptor {
     }
 
     public void merge(FactoryBindingDescriptor src) {
+        enabled = src.enabled;
         if (Boolean.TRUE.equals(src.getAppend())) {
             if (log.isInfoEnabled()) {
                 log.info("FactoryBinding " + name + " is merging with " + src.getName());

@@ -57,7 +57,11 @@ public class FactoryBindingRegistry extends ContributionFragmentRegistry<Factory
 
     @Override
     public FactoryBindingDescriptor getContribution(String docTypeOrFacet) {
-        return super.getContribution(docTypeOrFacet);
+        FactoryBindingDescriptor contrib = super.getContribution(docTypeOrFacet);
+        if (contrib == null  || !contrib.isEnabled()) {
+            return null;
+        }
+        return contrib;
     }
 
 }

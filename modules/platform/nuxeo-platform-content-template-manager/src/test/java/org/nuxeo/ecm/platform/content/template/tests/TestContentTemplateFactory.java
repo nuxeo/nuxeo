@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.content.template.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -48,6 +49,7 @@ import org.nuxeo.ecm.platform.content.template.service.NotificationDescriptor;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -62,6 +64,9 @@ public class TestContentTemplateFactory {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Before
     public void setUp() throws Exception {
@@ -289,6 +294,14 @@ public class TestContentTemplateFactory {
         DocumentModelList children = session.getChildren(specialFolder.getRef());
         assertEquals(1, children.size());
         assertEquals("france", children.get(0).getPropertyValue("sf:country"));
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.content.template.tests:test-dummy-content-template-contrib.xml")
+    public void testDisableTemplate() throws Exception {
+        assertNotNull(service.getFactoryForType("chocolat"));
+        hotDeployer.deploy("org.nuxeo.ecm.platform.content.template.tests:test-dummy-content-template-disable-contrib.xml");
+        assertNull(service.getFactoryForType("chocolat"));
     }
 
 }
