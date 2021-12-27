@@ -84,8 +84,7 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
 
     @Override
     public int getApplicationStartedOrder() {
-        // start before repository and directories
-        return ComponentStartOrders.REPOSITORY - 10;
+        return ComponentStartOrders.MONGODB;
     }
 
     @SuppressWarnings("resource") // client closed by stop()
