@@ -73,6 +73,7 @@ import org.nuxeo.elasticsearch.work.ScrollingIndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -232,10 +233,7 @@ public class ElasticSearchComponent extends DefaultComponent
 
     @Override
     public int getApplicationStartedOrder() {
-        RepositoryService component = (RepositoryService) Framework.getRuntime()
-                                                                   .getComponent(
-                                                                           "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
-        return component.getApplicationStartedOrder() / 2;
+        return ComponentStartOrders.ELASTIC;
     }
 
     void processStackedCommands() {

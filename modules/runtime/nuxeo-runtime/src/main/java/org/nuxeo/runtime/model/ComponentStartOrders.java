@@ -28,6 +28,12 @@ public class ComponentStartOrders {
     /** @since 11.5 */
     public static final int CAPABILITIES = -2000;
 
+    // @since 2021.14
+    public static final int MONGODB = 40;
+
+    // @since 2021.14
+    public static final int ELASTIC = 50;
+
     public static final int REPOSITORY = 100;
 
     public static final int DEFAULT = 1000;
