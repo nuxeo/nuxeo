@@ -88,6 +88,7 @@ public class LifeCycleTrashService extends AbstractTrashService {
             // handle placeless document
             session.removeDocument(doc.getRef());
         } else {
+            checkCanTrash(doc);
             if (!TRUE.equals(doc.getContextData(DISABLE_TRASH_RENAMING))) {
                 String name = mangleName(doc);
                 session.move(doc.getRef(), doc.getParentRef(), name);
