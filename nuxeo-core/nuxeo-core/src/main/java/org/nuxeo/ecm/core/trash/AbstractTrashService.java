@@ -20,12 +20,14 @@ package org.nuxeo.ecm.core.trash;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +35,7 @@ import java.util.stream.StreamSupport;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -40,6 +43,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
@@ -47,6 +51,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.runtime.api.Framework;
@@ -59,6 +64,10 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractTrashService implements TrashService {
 
     public static final String TRASHED_QUERY = "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 1 AND ecm:parentId = '%s'";
+
+    public static final String RETENTION_QUERY = "SELECT * FROM Document, Relation WHERE ecm:ancestorId = '%s' AND ecm:isProxy = 0 AND ecm:retainUntil >= TIMESTAMP '%s'";
+
+    public static final String LEGAL_HOLD_QUERY = "SELECT * FROM Document, Relation WHERE ecm:ancestorId = '%s' AND ecm:isProxy = 0 AND ecm:hasLegalHold = 1";
 
     @Override
     public boolean folderAllowsDelete(DocumentModel folder) {
@@ -334,6 +343,30 @@ public abstract class AbstractTrashService implements TrashService {
             }
         }
         return name;
+    }
+
+    /**
+     * Throws a {@link DocumentExistsException} if a descendant document cannot be trashed.
+     *
+     * @since 2021.14
+     */
+    protected void checkCanTrash(DocumentModel model) {
+        CoreSession session = model.getCoreSession();
+        if (!BaseSession.canDeleteUndeletable(session.getPrincipal())) {
+            PartialList<Map<String, Serializable>> projection = session.queryProjection(
+                    String.format(LEGAL_HOLD_QUERY, model.getId()), 1, 0);
+            if (projection.size() > 0) {
+                throw new DocumentExistsException(
+                        "Cannot remove " + projection.get(0).get(NXQL.ECM_UUID) + ", it is under retention / hold");
+            }
+            Calendar now = Calendar.getInstance();
+            projection = session.queryProjection(String.format(RETENTION_QUERY, model.getId(), now.toInstant()), 1, 0,
+                    false);
+            if (projection.size() > 0) {
+                throw new DocumentExistsException(
+                        "Cannot remove " + projection.get(0).get(NXQL.ECM_UUID) + ", it is under retention / hold");
+            }
+        }
     }
 
 }
