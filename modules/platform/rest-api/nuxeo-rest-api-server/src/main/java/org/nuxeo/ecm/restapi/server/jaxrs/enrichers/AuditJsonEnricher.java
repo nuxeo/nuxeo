@@ -60,6 +60,9 @@ public class AuditJsonEnricher extends AbstractJsonEnricher<DocumentModel>  {
         jg.writeFieldName(NAME);
         jg.writeStartArray();
         try (SessionWrapper wrapper = ctx.getSession(document)) {
+            if (!wrapper.getSession().exists(document.getRef())) {
+                return;
+            }
             DocumentModel searchDocument = wrapper.getSession().createDocumentModel("BasicAuditSearch");
             searchDocument.setPropertyValue("bas:eventIds", (Serializable) ctx.getParameters(AuditAdapter.EVENT_ID_PARAMETER_NAME));
             searchDocument.setPropertyValue("bas:eventCategories", (Serializable) ctx.getParameters(AuditAdapter.CATEGORY_PARAMETER_NAME));

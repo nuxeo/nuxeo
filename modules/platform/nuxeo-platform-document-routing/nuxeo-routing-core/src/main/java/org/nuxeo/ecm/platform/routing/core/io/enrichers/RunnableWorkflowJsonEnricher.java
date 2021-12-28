@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
@@ -52,9 +53,12 @@ public class RunnableWorkflowJsonEnricher extends AbstractJsonEnricher<DocumentM
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
         jg.writeFieldName(NAME);
         jg.writeStartArray();
-        try {
+        try (SessionWrapper wrapper = ctx.getSession(document)) {
+            if (!wrapper.getSession().exists(document.getRef())) {
+                return;
+            }
             DocumentRoutingService documentRoutingService = Framework.getService(DocumentRoutingService.class);
-            List<DocumentRoute> routeModels = documentRoutingService.getRunnableWorkflows(document.getCoreSession(),
+            List<DocumentRoute> routeModels = documentRoutingService.getRunnableWorkflows(wrapper.getSession(),
                     List.of(document.getId()));
             for (DocumentRoute documentRoute : routeModels) {
                 writeEntity(documentRoute, jg);

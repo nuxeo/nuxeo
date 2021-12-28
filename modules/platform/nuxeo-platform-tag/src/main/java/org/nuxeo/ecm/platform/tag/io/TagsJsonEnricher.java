@@ -49,15 +49,17 @@ public class TagsJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
-        TagService tagService = Framework.getService(TagService.class);
-        jg.writeArrayFieldStart(NAME);
         try (SessionWrapper wrapper = ctx.getSession(document)) {
+            if (!wrapper.getSession().exists(document.getRef())) {
+                return;
+            }
+            TagService tagService = Framework.getService(TagService.class);
+            jg.writeArrayFieldStart(NAME);
             for (String tag : tagService.getTags(wrapper.getSession(), document.getId())) {
                 jg.writeString(tag);
             }
+            jg.writeEndArray();
         }
-        jg.writeEndArray();
-
     }
 
 }
