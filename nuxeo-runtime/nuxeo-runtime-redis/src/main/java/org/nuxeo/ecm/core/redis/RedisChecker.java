@@ -46,14 +46,16 @@ public class RedisChecker implements BackingChecker {
     @Override
     public void check(ConfigurationGenerator cg) throws ConfigurationException {
         RedisPoolDescriptor config = getConfig(cg);
+        RedisExecutor executor = config.newExecutor();
         try {
-            RedisExecutor executor = config.newExecutor();
             String pong = executor.execute(Jedis::ping);
             if (!"PONG".equals(pong)) {
                 throw new RuntimeException("Unable to ping Redis, received " + pong); // NOSONAR
             }
         } catch (RuntimeException e) {
             throw new ConfigurationException("Unable to reach Redis on prefix: " + config.prefix, e);
+        } finally {
+            executor.getPool().close();
         }
     }
 
