@@ -33,6 +33,8 @@ public class BlobStatus {
 
     protected Instant downloadableUntil;
 
+    protected boolean ongoingRestore;
+
     public BlobStatus withStorageClass(String storageClass) {
         this.storageClass = storageClass;
         return this;
@@ -45,6 +47,11 @@ public class BlobStatus {
 
     public BlobStatus withDownloadableUntil(Instant downloadableUntil) {
         this.downloadableUntil = downloadableUntil;
+        return this;
+    }
+
+    public BlobStatus withOngoingRestore(boolean ongoingRestore) {
+        this.ongoingRestore = ongoingRestore;
         return this;
     }
 
@@ -71,4 +78,7 @@ public class BlobStatus {
         return downloadableUntil;
     }
 
+    public boolean isOngoingRestore() {
+        return ongoingRestore;
+    }
 }
