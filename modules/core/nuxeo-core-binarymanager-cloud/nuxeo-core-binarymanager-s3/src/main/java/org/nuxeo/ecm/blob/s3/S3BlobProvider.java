@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -244,7 +245,7 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
         Date date = metadata.getRestoreExpirationTime();
         Instant downloadableUntil = date == null ? null : date.toInstant();
         boolean downloadable = storageClass == null || downloadableUntil != null;
-        boolean ongoingRestore = metadata.getOngoingRestore();
+        boolean ongoingRestore = BooleanUtils.isTrue(metadata.getOngoingRestore());
         return new BlobStatus().withStorageClass(storageClass)
                                .withDownloadable(downloadable)
                                .withDownloadableUntil(downloadableUntil)
