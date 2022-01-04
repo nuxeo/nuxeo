@@ -39,6 +39,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
+import static org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.UPDATE_READ_ACL_BAF_IMPL_PROPERTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -76,6 +77,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -850,11 +852,26 @@ public class TestSQLRepositorySecurity {
     }
 
     @Test
-    public void testReadAclOnLargeTree() {
+    public void testReadAclOnLargeTreeBaf() {
         String enabledProp = "nuxeo.core.readacl.async.enabled";
         String thresholdProp = "nuxeo.core.readacl.async.threshold";
         Framework.getProperties().put(enabledProp, "true");
         Framework.getProperties().put(thresholdProp, "10");
+        try {
+            doTestReadAclOnLargeTree();
+        } finally {
+            Framework.getProperties().remove(enabledProp);
+            Framework.getProperties().remove(thresholdProp);
+        }
+    }
+
+    @Test
+    public void testReadAclOnLargeTreeWork() {
+        String enabledProp = "nuxeo.core.readacl.async.enabled";
+        String thresholdProp = "nuxeo.core.readacl.async.threshold";
+        Framework.getProperties().put(enabledProp, "true");
+        Framework.getProperties().put(thresholdProp, "10");
+        Framework.getProperties().put(UPDATE_READ_ACL_BAF_IMPL_PROPERTY, "false");
         try {
             doTestReadAclOnLargeTree();
         } finally {
