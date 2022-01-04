@@ -84,8 +84,15 @@ public class PlatformFunctions extends CoreFunctions {
         }
     }
 
+    /**
+     * @since 2021.14
+     */
+    public NuxeoPrincipal getPrincipal(String username, boolean fetchReferences) {
+        return getUserManager().getPrincipal(username, fetchReferences);
+    }
+
     public NuxeoPrincipal getPrincipal(String username) {
-        return getUserManager().getPrincipal(username, false);
+        return getPrincipal(username, true);
     }
 
     protected String getEmail(NuxeoPrincipal principal, String userSchemaName, String userEmailFieldName) {
@@ -96,7 +103,7 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     public String getEmail(String username) {
-        return getEmail(getPrincipal(username), getUserManager().getUserSchemaName(),
+        return getEmail(getPrincipal(username, false), getUserManager().getUserSchemaName(),
                 getUserManager().getUserEmailField());
     }
 
@@ -154,10 +161,10 @@ public class PlatformFunctions extends CoreFunctions {
             NuxeoPrincipal principal = null;
             if (usePrefix) {
                 if (username.startsWith(NuxeoPrincipal.PREFIX)) {
-                    principal = getPrincipal(username.replace(NuxeoPrincipal.PREFIX, ""));
+                    principal = getPrincipal(username.replace(NuxeoPrincipal.PREFIX, ""), false);
                 }
             } else {
-                principal = getPrincipal(username);
+                principal = getPrincipal(username, false);
             }
             if (principal != null) {
                 String email = getEmail(principal, schemaName, fieldName);
