@@ -131,6 +131,13 @@ public class DBSTransactionState {
 
     public static final String READ_ACL_ASYNC_THRESHOLD_DEFAULT = "500";
 
+    /**
+     * Set this property to false to use worker implementation for read acls update.
+     *
+     * @since 10.10-HF57
+     */
+    public static final String UPDATE_READ_ACL_BAF_IMPL_PROPERTY = "nuxeo.core.readacl.impl.baf";
+
     protected final DBSRepository repository;
 
     protected final DBSSession session;
@@ -555,12 +562,18 @@ public class DBSTransactionState {
                 updateDocumentReadAcls(childId);
             }
 
-            // bulk action to do the whole tree
             nxql = String.format("SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", id);
-            BulkService service = Framework.getService(BulkService.class);
-            BulkCommand command = new BulkCommand.Builder(UPDATE_READ_ACLS_ACTION, nxql).user(
-                    SYSTEM_USERNAME).repository(session.getRepositoryName()).build();
-            service.submit(command);
+            if (Framework.isBooleanPropertyFalse(UPDATE_READ_ACL_BAF_IMPL_PROPERTY)) {
+                // asynchronous work to do the whole tree
+                Work work = new FindReadAclsWork(repository.getName(), nxql, null);
+                Framework.getService(WorkManager.class).schedule(work);
+            } else {
+                // bulk action to do the whole tree (default behavior if UPDATE_READ_ACL_BAF_IMPL_PROPERTY unset)
+                BulkService service = Framework.getService(BulkService.class);
+                BulkCommand command = new BulkCommand.Builder(UPDATE_READ_ACLS_ACTION, nxql).user(
+                        SYSTEM_USERNAME).repository(session.getRepositoryName()).build();
+                service.submit(command);
+            }
         }
     }
 
