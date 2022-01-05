@@ -41,7 +41,7 @@ public class UserAgentMatcher {
 
     private static final Pattern UA_MSIE_FROM_10 = Pattern.compile("^Mozilla.*[Tt]rident/[6-9]\\..*");
 
-    private static final Pattern UA_MSEDGE = Pattern.compile("^Mozilla.*Edge/.*");
+    private static final Pattern UA_MSEDGE = Pattern.compile("^Mozilla.*Edg(e)?/.*");
 
     private UserAgentMatcher() {
         // Helper class
