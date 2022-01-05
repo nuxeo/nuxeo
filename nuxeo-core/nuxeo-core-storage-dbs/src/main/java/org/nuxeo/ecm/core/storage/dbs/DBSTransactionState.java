@@ -65,6 +65,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -1131,7 +1132,9 @@ public class DBSTransactionState {
             blobKeysArray = blobKeys.toArray();
             Arrays.sort(blobKeysArray);
         }
-        docState.put(KEY_BLOB_KEYS, blobKeysArray);
+        if (!Objects.deepEquals(blobKeysArray, docState.get(KEY_BLOB_KEYS))) {
+            docState.put(KEY_BLOB_KEYS, blobKeysArray);
+        }
     }
 
     /**
