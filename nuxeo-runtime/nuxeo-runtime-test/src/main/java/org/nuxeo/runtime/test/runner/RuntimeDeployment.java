@@ -18,7 +18,6 @@
  */
 package org.nuxeo.runtime.test.runner;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
@@ -27,7 +26,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -77,23 +75,10 @@ public class RuntimeDeployment {
     protected LinkedList<RuntimeContext> contexts = new LinkedList<>();
 
     protected void index(Class<?> clazz) {
-        AnnotationScanner scanner = FeaturesRunner.scanner;
-        scanner.scan(clazz);
-        List<? extends Annotation> annos = scanner.getAnnotations(clazz);
-        if (annos == null) {
-            return;
-        }
-        for (Annotation anno : annos) {
-            if (anno.annotationType() == Deploy.class) {
-                index((Deploy) anno);
-            } else if (anno.annotationType() == Deploys.class) {
-                index((Deploys) anno);
-            } else if (anno.annotationType() == LocalDeploy.class) {
-                index((LocalDeploy) anno);
-            } else if (anno.annotationType() == PartialDeploy.class) {
-                index((PartialDeploy) anno);
-            }
-        }
+        AnnotationScanner scanner = FeaturesRunner.getScanner();
+        scanner.getAnnotations(clazz, Deploy.class).forEach(this::index);
+        scanner.getAnnotations(clazz, LocalDeploy.class).forEach(this::index);
+        scanner.getAnnotations(clazz, PartialDeploy.class).forEach(this::index);
     }
 
     protected void index(RunnerFeature feature) {
@@ -101,9 +86,9 @@ public class RuntimeDeployment {
     }
 
     protected void index(Method method) {
-        index(method.getAnnotation(Deploy.class));
-        index(method.getAnnotation(Deploys.class));
+        Arrays.asList(method.getAnnotationsByType(Deploy.class)).forEach(this::index);
         index(method.getAnnotation(LocalDeploy.class));
+        index(method.getAnnotation(PartialDeploy.class));
     }
 
     protected void index(Deploy config) {
@@ -112,15 +97,6 @@ public class RuntimeDeployment {
         }
         for (String each : config.value()) {
             index(each, mainIndex);
-        }
-    }
-
-    private void index(Deploys deploys) {
-        if (deploys == null) {
-            return;
-        }
-        for (Deploy value : deploys.value()) {
-            index(value);
         }
     }
 

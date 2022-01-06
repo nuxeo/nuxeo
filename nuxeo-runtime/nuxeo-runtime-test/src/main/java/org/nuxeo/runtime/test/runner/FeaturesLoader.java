@@ -144,16 +144,14 @@ class FeaturesLoader {
     }
 
     public void loadFeatures(Class<?> classToRun) throws Exception {
-        FeaturesRunner.scanner.scan(classToRun);
         // load required features from annotation
-        List<Features> annos = FeaturesRunner.scanner.getAnnotations(classToRun, Features.class);
-        if (annos != null) {
-            for (Features anno : annos) {
-                for (Class<? extends RunnerFeature> cl : anno.value()) {
-                    loadFeature(new HashSet<Class<?>>(), cl);
-                }
+        List<Features> annos = FeaturesRunner.getScanner().getAnnotations(classToRun, Features.class);
+        for (Features anno : annos) {
+            for (Class<? extends RunnerFeature> cl : anno.value()) {
+                loadFeature(new HashSet<>(), cl);
             }
         }
+
     }
 
     protected void loadFeature(HashSet<Class<?>> cycles, Class<? extends RunnerFeature> clazz) throws Exception {
@@ -164,14 +162,11 @@ class FeaturesLoader {
             throw new IllegalStateException("Cycle detected in features dependencies of " + clazz);
         }
         cycles.add(clazz);
-        FeaturesRunner.scanner.scan(clazz);
         // load required features from annotation
-        List<Features> annos = FeaturesRunner.scanner.getAnnotations(clazz, Features.class);
-        if (annos != null) {
-            for (Features anno : annos) {
-                for (Class<? extends RunnerFeature> cl : anno.value()) {
-                    loadFeature(cycles, cl);
-                }
+        List<Features> annos = FeaturesRunner.getScanner().getAnnotations(clazz, Features.class);
+        for (Features anno : annos) {
+            for (Class<? extends RunnerFeature> cl : anno.value()) {
+                loadFeature(cycles, cl);
             }
         }
         final Holder actual = new Holder(clazz);
