@@ -293,7 +293,7 @@ public class TestHtmlSanitizerServiceImpl {
                 + "<style>#a { content: \"<![CDATA[\" }</style>" //
                 + "<style>#a { content: \"-->\" }</style>" //
                 + "<style>#a { content: \"]]>\" }</style>";
-        String expected = "<select><option><style></style></option></select>" //
+        String expected = "<select><option><style></style>&lt;script&gt;alert(1)&lt;/script&gt;</option></select>" //
                 + "<style></style>" //
                 + "<style></style>" //
                 + "<style></style>" //

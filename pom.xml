@@ -3047,7 +3047,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>1.5.6</version>
+        <version>3.4.1</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
@@ -4148,7 +4148,7 @@
       <dependency>
         <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
         <artifactId>owasp-java-html-sanitizer</artifactId>
-        <version>20190103.NX1</version>
+        <version>20211018.NX1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
