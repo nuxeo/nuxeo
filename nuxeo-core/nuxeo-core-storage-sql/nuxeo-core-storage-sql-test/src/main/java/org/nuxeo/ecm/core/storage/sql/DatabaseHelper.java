@@ -95,6 +95,9 @@ public abstract class DatabaseHelper {
     public static String setProperty(String name, String def) {
         String value = System.getProperty(name);
         if (value == null || value.equals("") || value.equals("${" + name + "}")) {
+            value = Framework.getProperty(name); // for values set by WithFrameworkPropertyFeature
+        }
+        if (value == null || value.equals("") || value.equals("${" + name + "}")) {
             value = def;
         }
         Framework.getProperties().setProperty(name, value);
