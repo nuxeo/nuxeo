@@ -2730,6 +2730,13 @@ public class TestCmisBinding extends TestCmisBindingBase {
         } catch (CmisInvalidArgumentException e) {
             assertTrue(e.getMessage().contains("foo is not a property query name in any of the types"));
         }
+        // NXP-30745 NXP-30748
+        try {
+            query("!");
+            fail();
+        } catch (CmisInvalidArgumentException e) {
+            assertTrue(e.getMessage().contains("line 1:0 no viable alternative at character '!'"));
+        }
     }
 
     @Test
