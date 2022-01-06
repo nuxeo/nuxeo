@@ -22,15 +22,14 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 
@@ -43,6 +42,13 @@ public class AnnotationScanner {
 
     protected final Map<Class<?>, List<Annotation>> classes = new Hashtable<Class<?>, List<Annotation>>();
 
+    protected final Map<Class<?>, Map<Class<?>, List<Annotation>>> classesAnnotations = new ConcurrentHashMap<>();
+
+    /**
+     * @deprecated since 2021.15, doesn't take into account @Repeatable annotations, prefer to use
+     *             {@link #getAnnotations(Class, Class)} instead.
+     */
+    @Deprecated
     public synchronized void scan(Class<?> clazz) {
         if (classes.containsKey(clazz)) {
             return;
@@ -50,6 +56,11 @@ public class AnnotationScanner {
         collectAnnotations(clazz);
     }
 
+    /**
+     * @deprecated since 2021.15, doesn't take into account @Repeatable annotations, prefer to use
+     *             {@link #getAnnotations(Class, Class)} instead.
+     */
+    @Deprecated
     public List<? extends Annotation> getAnnotations(Class<?> clazz) {
         if (!visitedClasses.contains(clazz)) {
             scan(clazz);
@@ -74,12 +85,36 @@ public class AnnotationScanner {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Annotation> List<T> getAnnotations(Class<?> clazz, Class<T> annotationType) {
-        if (!visitedClasses.contains(clazz)) {
-            scan(clazz);
+    public <T extends Annotation> List<T> getAnnotations(Class<?> clazz, Class<T> annotationClass) {
+        return (List<T>) classesAnnotations.computeIfAbsent(clazz, k -> new ConcurrentHashMap<>())
+                                           .computeIfAbsent(annotationClass,
+                                                            k -> collectAnnotations(clazz, annotationClass));
+    }
+
+    protected <T extends Annotation> List<Annotation> collectAnnotations(Class<?> clazz, Class<T> annotationClass) {
+        Set<Annotation> annotations = new LinkedHashSet<>();
+        collectAnnotations(clazz, annotationClass, annotations);
+        return new ArrayList<>(annotations);
+    }
+
+    protected <T extends Annotation> void collectAnnotations(Class<?> clazz, Class<T> annotationClass,
+            Set<Annotation> annotations) {
+        // check if we already computed the annotations for the given clazz
+        if (classesAnnotations.getOrDefault(clazz, Collections.emptyMap()).containsKey(annotationClass)) {
+            annotations.addAll(classesAnnotations.get(clazz).get(annotationClass));
+            return;
         }
-        return (List<T>) ImmutableList.copyOf(Iterables.filter(classes.get(clazz),
-                Predicates.instanceOf(annotationType)));
+        // first collect annotations from class
+        annotations.addAll(Arrays.asList(clazz.getAnnotationsByType(annotationClass)));
+        // second collect annotations from interfaces
+        for (Class<?> itf : clazz.getInterfaces()) {
+            collectAnnotations(itf, annotationClass, annotations);
+        }
+        // third collect annotations from super classes
+        Class<?> superClass = clazz.getSuperclass();
+        if (superClass != null) {
+            collectAnnotations(superClass, annotationClass, annotations);
+        }
     }
 
     /**
