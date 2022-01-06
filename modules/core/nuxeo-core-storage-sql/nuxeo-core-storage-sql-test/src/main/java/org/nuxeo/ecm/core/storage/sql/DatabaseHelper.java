@@ -36,7 +36,6 @@ import org.nuxeo.common.utils.JDBCUtils;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 
 public abstract class DatabaseHelper {
@@ -94,6 +93,9 @@ public abstract class DatabaseHelper {
 
     public static String setProperty(String name, String def) {
         String value = System.getProperty(name);
+        if (value == null || value.equals("") || value.equals("${" + name + "}")) {
+            value = Framework.getProperty(name); // for values set by WithFrameworkPropertyFeature
+        }
         if (value == null || value.equals("") || value.equals("${" + name + "}")) {
             value = def;
         }
