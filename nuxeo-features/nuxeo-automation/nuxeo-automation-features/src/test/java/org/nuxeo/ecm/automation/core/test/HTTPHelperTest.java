@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockserver.integration.ClientAndProxy.startClientAndProxy;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -45,8 +44,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockserver.client.server.MockServerClient;
-import org.mockserver.integration.ClientAndProxy;
+import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.matchers.Times;
 import org.mockserver.model.BinaryBody;
@@ -83,7 +81,6 @@ public class HTTPHelperTest {
     protected static final String SERVER_PATH = "/ws/path/"; // NOSONAR
 
     protected static final int SERVER_PORT = 1080;
-    protected ClientAndProxy proxy;
 
     protected static final String SERVER_URL = "http://" + SERVER_HOST + ":" + SERVER_PORT + SERVER_PATH;
 
@@ -105,7 +102,6 @@ public class HTTPHelperTest {
     @Before
     public void setUp() {
         mockServer = startClientAndServer(1080);
-        proxy = startClientAndProxy(1090);
 
         ctx = new OperationContext(session);
 
@@ -118,7 +114,6 @@ public class HTTPHelperTest {
 
     @After
     public void tearDown() {
-        proxy.stop();
         mockServer.stop();
     }
 

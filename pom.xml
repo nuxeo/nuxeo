@@ -140,6 +140,7 @@
     <lucene.version>7.5.0</lucene.version>
     <elasticsearch.version>6.5.3</elasticsearch.version> <!-- when changing this make sure JNA version is in sync -->
     <jna.version>4.5.2</jna.version>
+    <netty-handler.version>4.1.72.Final</netty-handler.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>2.7.0-NX1</gwt.version>
@@ -2248,6 +2249,14 @@
         <artifactId>transport-netty4-client</artifactId>
         <version>${elasticsearch.version}</version>
       </dependency>
+
+      <!-- need a version more recent than the one pulled by transport-netty4-client -->
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-handler</artifactId>
+        <version>${netty-handler.version}</version>
+      </dependency>
+
       <!-- needed for embedded mode -->
       <dependency>
         <groupId>org.codelibs.elasticsearch.module</groupId>
@@ -3129,7 +3138,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>1.5.15</version>
+        <version>3.4.1</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
@@ -3364,7 +3373,7 @@
       <dependency>
         <groupId>org.mock-server</groupId>
         <artifactId>mockserver-netty</artifactId>
-        <version>3.10.4</version>
+        <version>5.11.2</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
