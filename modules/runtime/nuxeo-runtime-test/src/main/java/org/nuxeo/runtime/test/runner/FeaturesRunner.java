@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.ClassRule;
@@ -134,6 +136,65 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     public Iterable<RunnerFeature> getFeatures() {
         return loader.features();
+    }
+
+    /**
+     * Returns the list of annotations present on the test class, then on the interfaces implemented by the test class,
+     * then on its super class, then on the different features.
+     *
+     * @return the list of annotations for the current test
+     * @since 2021.15
+     */
+    public <T extends Annotation> List<T> getAnnotations(Class<T> type) {
+        var annotations = new ArrayList<>(scanner.getAnnotations(getTargetTestClass(), type));
+        apply("getAnnotations", BACKWARD, holder -> annotations.addAll(scanner.getAnnotations(holder.type, type)));
+        return annotations;
+    }
+
+    /**
+     * Returns the list of annotations for the given method.
+     *
+     * @return the list of annotations for the given method
+     * @since 2021.15
+     */
+    public <T extends Annotation> List<T> getAnnotations(Class<T> type, FrameworkMethod method) {
+        return new ArrayList<>(List.of(method.getMethod().getAnnotationsByType(type)));
+    }
+
+    /**
+     * Returns the list of annotations for the given method if the method is given, otherwise return the list of
+     * annotations for the current test.
+     * <p>
+     * This is a convenient method for feature that has the same code to execute for before class and before method
+     * steps.
+     *
+     * @return the list of annotations for the given method
+     * @since 2021.15
+     */
+    public <T extends Annotation> List<T> getMethodOrTestAnnotations(Class<T> type, @Nullable FrameworkMethod method) {
+        if (method != null) {
+            return getAnnotations(type, method);
+        }
+        return getAnnotations(type);
+    }
+
+    /**
+     * Returns the list of annotations for the given method, if no annotation has been found, get the annotations for
+     * the current test.
+     *
+     * @return the list of annotations for the given method, if they exist, otherwise the list of annotations for the
+     *         current test
+     * @since 2021.15
+     */
+    public <T extends Annotation> List<T> getMethodAnnotationsWithClassFallback(Class<T> type,
+            @Nullable FrameworkMethod method) {
+        if (method != null) {
+            var annotations = getAnnotations(type, method);
+            if (!annotations.isEmpty()) {
+                return annotations;
+            }
+        }
+        return getAnnotations(type);
     }
 
     /**

@@ -24,13 +24,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.classgraph.ClassGraph;
 
@@ -43,6 +41,13 @@ public class AnnotationScanner {
 
     protected final Map<Class<?>, List<Annotation>> classes = new Hashtable<>();
 
+    protected final Map<Class<?>, Map<Class<?>, List<Annotation>>> classesAnnotations = new ConcurrentHashMap<>();
+
+    /**
+     * @deprecated since 2021.15, doesn't take into account @Repeatable annotations, prefer to use
+     *             {@link #getAnnotations(Class, Class)} instead.
+     */
+    @Deprecated(since = "2021.15")
     public synchronized void scan(Class<?> clazz) {
         if (classes.containsKey(clazz)) {
             return;
@@ -50,6 +55,11 @@ public class AnnotationScanner {
         collectAnnotations(clazz);
     }
 
+    /**
+     * @deprecated since 2021.15, doesn't take into account @Repeatable annotations, prefer to use
+     *             {@link #getAnnotations(Class, Class)} instead.
+     */
+    @Deprecated(since = "2021.15")
     public List<? extends Annotation> getAnnotations(Class<?> clazz) {
         if (!visitedClasses.contains(clazz)) {
             scan(clazz);
@@ -74,12 +84,36 @@ public class AnnotationScanner {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Annotation> List<T> getAnnotations(Class<?> clazz, Class<T> annotationType) {
-        if (!visitedClasses.contains(clazz)) {
-            scan(clazz);
+    public <T extends Annotation> List<T> getAnnotations(Class<?> clazz, Class<T> annotationClass) {
+        return (List<T>) classesAnnotations.computeIfAbsent(clazz, k -> new ConcurrentHashMap<>())
+                                           .computeIfAbsent(annotationClass,
+                                                            k -> collectAnnotations(clazz, annotationClass));
+    }
+
+    protected <T extends Annotation> List<Annotation> collectAnnotations(Class<?> clazz, Class<T> annotationClass) {
+        var annotations = new LinkedHashSet<Annotation>();
+        collectAnnotations(clazz, annotationClass, annotations);
+        return new ArrayList<>(annotations);
+    }
+
+    protected <T extends Annotation> void collectAnnotations(Class<?> clazz, Class<T> annotationClass,
+            Set<Annotation> annotations) {
+        // check if we already computed the annotations for the given clazz
+        if (classesAnnotations.getOrDefault(clazz, Map.of()).containsKey(annotationClass)) {
+            annotations.addAll(classesAnnotations.get(clazz).get(annotationClass));
+            return;
         }
-        return (List<T>) ImmutableList.copyOf(Iterables.filter(classes.get(clazz),
-                Predicates.instanceOf(annotationType)));
+        // first collect annotations from class
+        annotations.addAll(List.of(clazz.getAnnotationsByType(annotationClass)));
+        // second collect annotations from interfaces
+        for (Class<?> itf : clazz.getInterfaces()) {
+            collectAnnotations(itf, annotationClass, annotations);
+        }
+        // third collect annotations from super classes
+        Class<?> superClass = clazz.getSuperclass();
+        if (superClass != null) {
+            collectAnnotations(superClass, annotationClass, annotations);
+        }
     }
 
     /**
@@ -97,7 +131,7 @@ public class AnnotationScanner {
         } catch (ArrayStoreException cause) {
             String classpathFiles = new ClassGraph().getClasspathFiles().toString();
             throw new AssertionError("Cannot load annotations of " + clazz.getName()
-                    + ", check your classpath for missing classes\n" + classpathFiles, cause);
+                                             + ", check your classpath for missing classes\n" + classpathFiles, cause);
         }
         // first scan interfaces
         for (Class<?> itf : clazz.getInterfaces()) {

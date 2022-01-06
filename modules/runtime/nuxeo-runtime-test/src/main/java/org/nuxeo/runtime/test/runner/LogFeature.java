@@ -18,10 +18,7 @@
  */
 package org.nuxeo.runtime.test.runner;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -172,10 +169,11 @@ public class LogFeature implements RunnerFeature {
         // Remove the previous threshold if any.
         restoreConsoleLog();
         // Set the new threshold
-        ConsoleLogLevelThreshold consoleLogThreshold = getAnnotation(runner, method, ConsoleLogLevelThreshold.class);
-        if (consoleLogThreshold.value() != null) {
-            setConsoleLogThreshold(consoleLogThreshold.value());
-        }
+        runner.getMethodAnnotationsWithClassFallback(ConsoleLogLevelThreshold.class, method)
+              .stream()
+              .map(ConsoleLogLevelThreshold::value)
+              .findFirst()
+              .ifPresent(this::setConsoleLogThreshold);
     }
 
     /**
@@ -187,10 +185,11 @@ public class LogFeature implements RunnerFeature {
      * @since 11.1
      */
     protected void restoreConsoleThresholdLogLevel(FeaturesRunner runner, FrameworkMethod method) {
-        ConsoleLogLevelThreshold consoleLogThreshold = getAnnotation(runner, method, ConsoleLogLevelThreshold.class);
-        if (consoleLogThreshold.value() != null) {
-            restoreConsoleLog();
-        }
+        runner.getMethodAnnotationsWithClassFallback(ConsoleLogLevelThreshold.class, method)
+              .stream()
+              .map(ConsoleLogLevelThreshold::value)
+              .findFirst()
+              .ifPresent(t -> restoreConsoleLog());
     }
 
     /**
@@ -207,7 +206,7 @@ public class LogFeature implements RunnerFeature {
      * @since 11.1
      */
     protected void addOrUpdateLoggerLevel(FeaturesRunner runner, FrameworkMethod method) {
-        for (LoggerLevel logger : getLoggers(runner, method)) {
+        for (LoggerLevel logger : runner.getMethodOrTestAnnotations(LoggerLevel.class, method)) {
             if (logger.level() != null) {
                 String loggerName = getLoggerName(logger);
                 LoggerContext context = LoggerContext.getContext(false);
@@ -236,41 +235,13 @@ public class LogFeature implements RunnerFeature {
      * @since 11.1
      */
     protected void restoreLoggerLevel(FeaturesRunner runner, FrameworkMethod method) {
-        for (LoggerLevel logger : getLoggers(runner, method)) {
+        for (LoggerLevel logger : runner.getMethodOrTestAnnotations(LoggerLevel.class, method)) {
             if (logger.level() != null) {
                 String loggerName = getLoggerName(logger);
                 Level level = originalLevelByLogger.remove(buildKey(logger, method));
                 Configurator.setLevel(loggerName, level);
             }
         }
-    }
-
-    /**
-     * Retrieves the {@link LoggerLevel}, a {@code Class} or a {@code Method} can be annotated by one or more Logger.
-     *
-     * @since 11.1
-     */
-    protected List<LoggerLevel> getLoggers(FeaturesRunner runner, FrameworkMethod method) {
-        // Unique annotation LoggerLevel.
-        List<LoggerLevel> loggers = new ArrayList<>(List.of(getAnnotation(runner, method, LoggerLevel.class)));
-
-        // Repeatable annotation LoggerLevel using LoggerLevels.
-        LoggerLevels configs = getAnnotation(runner, method, LoggerLevels.class);
-        if (configs.value() != null) {
-            loggers.addAll(List.of(configs.value()));
-        }
-
-        return loggers;
-    }
-
-    /**
-     * Gets the annotation for a given {@code FeaturesRunner}, {@code FrameworkMethod} and a {@code Class} type.
-     *
-     * @since 11.1
-     */
-    protected <T extends Annotation> T getAnnotation(FeaturesRunner runner, FrameworkMethod method, Class<T> type) {
-        return method != null ? runner.getConfig(method, type) : runner.getConfig(type);
-
     }
 
     /**
