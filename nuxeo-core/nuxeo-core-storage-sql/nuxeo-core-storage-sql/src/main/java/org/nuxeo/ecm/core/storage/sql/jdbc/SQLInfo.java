@@ -1245,6 +1245,21 @@ public class SQLInfo {
      * Builds the map from a result set given a list of columns and column keys.
      */
     public static class ColumnMapMaker implements MapMaker {
+
+        /**
+         * Keys for values that are ids.
+         *
+         * @since 2021.15
+         */
+        public static final Set<String> ID_VALUES_KEYS = new HashSet<>(Arrays.asList( //
+                NXQL.ECM_UUID, //
+                NXQL.ECM_PARENTID, //
+                NXQL.ECM_ANCESTORID, //
+                NXQL.ECM_VERSION_VERSIONABLEID, //
+                NXQL.ECM_PROXY_TARGETID, //
+                NXQL.ECM_PROXY_VERSIONABLEID, //
+                NXQL.ECM_FULLTEXT_JOBID));
+
         public final List<Column> columns;
 
         public final List<String> keys;
@@ -1266,7 +1281,7 @@ public class SQLInfo {
             for (Column column : columns) {
                 String key = keys.get(i - 1);
                 Serializable value = column.getFromResultSet(rs, i++);
-                if (NXQL.ECM_UUID.equals(key) || NXQL.ECM_PARENTID.equals(key)) {
+                if (ID_VALUES_KEYS.contains(key)) {
                     value = String.valueOf(value); // idToString
                 }
                 map.put(key, value);
