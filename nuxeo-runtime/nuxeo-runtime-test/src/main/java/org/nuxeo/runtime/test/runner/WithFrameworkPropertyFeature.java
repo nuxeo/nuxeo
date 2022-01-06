@@ -21,7 +21,11 @@ package org.nuxeo.runtime.test.runner;
 
 import java.util.Properties;
 
+import javax.annotation.Nullable;
+
 import org.junit.runners.model.FrameworkMethod;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -31,12 +35,44 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class WithFrameworkPropertyFeature implements RunnerFeature {
 
-    protected Properties previousProperties = new Properties();
+    protected Properties previousClassProperties = new Properties();
+
+    protected Properties previousMethodProperties = new Properties();
+
+    @Override
+    public void initialize(FeaturesRunner runner) throws Exception {
+        // handle annotation on test class
+        // use a listener to be able to add Framework properties before runtime starts
+        Framework.addListener(new RuntimeServiceListener() {
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (event.id == RuntimeServiceEvent.RUNTIME_ABOUT_TO_START) {
+                    putProperties(previousClassProperties, runner, null);
+                    Framework.removeListener(this);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void afterRun(FeaturesRunner runner) throws Exception {
+        removeProperties(previousClassProperties, runner, null);
+    }
 
     @Override
     public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
+        putProperties(previousMethodProperties, runner, method);
+    }
+
+    @Override
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
+        removeProperties(previousMethodProperties, runner, method);
+    }
+
+    protected void putProperties(Properties previousProperties, FeaturesRunner runner,
+            @Nullable FrameworkMethod method) {
         Properties properties = Framework.getProperties();
-        for (WithFrameworkProperty annot : method.getMethod().getAnnotationsByType(WithFrameworkProperty.class)) {
+        for (WithFrameworkProperty annot : runner.getMethodOrTestAnnotations(WithFrameworkProperty.class, method)) {
             String propertyKey = annot.name();
             Object previousProperty = properties.remove(propertyKey);
             if (previousProperty != null) {
@@ -46,10 +82,10 @@ public class WithFrameworkPropertyFeature implements RunnerFeature {
         }
     }
 
-    @Override
-    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
+    protected void removeProperties(Properties previousProperties, FeaturesRunner runner,
+            @Nullable FrameworkMethod method) {
         Properties properties = Framework.getProperties();
-        for (WithFrameworkProperty annot : method.getMethod().getAnnotationsByType(WithFrameworkProperty.class)) {
+        for (WithFrameworkProperty annot : runner.getMethodOrTestAnnotations(WithFrameworkProperty.class, method)) {
             String propertyKey = annot.name();
             if (previousProperties.contains(propertyKey)) {
                 properties.put(propertyKey, previousProperties.get(propertyKey));
@@ -59,5 +95,4 @@ public class WithFrameworkPropertyFeature implements RunnerFeature {
         }
         previousProperties.clear();
     }
-
 }

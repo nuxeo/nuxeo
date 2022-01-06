@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 @Inherited
 @Repeatable(WithFrameworkProperties.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface WithFrameworkProperty {
 
     String name();
