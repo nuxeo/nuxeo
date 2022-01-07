@@ -2,11 +2,11 @@
 <component name="org.nuxeo.ecm.platform.restapi.server.routing.test.task.action" version="1.0.0">
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-    <schema name="var_confirm-20200527183138945-start-node" prefix="var_confirm-20200527183138945-start-node" override="true" src="task-request-unmarshalling/schemas/var_confirm-20200527183138945-start-node.xsd"/>
-    <schema name="var_confirm-20200527183138946-stop-node" prefix="var_confirm-20200527183138946-stop-node" override="true" src="task-request-unmarshalling/schemas/var_confirm-20200527183138946-stop-node.xsd"/>
-    <schema name="var_global_confirm-20200527183230146-approve-task" prefix="var_global_confirm-20200527183230146-approve-task" override="true" src="task-request-unmarshalling/schemas/var_global_confirm-20200527183230146-approve-task.xsd"/>
-    <schema name="var_confirm-20200527183230146-approve-task" prefix="var_confirm-20200527183230146-approve-task" override="true" src="task-request-unmarshalling/schemas/var_confirm-20200527183230146-approve-task.xsd"/>
-    <schema name="var_confirm" prefix="var_confirm" override="true" src="task-request-unmarshalling/schemas/var_confirm.xsd"/>
+    <schema name="var_confirm-20200527183138945-start-node" prefix="v_conf-20200527183138945-start-node" override="true" src="task-request-unmarshalling/schemas/var_confirm-20200527183138945-start-node.xsd"/>
+    <schema name="var_confirm-20200527183138946-stop-node" prefix="v_conf-20200527183138946-stop-node" override="true" src="task-request-unmarshalling/schemas/var_confirm-20200527183138946-stop-node.xsd"/>
+    <schema name="var_global_confirm-20200527183230146-approve-task" prefix="v__global_conf-20200527183230146-approve-task" override="true" src="task-request-unmarshalling/schemas/var_global_confirm-20200527183230146-approve-task.xsd"/>
+    <schema name="var_confirm-20200527183230146-approve-task" prefix="v_conf-20200527183230146-approve-task" override="true" src="task-request-unmarshalling/schemas/var_confirm-20200527183230146-approve-task.xsd"/>
+    <schema name="var_confirm" prefix="v_conf" override="true" src="task-request-unmarshalling/schemas/var_confirm.xsd"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">

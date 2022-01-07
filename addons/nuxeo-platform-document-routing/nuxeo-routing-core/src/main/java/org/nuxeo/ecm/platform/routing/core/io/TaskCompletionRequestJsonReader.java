@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
@@ -90,8 +91,6 @@ public class TaskCompletionRequestJsonReader extends EntityJsonReader<TaskComple
         String comment = getStringField(jn, "comment");
 
         // get the task and workflow schema names
-        String nodeSchema;
-        String workflowSchema;
         Map<String, Serializable> variables = new HashMap<>();
         try (SessionWrapper closeable = ctx.getSession(null)) {
             CoreSession session = closeable.getSession();
@@ -111,16 +110,14 @@ public class TaskCompletionRequestJsonReader extends EntityJsonReader<TaskComple
             // get the variables
             JsonNode variablesNode = jn.get("variables");
             if (variablesNode != null) {
-                String workflowSchemaFacet = (String) graphRoute.getDocument().getPropertyValue(
-                        GraphRoute.PROP_VARIABLES_FACET);
+                String workflowSchemaFacet = (String) graphRoute.getDocument()
+                                                                .getPropertyValue(GraphRoute.PROP_VARIABLES_FACET);
                 CompositeType type = schemaManager.getFacet(workflowSchemaFacet);
-                workflowSchema = type.getSchemaNames()[0];
-                variables.putAll(getVariables(variablesNode, workflowSchema));
+                variables.putAll(getVariables(variablesNode, type.getSchemas().stream().findFirst().get()));
 
                 String nodeSchemaFacet = (String) node.getDocument().getPropertyValue(GraphNode.PROP_VARIABLES_FACET);
                 type = schemaManager.getFacet(nodeSchemaFacet);
-                nodeSchema = type.getSchemaNames()[0];
-                variables.putAll(getVariables(variablesNode, nodeSchema));
+                variables.putAll(getVariables(variablesNode, type.getSchemas().stream().findFirst().get()));
             }
 
         }
@@ -128,10 +125,13 @@ public class TaskCompletionRequestJsonReader extends EntityJsonReader<TaskComple
         return new TaskCompletionRequest(comment, variables, false);
     }
 
-    private Map<String, Serializable> getVariables(JsonNode variables, String schemaName) throws IOException {
+    private Map<String, Serializable> getVariables(JsonNode variables, Schema schema) throws IOException {
         Map<String, Serializable> variable = new HashMap<>();
+        String schemaName = schema.getNamespace() != null && schema.getNamespace().hasPrefix()
+                ? schema.getNamespace().prefix
+                : schema.getName();
         ParameterizedType genericType = TypeUtils.parameterize(List.class, Property.class);
-        try (Closeable resource = ctx.wrap().with(DEFAULT_SCHEMA_NAME, schemaName).open()) {
+        try (Closeable resource = ctx.wrap().with(DEFAULT_SCHEMA_NAME, schema.getName()).open()) {
             List<Property> properties = readEntity(List.class, genericType, variables);
             for (Property property : properties) {
                 variable.put(property.getName().substring(schemaName.length() + 1), property.getValue());

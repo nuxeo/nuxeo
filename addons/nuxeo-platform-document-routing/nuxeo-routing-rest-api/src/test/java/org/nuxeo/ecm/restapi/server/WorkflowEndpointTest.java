@@ -1430,6 +1430,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
     /*
      * NXP-29171
+     * NXP-30658
      */
     @Test
     @Deploy("org.nuxeo.ecm.platform.restapi.server.routing.test:test-specific-task-request-unmarshalling.xml")
@@ -1455,7 +1456,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             taskId = node.get("entries").get(0).get("id").textValue();
         }
 
-        NuxeoGroup group = userManager.getGroup("administrators");
+        NuxeoGroup group = userManager.getGroup("members");
 
         String groupJson = MarshallerHelper.objectToJson(group, RenderingContext.CtxBuilder.get());
         String body = String.format("{\"entity-type\":\"task\", \"id\":\"%s\", \"variables\":{\"assignees\":[%s]}}",
@@ -1475,7 +1476,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
             ArrayNode arrayAssignees = (ArrayNode) nodeAssignees;
             assertEquals("Number of assignees is wrong", 1, arrayAssignees.size());
-            assertEquals("group:administrators", arrayAssignees.get(0).textValue());
+            assertEquals("group:members", arrayAssignees.get(0).textValue());
         }
 
     }
