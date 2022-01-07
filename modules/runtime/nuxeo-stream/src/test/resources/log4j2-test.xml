@@ -17,8 +17,11 @@
     <Logger name="net.openhft.chronicle" level="warn" />
     <!-- debug to view schema registry request -->
     <Logger name="io.confluent.kafka" level="info" />
-    <!-- Hide perf warnings -->
+    <!-- Hide unimportant warnings -->
     <Logger name="net.openhft.chronicle.queue.impl.single.SCQIndexing" level="error" />
+    <Logger name="net.openhft.chronicle.core.io.BackgroundResourceReleaser" level="error" />
+    <Logger name="net.openhft.chronicle.queue.impl.single.QueueFileShrinkManager" level="error" />
+    <Logger name="net.openhft.chronicle.queue.impl.single.ReferenceCountedCache" level="error" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />

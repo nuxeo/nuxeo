@@ -203,6 +203,7 @@
     <Logger name="net.openhft.chronicle.queue.impl.single.SCQIndexing" level="error" /> <!-- Hide perf warnings -->
     <Logger name="net.openhft.chronicle.bytes.MappedFile" level="error" /> <!-- Hide perf warnings -->
     <Logger name="net.openhft.chronicle.queue.impl.single.ReferenceCountedCache" level="error" /> <!-- Hide cache cleaning warnings -->
+    <Logger name="net.openhft.chronicle.core.io.BackgroundResourceReleaser" level="error" /> <!-- Hide already released warnings -->
 
     <Logger name="org.elasticsearch.bootstrap" level="error" />
 
