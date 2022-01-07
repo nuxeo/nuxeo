@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.video.extension;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -797,4 +798,18 @@ public class TestVideoImporterAndListeners {
         assertTrue(transcodedMimeTypes.toString(), transcodedMimeTypes.contains("video/mp4"));
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.video.core:test-video-conversions-enabled.xml")
+    @Deploy("org.nuxeo.ecm.platform.video.core:test-video-auto-versioning-on-creation.xml")
+    public void testAutoVersioningOnCreationNoAutoCheckout() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
+        Blob blob = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+        txFeature.nextTransaction();
+
+        doc = session.getDocument(doc.getRef());
+        assertFalse(doc.isCheckedOut());
+        assertEquals("1.0", doc.getVersionLabel());
+    }
 }
