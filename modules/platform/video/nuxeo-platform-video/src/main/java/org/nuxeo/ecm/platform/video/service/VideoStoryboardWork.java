@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.video.service;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTO_CHECKOUT;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -97,6 +98,7 @@ public class VideoStoryboardWork extends AbstractWork {
             if (doc.isVersion()) {
                 doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
             }
+            doc.putContextData(DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
             session.saveDocument(doc);
         }
 
