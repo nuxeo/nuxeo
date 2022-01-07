@@ -1,0 +1,19 @@
+<component name="org.nuxeo.video.test.versioning" >
+
+  <extension target="org.nuxeo.ecm.core.api.versioning.VersioningService" point="filters">
+    <filter id="isDocumentBeingCreatedForTheFirstTime">
+      <condition>#{previousDocument==null}</condition>
+    </filter>
+    <filter id="isCurrentDocumentAVideo">
+      <facet>Video</facet>
+    </filter>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.api.versioning.VersioningService" point="policies">
+    <policy id="custom-policy-for-videos" order="35" increment="MAJOR">
+      <filter-id>isDocumentBeingCreatedForTheFirstTime</filter-id>
+      <filter-id>isCurrentDocumentAVideo</filter-id>
+    </policy>
+  </extension>
+
+</component>
