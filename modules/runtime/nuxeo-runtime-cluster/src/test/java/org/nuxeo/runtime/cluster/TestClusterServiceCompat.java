@@ -20,18 +20,16 @@ package org.nuxeo.runtime.cluster;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import java.util.Properties;
+import static org.nuxeo.runtime.cluster.ClusterServiceImpl.CLUSTERING_ENABLED_OLD_PROP;
+import static org.nuxeo.runtime.cluster.ClusterServiceImpl.NODE_ID_OLD_PROP;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.cluster.TestClusterServiceCompat.OldClusterPropFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RunnerFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * Test of the compatibility framework properties to define the cluster node id.
@@ -39,18 +37,10 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  * @since 11.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({ ClusterFeature.class, OldClusterPropFeature.class })
+@Features(ClusterFeature.class)
+@WithFrameworkProperty(name = CLUSTERING_ENABLED_OLD_PROP, value = "true")
+@WithFrameworkProperty(name = NODE_ID_OLD_PROP, value = "1111")
 public class TestClusterServiceCompat {
-
-    public static class OldClusterPropFeature implements RunnerFeature {
-
-        @Override
-        public void start(FeaturesRunner runner) throws Exception {
-            Properties properties = Framework.getProperties();
-            properties.put("repository.clustering.enabled", "true");
-            properties.put("repository.clustering.id", "1111");
-        }
-    }
 
     @Inject
     protected ClusterService clusterService;

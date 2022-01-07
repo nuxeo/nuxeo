@@ -32,25 +32,23 @@ import static org.nuxeo.common.Environment.PRODUCT_VERSION;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginStartupPage;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginVideo;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 import com.sun.jersey.api.uri.UriComponent;
 
@@ -59,15 +57,10 @@ import com.sun.jersey.api.uri.UriComponent;
 @Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-framework.xml")
 @Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig.xml")
+@WithFrameworkProperty(name = PRODUCT_VERSION, value = "LTS-2015")
+@WithFrameworkProperty(name = DISTRIBUTION_VERSION, value = "7.10")
+@WithFrameworkProperty(name = DISTRIBUTION_PACKAGE, value = "zip")
 public class TestLoginScreenConfig {
-
-    @Before
-    public void setUp() throws Exception {
-        Properties properties = Framework.getProperties();
-        properties.setProperty(PRODUCT_VERSION, "LTS-2015");
-        properties.setProperty(DISTRIBUTION_VERSION, "7.10");
-        properties.setProperty(DISTRIBUTION_PACKAGE, "zip");
-    }
 
     @Inject
     protected HotDeployer hotDeployer;

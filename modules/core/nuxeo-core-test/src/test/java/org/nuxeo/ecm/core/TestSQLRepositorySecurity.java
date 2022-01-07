@@ -50,8 +50,6 @@ import javax.inject.Inject;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,7 +73,6 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -86,6 +83,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -104,29 +102,12 @@ public class TestSQLRepositorySecurity {
     @Inject
     protected EventService eventService;
 
-    @Before
-    public void setUp() {
-        if (allowNegativeAcl()) {
-            Framework.getProperties().setProperty(SQLSession.ALLOW_NEGATIVE_ACL_PROPERTY, "true");
-        }
-    }
-
-    @After
-    public void tearDown() {
-        Framework.getProperties().remove(SQLSession.ALLOW_NEGATIVE_ACL_PROPERTY);
-    }
-
     protected CoreSession openSessionAs(String username) {
         return CoreInstance.getCoreSession(session.getRepositoryName(), username);
     }
 
     protected CoreSession openSessionAs(NuxeoPrincipal principal) {
         return CoreInstance.getCoreSession(session.getRepositoryName(), principal);
-    }
-
-    // overridden to test with allowed negative properties
-    protected boolean allowNegativeAcl() {
-        return false; // default in Nuxeo
     }
 
     // assumes that the global "session" belongs to an Administrator
@@ -821,17 +802,10 @@ public class TestSQLRepositorySecurity {
     }
 
     @Test
+    @WithFrameworkProperty(name = "nuxeo.core.readacl.async.enabled", value = "true")
+    @WithFrameworkProperty(name = "nuxeo.core.readacl.async.threshold", value = "10")
     public void testReadAclOnLargeTree() {
-        String enabledProp = "nuxeo.core.readacl.async.enabled";
-        String thresholdProp = "nuxeo.core.readacl.async.threshold";
-        Framework.getProperties().put(enabledProp, "true");
-        Framework.getProperties().put(thresholdProp, "10");
-        try {
-            doTestReadAclOnLargeTree();
-        } finally {
-            Framework.getProperties().remove(enabledProp);
-            Framework.getProperties().remove(thresholdProp);
-        }
+        doTestReadAclOnLargeTree();
     }
 
     protected void doTestReadAclOnLargeTree() {

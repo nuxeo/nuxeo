@@ -24,15 +24,14 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
 import org.nuxeo.drive.NuxeoDriveConstants;
 import org.nuxeo.ecm.automation.test.HttpAutomationSession;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * Tests the {@link NuxeoDriveGetClientUpdateInfo} operation.
@@ -43,19 +42,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deprecated
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveAutomationFeature.class)
+// Set Framework properties required for the client update
+@WithFrameworkProperty(name = Environment.DISTRIBUTION_VERSION, value = "5.9.3")
+@WithFrameworkProperty(name = NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY, value = "https://community.nuxeo.com/static/drive-updates/")
 public class TestGetClientUpdateInfo {
 
     @Inject
     protected HttpAutomationSession clientSession;
-
-    @Before
-    public void init() {
-        // Set Framework properties required for the client update
-        Framework.getProperties().put(Environment.DISTRIBUTION_VERSION, "5.9.3");
-        Framework.getProperties()
-                 .put(NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY,
-                         "https://community.nuxeo.com/static/drive-updates/");
-    }
 
     @Test
     public void testGetClientUpdateInfo() throws IOException {

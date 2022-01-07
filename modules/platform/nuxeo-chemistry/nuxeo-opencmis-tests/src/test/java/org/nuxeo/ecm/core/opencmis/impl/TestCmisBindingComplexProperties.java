@@ -57,10 +57,10 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoTypeHelper;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,6 +74,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@WithFrameworkProperty(name = NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, value = "true")
 public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
 
     @Inject
@@ -87,7 +88,6 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
 
     @After
     public void tearDown() {
-        Framework.getProperties().remove(NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES);
         tearDownBinding();
     }
 
@@ -104,9 +104,6 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetComplexListProperty() throws Exception {
-        // Enable complex properties
-        Framework.getProperties().setProperty(NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, "true");
-
         // Create a complex property to encode
         List<Map<String, Object>> propList = createComplexPropertyList(3);
 
@@ -137,9 +134,6 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
     @SuppressWarnings("unchecked")
     @Test
     public void testQueryComplexListProperty() throws Exception {
-        // Enable complex properties
-        Framework.getProperties().setProperty(NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, "true");
-
         // Create a complex property to encode
         List<Map<String, Object>> propList = createComplexPropertyList(3);
 
@@ -179,9 +173,6 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
     @SuppressWarnings("unchecked")
     @Test
     public void testSetComplexListProperty() throws Exception {
-        // Enable complex properties
-        Framework.getProperties().setProperty(NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, "true");
-
         // Create some JSON to pass into the CMIS service
         ArrayList<ObjectNode> nodeList = createComplexNodeList(3, DateTimeFormat.TIME_IN_MILLIS);
 
@@ -217,9 +208,6 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
 
     @Test
     public void testGetComplexProperty() throws Exception {
-        // Enable complex properties
-        Framework.getProperties().setProperty(NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, "true");
-
         // Create a complex property to encode
         List<Map<String, Object>> list = createComplexPropertyList(1);
         Map<String, Object> propMap = list.get(0);
@@ -252,9 +240,6 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
     @SuppressWarnings("unchecked")
     @Test
     public void testQueryComplexProperty() throws Exception {
-        // Enable complex properties
-        Framework.getProperties().setProperty(NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, "true");
-
         // Create a complex property to encode
         List<Map<String, Object>> list = createComplexPropertyList(1);
         Map<String, Object> propMap = list.get(0);
@@ -293,9 +278,6 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
     @SuppressWarnings("unchecked")
     @Test
     public void testSetComplexProperty() throws Exception {
-        // Enable complex properties
-        Framework.getProperties().setProperty(NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, "true");
-
         // Create some JSON to pass into the CMIS service
         ArrayList<ObjectNode> nodeList = createComplexNodeList(1, DateTimeFormat.TIME_IN_MILLIS);
         ObjectNode jsonObj = nodeList.get(0);
@@ -325,9 +307,10 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
     /**
      * Test that complex types are not exposed unless the enabled property is set
      */
+    // TODO this test doesn't work because NuxeoRepository keeps a cache of TypeManager
+    // Don't enable complex properties for this test
+    @WithFrameworkProperty(name = NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, value = "false")
     public void testEnableComplexProperties() throws Exception {
-        // Don't enable complex properties for this test
-
         // Set a complex property on a document
         HashMap<String, Object> propMap = new HashMap<>();
         propMap.put("stringProp", "testString");

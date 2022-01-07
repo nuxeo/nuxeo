@@ -32,10 +32,10 @@ import javax.naming.StringRefAddr;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * Tests the {@link EmailResourceFactory}.
@@ -62,13 +62,17 @@ public class TestEmailResourceFactory {
         attributes = initialProperties.elements();
         properties = factory.toProperties(attributes);
         assertEquals("joe", properties.getProperty(CONFIGURATION_MAIL_SMTP_USER));
+    }
 
+    @Test
+    @WithFrameworkProperty(name = "mail.transport.password", value = "varExpandedPassword")
+    public void testToPropertiesExpanded() {
+        EmailResourceFactory factory = new EmailResourceFactory();
+        Vector<RefAddr> initialProperties = new Vector<>();
         // var property, needs to be expanded
-        Framework.getProperties().put("mail.transport.password", "varExpandedPassword");
         initialProperties.add(new StringRefAddr(CONFIGURATION_MAIL_SMTP_PASSWORD, "${mail.transport.password}"));
-        attributes = initialProperties.elements();
-        properties = factory.toProperties(attributes);
+        var attributes = initialProperties.elements();
+        var properties = factory.toProperties(attributes);
         assertEquals("varExpandedPassword", properties.getProperty(CONFIGURATION_MAIL_SMTP_PASSWORD));
-        Framework.getProperties().remove("mail.transport.password");
     }
 }

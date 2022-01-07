@@ -92,6 +92,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -1122,17 +1123,11 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
      * @since 10.2
      */
     @Test
+    @WithFrameworkProperty(name = DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_INSTANCES_PROPERTY, value = "true")
     public void testWorkflowCleanUpDisabling() throws Exception {
-        Framework.getProperties()
-                 .put(DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_INSTANCES_PROPERTY, "true");
-        try {
-            createWorkflowsThenWaitForCleanup();
-            DocumentModelList cancelled = session.query(CANCELLED_WORKFLOWS);
-            assertEquals(NB_WF, cancelled.size());
-        } finally {
-            Framework.getProperties()
-                     .remove(DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_INSTANCES_PROPERTY);
-        }
+        createWorkflowsThenWaitForCleanup();
+        DocumentModelList cancelled = session.query(CANCELLED_WORKFLOWS);
+        assertEquals(NB_WF, cancelled.size());
     }
 
     protected void createWorkflowsThenWaitForCleanup() throws Exception {

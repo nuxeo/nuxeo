@@ -50,6 +50,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -666,9 +667,9 @@ public class TestNxqlConversion {
     }
 
     @Test
+    // force NXQL.nowPlusPeriodAndDuration to return a known date/time, for tests
+    @WithFrameworkProperty(name = NXQL.TEST_NXQL_NOW, value = "2001-02-03T04:05:06.007Z")
     public void testConverterNOW() {
-        // force NXQL.nowPlusPeriodAndDuration to return a known date/time, for tests
-        Framework.getProperties().put(NXQL.TEST_NXQL_NOW, "2001-02-03T04:05:06.007Z");
         String es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM Document WHERE f1 = NOW()").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -697,7 +698,6 @@ public class TestNxqlConversion {
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
                 "}", es);
-        Framework.getProperties().remove(NXQL.TEST_NXQL_NOW);
     }
 
     @Test

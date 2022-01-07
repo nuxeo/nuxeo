@@ -21,16 +21,15 @@ package org.nuxeo.runtime.cluster;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.runtime.cluster.ClusterServiceImpl.CLUSTERING_ENABLED_OLD_PROP;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.cluster.TestClusterServiceRandom.OldClusterPropFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RunnerFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * Test of the compatibility framework properties to define the cluster node id randomly when no configuration is
@@ -39,17 +38,9 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  * @since 11.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({ ClusterFeature.class, OldClusterPropFeature.class })
+@Features(ClusterFeature.class)
+@WithFrameworkProperty(name = CLUSTERING_ENABLED_OLD_PROP, value = "true") // but don't define repository.clustering.id
 public class TestClusterServiceRandom {
-
-    public static class OldClusterPropFeature implements RunnerFeature {
-
-        @Override
-        public void start(FeaturesRunner runner) throws Exception {
-            Framework.getProperties().put("repository.clustering.enabled", "true");
-            // but don't define repository.clustering.id
-        }
-    }
 
     @Inject
     protected ClusterService clusterService;

@@ -96,6 +96,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 import org.nuxeo.wopi.FileInfo;
 import org.nuxeo.wopi.Operation;
 import org.nuxeo.wopi.WOPIDiscoveryFeature;
@@ -119,6 +120,7 @@ import com.sun.jersey.api.client.WebResource;
 @Deploy("org.nuxeo.ecm.jwt")
 @Deploy("org.nuxeo.wopi:OSGI-INF/test-jwt-contrib.xml")
 @Deploy("org.nuxeo.wopi:OSGI-INF/test-webengine-servletcontainer-contrib.xml")
+@WithFrameworkProperty(name = Environment.PRODUCT_NAME, value = "WOPI Test")
 public class TestFilesEndpoint {
 
     public static final String WOPI_FILES = "site/wopi/files";
@@ -192,8 +194,6 @@ public class TestFilesEndpoint {
 
         // make sure everything is committed
         transactionalFeature.nextTransaction();
-
-        Framework.getProperties().put(Environment.PRODUCT_NAME, "WOPI Test");
     }
 
     protected String getBaseURL() {
@@ -282,8 +282,6 @@ public class TestFilesEndpoint {
     public void tearDown() {
         Stream.of("john", "joe").forEach(userManager::deleteUser);
         client.destroy();
-
-        Framework.getProperties().remove(Environment.PRODUCT_NAME);
     }
 
     @Test

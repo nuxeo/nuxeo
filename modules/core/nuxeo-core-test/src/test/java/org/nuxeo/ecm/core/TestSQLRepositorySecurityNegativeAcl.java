@@ -20,14 +20,13 @@
 
 package org.nuxeo.ecm.core;
 
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
+
 /**
  * Tests about security in a context where negative ACLs are allowed.
  */
+@WithFrameworkProperty(name = SQLSession.ALLOW_NEGATIVE_ACL_PROPERTY, value = "true")
 public class TestSQLRepositorySecurityNegativeAcl extends TestSQLRepositorySecurity {
-
-    @Override
-    protected boolean allowNegativeAcl() {
-        return true;
-    }
 
 }

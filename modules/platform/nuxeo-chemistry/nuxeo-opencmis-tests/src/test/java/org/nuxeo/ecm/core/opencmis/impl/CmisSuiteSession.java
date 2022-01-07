@@ -111,6 +111,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoContentStream;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoTypeHelper;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -121,6 +122,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -1313,11 +1315,8 @@ public class CmisSuiteSession {
     }
 
     @Test
+    @WithFrameworkProperty(name = NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, value = "true")
     public void testComplexProperties() throws Exception {
-        // Enable complex properties
-        String ENABLE_COMPLEX_PROPERTIES = "org.nuxeo.cmis.enableComplexProperties";
-        Framework.getProperties().setProperty(ENABLE_COMPLEX_PROPERTIES, "true");
-
         cmisFeatureSession.tearDownCmisSession();
         Thread.sleep(1000); // otherwise sometimes fails to set up again
         session = cmisFeatureSession.setUpCmisSession(coreSession.getRepositoryName());

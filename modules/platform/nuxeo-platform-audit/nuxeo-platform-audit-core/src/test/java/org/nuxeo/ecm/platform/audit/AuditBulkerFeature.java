@@ -21,11 +21,10 @@ package org.nuxeo.ecm.platform.audit;
 import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_AUDIT_ENABLED_PROP;
 
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 @Features({ ManagementFeature.class, PlatformFeature.class })
 @Deploy("org.nuxeo.runtime.datasource")
@@ -34,18 +33,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.audit")
 @Deploy("org.nuxeo.ecm.platform.audit:nxaudit-ds.xml")
 @Deploy("org.nuxeo.ecm.platform.audit:test-audit-bulker-contrib.xml")
+@WithFrameworkProperty(name = STREAM_AUDIT_ENABLED_PROP, value = "false")
 public class AuditBulkerFeature extends AuditFeature {
-
-    @Override
-    public void start(FeaturesRunner runner) throws Exception {
-        // enable it for AuditLogger#await
-        Framework.getProperties().setProperty(STREAM_AUDIT_ENABLED_PROP, "false");
-    }
-
-    @Override
-    public void stop(FeaturesRunner runner) throws Exception {
-        // disable it for next tests
-        Framework.getProperties().setProperty(STREAM_AUDIT_ENABLED_PROP, "true");
-    }
 
 }

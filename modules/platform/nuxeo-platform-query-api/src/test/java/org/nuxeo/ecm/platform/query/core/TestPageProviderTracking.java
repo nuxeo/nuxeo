@@ -43,10 +43,10 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * @since 7.4
@@ -77,11 +77,8 @@ public class TestPageProviderTracking {
     }
 
     @Test
+    @WithFrameworkProperty(name = AbstractPageProvider.PAGEPROVIDER_TRACK_PROPERTY_NAME, value = "CURRENT_DOCUMENT_CHILDREN2")
     public void testTrackingProperty() throws Exception {
-
-        Framework.getProperties().setProperty(AbstractPageProvider.PAGEPROVIDER_TRACK_PROPERTY_NAME,
-                "CURRENT_DOCUMENT_CHILDREN2");
-
         PageProviderDefinition def = pps.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN2");
         assertFalse(def.isUsageTrackingEnabled());
 

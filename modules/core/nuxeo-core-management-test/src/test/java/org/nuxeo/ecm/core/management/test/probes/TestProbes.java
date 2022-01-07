@@ -29,7 +29,6 @@ import static org.nuxeo.ecm.core.management.probes.ProbeManagerImpl.DEFAULT_HEAL
 
 import java.util.Collection;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,12 +39,12 @@ import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.test.runner.LoggerLevel;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 import com.google.inject.Inject;
 
@@ -56,6 +55,8 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.ecm.core.management")
 @Deploy("org.nuxeo.ecm.core.management.test")
 @LoggerLevel(klass = HealthCheckResult.class, level = "ERROR")
+// remove effects linked to cache for these tests
+@WithFrameworkProperty(name = DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY, value = TestProbes.TEST_INTERVAL_SECONDS)
 public class TestProbes {
 
     private static final String TEST_PROBE_OK_RESULT_AS_JSON = "{\"testProbeStatus\":\"ok\"}";
@@ -66,7 +67,7 @@ public class TestProbes {
 
     private static final String ALL_PROBES_FAILED_RESULT_AS_JSON = "{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"failed\",\"streamStatus\":\"ok\"}";
 
-    protected static final int TEST_INTERVAL_SECONDS = -1;
+    protected static final String TEST_INTERVAL_SECONDS = "-1";
 
     @Inject
     protected ProbeManager pm;
@@ -76,17 +77,8 @@ public class TestProbes {
 
     @Before
     public void removeCacheOnProbes() {
-        // remove effects linked to cache for these tests
-        Framework.getProperties()
-                 .setProperty(DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY, String.valueOf(TEST_INTERVAL_SECONDS));
         // reset fake service status
         fs.setSuccess();
-    }
-
-    @After
-    public void cleanupProbes() {
-        // set healthCheck interval back to default value after each test
-        Framework.getProperties().remove(DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY);
     }
 
     @Test

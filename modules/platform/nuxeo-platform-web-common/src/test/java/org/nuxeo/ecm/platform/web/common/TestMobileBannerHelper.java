@@ -29,10 +29,10 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * @since 9.1
@@ -40,6 +40,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.url")
+@WithFrameworkProperty(name = "nuxeo.mobile.application.protocol", value = "nuxeo")
+@WithFrameworkProperty(name = "nuxeo.mobile.application.android.package", value = "com.nuxeomobile")
+@WithFrameworkProperty(name = "nuxeo.mobile.application.iTunesId", value = "id1103802613")
 public class TestMobileBannerHelper {
 
     public static final String BASE_URL = "http://localhost:8080/nuxeo/";
@@ -53,9 +56,6 @@ public class TestMobileBannerHelper {
 
     @Before
     public void init() {
-        Framework.getProperties().put("nuxeo.mobile.application.protocol", "nuxeo");
-        Framework.getProperties().put("nuxeo.mobile.application.android.package", "com.nuxeomobile");
-        Framework.getProperties().put("nuxeo.mobile.application.iTunesId", "id1103802613");
         doc = session.createDocument(session.createDocumentModel("/", "testDoc", "File"));
     }
 
