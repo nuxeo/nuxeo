@@ -650,7 +650,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(Boolean.FALSE, // ...
                 getValue(data, NuxeoTypeHelper.NX_ISVERSION));
         assertEquals(Boolean.FALSE, // ...
-                     getValue(data, NuxeoTypeHelper.NX_ISTRASHED));
+                getValue(data, NuxeoTypeHelper.NX_ISTRASHED));
         assertEquals("project", getValue(data, NuxeoTypeHelper.NX_LIFECYCLE_STATE));
         assertEquals(rootFolderId, getValue(data, NuxeoTypeHelper.NX_PARENT_ID));
         @SuppressWarnings("unchecked")
@@ -1064,56 +1064,52 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         tree = navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(2), null, null, null, null,
                 null, null);
-        assertEquals(
-                "testfolder1_Title[" //
-                        + /* */"testfile1_Title, " //
-                        + /* */"testfile2_Title, " //
-                        + /* */"testfile3_Title], " //
-                        + "testfolder2_Title[" //
-                        + /* */"testfolder3_Title, " //
-                        + /* */"testfolder4_Title" //
-                        + /* */(supportsProxies() ? ", title6" : "") //
-                        + "]", //
+        assertEquals("testfolder1_Title[" //
+                + /* */"testfile1_Title, " //
+                + /* */"testfile2_Title, " //
+                + /* */"testfile3_Title], " //
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title, " //
+                + /* */"testfolder4_Title" //
+                + /* */(supportsProxies() ? ", title6" : "") //
+                + "]", //
                 flat(tree));
 
         tree = navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(3), null, null, null, null,
                 null, null);
-        assertEquals(
-                "testfolder1_Title[" //
-                        + /* */"testfile1_Title, " //
-                        + /* */"testfile2_Title, " //
-                        + /* */"testfile3_Title], " //
-                        + "testfolder2_Title[" //
-                        + /* */"testfolder3_Title[testfile4_Title, title6], " //
-                        + /* */"testfolder4_Title" //
-                        + /* */(supportsProxies() ? ", title6" : "") //
-                        + "]", //
+        assertEquals("testfolder1_Title[" //
+                + /* */"testfile1_Title, " //
+                + /* */"testfile2_Title, " //
+                + /* */"testfile3_Title], " //
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title[testfile4_Title, title6], " //
+                + /* */"testfolder4_Title" //
+                + /* */(supportsProxies() ? ", title6" : "") //
+                + "]", //
                 flat(tree));
 
         tree = navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(4), null, null, null, null,
                 null, null);
-        assertEquals(
-                "testfolder1_Title[" //
-                        + /* */"testfile1_Title, " //
-                        + /* */"testfile2_Title, " //
-                        + /* */"testfile3_Title], " //
-                        + "testfolder2_Title[" //
-                        + /* */"testfolder3_Title[testfile4_Title, title6], " //
-                        + /* */"testfolder4_Title" //
-                        + /* */(supportsProxies() ? ", title6" : "") //
-                        + "]", //
+        assertEquals("testfolder1_Title[" //
+                + /* */"testfile1_Title, " //
+                + /* */"testfile2_Title, " //
+                + /* */"testfile3_Title], " //
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title[testfile4_Title, title6], " //
+                + /* */"testfolder4_Title" //
+                + /* */(supportsProxies() ? ", title6" : "") //
+                + "]", //
                 flat(tree));
 
         tree = navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(-1), null, null, null, null,
                 null, null);
-        assertEquals(
-                "testfolder1_Title[testfile1_Title, " + /* */"testfile2_Title, " //
-                        + /* */"testfile3_Title], " //
-                        + "testfolder2_Title[" //
-                        + /* */"testfolder3_Title[testfile4_Title, title6], " //
-                        + /* */"testfolder4_Title" //
-                        + /* */(supportsProxies() ? ", title6" : "") //
-                        + "]", //
+        assertEquals("testfolder1_Title[testfile1_Title, " + /* */"testfile2_Title, " //
+                + /* */"testfile3_Title], " //
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title[testfile4_Title, title6], " //
+                + /* */"testfolder4_Title" //
+                + /* */(supportsProxies() ? ", title6" : "") //
+                + "]", //
                 flat(tree));
 
         ObjectData ob = getObjectByPath("/testfolder2");
@@ -1161,38 +1157,34 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         tree = navService.getFolderTree(repositoryId, rootFolderId, BigInteger.valueOf(2), null, null, null, null, null,
                 null);
-        assertEquals(
-                "testfolder1_Title, " //
-                        + "testfolder2_Title[" //
-                        + /* */"testfolder3_Title, " //
-                        + /* */"testfolder4_Title]", //
+        assertEquals("testfolder1_Title, " //
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title, " //
+                + /* */"testfolder4_Title]", //
                 flat(tree));
 
         tree = navService.getFolderTree(repositoryId, rootFolderId, BigInteger.valueOf(3), null, null, null, null, null,
                 null);
-        assertEquals(
-                "testfolder1_Title, " //
-                        + "testfolder2_Title[" //
-                        + /* */"testfolder3_Title, " //
-                        + /* */"testfolder4_Title]", //
+        assertEquals("testfolder1_Title, " //
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title, " //
+                + /* */"testfolder4_Title]", //
                 flat(tree));
 
         tree = navService.getFolderTree(repositoryId, rootFolderId, BigInteger.valueOf(4), null, null, null, null, null,
                 null);
-        assertEquals(
-                "testfolder1_Title, " //
-                        + "testfolder2_Title[" //
-                        + /* */"testfolder3_Title, " //
-                        + /* */"testfolder4_Title]", //
+        assertEquals("testfolder1_Title, " //
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title, " //
+                + /* */"testfolder4_Title]", //
                 flat(tree));
 
         tree = navService.getFolderTree(repositoryId, rootFolderId, BigInteger.valueOf(-1), null, null, null, null,
                 null, null);
-        assertEquals(
-                "testfolder1_Title, " //
-                        + "testfolder2_Title[" //
-                        + /* */"testfolder3_Title, " //
-                        + /* */"testfolder4_Title]", //
+        assertEquals("testfolder1_Title, " //
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title, " //
+                + /* */"testfolder4_Title]", //
                 flat(tree));
 
         ObjectData ob = getObjectByPath("/testfolder2");
@@ -1437,8 +1429,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         statement = "SELECT cmis:objectId, dc:description" //
                 + " FROM File" //
-                + " WHERE dc:title = 'testfile1_Title' AND dc:description <> 'argh'"
-                + " AND dc:coverage <> 'zzzzz'";
+                + " WHERE dc:title = 'testfile1_Title' AND dc:description <> 'argh'" + " AND dc:coverage <> 'zzzzz'";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
 
@@ -1732,10 +1723,10 @@ public class TestCmisBinding extends TestCmisBindingBase {
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
         assertEquals("testfile1_Title",
-                     res.getObjects().get(0).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
+                res.getObjects().get(0).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
         // file5 was deleted in the setup function of the test case
         assertEquals("title5",
-                     res.getObjects().get(1).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
+                res.getObjects().get(1).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
 
         statement = "SELECT cmis:name FROM File WHERE nuxeo:isTrashed = true OR nuxeo:isTrashed = false";
         res = query(statement);
@@ -1764,7 +1755,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         res = query("SELECT cmis:name FROM File WHERE nuxeo:lifecycleState = 'obsolete'");
         assertEquals(1, res.getNumItems().intValue());
         assertEquals("testfile1_Title",
-                     res.getObjects().get(0).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
+                res.getObjects().get(0).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
 
         res = query("SELECT cmis:name FROM File  "
                 + "WHERE nuxeo:lifecycleState IN ('project', 'obsolete', 'somethingelse')");
@@ -2880,9 +2871,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(1, res.getNumItems().intValue());
     }
 
-
     @Test
-    //NXP-23164
+    // NXP-23164
     public void testNonPrefixedFields() throws Exception {
         ObjectList res;
         String statement;
@@ -2892,7 +2882,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertNotNull(id);
         ObjectData ob = getObject(id);
 
-        //Initially icon is null
+        // Initially icon is null
         checkValue("icon", null, ob);
         Properties props = createProperties("icon", "my/icon");
         Holder<String> idHolder = new Holder<>(ob.getId());
@@ -2901,7 +2891,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         waitForIndexing();
 
-        statement = "SELECT icon, minor_version FROM File WHERE cmis:objectId = '"+id+"'";
+        statement = "SELECT icon, minor_version FROM File WHERE cmis:objectId = '" + id + "'";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         ObjectData singleResult = res.getObjects().get(0);
@@ -3299,8 +3289,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // create live proxy
 
         Helper.sleepForAuditGranularity();
-        coreSession.createProxy(new PathRef("/testfolder1/testfile1"),
-                new PathRef("/testfolder2"));
+        coreSession.createProxy(new PathRef("/testfolder1/testfile1"), new PathRef("/testfolder2"));
         coreSession.save();
         nextTransaction();
         waitForIndexing();
@@ -3336,13 +3325,13 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // Grant read right on root for john
         ACP acp = new ACPImpl();
         acp.addACE(ACL.LOCAL_ACL, new ACE("john", SecurityConstants.READ, true));
-        coreSession.setACP(new PathRef("/"), acp,  false);
+        coreSession.setACP(new PathRef("/"), acp, false);
 
         // Deny read right on testfolder3 for john
         PathRef folder3Ref = new PathRef("/testfolder2/testfolder3");
         acp = coreSession.getACP(folder3Ref);
         acp.blockInheritance(ACL.LOCAL_ACL, "Administrator");
-        coreSession.setACP(folder3Ref, acp,  true);
+        coreSession.setACP(folder3Ref, acp, true);
 
         coreSession.save();
         nextTransaction();
@@ -3392,13 +3381,13 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // Grant read right on root for john
         ACP acp = new ACPImpl();
         acp.addACE(ACL.LOCAL_ACL, new ACE("john", SecurityConstants.READ, true));
-        coreSession.setACP(new PathRef("/"), acp,  false);
+        coreSession.setACP(new PathRef("/"), acp, false);
 
         // Deny read right on testfolder3 for john
         PathRef folder3Ref = new PathRef("/testfolder2/testfolder3");
         acp = coreSession.getACP(folder3Ref);
         acp.blockInheritance(ACL.LOCAL_ACL, "Administrator");
-        coreSession.setACP(folder3Ref, acp,  true);
+        coreSession.setACP(folder3Ref, acp, true);
 
         coreSession.save();
         nextTransaction();
