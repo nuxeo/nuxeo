@@ -28,8 +28,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -86,6 +89,13 @@ public class ElasticSearchIndexConfig {
 
     @XNode("mapping@file")
     protected String mappingFile;
+
+    // @since 2021.17
+    protected List<String> extraMappings = new ArrayList<>();
+
+    // @since 2021.17
+    @XNode("mapping@append")
+    protected Boolean mappingAppend;
 
     @XNodeList(value = "fetchFromSource/exclude", type = String[].class, componentType = String.class)
     protected String[] excludes;
@@ -174,6 +184,18 @@ public class ElasticSearchIndexConfig {
         return contentOfFile(DEFAULT_MAPPING_FILE);
     }
 
+    public List<String> getExtraMappings() {
+        List<String> mappings = new ArrayList<>();
+        for (String extraMapping : extraMappings) {
+            if (extraMapping.endsWith(".json")) {
+                mappings.add(contentOfFile(extraMapping));
+            } else {
+                mappings.add(extraMapping);
+            }
+        }
+        return mappings;
+    }
+
     public boolean mustCreate() {
         return create;
     }
@@ -209,16 +231,19 @@ public class ElasticSearchIndexConfig {
         if (other == null) {
             return;
         }
-        if (mapping == null && other.mapping != null) {
+        if (BooleanUtils.isTrue(other.mappingAppend)) {
+            if (other.mappingFile != null) {
+                extraMappings.add(other.mappingFile);
+            } else {
+                extraMappings.add(other.mapping);
+            }
+        } else if (other.mapping != null || other.mappingFile != null) {
             mapping = other.mapping;
-        }
-        if (settings == null && other.settings != null) {
-            settings = other.settings;
-        }
-        if (mappingFile == null && other.mappingFile != null) {
             mappingFile = other.mappingFile;
+            extraMappings.clear();
         }
-        if (settingsFile == null && other.settingsFile != null) {
+        if (other.settings != null || other.settingsFile != null) {
+            settings = other.settings;
             settingsFile = other.settingsFile;
         }
     }

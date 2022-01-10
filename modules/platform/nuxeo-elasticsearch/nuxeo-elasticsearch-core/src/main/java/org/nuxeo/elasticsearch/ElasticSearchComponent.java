@@ -147,8 +147,12 @@ public class ElasticSearchComponent extends DefaultComponent
             ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
             ElasticSearchIndexConfig previous = indexConfig.get(idx.getName());
             if (idx.isEnabled()) {
-                idx.merge(previous);
-                indexConfig.put(idx.getName(), idx);
+                if (previous != null) {
+                    previous.merge(idx);
+                    indexConfig.put(idx.getName(), previous);
+                } else {
+                    indexConfig.put(idx.getName(), idx);
+                }
                 log.info("Registering index configuration: " + idx + ", loaded from " + contributor.getName());
             } else if (previous != null) {
                 log.info("Disabling index configuration: " + previous + ", deactivated by " + contributor.getName());

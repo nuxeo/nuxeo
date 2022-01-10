@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.test.append.true.mapping.without.mappingfile.contrib">
+  <extension point="elasticSearchIndex" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <elasticSearchIndex name="nxutest">
+      <mapping append="true">
+        {
+          "properties": {
+            "ecm:name": {
+              "type": "keyword",
+              "ignore_above": 256,
+              "copy_to": "all_field"
+            }
+          }
+        }
+      </mapping>
+    </elasticSearchIndex>
+  </extension>
+</component>

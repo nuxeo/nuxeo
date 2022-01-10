@@ -62,6 +62,13 @@ public interface ESClient extends AutoCloseable {
     void createIndex(String indexName, String jsonSettings);
 
     void createMapping(String indexName, String type, String jsonMapping);
+    
+    /**
+     * Returns the mapping from elastic, exposed for testing purposes
+     *
+     * @since 2021.17
+     */
+    String getMapping(String indexName);
 
     String getNodesInfo();
 

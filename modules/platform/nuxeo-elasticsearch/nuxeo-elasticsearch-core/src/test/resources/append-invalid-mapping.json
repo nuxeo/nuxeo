@@ -1,0 +1,7 @@
+{
+  "properties": {
+    "note:note": {
+      "type": "integer"
+    }
+  }
+}

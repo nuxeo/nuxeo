@@ -219,6 +219,20 @@ public class ESRestClient implements ESClient {
         }
     }
 
+    @Override
+    public String getMapping(String indexName) {
+        Request request = new Request("GET", String.format("/%s/_mapping", indexName));
+        Response response = performRequestWithTracing(request);
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            throw new NuxeoException(String.format("Fail to get mapping on %s: %s", indexName, response));
+        }
+        try {
+            return EntityUtils.toString(response.getEntity());
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+    }
+
     protected Response performRequest(Request request) {
         try {
             return lowLevelClient.performRequest(request);

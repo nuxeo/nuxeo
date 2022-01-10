@@ -53,7 +53,6 @@ import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.pubsub.AbstractPubSubBroker;
-import org.nuxeo.runtime.pubsub.StreamPubSubProvider;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -522,6 +521,13 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             log.info("Creating mapping type: {} on index: {}", indexName, conf.getName());
             log.debug("Using mapping: {}", conf::getMapping);
             getClient().createMapping(indexName, conf.getType(), conf.getMapping());
+            for (String extraMapping : conf.getExtraMappings()) {
+                try {
+                    getClient().createMapping(indexName, conf.getType(), extraMapping);
+                } catch (NuxeoException e) {
+                    throw e.addInfo("An error occurred while putting the mapping: " + extraMapping + " into ElasticSearch configuration");
+                }
+            }
             if (!dropIfExists && conf.getRepositoryName() != null) {
                 repositoryInitialized.add(conf.getRepositoryName());
             }

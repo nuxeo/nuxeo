@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.test.append.invalid.mapping.without.mappingfile.contained.contrib">
+  <extension point="elasticSearchIndex" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <elasticSearchIndex name="nxutest">
+      <mapping append="true">
+        {
+          "properties": {
+            "note:note": {
+              "type": "integer"
+            }
+          }
+        }
+      </mapping>
+    </elasticSearchIndex>
+  </extension>
+</component>

@@ -153,6 +153,11 @@ public class ESTransportClient implements ESClient {
     }
 
     @Override
+    public String getMapping(String indexName) {
+        return client.admin().indices().prepareGetMappings(indexName).get().toString();
+    }
+
+    @Override
     public String getNodesInfo() {
         return client.admin().cluster().prepareNodesInfo().get().toString();
     }

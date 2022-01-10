@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.test.dynamic.mapping.contrib">
+  <require>org.nuxeo.elasticsearch.test.mapping.contrib</require>
   <extension point="elasticSearchIndex" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
     <elasticSearchIndex name="nxutest" repository="test" type="doc">
-      <mapping file="dynamic-mapping.json" />
+      <mapping file="dynamic-mapping.json" append="true"/>
     </elasticSearchIndex>
   </extension>
   <!-- custom writer to be used with the dynamic mapper -->

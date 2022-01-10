@@ -1,0 +1,9 @@
+{
+  "properties": {
+    "ecm:name": {
+      "type": "keyword",
+      "ignore_above": 256,
+      "copy_to": "all_field"
+    }
+  }
+}
