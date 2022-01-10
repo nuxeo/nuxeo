@@ -330,7 +330,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending(KEY_READ_ACL));
         IndexOptions parentNameIndexOptions = new IndexOptions();
         if (descriptor != null) {
-            parentNameIndexOptions.unique(Boolean.TRUE.equals(descriptor.getChildNameUniqueConstraintEnabled()));
+            parentNameIndexOptions.unique(Boolean.TRUE.equals(descriptor.getChildNameUniqueConstraintEnabled()))
+                                  .partialFilterExpression(Filters.exists(KEY_PARENT_ID));
         }
         coll.createIndex(Indexes.ascending(KEY_PARENT_ID, KEY_NAME), parentNameIndexOptions);
         // often used in user-generated queries
