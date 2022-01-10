@@ -19,10 +19,13 @@
 
 package org.nuxeo.ecm.core.mongodb;
 
+import static java.util.stream.Collectors.toList;
 import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -34,6 +37,8 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -104,6 +109,20 @@ public class TestMongoDBIndices {
         }
     }
 
+    @Test
+    public void shouldNotFailWhenCreatingVersions() {
+        CoreSession bobSession = CoreInstance.getCoreSession(coreSession.getRepositoryName(), "bob");
+        var doc = createDocument(bobSession, folder, DOCUMENT_NAME);
+
+        doc.checkIn(VersioningOption.MINOR, null);
+        doc.checkOut();
+        assertVersionLabels(bobSession, doc, "0.1");
+
+        doc.checkIn(VersioningOption.MINOR, null);
+        doc.checkOut();
+        assertVersionLabels(bobSession, doc, "0.1", "0.2");
+    }
+
     protected DocumentModel createDocument(CoreSession session, DocumentModel parent, String fileName) {
         DocumentModel doc = session.createDocumentModel(parent.getPathAsString(), fileName, "File");
         session.createDocument(doc);
@@ -116,5 +135,13 @@ public class TestMongoDBIndices {
         ACL acl = acp.getOrCreateACL();
         acl.add(new ACE(userName, SecurityConstants.READ_WRITE, true));
         coreSession.setACP(documentModel.getRef(), acp, false);
+    }
+
+    protected void assertVersionLabels(CoreSession session, DocumentModel doc, String... labels) {
+        var versionLabels = session.getVersionsForDocument(doc.getRef())
+                                   .stream()
+                                   .map(VersionModel::getLabel)
+                                   .collect(toList());
+        assertEquals(List.of(labels), versionLabels);
     }
 }
