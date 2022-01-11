@@ -76,13 +76,16 @@ public class BasePermissionsJsonEnricher extends AbstractJsonEnricher<DocumentMo
 
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
-        jg.writeArrayFieldStart(NAME);
         try (SessionWrapper wrapper = ctx.getSession(document)) {
+            if (!wrapper.getSession().exists(document.getRef())) {
+                return;
+            }
+            jg.writeArrayFieldStart(NAME);
             for (String permission : getPermissionsInSession(document, wrapper.getSession())) {
                 jg.writeString(permission);
             }
+            jg.writeEndArray();
         }
-        jg.writeEndArray();
     }
 
     private Collection<String> getPermissionsInSession(DocumentModel doc, CoreSession session) {

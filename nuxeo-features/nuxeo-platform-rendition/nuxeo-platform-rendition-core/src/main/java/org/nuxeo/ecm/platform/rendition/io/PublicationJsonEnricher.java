@@ -43,9 +43,12 @@ public class PublicationJsonEnricher extends AbstractJsonEnricher<DocumentModel>
 
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
-        jg.writeObjectFieldStart(NAME);
-        int resultCount;
         try (SessionWrapper wrapper = ctx.getSession(document)) {
+            if (!wrapper.getSession().exists(document.getRef())) {
+                return;
+            }
+            jg.writeObjectFieldStart(NAME);
+            int resultCount;
             String escapedId = NXQL.escapeString(document.getId());
             resultCount = wrapper.getSession()
                                  .queryProjection(
@@ -53,9 +56,8 @@ public class PublicationJsonEnricher extends AbstractJsonEnricher<DocumentModel>
                                                  escapedId, escapedId),
                                          0, 0)
                                  .size();
-
+            jg.writeNumberField("resultsCount", resultCount);
+            jg.writeEndObject();
         }
-        jg.writeNumberField("resultsCount", resultCount);
-        jg.writeEndObject();
     }
 }

@@ -49,8 +49,11 @@ public class FirstAccessibleAncestorJsonEnricher extends AbstractJsonEnricher<Do
 
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
-        TrashService trashService = Framework.getService(TrashService.class);
         try (SessionWrapper wrapper = ctx.getSession(document)) {
+            if (!wrapper.getSession().exists(document.getRef())) {
+                return;
+            }
+            TrashService trashService = Framework.getService(TrashService.class);
             DocumentModel above = trashService.getAboveDocument(document, wrapper.getSession().getPrincipal());
             if (above != null) {
                 writeEntityField(NAME, above, jg);
