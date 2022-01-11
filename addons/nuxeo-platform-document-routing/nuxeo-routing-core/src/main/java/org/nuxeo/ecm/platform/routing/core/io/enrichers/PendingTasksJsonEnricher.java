@@ -54,6 +54,9 @@ public class PendingTasksJsonEnricher extends AbstractJsonEnricher<DocumentModel
         jg.writeFieldName(NAME);
         jg.writeStartArray();
         try (SessionWrapper wrapper = ctx.getSession(document)) {
+            if (!wrapper.getSession().exists(document.getRef())) {
+                return;
+            }
             DocumentRoutingService documentRoutingService = Framework.getService(DocumentRoutingService.class);
             List<Task> tasks = documentRoutingService.getTasks(document, wrapper.getSession().getPrincipal().getName(),
                     null, null, wrapper.getSession());

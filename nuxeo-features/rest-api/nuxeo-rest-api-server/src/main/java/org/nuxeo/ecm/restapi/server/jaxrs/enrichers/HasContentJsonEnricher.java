@@ -65,6 +65,9 @@ public class HasContentJsonEnricher extends AbstractJsonEnricher<DocumentModel> 
 
     protected boolean hasContent(DocumentModel document, String query) throws IOException {
         try (SessionWrapper wrapper = ctx.getSession(document)) {
+            if (!wrapper.getSession().exists(document.getRef())) {
+                return false;
+            }
             // Limit result set to 1 as we just want to know if there's at least one child
             return wrapper.getSession()
                           .queryProjection(String.format(query, NXQL.escapeString(document.getId())), 1, 0)

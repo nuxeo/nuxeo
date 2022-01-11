@@ -26,22 +26,37 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.collections.core.io.FavoritesJsonEnricher;
+import org.nuxeo.ecm.collections.core.test.CollectionFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.marshallers.json.enrichers.BasePermissionsJsonEnricher;
+import org.nuxeo.ecm.core.io.marshallers.json.enrichers.BreadcrumbJsonEnricher;
+import org.nuxeo.ecm.core.io.marshallers.json.enrichers.FirstAccessibleAncestorJsonEnricher;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.preview.io.PreviewJsonEnricher;
+import org.nuxeo.ecm.platform.rendition.io.PublicationJsonEnricher;
+import org.nuxeo.ecm.platform.tag.io.TagsJsonEnricher;
+import org.nuxeo.ecm.platform.types.SubtypesJsonEnricher;
+import org.nuxeo.ecm.restapi.server.jaxrs.enrichers.AuditJsonEnricher;
+import org.nuxeo.ecm.restapi.server.jaxrs.enrichers.HasContentJsonEnricher;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogFeature;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,13 +67,37 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class, LogFeature.class })
+@Features({ RestServerFeature.class, LogFeature.class, LogCaptureFeature.class, CollectionFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-defaultvalue-docTypes.xml")
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-dummy-listener-contrib.xml")
 public class EmptyDocumentTest extends BaseTest {
 
     protected static final Map<String, String> HEADERS = Collections.singletonMap("properties", "*");
+
+    protected static final Map<String, String> ENRICHERS_HEADERS = Collections.singletonMap("enrichers-document",
+            String.join(",",
+                    Arrays.asList(HasContentJsonEnricher.NAME, FirstAccessibleAncestorJsonEnricher.NAME,
+                            BasePermissionsJsonEnricher.NAME, BreadcrumbJsonEnricher.NAME, PublicationJsonEnricher.NAME,
+                            TagsJsonEnricher.NAME, PreviewJsonEnricher.NAME, FavoritesJsonEnricher.NAME,
+                            AuditJsonEnricher.NAME, SubtypesJsonEnricher.NAME)));
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
+    public void testEmptyDocumentEnrichers() {
+        DocumentModel folder = RestServerInit.getFolder(0, session);
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("type", "DocDefaultValue");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "id/" + folder.getId() + "/@emptyWithDefault", null, queryParams, null, ENRICHERS_HEADERS)) {
+            List<LogEvent> events = logCaptureResult.getCaughtEvents();
+            assertEquals(0, events.size());
+        }
+    }
 
     @Inject
     protected LogFeature logFeature;

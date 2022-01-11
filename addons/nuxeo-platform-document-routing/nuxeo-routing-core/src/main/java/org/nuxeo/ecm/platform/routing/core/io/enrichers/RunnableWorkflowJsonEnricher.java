@@ -65,6 +65,9 @@ public class RunnableWorkflowJsonEnricher extends AbstractJsonEnricher<DocumentM
         jg.writeFieldName(NAME);
         jg.writeStartArray();
         try (SessionWrapper wrapper = ctx.getSession(document)) {
+            if (!wrapper.getSession().exists(document.getRef())) {
+                return;
+            }
             DocumentRoutingService documentRoutingService = Framework.getService(DocumentRoutingService.class);
             List<DocumentModel> routeModels = documentRoutingService.searchRouteModels(wrapper.getSession(), "");
 

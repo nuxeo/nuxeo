@@ -72,6 +72,9 @@ public class BreadcrumbJsonEnricher extends AbstractJsonEnricher<DocumentModel> 
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
         List<DocumentModel> parentDocuments = null;
         try (SessionWrapper wrapper = ctx.getSession(document)) {
+            if (!wrapper.getSession().exists(document.getRef())) {
+                return;
+            }
             parentDocuments = wrapper.getSession().getParentDocuments(document.getRef());
         }
         DocumentModelListImpl documentList = new DocumentModelListImpl(parentDocuments);
