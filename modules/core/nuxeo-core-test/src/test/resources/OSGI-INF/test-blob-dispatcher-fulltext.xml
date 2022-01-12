@@ -8,7 +8,6 @@
   </extension>
   <extension target="org.nuxeo.ecm.core.blob.DocumentBlobManager" point="configuration">
     <blobdispatcher>
-      <class>org.nuxeo.ecm.core.blob.DefaultBlobDispatcher</class>
       <property name="blob:xpath=ecm:fulltextBinary">fulltext</property>
       <property name="default">test</property>
     </blobdispatcher>
