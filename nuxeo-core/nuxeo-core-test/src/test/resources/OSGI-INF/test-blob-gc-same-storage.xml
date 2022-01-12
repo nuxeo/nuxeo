@@ -12,7 +12,6 @@
   </extension>
   <extension target="org.nuxeo.ecm.core.blob.DocumentBlobManager" point="configuration">
     <blobdispatcher>
-      <class>org.nuxeo.ecm.core.blob.DefaultBlobDispatcher</class>
       <property name="dc:source=first">first</property>
       <property name="dc:source=second">second</property>
       <property name="default">test</property>

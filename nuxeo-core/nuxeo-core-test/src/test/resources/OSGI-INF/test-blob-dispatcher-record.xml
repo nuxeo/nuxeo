@@ -9,7 +9,6 @@
   </extension>
   <extension target="org.nuxeo.ecm.core.blob.DocumentBlobManager" point="configuration">
     <blobdispatcher>
-      <class>org.nuxeo.ecm.core.blob.DefaultBlobDispatcher</class>
       <property name="records">records1</property>
       <property name="default">test</property>
     </blobdispatcher>

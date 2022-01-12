@@ -18,12 +18,12 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.model.Document.BlobAccessor;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -62,14 +61,10 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
 
     protected static final String XP = "configuration";
 
-    protected static BlobDispatcher DEFAULT_BLOB_DISPATCHER = new DefaultBlobDispatcher();
-
     protected static final int BINARY_GC_TX_TIMEOUT_SEC = 86_400; // 1 day
 
     // in these low-level APIs we deal with unprefixed xpaths, so not file:content
     protected static final String MAIN_BLOB_XPATH = "content";
-
-    protected Deque<BlobDispatcherDescriptor> blobDispatcherDescriptorsRegistry = new LinkedList<>();
 
     protected volatile List<BinaryGarbageCollector> garbageCollectors;
 
@@ -78,16 +73,14 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
      */
     protected volatile boolean sharedStorage;
 
-    @Override
-    public void deactivate(ComponentContext context) {
-        blobDispatcherDescriptorsRegistry.clear();
-    }
+    protected volatile BlobDispatcher blobDispatcher;
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP.equals(extensionPoint)) {
             if (contribution instanceof BlobDispatcherDescriptor) {
-                registerBlobDispatcher((BlobDispatcherDescriptor) contribution);
+                super.registerContribution(contribution, extensionPoint, contributor);
+                blobDispatcher = null;
             } else {
                 throw new NuxeoException("Invalid descriptor: " + contribution.getClass());
             }
@@ -100,25 +93,26 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP.equals(extensionPoint)) {
             if (contribution instanceof BlobDispatcherDescriptor) {
-                unregisterBlobDispatcher((BlobDispatcherDescriptor) contribution);
+                super.unregisterContribution(contribution, extensionPoint, contributor);
+                blobDispatcher = null;
             }
         }
     }
 
-    protected void registerBlobDispatcher(BlobDispatcherDescriptor descr) {
-        blobDispatcherDescriptorsRegistry.add(descr);
-    }
-
-    protected void unregisterBlobDispatcher(BlobDispatcherDescriptor descr) {
-        blobDispatcherDescriptorsRegistry.remove(descr);
-    }
-
     protected BlobDispatcher getBlobDispatcher() {
-        BlobDispatcherDescriptor descr = blobDispatcherDescriptorsRegistry.peekLast();
-        if (descr == null) {
-            return DEFAULT_BLOB_DISPATCHER;
+        if (blobDispatcher == null) {
+            synchronized (this) {
+                if (blobDispatcher == null) {
+                    BlobDispatcherDescriptor descr = getDescriptor(XP, UNIQUE_DESCRIPTOR_ID);
+                    if (descr == null) {
+                        blobDispatcher = new DefaultBlobDispatcher();
+                    } else {
+                        blobDispatcher = descr.getBlobDispatcher();
+                    }
+                }
+            }
         }
-        return descr.getBlobDispatcher();
+        return blobDispatcher;
     }
 
     protected BlobProvider getBlobProvider(String providerId) {

@@ -25,6 +25,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * Descriptor for a {@link BlobDispatcher} and its configuration.
@@ -32,24 +33,27 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @since 7.3
  */
 @XObject(value = "blobdispatcher")
-public class BlobDispatcherDescriptor {
+public class BlobDispatcherDescriptor implements Descriptor {
 
-    public BlobDispatcherDescriptor() {
-    }
+    /** @since 2021.15 */
+    @XNode("@merge")
+    protected boolean merge;
 
     @XNode("class")
-    public Class<? extends BlobDispatcher> klass;
+    public Class<? extends BlobDispatcher> klass = DefaultBlobDispatcher.class;
 
     @XNodeMap(value = "property", key = "@name", type = LinkedHashMap.class, componentType = String.class)
     public Map<String, String> properties = new LinkedHashMap<>();
 
     private BlobDispatcher instance;
 
+    @Override
+    public String getId() {
+        return UNIQUE_DESCRIPTOR_ID;
+    }
+
     public synchronized BlobDispatcher getBlobDispatcher() {
         if (instance == null) {
-            if (klass == null) {
-                throw new NuxeoException("Missing class in blob dispatcher descriptor");
-            }
             BlobDispatcher blobDispatcher;
             try {
                 blobDispatcher = klass.newInstance();
@@ -62,4 +66,22 @@ public class BlobDispatcherDescriptor {
         return instance;
     }
 
+    @Override
+    public Descriptor merge(Descriptor o) {
+        BlobDispatcherDescriptor other = (BlobDispatcherDescriptor) o;
+        BlobDispatcherDescriptor merged = new BlobDispatcherDescriptor();
+        if (other.merge) {
+            if (klass != null && other.klass != null && !klass.equals(other.klass)) {
+                throw new NuxeoException(
+                        "Can not merge blob dispatcher with different class: " + klass + " and " + other.klass);
+            }
+            merged.klass = klass;
+            merged.properties.putAll(properties);
+            merged.properties.putAll(other.properties);
+        } else {
+            merged.klass = other.klass;
+            merged.properties.putAll(other.properties);
+        }
+        return merged;
+    }
 }

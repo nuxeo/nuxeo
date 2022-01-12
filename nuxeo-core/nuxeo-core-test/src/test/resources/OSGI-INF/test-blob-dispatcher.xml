@@ -24,7 +24,6 @@
   </extension>
   <extension target="org.nuxeo.ecm.core.blob.DocumentBlobManager" point="configuration">
     <blobdispatcher>
-      <class>org.nuxeo.ecm.core.blob.DefaultBlobDispatcher</class>
       <property name="dc:format=video">test2</property>
       <property name="nosuchschema:nosuchprop=foo">test2</property>
       <property name="blob:mime-type=video/mp4,nosuchschema:nosuchprop=foo">test3</property>
