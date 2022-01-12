@@ -37,7 +37,6 @@
 
   <extension target="org.nuxeo.ecm.core.blob.DocumentBlobManager" point="configuration">
     <blobdispatcher>
-      <class>org.nuxeo.ecm.core.blob.DefaultBlobDispatcher</class>
       <property name="blob:xpath=s3-test:content">test</property>
       <property name="blob:xpath=s3-other:content">other</property>
       <property name="default">test</property>
