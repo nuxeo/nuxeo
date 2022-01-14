@@ -1248,7 +1248,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         options.maxTime(getMaxTimeMs(), MILLISECONDS);
         try {
             return MongoDBCountHelper.countDocuments(databaseID, coll, filter, options);
-        } catch (MongoExecutionTimeoutException e) {
+        } catch (MongoExecutionTimeoutException | MongoSocketReadTimeoutException e) {
             log.warn(String.format("MongoDB timed out when computing total count with filters %s", filter.toString()));
             return -2;
         }
