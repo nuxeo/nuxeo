@@ -1080,7 +1080,7 @@ public class MongoDBConnection extends DBSConnectionBase {
                 return coll.countDocuments(filter, options);
             }
 
-        } catch (MongoExecutionTimeoutException e) {
+        } catch (MongoExecutionTimeoutException | MongoSocketReadTimeoutException e) {
             log.warn("MongoDB timed out when computing total count with filters {}", filter::toString);
             return -2;
         }
