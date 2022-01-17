@@ -69,24 +69,17 @@ public class TestLoginScreenConfig {
         properties.setProperty(DISTRIBUTION_PACKAGE, "zip");
     }
 
-    private PluggableAuthenticationService getAuthService() {
-        PluggableAuthenticationService authService;
-        authService = Framework.getService(PluggableAuthenticationService.class);
-
-        return authService;
-    }
-
     @Inject
     protected HotDeployer hotDeployer;
 
     @Inject
     public RuntimeHarness runtimeHarness;
 
+    @Inject
+    protected PluggableAuthenticationService authService;
+
     @Test
     public void testSimpleConfig() {
-        PluggableAuthenticationService authService = getAuthService();
-        assertNotNull(authService);
-
         LoginScreenConfig config = authService.getLoginScreenConfig();
         assertNotNull(config);
 
@@ -127,9 +120,6 @@ public class TestLoginScreenConfig {
 
     @Test
     public void testVariableExpension() {
-        PluggableAuthenticationService authService = getAuthService();
-        assertNotNull(authService);
-
         LoginScreenConfig config = authService.getLoginScreenConfig();
         assertNotNull(config);
 
@@ -139,9 +129,6 @@ public class TestLoginScreenConfig {
 
     @Test
     public void testMergeConfig() throws Exception {
-        PluggableAuthenticationService authService = getAuthService();
-        assertNotNull(authService);
-
         LoginScreenConfig config = authService.getLoginScreenConfig();
         assertNotNull(config);
 
@@ -164,7 +151,6 @@ public class TestLoginScreenConfig {
 
         hotDeployer.deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig-merge.xml");
 
-        authService = getAuthService();
         config = authService.getLoginScreenConfig();
         assertNotNull(config);
 
@@ -220,9 +206,6 @@ public class TestLoginScreenConfig {
      */
     @Test
     public void testMergeConfigLanguages() throws Exception {
-        PluggableAuthenticationService authService = getAuthService();
-        assertNotNull(authService);
-
         LoginScreenConfig config = authService.getLoginScreenConfig();
 
         assertNotNull(config);
@@ -235,7 +218,6 @@ public class TestLoginScreenConfig {
 
         hotDeployer.deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig-merge2.xml");
 
-        authService = getAuthService();
         config = authService.getLoginScreenConfig();
 
         assertNotNull(config);
@@ -254,9 +236,6 @@ public class TestLoginScreenConfig {
      */
     @Test
     public void testMergeConfigLanguagesNoAppend() throws Exception {
-        PluggableAuthenticationService authService = getAuthService();
-        assertNotNull(authService);
-
         LoginScreenConfig config = authService.getLoginScreenConfig();
 
         assertNotNull(config);
@@ -269,7 +248,6 @@ public class TestLoginScreenConfig {
 
         hotDeployer.deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig-merge3.xml");
 
-        authService = getAuthService();
         config = authService.getLoginScreenConfig();
 
         assertNotNull(config);
@@ -337,6 +315,7 @@ public class TestLoginScreenConfig {
     @Test
     public void testLoginProviderRegistrationNotOverriddenByContribution() throws Exception {
         LoginScreenConfig config = LoginScreenHelper.getConfig();
+        assertNotNull(config);
         assertEquals(3, config.getProviders().size());
 
         // dynamically register a login provider
@@ -393,21 +372,17 @@ public class TestLoginScreenConfig {
         query = UriComponent.decodeQuery(url.getQuery(), true);
 
         assertThat(query.keySet()).contains("why");
-        assertFalse(query.keySet().contains(PRODUCT_VERSION));
+        assertFalse(query.containsKey(PRODUCT_VERSION));
         assertThat(query.get("why")).contains("testing");
     }
 
     @Test
     public void testUndeployConfig() throws Exception {
-        PluggableAuthenticationService authService = getAuthService();
-        assertNotNull(authService);
-
         LoginScreenConfig config = authService.getLoginScreenConfig();
         assertNotNull(config);
 
         hotDeployer.undeploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig.xml");
 
-        authService = getAuthService();
         config = authService.getLoginScreenConfig();
         assertNull(config);
     }

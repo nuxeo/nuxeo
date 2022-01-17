@@ -18,7 +18,11 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import java.io.UnsupportedEncodingException;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
+import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,14 +33,12 @@ import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -264,11 +266,11 @@ public class LoginScreenConfig {
     }
 
     public Boolean getVideoMuted() {
-        return muted == null ? false : muted;
+        return isTrue(muted);
     }
 
     public Boolean getVideoLoop() {
-        return loop == null ? true : loop;
+        return toBooleanDefaultIfNull(loop, true);
     }
 
     public boolean hasVideos() {
@@ -276,7 +278,7 @@ public class LoginScreenConfig {
     }
 
     public boolean getDisplayNews() {
-        return !(removeNews || StringUtils.isBlank(newsIframeUrl));
+        return !removeNews && isNotBlank(newsIframeUrl);
     }
 
     public boolean getDisplayMobileBanner() {
@@ -284,7 +286,7 @@ public class LoginScreenConfig {
     }
 
     public Boolean getFieldAutocomplete() {
-        return fieldAutocomplete == null ? true : fieldAutocomplete;
+        return toBooleanDefaultIfNull(fieldAutocomplete, true);
     }
 
     @XNode("headerStyle")
@@ -347,11 +349,7 @@ public class LoginScreenConfig {
             }
             newsIframeFullUrl = newsIFrameBuilder.build().toString();
         }
-        try {
-            return URLDecoder.decode(newsIframeFullUrl, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new NuxeoException("Cannot decode login iframe URL " + newsIframeFullUrl);
-        }
+        return URLDecoder.decode(newsIframeFullUrl, UTF_8);
     }
 
     /**
