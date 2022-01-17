@@ -18,8 +18,10 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
+import static org.apache.commons.lang3.BooleanUtils.isNotTrue;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.io.Serializable;
@@ -89,19 +91,19 @@ public class LoginScreenConfig implements Serializable {
     protected String backgroundImage;
 
     @XNode("removeNews")
-    protected Boolean removeNews = false;
+    protected Boolean removeNews;
 
     /**
      * @since 10.10-HF55
      */
     @XNode("displayMobileBanner")
-    protected Boolean displayMobileBanner = true;
+    protected Boolean displayMobileBanner;
 
     protected String headerStyle;
 
     protected String footerStyle;
 
-    protected String newsIframeUrl = NUXEO_NEWS_URL;
+    protected String newsIframeUrl;
 
     protected String newsIframeFullUrl = null;
 
@@ -282,11 +284,11 @@ public class LoginScreenConfig implements Serializable {
     }
 
     public boolean getDisplayNews() {
-        return !removeNews && isNotBlank(newsIframeUrl);
+        return isNotTrue(removeNews) && isNotBlank(internalGetNewsIframeUrl());
     }
 
     public boolean getDisplayMobileBanner() {
-        return displayMobileBanner;
+        return toBooleanDefaultIfNull(displayMobileBanner, true);
     }
 
     public Boolean getFieldAutocomplete() {
@@ -340,10 +342,14 @@ public class LoginScreenConfig implements Serializable {
         newsIframeFullUrl = null;
     }
 
+    protected String internalGetNewsIframeUrl() {
+        return firstNonNull(newsIframeUrl, NUXEO_NEWS_URL);
+    }
+
     public String getNewsIframeUrl() {
         if (newsIframeFullUrl == null) {
-            UriBuilder newsIFrameBuilder = UriBuilder.fromPath(newsIframeUrl);
-            if (NUXEO_NEWS_URL.equals(newsIframeUrl)) {
+            UriBuilder newsIFrameBuilder = UriBuilder.fromPath(internalGetNewsIframeUrl());
+            if (NUXEO_NEWS_URL.equals(internalGetNewsIframeUrl())) {
                 newsIFrameBuilder.queryParam(Environment.PRODUCT_VERSION,
                         Framework.getProperty(Environment.PRODUCT_VERSION))
                                  .queryParam(Environment.DISTRIBUTION_VERSION,
