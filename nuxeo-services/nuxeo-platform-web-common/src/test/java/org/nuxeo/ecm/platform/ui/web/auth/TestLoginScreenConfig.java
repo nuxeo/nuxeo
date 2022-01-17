@@ -338,6 +338,7 @@ public class TestLoginScreenConfig {
     @Test
     public void testLoginProviderRegistrationNotOverriddenByContribution() throws Exception {
         LoginScreenConfig config = LoginScreenHelper.getConfig();
+        assertNotNull(config);
         assertEquals(3, config.getProviders().size());
 
         // dynamically register a login provider
@@ -394,7 +395,7 @@ public class TestLoginScreenConfig {
         query = UriComponent.decodeQuery(url.getQuery(), true);
 
         assertThat(query.keySet()).contains("why");
-        assertFalse(query.keySet().contains(PRODUCT_VERSION));
+        assertFalse(query.containsKey(PRODUCT_VERSION));
         assertThat(query.get("why")).contains("testing");
     }
 
