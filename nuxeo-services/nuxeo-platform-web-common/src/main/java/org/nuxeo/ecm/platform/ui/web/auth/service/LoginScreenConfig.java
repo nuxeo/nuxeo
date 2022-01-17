@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
+import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -30,7 +34,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -267,11 +270,11 @@ public class LoginScreenConfig implements Serializable {
     }
 
     public Boolean getVideoMuted() {
-        return muted == null ? false : muted;
+        return isTrue(muted);
     }
 
     public Boolean getVideoLoop() {
-        return loop == null ? true : loop;
+        return toBooleanDefaultIfNull(loop, true);
     }
 
     public boolean hasVideos() {
@@ -279,7 +282,7 @@ public class LoginScreenConfig implements Serializable {
     }
 
     public boolean getDisplayNews() {
-        return !(removeNews || StringUtils.isBlank(newsIframeUrl));
+        return !removeNews && isNotBlank(newsIframeUrl);
     }
 
     public boolean getDisplayMobileBanner() {
@@ -287,7 +290,7 @@ public class LoginScreenConfig implements Serializable {
     }
 
     public Boolean getFieldAutocomplete() {
-        return fieldAutocomplete == null ? true : fieldAutocomplete;
+        return toBooleanDefaultIfNull(fieldAutocomplete, true);
     }
 
     @XNode("headerStyle")
