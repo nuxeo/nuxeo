@@ -28,6 +28,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -45,6 +49,7 @@ import org.nuxeo.ecm.core.io.marshallers.json.JsonFactoryProvider;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -175,54 +180,108 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
     }
 
     // NXP-30680
+    // NXP-30806
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
-    public void testSetScalarWithWrongTypeThrowsException() throws Exception {
-        testSetScalarWithWrongTypeThrowsException("{\"my:integer\": \"Some string\"}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:integer\": true}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:integer\": 12.34}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:integer\": {\"key\": true}}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:integer\": [0]}");
+    public void testPropertyValuePossibilities() throws Exception {
+        testPropertyWithAcceptedRepresentationWorks("{\"my:string\": \"Some string\"}", "my:string", "Some string");
+        testPropertyWithAcceptedRepresentationWorks(String.format("{\"my:string\": %s}", Long.MAX_VALUE), "my:string",
+                String.valueOf(Long.MAX_VALUE));
+        testPropertyWithAcceptedRepresentationWorks("{\"my:string\": 1234}", "my:string", "1234");
+        testPropertyWithAcceptedRepresentationWorks("{\"my:string\": 12.34}", "my:string", "12.34");
+        testPropertyWithAcceptedRepresentationWorks("{\"my:string\": true}", "my:string", "true");
+        testPropertyWithAcceptedRepresentationWorks("{\"my:string\": null}", "my:string", null);
+        testPropertyWithWrongRepresentationThrowsException("{\"my:string\": {\"key\": true}}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:string\": [0]}");
 
-        testSetScalarWithWrongTypeThrowsException("{\"my:long\": \"Some string\"}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:long\": true}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:long\": 12.34}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:long\": {\"key\": true}}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:long\": [0]}");
+        // numbers are always handled as Long in Nuxeo
+        testPropertyWithAcceptedRepresentationWorks("{\"my:integer\": 1234}", "my:integer", 1234L);
+        testPropertyWithAcceptedRepresentationWorks(String.format("{\"my:integer\": %s}", Long.MAX_VALUE), "my:integer",
+                Long.MAX_VALUE);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:integer\": \"1234\"}", "my:integer", 1234L);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:integer\": null}", "my:integer", null);
+        testPropertyWithWrongRepresentationThrowsException("{\"my:integer\": \"Some string\"}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:integer\": \"12.34\"}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:integer\": true}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:integer\": 12.34}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:integer\": {\"key\": true}}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:integer\": [0]}");
 
-        testSetScalarWithWrongTypeThrowsException("{\"my:boolean\": \"Some string\"}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:boolean\": 1234}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:boolean\": 12.34}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:boolean\": {\"key\": true}}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:boolean\": [0]}");
+        testPropertyWithAcceptedRepresentationWorks(String.format("{\"my:long\": %s}", Long.MAX_VALUE), "my:long",
+                Long.MAX_VALUE);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:long\": 1234}", "my:long", 1234L);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:long\": \"1234\"}", "my:long", 1234L);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:long\": null}", "my:long", null);
+        testPropertyWithWrongRepresentationThrowsException("{\"my:long\": \"Some string\"}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:long\": \"12.34\"}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:long\": true}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:long\": 12.34}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:long\": {\"key\": true}}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:long\": [0]}");
 
-        testSetScalarWithWrongTypeThrowsException("{\"my:double\": \"Some string\"}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:double\": true}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:double\": {\"key\": true}}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:double\": [0]}");
+        testPropertyWithAcceptedRepresentationWorks("{\"my:boolean\": true}", "my:boolean", true);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:boolean\": \"true\"}", "my:boolean", true);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:boolean\": \"Some string\"}", "my:boolean", false);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:boolean\": 1234}", "my:boolean", true);
+        testPropertyWithAcceptedRepresentationWorks(String.format("{\"my:boolean\": %s}", Long.MAX_VALUE), "my:boolean",
+                true);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:boolean\": 1}", "my:boolean", true);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:boolean\": 0}", "my:boolean", false);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:boolean\": null}", "my:boolean", null);
+        testPropertyWithWrongRepresentationThrowsException("{\"my:boolean\": 12.34}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:boolean\": {\"key\": true}}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:boolean\": [0]}");
 
-        testSetScalarWithWrongTypeThrowsException("{\"my:date\": \"Some string\"}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:date\": true}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:date\": 1234}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:date\": 12.34}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:date\": {\"key\": true}}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:date\": [0]}");
+        testPropertyWithAcceptedRepresentationWorks("{\"my:double\": 1234}", "my:double", 1234.0);
+        testPropertyWithAcceptedRepresentationWorks(String.format("{\"my:double\": %s}", Long.MAX_VALUE), "my:double",
+                Long.valueOf(Long.MAX_VALUE).doubleValue());
+        testPropertyWithAcceptedRepresentationWorks("{\"my:double\": 12.34}", "my:double", 12.34);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:double\": \"12.34\"}", "my:double", 12.34);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:double\": null}", "my:double", null);
+        testPropertyWithWrongRepresentationThrowsException("{\"my:double\": \"Some string\"}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:double\": true}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:double\": {\"key\": true}}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:double\": [0]}");
 
-        testSetScalarWithWrongTypeThrowsException("{\"my:strings\": \"Some string\"}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:strings\": true}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:strings\": 1234}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:strings\": 12.34}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:strings\": {\"key\": true}}");
+        Date date = DateParser.parseW3CDateTime("2022-01-18T17:20:21.123");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:date\": \"2022-01-18T17:20:21.123\"}", "my:date", cal);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:long\": null}", "my:date", null);
+        testPropertyWithWrongRepresentationThrowsException("{\"my:date\": \"Some string\"}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:date\": true}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:date\": 1234}");
+        testPropertyWithWrongRepresentationThrowsException(String.format("{\"my:date\": %s}", Long.MAX_VALUE));
+        testPropertyWithWrongRepresentationThrowsException("{\"my:date\": 12.34}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:date\": {\"key\": true}}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:date\": [0]}");
+
+        testPropertyWithAcceptedRepresentationWorks("{\"my:strings\": [\"Some string\"]}", "my:strings",
+                new String[] { "Some string" });
+        testPropertyWithAcceptedRepresentationWorks("{\"my:strings\": null}", "my:strings", null);
+        testPropertyWithWrongRepresentationThrowsException("{\"my:strings\": \"Some string\"}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:strings\": true}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:strings\": 1234}");
+        testPropertyWithWrongRepresentationThrowsException(String.format("{\"my:strings\": %s}", Long.MAX_VALUE));
+        testPropertyWithWrongRepresentationThrowsException("{\"my:strings\": 12.34}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:strings\": {\"key\": true}}");
 
         // complex
-        testSetScalarWithWrongTypeThrowsException("{\"my:name\": \"Some string\"}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:name\": true}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:name\": 1234}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:name\": 12.34}");
-        testSetScalarWithWrongTypeThrowsException("{\"my:name\": [0]}");
+        Map<String, String> map = new HashMap<>();
+        map.put("FirstName", "foo");
+        map.put("LastName", "bar");
+        testPropertyWithAcceptedRepresentationWorks("{\"my:name\": {\"FirstName\":\"foo\", \"LastName\":\"bar\"}}",
+                "my:name", map);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:name\": null}", "my:name", Collections.emptyMap());
+        testPropertyWithWrongRepresentationThrowsException("{\"my:name\": \"Some string\"}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:name\": true}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:name\": 1234}");
+        testPropertyWithWrongRepresentationThrowsException(String.format("{\"my:name\": %s}", Long.MAX_VALUE));
+        testPropertyWithWrongRepresentationThrowsException("{\"my:name\": 12.34}");
+        testPropertyWithWrongRepresentationThrowsException("{\"my:name\": [0]}");
     }
 
-    protected void testSetScalarWithWrongTypeThrowsException(String properties)
+    protected void testPropertyWithWrongRepresentationThrowsException(String properties)
             throws IOException {
         String json = '{' + //
                 "\"entity-type\": \"document\", " + //
@@ -238,7 +297,28 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
             fail("Read should have failed due to wrong type");
         } catch (NuxeoException e) {
             assertTrue(e instanceof MarshallingException);
-            assertTrue(e.getMessage().startsWith("Wrong type for property:"));
+            assertTrue(e.getMessage().startsWith("Unable to deserialize property:"));
+        }
+    }
+
+    protected void testPropertyWithAcceptedRepresentationWorks(String properties, String expectedProperty,
+            Object expectedValue) throws IOException {
+        String json = '{' + //
+                "\"entity-type\": \"document\", " + //
+                "\"type\": \"MyDocType\", " + //
+                "\"name\": \"myDoc\", " + //
+                "\"properties\": " + properties + " " + //
+                '}';
+        try (JsonParser jp = JsonFactoryProvider.get().createParser(json)) {
+            JsonNode jn = jp.readValueAsTree();
+
+            DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
+            DocumentModel doc = reader.read(jn);
+            if (expectedValue instanceof Object[]) {
+                assertArrayEquals((Object[]) expectedValue, (Object[]) doc.getPropertyValue(expectedProperty));
+            } else {
+                assertEquals(expectedValue, doc.getPropertyValue(expectedProperty));
+            }
         }
     }
 }
