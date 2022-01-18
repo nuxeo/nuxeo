@@ -333,6 +333,24 @@ public class TestCSVExportAction {
         testDownloadCSV("elastic");
     }
 
+    @Test
+    public void testWithVeryLongLine() throws Exception {
+        DocumentModel bigMeta = session.createDocumentModel(DocumentSetRepositoryInit.ROOT, "big-meta", "File");
+        int size = 2_000_000;
+        bigMeta.setPropertyValue("dc:title", new String(new char[size]).replace('\0', 'X'));
+        session.createDocument(bigMeta);
+        txFeature.nextTransaction();
+
+        BulkCommand command = createBuilder().build();
+        bulkService.submit(command);
+        assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
+
+        BulkStatus status = bulkService.getStatus(command.getId());
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(CREATED_TOTAL + 1, status.getProcessed());
+        assertEquals(CREATED_TOTAL + 1, status.getTotal());
+    }
+
     protected void testDownloadCSV(String scroller) throws Exception {
         BulkCommand command = createBuilder().param("schemas", ImmutableList.of("dublincore"))
                                              .bucket(100)

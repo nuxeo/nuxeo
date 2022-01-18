@@ -16,6 +16,13 @@
       defaultConcurrency="${nuxeo.bulk.action.csvExport.defaultConcurrency:=2}"
       defaultPartitions="${nuxeo.bulk.action.csvExport.defaultPartitions:=2}">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
+      <stream name="bulk/makeBlob">
+        <filter name="overflow" class="org.nuxeo.ecm.core.transientstore.computation.TransientStoreOverflowRecordFilter">
+          <option name="storeName">default</option>
+          <option name="prefix">csvoverflow</option>
+          <option name="thresholdSize">990000</option>
+        </filter>
+      </stream>
       <option name="produceImmediate">false</option>
     </streamProcessor>
   </extension>
