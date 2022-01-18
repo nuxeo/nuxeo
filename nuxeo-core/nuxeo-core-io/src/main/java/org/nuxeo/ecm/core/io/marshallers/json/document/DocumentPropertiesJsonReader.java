@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -162,7 +163,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
     private void fillScalarProperty(Property property, JsonNode jn) throws IOException {
         if ((property instanceof ArrayProperty)) {
             if (!jn.isArray()) {
-                throw new MarshallingException("Wrong type for property: " + property.getXPath(), SC_BAD_REQUEST);
+                throw newUnableToDeserializeException(property);
             }
             List<Object> values = new ArrayList<>();
             Iterator<JsonNode> it = jn.elements();
@@ -214,7 +215,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
                         return blob.getString();
                     }
                 }
-                throw new MarshallingException("Wrong type for property: " + property.getXPath(), SC_BAD_REQUEST);
+                throw newUnableToDeserializeException(property);
             }
             Object object = null;
             for (Class<?> clazz : resolver.getManagedClasses()) {
@@ -228,7 +229,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
                 }
             }
             if (object == null) {
-                throw new MarshallingException("Unable to parse the property: " + property.getXPath(), SC_BAD_REQUEST);
+                throw newUnableToDeserializeException(property);
             }
             value = resolver.getReference(object);
             if (value == null) {
@@ -236,7 +237,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
                         + " value cannot be resolved by the matching resolver: " + resolver.getName(), SC_BAD_REQUEST);
             }
         } else if (jn.isArray()) {
-            throw new MarshallingException("Wrong type for property: " + property.getXPath(), SC_BAD_REQUEST);
+            throw newUnableToDeserializeException(property);
         } else {
             value = getPropertyValue(property, jn, ((SimpleType) type).getPrimitiveType());
         }
@@ -247,28 +248,74 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
         Object value;
         if (jn.isNull()) {
             value = null;
-        } else if (type instanceof BooleanType && jn.isBoolean()) {
-            value = jn.asBoolean();
-        } else if (type instanceof LongType && (jn.isLong() || jn.isInt())) {
-            value = jn.asLong();
-        } else if (type instanceof DoubleType && jn.isNumber()) {
-            value = jn.asDouble();
-        } else if (type instanceof IntegerType && jn.isInt()) {
-            value = jn.asInt();
-        } else if (type instanceof BinaryType && jn.isBinary()) {
+        } else if (jn.isBoolean()) {
+            if (type instanceof BooleanType) {
+                value = jn.asBoolean();
+            } else if (type instanceof StringType) {
+                value = jn.asText();
+            } else {
+                throw newUnableToDeserializeException(property);
+            }
+        } else if (jn.isLong()) {
+            if (type instanceof LongType || type instanceof DoubleType) {
+                value = jn.asLong();
+            } else if (type instanceof BooleanType) {
+                value = jn.asBoolean(); // 0 to false, everything else to true
+            } else if (type instanceof StringType) {
+                value = jn.asText();
+            } else {
+                throw newUnableToDeserializeException(property);
+            }
+        } else if (jn.isDouble()) {
+            if (type instanceof DoubleType) {
+                value = jn.asDouble();
+            } else if (type instanceof StringType) {
+                value = jn.asText();
+            } else {
+                throw newUnableToDeserializeException(property);
+            }
+        } else if (jn.isInt()) {
+            if (type instanceof LongType || type instanceof IntegerType || type instanceof DoubleType) {
+                value = jn.asInt();
+            } else if (type instanceof BooleanType) {
+                value = jn.asBoolean(); // 0 to false, everything else to true
+            } else if (type instanceof StringType) {
+                value = jn.asText();
+            } else {
+                throw newUnableToDeserializeException(property);
+            }
+        } else if (jn.isBinary() && type instanceof BinaryType) {
             value = jn.binaryValue();
-        } else if (type instanceof StringType && jn.isTextual()) {
-            value = jn.asText();
-        } else if (type instanceof DateType && jn.isTextual()) {
-            try {
-                value = type.decode(jn.asText());
-            } catch (IllegalArgumentException e) {
-                throw new MarshallingException("Wrong type for property: " + property.getXPath(), e, SC_BAD_REQUEST);
+        } else if (jn.isTextual()) {
+            if (type instanceof BooleanType) {
+                value = Boolean.parseBoolean(jn.asText());
+            } else if (type instanceof LongType) {
+                value = tryParse(Long::parseLong, jn.asText(), property);
+            } else if (type instanceof DoubleType) {
+                value = tryParse(Double::parseDouble, jn.asText(), property);
+            } else if (type instanceof IntegerType) {
+                value = tryParse(Integer::parseInt, jn.asText(), property);
+            } else if (type instanceof BinaryType) {
+                value = jn.binaryValue();
+            } else if (type instanceof StringType) {
+                value = jn.asText();
+            } else if (type instanceof DateType) {
+                value = tryParse(type::decode, jn.asText(), property);
+            } else {
+                throw newUnableToDeserializeException(property);
             }
         } else {
-            throw new MarshallingException("Wrong type for property: " + property.getXPath(), SC_BAD_REQUEST);
+            throw newUnableToDeserializeException(property);
         }
         return value;
+    }
+
+    private Object tryParse(Function<String, Object> parser, String value, Property property) {
+        try {
+            return parser.apply(value);
+        } catch (IllegalArgumentException e) {
+            throw newUnableToDeserializeException(property, e);
+        }
     }
 
     private void fillListProperty(Property property, JsonNode jn) throws IOException {
@@ -290,7 +337,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
 
     private void fillComplexProperty(Property property, JsonNode jn) throws IOException {
         if (!jn.isObject()) {
-            throw new MarshallingException("Wrong type for property: " + property.getXPath(), SC_BAD_REQUEST);
+            throw newUnableToDeserializeException(property);
         }
         Entry<String, JsonNode> elNode;
         Iterator<Entry<String, JsonNode>> it = jn.fields();
@@ -307,4 +354,12 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
         }
     }
 
+    private MarshallingException newUnableToDeserializeException(Property property) {
+        return newUnableToDeserializeException(property, null);
+    }
+
+    private MarshallingException newUnableToDeserializeException(Property property, Throwable cause) {
+        return new MarshallingException("Unable to deserialize property: " + property.getXPath(), cause,
+                SC_BAD_REQUEST);
+    }
 }
