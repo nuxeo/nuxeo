@@ -83,6 +83,9 @@ public class NotificationConstants {
 
     public static final String IS_JSF_UI = "isJSFUI";
 
+    /** @since 11.1 **/
+    public static final String SERVER_URL_PREFIX = "serverUrlPrefix";
+
     private NotificationConstants() {
     }
 

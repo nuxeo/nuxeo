@@ -240,6 +240,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         DocumentModel doc = ctx.getSourceDocument();
         String author = ctx.getPrincipal().getName();
         Calendar created = (Calendar) ctx.getSourceDocument().getPropertyValue("dc:created");
+        eventInfo.put(NotificationConstants.SERVER_URL_PREFIX, notificationService.getServerUrlPrefix());
 
         // Get notification document codec
         DocumentViewCodecManager codecService = Framework.getService(DocumentViewCodecManager.class);
