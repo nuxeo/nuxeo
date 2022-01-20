@@ -18,10 +18,13 @@
  */
 package org.nuxeo.ecm.core.bulk.computation;
 
+import static org.nuxeo.ecm.core.bulk.computation.BulkScrollerComputation.BIG_BULK_COMMAND_THRESHOLD;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.UNKNOWN;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.BulkServiceImpl;
@@ -48,6 +51,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BulkStatusComputation extends AbstractComputation {
 
+    private static final Logger log = LogManager.getLogger(BulkStatusComputation.class);
+
     public BulkStatusComputation(String name) {
         super(name, 1, 1);
     }
@@ -73,6 +78,9 @@ public class BulkStatusComputation extends AbstractComputation {
         byte[] statusAsBytes = bulkService.setStatus(status);
         if (status.getState() == COMPLETED || recordStatus.getState() == ABORTED) {
             context.produceRecord(OUTPUT_1, status.getId(), statusAsBytes);
+            if (status.getTotal() > BIG_BULK_COMMAND_THRESHOLD) {
+                log.warn("BBC: {} command completed: {}.", status.getId(), status);
+            }
         }
         context.askForCheckpoint();
     }
