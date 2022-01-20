@@ -50,7 +50,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 public class TestCloudFrontRedirect extends AbstractS3BinaryTest<CloudFrontBinaryManager> {
     @BeforeClass
     public static void beforeClass() {
-        PROPERTIES = new HashMap<>();
+        properties = new HashMap<>();
         // NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!!
         // ********** NEVER COMMIT THE SECRET KEYS !!! **********
         String bucketName = "CHANGETHIS";
@@ -62,13 +62,13 @@ public class TestCloudFrontRedirect extends AbstractS3BinaryTest<CloudFrontBinar
         String distribution = "CHANGETHIS";
         // ********** NEVER COMMIT THE SECRET KEYS !!! **********
 
-        PROPERTIES.put(BUCKET_NAME_PROPERTY, bucketName);
-        PROPERTIES.put(BUCKET_PREFIX_PROPERTY, "testfolder/");
-        PROPERTIES.put(AWS_ID_PROPERTY, idKey);
-        PROPERTIES.put(AWS_SECRET_PROPERTY, secretKey);
-        PROPERTIES.put(DISTRIB_DOMAIN_PROPERTY, distribution);
-        PROPERTIES.put(PRIVATE_KEY_PROPERTY, privateKeyPath);
-        PROPERTIES.put(PRIVATE_KEY_ID_PROPERTY, privateKeyId);
+        properties.put(BUCKET_NAME_PROPERTY, bucketName);
+        properties.put(BUCKET_PREFIX_PROPERTY, String.format("testfolder-%s/", System.currentTimeMillis()));
+        properties.put(AWS_ID_PROPERTY, idKey);
+        properties.put(AWS_SECRET_PROPERTY, secretKey);
+        properties.put(DISTRIB_DOMAIN_PROPERTY, distribution);
+        properties.put(PRIVATE_KEY_PROPERTY, privateKeyPath);
+        properties.put(PRIVATE_KEY_ID_PROPERTY, privateKeyId);
         boolean disabled = bucketName.equals("CHANGETHIS");
         assumeTrue("No AWS credentials configured", !disabled);
     }
@@ -91,7 +91,7 @@ public class TestCloudFrontRedirect extends AbstractS3BinaryTest<CloudFrontBinar
     @Override
     protected CloudFrontBinaryManager getBinaryManager() throws IOException {
         CloudFrontBinaryManager binaryManager = new CloudFrontBinaryManager();
-        binaryManager.initialize("repo", PROPERTIES);
+        binaryManager.initialize("repo", properties);
         return binaryManager;
     }
 }

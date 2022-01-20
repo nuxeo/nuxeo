@@ -77,6 +77,8 @@ import com.amazonaws.services.s3.model.S3Object;
 @Features({ RuntimeFeature.class, MockitoFeature.class })
 public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
+    protected static final Random RANDOM = new Random();
+
     @Mock
     @RuntimeService
     protected BlobManager blobManager;
@@ -87,7 +89,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     @BeforeClass
     public static void beforeClass() {
-        PROPERTIES = S3TestHelper.getProperties();
+        properties = S3TestHelper.getProperties();
     }
 
     @Before
@@ -127,17 +129,17 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     @Test
     public void testS3MaxConnections() throws IOException {
-        PROPERTIES.put(S3BinaryManager.CONNECTION_MAX_PROPERTY, "1");
-        PROPERTIES.put(S3BinaryManager.CONNECTION_RETRY_PROPERTY, "0");
-        PROPERTIES.put(S3BinaryManager.CONNECTION_TIMEOUT_PROPERTY, "5000"); // 5s
+        properties.put(S3BinaryManager.CONNECTION_MAX_PROPERTY, "1");
+        properties.put(S3BinaryManager.CONNECTION_RETRY_PROPERTY, "0");
+        properties.put(S3BinaryManager.CONNECTION_TIMEOUT_PROPERTY, "5000"); // 5s
         try {
             binaryManager = new S3BinaryManager();
-            binaryManager.initialize("repo", PROPERTIES);
+            binaryManager.initialize("repo", properties);
             doTestS3MaxConnections();
         } finally {
-            PROPERTIES.remove(S3BinaryManager.CONNECTION_MAX_PROPERTY);
-            PROPERTIES.remove(S3BinaryManager.CONNECTION_RETRY_PROPERTY);
-            PROPERTIES.remove(S3BinaryManager.CONNECTION_TIMEOUT_PROPERTY);
+            properties.remove(S3BinaryManager.CONNECTION_MAX_PROPERTY);
+            properties.remove(S3BinaryManager.CONNECTION_RETRY_PROPERTY);
+            properties.remove(S3BinaryManager.CONNECTION_TIMEOUT_PROPERTY);
         }
     }
 
@@ -322,7 +324,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     protected byte[] generateRandomBytes(int length) {
         byte[] bytes = new byte[length];
-        new Random().nextBytes(bytes);
+        RANDOM.nextBytes(bytes);
         return bytes;
     }
 
@@ -354,13 +356,13 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
     @Override
     protected S3BinaryManager getBinaryManager() throws IOException {
         S3BinaryManager binaryManager = new S3BinaryManager();
-        binaryManager.initialize("repo", PROPERTIES);
+        binaryManager.initialize("repo", properties);
         return binaryManager;
     }
 
     /** Other binary manager storing in a subfolder of the main one. */
     protected S3BinaryManager getBinaryManager2() throws IOException {
-        Map<String, String> properties2 = new HashMap<>(PROPERTIES);
+        Map<String, String> properties2 = new HashMap<>(properties);
         String prefix = properties2.get(S3BinaryManager.BUCKET_PREFIX_PROPERTY);
         properties2.put(S3BinaryManager.BUCKET_PREFIX_PROPERTY, prefix + "transient/");
         S3BinaryManager binaryManager = new S3BinaryManager();
@@ -370,7 +372,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     /** Other binary manager with a different digest algorithm. */
     protected S3BinaryManager getBinaryManager3() throws IOException {
-        Map<String, String> properties3 = new HashMap<>(PROPERTIES);
+        Map<String, String> properties3 = new HashMap<>(properties);
         String prefix = properties3.get(S3BinaryManager.BUCKET_PREFIX_PROPERTY);
         properties3.put(S3BinaryManager.BUCKET_PREFIX_PROPERTY, prefix + "withsha/");
         properties3.put(AbstractCloudBinaryManager.DIGEST_ALGORITHM_PROPERTY, "SHA-256");

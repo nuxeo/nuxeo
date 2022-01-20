@@ -92,6 +92,8 @@ public abstract class TestS3DirectUploadAbstract {
 
     public static final String S3DIRECT_PREFIX = SYSTEM_PROPERTY_PREFIX + ".transient.";
 
+    protected static final Random RANDOM = new Random();
+
     protected static String envId;
 
     protected static String envSecret;
@@ -295,7 +297,8 @@ public abstract class TestS3DirectUploadAbstract {
         String bucket = (String) properties.get(S3DirectBatchHandler.INFO_BUCKET);
         String prefix = (String) properties.get(S3DirectBatchHandler.INFO_BASE_KEY);
 
-        Upload upload = tm.upload(new PutObjectRequest(bucket, prefix + key, new ByteArrayInputStream(content), metadata));
+        Upload upload = tm.upload(
+                new PutObjectRequest(bucket, prefix + key, new ByteArrayInputStream(content), metadata));
         try {
             upload.waitForUploadResult();
         } catch (InterruptedException e) {
@@ -311,17 +314,17 @@ public abstract class TestS3DirectUploadAbstract {
         String awsSecretAccessKey = (String) properties.get(S3DirectBatchHandler.INFO_AWS_SECRET_ACCESS_KEY);
         AWSCredentials credentials = awsSessionToken == null
                 ? new BasicAWSCredentials(awsSecretKeyId, awsSecretAccessKey)
-                        : new BasicSessionCredentials(awsSecretKeyId, awsSecretAccessKey, awsSessionToken);
-                return AmazonS3ClientBuilder.standard()
-                        .withAccelerateModeEnabled(accelerated)
-                        .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                        .withRegion((String) properties.get(S3DirectBatchHandler.INFO_AWS_REGION))
-                        .build();
+                : new BasicSessionCredentials(awsSecretKeyId, awsSecretAccessKey, awsSessionToken);
+        return AmazonS3ClientBuilder.standard()
+                                    .withAccelerateModeEnabled(accelerated)
+                                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                                    .withRegion((String) properties.get(S3DirectBatchHandler.INFO_AWS_REGION))
+                                    .build();
     }
 
     protected byte[] generateRandomBytes(int length) {
         byte[] bytes = new byte[length];
-        new Random().nextBytes(bytes);
+        RANDOM.nextBytes(bytes);
         return bytes;
     }
 

@@ -33,7 +33,7 @@ public class TestS3BinaryManagerWithSSE extends TestS3BinaryManager {
     public static void beforeClass() {
         TestS3BinaryManager.beforeClass();
         // activate server side encryption
-        PROPERTIES.put(SERVERSIDE_ENCRYPTION_PROPERTY, Boolean.TRUE.toString());
+        properties.put(SERVERSIDE_ENCRYPTION_PROPERTY, Boolean.TRUE.toString());
     }
 
 }

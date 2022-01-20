@@ -82,7 +82,7 @@ import org.osgi.framework.Bundle;
 @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests")
 public class S3BlobProviderFeature implements RunnerFeature {
 
-    public static String S3_DOC_TYPE = "FileS3";
+    public static final String S3_DOC_TYPE = "FileS3";
 
     public static final String PREFIX_TEST = "nuxeo.test.s3storage.";
 
@@ -169,7 +169,7 @@ public class S3BlobProviderFeature implements RunnerFeature {
         return () -> value;
     }
 
-    protected String configureProperty(String key, Supplier<String>... suppliers) {
+    protected String configureProperty(String key, @SuppressWarnings("unchecked") Supplier<String>... suppliers) {
         String value = getFirstNonNull(suppliers);
         if (value != null) {
             Framework.getProperties().setProperty(key, value);
@@ -179,12 +179,15 @@ public class S3BlobProviderFeature implements RunnerFeature {
 
     @Override
     public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
-        clearBlobStore("test");
-        clearBlobStore("other");
+        clearBlobStores();
     }
 
     @Override
     public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
+        clearBlobStores();
+    }
+
+    protected void clearBlobStores() {
         clearBlobStore("test");
         clearBlobStore("other");
     }

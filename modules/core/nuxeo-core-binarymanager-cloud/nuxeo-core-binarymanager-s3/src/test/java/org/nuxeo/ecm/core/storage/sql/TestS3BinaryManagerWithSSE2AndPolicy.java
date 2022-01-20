@@ -22,7 +22,7 @@ import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERT
 import org.junit.BeforeClass;
 
 /**
- * Tests S3DirectBatchHandler with Server Side Encryption activated on a bucket with policy denying requests without SSE
+ * Tests TestS3BinaryManager with Server Side Encryption activated on a bucket with policy denying requests without SSE
  * header. <br>
  * <br>
  * see {@link TestS3BinaryManagerWithSSE2AndPolicy} for details about the policy.
@@ -35,7 +35,7 @@ public class TestS3BinaryManagerWithSSE2AndPolicy extends TestS3BinaryManager {
     public static void beforeClass() {
         TestS3BinaryManagerWithSSE.beforeClass();
         // use a s3 bucket with encryption enforcement policy
-        PROPERTIES.put(BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload-policy");
+        properties.put(BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload-policy");
     }
 
 }

@@ -31,7 +31,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 public abstract class AbstractS3BinaryTest<T extends S3BinaryManager> extends AbstractTestCloudBinaryManager<T> {
 
-    protected static Map<String, String> PROPERTIES = Collections.emptyMap();
+    protected static Map<String, String> properties = Collections.emptyMap();
 
     @Override
     protected Set<String> listObjects() {
