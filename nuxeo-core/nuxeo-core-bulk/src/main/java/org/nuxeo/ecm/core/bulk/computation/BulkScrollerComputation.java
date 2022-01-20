@@ -77,6 +77,9 @@ public class BulkScrollerComputation extends AbstractComputation {
 
     public static final int MAX_SCROLL_SIZE = 4_000;
 
+    // @since 2021.15 threshold to trace Big Bulk Command (BBC)
+    public static final long BIG_BULK_COMMAND_THRESHOLD = 50_000;
+
     protected final int scrollBatchSize;
 
     protected final int scrollKeepAliveSeconds;
@@ -164,6 +167,7 @@ public class BulkScrollerComputation extends AbstractComputation {
             long bucketNumber = 1;
             final long queryLimit = getQueryLimit(command);
             boolean limitReached = false;
+            boolean bigBulkCommand = false;
             scrollLoop:
             try (Scroll scroll = buildScroll(command)) {
                 while (scroll.hasNext()) {
@@ -185,6 +189,11 @@ public class BulkScrollerComputation extends AbstractComputation {
                         produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++, documentCount);
                     }
                     documentCount += scrollCount;
+                    if (!bigBulkCommand && documentCount > BIG_BULK_COMMAND_THRESHOLD) {
+                        log.warn("BBC: {} (Big Bulk Command) detected, scrolling more than {} items: {}.", commandId,
+                                BIG_BULK_COMMAND_THRESHOLD, command);
+                        bigBulkCommand = true;
+                    }
                     if (limitReached) {
                         log.warn("Scroll limit {} reached for command {}", queryLimit, commandId);
                         break scrollLoop;
@@ -199,6 +208,9 @@ public class BulkScrollerComputation extends AbstractComputation {
             }
             // update status after scroll when we handle the scroller
             updateStatusAfterScroll(context, commandId, documentCount, limitReached);
+            if (bigBulkCommand) {
+                log.warn("BBC: {} scroll done: {} items.", commandId, documentCount);
+            }
         } catch (IllegalArgumentException | QueryParseException | DocumentNotFoundException e) {
             log.error("Invalid query results in an empty document set: {}", command, e);
             updateStatusAfterScroll(context, commandId, "Invalid query");
