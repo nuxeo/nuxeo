@@ -71,6 +71,9 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     // @since 2021.13
     protected static final int CHECKPOINT_PAUSE_MS = 30_000;
 
+    // @since 2021.15
+    public static final long SLOW_COMPUTATION_THRESHOLD_NS = 10 * 60 * 1_000_000_000L;
+
     private static final Log log = LogFactory.getLog(ComputationRunner.class);
 
     protected final LogStreamManager streamManager;
@@ -405,6 +408,12 @@ public class ComputationRunner implements Runnable, RebalanceListener {
                     .onFailure(failure -> computation.processFailure(context, failure))
                     .withFallback(() -> processFallback(context))
                     .run(() -> computation.processRecord(context, from, record));
+            long duration = ignored.stop();
+            if (duration > SLOW_COMPUTATION_THRESHOLD_NS && processRecordTimer.getCount() > 100
+                    && duration >= processRecordTimer.getSnapshot().getMax()) {
+                log.warn("Slow computation: " + metadata.name() + ", on " + context.getLastOffset() + ", took: "
+                        + duration / 1_000_000_000L + "s, record: " + record.toString());
+            }
         } finally {
             runningCount.dec();
         }
