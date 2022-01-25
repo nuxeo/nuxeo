@@ -222,6 +222,12 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
      */
     public static final String DISABLE_PROXY_PROPERTY = "nuxeo.s3.proxy.disabled";
 
+    /** @since 2021.15 */
+    public static final String USER_AGENT_PREFIX_PROPERTY = "userAgentPrefix";
+
+    /** @since 2021.15 */
+    public static final String USER_AGENT_SUFFIX_PROPERTY = "userAgentSuffix";
+
     public static final ObjectLockRetentionMode DEFAULT_RETENTION_MODE = ObjectLockRetentionMode.GOVERNANCE;
 
     public final CloudFrontConfiguration cloudFront;
@@ -429,6 +435,8 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         int maxErrorRetry = getIntProperty(CONNECTION_RETRY_PROPERTY);
         int connectionTimeout = getIntProperty(CONNECTION_TIMEOUT_PROPERTY);
         int socketTimeout = getIntProperty(SOCKET_TIMEOUT_PROPERTY);
+        String userAgentPrefix = getProperty(USER_AGENT_PREFIX_PROPERTY);
+        String userAgentSuffix = getProperty(USER_AGENT_SUFFIX_PROPERTY);
         ClientConfiguration clientConfiguration = new ClientConfiguration();
         if (!proxyDisabled) {
             if (isNotBlank(proxyHost)) {
@@ -455,6 +463,12 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         }
         if (socketTimeout >= 0) { // 0 is allowed
             clientConfiguration.setSocketTimeout(socketTimeout);
+        }
+        if (isNotBlank(userAgentPrefix)) {
+            clientConfiguration.setUserAgentPrefix(userAgentPrefix);
+        }
+        if (isNotBlank(userAgentSuffix)) {
+            clientConfiguration.setUserAgentSuffix(userAgentSuffix);
         }
         AWSConfigurationService service = Framework.getService(AWSConfigurationService.class);
         if (service != null) {

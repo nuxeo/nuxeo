@@ -29,6 +29,8 @@
       <property name="multipartCopyThreshold">${nuxeo.s3storage.multipart.copy.threshold}</property>
       <property name="multipartUploadThreshold">${nuxeo.s3storage.multipart.upload.threshold}</property>
       <property name="minimumUploadPartSize">${nuxeo.s3storage.minimum.upload.part.size}</property>
+      <property name="userAgentPrefix">${nuxeo.s3storage.user.agent.prefix}</property>
+      <property name="userAgentSuffix">${nuxeo.s3storage.user.agent.suffix}</property>
     </blobprovider>
   </extension>
 

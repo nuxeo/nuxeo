@@ -163,6 +163,12 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
 
     public static final String DIRECTDOWNLOAD_EXPIRE_PROPERTY_COMPAT = "downloadfroms3.expire";
 
+    /** @since 2021.15 */
+    public static final String USER_AGENT_PREFIX_PROPERTY = "userAgentPrefix";
+
+    /** @since 2021.15 */
+    public static final String USER_AGENT_SUFFIX_PROPERTY = "userAgentSuffix";
+
     public static final String DELIMITER = "/";
 
     /** @deprecated since 11.1, now unused */
@@ -262,6 +268,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
         boolean accelerateModeEnabled = getBooleanProperty(ACCELERATE_MODE_PROPERTY);
         boolean pathStyleAccessEnabled = getBooleanProperty(PATHSTYLEACCESS_PROPERTY);
         String sseprop = getProperty(SERVERSIDE_ENCRYPTION_PROPERTY);
+        String userAgentPrefix = getProperty(USER_AGENT_PREFIX_PROPERTY);
+        String userAgentSuffix = getProperty(USER_AGENT_SUFFIX_PROPERTY);
         if (isNotBlank(sseprop)) {
             useServerSideEncryption = Boolean.parseBoolean(sseprop);
             serverSideKMSKeyID = getProperty(SERVERSIDE_ENCRYPTION_KMS_KEY_PROPERTY);
@@ -314,6 +322,12 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
         }
         if (socketTimeout >= 0) { // 0 is allowed
             clientConfiguration.setSocketTimeout(socketTimeout);
+        }
+        if (isNotBlank(userAgentPrefix)) {
+            clientConfiguration.setUserAgentPrefix(userAgentPrefix);
+        }
+        if (isNotBlank(userAgentSuffix)) {
+            clientConfiguration.setUserAgentSuffix(userAgentSuffix);
         }
 
         AWSConfigurationService service = Framework.getService(AWSConfigurationService.class);

@@ -35,6 +35,8 @@ nuxeo.s3storage.multipart.copy.part.size=5242880
 nuxeo.s3storage.multipart.copy.threshold=5368709120
 nuxeo.s3storage.multipart.upload.threshold=16777216
 nuxeo.s3storage.minimum.upload.part.size=5242880
+nuxeo.s3storage.user.agent.prefix=
+nuxeo.s3storage.user.agent.suffix=
 
 nuxeo.s3storage.useDirectUpload=false
 
