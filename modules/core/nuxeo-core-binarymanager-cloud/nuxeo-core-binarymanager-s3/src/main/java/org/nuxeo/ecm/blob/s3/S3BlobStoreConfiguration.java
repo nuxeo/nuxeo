@@ -303,7 +303,8 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
                 ? ObjectLockRetentionMode.COMPLIANCE
                 : ObjectLockRetentionMode.GOVERNANCE;
         if (!s3RetentionEnabled && Boolean.parseBoolean(properties.get(RECORD))) {
-            log.warn("Blob provider is configured for records but retention is not enabled on s3 bucket {}", bucketName);
+            log.warn("Blob provider is configured for records but retention is not enabled on s3 bucket {}",
+                    bucketName);
         }
 
         transferManager = createTransferManager();
@@ -389,8 +390,8 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         if (isBlank(value)) {
             value = "";
         } else if (!value.endsWith(DELIMITER)) {
-            log.debug(String.format("%s %s S3 bucket prefix should end with '/': added automatically.",
-                    BUCKET_PREFIX_PROPERTY, value));
+            log.debug("{} {} S3 bucket prefix should end with '/': added automatically.", BUCKET_PREFIX_PROPERTY,
+                    value);
             value += DELIMITER;
         }
         if (isNotBlank(namespace)) {

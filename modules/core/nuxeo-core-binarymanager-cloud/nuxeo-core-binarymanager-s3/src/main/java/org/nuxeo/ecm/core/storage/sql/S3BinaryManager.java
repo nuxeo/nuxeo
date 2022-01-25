@@ -268,7 +268,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
         }
 
         if (isBlank(bucketName)) {
-            throw new RuntimeException("Missing conf: " + BUCKET_NAME_PROPERTY);
+            throw new NuxeoException("Missing conf: " + BUCKET_NAME_PROPERTY);
         }
 
         if (!isBlank(bucketNamePrefix) && !bucketNamePrefix.endsWith(DELIMITER)) {
@@ -338,7 +338,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
                 confok = false;
             }
             if (!confok) {
-                throw new RuntimeException("S3 Crypto configuration incomplete");
+                throw new NuxeoException("S3 Crypto configuration incomplete");
             }
             try {
                 // Open keystore
@@ -350,7 +350,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
                 }
                 // Get keypair for alias
                 if (!keystore.isKeyEntry(privkeyAlias)) {
-                    throw new RuntimeException("Alias " + privkeyAlias + " is missing or not a key alias");
+                    throw new NuxeoException("Alias " + privkeyAlias + " is missing or not a key alias");
                 }
                 PrivateKey privKey = (PrivateKey) keystore.getKey(privkeyAlias, privkeyPass.toCharArray());
                 Certificate cert = keystore.getCertificate(privkeyAlias);
@@ -360,7 +360,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
                 encryptionMaterials = new EncryptionMaterials(keypair);
                 cryptoConfiguration = new CryptoConfiguration();
             } catch (IOException | GeneralSecurityException e) {
-                throw new RuntimeException("Could not read keystore: " + keystoreFile + ", alias: " + privkeyAlias, e);
+                throw new NuxeoException("Could not read keystore: " + keystoreFile + ", alias: " + privkeyAlias, e);
             }
         }
         isEncrypted = encryptionMaterials != null;
@@ -640,12 +640,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
                 copyObjectRequest.setNewObjectMetadata(newObjectMetadata);
             }
             Copy copy = transferManager.copy(copyObjectRequest);
-            try {
-                copy.waitForCompletion();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new NuxeoException(e);
-            }
+            waitForCopyCompletion(copy);
             if (log.isDebugEnabled()) {
                 long dtms = System.currentTimeMillis() - t0;
                 log.debug("copied blob " + sourceKey + " to " + key + " in " + dtms + "ms");
@@ -657,6 +652,16 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
             log.warn(message + ", falling back to regular copy: " + e.getMessage());
             log.debug(message, e);
             return null;
+        }
+    }
+
+    /** @since 2021.15 */
+    protected void waitForCopyCompletion(Copy copy) {
+        try {
+            copy.waitForCompletion();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
         }
     }
 
@@ -704,7 +709,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
                     throw new IOException(ee);
                 } catch (InterruptedException ee) {
                     Thread.currentThread().interrupt();
-                    throw new RuntimeException(ee);
+                    throw new NuxeoException(ee);
                 } finally {
                     if (log.isDebugEnabled()) {
                         long dtms = System.currentTimeMillis() - t0;
@@ -733,7 +738,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
                 return false;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
+                throw new NuxeoException(e);
             } finally {
                 if (log.isDebugEnabled()) {
                     long dtms = System.currentTimeMillis() - t0;
