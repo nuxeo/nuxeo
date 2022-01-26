@@ -1,12 +1,9 @@
-<component name="org.nuxeo.automation.test-operation" version="1.0">
-
+<component name="org.nuxeo.automation.test-operation-disable" version="1.0">
+  <require>org.nuxeo.automation.test-operation</require>
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="event-handlers">
-    <handler id="test">
+    <handler id="test" enabled="false">
       <event>aboutToCreate</event>
-      <filters>
-        <condition>a &lt; b &amp; b &gt; c</condition>
-      </filters>
     </handler>
   </extension>
 

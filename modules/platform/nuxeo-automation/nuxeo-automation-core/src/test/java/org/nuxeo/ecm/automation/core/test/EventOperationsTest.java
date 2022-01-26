@@ -19,6 +19,10 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -38,6 +42,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -62,6 +67,9 @@ public class EventOperationsTest {
 
     @Inject
     protected EventService eventService;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Before
     public void initRepo() throws Exception {
@@ -172,6 +180,35 @@ public class EventOperationsTest {
 
         doc = session.getDocument(doc.getRef());
         assertEquals("New source", doc.getPropertyValue("dc:source"));
+    }
+
+    @Test
+    public void testChainIDCollision() throws Exception {
+        assertPresent("aboutToCreate", "testOp", false);
+        assertPresent("documentCreated", "testOp", false);
+        hotDeployer.deploy("org.nuxeo.ecm.automation.core.tests:test-chainid-override-1.xml");
+        assertPresent("aboutToCreate", "testOp", true);
+        assertPresent("documentCreated", "testOp", false);
+        hotDeployer.deploy("org.nuxeo.ecm.automation.core.tests:test-chainid-override-2.xml");
+        assertPresent("aboutToCreate", "testOp", true);
+        assertPresent("documentCreated", "testOp", true);
+    }
+
+    protected void assertPresent(String eventId, String chainId, boolean expected) {
+        var handlers = registry.getEventHandlers(eventId);
+        boolean present = handlers != null && handlers.stream().anyMatch(h -> h.getChainId().equals(chainId));
+        assertEquals(expected, present);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.core.tests:test-enc.xml")
+    public void testDisableEventHandler() throws Exception {
+        List<EventHandler> eventHandlers = registry.getEventHandlers("aboutToCreate");
+        assertEquals(1, eventHandlers.size());
+        assertTrue(eventHandlers.get(0).isEnabled());
+        hotDeployer.deploy("org.nuxeo.ecm.automation.core.tests:test-enc-disable.xml");
+        eventHandlers = registry.getEventHandlers("aboutToCreate");
+        assertNull(eventHandlers);
     }
 
 }

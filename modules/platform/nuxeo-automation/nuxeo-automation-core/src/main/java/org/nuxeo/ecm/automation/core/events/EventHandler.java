@@ -19,15 +19,17 @@
 package org.nuxeo.ecm.automation.core.events;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mvel2.CompileException;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -48,6 +50,10 @@ public class EventHandler {
 
     private static final Log log = LogFactory.getLog(EventHandler.class);
 
+    /** @since 2021.16 */
+    @XNode("@id")
+    protected String id;
+
     @XNode("@chainId")
     protected String chainId;
 
@@ -65,7 +71,7 @@ public class EventHandler {
 
     @XNode("filters/lifeCycle")
     protected void setLifeCycleExpr(String lifeCycles) {
-        lifeCycle = StringUtils.split(lifeCycles, ',', true);
+        lifeCycle = org.nuxeo.common.utils.StringUtils.split(lifeCycles, ',', true);
     }
 
     protected String[] lifeCycle;
@@ -99,6 +105,10 @@ public class EventHandler {
         condition = convertExpr(expr);
     }
 
+    /** @since 2021.16 */
+    @XNode("@enabled")
+    protected boolean enabled = true;
+
     protected String convertExpr(String expr) {
         String res = expr.replaceAll("&lt;", "<");
         res = res.replaceAll("&gt;", ">");
@@ -120,6 +130,10 @@ public class EventHandler {
 
     public Set<String> getEvents() {
         return events;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getChainId() {
@@ -210,6 +224,10 @@ public class EventHandler {
         return doctypes;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     /**
      * Checks if this handler should run for the event and operation context.
      *
@@ -217,6 +235,9 @@ public class EventHandler {
      *            and just return {@code true} to avoid costly evaluations on {@link ShallowDocumentModel} instances
      */
     public boolean isEnabled(OperationContext ctx, EventContext eventCtx, boolean quick) {
+        if (!isEnabled()) {
+            return false;
+        }
         Object obj = ctx.getInput();
         DocumentModel doc = null;
         if (obj instanceof DocumentModel) {
@@ -296,5 +317,73 @@ public class EventHandler {
             }
         }
         return true;
+    }
+
+    /** @since 2021.16 */
+    @Override
+    public EventHandler clone() {
+        EventHandler clone = new EventHandler();
+        clone.id = id;
+        clone.chainId = chainId;
+        clone.isPostCommit = isPostCommit;
+        if (events != null) {
+            clone.events = new HashSet<>(events);
+        }
+        if (doctypes != null) {
+            clone.doctypes = new HashSet<>(doctypes);
+        }
+        clone.facet = facet;
+        if (lifeCycle != null) {
+            clone.lifeCycle = Arrays.copyOf(lifeCycle, lifeCycle.length);
+        }
+        clone.pathStartsWith = pathStartsWith;
+        clone.attribute = attribute;
+        if (memberOf != null) {
+            clone.memberOf = new ArrayList<>(memberOf);
+        }
+        clone.isAdministrator = isAdministrator;
+        clone.condition = condition;
+        clone.enabled = enabled;
+        return clone;
+    }
+
+    /** @since 2021.16 */
+    public void merge(EventHandler other) {
+        if (!StringUtils.isBlank(other.chainId)) {
+            chainId = other.chainId;
+        }
+        isPostCommit = other.isPostCommit;
+        events = mergeCollections(events, other.events, new HashSet<>());
+        doctypes = mergeCollections(doctypes, other.doctypes, new HashSet<>());
+        if (StringUtils.isNotBlank(other.facet)) {
+            facet = other.facet;
+        }
+        if (other.lifeCycle != null) {
+            lifeCycle = other.lifeCycle;
+        }
+        if (StringUtils.isNotBlank(other.pathStartsWith)) {
+            pathStartsWith = other.pathStartsWith;
+        }
+        if (other.attribute != null) {
+            attribute = other.attribute;
+        }
+        memberOf = mergeCollections(memberOf, other.memberOf, new ArrayList<>());
+        if (other.isAdministrator != null) {
+            isAdministrator = other.isAdministrator;
+        }
+        if (StringUtils.isNotBlank(other.condition)) {
+            condition = other.condition;
+        }
+        enabled = other.enabled;
+    }
+
+    protected <C extends Collection<V>, V> C mergeCollections(C collection, C otherCollection, C newCollection) {
+        if (collection != null) {
+            newCollection.addAll(collection);
+        }
+        if (otherCollection != null) {
+            newCollection.addAll(otherCollection);
+        }
+        return newCollection;
     }
 }

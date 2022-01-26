@@ -20,10 +20,11 @@ package org.nuxeo.ecm.automation.core.events;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -31,83 +32,61 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class EventRegistry extends ContributionFragmentRegistry<EventHandler> {
 
-    protected Map<String, List<EventHandler>> handlers = new HashMap<>();
+    private static final Logger log = LogManager.getLogger(EventRegistry.class);
 
     protected volatile Map<String, List<EventHandler>> lookup;
 
     @Override
     public String getContributionId(EventHandler contrib) {
-        // useless, never used
-        return contrib.getChainId();
+        String id = contrib.getId();
+        if (id == null) {
+            id = contrib.chainId;
+            if (contrib.events != null && !contrib.events.isEmpty()) {
+                id += "_" + String.join("_", contrib.events);
+            }
+            log.debug("An EventHandler without id has been contributed. Generated id: {} ", id);
+        }
+        return id;
     }
 
     @Override
     public void contributionUpdated(String id, EventHandler handler, EventHandler newOrigContrib) {
-        for (String eventId : handler.getEvents()) {
-            putEventHandler(eventId, handler);
-        }
         lookup = null;
-    }
-
-    protected void putEventHandler(String eventId, EventHandler handler) {
-        List<EventHandler> handlers = this.handlers.get(eventId);
-        if (handlers == null) {
-            handlers = new ArrayList<>();
-        }
-        if (!handlers.contains(handler)) {
-            handlers.add(handler);
-        }
-        this.handlers.put(eventId, handlers);
     }
 
     @Override
     public void contributionRemoved(String id, EventHandler handler) {
-        for (String eventId : handler.getEvents()) {
-            List<EventHandler> handlers = this.handlers.get(eventId);
-            if (handlers != null) {
-                Iterator<EventHandler> it = handlers.iterator();
-                while (it.hasNext()) {
-                    EventHandler h = it.next();
-                    // TODO chainId is not really an unique ID for the event
-                    // handler...
-                    if (h.chainId.equals(handler.chainId)) {
-                        it.remove();
-                        break;
-                    }
-                }
-            }
-        }
         lookup = null;
     }
 
     @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
     public EventHandler clone(EventHandler orig) {
-        throw new UnsupportedOperationException();
+        return orig.clone();
     }
 
     @Override
     public void merge(EventHandler src, EventHandler dst) {
-        throw new UnsupportedOperationException();
+        dst.merge(src);
     }
 
     // API
 
     public Map<String, List<EventHandler>> lookup() {
-        Map<String, List<EventHandler>> _lookup = lookup;
-        if (_lookup == null) {
+        if (lookup == null) {
             synchronized (this) {
                 if (lookup == null) {
-                    lookup = new HashMap<>(handlers);
+                    lookup = new HashMap<>();
+                    for (var eventHandler : toMap().values()) {
+                        if (eventHandler.isEnabled()) {
+                            for (var eventId : eventHandler.getEvents()) {
+                                lookup.computeIfAbsent(eventId, k -> new ArrayList<>()).add(eventHandler);
+                            }
+                        }
+                    }
                 }
-                _lookup = lookup;
             }
         }
-        return _lookup;
+        return lookup;
     }
 
 }

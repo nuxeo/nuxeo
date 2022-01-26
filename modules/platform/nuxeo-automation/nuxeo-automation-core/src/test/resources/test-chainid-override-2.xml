@@ -1,0 +1,8 @@
+<component name="org.nuxeo.automation.test-handler-override-2" version="1.0">
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="event-handlers">
+    <handler chainId="testOp">
+      <event>documentCreated</event>
+    </handler>
+  </extension>
+</component>

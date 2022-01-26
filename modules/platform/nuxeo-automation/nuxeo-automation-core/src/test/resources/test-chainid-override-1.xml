@@ -1,13 +1,8 @@
-<component name="org.nuxeo.automation.test-operation" version="1.0">
-
+<component name="org.nuxeo.automation.test-handler-override-1" version="1.0">
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="event-handlers">
-    <handler id="test">
+    <handler chainId="testOp">
       <event>aboutToCreate</event>
-      <filters>
-        <condition>a &lt; b &amp; b &gt; c</condition>
-      </filters>
     </handler>
   </extension>
-
 </component>
