@@ -27,6 +27,7 @@ import static com.amazonaws.SDKGlobalConfiguration.SECRET_KEY_ENV_VAR;
 import static org.apache.commons.lang3.ObjectUtils.getFirstNonNull;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.blob.s3.S3TestHelper.getUniqueBucketPrefix;
 
 import java.io.IOException;
 import java.net.URL;
@@ -64,8 +65,8 @@ import org.osgi.framework.Bundle;
  * <li>put these properties into the contribution
  * </ul>
  * By default, the two {@link S3BlobProvider} will have the same {@code awsid}, {@code awssecret}, {@code awstoken}, and
- * {@code bucket}. The blob provider {@code test} will use {@code provider-test/} as {@code bucket_prefix}, respectively
- * {@code provider-other/} for the blob provider {@code other}.
+ * {@code bucket}. The blob provider {@code test} will use {@code provider-test-TIMESTAMP/} as default
+ * {@code bucket_prefix}, respectively {@code provider-other-TIMESTAMP/} for the blob provider {@code other}.
  * <p>
  * If a test needs a specific blob provider settings, it can deploy a partial contribution with these settings only, the
  * descriptor merge behavior will do the necessary.
@@ -114,7 +115,7 @@ public class S3BlobProviderFeature implements RunnerFeature {
     public static final String PROVIDER_TEST_BUCKET_PREFIX = PREFIX_PROVIDER_TEST
             + S3BlobStoreConfiguration.BUCKET_PREFIX_PROPERTY;
 
-    public static final String DEFAULT_PROVIDER_TEST_BUCKET_PREFIX = "provider-test/";
+    public static final String DEFAULT_PROVIDER_TEST_BUCKET_PREFIX = "provider-test";
 
     public static final String PROVIDER_OTHER_BUCKET = PREFIX_PROVIDER_OTHER
             + S3BlobStoreConfiguration.BUCKET_NAME_PROPERTY;
@@ -122,7 +123,7 @@ public class S3BlobProviderFeature implements RunnerFeature {
     public static final String PROVIDER_OTHER_BUCKET_PREFIX = PREFIX_PROVIDER_OTHER
             + S3BlobStoreConfiguration.BUCKET_PREFIX_PROPERTY;
 
-    public static final String DEFAULT_PROVIDER_OTHER_BUCKET_PREFIX = "provider-other/";
+    public static final String DEFAULT_PROVIDER_OTHER_BUCKET_PREFIX = "provider-other";
 
     @Override
     @SuppressWarnings("unchecked")
@@ -132,18 +133,20 @@ public class S3BlobProviderFeature implements RunnerFeature {
                 sysProp(AWS_ID));
         var awsSecret = configureProperty(AWS_SECRET, sysEnv(SECRET_KEY_ENV_VAR), sysEnv(ALTERNATE_SECRET_KEY_ENV_VAR),
                 sysProp(AWS_SECRET));
-        configureProperty(AWS_SESSION_TOKEN, sysEnv(AWS_SESSION_TOKEN_ENV_VAR), sysProp(AWS_SESSION_TOKEN));
-        configureProperty(BUCKET_REGION, sysEnv(AWS_REGION_ENV_VAR), sysProp(BUCKET_REGION));
+        // fall back on empty string to allow AWS credentials provider to generate credentials without session token
+        configureProperty(AWS_SESSION_TOKEN, sysEnv(AWS_SESSION_TOKEN_ENV_VAR), sysProp(AWS_SESSION_TOKEN), () -> "");
+        var awsRegion = configureProperty(BUCKET_REGION, sysEnv(AWS_REGION_ENV_VAR), sysProp(BUCKET_REGION));
         // configure specific blob provider properties
-        configureProperty(PROVIDER_TEST_BUCKET, sysProp(PROVIDER_TEST_BUCKET), sysProp(BUCKET));
-        configureProperty(PROVIDER_TEST_BUCKET_PREFIX, sysProp(PROVIDER_TEST_BUCKET_PREFIX),
-                constant(DEFAULT_PROVIDER_TEST_BUCKET_PREFIX));
-        configureProperty(PROVIDER_OTHER_BUCKET, sysProp(PROVIDER_OTHER_BUCKET), sysProp(PROVIDER_TEST_BUCKET),
-                sysProp(BUCKET));
-        configureProperty(PROVIDER_OTHER_BUCKET_PREFIX, sysProp(PROVIDER_OTHER_BUCKET_PREFIX),
-                constant(DEFAULT_PROVIDER_OTHER_BUCKET_PREFIX));
+        var testBucket = configureProperty(PROVIDER_TEST_BUCKET, sysProp(PROVIDER_TEST_BUCKET), sysProp(BUCKET));
+        configureProperty(PROVIDER_TEST_BUCKET_PREFIX, unique(sysProp(PROVIDER_TEST_BUCKET_PREFIX).get()),
+                unique(DEFAULT_PROVIDER_TEST_BUCKET_PREFIX));
+        var otherBucket = configureProperty(PROVIDER_OTHER_BUCKET, sysProp(PROVIDER_OTHER_BUCKET),
+                sysProp(PROVIDER_TEST_BUCKET), sysProp(BUCKET));
+        configureProperty(PROVIDER_OTHER_BUCKET_PREFIX, unique(sysProp(PROVIDER_OTHER_BUCKET_PREFIX).get()),
+                unique(DEFAULT_PROVIDER_OTHER_BUCKET_PREFIX));
         // check if tests can run
-        assumeTrue("AWS Credentials are missing in test configuration", isNoneBlank(awsId, awsSecret));
+        assumeTrue("AWS credentials, region and bucket are missing in test configuration",
+                isNoneBlank(awsId, awsSecret, awsRegion, testBucket, otherBucket));
         // deploy the test bundle after the properties have been set
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
@@ -165,8 +168,8 @@ public class S3BlobProviderFeature implements RunnerFeature {
         return () -> StringUtils.trimToNull(System.getProperty(key));
     }
 
-    protected Supplier<String> constant(String value) {
-        return () -> value;
+    protected Supplier<String> unique(String prefix) {
+        return () -> prefix == null ? null : getUniqueBucketPrefix(prefix);
     }
 
     protected String configureProperty(String key, @SuppressWarnings("unchecked") Supplier<String>... suppliers) {

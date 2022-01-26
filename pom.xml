@@ -4981,6 +4981,12 @@
             <nuxeo.test.mongodb.server>${nuxeo.test.mongodb.server}</nuxeo.test.mongodb.server>
             <nuxeo.test.mongodb.dbname>${nuxeo.test.mongodb.dbname}</nuxeo.test.mongodb.dbname>
             <nuxeo.test.elasticsearch.addressList>${nuxeo.test.elasticsearch.addressList}</nuxeo.test.elasticsearch.addressList>
+            <nuxeo.test.s3storage.bucket>${nuxeo.test.s3storage.bucket}</nuxeo.test.s3storage.bucket>
+            <nuxeo.test.s3storage.transient.bucket>${nuxeo.test.s3storage.transient.bucket}</nuxeo.test.s3storage.transient.bucket>
+            <nuxeo.test.s3storage.policy.bucket>${nuxeo.test.s3storage.policy.bucket}</nuxeo.test.s3storage.policy.bucket>
+            <nuxeo.test.s3storage.bucket_prefix>${nuxeo.test.s3storage.bucket_prefix}</nuxeo.test.s3storage.bucket_prefix>>
+            <nuxeo.test.s3storage.provider.test.bucket_prefix>${nuxeo.test.s3storage.provider.test.bucket_prefix}</nuxeo.test.s3storage.provider.test.bucket_prefix>
+            <nuxeo.test.s3storage.provider.other.bucket_prefix>${nuxeo.test.s3storage.provider.other.bucket_prefix}</nuxeo.test.s3storage.provider.other.bucket_prefix>>
           </systemPropertyVariables>
           <includes>
             <include>**/Test*.java</include>

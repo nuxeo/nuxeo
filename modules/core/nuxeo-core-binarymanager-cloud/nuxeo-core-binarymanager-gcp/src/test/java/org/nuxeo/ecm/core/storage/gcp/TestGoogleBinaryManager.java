@@ -33,6 +33,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.AfterClass;
@@ -135,6 +136,11 @@ public class TestGoogleBinaryManager extends AbstractTestCloudBinaryManager<Goog
                          .map(CompletableFuture::runAsync)
                          .toArray(CompletableFuture[]::new);
         CompletableFuture.allOf(futures).get(1, TimeUnit.MINUTES);
+    }
+
+    @Override
+    protected Set<String> getKeys(List<String> digests) {
+        return digests.stream().map(digest -> binaryManager.bucketPrefix + digest).collect(Collectors.toSet());
     }
 
 }

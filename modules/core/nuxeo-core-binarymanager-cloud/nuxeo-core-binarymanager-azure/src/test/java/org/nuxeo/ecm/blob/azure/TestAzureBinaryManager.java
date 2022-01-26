@@ -372,4 +372,9 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
         }
     }
 
+    @Override
+    protected Set<String> getKeys(List<String> digests) {
+        return new HashSet<>(digests);
+    }
+
 }

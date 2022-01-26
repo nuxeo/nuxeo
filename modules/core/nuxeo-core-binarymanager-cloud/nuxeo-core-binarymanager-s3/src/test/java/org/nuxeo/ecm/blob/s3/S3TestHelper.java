@@ -27,6 +27,7 @@ import static com.amazonaws.SDKGlobalConfiguration.SECRET_KEY_ENV_VAR;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.blob.s3.S3BlobProviderFeature.PREFIX_TEST;
 import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.AWS_ID_PROPERTY;
 import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.AWS_SECRET_PROPERTY;
 import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.AWS_SESSION_TOKEN_PROPERTY;
@@ -55,13 +56,16 @@ public class S3TestHelper {
         String envId = defaultIfBlank(System.getenv(ACCESS_KEY_ENV_VAR), System.getenv(ALTERNATE_ACCESS_KEY_ENV_VAR));
         String envSecret = defaultIfBlank(System.getenv(SECRET_KEY_ENV_VAR),
                 System.getenv(ALTERNATE_SECRET_KEY_ENV_VAR));
+        // fall back on empty string to allow AWS credentials provider to generate credentials without session token
         String envSessionToken = defaultIfBlank(System.getenv(AWS_SESSION_TOKEN_ENV_VAR), "");
-        String envRegion = defaultIfBlank(System.getenv(AWS_REGION_ENV_VAR), "");
+        String envRegion = System.getenv(AWS_REGION_ENV_VAR);
+        String bucketName = System.getProperty(PREFIX_TEST + BUCKET_NAME_PROPERTY);
+        assumeTrue("AWS credentials, region and bucket not set in the environment variables",
+                isNoneBlank(envId, envSecret, envRegion, bucketName));
 
-        String bucketName = "nuxeo-test-changeme";
-        String bucketPrefix = "testfolder/";
-
-        assumeTrue("AWS Credentials not set in the environment variables", isNoneBlank(envId, envSecret));
+        String bucketPrefixProperty = defaultIfBlank(System.getProperty(PREFIX_TEST + BUCKET_PREFIX_PROPERTY),
+                "testFolder");
+        String bucketPrefix = getUniqueBucketPrefix(bucketPrefixProperty);
 
         properties.put(AWS_ID_PROPERTY, envId);
         properties.put(AWS_SECRET_PROPERTY, envSecret);
@@ -78,6 +82,11 @@ public class S3TestHelper {
 
     public static void removeProperty(String key) {
         System.getProperties().remove(SYSTEM_PROPERTY_PREFIX + '.' + key);
+    }
+
+    public static String getUniqueBucketPrefix(String prefix) {
+        long timestamp = System.nanoTime();
+        return String.format("%s-%s/", prefix, timestamp);
     }
 
 }

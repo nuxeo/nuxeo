@@ -110,6 +110,32 @@ S3 parameters (except `nuxeo.core.binarymanager`) are mandatory, additionally Cl
 mvn clean install
 ```
 
+## Testing
+
+Running the unit tests requires some environment variables and System properties to be set, otherwise they are skipped.
+
+### Environment Variables
+
+```shell
+  AWS_REGION=eu-west-3
+  AWS_ACCESS_KEY_ID=******
+  AWS_SECRET_ACCESS_KEY=******
+  AWS_ROLE_ARN=arn:aws:iam::783725821734:role/nuxeo-s3directupload-role
+```
+
+### System Properties
+
+```shell
+mvn test \
+  -nsu \
+  -Dnuxeo.test.s3storage.bucket=nuxeo-platform-unit-tests \
+  -Dnuxeo.test.s3storage.transient.bucket=nuxeo-platform-unit-tests-transient \
+  -Dnuxeo.test.s3storage.policy.bucket=nuxeo-platform-unit-tests-policy \
+  -Dnuxeo.test.s3storage.bucket_prefix=BUCKET_PREFIX \
+  -Dnuxeo.test.s3storage.provider.test.bucket_prefix=TEST_BLOB_PROVIDER_PREFIX \
+  -Dnuxeo.test.s3storage.provider.other.bucket_prefix=OTHER_BLOB_PROVIDER_PREFIX
+```
+
 ## Deploying
 
 Install [the Amazon S3 Online Storage Marketplace Package](https://connect.nuxeo.com/nuxeo/site/marketplace/package/amazon-s3-online-storage).

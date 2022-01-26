@@ -18,7 +18,11 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.blob.s3.S3BlobProviderFeature.PREFIX_TEST;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERTY;
+
 import org.junit.BeforeClass;
 
 /**
@@ -31,11 +35,15 @@ import org.junit.BeforeClass;
  */
 public class TestS3BinaryManagerWithSSE2AndPolicy extends TestS3BinaryManager {
 
+    public static final String POLICY = "policy";
+
     @BeforeClass
     public static void beforeClass() {
         TestS3BinaryManagerWithSSE.beforeClass();
         // use a s3 bucket with encryption enforcement policy
-        properties.put(BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload-policy");
+        String bucketName = System.getProperty(String.format("%s%s.%s", PREFIX_TEST, POLICY, BUCKET_NAME_PROPERTY));
+        assumeTrue("AWS bucket with policy not set in the environment variables", isNotBlank(bucketName));
+        properties.put(BUCKET_NAME_PROPERTY, bucketName);
     }
 
 }

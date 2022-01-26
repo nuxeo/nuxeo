@@ -21,11 +21,14 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.blob.AbstractTestCloudBinaryManager;
 
+import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
@@ -33,45 +36,36 @@ public abstract class AbstractS3BinaryTest<T extends S3BinaryManager> extends Ab
 
     protected static Map<String, String> properties = Collections.emptyMap();
 
+    /**
+     * Lists objects recursively in the bucket under the configured prefix.
+     */
     @Override
     protected Set<String> listObjects() {
-        Set<String> digests = new HashSet<>();
-        ObjectListing list = null;
-        do {
-            if (list == null) {
-                list = binaryManager.amazonS3.listObjects(binaryManager.bucketName, binaryManager.bucketNamePrefix);
-            } else {
-                list = binaryManager.amazonS3.listNextBatchOfObjects(list);
-            }
-            int prefixLength = binaryManager.bucketNamePrefix.length();
-            for (S3ObjectSummary summary : list.getObjectSummaries()) {
-                String digest = summary.getKey().substring(prefixLength);
-                if (!binaryManager.isValidDigest(digest)) {
-                    continue;
-                }
-                digests.add(digest);
-            }
-        } while (list.isTruncated());
-        return digests;
+        return listBucketObjects(true);
     }
 
     /**
-     * Removes all objects in the bucket, not only those under the configured prefix.
+     * Removes objects recursively in the bucket under the configured prefix.
      */
     @Override
     protected void removeObjects() throws IOException {
-        listAllObjects().forEach(key -> binaryManager.amazonS3.deleteObject(binaryManager.bucketName, key));
+        listObjects().forEach(key -> binaryManager.amazonS3.deleteObject(binaryManager.bucketName, key));
     }
 
     /**
      * Lists all objects in the bucket, not only those under the configured prefix.
      */
     protected Set<String> listAllObjects() {
+        return listBucketObjects(false);
+    }
+
+    /** @since 2021.16 */
+    protected Set<String> listBucketObjects(boolean prefix) {
         Set<String> digests = new HashSet<>();
         ObjectListing list = null;
         do {
             if (list == null) {
-                list = binaryManager.amazonS3.listObjects(binaryManager.bucketName);
+                list = getObjectListing(prefix);
             } else {
                 list = binaryManager.amazonS3.listNextBatchOfObjects(list);
             }
@@ -82,4 +76,21 @@ public abstract class AbstractS3BinaryTest<T extends S3BinaryManager> extends Ab
         } while (list.isTruncated());
         return digests;
     }
+
+    /** @since 2021.16 */
+    protected ObjectListing getObjectListing(boolean prefix) {
+        if (prefix) {
+            ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(binaryManager.bucketName)
+                                                                            .withPrefix(binaryManager.bucketNamePrefix);
+            return binaryManager.amazonS3.listObjects(listObjectsRequest);
+        } else {
+            return binaryManager.amazonS3.listObjects(binaryManager.bucketName);
+        }
+    }
+
+    @Override
+    protected Set<String> getKeys(List<String> digests) {
+        return digests.stream().map(digest -> binaryManager.bucketNamePrefix + digest).collect(Collectors.toSet());
+    }
+
 }

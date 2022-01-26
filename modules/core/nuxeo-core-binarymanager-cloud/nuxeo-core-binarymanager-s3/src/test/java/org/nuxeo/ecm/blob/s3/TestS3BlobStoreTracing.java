@@ -23,8 +23,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.BUCKET_PREFIX_PROPERTY;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -32,19 +34,21 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.message.SimpleMessage;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.blob.AbstractBlobStore;
 import org.nuxeo.ecm.core.blob.BlobContext;
@@ -63,20 +67,24 @@ import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.work.WorkManagerFeature;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
+import org.nuxeo.runtime.model.URLStreamRef;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.TransactionalConfig;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.osgi.framework.Bundle;
 
 @RunWith(FeaturesRunner.class)
 @Features({ BlobManagerFeature.class, WorkManagerFeature.class, TransactionalFeature.class, LogCaptureFeature.class,
-        MockitoFeature.class })
+        MockitoFeature.class, TestS3BlobStoreTracing.S3BlobStoreTracingFeature.class })
 @LogCaptureFeature.FilterOn(logLevel = "TRACE", loggerClass = AbstractBlobStore.class)
 @TransactionalConfig(autoStart = false)
-@Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-blob-provider-s3-tracing.xml")
 public class TestS3BlobStoreTracing {
 
     protected static final String XPATH = "content";
@@ -105,6 +113,17 @@ public class TestS3BlobStoreTracing {
             "s3-managed", //
             "s3-record");
 
+    protected static final String BLOB_PROVIDER_PREFIX_REGEX = String.format("((%s)/)", String.join("|", List.of( //
+            "base", //
+            "other", //
+            "subdirs", //
+            "sha256", //
+            "nocache", //
+            "managed", //
+            "record")));
+
+    protected static String bucketPrefix;
+
     @Inject
     protected LogCaptureFeature.Result logCaptureResult;
 
@@ -119,11 +138,6 @@ public class TestS3BlobStoreTracing {
     protected RepositoryService repositoryService;
 
     protected Path tmpFile;
-
-    @BeforeClass
-    public static void beforeClass() {
-        S3TestHelper.getProperties().forEach(S3TestHelper::setProperty);
-    }
 
     @Before
     public void setUp() throws IOException {
@@ -184,9 +198,14 @@ public class TestS3BlobStoreTracing {
     protected void checkTrace(String filename) throws IOException {
         List<String> expectedTrace = LogTracingHelper.readTrace("traces/" + filename);
         List<String> actualTrace = logCaptureResult.getCaughtEventMessages();
+        // add bucket prefix to expected trace
+        List<String> expectedTracePrefixed = expectedTrace.stream()
+                                                          .map(s -> s.replaceAll(BLOB_PROVIDER_PREFIX_REGEX,
+                                                                  bucketPrefix + "-$2/"))
+                                                          .collect(Collectors.toList());
         Map<String, String> context = new HashMap<>();
         try {
-            LogTracingHelper.assertEqualsLists(expectedTrace, actualTrace, context);
+            LogTracingHelper.assertEqualsLists(expectedTracePrefixed, actualTrace, context);
         } catch (AssertionError e) {
             System.err.println(filename);
             System.err.println(String.join("\n", actualTrace));
@@ -588,6 +607,42 @@ public class TestS3BlobStoreTracing {
         // check content
         Blob blob2 = bp.readBlob(blobInfo(key2));
         assertEquals(FOO, blob2.getString());
+    }
+
+    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests")
+    public static class S3BlobStoreTracingFeature implements RunnerFeature {
+
+        @Override
+        public void start(FeaturesRunner runner) {
+            setProperties();
+            // deploy the test contribution after the properties have been set
+            deployContribution(runner);
+        }
+
+        protected static void setProperties() {
+            // set S3 properties
+            Map<String, String> properties = S3TestHelper.getProperties();
+            properties.forEach(S3TestHelper::setProperty);
+
+            // remove trailing slash from bucket prefix
+            bucketPrefix = StringUtils.removeEnd(properties.get(BUCKET_PREFIX_PROPERTY), "/");
+
+            // set System property to be replaced in test contribution
+            System.setProperty("blobProvider.s3.tracing.bucket_prefix", bucketPrefix);
+        }
+
+        protected void deployContribution(FeaturesRunner runner) {
+            try {
+                RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
+                Bundle bundle = harness.getOSGiAdapter()
+                                       .getRegistry()
+                                       .getBundle("org.nuxeo.ecm.core.storage.binarymanager.s3.tests");
+                URL url = bundle.getEntry("OSGI-INF/test-blob-provider-s3-tracing.xml");
+                harness.getContext().deploy(new URLStreamRef(url));
+            } catch (IOException e) {
+                throw new NuxeoException(e);
+            }
+        }
     }
 
 }

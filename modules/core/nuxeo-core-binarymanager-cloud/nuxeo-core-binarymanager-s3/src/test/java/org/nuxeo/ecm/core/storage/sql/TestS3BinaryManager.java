@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +36,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.junit.After;
 import org.junit.Before;
@@ -50,6 +52,7 @@ import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.binary.Binary;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.LazyBinary;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mockito.MockitoFeature;
@@ -63,21 +66,20 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 
 /**
- * ***** NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!! *****
- * <p>
- * This test must be run with at least the following system properties set:
+ * This test must be run with at least the:
  * <ul>
- * <li>nuxeo.s3storage.awsid (or AWS_ACCESS_KEY_ID environment variable)</li>
- * <li>nuxeo.s3storage.awssecret (or AWS_SECRET_ACCESS_KEY environment variable)</li>
+ * <li>AWS_ACCESS_KEY_ID (or AWS_ACCESS_KEY) environment variable</li>
+ * <li>AWS_SECRET_KEY (or AWS_SECRET_ACCESS_KEY) environment variable</li>
+ * <li>AWS_REGION environment variable</li>
+ * <li>nuxeo.test.s3storage.bucket System property</li>
  * </ul>
- * <p>
- * ***** NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!! *****
+ * and ideally the nuxeo.test.s3storage.bucket_prefixSystem property
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, MockitoFeature.class })
 public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
-    protected static final Random RANDOM = new Random();
+    protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
 
     @Mock
     @RuntimeService
@@ -256,45 +258,45 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         }
     }
 
-    @Override
+    /** @since 2021.16 */
     @Test
-    public void testBinaryManagerGC() throws IOException {
-        if (binaryManager.bucketNamePrefix.isEmpty()) {
-            // no additional test if no bucket name prefix
-            super.testBinaryManagerGC();
-            return;
-        }
-
+    public void testBinaryManagerGCBucketPrefix() throws IOException, NoSuchAlgorithmException {
         // create a md5-looking extra file at the root
-        String digest = "12345678901234567890123456789012";
-        try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(1);
-            if (binaryManager.useServerSideEncryption) {
-                metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+        String digest = DigestUtils.md5Hex(generateRandomBytes(8));
+        try {
+            try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentLength(1);
+                if (binaryManager.useServerSideEncryption) {
+                    metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+                }
+                binaryManager.amazonS3.putObject(binaryManager.bucketName, digest, in, metadata);
             }
-            binaryManager.amazonS3.putObject(binaryManager.bucketName, digest, in, metadata);
-        }
-        // create a md5-looking extra file in a "subdirectory" of the bucket prefix
-        String digest2 = binaryManager.bucketNamePrefix + "subfolder/12345678901234567890123456789999";
-        try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(1);
-            if (binaryManager.useServerSideEncryption) {
-                metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+            // create a md5-looking extra file in a "subdirectory" of the bucket prefix
+            String digest2 = binaryManager.bucketNamePrefix + "subfolder/12345678901234567890123456789999";
+            try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentLength(1);
+                if (binaryManager.useServerSideEncryption) {
+                    metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+                }
+                binaryManager.amazonS3.putObject(binaryManager.bucketName, digest2, in, metadata);
             }
-            binaryManager.amazonS3.putObject(binaryManager.bucketName, digest2, in, metadata);
+            // check that the files are here
+            assertTrue(listAllObjects().containsAll(new HashSet<>(Arrays.asList(digest, digest2))));
+
+            // run GC
+            BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
+            gc.start();
+            gc.stop(true);
+
+            // check that the extra files are still here
+            Set<String> res = listAllObjects();
+            assertTrue(res.contains(digest));
+            assertTrue(res.contains(digest2));
+        } finally {
+            binaryManager.amazonS3.deleteObject(binaryManager.bucketName, digest);
         }
-        // check that the files are here
-        assertEquals(new HashSet<>(Arrays.asList(digest, digest2)), listAllObjects());
-
-        // run base test with the bucket name prefix
-        super.testBinaryManagerGC();
-
-        // check that the extra files are still here
-        Set<String> res = listAllObjects();
-        assertTrue(res.contains(digest));
-        assertTrue(res.contains(digest2));
     }
 
     @Test

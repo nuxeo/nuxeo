@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.blob.s3.S3TestHelper.getUniqueBucketPrefix;
 import static org.nuxeo.ecm.core.storage.sql.CloudFrontBinaryManager.DISTRIB_DOMAIN_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.CloudFrontBinaryManager.PRIVATE_KEY_ID_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.CloudFrontBinaryManager.PRIVATE_KEY_PROPERTY;
@@ -63,7 +64,7 @@ public class TestCloudFrontRedirect extends AbstractS3BinaryTest<CloudFrontBinar
         // ********** NEVER COMMIT THE SECRET KEYS !!! **********
 
         properties.put(BUCKET_NAME_PROPERTY, bucketName);
-        properties.put(BUCKET_PREFIX_PROPERTY, String.format("testfolder-%s/", System.currentTimeMillis()));
+        properties.put(BUCKET_PREFIX_PROPERTY, getUniqueBucketPrefix("testFolder"));
         properties.put(AWS_ID_PROPERTY, idKey);
         properties.put(AWS_SECRET_PROPERTY, secretKey);
         properties.put(DISTRIB_DOMAIN_PROPERTY, distribution);

@@ -22,9 +22,9 @@
       <property name="awstoken">${nuxeo.s3storage.transient.awstoken}</property>
       <property name="crypt.serverside">${nuxeo.s3storage.transient.crypt.serverside}</property>
       <property name="bucket">${nuxeo.s3storage.transient.bucket}</property>
-      <property name="region">eu-west-3</property>
-      <property name="bucket_prefix">unit-test-transient-prefix/</property>
-      <property name="roleArn">arn:aws:iam::783725821734:role/nuxeo-s3directupload-role</property>
+      <property name="region">${nuxeo.s3storage.transient.region}</property>
+      <property name="bucket_prefix">${nuxeo.s3storage.transient.bucket_prefix}/</property>
+      <property name="roleArn">${nuxeo.s3storage.transient.roleArn}</property>
       <property name="policyTemplate">{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:PutObject","Resource":["arn:aws:s3:::${nuxeo.s3storage.transient.bucket}/*"]}]}
       </property>
     </batchHandler>

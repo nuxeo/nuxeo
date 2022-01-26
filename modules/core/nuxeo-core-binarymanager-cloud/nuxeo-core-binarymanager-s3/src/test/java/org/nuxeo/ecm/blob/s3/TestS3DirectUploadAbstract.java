@@ -20,6 +20,7 @@
  */
 package org.nuxeo.ecm.blob.s3;
 
+import static com.amazonaws.SDKGlobalConfiguration.AWS_ROLE_ARN_ENV_VAR;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -27,11 +28,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.blob.s3.S3BlobProviderFeature.PREFIX_TEST;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_ID_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SECRET_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SESSION_TOKEN_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_PREFIX_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_REGION_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.SYSTEM_PROPERTY_PREFIX;
+import static org.nuxeo.ecm.core.storage.sql.S3DirectBatchHandler.ROLE_ARN_PROPERTY;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -90,9 +95,11 @@ public abstract class TestS3DirectUploadAbstract {
 
     public static final int MULTIPART_THRESHOLD = 5 * 1024 * 1024; // 5MB AWS minimum value
 
-    public static final String S3DIRECT_PREFIX = SYSTEM_PROPERTY_PREFIX + ".transient.";
+    public static final String TRANSIENT = "transient";
 
-    protected static final Random RANDOM = new Random();
+    public static final String S3DIRECT_PREFIX = String.format("%s.%s.", SYSTEM_PROPERTY_PREFIX, TRANSIENT);
+
+    protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
 
     protected static String envId;
 
@@ -124,15 +131,24 @@ public abstract class TestS3DirectUploadAbstract {
         envId = properties.get(AWS_ID_PROPERTY);
         envSecret = properties.get(AWS_SECRET_PROPERTY);
         envToken = properties.get(AWS_SESSION_TOKEN_PROPERTY);
-        String bucketName2 = "nuxeo-test-changeme-2";
+        String envRegion = properties.get(BUCKET_REGION_PROPERTY);
+        String roleArn = System.getenv(AWS_ROLE_ARN_ENV_VAR);
+        String transientBucketName = System.getProperty(
+                String.format("%s%s.%s", PREFIX_TEST, TRANSIENT, BUCKET_NAME_PROPERTY));
+        assumeTrue("AWS credentials, region, role and bucket not set in the environment variables",
+                StringUtils.isNoneBlank(envId, envSecret, envRegion, roleArn, transientBucketName));
 
-        assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
+        String transientBucketPrefix = String.format("%s-%s/",
+                StringUtils.removeEnd(properties.get(BUCKET_PREFIX_PROPERTY), "/"), "directUploadSource");
 
         // BatchHander config
         System.setProperty(S3DIRECT_PREFIX + AWS_ID_PROPERTY, envId);
         System.setProperty(S3DIRECT_PREFIX + AWS_SECRET_PROPERTY, envSecret);
         System.setProperty(S3DIRECT_PREFIX + AWS_SESSION_TOKEN_PROPERTY, envToken);
-        System.setProperty(S3DIRECT_PREFIX + BUCKET_NAME_PROPERTY, bucketName2);
+        System.setProperty(S3DIRECT_PREFIX + BUCKET_REGION_PROPERTY, envRegion);
+        System.setProperty(S3DIRECT_PREFIX + BUCKET_NAME_PROPERTY, transientBucketName);
+        System.setProperty(S3DIRECT_PREFIX + BUCKET_PREFIX_PROPERTY, transientBucketPrefix);
+        System.setProperty(S3DIRECT_PREFIX + ROLE_ARN_PROPERTY, roleArn);
     }
 
     @After

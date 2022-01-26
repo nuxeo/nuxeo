@@ -27,9 +27,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -140,9 +139,6 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         }
     }
 
-    /**
-     * NOTE THAT THIS TEST WILL REMOVE ALL FILES IN THE BUCKET!!!
-     */
     @Test
     public void testBinaryManagerGC() throws IOException {
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
@@ -152,7 +148,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         byte[] bytes = CONTENT.getBytes(StandardCharsets.UTF_8);
         binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
-        assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
+        assertEquals(getKeys(Collections.singletonList(CONTENT_MD5)), listObjects());
 
         // get binary
         binary = binaryManager.getBinary(CONTENT_MD5);
@@ -165,7 +161,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         // another binary we'll keep
         binaryManager.getBinary(Blobs.createBlob(CONTENT3));
 
-        assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
+        assertEquals(getKeys(List.of(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
 
         // GC in non-delete mode
         BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
@@ -186,7 +182,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         if (isStorageSizeSameAsOriginalSize()) {
             assertEquals(CONTENT2.length(), status.sizeBinariesGC);
         }
-        assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
+        assertEquals(getKeys(List.of(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
 
         // real GC
         gc = binaryManager.getGarbageCollector();
@@ -203,7 +199,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         if (isStorageSizeSameAsOriginalSize()) {
             assertEquals(CONTENT2.length(), status.sizeBinariesGC);
         }
-        assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT3_MD5)), listObjects());
+        assertEquals(getKeys(List.of(CONTENT_MD5, CONTENT3_MD5)), listObjects());
 
         // another GC after not marking content3
         gc = binaryManager.getGarbageCollector();
@@ -219,14 +215,9 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         if (isStorageSizeSameAsOriginalSize()) {
             assertEquals(CONTENT3.length(), status.sizeBinariesGC);
         }
-        assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
+        assertEquals(getKeys(Collections.singletonList(CONTENT_MD5)), listObjects());
     }
 
-    /**
-     * NOTE THAT THIS TEST WILL REMOVE ALL FILES IN THE BUCKET!!!
-     *
-     * @throws IOException
-     */
     @Test
     public void testBinaryManagerGCWithConcurrentCreation() throws IOException {
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
@@ -236,7 +227,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         byte[] bytes = CONTENT.getBytes(StandardCharsets.UTF_8);
         binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
-        assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
+        assertEquals(getKeys(Collections.singletonList(CONTENT_MD5)), listObjects());
 
         // get binary
         binary = binaryManager.getBinary(CONTENT_MD5);
@@ -246,7 +237,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         // another binary we'll GC
         binaryManager.getBinary(Blobs.createBlob(CONTENT2));
 
-        assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5)), listObjects());
+        assertEquals(getKeys(List.of(CONTENT_MD5, CONTENT2_MD5)), listObjects());
 
         // GC start
 
@@ -267,11 +258,14 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         if (isStorageSizeSameAsOriginalSize()) {
             assertEquals(CONTENT2.length(), status.sizeBinariesGC);
         }
-        assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT3_MD5)), listObjects());
+        assertEquals(getKeys(List.of(CONTENT_MD5, CONTENT3_MD5)), listObjects());
     }
 
-    protected static String toString(InputStream stream) throws IOException {
+    protected String toString(InputStream stream) throws IOException {
         return IOUtils.toString(stream, StandardCharsets.UTF_8);
     }
+
+    /** @since 2021.16 */
+    protected abstract Set<String> getKeys(List<String> digests);
 
 }
