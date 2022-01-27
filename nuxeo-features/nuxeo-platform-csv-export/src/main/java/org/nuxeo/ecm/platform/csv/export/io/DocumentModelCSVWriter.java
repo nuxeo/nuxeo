@@ -30,6 +30,10 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.common.function.ThrowableRunnable;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -59,6 +63,15 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
 
     @Override
     protected void write(DocumentModel entity, CSVPrinter printer) throws IOException {
+        if (entity.getSessionId() == null || entity.getId() == null) {
+            // do not try to re-attach a detached or non-existing document
+            doWriteEntityBody(entity, printer);
+        } else {
+            withDocumentAttached(entity, () -> doWriteEntityBody(entity, printer));
+        }
+    }
+
+    protected void doWriteEntityBody(DocumentModel entity, CSVPrinter printer) throws IOException {
         writeSystem(entity, printer);
         for (String schemaName : getList(ctx, SCHEMAS_CTX_DATA)) {
             Schema schema = schemaManager.getSchema(schemaName);
@@ -158,5 +171,19 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
         }
         propertyWriter.write(property, Property.class, Property.class, TEXT_CSV_TYPE,
                 new OutputStreamWithCSVWriter(printer));
+    }
+
+    protected void withDocumentAttached(DocumentModel doc, ThrowableRunnable<IOException> runnable) throws IOException {
+        String repositoryName = doc.getRepositoryName();
+        CoreSession currentSession = ctx.getSession(doc).getSession();
+        boolean sameRepository = currentSession.getRepositoryName().equals(repositoryName);
+        try (CloseableCoreSession session = sameRepository ? null : CoreInstance.openCoreSession(repositoryName)) {
+            if (session != null) {
+                // re-attach the document
+                doc.detach(false);
+                doc.attach(session.getSessionId());
+            }
+            runnable.run();
+        }
     }
 }

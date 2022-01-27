@@ -37,6 +37,8 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.directory.test.DirectoryFeature;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
@@ -196,6 +198,25 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         session.saveDocument(document);
         csv = csvAssert(document, renderingCtx);
         csv.has("dc:description").isEquals("for=+-@\t\rmula");
+    }
+
+    // NXP-30834
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test:OSGI-INF/other-repo.xml")
+    public void testMultiRepo() throws IOException {
+        // create a document in another repo
+        DocumentModel doc;
+        try (CloseableCoreSession secondSession = CoreInstance.openCoreSession("import")) {
+            doc = secondSession.createDocumentModel("/", "file", "File");
+            doc.setPropertyValue("dc:title", "bar foo");
+            doc = secondSession.createDocument(doc);
+        }
+
+        // write the document with the default session in ctx
+        RenderingContext renderingCtx = RenderingContext.CtxBuilder.session(session).get();
+        renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, Collections.singletonList("file"));
+        CSVAssert csv = csvAssert(doc, renderingCtx);
+        assertNotNull(csv);
     }
 
 }
