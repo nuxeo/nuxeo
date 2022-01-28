@@ -31,8 +31,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.logging.log4j.ThreadContext;
 import org.nuxeo.lib.stream.Log4jCorrelation;
 
+import datadog.trace.api.CorrelationIdentifier;
 import io.opencensus.trace.AttributeValue;
 import io.opencensus.trace.BlankSpan;
 import io.opencensus.trace.Span;
@@ -50,9 +52,11 @@ public class TracingWebFilter extends HttpFilter {
 
     protected static final String SESSION_KEY = "http.session";
 
-    public static final String DD_TRACE_ID_CONTEXT_KEY = "dd.trace_id";
+    // @since 2021.16
+    protected static final String DD_TRACE_ID_CONTEXT_KEY = "dd.trace_id";
 
-    public static final String DD_SPAN_ID_CONTEXT_KEY = "dd.span_id";
+    // @since 2021.16
+    protected static final String DD_SPAN_ID_CONTEXT_KEY = "dd.span_id";
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -90,10 +94,26 @@ public class TracingWebFilter extends HttpFilter {
     }
 
     protected void addTracingCorrelation(Span span) {
+        addDatadogTracingCorrelation();
         Log4jCorrelation.start(span);
     }
 
     protected void removeTracingCorrelation() {
+        removeDatadogTracingCorrelation();
         Log4jCorrelation.end();
+    }
+
+    protected void addDatadogTracingCorrelation() {
+        String traceId = CorrelationIdentifier.getTraceId();
+        if ("0".equals(traceId)) {
+            return;
+        }
+        ThreadContext.put(DD_TRACE_ID_CONTEXT_KEY, traceId);
+        ThreadContext.put(DD_SPAN_ID_CONTEXT_KEY, CorrelationIdentifier.getSpanId());
+    }
+
+    protected void removeDatadogTracingCorrelation() {
+        ThreadContext.remove(DD_TRACE_ID_CONTEXT_KEY);
+        ThreadContext.remove(DD_SPAN_ID_CONTEXT_KEY);
     }
 }

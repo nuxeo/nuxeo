@@ -4838,6 +4838,11 @@
         <artifactId>metrics-datadog</artifactId>
         <version>2.0.0-RC1</version>
       </dependency>
+      <dependency>
+        <groupId>com.datadoghq</groupId>
+        <artifactId>dd-trace-api</artifactId>
+        <version>0.93.0</version>
+      </dependency>
 
     </dependencies>
   </dependencyManagement>
