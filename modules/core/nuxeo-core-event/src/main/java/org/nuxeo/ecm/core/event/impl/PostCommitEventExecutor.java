@@ -41,6 +41,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
+import org.nuxeo.lib.stream.Log4jCorrelation;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -220,6 +221,7 @@ public class PostCommitEventExecutor {
             EventStats stats = Framework.getService(EventStats.class);
             Span span = getTracingSpan("postcommit/EventBundleBulkRunner");
             try (Scope scope = Tracing.getTracer().withSpan(span)) {
+                Log4jCorrelation.start(span);
                 for (EventListenerDescriptor listener : listeners) {
                     EventBundle filtered = listener.filterBundle(bundle);
                     if (filtered.isEmpty()) {
@@ -271,6 +273,7 @@ public class PostCommitEventExecutor {
                 span.setStatus(Status.OK);
             } finally {
                 span.end();
+                Log4jCorrelation.end();
             }
 
             long elapsed = System.currentTimeMillis() - t0;
@@ -342,6 +345,7 @@ public class PostCommitEventExecutor {
             // transaction timeout is managed by the FutureTask
             boolean tx = TransactionHelper.startTransaction();
             try (Scope scope = Tracing.getTracer().withSpan(span)) {
+                Log4jCorrelation.start(span);
                 reconnected = new ReconnectedEventBundleImpl(bundle, listeners.toString());
                 for (EventListenerDescriptor listener : listeners) {
                     EventBundle filtered = listener.filterBundle(reconnected);
@@ -392,6 +396,7 @@ public class PostCommitEventExecutor {
                 long elapsed = System.currentTimeMillis() - t0;
                 log.debug("Events postcommit bulk execution finished in {}ms", elapsed);
                 span.end();
+                Log4jCorrelation.end();
             }
             return Boolean.TRUE; // no error to report
         }

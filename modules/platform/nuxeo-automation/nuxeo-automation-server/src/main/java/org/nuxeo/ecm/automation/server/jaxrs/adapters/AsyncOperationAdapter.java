@@ -75,6 +75,7 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
+import org.nuxeo.lib.stream.Log4jCorrelation;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -196,6 +197,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
                                .startSpan();
             span.addLink(Link.fromSpanContext(traceContext, Link.Type.PARENT_LINKED_SPAN));
             try (Scope scope = Tracing.getTracer().withSpan(span)) {
+                Log4jCorrelation.start(span);
                 TransactionHelper.runInTransaction(() -> {
                     LoginComponent.pushPrincipal(principal);
                     try {
@@ -208,6 +210,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
                         LoginComponent.popPrincipal();
                     }
                 });
+            } finally {
+                Log4jCorrelation.end();
             }
         }, String.format("Nuxeo-AsyncOperation-%s", executionId)).start();
 

@@ -54,6 +54,7 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.metrics.MetricsService;
+import org.nuxeo.lib.stream.Log4jCorrelation;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -369,6 +370,7 @@ public abstract class AbstractWork implements Work {
         }
         Span span = getSpanFromContext(traceContext);
         try (Scope scope = Tracing.getTracer().withSpan(span)) {
+            Log4jCorrelation.start();
             RuntimeException suppressed = null;
             int retryCount = getRetryCount(); // may be 0
             for (int i = 0; i <= retryCount; i++) {
@@ -398,6 +400,7 @@ public abstract class AbstractWork implements Work {
             workFailed(suppressed);
         } finally {
             span.end();
+            Log4jCorrelation.end();
         }
     }
 

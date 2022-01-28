@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.Log4jCorrelation;
 import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.ComputationPolicy;
@@ -377,6 +378,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             span = BlankSpan.INSTANCE;
         }
         try (Scope scope = Tracing.getTracer().withSpan(span)) {
+            Log4jCorrelation.start(span);
             final boolean[] timerUpdate = { false };
             sortedTimer.forEach((key, value) -> {
                 context.removeTimer(key);
@@ -396,6 +398,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             return false;
         } finally {
             span.end();
+            Log4jCorrelation.end();
         }
     }
 
@@ -451,6 +454,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     protected void processRecordWithTracing(String from, Record record) {
         Span span = getSpanFromRecord(record);
         try (Scope scope = Tracing.getTracer().withSpan(span)) {
+            Log4jCorrelation.start(span);
             processRecordWithRetry(from, record);
             checkRecordFlags(record);
             checkSourceLowWatermark();
@@ -458,6 +462,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             checkpointIfNecessary();
         } finally {
             span.end();
+            Log4jCorrelation.end();
         }
     }
 

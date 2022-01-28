@@ -31,11 +31,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.nuxeo.lib.stream.Log4jCorrelation;
+
 import io.opencensus.trace.AttributeValue;
 import io.opencensus.trace.BlankSpan;
 import io.opencensus.trace.Span;
 import io.opencensus.trace.Tracing;
-
 /**
  * Add some tags to span created by OcHttpServletFilter
  */
@@ -49,6 +50,10 @@ public class TracingWebFilter extends HttpFilter {
 
     protected static final String SESSION_KEY = "http.session";
 
+    public static final String DD_TRACE_ID_CONTEXT_KEY = "dd.trace_id";
+
+    public static final String DD_SPAN_ID_CONTEXT_KEY = "dd.span_id";
+
     @Override
     public void init(FilterConfig filterConfig) {
         config = filterConfig;
@@ -59,7 +64,12 @@ public class TracingWebFilter extends HttpFilter {
             throws IOException, ServletException {
         Span span = Tracing.getTracer().getCurrentSpan();
         addTags(span, req);
-        chain.doFilter(req, res);
+        addTracingCorrelation(span);
+        try {
+            chain.doFilter(req, res);
+        } finally {
+            removeTracingCorrelation();
+        }
     }
 
     protected void addTags(Span span, HttpServletRequest httpRequest) {
@@ -77,5 +87,13 @@ public class TracingWebFilter extends HttpFilter {
             map.put(SESSION_KEY, AttributeValue.stringAttributeValue(session.getId()));
         }
         span.putAttributes(map);
+    }
+
+    protected void addTracingCorrelation(Span span) {
+        Log4jCorrelation.start(span);
+    }
+
+    protected void removeTracingCorrelation() {
+        Log4jCorrelation.end();
     }
 }
