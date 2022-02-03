@@ -22,12 +22,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.ElasticsearchStatusException;
+import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -47,6 +50,7 @@ import org.elasticsearch.action.support.replication.ReplicationRequest;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.Response;
+import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
@@ -56,6 +60,9 @@ import org.elasticsearch.rest.RestStatus;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
+
+import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.RetryPolicy;
 
 /**
  * @since 9.3
@@ -295,12 +302,46 @@ public class ESRestClient implements ESClient {
 
     @Override
     public BulkResponse bulk(BulkRequest request) {
+        // 3 retries with backoff of 30s jitter 0.5:
+        // retry 1: 30s +/-15 [t+15, t+45]
+        // retry 2: 60s +/-30 [t+45, t+135]
+        // retry 3: 120 +/-60 [t+105, t+315]
+        RetryPolicy policy = new RetryPolicy().withMaxRetries(3)
+                                              .withBackoff(30, 200, TimeUnit.SECONDS)
+                                              .withJitter(0.5)
+                                              .retryOn(TooManyRequestsRetryableException.class);
+        AtomicReference<BulkResponse> response = new AtomicReference<>();
+        Failsafe.with(policy)
+                .onRetry(failure -> log.warn("Retrying bulk index ... " + request.getDescription()))
+                .onRetriesExceeded(failure -> log.warn(
+                        "Give up bulk index after " + policy.getMaxRetries() + " retries: " + request.getDescription()))
+                .run(() -> response.set(doBulk(request)));
+        return response.get();
+    }
+
+    protected BulkResponse doBulk(BulkRequest request) throws TooManyRequestsRetryableException {
         try {
             if (BulkShardRequest.DEFAULT_TIMEOUT == request.timeout()) {
                 // use a longer timeout than the default one
                 request.timeout(LONG_TIMEOUT);
             }
-            return client.bulk(request, RequestOptions.DEFAULT);
+            BulkResponse response = client.bulk(request, RequestOptions.DEFAULT);
+            if (response.hasFailures()) {
+                for (BulkItemResponse item : response.getItems()) {
+                    if (item.isFailed() && RestStatus.TOO_MANY_REQUESTS == item.getFailure().getStatus()) {
+                        // Since Elastic 7.0 transient circuit breaker exceptions return 429
+                        log.warn("Detecting overloaded Elastic bulk response: " + item.getFailureMessage());
+                        throw new TooManyRequestsRetryableException(item.getFailureMessage());
+                    }
+                }
+            }
+            return response;
+        } catch (ResponseException e) {
+            if (e.getResponse().getStatusLine().getStatusCode() == RestStatus.TOO_MANY_REQUESTS.getStatus()) {
+                log.warn("Detecting overloaded Elastic response: " + e.getResponse().getStatusLine());
+                throw new TooManyRequestsRetryableException(e.getResponse().getStatusLine().toString());
+            }
+            throw new NuxeoException(e);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -348,6 +389,24 @@ public class ESRestClient implements ESClient {
 
     @Override
     public IndexResponse index(IndexRequest request) {
+        // 3 retries with backoff of 2s jitter 0.5:
+        // retry 1: 2s +/-1 [t+1, t+3]
+        // retry 2: 4s +/-2 [t+3, t+9]
+        // retry 3: 8s +/-4 [t+7, t+21]
+        RetryPolicy policy = new RetryPolicy().withMaxRetries(3)
+                                              .withBackoff(2, 30, TimeUnit.SECONDS)
+                                              .withJitter(0.5)
+                                              .retryOn(TooManyRequestsRetryableException.class);
+        AtomicReference<IndexResponse> response = new AtomicReference<>();
+        Failsafe.with(policy)
+                .onRetry(failure -> log.warn("Retrying index ... " + request.getDescription()))
+                .onRetriesExceeded(failure -> log.warn(
+                        "Give up index after " + policy.getMaxRetries() + " retries: " + request.getDescription()))
+                .run(() -> response.set(doIndex(request)));
+        return response.get();
+    }
+
+    protected IndexResponse doIndex(IndexRequest request) throws TooManyRequestsRetryableException {
         try {
             if (IndexRequest.DEFAULT_TIMEOUT == request.timeout()) {
                 // use a longer timeout than the default one
@@ -357,6 +416,9 @@ public class ESRestClient implements ESClient {
         } catch (ElasticsearchStatusException e) {
             if (RestStatus.CONFLICT.equals(e.status())) {
                 throw new ConcurrentUpdateException(e);
+            } else if (RestStatus.TOO_MANY_REQUESTS.equals(e.status())) {
+                log.warn("Detecting overloaded Elastic index response: " + e.getMessage());
+                throw new TooManyRequestsRetryableException(e.getMessage());
             }
             throw new NuxeoException(e);
         } catch (IOException e) {
@@ -402,5 +464,17 @@ public class ESRestClient implements ESClient {
             lowLevelClient = null;
         }
         client = null;
+    }
+
+    /**
+     * Exception when Elastic is overloaded by indexing requests.
+     *
+     * @since 2021.16
+     */
+    public static class TooManyRequestsRetryableException extends Exception {
+
+        public TooManyRequestsRetryableException(String message) {
+            super(message);
+        }
     }
 }
