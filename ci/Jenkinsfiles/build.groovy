@@ -239,11 +239,21 @@ def buildUnitTestStage(env) {
                 sh "touch ${HOME}/nuxeo-test-${env}.properties"
               } else {
                 // prepare test framework system properties
+                // prefix sample: nuxeo-lts-pr-48-3-mongodb
+                def bucketPrefix = "$GITHUB_REPO-$BRANCH_NAME-$BUILD_NUMBER-${env}".toLowerCase()
+                def testBlobProviderPrefix = "$bucketPrefix-test"
+                def otherBlobProviderPrefix = "$bucketPrefix-other"
+
                 sh """
                   cat ci/mvn/nuxeo-test-${env}.properties \
                     ci/mvn/nuxeo-test-elasticsearch.properties \
+                    ci/mvn/nuxeo-test-s3.properties \
                     > ci/mvn/nuxeo-test-${env}.properties~gen
-                  NAMESPACE=${testNamespace} DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
+                  BUCKET_PREFIX=${bucketPrefix} \
+                    TEST_BLOB_PROVIDER_PREFIX=${testBlobProviderPrefix} \
+                    OTHER_BLOB_PROVIDER_PREFIX=${otherBlobProviderPrefix} \
+                    NAMESPACE=${testNamespace} \
+                    DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
                     envsubst < ci/mvn/nuxeo-test-${env}.properties~gen > ${HOME}/nuxeo-test-${env}.properties
                 """
               }
@@ -254,17 +264,37 @@ def buildUnitTestStage(env) {
               //   - loading some test framework system properties
               def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
               def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
+              def mvnCommand = """                 
+                mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
+                  -Dcustom.environment=${env} \
+                  -Dcustom.environment.log.dir=target-${env} \
+                  -Dnuxeo.test.core=${testCore} \
+                  -Dnuxeo.test.redis.host=${redisHost} \
+                  ${kafkaOptions} \
+                  test
+              """
 
               retry(2) {
-                sh """
-                  mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
-                    -Dcustom.environment=${env} \
-                    -Dcustom.environment.log.dir=target-${env} \
-                    -Dnuxeo.test.core=${testCore} \
-                    -Dnuxeo.test.redis.host=${redisHost} \
-                    ${kafkaOptions} \
-                    test
-                """
+                if (isDev) {
+                  sh "${mvnCommand}"
+                } else {
+                  def awsAccessKeyId = sh(
+                    script: "kubectl get secret ${AWS_CREDENTIALS_SECRET} -n ${CURRENT_NAMESPACE} -o=jsonpath='{.data.access_key_id}' | base64 --decode",
+                    returnStdout: true
+                  )
+                  def awsSecretAccessKey = sh(
+                    script: "kubectl get secret ${AWS_CREDENTIALS_SECRET} -n ${CURRENT_NAMESPACE} -o=jsonpath='{.data.secret_access_key}' | base64 --decode",
+                    returnStdout: true
+                  )
+                  withEnv([
+                    "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+                    "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+                    "AWS_REGION=${AWS_REGION}",
+                    "AWS_ROLE_ARN=${AWS_ROLE_ARN}"
+                  ]) {
+                    sh "${mvnCommand}"
+                  }
+                }
               }
 
               setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
@@ -332,6 +362,10 @@ pipeline {
     CHANGE_TARGET = "${env.CHANGE_TARGET != null ? env.CHANGE_TARGET : BRANCH_NAME}"
     CONNECT_PREPROD_URL = 'https://nos-preprod-connect.nuxeocloud.com/nuxeo'
     SLACK_CHANNEL = 'platform-notifs'
+    GITHUB_REPO = 'nuxeo-lts'
+    AWS_REGION = 'eu-west-3'
+    AWS_ROLE_ARN= 'arn:aws:iam::783725821734:role/nuxeo-s3directupload-role'
+    AWS_CREDENTIALS_SECRET = 'aws-credentials'
   }
 
   stages {
