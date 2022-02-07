@@ -1,0 +1,1 @@
+Bundle-SymbolicName: org.nuxeo.lib.runtime.log4j;singleton:=true
