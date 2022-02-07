@@ -276,6 +276,11 @@
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.lib.runtime</groupId>
+        <artifactId>nuxeo-runtime-log4j</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-connect-standalone</artifactId>
         <version>${nuxeo.platform.version}</version>

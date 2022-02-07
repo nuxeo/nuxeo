@@ -23,6 +23,7 @@
     <module>nuxeo-runtime-jtajca</module>
     <module>nuxeo-runtime-kv</module>
     <module>nuxeo-runtime-launcher</module>
+    <module>nuxeo-runtime-log4j</module>
     <module>nuxeo-runtime-management</module>
     <module>nuxeo-runtime-metrics</module>
     <module>nuxeo-runtime-migration</module>
