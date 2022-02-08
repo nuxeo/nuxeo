@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2022 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
@@ -59,9 +60,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.core.LogEvent;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.api.AbstractSession;
@@ -124,12 +123,9 @@ public class TestSQLRepositoryQuery {
     protected TrashService trashService;
 
     @Inject
-    LogCaptureFeature.Result logCaptureResult;
+    protected LogCaptureFeature.Result logCaptureResult;
 
     protected boolean proxies;
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     protected boolean isDBS() {
         return coreFeature.getStorageConfiguration().isDBS();
@@ -2501,9 +2497,8 @@ public class TestSQLRepositoryQuery {
     @Test
     public void testEqualsTimeWithMilliseconds() {
         Date currentDate = setupDocTest();
-        String testQuery = String.format(
-                "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified = TIMESTAMP '%s'" + " AND ecm:isProxy = 0",
-                DateUtils.formatISODateTime(currentDate));
+        String testQuery = String.format("SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified = TIMESTAMP '%s'"
+                + " AND ecm:isProxy = 0", DateUtils.formatISODateTime(currentDate));
         DocumentModelList docs = session.query(testQuery);
         assertEquals(1, docs.size());
     }
@@ -2513,9 +2508,8 @@ public class TestSQLRepositoryQuery {
         Date currentDate = setupDocTest();
         // add a second to be sure that the document is found
         currentDate = addSecond(currentDate);
-        String testQuery = String.format(
-                "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified < TIMESTAMP '%s'" + " AND ecm:isProxy = 0",
-                DateUtils.formatISODateTime(currentDate));
+        String testQuery = String.format("SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified < TIMESTAMP '%s'"
+                + " AND ecm:isProxy = 0", DateUtils.formatISODateTime(currentDate));
         DocumentModelList docs = session.query(testQuery);
         assertEquals(1, docs.size());
     }
@@ -3589,20 +3583,19 @@ public class TestSQLRepositoryQuery {
         assertEquals(nbDocs, dml.size());
 
         ScrollResult<String> ret = session.scroll("SELECT * FROM Document", batchSize, 10);
+        String scrollId = ret.getScrollId();
         int total = 0;
         while (ret.hasResults()) {
             List<String> ids = ret.getResults();
             ids.forEach(id -> assertFalse(id.isEmpty()));
             total += ids.size();
-            ret = session.scroll(ret.getScrollId());
+            ret = session.scroll(scrollId);
         }
         assertEquals(nbDocs, total);
 
         // the scroll id is now closed
-        exception.expect(NuxeoException.class);
-        exception.expectMessage("Unknown or timed out scrollId");
-        ret = session.scroll(ret.getScrollId());
-        assertFalse(ret.hasResults());
+        var exception = assertThrows(NuxeoException.class, () -> session.scroll(scrollId));
+        assertEquals("Unknown or timed out scrollId", exception.getMessage());
     }
 
     @Test
@@ -3648,18 +3641,14 @@ public class TestSQLRepositoryQuery {
         // wait for scroll timeout
         Thread.sleep(1100);
 
-        exception.expect(NuxeoException.class);
-        exception.expectMessage("Timed out scrollId");
-        ret = session.scroll(ret.getScrollId());
-        assertFalse(ret.hasResults());
+        var exception = assertThrows(NuxeoException.class, () -> session.scroll(ret.getScrollId()));
+        assertEquals("Timed out scrollId", exception.getMessage());
     }
 
     @Test
     public void testScrollBadUsageInvalidScrollId() {
-        exception.expect(NuxeoException.class);
-        exception.expectMessage("Unknown or timed out scrollId");
-        ScrollResult<String> ret = session.scroll("foo");
-        assertFalse(ret.hasResults());
+        var exception = assertThrows(NuxeoException.class, () -> session.scroll("foo"));
+        assertEquals("Unknown or timed out scrollId", exception.getMessage());
     }
 
     @Test
@@ -3680,19 +3669,15 @@ public class TestSQLRepositoryQuery {
 
         Thread.sleep(1100);
         // normal timeout on ret1
-        try {
-            session.scroll(ret1.getScrollId());
-        } catch (NuxeoException e) {
-            assertEquals("Timed out scrollId", e.getMessage());
-        }
+        var exception1 = assertThrows(NuxeoException.class, () -> session.scroll(ret1.getScrollId()));
+        assertEquals("Timed out scrollId", exception1.getMessage());
         // This new call will clean leaked scroll
         ScrollResult<String> ret4 = session.scroll("SELECT * FROM Document", 1, 1);
         assertTrue(ret4.hasResults());
 
         // ret2 is now unknown because it has been cleaned
-        exception.expect(NuxeoException.class);
-        exception.expectMessage("Unknown or timed out scrollId");
-        session.scroll(ret2.getScrollId());
+        var exception2 = assertThrows(NuxeoException.class, () -> session.scroll(ret2.getScrollId()));
+        assertEquals("Unknown or timed out scrollId", exception2.getMessage());
     }
 
     @Test
@@ -3732,9 +3717,7 @@ public class TestSQLRepositoryQuery {
                         Thread.currentThread().interrupt();
                         throw new NuxeoException(e);
                     }
-                    int nb = session.scroll(scrollId).getResults().size();
-                    // System.out.println(Thread.currentThread().getName() + ": return: " + nb);
-                    return nb;
+                    return session.scroll(scrollId).getResults().size();
                 } finally {
                     TransactionHelper.commitOrRollbackTransaction();
                 }
@@ -3861,7 +3844,7 @@ public class TestSQLRepositoryQuery {
         // no record present initially
         dml = session.query(queryRecords);
         assertEquals(0, dml.size());
-        dml = session.query(queryNotRecord) ;
+        dml = session.query(queryNotRecord);
         assertEquals(0, dml.size());
 
         // create a document
@@ -3872,7 +3855,7 @@ public class TestSQLRepositoryQuery {
         // still no record
         dml = session.query(queryRecords);
         assertEquals(0, dml.size());
-        dml = session.query(queryNotRecord) ;
+        dml = session.query(queryNotRecord);
         assertEquals(1, dml.size()); // 1 doc that isn't a record
 
         // make a record
@@ -3883,7 +3866,7 @@ public class TestSQLRepositoryQuery {
         dml = session.query(queryRecords);
         assertEquals(1, dml.size());
         assertEquals(doc.getId(), dml.get(0).getId());
-        dml = session.query(queryNotRecord) ;
+        dml = session.query(queryNotRecord);
         assertEquals(0, dml.size());
     }
 
@@ -3921,7 +3904,7 @@ public class TestSQLRepositoryQuery {
         // no hold present initially
         dml = session.query(queryHolds);
         assertEquals(0, dml.size());
-        dml = session.query(queryNoHold) ;
+        dml = session.query(queryNoHold);
         assertEquals(0, dml.size());
 
         // create a document
@@ -3933,7 +3916,7 @@ public class TestSQLRepositoryQuery {
         // still no hold
         dml = session.query(queryHolds);
         assertEquals(0, dml.size());
-        dml = session.query(queryNoHold) ;
+        dml = session.query(queryNoHold);
         assertEquals(1, dml.size()); // 1 doc that has no hold
 
         // add hold
@@ -3944,7 +3927,7 @@ public class TestSQLRepositoryQuery {
         dml = session.query(queryHolds);
         assertEquals(1, dml.size());
         assertEquals(doc.getId(), dml.get(0).getId());
-        dml = session.query(queryNoHold) ;
+        dml = session.query(queryNoHold);
         assertEquals(0, dml.size());
     }
 
@@ -3956,7 +3939,7 @@ public class TestSQLRepositoryQuery {
         Blob blob1 = Blobs.createBlob("foo");
         doc.setPropertyValue("content", (Serializable) blob1);
         Blob blob2 = Blobs.createBlob("bar");
-        doc.setPropertyValue("files:files", (Serializable) Arrays.asList(Collections.singletonMap("file", blob2)));
+        doc.setPropertyValue("files:files", (Serializable) List.of(Map.of("file", blob2)));
         doc = session.createDocument(doc);
         session.save();
 
