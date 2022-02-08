@@ -581,6 +581,9 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
                     projectionFieldParts.add(part);
                     if (!firstPart) {
                         // we already computed the type of the first part
+                        if (!(type instanceof ComplexType)) {
+                            throw new QueryParseException("No such property: " + name);
+                        }
                         field = ((ComplexType) type).getField(part);
                         if (field == null) {
                             throw new QueryParseException("No such property: " + name);
@@ -589,6 +592,9 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
                     }
                 } else {
                     // wildcard
+                    if (!(type instanceof ListType)) {
+                        throw new QueryParseException("No such property: " + name);
+                    }
                     type = ((ListType) type).getFieldType();
                 }
                 firstPart = false;

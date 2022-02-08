@@ -4029,4 +4029,24 @@ public class TestSQLRepositoryQuery {
         }
     }
 
+    // NXP-30832
+    @Test
+    public void testInvalidQuery() {
+        try {
+            session.query("SELECT * FROM Document WHERE uid/* IS NULL");
+            fail("Query should have failed");
+        } catch (QueryParseException e) {
+            assertEquals("Failed to execute query: SELECT * FROM Document WHERE uid/* IS NULL, No such property: uid/*",
+                    e.getMessage());
+        }
+
+        try {
+            session.query("SELECT * FROM Document WHERE uid/name IS NULL");
+            fail("Query should have failed");
+        } catch (QueryParseException e) {
+            assertEquals(
+                    "Failed to execute query: SELECT * FROM Document WHERE uid/name IS NULL, No such property: uid/name",
+                    e.getMessage());
+        }
+    }
 }
