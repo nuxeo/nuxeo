@@ -3987,4 +3987,18 @@ public class TestSQLRepositoryQuery {
         assertEquals(file1.getId(), docs.get(0).getId());
     }
 
+    // NXP-30832
+    @Test
+    public void testInvalidQuery() {
+        var exception1 = assertThrows(QueryParseException.class,
+                () -> session.query("SELECT * FROM Document WHERE uid/* IS NULL"));
+        assertEquals("Failed to execute query: SELECT * FROM Document WHERE uid/* IS NULL, No such property: uid/*",
+                exception1.getMessage());
+
+        var exception2 = assertThrows(QueryParseException.class,
+                () -> session.query("SELECT * FROM Document WHERE uid/name IS NULL"));
+        assertEquals(
+                "Failed to execute query: SELECT * FROM Document WHERE uid/name IS NULL, No such property: uid/name",
+                exception2.getMessage());
+    }
 }
