@@ -196,7 +196,7 @@ public class ACLImpl extends ArrayList<ACE> implements ACL {
         ListIterator<ACE> it = listIterator();
         while (it.hasNext()) {
             ACE ace = it.next();
-            if (ace.getPermission().equals(oldPerm)) {
+            if (ace != null && ace.getPermission() != null && ace.getPermission().equals(oldPerm)) {
                 ace = ACE.builder(ace).permission(newPerm).build();
                 it.set(ace);
             }

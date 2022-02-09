@@ -64,4 +64,12 @@ public class TestACL {
         assertEquals(1, acl.getACEs().length);
     }
 
+    // NXP-30801
+    @Test
+    public void testNullACE() {
+        acl.add(null);
+        acl.add(new ACE(null, null, false));
+        acl.replacePermission("ReadVersion", "Read");
+    }
+
 }
