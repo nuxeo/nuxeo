@@ -378,10 +378,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                         loadDataModel(schema);
                     }
                 }
-                // fetch ACP too if possible
-                if (ref != null) {
-                    getACP();
-                }
                 detachedVersionLabel = getVersionLabel();
                 // load some system info
                 isCheckedOut();
@@ -392,6 +388,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 isRecord();
                 getRetainUntil();
                 hasLegalHold();
+                // fetch ACP too if possible
+                if (ref != null) {
+                    getACP();
+                }
             }
         } finally {
             sid = null;
