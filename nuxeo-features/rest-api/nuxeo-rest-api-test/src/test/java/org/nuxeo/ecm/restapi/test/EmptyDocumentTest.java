@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.preview.io.PreviewJsonEnricher;
 import org.nuxeo.ecm.platform.rendition.io.PublicationJsonEnricher;
 import org.nuxeo.ecm.platform.tag.io.TagsJsonEnricher;
 import org.nuxeo.ecm.platform.types.SubtypesJsonEnricher;
+import org.nuxeo.ecm.platform.rendition.io.RenditionJsonEnricher;
 import org.nuxeo.ecm.restapi.server.jaxrs.enrichers.AuditJsonEnricher;
 import org.nuxeo.ecm.restapi.server.jaxrs.enrichers.HasContentJsonEnricher;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -80,7 +81,7 @@ public class EmptyDocumentTest extends BaseTest {
                     Arrays.asList(HasContentJsonEnricher.NAME, FirstAccessibleAncestorJsonEnricher.NAME,
                             BasePermissionsJsonEnricher.NAME, BreadcrumbJsonEnricher.NAME, PublicationJsonEnricher.NAME,
                             TagsJsonEnricher.NAME, PreviewJsonEnricher.NAME, FavoritesJsonEnricher.NAME,
-                            AuditJsonEnricher.NAME, SubtypesJsonEnricher.NAME)));
+                            AuditJsonEnricher.NAME, SubtypesJsonEnricher.NAME, RenditionJsonEnricher.NAME)));
 
     @Inject
     protected LogCaptureFeature.Result logCaptureResult;
