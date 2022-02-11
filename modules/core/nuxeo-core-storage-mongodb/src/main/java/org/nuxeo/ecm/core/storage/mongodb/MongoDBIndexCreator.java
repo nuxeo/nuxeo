@@ -18,17 +18,29 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bson.BsonDocument;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.nuxeo.ecm.core.schema.PropertyCharacteristicHandler;
 import org.nuxeo.ecm.core.schema.PropertyIndexOrder;
 import org.nuxeo.ecm.core.schema.PropertyIndexOrder.IndexOrder;
 import org.nuxeo.ecm.core.schema.types.Schema;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.IndexModel;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 
@@ -37,11 +49,13 @@ import com.mongodb.client.model.Indexes;
  */
 public class MongoDBIndexCreator {
 
+    private static final Logger log = LogManager.getLogger(MongoDBIndexCreator.class);
+
     protected final PropertyCharacteristicHandler handler;
 
     protected final MongoCollection<Document> collection;
 
-    protected Set<String> existingIndexes;
+    protected Map<String, Document> existingIndexes;
 
     public MongoDBIndexCreator(PropertyCharacteristicHandler handler, MongoCollection<Document> collection) {
         this.handler = handler;
@@ -50,16 +64,34 @@ public class MongoDBIndexCreator {
 
     public void createIndexes(Schema schema) {
         var prefix = schema.getNamespace().hasPrefix() ? schema.getNamespace().prefix : schema.getName();
-        handler.getIndexedProperties(schema.getName())
-               .stream()
-               .filter(PropertyIndexOrder::isIndexNotNone)
-               // convert property path to mongoDB index property
-               .map(p -> p.replacePath(path -> prefix + ':' + pathToIndexKey(path)))
-               // keep only the ones that don't already exist
-               .filter(p -> !indexExists(p.getPath()))
-               .map(p -> p.getIndexOrder() == IndexOrder.ASCENDING ? Indexes.ascending(p.getPath())
-                       : Indexes.descending(p.getPath()))
-               .forEach(i -> collection.createIndex(i, new IndexOptions().background(true)));
+        var indexes = handler.getIndexedProperties(schema.getName())
+                             .stream()
+                             .filter(PropertyIndexOrder::isIndexNotNone)
+                             // convert property path to mongoDB index property
+                             .map(p -> p.replacePath(path -> prefix + ':' + pathToIndexKey(path)))
+                             .map(this::toIndexModel)
+                             .collect(toList());
+        createIndexes(indexes);
+    }
+
+    public void createIndexes(List<IndexModel> indexes) {
+        var existingIndexes = getExistingIndexes();
+        var toCreate = new ArrayList<IndexModel>();
+        for (var index : indexes) {
+            String indexKey = getIndexName(index);
+            if (!existingIndexes.containsKey(indexKey)) {
+                log.info("The index: {} is about to be created", indexKey);
+                toCreate.add(index);
+            } else if (!hasCorrectDefinition(index, existingIndexes.get(indexKey))) {
+                log.warn("The index: {} has not the correct definition, please check you DB, expected: {}, actual:{}",
+                        indexKey, index, existingIndexes.get(indexKey));
+            } else {
+                log.info("The index: {} is already configured", indexKey);
+            }
+        }
+        if (!toCreate.isEmpty()) {
+            collection.createIndexes(toCreate);
+        }
     }
 
     /**
@@ -72,21 +104,74 @@ public class MongoDBIndexCreator {
      * <li>files:files/&#42;/data -&gt; files:files.data</li>
      * </ul>
      */
-    public String pathToIndexKey(String path) {
+    protected String pathToIndexKey(String path) {
         return path.replaceAll("/(\\*/)?", ".");
     }
 
-    protected boolean indexExists(String path) {
+    protected IndexModel toIndexModel(PropertyIndexOrder property) {
+        var key = property.getIndexOrder() == IndexOrder.ASCENDING ? Indexes.ascending(property.getPath())
+                : Indexes.descending(property.getPath());
+        return new IndexModel(key, new IndexOptions().background(true));
+    }
+
+    protected Map<String, Document> getExistingIndexes() {
         if (existingIndexes == null) {
             existingIndexes = collection.listIndexes()
-                                        .map(d -> d.get("key", Document.class))
                                         .into(new ArrayList<>())
                                         .stream()
-                                        // exclude compound indexes
-                                        .filter(d -> d.size() == 1)
-                                        .flatMap(d -> d.keySet().stream())
-                                        .collect(Collectors.toSet());
+                                        .collect(toMap(d -> d.get("name", String.class), Function.identity()));
         }
-        return existingIndexes.contains(path);
+        return existingIndexes;
+    }
+
+    protected String getIndexName(IndexModel index) {
+        if (StringUtils.isNotBlank(index.getOptions().getName())) {
+            return index.getOptions().getName();
+        }
+        var builder = new StringBuilder();
+        for (var entry : ((BsonDocument) index.getKeys()).entrySet()) {
+            if (builder.length() > 0) {
+                builder.append('_');
+            }
+            builder.append(entry.getKey()).append('_');
+            // just two cases in index case
+            if (entry.getValue().isNumber()) {
+                builder.append(entry.getValue().asNumber().intValue());
+            } else if (entry.getValue().isString()) {
+                builder.append(entry.getValue().asString().getValue());
+            }
+        }
+        return builder.toString();
+    }
+
+    protected boolean hasCorrectDefinition(IndexModel index, Document actualIndex) {
+        var options = index.getOptions();
+        // check basic options, excluding version fields and specific options such as 2d/geo ones
+        boolean result = checkDefinition(options.isBackground(), actualIndex, "background");
+        result = result && checkDefinition(options.isUnique(), actualIndex, "unique");
+        result = result && checkDefinition(options.isSparse(), actualIndex, "sparse");
+        result = result && checkDefinition(options.getExpireAfter(TimeUnit.SECONDS), actualIndex, "expireAfterSeconds");
+        result = result && checkDefinition(options.getLanguageOverride(), actualIndex, "language_override");
+        result = result && checkDefinition(options.getPartialFilterExpression(), actualIndex, "partialFilterExpression");
+        result = result && checkDefinition(options.isHidden(), actualIndex, "hidden");
+        return result;
+    }
+
+    protected boolean checkDefinition(boolean expectedValue, Document actualIndex, String fieldName) {
+        return !expectedValue || actualIndex.getBoolean(fieldName, false);
+    }
+
+    protected boolean checkDefinition(Object expectedValue, Document actualIndex, String fieldName) {
+        return Objects.equals(expectedValue, actualIndex.get(fieldName));
+    }
+
+    protected boolean checkDefinition(Bson expectedValue, Document actualIndex, String fieldName) {
+        var actualValue = actualIndex.get(fieldName, Document.class);
+        if (expectedValue == null || actualValue == null) {
+            return expectedValue == null && actualValue == null;
+        }
+        var expectedDoc = expectedValue.toBsonDocument(BsonDocument.class, collection.getCodecRegistry());
+        var actualDoc = actualValue.toBsonDocument(BsonDocument.class, collection.getCodecRegistry());
+        return expectedDoc.equals(actualDoc);
     }
 }

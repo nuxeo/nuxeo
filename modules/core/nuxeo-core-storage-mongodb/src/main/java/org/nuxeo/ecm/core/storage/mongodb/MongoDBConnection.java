@@ -113,6 +113,7 @@ import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.CountOptions;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.IndexModel;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Projections;
@@ -251,29 +252,30 @@ public class MongoDBConnection extends DBSConnectionBase {
     protected void initRepositoryIndexes(MongoDBRepositoryDescriptor descriptor) {
         // create required indexes
         // code does explicit queries on those
+        var indexes = new ArrayList<IndexModel>();
         if (useCustomId) {
-            coll.createIndex(Indexes.ascending(KEY_ID), new IndexOptions().unique(true));
+            indexes.add(new IndexModel(Indexes.ascending(KEY_ID), new IndexOptions().unique(true)));
         }
-        coll.createIndex(Indexes.ascending(KEY_PARENT_ID));
-        coll.createIndex(Indexes.ascending(KEY_ANCESTOR_IDS));
-        coll.createIndex(Indexes.ascending(KEY_VERSION_SERIES_ID));
-        coll.createIndex(Indexes.ascending(KEY_PROXY_TARGET_ID));
-        coll.createIndex(Indexes.ascending(KEY_PROXY_VERSION_SERIES_ID));
-        coll.createIndex(Indexes.ascending(KEY_READ_ACL));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_PARENT_ID)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_ANCESTOR_IDS)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_VERSION_SERIES_ID)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_PROXY_TARGET_ID)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_PROXY_VERSION_SERIES_ID)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_READ_ACL)));
         IndexOptions parentNameIndexOptions = new IndexOptions();
         if (descriptor != null) {
             parentNameIndexOptions.unique(Boolean.TRUE.equals(descriptor.getChildNameUniqueConstraintEnabled()))
                                   .partialFilterExpression(Filters.exists(KEY_PARENT_ID));
         }
-        coll.createIndex(Indexes.ascending(KEY_PARENT_ID, KEY_NAME), parentNameIndexOptions);
+        indexes.add(new IndexModel(Indexes.ascending(KEY_PARENT_ID, KEY_NAME), parentNameIndexOptions));
         // often used in user-generated queries
-        coll.createIndex(Indexes.ascending(KEY_PRIMARY_TYPE));
-        coll.createIndex(Indexes.ascending(KEY_LIFECYCLE_STATE));
-        coll.createIndex(Indexes.ascending(KEY_IS_TRASHED));
-        coll.createIndex(Indexes.ascending(KEY_RETAIN_UNTIL));
-        coll.createIndex(Indexes.ascending(KEY_BLOB_KEYS));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_PRIMARY_TYPE)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_LIFECYCLE_STATE)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_IS_TRASHED)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_RETAIN_UNTIL)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_BLOB_KEYS)));
         if (!repository.isFulltextDisabled()) {
-            coll.createIndex(Indexes.ascending(KEY_FULLTEXT_JOBID));
+            indexes.add(new IndexModel(Indexes.ascending(KEY_FULLTEXT_JOBID)));
         }
         if (!repository.isFulltextSearchDisabled()) {
             Bson indexKeys = Indexes.compoundIndex( //
@@ -281,17 +283,19 @@ public class MongoDBConnection extends DBSConnectionBase {
                     Indexes.text(KEY_FULLTEXT_BINARY) //
             );
             IndexOptions indexOptions = new IndexOptions().name(FULLTEXT_INDEX_NAME).languageOverride(LANGUAGE_FIELD);
-            coll.createIndex(indexKeys, indexOptions);
+            indexes.add(new IndexModel(indexKeys, indexOptions));
         }
-        coll.createIndex(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_USER));
-        coll.createIndex(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_STATUS));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_USER)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_STATUS)));
 
-        // create contributed indexes
         var schemaManager = Framework.getService(SchemaManager.class);
         var mongoDBIndexCreator = new MongoDBIndexCreator(schemaManager, coll);
+        mongoDBIndexCreator.createIndexes(indexes);
+        // create contributed indexes
         // lookup the schemas used in documents and facets
         Stream.concat(Stream.of(schemaManager.getDocumentTypes()), Stream.of(schemaManager.getFacets()))
               .flatMap(c -> c.getSchemas().stream())
+              .distinct()
               .forEach(mongoDBIndexCreator::createIndexes);
     }
 
