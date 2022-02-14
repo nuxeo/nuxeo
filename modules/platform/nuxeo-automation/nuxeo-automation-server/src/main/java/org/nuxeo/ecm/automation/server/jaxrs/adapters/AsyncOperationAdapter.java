@@ -311,7 +311,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     protected void setError(String executionId, Throwable t) {
-        log.error(t);
+        log.error("An error occurred during execution: {}", executionId, t);
         // find custom status from any NuxeoException or RestOperationException
         int status = SC_INTERNAL_SERVER_ERROR;
         Throwable cause = t;

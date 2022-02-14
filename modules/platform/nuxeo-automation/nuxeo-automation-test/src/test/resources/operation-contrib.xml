@@ -88,5 +88,19 @@
         }
       </script>
     </scriptedOperation>
+
+    <scriptedOperation id="javascript.dummy">
+      <inputType>void</inputType>
+      <outputType>void</outputType>
+      <category>javascript</category>
+      <description></description>
+      <script>
+        <![CDATA[
+        function run(input, params) {
+          return input;
+        }
+        ]]>
+      </script>
+    </scriptedOperation>
   </extension>
 </component>

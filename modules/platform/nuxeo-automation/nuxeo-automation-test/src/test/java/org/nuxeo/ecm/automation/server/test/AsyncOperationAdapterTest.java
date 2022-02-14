@@ -20,7 +20,6 @@ package org.nuxeo.ecm.automation.server.test;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
-import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
@@ -155,6 +154,12 @@ public class AsyncOperationAdapterTest {
                          .setInput(getDocRef(file))
                          .executeReturningBlob();
         assertNotNull(blob);
+    }
+
+    // NXP-30876
+    @Test
+    public void testAsyncScriptOperation() throws Exception {
+        async.newRequest("javascript.dummy").execute();
     }
 
     @Test

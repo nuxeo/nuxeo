@@ -65,7 +65,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
     protected int priority;
 
     @SuppressWarnings("rawtypes")
-    protected Class<? extends AsyncService> asyncService;
+    protected Class<? extends AsyncService> asyncService = AsyncService.class;
 
     public InvokableMethod(OperationType op, Method method, OperationMethod anno) {
         produce = method.getReturnType();
