@@ -222,8 +222,13 @@ public class MongoDBConnection extends DBSConnectionBase {
     protected void initRepository(MongoDBRepositoryDescriptor descriptor) {
         // check root presence
         boolean rootPresence = coll.countDocuments(converter.filterEq(KEY_ID, getRootId())) > 0;
-        if (!rootPresence || descriptor.isCreateIndexes()) {
-            initRepositoryIndexes(descriptor);
+        if ((!rootPresence || descriptor.isCreateIndexes()) && !mongoDBRepository.indexInitialized) {
+            synchronized (mongoDBRepository) {
+                if (!mongoDBRepository.indexInitialized) {
+                    initRepositoryIndexes(descriptor);
+                    mongoDBRepository.indexInitialized = true;
+                }
+            }
         }
         if (rootPresence) {
             mongoDBRepository.readSettings();

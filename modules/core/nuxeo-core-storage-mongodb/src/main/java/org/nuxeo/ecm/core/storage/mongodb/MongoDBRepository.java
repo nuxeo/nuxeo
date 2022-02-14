@@ -155,6 +155,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected boolean supportsDenormalizedBlobKeys;
 
+    // @since 2021.16
+    protected volatile boolean indexInitialized;
+
     public MongoDBRepository(MongoDBRepositoryDescriptor descriptor) {
         super(descriptor.name, descriptor);
         this.descriptor = descriptor;
