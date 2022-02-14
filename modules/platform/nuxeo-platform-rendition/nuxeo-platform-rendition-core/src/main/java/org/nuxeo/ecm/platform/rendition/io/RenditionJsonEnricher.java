@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
@@ -52,17 +53,22 @@ public class RenditionJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
         RenditionService renditionService = Framework.getService(RenditionService.class);
         List<Rendition> renditions = renditionService.getAvailableRenditions(document, true);
-        jg.writeArrayFieldStart(NAME);
-        for (Rendition rendition : renditions) {
-            jg.writeStartObject();
-            jg.writeStringField("name", rendition.getName());
-            jg.writeStringField("kind", rendition.getKind());
-            jg.writeStringField("icon", ctx.getBaseUrl().replaceAll("/$", "") + rendition.getIcon());
-            jg.writeStringField("url", String.format(RENDITION_REST_URL_FORMAT, ctx.getBaseUrl(), document.getId(),
-                rendition.getName()));
-            jg.writeEndObject();
+        try (SessionWrapper wrapper = ctx.getSession(document)) {
+            if (!wrapper.getSession().exists(document.getRef())) {
+                return;
+            }
+            jg.writeArrayFieldStart(NAME);
+            for (Rendition rendition : renditions) {
+                jg.writeStartObject();
+                jg.writeStringField("name", rendition.getName());
+                jg.writeStringField("kind", rendition.getKind());
+                jg.writeStringField("icon", ctx.getBaseUrl().replaceAll("/$", "") + rendition.getIcon());
+                jg.writeStringField("url", String.format(RENDITION_REST_URL_FORMAT, ctx.getBaseUrl(), document.getId(),
+                        rendition.getName()));
+                jg.writeEndObject();
+            }
+            jg.writeEndArray();
         }
-        jg.writeEndArray();
     }
 
 }
