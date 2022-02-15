@@ -325,7 +325,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public void removeOperation(OperationType type) {
-        operations.removeContribution(type, true);
+        operations.removeContribution(type);
     }
 
     @Override

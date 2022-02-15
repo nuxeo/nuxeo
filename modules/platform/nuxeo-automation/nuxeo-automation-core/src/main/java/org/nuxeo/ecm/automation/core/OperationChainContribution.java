@@ -35,13 +35,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -69,10 +68,6 @@ public class OperationChainContribution {
 
     @XNode("@replace")
     protected boolean replace = true;
-
-    /** @since 2021.16 */
-    @XNode("@enabled")
-    protected boolean enabled = true;
 
     @XNode("description")
     protected String description;
@@ -155,7 +150,6 @@ public class OperationChainContribution {
 
     public OperationChain toOperationChain(Bundle bundle) throws OperationException {
         OperationChain chain = new OperationChain(id);
-        chain.setEnabled(enabled);
         chain.setDescription(description);
         chain.setPublic(isPublic);
         chain.setAliases(aliases);
@@ -214,7 +208,7 @@ public class OperationChainContribution {
                         if (T_DOCUMENT.equals(type)) {
                             val = TypeAdapterHelper.createDocumentRefOrExpression(param.value);
                         } else if (T_DOCUMENTS.equals(type)) {
-                            String[] ar = org.nuxeo.common.utils.StringUtils.split(param.value, ',', true);
+                            String[] ar = StringUtils.split(param.value, ',', true);
                             DocumentRefListImpl result = new DocumentRefListImpl(ar.length);
                             for (String ref : ar) {
                                 result.add(TypeAdapterHelper.createDocumentRef(ref));
@@ -315,42 +309,5 @@ public class OperationChainContribution {
             });
             return op;
         }).toArray(Operation[]::new);
-    }
-
-    /** @since 2021.16 */
-    @Override
-    public OperationChainContribution clone() {
-        OperationChainContribution clone = new OperationChainContribution();
-        clone.id = id;
-        clone.replace = replace;
-        clone.description = description;
-        if (ops != null) {
-            clone.ops = Arrays.copyOf(ops, ops.length);
-        }
-        clone.isPublic = isPublic;
-        clone.enabled = enabled;
-        if (params != null) {
-            clone.params = Arrays.copyOf(params, params.length);
-        }
-        if (aliases != null) {
-            clone.aliases = Arrays.copyOf(aliases, aliases.length);
-        }
-        return clone;
-    }
-
-    /** @since 2021.16 */
-    public void merge(OperationChainContribution other) {
-        if (StringUtils.isNotBlank(other.id)) {
-            id = other.id;
-        }
-        replace = other.replace;
-        if (StringUtils.isNotBlank(other.description)) {
-            description = other.description;
-        }
-        ops = other.ops;
-        isPublic = other.isPublic;
-        enabled = other.enabled;
-        params = other.params;
-        aliases = other.aliases;
     }
 }

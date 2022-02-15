@@ -1,7 +1,0 @@
-<component name="org.nuxeo.ecm.core.rules.test-operations-disable" version="1.0">
-  <require>org.nuxeo.ecm.core.rules.test-operations</require>
-  <extension point="chains"
-             target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
-    <chain id="mychain" enabled="false"/>
-  </extension>
-</component>

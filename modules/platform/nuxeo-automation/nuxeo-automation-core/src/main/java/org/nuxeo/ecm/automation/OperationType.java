@@ -84,14 +84,4 @@ public interface OperationType {
         return ChainTypeImpl.typeof(chain, replace);
     }
 
-    /** @since 2021.16 */
-    boolean isEnabled();
-
-    /** @since 2021.16 */
-    OperationType clone();
-
-    /** @since 2021.16 */
-    void merge(OperationType other);
-
-
 }
