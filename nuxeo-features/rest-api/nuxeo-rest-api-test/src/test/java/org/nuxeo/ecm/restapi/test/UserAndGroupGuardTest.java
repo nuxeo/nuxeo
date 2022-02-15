@@ -44,10 +44,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @RepositoryConfig(init = RestServerInit.class)
-public class GuardTests extends BaseUserTest {
+public class UserAndGroupGuardTest extends BaseUserTest {
 
     @Inject
-    UserManager um;
+    protected UserManager um;
 
     @Override
     public void doBefore() {
@@ -56,14 +56,14 @@ public class GuardTests extends BaseUserTest {
     }
 
     @Test
-    public void onlyAdminCanDeleteAUser() throws Exception {
+    public void onlyAdminCanDeleteAUser() {
         // Given a modified user
 
         // When I call a DELETE on the Rest endpoint
         try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/user/user2")) {
 
-            // Then it returns a 401
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it returns a 403
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
@@ -75,8 +75,8 @@ public class GuardTests extends BaseUserTest {
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "/user/" + user.getName(),
                 getPrincipalAsJson(user))) {
 
-            // Then it returns a 401
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it returns a 403
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
@@ -88,8 +88,8 @@ public class GuardTests extends BaseUserTest {
         // When i POST it on the user endpoint
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/user", getPrincipalAsJson(principal))) {
 
-            // Then it returns a 401
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it returns a 403
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
@@ -101,8 +101,8 @@ public class GuardTests extends BaseUserTest {
         // When i POST this group
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/group/", getGroupAsJson(group))) {
 
-            // Then it returns a 401
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it returns a 403
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
@@ -116,17 +116,17 @@ public class GuardTests extends BaseUserTest {
                 getGroupAsJson(group))) {
 
             // Then it returns a 401
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
     @Test
-    public void onlyAdminCanDeleteGroups() throws Exception {
+    public void onlyAdminCanDeleteGroups() {
         // When i DELETE this group
         try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/group/group1")) {
 
-            // Then it returns a 401
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it returns a 403
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
@@ -140,13 +140,13 @@ public class GuardTests extends BaseUserTest {
         try (CloseableClientResponse response = getResponse(RequestType.POST,
                 "/group/" + group.getName() + "/user/" + principal.getName(), getGroupAsJson(group))) {
 
-            // Then it returns a 401
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it returns a 403
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
     @Test
-    public void onlyAdminCanRemoveAGroupFromAUser() throws Exception {
+    public void onlyAdminCanRemoveAGroupFromAUser() {
         // Given a modified group
         NuxeoGroup group = um.getGroup("group1");
         NuxeoPrincipal principal = um.getPrincipal("user1");
@@ -155,39 +155,39 @@ public class GuardTests extends BaseUserTest {
         try (CloseableClientResponse response = getResponse(RequestType.DELETE,
                 "/group/" + group.getName() + "/user/" + principal.getName())) {
 
-            // Then it returns a 401
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it returns a 403
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
     @Test
-    public void powerUserCantDeleteAdminArtifacts() throws Exception {
+    public void powerUserCantDeleteAdminArtifacts() {
         // Given a power user
         NuxeoPrincipal principal = RestServerInit.getPowerUser();
         service = getServiceFor(principal.getName(), principal.getName());
 
         // When i try to delete admin user
         try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/user/Administrator")) {
-            // Then it returns a 401
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it returns a 403
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
 
         // When i try to delete admin user
         try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/group/administrators")) {
-            // Then it returns a 401
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it returns a 403
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
     @Test
-    public void powerUserCanDeleteNonAdminArtifacts() throws Exception {
+    public void powerUserCanDeleteNonAdminArtifacts() {
         // Given a power user
         NuxeoPrincipal principal = RestServerInit.getPowerUser();
         service = getServiceFor(principal.getName(), principal.getName());
 
         // When i try to delete admin user
         try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/user/user2")) {
-            // Then it return a NO_CONTENT response
+            // Then it returns a NO_CONTENT response
             assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
             assertNull(um.getPrincipal("user2"));
