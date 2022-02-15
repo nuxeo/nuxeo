@@ -37,6 +37,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.search.FuzzyQuery;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchPhrasePrefixQueryBuilder;
 import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
@@ -82,6 +83,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.hint.MoreLikeThisESHintQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Helper class that holds the conversion logic. Conversion is based on the existing NXQL Parser, we are just using a
@@ -486,6 +488,8 @@ public final class NxqlQueryConverter {
                 && !wildcard.contains("\\")) {
             MatchPhrasePrefixQueryBuilder query = QueryBuilders.matchPhrasePrefixQuery(fieldName,
                     wildcard.replace("*", ""));
+            ConfigurationService cs = Framework.getService(ConfigurationService.class);
+            query.maxExpansions(cs.getInteger("elasticsearch.max_expansions", FuzzyQuery.defaultMaxExpansions));
             if (hint != null && hint.analyzer != null) {
                 query.analyzer(hint.analyzer);
             }

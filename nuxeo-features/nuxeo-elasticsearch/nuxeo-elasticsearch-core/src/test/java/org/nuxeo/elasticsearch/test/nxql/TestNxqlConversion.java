@@ -2017,6 +2017,22 @@ public class TestNxqlConversion {
     }
 
     @Test
+    @Deploy("org.nuxeo.elasticsearch.core.test:max-expansions-contrib.xml")
+    public void testMatchPhrasePrefixWithCustomMaxExpansions() {
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1 LIKE 'foo%'").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"match_phrase_prefix\" : {\n" +
+                "    \"f1\" : {\n" +
+                "      \"query\" : \"foo\",\n" +
+                "      \"slop\" : 0,\n" +
+                "      \"max_expansions\" : 200,\n" +
+                "      \"boost\" : 1.0\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+    }
+
+    @Test
     public void shouldFailWhenESHintOperatorIsUnknown() {
         try {
             String es = NxqlQueryConverter.toESQueryBuilder(
