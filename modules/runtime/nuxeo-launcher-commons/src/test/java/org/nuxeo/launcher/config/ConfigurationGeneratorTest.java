@@ -350,9 +350,13 @@ public class ConfigurationGeneratorTest {
         // create a symlink targeting the log directory
         Path logSymlink = rule.getNuxeoHome().resolve(Environment.DEFAULT_LOG_DIR);
         Files.createSymbolicLink(logSymlink, logDir);
-        // load configuration and verifyInstallation
-        ConfigurationGenerator generator = generatorBuilder().init(true).build();
-        generator.verifyInstallation();
+        try {
+            // load configuration and verifyInstallation
+            ConfigurationGenerator generator = generatorBuilder().init(true).build();
+            generator.verifyInstallation();
+        } finally {
+            Files.deleteIfExists(logSymlink);
+        }
     }
 
     protected ConfigurationGenerator.Builder generatorBuilder() {
