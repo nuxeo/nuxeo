@@ -14,20 +14,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-jtajca</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-datasource</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.lib.runtime</groupId>
       <artifactId>nuxeo-runtime-tomcat-adapter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-management-jtajca</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
