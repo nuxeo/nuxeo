@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.test.max.expansions">
+    <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+        <property name="elasticsearch.max_expansions">200</property>
+    </extension>
+</component>
