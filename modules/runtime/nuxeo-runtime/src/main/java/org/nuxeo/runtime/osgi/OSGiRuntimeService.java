@@ -92,6 +92,17 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
     public static final Version VERSION = Version.parseString("1.4.0");
 
+    // @since 2021.17
+    protected static final Comparator<String> PROPERTIES_FILE_FIRST = (a, b) -> {
+        if (isPropertiesFile(a)) {
+            return isPropertiesFile(b) ? 0 : -1;
+        } else if (isPropertiesFile(b)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    };
+
     private static final Logger log = LogManager.getLogger(OSGiRuntimeService.class);
 
     private final BundleContext bundleContext;
@@ -310,7 +321,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         File dir = env.getConfig();
         String[] names = dir.list();
         if (names != null) {
-            Arrays.sort(names, String::compareToIgnoreCase);
+            Arrays.sort(names, PROPERTIES_FILE_FIRST.thenComparing(String::compareToIgnoreCase));
             log.debug("Deployment order of configuration files: {}",
                     () -> Stream.of(names).reduce((n1, n2) -> n1 + "\n\t" + n2).map(n -> "\n\t" + n).orElse(""));
             for (String name : names) {
@@ -329,7 +340,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                             messageHandler.addMessage(new RuntimeMessage(Level.ERROR, message, Source.CONFIG, name));
                         }
                     }
-                } else if (name.endsWith(".config") || name.endsWith(".ini") || name.endsWith(".properties")) {
+                } else if (isPropertiesFile(name)) {
                     File file = new File(dir, name);
                     log.trace("Configuration: loading properties: {}", name);
                     loadProperties(file);
@@ -355,7 +366,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             Arrays.sort(names, String::compareToIgnoreCase);
             CryptoProperties props = new CryptoProperties(System.getProperties());
             for (String name : names) {
-                if (name.endsWith(".config") || name.endsWith(".ini") || name.endsWith(".properties")) {
+                if (isPropertiesFile(name)) {
                     try (FileInputStream in = new FileInputStream(new File(dir, name))) {
                         props.load(in);
                     }
@@ -545,6 +556,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             return false;
         }
         return "JBoss".equals(hn) && hv.startsWith("4");
+    }
+
+    protected static boolean isPropertiesFile(String name) {
+        return name.endsWith(".config") || name.endsWith(".ini") || name.endsWith(".properties");
     }
 
 }
