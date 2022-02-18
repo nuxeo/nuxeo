@@ -85,6 +85,7 @@ public class JsonDocumentModelReader {
         String parentId = (String) getProperty("ecm:parentId");
         String repositoryName = (String) getProperty("ecm:repository");
         boolean isProxy = Boolean.TRUE.equals(getProperty("ecm:isProxy"));
+        boolean isVersion = Boolean.TRUE.equals(getProperty("ecm:isVersion"));
         String sourceId = null; // TODO write this in JsonESDocumentWriter
 
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
@@ -100,6 +101,7 @@ public class JsonDocumentModelReader {
         DocumentRef parentRef = parentId == null ? null : new IdRef(parentId);
         DocumentModelImpl doc = new DocumentModelImpl(sid, type, id, pathObj, docRef, parentRef, null, facets, sourceId,
                 repositoryName, isProxy);
+        doc.setIsVersion(isVersion);
 
         // preload DataModel to prevent DB access
         for (String schemaName : doc.getSchemas()) { // all schemas including from facets
