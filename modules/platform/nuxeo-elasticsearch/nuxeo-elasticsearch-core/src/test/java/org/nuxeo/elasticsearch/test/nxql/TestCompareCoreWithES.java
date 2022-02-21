@@ -162,15 +162,15 @@ public class TestCompareCoreWithES {
         Assert.assertEquals(expected.size(), actual.size());
         // quick check for some props for better failure messages
         for (int i = 0; i < expected.size(); i++) {
-            DocumentModel expecteDdoc = expected.get(i);
+            DocumentModel expectedDoc = expected.get(i);
             DocumentModel actualDoc = actual.get(i);
             for (String xpath : List.of("dc:title", "dc:nature", "dc:rights", "dc:subjects",
                     "relatedtext:relatedtextresources")) {
-                Serializable expectedValue = getProperty(expecteDdoc, xpath);
+                Serializable expectedValue = getProperty(expectedDoc, xpath);
                 Serializable actualValue = getProperty(actualDoc, xpath);
                 Assert.assertEquals(xpath, expectedValue, actualValue);
             }
-            Assert.assertEquals(expecteDdoc.isVersion(), actualDoc.isVersion());
+            Assert.assertEquals(expectedDoc.isVersion(), actualDoc.isVersion());
         }
         Assert.assertEquals(getDigest(expected), getDigest(actual));
     }
@@ -284,7 +284,7 @@ public class TestCompareCoreWithES {
     @Test
     public void testSearchWithStartsWith() {
         testQueries(new String[] {
-                // Note that there are differnces between ES and VCS:
+                // Note that there are differences between ES and VCS:
                 // ES version document has a path and is searchable with startswith
                 "SELECT * from Document WHERE ecm:path STARTSWITH '/nomatch' ORDER BY dc:title",
                 "SELECT * from Document WHERE ecm:path STARTSWITH '/folder' AND ecm:path != '/folder' ORDER BY dc:title",
