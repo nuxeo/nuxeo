@@ -377,6 +377,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     public BinaryManagerStatus garbageCollectBinaries(boolean delete) {
         // do the GC in a long-running transaction to avoid timeouts
         return runInTransaction(() -> {
+            log.warn("GC Binaries starting, delete: " + delete);
             List<BinaryGarbageCollector> gcs = getGarbageCollectors();
             // check whether two GCs share storage
             Set<String> ids = gcs.stream().map(BinaryGarbageCollector::getId).collect(toSet());
@@ -408,20 +409,24 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             // in all repositories, mark referenced binaries
             RepositoryService repositoryService = Framework.getService(RepositoryService.class);
             for (String repositoryName : repositoryService.getRepositoryNames()) {
+                log.info("Marking binaries for repository: " + repositoryName);
                 Repository repository = repositoryService.getRepository(repositoryName);
                 repository.markReferencedBlobs(markerCallback);
             }
             // stop gc
             BinaryManagerStatus globalStatus = new BinaryManagerStatus();
             for (BinaryGarbageCollector gc : gcs) {
+                log.info("GC Binaries: " + gc.getId());
                 gc.stop(delete);
                 BinaryManagerStatus status = gc.getStatus();
+                log.info("GC Binaries status: " + status);
                 globalStatus.numBinaries += status.numBinaries;
                 globalStatus.sizeBinaries += status.sizeBinaries;
                 globalStatus.numBinariesGC += status.numBinariesGC;
                 globalStatus.sizeBinariesGC += status.sizeBinariesGC;
             }
             globalStatus.gcDuration = System.currentTimeMillis() - start;
+            log.warn("GC Binaries Completed: " + globalStatus);
             return globalStatus;
         }, BINARY_GC_TX_TIMEOUT_SEC);
     }
