@@ -51,10 +51,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.lib.runtime</groupId>
-      <artifactId>nuxeo-runtime-log4j</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>elasticsearch</artifactId>
     </dependency>
