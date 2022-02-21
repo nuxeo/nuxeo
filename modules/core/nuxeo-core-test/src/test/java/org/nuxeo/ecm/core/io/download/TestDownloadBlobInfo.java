@@ -31,10 +31,10 @@ public class TestDownloadBlobInfo {
 
     protected void assertParsed(String xpath, String filename, String string) {
         DownloadBlobInfo downloadBlobInfo = new DownloadBlobInfo("somerepo/someid" + string);
-        assertEquals("somerepo", downloadBlobInfo.repository);
-        assertEquals("someid", downloadBlobInfo.docId);
-        assertEquals(xpath, downloadBlobInfo.xpath);
-        assertEquals(filename, downloadBlobInfo.filename);
+        assertEquals("somerepo", downloadBlobInfo.getRepository());
+        assertEquals("someid", downloadBlobInfo.getDocId());
+        assertEquals(xpath, downloadBlobInfo.getXpath());
+        assertEquals(filename, downloadBlobInfo.getFilename());
     }
 
     @Test

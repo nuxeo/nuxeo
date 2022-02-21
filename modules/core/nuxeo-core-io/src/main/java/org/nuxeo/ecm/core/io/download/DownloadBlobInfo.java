@@ -73,4 +73,24 @@ public class DownloadBlobInfo {
             }
         }
     }
+
+    /** @since 2021.17 */
+    public String getRepository() {
+        return repository;
+    }
+
+    /** @since 2021.17 */
+    public String getDocId() {
+        return docId;
+    }
+
+    /** @since 2021.17 */
+    public String getXpath() {
+        return xpath;
+    }
+
+    /** @since 2021.17 */
+    public String getFilename() {
+        return filename;
+    }
 }
