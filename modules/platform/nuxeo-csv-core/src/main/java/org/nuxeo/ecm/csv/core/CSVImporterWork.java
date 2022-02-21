@@ -151,7 +151,7 @@ public class CSVImporterWork extends TransientStoreWork {
 
     private static final Logger log = LogManager.getLogger(CSVImporterWork.class);
 
-    private static final String TEMPLATE_IMPORT_RESULT = "templates/csvImportResult.ftl";
+    public static final String TEMPLATE_IMPORT_RESULT = "templates/csvImportResult.ftl";
 
     public static final String CATEGORY_CSV_IMPORTER = "csvImporter";
 
@@ -251,9 +251,9 @@ public class CSVImporterWork extends TransientStoreWork {
         }
     }
 
-    static final Serializable EMPTY_LOGS = new ArrayList<CSVImportLog>();
+    protected static final Serializable EMPTY_LOGS = new ArrayList<CSVImportLog>();
 
-    String launch() {
+    protected String launch() {
         WorkManager works = Framework.getService(WorkManager.class);
 
         TransientStore store = getStore();
@@ -263,7 +263,7 @@ public class CSVImporterWork extends TransientStoreWork {
         return id;
     }
 
-    static CSVImportStatus getStatus(String id) {
+    protected static CSVImportStatus getStatus(String id) {
         TransientStore store = getStore();
         if (!store.exists(id)) {
             return null;
@@ -272,7 +272,7 @@ public class CSVImporterWork extends TransientStoreWork {
     }
 
     @SuppressWarnings("unchecked")
-    static List<CSVImportLog> getLastImportLogs(String id) {
+    protected static List<CSVImportLog> getLastImportLogs(String id) {
         TransientStore store = getStore();
         if (!store.exists(id)) {
             return Collections.emptyList();
@@ -724,7 +724,7 @@ public class CSVImporterWork extends TransientStoreWork {
     /**
      * @since 9.1
      */
-    private Blob getBlob() {
+    protected Blob getBlob() {
         return getStore().getBlobs(id).get(0);
     }
 
@@ -760,7 +760,7 @@ public class CSVImporterWork extends TransientStoreWork {
         }
     }
 
-    private static String loadTemplate(String key) {
+    protected static String loadTemplate(String key) {
         InputStream io = CSVImporterWork.class.getClassLoader().getResourceAsStream(key);
         if (io != null) {
             try {
