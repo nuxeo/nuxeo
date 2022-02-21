@@ -170,6 +170,7 @@ public class TestCompareCoreWithES {
                 Serializable actualValue = getProperty(actualDoc, xpath);
                 Assert.assertEquals(xpath, expectedValue, actualValue);
             }
+            Assert.assertEquals(expecteDdoc.isVersion(), actualDoc.isVersion());
         }
         Assert.assertEquals(getDigest(expected), getDigest(actual));
     }
@@ -229,14 +230,14 @@ public class TestCompareCoreWithES {
 
     @Test
     public void testSimpleSearchWithSort() {
-        testQueries(new String[] { "select * from Document order by dc:title, dc:created",
-                "select * from Document where ecm:isTrashed = 0 order by dc:title",
-                "select * from File order by dc:title", });
+        testQueries(new String[] { "select * from Document order by dc:created, ecm:uuid",
+                "select * from Document where ecm:isTrashed = 0 order by ecm:uuid",
+                "select * from File order by ecm:uuid", });
     }
 
     @Test
     public void testSearchOnProxies() {
-        testQueries(new String[] { "select * from Document where ecm:isProxy=0 order by dc:title",
+        testQueries(new String[] { "select * from Document where ecm:isProxy=0 order by ecm:uuid",
                 "select * from Document where ecm:isProxy=1 order by dc:title", });
     }
 
@@ -263,21 +264,21 @@ public class TestCompareCoreWithES {
 
     @Test
     public void testSearchOnTypes() {
-        testQueries(new String[] { "select * from File order by dc:title", "select * from Folder order by dc:title",
-                "select * from Note order by dc:title",
-                "select * from Note where ecm:primaryType IN ('Note', 'Folder') order by dc:title",
-                "select * from Document where ecm:mixinType = 'Folderish' order by dc:title",
-                "select * from Document where ecm:mixinType != 'Folderish' order by dc:title", });
+        testQueries(new String[] { "select * from File order by ecm:uuid", "select * from Folder order by ecm:uuid",
+                "select * from Note order by ecm:uuid",
+                "select * from Note where ecm:primaryType IN ('Note', 'Folder') order by ecm:uuid",
+                "select * from Document where ecm:mixinType = 'Folderish' order by ecm:uuid",
+                "select * from Document where ecm:mixinType != 'Folderish' order by ecm:uuid", });
     }
 
     @Test
     public void testSearchWithLike() {
         // Validate that NXP-14338 is fixed
         testQueries(new String[] { "SELECT * FROM Document WHERE dc:title LIKE 'nomatch%'",
-                "SELECT * from Document WHERE dc:title LIKE 'File%' ORDER BY dc:title",
-                "SELECT * from Document WHERE dc:title LIKE '%ile%' ORDER BY dc:title",
-                "SELECT * from Document WHERE dc:title NOT LIKE '%ile%' ORDER BY dc:title",
-                "SELECT * from Document WHERE dc:title NOT LIKE '%i%e%' ORDER BY dc:title", });
+                "SELECT * from Document WHERE dc:title LIKE 'File%' ORDER BY ecm:uuid",
+                "SELECT * from Document WHERE dc:title LIKE '%ile%' ORDER BY ecm:uuid",
+                "SELECT * from Document WHERE dc:title NOT LIKE '%ile%' ORDER BY ecm:uuid",
+                "SELECT * from Document WHERE dc:title NOT LIKE '%i%e%' ORDER BY ecm:uuid", });
     }
 
     @Test
@@ -295,9 +296,9 @@ public class TestCompareCoreWithES {
         DocumentModel folder = session.getDocument(new PathRef("/folder"));
         Assert.assertNotNull(folder);
         String fid = folder.getId();
-        testQueries(new String[] { "SELECT * from Document WHERE ecm:ancestorId = 'non-esisting-id' ORDER BY dc:title",
-                "SELECT * from Document WHERE ecm:ancestorId != 'non-existing-id' ORDER BY dc:title",
-                "SELECT * FROM Document WHERE ecm:ancestorId = '" + fid + "' ORDER BY dc:title", });
+        testQueries(new String[] { "SELECT * from Document WHERE ecm:ancestorId = 'non-esisting-id' ORDER BY ecm:uuid",
+                "SELECT * from Document WHERE ecm:ancestorId != 'non-existing-id' ORDER BY ecm:uuid",
+                "SELECT * FROM Document WHERE ecm:ancestorId = '" + fid + "' ORDER BY ecm:uuid", });
     }
 
 }
