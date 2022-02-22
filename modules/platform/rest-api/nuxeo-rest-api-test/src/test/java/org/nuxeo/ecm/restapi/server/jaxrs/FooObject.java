@@ -26,9 +26,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -66,5 +69,12 @@ public class FooObject extends DefaultObject {
     @Path("internal-error")
     public Object doInternalServerErrorException() {
         throw new NuxeoException("a secret message", SC_INTERNAL_SERVER_ERROR);
+    }
+
+    @GET
+    @Path("unauthenticated/doc")
+    public Object doGetDocUnauthenticated() {
+        CoreSession session = CoreInstance.getCoreSessionSystem(null);
+        return Framework.doPrivileged(session::getRootDocument);
     }
 }
