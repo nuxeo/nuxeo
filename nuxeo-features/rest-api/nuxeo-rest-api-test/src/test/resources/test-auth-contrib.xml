@@ -2,7 +2,7 @@
 
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="openUrl">
     <openUrl name="foo">
-      <grantPattern>/api/v1/foo/unauthenticated</grantPattern>
+      <grantPattern>/api/v1/foo/unauthenticated.*</grantPattern>
     </openUrl>
   </extension>
 

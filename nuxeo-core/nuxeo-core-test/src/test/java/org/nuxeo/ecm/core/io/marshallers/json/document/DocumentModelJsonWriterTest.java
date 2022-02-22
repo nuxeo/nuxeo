@@ -29,6 +29,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.inject.Inject;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -55,6 +57,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -627,7 +630,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     // NXP-30615
     @Test
     @Deploy("org.nuxeo.ecm.core.test:OSGI-INF/other-repo.xml")
-    public void testMultiRepo() throws IOException {
+    public void testMultiRepo() throws IOException, LoginException {
         // create a document in another repo
         DocumentModel doc;
         try (CloseableCoreSession secondSession = CoreInstance.openCoreSession("import")) {
@@ -638,9 +641,16 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
 
         // write the document with the default session in ctx
         // the session on the "import" repository is now closed
-        RenderingContext ctxDefault = CtxBuilder.properties("*").session(session).get();
-        JsonAssert json = jsonAssert(doc, ctxDefault);
-        assertNotNull(json);
+        LoginContext ctx = Framework.loginAsUser("Administrator");
+        try {
+            RenderingContext ctxDefault = CtxBuilder.properties("*").session(session).get();
+            JsonAssert json = jsonAssert(doc, ctxDefault);
+            assertNotNull(json);
+        } finally {
+            if (ctx != null) {
+                ctx.logout();
+            }
+        }
     }
 
 }
