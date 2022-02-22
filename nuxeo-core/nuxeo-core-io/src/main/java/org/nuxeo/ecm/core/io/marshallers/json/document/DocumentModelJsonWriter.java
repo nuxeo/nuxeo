@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
@@ -147,8 +148,11 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
 
     @Override
     protected void writeEntityBody(DocumentModel doc, JsonGenerator jg) throws IOException {
-        if (doc.getSessionId() == null || doc.getId() == null || doc.getRef() == null) {
-            // do not try to re-attach a detached or non-existing document
+        if (doc.getSessionId() == null || doc.getId() == null || doc.getRef() == null
+                || ClientLoginModule.getCurrentPrincipal() == null) {
+            // do not try to re-attach if:
+            // - the document is detached or non-existing
+            // - there is no logged in user
             doWriteEntityBody(doc, jg);
         } else {
             withDocumentAttached(doc, () -> doWriteEntityBody(doc, jg));

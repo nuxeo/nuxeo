@@ -23,9 +23,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -51,6 +55,16 @@ public class FooObject extends DefaultObject {
     @Path("exception")
     public Object doException() {
         throw new NuxeoException("foo");
+    }
+
+    @GET
+    @Path("unauthenticated/doc")
+    public Object doGetDocUnauthenticated() {
+        DocumentModel doc;
+        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(null)) {
+            doc = Framework.doPrivileged(session::getRootDocument);
+        }
+        return doc;
     }
 
 }

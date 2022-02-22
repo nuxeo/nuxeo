@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
@@ -66,6 +67,22 @@ public class MarshallingEdgeCasesTest extends BaseTest {
             assertEquals(200, r.getStatus());
             JsonNode node = mapper.readTree(r.getEntityInputStream());
             assertEquals("bar", node.get("foo").textValue());
+        }
+    }
+
+    // NXP-30854
+    @Test
+    public void unauthenticatedEndpointShouldReturnDocument() throws IOException {
+        Client client = JerseyClientHelper.clientBuilder().build();
+        ClientResponse response = client.resource(getRestApiUrl())
+                                        .path("foo")
+                                        .path("unauthenticated/doc")
+                                        .accept(MediaType.APPLICATION_JSON)
+                                        .get(ClientResponse.class);
+        try (CloseableClientResponse r = CloseableClientResponse.of(response)) {
+            assertEquals(200, r.getStatus());
+            JsonNode node = mapper.readTree(r.getEntityInputStream());
+            assertNotNull(node);
         }
     }
 
