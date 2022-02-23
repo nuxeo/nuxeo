@@ -50,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 10.3
  */
 @Operation(id = PublishRendition.ID, category = Constants.CAT_DOCUMENT, label = "Publish Document's Rendition", description = "input document's chosen rendition into the target section. If rendition is not given and default rendition option is false, it falls back on default publishing. Existing proxy is overrided if the override attribute is set. Return the created proxy.", aliases = {
-        "Document.PublishRendition" })
+        "Document.PublishRendition", "Document.Publish" })
 public class PublishRendition {
 
     public static final String ID = PublishDocument.ID;

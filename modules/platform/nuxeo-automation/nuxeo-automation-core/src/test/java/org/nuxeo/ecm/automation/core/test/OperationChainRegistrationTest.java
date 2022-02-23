@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.Properties;
 
@@ -28,11 +29,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 /**
  * Test registration of operation chains on service.
@@ -48,6 +51,9 @@ public class OperationChainRegistrationTest {
     @Inject
     AutomationService service;
 
+    @Inject
+    protected HotDeployer hotDeployer;
+
     /**
      * Check chain properties when using escaped params in operations
      */
@@ -62,6 +68,19 @@ public class OperationChainRegistrationTest {
         Properties props = new Properties();
         props.put("dc:title", "My note > other notes");
         assertEquals(props, params.map().get("properties"));
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.core:test-operations.xml")
+    public void testDisableChainType() throws Exception {
+        service.getOperation("mychain");
+        hotDeployer.deploy("org.nuxeo.ecm.automation.core.tests:test-operations-disable.xml");
+        try {
+            service.getOperation("mychain");
+            fail("should not have found a disabled chain");
+        } catch (OperationNotFoundException e) {
+            assertEquals("No operation was bound on ID: mychain", e.getMessage());
+        }
     }
 
 }

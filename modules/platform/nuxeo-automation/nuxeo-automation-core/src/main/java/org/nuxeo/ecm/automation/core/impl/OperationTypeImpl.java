@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -59,29 +60,29 @@ public class OperationTypeImpl implements OperationType {
     /**
      * The service that registered the operation
      */
-    protected final AutomationService service;
+    protected AutomationService service;
 
     /**
      * The operation ID - used for lookups.
      */
-    protected final String id;
+    protected String id;
 
     /**
      * The operation ID Aliases array.
      *
      * @since 7.1
      */
-    protected final String[] aliases;
+    protected String[] aliases;
 
     /**
      * The operation type
      */
-    protected final Class<?> type;
+    protected Class<?> type;
 
     /**
      * Injectable parameters. a map between the parameter name and the Field object
      */
-    protected final Map<String, Field> params;
+    protected Map<String, Field> params;
 
     /**
      * Invocable methods
@@ -105,6 +106,9 @@ public class OperationTypeImpl implements OperationType {
     protected String contributingComponent;
 
     protected List<WidgetDefinition> widgetDefinitionList;
+
+    /** @since 2021.17 */
+    protected boolean enabled = true;
 
     public OperationTypeImpl(AutomationService service, Class<?> type) {
         this(service, type, null);
@@ -407,5 +411,54 @@ public class OperationTypeImpl implements OperationType {
     @Override
     public List<InvokableMethod> getMethods() {
         return methods;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public OperationTypeImpl clone() {
+        OperationTypeImpl clone = new OperationTypeImpl(service, type, contributingComponent, widgetDefinitionList);
+        clone.inputType = inputType;
+        return clone;
+    }
+
+    @Override
+    public void merge(OperationType other) {
+        var ot = (OperationTypeImpl) other;
+        enabled = ot.isEnabled();
+        service = ot.service;
+        aliases = ot.aliases;
+        params = ot.params;
+        inputType = ot.getInputType();
+        contributingComponent = ot.getContributingComponent();
+        methods = ot.getMethods();
+        type = ot.type;
+        injectableFields = ot.injectableFields;
+        widgetDefinitionList = ot.widgetDefinitionList;
+    }
+
+    /** @since 2021.17 */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(id)
+                                    .append(type)
+                                    .append(enabled)
+                                    .hashCode();
+    }
+
+    /** @since 2021.17 */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof OperationTypeImpl)) {
+            return false;
+        }
+        var ot = (OperationTypeImpl) obj;
+        return id.equals(ot.getId()) && type.equals(ot.type) && enabled == ot.enabled;
     }
 }

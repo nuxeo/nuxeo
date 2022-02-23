@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -36,13 +37,13 @@ import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
  */
 public class ScriptingOperationTypeImpl implements OperationType {
 
-    protected final AutomationScriptingServiceImpl scripting;
+    protected AutomationScriptingServiceImpl scripting;
 
-    protected final AutomationService automation;
+    protected AutomationService automation;
 
-    protected final ScriptingOperationDescriptor desc;
+    protected ScriptingOperationDescriptor desc;
 
-    protected final InvokableMethod method;
+    protected InvokableMethod method;
 
     public ScriptingOperationTypeImpl(AutomationScriptingServiceImpl scripting, AutomationService automation,
             ScriptingOperationDescriptor desc) {
@@ -124,4 +125,49 @@ public class ScriptingOperationTypeImpl implements OperationType {
         }
     }
 
+    @Override
+    public boolean isEnabled() {
+        return desc.isEnabled();
+    }
+
+    @Override
+    public ScriptingOperationTypeImpl clone() {
+        return new ScriptingOperationTypeImpl(scripting, automation, desc.clone());
+    }
+
+    @Override
+    public void merge(OperationType other) {
+        var os = (ScriptingOperationTypeImpl) other;
+        scripting = os.scripting;
+        automation = os.automation;
+        desc.merge(os.desc);
+        method = os.method;
+    }
+
+    /** @since 2021.17 */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(getId())
+                                    .append(getType())
+                                    .append(getInputType())
+                                    .append(desc.getOutputType())
+                                    .append(desc.category)
+                                    .hashCode();
+    }
+
+    /** @since 2021.17 */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof ScriptingOperationTypeImpl)) {
+            return false;
+        }
+        ScriptingOperationTypeImpl other = (ScriptingOperationTypeImpl) obj;
+        return getId().equals(other.getId()) && getType().equals(other.getType())
+                && getInputType().equals(other.getInputType())
+                && desc.getOutputType().equals(other.desc.getOutputType())
+                && desc.category.equals(other.desc.category);
+    }
 }

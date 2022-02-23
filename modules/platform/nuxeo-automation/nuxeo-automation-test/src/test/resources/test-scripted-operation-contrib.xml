@@ -1,0 +1,5 @@
+<component name="org.nuxeo.ecm.automation.test-scripted-operation" version="1.0">
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
+    <scriptedOperation id="testScript"/>
+  </extension>
+</component>
