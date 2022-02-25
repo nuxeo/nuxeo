@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.elasticsearch.test.append.true.mapping.without.mappingfile.contrib">
+<component name="org.nuxeo.elasticsearch.test.append.true.mapping.with.mappingfile.contrib">
   <extension point="elasticSearchIndex" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
     <elasticSearchIndex name="nxutest">
       <mapping file="append-true-mapping-with-mappingfile.json" append="true" />
