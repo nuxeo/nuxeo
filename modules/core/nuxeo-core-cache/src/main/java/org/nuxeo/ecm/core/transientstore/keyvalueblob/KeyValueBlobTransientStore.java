@@ -37,8 +37,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobInfo;
@@ -102,7 +102,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class KeyValueBlobTransientStore implements TransientStoreProvider {
 
-    private static final Log log = LogFactory.getLog(KeyValueBlobTransientStore.class);
+    private static final Logger log = LogManager.getLogger(KeyValueBlobTransientStore.class);
 
     public static final String SEP = ".";
 
@@ -316,7 +316,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         try {
             return mapper.readValue(json, LIST_STRING);
         } catch (IOException e) {
-            log.error("Invalid JSON array: " + json);
+            log.error("Invalid JSON array: {}", json);
             return null;
         }
     }
@@ -328,7 +328,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         try {
             return mapper.readValue(json, MAP_STRING_STRING);
         } catch (IOException e) {
-            log.error("Invalid JSON object: " + json);
+            log.error("Invalid JSON object: {}", json);
             return null;
         }
     }
@@ -627,8 +627,9 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
                 // ignore, the blob was removed from the blob provider
                 // maybe by a concurrent GC from this transient store
                 // or from the blob provider itself (if it's incorrectly shared)
-                log.debug("Failed to read blob: " + digest + " in blob provider: " + blobProviderId
-                        + " for transient store: " + name);
+                log.debug("Failed to read blob: {} in blob provider: {}  for transient store: {}", digest,
+                        blobProviderId, name);
+
             }
         }
         return blobs;
