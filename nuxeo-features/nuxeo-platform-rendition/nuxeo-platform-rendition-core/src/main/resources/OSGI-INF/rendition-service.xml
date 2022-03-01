@@ -84,4 +84,9 @@
     <object class="org.nuxeo.ecm.platform.rendition.service.DefaultRenditionDescriptor" />
   </extension-point>
 
+  <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
+    <!-- Explicit declaration based on default configuration to enforce GC -->
+    <store name="LazyRenditionCache" />
+  </extension>
+
 </component>
