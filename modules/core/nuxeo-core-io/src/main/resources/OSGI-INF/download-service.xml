@@ -85,4 +85,9 @@
     <property name="org.nuxeo.download.url.follow.redirect">false</property>
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
+    <!-- Explicit declaration based on default configuration to enforce GC -->
+    <store name="download" />
+  </extension>
+
 </component>

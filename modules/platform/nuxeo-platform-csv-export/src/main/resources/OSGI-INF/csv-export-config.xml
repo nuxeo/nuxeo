@@ -27,4 +27,9 @@
     </streamProcessor>
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
+    <!-- Explicit declaration based on default configuration to enforce GC -->
+    <store name="csvExport" />
+  </extension>
+
 </component>
