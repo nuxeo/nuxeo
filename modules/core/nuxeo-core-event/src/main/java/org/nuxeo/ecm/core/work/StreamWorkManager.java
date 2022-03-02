@@ -379,8 +379,9 @@ public class StreamWorkManager extends WorkManagerImpl {
         ComputationPolicy policy = new ComputationPolicyBuilder().continueOnFailure(true).build();
         RecordFilterChain filter = getRecordFilter();
         settings = new Settings(DEFAULT_CONCURRENCY, getPartitions(DEFAULT_CONCURRENCY), getCodec(), policy, filter);
-        descriptors.forEach(item -> settings.setConcurrency(item.getId(), item.getMaxThreads()));
-        descriptors.forEach(item -> settings.setPartitions(item.getId(), getPartitions(item.getMaxThreads())));
+        descriptors.forEach(item -> settings.setConcurrency(NAMESPACE_PREFIX + item.getId(), item.getMaxThreads()));
+        descriptors.forEach(
+                item -> settings.setPartitions(NAMESPACE_PREFIX + item.getId(), getPartitions(item.getMaxThreads())));
     }
 
     protected int getPartitions(int maxThreads) {
