@@ -88,6 +88,7 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     public static final String WORK_LOG_CONFIG_PROP = "nuxeo.stream.work.log.config";
 
+    @Deprecated(since = "2021.0")
     public static final String DEFAULT_WORK_LOG_CONFIG = "work";
 
     public static final String WORK_CODEC_PROP = "nuxeo.stream.work.log.codec";
@@ -339,8 +340,6 @@ public class StreamWorkManager extends WorkManagerImpl {
     }
 
     protected LogManager getLogManager() {
-        String config = getLogConfig();
-        log.info("Init StreamWorkManager with Log configuration: " + config);
         StreamService service = Framework.getService(StreamService.class);
         return service.getLogManager();
     }
@@ -350,6 +349,7 @@ public class StreamWorkManager extends WorkManagerImpl {
         return service.getStreamManager();
     }
 
+    @Deprecated(since = "2021.0")
     protected String getLogConfig() {
         return Framework.getProperty(WORK_LOG_CONFIG_PROP, DEFAULT_WORK_LOG_CONFIG);
     }
@@ -385,7 +385,7 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     protected int getPartitions(int maxThreads) {
         if (maxThreads == 1) {
-            // when the pool size is one the we don't want any concurrency
+            // Special case where one thread means no concurrency at cluster level
             return 1;
         }
         return getOverProvisioningFactor() * maxThreads;
