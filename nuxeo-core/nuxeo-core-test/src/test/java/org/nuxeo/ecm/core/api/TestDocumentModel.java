@@ -26,12 +26,20 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -250,6 +258,33 @@ public class TestDocumentModel {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.copy(doc.getRef(), new PathRef("/"), "toto/tata");
+    }
+
+    /**
+     * @since 2021.17
+     */
+    @Test
+    public void testDocumentModelComparator() {
+        // Let's sort 2 docs on a date field
+        DocumentModel doc1 = new DocumentModelImpl("/", "doc1", "File");
+        Calendar cal1 = new GregorianCalendar(2000, 1, 1);
+        doc1.setPropertyValue("dc:expired", cal1);
+        DocumentModel doc2 = new DocumentModelImpl("/", "doc2", "File");
+        Calendar cal2 = new GregorianCalendar(2022, 1, 1);
+        doc2.setPropertyValue("dc:expired", cal2);
+        // cal1 is earlier
+        assertTrue(cal1.compareTo(cal2) < 0);
+        // but the toString for year 2000 starts with 9 so sorts higher
+        cal1.getTime(); // trigger time field computation
+        cal2.getTime();
+        assertTrue(cal1.toString().compareTo(cal2.toString()) > 0);
+        // nevertheless doc comparison works based on date, not string
+        List<DocumentModel> docs = new ArrayList<>(Arrays.asList(doc1, doc2));
+        DocumentModelComparator comp = new DocumentModelComparator("dublincore",
+                Collections.singletonMap("dc:expired", "desc"));
+        docs.sort(comp);
+        assertEquals(doc2, docs.get(0));
+        assertEquals(doc1, docs.get(1));
     }
 
 }
