@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.core.api;
 
 import java.text.Collator;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -84,6 +85,8 @@ public class DocumentModelComparator implements Sorter {
             cmp = ((Long) v1).compareTo((Long) v2);
         } else if (v1 instanceof Integer && v2 instanceof Integer) {
             cmp = ((Integer) v1).compareTo((Integer) v2);
+        } else if (v1 instanceof Calendar && v2 instanceof Calendar) {
+            cmp = ((Calendar) v1).compareTo((Calendar) v2);
         } else {
             cmp = collator.compare(v1.toString(), v2.toString());
         }
