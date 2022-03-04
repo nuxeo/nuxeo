@@ -19,6 +19,8 @@
  */
 package org.nuxeo.template.service;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,9 +36,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.pubsub.AbstractPubSubBroker;
+import org.nuxeo.runtime.pubsub.SerializableMessage;
 import org.nuxeo.template.adapters.doc.TemplateBasedDocumentAdapterImpl;
 import org.nuxeo.template.adapters.doc.TemplateBinding;
 import org.nuxeo.template.adapters.doc.TemplateBindings;
@@ -68,6 +73,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     public static final String OUTPUT_FORMAT_EXTENSION_XP = "outputFormat";
 
+    protected static final String TEMPLATE_PROCESSOR_INVAL_PUBSUB_TOPIC = "templateProcessorInval";
+
     private static final String FILTER_VERSIONS_PROPERTY = "nuxeo.templating.filterVersions";
 
     protected ContextFactoryRegistry contextExtensionRegistry;
@@ -78,11 +85,14 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     protected volatile Map<String, List<String>> type2Template;
 
+    protected TemplateProcessorInvalidator invalidator;
+
     @Override
     public void activate(ComponentContext context) {
         processorRegistry = new TemplateProcessorRegistry();
         contextExtensionRegistry = new ContextFactoryRegistry();
         outputFormatRegistry = new OutputFormatRegistry();
+        registerInvalidator();
     }
 
     @Override
@@ -90,6 +100,26 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         processorRegistry = null;
         contextExtensionRegistry = null;
         outputFormatRegistry = null;
+        unregisterInvalidator();
+    }
+
+    protected void registerInvalidator() {
+        ClusterService clusterService = Framework.getService(ClusterService.class);
+        if (clusterService != null && clusterService.isEnabled()) {
+            // register TemplateProcessor invalidator
+            String nodeId = clusterService.getNodeId();
+            invalidator = new TemplateProcessorInvalidator();
+            invalidator.initialize(TEMPLATE_PROCESSOR_INVAL_PUBSUB_TOPIC, nodeId);
+            log.info("Registered Template Processor invalidator for node: {}", nodeId);
+        } else {
+            log.info("Not registering a Template Processor invalidator because clustering is not enabled");
+        }
+    }
+
+    protected void unregisterInvalidator() {
+        if (invalidator != null) {
+            invalidator.close();
+        }
     }
 
     @Override
@@ -348,6 +378,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
             Map<String, List<String>> mapping = getTypeMapping();
             // check existing mapping for this docId
             List<String> boundTypes = new ArrayList<>();
+            boolean mappingChanged = false;
             for (String type : mapping.keySet()) {
                 if (mapping.get(type) != null) {
                     if (mapping.get(type).contains(doc.getId())) {
@@ -358,7 +389,9 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
             // unbind previous mapping for this docId
             for (String type : boundTypes) {
                 List<String> templates = mapping.get(type);
-                templates.remove(doc.getId());
+                if (templates.remove(doc.getId())) {
+                    mappingChanged = true;
+                }
                 if (templates.size() == 0) {
                     mapping.remove(type);
                 }
@@ -369,10 +402,15 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
                 if (templates == null) {
                     templates = new ArrayList<>();
                     mapping.put(type, templates);
+                    mappingChanged = true;
                 }
                 if (!templates.contains(doc.getId())) {
                     templates.add(doc.getId());
+                    mappingChanged = true;
                 }
+            }
+            if (mappingChanged && invalidator != null) {
+                invalidator.sendMessage(new TemplateProcessorInvalidation());
             }
         }
     }
@@ -414,6 +452,10 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         return targetDoc;
     }
 
+    protected synchronized void invalidateTypeMapping() {
+        type2Template = null;
+    }
+
     @Override
     public Collection<OutputFormatDescriptor> getOutputFormats() {
         return outputFormatRegistry.getRegistredOutputFormat();
@@ -422,5 +464,29 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     @Override
     public OutputFormatDescriptor getOutputFormatDescriptor(String outputFormatId) {
         return outputFormatRegistry.getOutputFormatById(outputFormatId);
+    }
+
+    public static class TemplateProcessorInvalidation implements SerializableMessage {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void serialize(OutputStream out) {
+            // nothing to write, sending the message itself is enough
+        }
+    }
+
+    public class TemplateProcessorInvalidator extends AbstractPubSubBroker<TemplateProcessorInvalidation> {
+
+        @Override
+        public TemplateProcessorInvalidation deserialize(InputStream in) {
+            return new TemplateProcessorInvalidation();
+        }
+
+        @Override
+        public void receivedMessage(TemplateProcessorInvalidation message) {
+            // nothing to read from the message, receiving the message itself is enough
+            invalidateTypeMapping();
+        }
     }
 }
