@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -60,7 +60,7 @@ import org.nuxeo.template.processors.IdentityProcessor;
  */
 public class TemplateProcessorComponent extends DefaultComponent implements TemplateProcessorService {
 
-    protected static final Log log = LogFactory.getLog(TemplateProcessorComponent.class);
+    protected static final Logger log = LogManager.getLogger(TemplateProcessorComponent.class);
 
     public static final String PROCESSOR_XP = "processor";
 
@@ -254,8 +254,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     }
 
     protected String buildTemplateSearchByNameQuery(String name) {
-        String query = "select * from Document where ecm:mixinType = 'Template' "
-                + "AND tmpl:templateName = " + NXQL.escapeString(name);
+        String query = "select * from Document where ecm:mixinType = 'Template' AND tmpl:templateName = "
+                + NXQL.escapeString(name);
         if (Boolean.parseBoolean(Framework.getProperty(FILTER_VERSIONS_PROPERTY))) {
             query += " AND ecm:isVersion = 0";
         }
@@ -300,14 +300,14 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     @Override
     public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) {
-        StringBuilder sb = new StringBuilder()
-                .append("select * from Document where ecm:isVersion = 0 AND ecm:isProxy = 0 AND ")
-                .append(TemplateBindings.BINDING_PROP_NAME)
-                .append("/*/")
-                .append(TemplateBinding.TEMPLATE_ID_KEY)
-                .append(" = '")
-                .append(source.getId())
-                .append("'");
+        StringBuilder sb = new StringBuilder().append(
+                "select * from Document where ecm:isVersion = 0 AND ecm:isProxy = 0 AND ")
+                                              .append(TemplateBindings.BINDING_PROP_NAME)
+                                              .append("/*/")
+                                              .append(TemplateBinding.TEMPLATE_ID_KEY)
+                                              .append(" = '")
+                                              .append(source.getId())
+                                              .append("'");
         DocumentModelList docs = source.getCoreSession().query(sb.toString());
 
         List<TemplateBasedDocument> result = new ArrayList<>();
