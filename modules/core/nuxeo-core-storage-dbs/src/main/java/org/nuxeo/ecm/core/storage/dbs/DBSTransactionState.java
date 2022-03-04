@@ -695,6 +695,9 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
         // no transient for state read, and we don't want to trash caches
         // fetch from repository only the properties needed for Read ACL computation and recursion
         State state = connection.readPartialState(id, READ_ACL_RECURSION_KEYS);
+        if (state == null) {
+            return;
+        }
         State oldState = new State(1);
         oldState.put(KEY_READ_ACL, state.get(KEY_READ_ACL));
         // compute new value
