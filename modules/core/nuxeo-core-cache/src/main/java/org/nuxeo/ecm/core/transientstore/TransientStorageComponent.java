@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.transientstore;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,7 +97,24 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
 
     @Override
     public void doGC() {
+        // keep backward compat: run GC only on stores that have been used
         stores.values().forEach(TransientStoreProvider::doGC);
+    }
+
+    @Override
+    public void doGC(String name) {
+        TransientStoreProvider provider = (TransientStoreProvider) getStore(name);
+        provider.doGC();
+    }
+
+    @Override
+    public Set<String> listStores() {
+        // concat static and dynamic stores
+        Set<String> ret = getDescriptors(EP_STORE).stream()
+                                                  .map(descriptor -> descriptor.getId())
+                                                  .collect(Collectors.toSet());
+        stores.forEach((k, v) -> ret.add(k));
+        return ret;
     }
 
     @Override

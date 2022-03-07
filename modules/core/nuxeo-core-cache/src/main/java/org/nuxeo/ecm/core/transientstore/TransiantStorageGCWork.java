@@ -30,15 +30,40 @@ public class TransiantStorageGCWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
+    protected final String store;
+
+    // @since 2021.17
+    public static final String CATEGORY = "transientStorageGC";
+
+    // @since 2021.17
+    public TransiantStorageGCWork(String store) {
+        super(store);
+        this.store = store;
+    }
+
+    @Override
+    public boolean isIdempotent() {
+        return false;
+    }
+
     @Override
     public String getTitle() {
-        return "Transient Store GC";
+        return "Transient Store GC" + (store != null ? " on " + store : "");
+    }
+
+    @Override
+    public String getCategory() {
+        return CATEGORY;
     }
 
     @Override
     public void work() {
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
-        tss.doGC();
+        if (store != null) {
+            tss.doGC(store);
+        } else {
+            tss.doGC();
+        }
     }
 
 }

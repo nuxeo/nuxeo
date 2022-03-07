@@ -34,7 +34,6 @@
 </#if>
       <category>storedRenditionsCleanup</category>
       <category>taggedVersionListener</category>
-      <category>TransiantStorageGCWork</category>
       <category>triggerEsclationRules</category>
       <category>unicityListener</category>
       <category>UserProfileImporterWork</category>
