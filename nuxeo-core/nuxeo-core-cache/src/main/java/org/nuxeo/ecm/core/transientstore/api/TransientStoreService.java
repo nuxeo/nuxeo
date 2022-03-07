@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.transientstore.api;
 
+import java.util.Set;
+
 /**
  * Service to expose access to {@link TransientStore}
  *
@@ -41,4 +43,20 @@ public interface TransientStoreService {
      * Triggers Garbage collecting of all {@link TransientStore}
      */
     void doGC();
+
+    /**
+     * Triggers Garbage collecting for a {@link TransientStore}.
+     *
+     * @param name the name of the target {@link TransientStore}
+     * @since 2021.17
+     */
+    void doGC(String name);
+
+    /**
+     * List contributed transient storage names
+     *
+     * @since 2021.17
+     */
+    Set<String> listStores();
+
 }
