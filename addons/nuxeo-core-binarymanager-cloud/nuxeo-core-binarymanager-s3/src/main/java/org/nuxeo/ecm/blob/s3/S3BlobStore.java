@@ -401,9 +401,10 @@ public class S3BlobStore extends AbstractBlobStore {
         } catch (AmazonServiceException e) {
             if (isMissingKey(e)) {
                 logTrace("<--", "missing");
-                return -1;
+            } else  {
+                log.warn("Cannot get length of: s3://" + bucketName + "/" + bucketKey, e);
             }
-            throw e;
+            return -1;
         }
     }
 
@@ -853,7 +854,7 @@ public class S3BlobStore extends AbstractBlobStore {
             if (isMissingKey(e)) {
                 logTrace("<--", "missing");
             } else {
-                log.warn(e, e);
+                log.warn("Cannot delete: s3://" + bucketName + "/" + bucketKey + "@" + versionId, e);
             }
         }
     }
@@ -868,6 +869,8 @@ public class S3BlobStore extends AbstractBlobStore {
      */
     public class S3BlobGarbageCollector extends AbstractBlobGarbageCollector {
 
+        protected static final int WARN_OBJECTS_THRESHOLD = 100_000;
+
         @Override
         public String getId() {
             return "s3:" + bucketName + "/" + bucketPrefix;
@@ -880,7 +883,7 @@ public class S3BlobStore extends AbstractBlobStore {
             toDelete = new HashSet<>();
             ObjectListing list = null;
             int prefixLength = bucketPrefix.length();
-            logTrace("->", "listObjects");
+            logTrace("->", "listObjects on " + getId());
             do {
                 if (list == null) {
                     ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName)
@@ -910,9 +913,15 @@ public class S3BlobStore extends AbstractBlobStore {
                     status.sizeBinaries += length;
                     status.numBinaries++;
                     toDelete.add(key);
+                     if (toDelete.size() % WARN_OBJECTS_THRESHOLD == 0) {
+                        log.warn("Listing {} in progress, {} objects ...", getId(), toDelete.size());
+                    }
                 }
             } while (list.isTruncated());
             logTrace("<--", status.numBinaries + " objects");
+            if (toDelete.size() >= WARN_OBJECTS_THRESHOLD) {
+                log.warn("Listing {} completed, {} objects.", getId(), toDelete.size());
+            }
         }
 
         /**

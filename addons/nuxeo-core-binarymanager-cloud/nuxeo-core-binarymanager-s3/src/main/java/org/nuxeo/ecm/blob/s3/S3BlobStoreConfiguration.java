@@ -593,7 +593,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
             log.debug("Cleanup done for bucket: {}", bucketName);
         } catch (AmazonServiceException e) {
             if (e.getStatusCode() == 400 || e.getStatusCode() == 404) {
-                log.warn("Aborting old uploads is not supported by this provider");
+                log.warn("Aborting old uploads is not supported by this provider", e);
                 return;
             }
             throw new NuxeoException("Failed to abort old uploads", e);

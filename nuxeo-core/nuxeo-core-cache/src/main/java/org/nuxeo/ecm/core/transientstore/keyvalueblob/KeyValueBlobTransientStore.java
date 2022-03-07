@@ -160,6 +160,9 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
     /** @since 11.1 */
     protected static final long LOCK_EXPONENTIAL_BACKOFF_AFTER_NANOS = TimeUnit.MILLISECONDS.toNanos(100);
 
+    /** @since 2021.17 */
+    protected static final long WARN_DURATION_MS_THRESHOLD = 300_000L; // 5min
+
     protected String name;
 
     protected String keyValueStoreName;
@@ -271,6 +274,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
                                .flatMap(Collection::stream)
                                .mapToLong(Blob::getLength)
                                .sum();
+        log.warn("Storage size for {}: {} bytes", name, size);
         kvs.put(STORAGE_SIZE, String.valueOf(size));
     }
 
@@ -280,19 +284,27 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         BlobProvider bp = getBlobProvider();
         BinaryGarbageCollector gc = bp.getBinaryGarbageCollector();
         boolean delete = false;
-        gc.start();
-        // if a concurrent user of the key/value store adds new keys after this point,
-        // it's ok because the GC doesn't delete keys created after GC start
+        log.debug("Starting GC on storage {}, listing blob on {}", name, gc.getId());
         try {
+            gc.start();
+            // if a concurrent user of the key/value store adds new keys after this point,
+            // it's ok because the GC doesn't delete keys created after GC start
+            log.debug("Marking keys from KV");
             keyStream().map(this::getBlobKeys) //
                        .flatMap(Collection::stream)
                        .forEach(gc::mark);
             delete = true;
         } finally {
             // don't delete if there's an exception, but still stop the GC
+            log.debug("GC delete={}", delete);
             gc.stop(delete);
         }
         computeStorageSize();
+        if (gc.getStatus().getGCDuration() > WARN_DURATION_MS_THRESHOLD) {
+            log.warn("GC completed for {}: {}", name, gc.getStatus());
+        } else {
+            log.debug("GC completed for {}: {}", name, gc.getStatus());
+        }
     }
 
     @Override
