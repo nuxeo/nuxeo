@@ -53,6 +53,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.kv.KeyValueStoreProvider;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -280,6 +281,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
     // also recomputes the exact storage size
     @Override
     public void doGC() {
+        TransactionHelper.commitOrRollbackTransaction();
         BlobProvider bp = getBlobProvider();
         BinaryGarbageCollector gc = bp.getBinaryGarbageCollector();
         boolean delete = false;
@@ -297,6 +299,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
             // don't delete if there's an exception, but still stop the GC
             log.debug("GC delete={}", delete);
             gc.stop(delete);
+            TransactionHelper.startTransaction();
         }
         computeStorageSize();
         if (gc.getStatus().getGCDuration() > WARN_DURATION_MS_THRESHOLD) {
