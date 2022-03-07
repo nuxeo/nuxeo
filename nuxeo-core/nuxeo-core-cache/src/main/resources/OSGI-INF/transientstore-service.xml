@@ -63,5 +63,13 @@
     </listener>
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="transientStorageGC">
+      <name>Queue to run Transient Storage Garbage Collection Work</name>
+      <maxThreads>${nuxeo.work.queue.transientStorageGC.threads:=1}</maxThreads>
+      <category>transientStorageGC</category>
+    </queue>
+  </extension>
+
 </component>
 

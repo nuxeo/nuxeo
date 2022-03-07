@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.transientstore;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -38,7 +39,8 @@ public class TransientStorageGCTrigger implements EventListener {
     public void handleEvent(Event event) {
         if (event.getName().equals(EVENT)) {
             WorkManager wm = Framework.getService(WorkManager.class);
-            wm.schedule(new TransiantStorageGCWork());
+            TransientStoreService tss = Framework.getService(TransientStoreService.class);
+            tss.listStores().forEach(store -> wm.schedule(new TransiantStorageGCWork(store)));
         }
     }
 }
