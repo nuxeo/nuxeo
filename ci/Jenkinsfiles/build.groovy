@@ -278,12 +278,15 @@ def buildUnitTestStage(env) {
                 if (isDev) {
                   sh "${mvnCommand}"
                 } else {
+                  // always read AWS credentials from secret in the platform namespace, even when running in platform-staging:
+                  // credentials rotation is disabled in platform-staging to prevent double rotation on the same keys
+                  def awsCredentialsNamespace = 'platform'
                   def awsAccessKeyId = sh(
-                    script: "kubectl get secret ${AWS_CREDENTIALS_SECRET} -n ${CURRENT_NAMESPACE} -o=jsonpath='{.data.access_key_id}' | base64 --decode",
+                    script: "kubectl get secret ${AWS_CREDENTIALS_SECRET} -n ${awsCredentialsNamespace} -o=jsonpath='{.data.access_key_id}' | base64 --decode",
                     returnStdout: true
                   )
                   def awsSecretAccessKey = sh(
-                    script: "kubectl get secret ${AWS_CREDENTIALS_SECRET} -n ${CURRENT_NAMESPACE} -o=jsonpath='{.data.secret_access_key}' | base64 --decode",
+                    script: "kubectl get secret ${AWS_CREDENTIALS_SECRET} -n ${awsCredentialsNamespace} -o=jsonpath='{.data.secret_access_key}' | base64 --decode",
                     returnStdout: true
                   )
                   withEnv([
