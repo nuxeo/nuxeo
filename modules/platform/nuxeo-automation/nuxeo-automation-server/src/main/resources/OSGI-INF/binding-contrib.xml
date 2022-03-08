@@ -36,6 +36,10 @@
     <binding name="Counters.GET">
       <administrator>true</administrator>
     </binding>
+    <!-- protect proxy creation -->
+    <binding name="Document.CreateLiveProxy">
+      <administrator>true</administrator>
+    </binding>
   </extension>
 
 </component>
