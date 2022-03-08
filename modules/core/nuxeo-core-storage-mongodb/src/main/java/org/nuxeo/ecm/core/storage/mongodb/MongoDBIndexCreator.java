@@ -147,8 +147,7 @@ public class MongoDBIndexCreator {
     protected boolean hasCorrectDefinition(IndexModel index, Document actualIndex) {
         var options = index.getOptions();
         // check basic options, excluding version fields and specific options such as 2d/geo ones
-        boolean result = checkDefinition(options.isBackground(), actualIndex, "background");
-        result = result && checkDefinition(options.isUnique(), actualIndex, "unique");
+        boolean result = checkDefinition(options.isUnique(), actualIndex, "unique");
         result = result && checkDefinition(options.isSparse(), actualIndex, "sparse");
         result = result && checkDefinition(options.getExpireAfter(TimeUnit.SECONDS), actualIndex, "expireAfterSeconds");
         result = result && checkDefinition(options.getLanguageOverride(), actualIndex, "language_override");
