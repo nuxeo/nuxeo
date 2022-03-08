@@ -86,9 +86,9 @@ public class BinaryMetadataSyncListener implements EventListener, Synchronizatio
         if (!creation && !update) {
             return;
         }
-        // skip processing if document is a proxy or it is disabled (useful when the work updates the metadata)
+        // skip processing if document is a proxy/version or it is disabled (useful when the work updates the metadata)
         DocumentModel doc = ((DocumentEventContext) ctx).getSourceDocument();
-        if (doc.isProxy() || isTrue((Boolean) ctx.getProperty(DISABLE_BINARY_METADATA_LISTENER))) {
+        if (doc.isProxy() || doc.isVersion() || isTrue((Boolean) ctx.getProperty(DISABLE_BINARY_METADATA_LISTENER))) {
             return;
         }
 

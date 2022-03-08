@@ -21,6 +21,7 @@ package org.nuxeo.binary.metadata.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,20 +36,24 @@ import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature.FilterOn;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 7.1
  */
 @RunWith(FeaturesRunner.class)
-@Features(BinaryMetadataFeature.class)
+@Features({ BinaryMetadataFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.platform.picture.core")
 @Deploy("org.nuxeo.ecm.platform.rendition.core")
 @Deploy("org.nuxeo.ecm.automation.core")
@@ -61,6 +66,9 @@ public class TestBinaryMetadataSyncListener extends BaseBinaryMetadataTest {
 
     @Inject
     protected TransactionalFeature txFeature;
+
+    @Inject
+    protected LogCaptureFeature.Result logResult;
 
     @Test
     public void testListenerCreationRulesSync() throws Exception {
@@ -289,5 +297,26 @@ public class TestBinaryMetadataSyncListener extends BaseBinaryMetadataTest {
         Blob anotherBlob = (Blob) doc.getProperty("file:content").getValue();
         // assert the blob was not modified even if the metadata was updated
         assertEquals(blob, anotherBlob);
+    }
+
+    // NXP-30858
+    @Test
+    @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-async-test.xml")
+    @FilterOn(loggerClass = AbstractWork.class, logLevel = "ERROR")
+    public void testAsyncBinaryMetadataAreNotRunOnVersion() throws IOException {
+        var doc = session.createDocumentModel("/", "file", "File");
+        File binary = FileUtils.getResourceFileFromContext("data/hello.pdf");
+        Blob fb = Blobs.createBlob(binary, "application/pdf");
+        DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
+        doc = session.createDocument(doc);
+
+        // assert previous state
+        assertTrue(logResult.getCaughtEventMessages().isEmpty());
+
+        session.checkIn(doc.getRef(), VersioningOption.MINOR, "0.1");
+        txFeature.nextTransaction();
+
+        // assert no work has failed
+        assertTrue(logResult.getCaughtEventMessages().isEmpty());
     }
 }
