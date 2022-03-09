@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
@@ -3676,6 +3677,56 @@ public class TestSQLRepositoryAPI {
         // check visible from live doc
         doc = session.getDocument(doc.getRef());
         assertEquals("the title again", doc.getProperty("dublincore", "title"));
+    }
+
+    // NXP-30914
+    @Test
+    public void testLiveProxyRestricted() {
+        testLiveProxyCreation(true);
+    }
+
+    // NXP-30914
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-proxy-creation-unrestricted-contrib.xml")
+    public void testLiveProxyUnrestricted() {
+        testLiveProxyCreation(false);
+    }
+
+    protected void testLiveProxyCreation(boolean restricted) {
+        // create live proxy target document
+        var doc = session.createDocumentModel("/", "liveProxyTarget", "File");
+        doc = session.createDocument(doc);
+        var docRef = doc.getRef();
+
+        // create live proxy parent folder
+        var parent = session.createDocumentModel("/", "liveProxyParent", "Folder");
+        parent = session.createDocument(parent);
+        var parentRef = parent.getRef();
+
+        // try to create live proxy as user with Read access only on target document
+        CoreSession joeSession = openSessionAs("joe");
+        // need at least AddChildren and ReadLifeCycle on proxy parent folder
+        setPermission(parentRef, "joe", "ReadWrite");
+        setPermission(docRef, "joe", "Read");
+        if (restricted) {
+            assertThrows(DocumentSecurityException.class, () -> joeSession.createProxy(docRef, parentRef));
+        } else {
+            var proxy = joeSession.createProxy(docRef, parentRef);
+            assertTrue(proxy.isProxy());
+        }
+
+        // create live proxy as user with Write access on target document
+        setPermission(docRef, "joe", "ReadWrite");
+        var proxy = joeSession.createProxy(docRef, parentRef);
+        assertTrue(proxy.isProxy());
+    }
+
+    protected void setPermission(DocumentRef docRef, String username, String permission) {
+        ACP acp = session.getACP(docRef);
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        ACE ace = new ACE(username, permission);
+        localACL.add(ace);
+        session.setACP(docRef, acp, true);
     }
 
     // NXP-30449
