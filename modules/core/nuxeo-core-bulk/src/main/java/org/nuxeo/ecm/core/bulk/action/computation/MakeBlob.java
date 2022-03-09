@@ -206,23 +206,27 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         if (!SORT_STREAM.equals(outputStream)) {
             appendHeaderFooterToFile(createTemp(commandId), commandId, in.getHeader(), in.getFooter());
         }
-
         String storeName = Framework.getService(BulkService.class).getStatus(commandId).getAction();
-        String value = saveInTransientStore(commandId, storeName);
-        DataBucket out = new DataBucket(commandId, totals.get(commandId), value, in.getHeaderAsString(),
-                in.getFooterAsString());
-        Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
-
-        if (produceImmediate) {
-            ((ComputationContextImpl) context).produceRecordImmediate(outputStream,
-                    Record.of(commandId, codec.encode(out)));
+        if (storeName == null) {
+            // An unknown status has a null action
+            log.debug("Unknown status for command: {}, skipping record: {}", commandId, context.getLastOffset());
         } else {
-            context.produceRecord(outputStream, Record.of(commandId, codec.encode(out)));
+            String value = saveInTransientStore(commandId, storeName);
+            DataBucket out = new DataBucket(commandId, totals.get(commandId), value, in.getHeaderAsString(),
+                    in.getFooterAsString());
+            Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
+
+            if (produceImmediate) {
+                ((ComputationContextImpl) context).produceRecordImmediate(outputStream,
+                        Record.of(commandId, codec.encode(out)));
+            } else {
+                context.produceRecord(outputStream, Record.of(commandId, codec.encode(out)));
+            }
         }
         totals.remove(commandId);
         counters.remove(commandId);
         lastBuckets.remove(commandId);
-        // we checkpoint only if there is not another command in progress
+        // Checkpoint only if there is no other commands in progress
         if (counters.isEmpty()) {
             context.askForCheckpoint();
         }
