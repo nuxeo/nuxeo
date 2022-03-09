@@ -4293,7 +4293,7 @@ public class TestSQLRepositoryAPI {
         assertEquals("t1-rename", doc.getName());
 
         doc.setProperty("dublincore", "title", "t2");
-        DummyBeforeModificationListener.clear();;
+        DummyBeforeModificationListener.clear();
         doc = session.saveDocument(doc);
         session.save();
         assertEquals("t2-rename", doc.getName());
