@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.proxy.creation.restricted.configuration" version="1.0">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property defining the restricted aspect when creating a (live) proxy.
+
+      @since 2021.17
+    </documentation>
+    <property name="org.nuxeo.proxy.creation.restricted">false</property>
+  </extension>
+
+</component>
