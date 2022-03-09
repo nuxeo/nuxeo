@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.proxy.creation.restricted.configuration.test" version="1.0">
+
+  <require>org.nuxeo.ecm.core.proxy.creation.restricted.configuration</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.proxy.creation.restricted">true</property>
+  </extension>
+
+</component>

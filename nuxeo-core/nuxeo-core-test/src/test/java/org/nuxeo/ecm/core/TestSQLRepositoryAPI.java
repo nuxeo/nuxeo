@@ -3619,6 +3619,62 @@ public class TestSQLRepositoryAPI {
         assertEquals("the title again", doc.getProperty("dublincore", "title"));
     }
 
+    // NXP-30914
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-proxy-creation-restricted-contrib.xml")
+    public void testLiveProxyRestricted() {
+        testLiveProxyCreation(true);
+    }
+
+    // NXP-30914
+    @Test
+    public void testLiveProxyUnrestricted() {
+        testLiveProxyCreation(false);
+    }
+
+    protected void testLiveProxyCreation(boolean restricted) {
+        // create live proxy target document
+        DocumentModel doc = session.createDocumentModel("/", "liveProxyTarget", "File");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+
+        // create live proxy parent folder
+        DocumentModel parent = session.createDocumentModel("/", "liveProxyParent", "Folder");
+        parent = session.createDocument(parent);
+        DocumentRef parentRef = parent.getRef();
+
+        // try to create live proxy as user with Read access only on target document
+        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
+            // need at least AddChildren and ReadLifeCycle on proxy parent folder
+            setPermission(parentRef, "joe", "ReadWrite");
+            setPermission(docRef, "joe", "Read");
+            if (restricted) {
+                try {
+                    joeSession.createProxy(docRef, parentRef);
+                    fail("Proxy creation should've failed for unauthorized user.");
+                } catch (DocumentSecurityException e) {
+                    assertEquals("Privilege 'Write' is not granted to 'joe'", e.getMessage());
+                }
+            } else {
+                DocumentModel proxy = joeSession.createProxy(docRef, parentRef);
+                assertTrue(proxy.isProxy());
+            }
+
+            // create live proxy as user with Write access on target document
+            setPermission(docRef, "joe", "ReadWrite");
+            DocumentModel proxy = joeSession.createProxy(docRef, parentRef);
+            assertTrue(proxy.isProxy());
+        }
+    }
+
+    protected void setPermission(DocumentRef docRef, String username, String permission) {
+        ACP acp = session.getACP(docRef);
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        ACE ace = new ACE(username, permission);
+        localACL.add(ace);
+        session.setACP(docRef, acp, true);
+    }
+
     @Test
     public void testProxySchemas() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");

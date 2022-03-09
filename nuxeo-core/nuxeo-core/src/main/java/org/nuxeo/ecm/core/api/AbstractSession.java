@@ -147,6 +147,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     public static final String BINARY_TEXT_SYS_PROP = "fulltextBinary";
 
+    // @since 2021.17
+    public static final String RESTRICT_PROXY_CREATION_PROPERTY = "org.nuxeo.proxy.creation.restricted";
+
     private Boolean limitedResults;
 
     private Long maxResults;
@@ -1970,7 +1973,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef) {
         Document doc = resolveReference(docRef);
         Document fold = resolveReference(folderRef);
-        checkPermission(doc, READ);
+        boolean restricted = Framework.getService(ConfigurationService.class)
+                                      .isBooleanTrue(RESTRICT_PROXY_CREATION_PROPERTY);
+        String permission = restricted ? WRITE : READ;
+        checkPermission(doc, permission);
         checkPermission(fold, ADD_CHILDREN);
         return createProxyInternal(doc, fold, new HashMap<>());
     }
