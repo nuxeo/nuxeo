@@ -107,7 +107,7 @@ public class Topology {
     }
 
     protected String getPumlIdentifier(String name) {
-        return name.replaceAll("[^a-zA-Z]", ".");
+        return name.replaceAll("[^a-zA-Z0-9]", ".");
     }
 
     protected void generateDag(Set<ComputationMetadataMapping> metadataSet)

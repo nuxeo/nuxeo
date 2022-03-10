@@ -59,11 +59,13 @@ public class ComputationRecordCounter extends AbstractComputation {
 
     @Override
     public void processTimer(ComputationContext context, String key, long time) {
-        context.setSourceLowWatermark(lastWatermark);
-        context.produceRecord(OUTPUT_1, Integer.toString(count), null);
-        count = 0;
+        if (count > 0) {
+            context.setSourceLowWatermark(lastWatermark);
+            context.produceRecord(OUTPUT_1, Integer.toString(count), null);
+            context.askForCheckpoint();
+            count = 0;
+        }
         context.setTimer("sum", System.currentTimeMillis() + intervalMs);
-        context.askForCheckpoint();
     }
 
 }
