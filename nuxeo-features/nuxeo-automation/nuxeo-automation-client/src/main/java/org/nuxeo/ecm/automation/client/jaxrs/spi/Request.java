@@ -248,9 +248,11 @@ public class Request extends HashMap<String, String> {
             // closing chunk expected
             throw new RemoteException(status, "ServerError", "Server Error", "");
         }
-        int semi = ctype.indexOf(';');
-        if (semi >= 0) {
-            ctype = ctype.substring(0, semi).trim();
+        if (ctype != null) {
+            int semi = ctype.indexOf(';');
+            if (semi >= 0) {
+                ctype = ctype.substring(0, semi).trim();
+            }    
         }
         if (CTYPE_ENTITY.equalsIgnoreCase(ctype)) {
             try {
