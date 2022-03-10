@@ -653,6 +653,9 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     @Override
     public void onPartitionsRevoked(Collection<LogPartition> partitions) {
         setThreadName("rebalance revoked");
+        // Flush the context in case of incomplete rebalance (NXP-29208)
+        this.context = new ComputationContextImpl(streamManager, metadata, policy, partitions.isEmpty());
+        computation.init(context);
     }
 
     @Override
