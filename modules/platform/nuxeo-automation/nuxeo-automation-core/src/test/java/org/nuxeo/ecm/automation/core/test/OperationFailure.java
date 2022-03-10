@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2022 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,24 +18,17 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @since 5.7.3 Operation throwing exception for testing.
  */
-@Operation(id = "operationFailure")
+@Operation(id = OperationFailure.ID)
 public class OperationFailure {
 
-    @Context
-    OperationContext ctx;
-
-    @Context
-    CoreSession session;
+    public static final String ID = "operationFailure";
 
     @OperationMethod
     public void run(DocumentModel doc) {

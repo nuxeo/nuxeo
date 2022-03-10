@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2022 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -323,12 +323,12 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
 
     @Override
     public Set<Map.Entry<String, Object>> entrySet() {
-        return new AbstractSet<Map.Entry<String, Object>>() {
+        return new AbstractSet<>() {
 
             @Override
             public Iterator<Entry<String, Object>> iterator() {
                 Iterator<Entry<String, Object>> iterator = vars.entrySet().iterator();
-                return new Iterator<Entry<String, Object>>() {
+                return new Iterator<>() {
 
                     @Override
                     public boolean hasNext() {
@@ -338,7 +338,7 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
                     @Override
                     public Entry<String, Object> next() {
                         Entry<String, Object> entry = iterator.next();
-                        return new Entry<String, Object>() {
+                        return new Entry<>() {
 
                             @Override
                             public String getKey() {
