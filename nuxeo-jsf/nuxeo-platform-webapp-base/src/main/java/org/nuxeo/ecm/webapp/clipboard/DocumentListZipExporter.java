@@ -103,7 +103,7 @@ public class DocumentListZipExporter {
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
         for (DocumentModel docChild : docList) {
             // NXP-2334 : skip trashed docs
-            if (doc.isTrashed()) {
+            if (docChild.isTrashed()) {
                 continue;
             }
             BlobHolder bh = docChild.getAdapter(BlobHolder.class);
