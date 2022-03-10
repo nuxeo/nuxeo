@@ -52,7 +52,7 @@ public class ContributionTest {
 
     // ------ Tests comes here --------
 
-    public static final int DEFAULT_BINDINGS = 8;
+    public static final int DEFAULT_BINDINGS = 9;
 
     /**
      * Test registration of a studio generated contribution
