@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core.operations.services.bulk;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.USERNAME;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -28,14 +29,19 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -79,18 +85,6 @@ public class TestAutomationBulkAction {
     @Inject
     public TransactionalFeature txFeature;
 
-    protected OperationContext ctx;
-
-    @Before
-    public void createOperationContext() {
-        ctx = new OperationContext(session);
-    }
-
-    @After
-    public void closeOperationContext() {
-        ctx.close();
-    }
-
     @Test
     public void testSetPropertyActionFromAutomation() throws Exception {
         String nxql = "SELECT * FROM ComplexDoc";
@@ -126,6 +120,104 @@ public class TestAutomationBulkAction {
         actionParams.put(AutomationBulkAction.OPERATION_ID, "Document.Update");
         actionParams.put(AutomationBulkAction.OPERATION_PARAMETERS, automationParams);
 
+        executeBulkRunAction(action, nxql, actionParams);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.features:test-failing-operation-contrib.xml")
+    @ConsoleLogLevelThreshold("ERROR") // hide automation trace logs which are verbose
+    public void testFailingAutomationErrorHandling() throws Exception {
+        // param for the automation bulk action
+        var actionParams = new HashMap<>();
+        actionParams.put(AutomationBulkAction.OPERATION_ID, "TestFailingOperation");
+        actionParams.put(AutomationBulkAction.OPERATION_PARAMETERS, Map.of());
+
+        String nxql = "SELECT * FROM ComplexDoc";
+        String commandId = executeBulkRunAction(AutomationBulkActionUi.ACTION_NAME, nxql, actionParams);
+
+        var nbDocuments = session.query(nxql, null, 0, 0, true).totalSize();
+
+        var status = bulkService.getStatus(commandId);
+        assertEquals(State.COMPLETED, status.getState());
+        assertEquals(nbDocuments, status.getErrorCount());
+        assertTrue(status.getErrorMessage()
+                         .startsWith(String.format("Bulk Action Operation with commandId: %s fails on documents: ",
+                                 commandId)));
+    }
+
+    @Test
+    @ConsoleLogLevelThreshold("ERROR") // hide automation trace logs which are verbose
+    public void testPermissionLackingDoesntRollbackWholeBatch() throws Exception {
+        var doc = session.createDocumentModel("/", "folder", "Folder");
+        session.createDocument(doc);
+        createDocumentAndSetPermission("/folder", "file1", true);
+        createDocumentAndSetPermission("/folder", "file2", false);
+        createDocumentAndSetPermission("/folder", "file3", true);
+        createDocumentAndSetPermission("/folder", "file4", false);
+        createDocumentAndSetPermission("/folder", "file5", true);
+
+        txFeature.nextTransaction();
+
+        // param for the automation bulk action
+        var actionParams = new HashMap<>();
+        actionParams.put(AutomationBulkAction.OPERATION_ID, "Document.Update");
+        actionParams.put(AutomationBulkAction.OPERATION_PARAMETERS, Map.of("properties", "dc:title=A new title"));
+
+        String commandId;
+        CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), USERNAME);
+        try (var ctx = new OperationContext(bobSession)) {
+            String nxql = "SELECT * FROM File WHERE ecm:path STARTSWITH '/folder'";
+            commandId = executeBulkRunAction(ctx, AutomationBulkActionUi.ACTION_NAME, nxql, actionParams);
+        }
+
+        // check error were caught
+        var status = bulkService.getStatus(commandId);
+        assertEquals(State.COMPLETED, status.getState());
+        assertEquals(2, status.getErrorCount());
+        assertTrue(status.getErrorMessage()
+                         .startsWith(String.format("Bulk Action Operation with commandId: %s fails on documents: ",
+                                 commandId)));
+
+        // check documents
+        doc = session.getDocument(new PathRef("/folder/file1"));
+        assertEquals("A new title", doc.getTitle());
+
+        doc = session.getDocument(new PathRef("/folder/file2"));
+        assertEquals("A title", doc.getTitle());
+
+        doc = session.getDocument(new PathRef("/folder/file3"));
+        assertEquals("A new title", doc.getTitle());
+
+        doc = session.getDocument(new PathRef("/folder/file4"));
+        assertEquals("A title", doc.getTitle());
+
+        doc = session.getDocument(new PathRef("/folder/file5"));
+        assertEquals("A new title", doc.getTitle());
+    }
+
+    protected void createDocumentAndSetPermission(String parentPath, String name, boolean bobCanWrite) {
+        var doc = session.createDocumentModel(parentPath, name, "File");
+        doc.setPropertyValue("dc:title", "A title");
+        doc = session.createDocument(doc);
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE(USERNAME, "Read", true));
+        if (bobCanWrite) {
+            acl.add(new ACE(USERNAME, "WriteProperties", true));
+        }
+        ACP acp = new ACPImpl();
+        acp.addACL(acl);
+        doc.setACP(acp, true);
+    }
+
+    protected String executeBulkRunAction(String action, String nxql, Map<?, ?> actionParams) throws Exception {
+        try (var ctx = new OperationContext(session)) {
+            return executeBulkRunAction(ctx, action, nxql, actionParams);
+        }
+    }
+
+    protected String executeBulkRunAction(OperationContext ctx, String action, String nxql, Map<?, ?> actionParams)
+            throws Exception {
         // param for the automation BulkRunAction operation
         var bulkActionParam = new HashMap<String, Serializable>();
         bulkActionParam.put("action", action);
@@ -143,43 +235,7 @@ public class TestAutomationBulkAction {
         assertTrue("Bulk action didn't finish", waitResult);
 
         txFeature.nextTransaction();
+
+        return commandId;
     }
-
-    @Test
-    @Deploy("org.nuxeo.ecm.automation.features:test-failing-operation-contrib.xml")
-    @ConsoleLogLevelThreshold("ERROR") // hide automation trace logs which are verbose
-    public void testFailingAutomationErrorHandling() throws Exception {
-        // param for the automation bulk action
-        var actionParams = new HashMap<>();
-        actionParams.put(AutomationBulkAction.OPERATION_ID, "TestFailingOperation");
-        actionParams.put(AutomationBulkAction.OPERATION_PARAMETERS, Map.of());
-
-        // param for the automation BulkRunAction operation
-        var bulkActionParam = new HashMap<String, Serializable>();
-        bulkActionParam.put("action", AutomationBulkActionUi.ACTION_NAME);
-        bulkActionParam.put("query", "SELECT * FROM ComplexDoc");
-        bulkActionParam.put("bucketSize", "10");
-        bulkActionParam.put("batchSize", "5");
-        bulkActionParam.put("parameters", OBJECT_MAPPER.writeValueAsString(actionParams));
-        var runResult = (BulkStatus) service.run(ctx, BulkRunAction.ID, bulkActionParam);
-
-        assertNotNull(runResult);
-        // runResult is a json containing commandId
-        String commandId = runResult.getId();
-
-        var waitResult = (boolean) service.run(ctx, BulkWaitForAction.ID, Map.of("commandId", commandId));
-        assertTrue("Bulk action didn't finish", waitResult);
-
-        txFeature.nextTransaction();
-
-        var nbDocuments = session.query("SELECT * FROM ComplexDoc", null, 0, 0, true).totalSize();
-
-        var status = bulkService.getStatus(commandId);
-        assertEquals(State.COMPLETED, status.getState());
-        assertEquals(nbDocuments, status.getErrorCount());
-        assertTrue(status.getErrorMessage()
-                         .startsWith(String.format("Bulk Action Operation with commandId: %s fails on documents: ",
-                                 commandId)));
-    }
-
 }

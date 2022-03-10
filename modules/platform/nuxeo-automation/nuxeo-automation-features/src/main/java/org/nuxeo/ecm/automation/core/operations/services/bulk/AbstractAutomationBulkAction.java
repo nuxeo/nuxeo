@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Bulk Action that runs an automation operation
@@ -121,9 +122,10 @@ public abstract class AbstractAutomationBulkAction implements StreamProcessorTop
         }
 
         protected void runOperationOnAllDocuments(CoreSession session, DocumentModelList documents) {
-            try (OperationContext ctx = new OperationContext(session)) {
+            try (OperationContext ctx = new OperationContext(session).handleTransaction(false)) {
                 ctx.setInput(documents);
                 service.run(ctx, operationId, params);
+                session.save();
             } catch (OperationException e) {
                 handleError(documents, e);
             }
@@ -131,13 +133,14 @@ public abstract class AbstractAutomationBulkAction implements StreamProcessorTop
 
         protected void runOperationOnEachDocument(CoreSession session, DocumentModelList documents) {
             for (DocumentModel doc : documents) {
-                try (OperationContext ctx = new OperationContext(session)) {
+                try (OperationContext ctx = new OperationContext(session).handleTransaction(false)) {
                     ctx.setInput(doc);
                     service.run(ctx, operationId, params);
                 } catch (OperationException | NuxeoException e) {
                     handleError(List.of(doc), e);
                 }
             }
+            session.save();
         }
 
         protected void handleError(List<DocumentModel> documents, Exception e) {
@@ -145,6 +148,7 @@ public abstract class AbstractAutomationBulkAction implements StreamProcessorTop
             String message = String.format("Bulk Action Operation with commandId: %s fails on documents: %s",
                     command.getId(), documentIds);
             if (failOnError) {
+                TransactionHelper.setTransactionRollbackOnly();
                 throw new NuxeoException(message, e);
             } else {
                 delta.inError(documents.size(), message);
