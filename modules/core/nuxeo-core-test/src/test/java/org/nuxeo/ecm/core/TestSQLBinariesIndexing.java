@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assume.assumeTrue;
 
 import java.util.concurrent.CountDownLatch;
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.DownloadBlobGuard;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -175,6 +177,28 @@ public class TestSQLBinariesIndexing {
         waitForFulltextIndexing();
         assertEquals(0, jobDocs());
         assertEquals(1, indexedDocs());
+    }
+
+    /**
+     * @since 2021.18
+     */
+    @Test
+    public void testBinariesAreNotIndexed() throws Exception {
+        createDocument();
+        blockFulltextUpdating();
+        DownloadBlobGuard.enable();
+        try {
+            session.save();
+            assertEquals(1, jobDocs());
+            assertEquals(0, indexedDocs());
+        } finally {
+            allowFulltextUpdating();
+        }
+
+        waitForFulltextIndexing();
+        assertEquals(0, jobDocs());
+        assertEquals(0, indexedDocs());
+        assertFalse(DownloadBlobGuard.isEnable());
     }
 
     @Test
