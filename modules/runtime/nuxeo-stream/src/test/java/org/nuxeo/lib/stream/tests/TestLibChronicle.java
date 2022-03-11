@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 
 import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
@@ -57,9 +58,7 @@ import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 public class TestLibChronicle implements StoreFileListener {
     protected static final Log log = LogFactory.getLog(TestLibChronicle.class);
 
-    protected final static String OS = System.getProperty("os.name").toLowerCase();
-
-    public final static boolean IS_WIN = OS.startsWith("win");
+    public final static boolean IS_WIN = ChronicleLogManager.IS_WIN;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder(new File("target"));

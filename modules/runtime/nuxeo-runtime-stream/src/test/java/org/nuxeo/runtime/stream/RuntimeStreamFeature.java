@@ -118,7 +118,7 @@ public class RuntimeStreamFeature implements RunnerFeature {
         if (!cleanupTopics) {
             return;
         }
-        log.debug("Clean Kafka topics");
+        log.debug("Cleaning Streams"); // not working with Chronicle Queue under Windows: NXP-30741
         StreamService service = Framework.getService(StreamService.class);
         service.stopProcessors();
         LogManager manager = service.getLogManager();

@@ -57,6 +57,11 @@ public class ChronicleLogManager extends AbstractLogManager {
 
     protected final ChronicleLogConfig defaultConfig;
 
+    protected final static String OS = System.getProperty("os.name").toLowerCase();
+
+    // @since 2021.17
+    public final static boolean IS_WIN = OS.startsWith("win");
+
     public ChronicleLogManager(Path basePath) {
         this(basePath, null);
     }
@@ -100,6 +105,10 @@ public class ChronicleLogManager extends AbstractLogManager {
     }
 
     protected static void deleteQueueBasePath(Path basePath) {
+        if (IS_WIN) {
+            log.info("Windows is not able to remove Chronicle Queues directory: " + basePath);
+            return;
+        }
         try {
             log.info("Removing Chronicle Queues directory: " + basePath);
             // Performs a recursive delete if the directory contains only chronicles files
