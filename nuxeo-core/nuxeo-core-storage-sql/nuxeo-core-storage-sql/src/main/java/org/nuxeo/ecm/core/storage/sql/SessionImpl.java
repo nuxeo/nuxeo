@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.api.impl.DownloadBlobGuard;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -411,12 +412,15 @@ public class SessionImpl implements Session, XAResource {
         }
         markIndexingInProgress(dirtyIds);
         List<Work> works = new ArrayList<>(dirtyIds.size());
+        boolean okToDownloadBlob = !DownloadBlobGuard.isEnable();
         for (Serializable id : dirtyIds) {
             boolean updateSimpleText = dirtyStrings.contains(id);
-            boolean updateBinaryText = dirtyBinaries.contains(id);
-            Work work = new FulltextExtractorWork(repository.getName(), model.idToString(id), updateSimpleText,
-                    updateBinaryText, true);
-            works.add(work);
+            boolean updateBinaryText = okToDownloadBlob && dirtyBinaries.contains(id);
+            if (updateBinaryText || updateSimpleText) {
+                Work work = new FulltextExtractorWork(repository.getName(), model.idToString(id), updateSimpleText,
+                        updateBinaryText, true);
+                works.add(work);
+            }
         }
         return works;
     }
@@ -1411,6 +1415,7 @@ public class SessionImpl implements Session, XAResource {
             mapper.commit(xid, onePhase);
         } finally {
             commitDone();
+            DownloadBlobGuard.disable();
         }
     }
 
@@ -1438,6 +1443,7 @@ public class SessionImpl implements Session, XAResource {
             }
         } finally {
             inTransaction = false;
+            DownloadBlobGuard.disable();
             // no invalidations to send
             checkThreadEnd();
         }
