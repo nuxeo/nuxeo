@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,6 +57,24 @@ public class TestTransactionHelper {
         } catch (TransactionRuntimeException e) {
             // tx timeout is expected
             TransactionHelper.startTransaction();
+        }
+    }
+
+    @Test
+    public void testCheckTransaction() throws InterruptedException {
+        TransactionHelper.commitOrRollbackTransaction();
+        int timeout = 1;
+        TransactionHelper.startTransaction(timeout);
+        Thread.sleep((timeout + 2) * 1000);
+        try {
+            TransactionHelper.checkTransactionTimeout();
+            fail("Expecting exception");
+        } catch (TransactionRuntimeException e) {
+            // tx timeout is expected
+            assertTrue(e.getMessage(), e.getMessage().contains("Transaction has timed out"));
+            assertTrue(e.getMessage(), e.getMessage().contains("duration 1s"));
+        } finally {
+            TransactionHelper.setTransactionRollbackOnly();
         }
     }
 
