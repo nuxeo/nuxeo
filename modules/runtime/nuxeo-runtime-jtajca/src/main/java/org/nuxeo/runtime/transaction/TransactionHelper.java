@@ -432,7 +432,7 @@ public class TransactionHelper {
                     // from org.apache.geronimo.transaction.manager.TransactionImpl.commit
                     Throwable cause = e.getCause();
                     String msg;
-                    if (cause != null && "Transaction has timed out".equals(cause.getMessage())) {
+                    if (cause != null && cause.getMessage().startsWith("Transaction has timed out")) {
                         msg = "Unable to commit: Transaction timeout";
                     } else {
                         // this happens if there's a ConcurrentUpdateException at transaction end inside VCS

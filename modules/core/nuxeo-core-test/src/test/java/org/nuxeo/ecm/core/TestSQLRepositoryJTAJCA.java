@@ -362,7 +362,7 @@ public class TestSQLRepositoryJTAJCA {
             session.getRootDocument();
             fail("should have preemptively timed out");
         } catch (TransactionRuntimeException e) {
-            assertEquals("Transaction has timed out", e.getMessage());
+            assertTrue(e.getMessage(), e.getMessage().startsWith("Transaction has timed out"));
         }
         try {
             TransactionHelper.commitOrRollbackTransaction();

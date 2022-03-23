@@ -65,6 +65,7 @@ import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.model.DescriptorRegistry;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 import io.opencensus.trace.AttributeValue;
 import io.opencensus.trace.Span;
@@ -274,8 +275,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             if (!desc.acceptEvent(ename)) {
                 continue;
             }
+            long t0 = System.currentTimeMillis();
             try {
-                long t0 = System.currentTimeMillis();
                 desc.asEventListener().handleEvent(event);
                 long elapsed = System.currentTimeMillis() - t0;
                 traceAddAnnotation(event, tracer, elapsed, desc.getName());
@@ -291,7 +292,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                 throw e;
             } catch (RuntimeException e) {
                 // get message
-                String message = "Exception during " + desc.getName() + " sync listener execution, ";
+                long elapsed = System.currentTimeMillis() - t0;
+                String message = "Exception during " + desc.getName() + " sync listener execution (after " + elapsed
+                        + "ms), ";
                 if (event.isBubbleException()) {
                     message += "other listeners will be ignored";
                 } else if (event.isMarkedForRollBack()) {
@@ -299,6 +302,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                     if (event.getRollbackMessage() != null) {
                         message += " (" + event.getRollbackMessage() + ")";
                     }
+                } else if (e instanceof TransactionRuntimeException) {
+                    message += " because of transaction timeout";
+                    TransactionHelper.setTransactionRollbackOnlyIfTimedOut();
                 } else {
                     message += "continuing to run other listeners";
                 }
