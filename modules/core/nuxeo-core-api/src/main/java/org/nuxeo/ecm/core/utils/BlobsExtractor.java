@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
@@ -189,8 +190,14 @@ public class BlobsExtractor {
             List<String> subPath = split.subList(1, split.size());
             if (property.isList()) {
                 for (Property childProperty : property.getChildren()) {
-                    Property childSubProp = childProperty.get(name);
-                    findBlobsProperties(childSubProp, subPath, properties);
+                    if (childProperty instanceof BlobProperty) {
+                        // List of blobs
+                        findBlobsProperties(childProperty, subPath, properties);
+                    } else {
+                        // list of complex type that could contain a blob
+                        Property childSubProp = childProperty.get(name);
+                        findBlobsProperties(childSubProp, subPath, properties);
+                    }
                 }
             } else { // complex type
                 Property childSubProp = property.get(name);
@@ -216,6 +223,11 @@ public class BlobsExtractor {
             } else if (type.isListType()) {
                 Type fieldType = ((ListType) type).getFieldType();
                 if (fieldType.isComplexType()) {
+                    if (TypeConstants.isContentType(fieldType)) {
+                        // note this path
+                        paths.add(fieldPath + "/*");
+                        continue;
+                    }
                     findBlobPaths((ComplexType) fieldType, fieldPath + "/*", schema, paths);
                 } else {
                     continue; // not binary text

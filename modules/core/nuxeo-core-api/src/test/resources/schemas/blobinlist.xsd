@@ -27,4 +27,12 @@
     </xs:sequence>
   </xs:complexType>
 
+  <!-- NXP-30925 -->
+  <xs:complexType name="blobList">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:content" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="multiBlobs" type="nxs:blobList"/>
+
 </xs:schema>

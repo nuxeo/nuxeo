@@ -72,7 +72,7 @@ public class TestBlobsExtractor {
         assertEquals(List.of("wihtoutpref:blob"), paths);
 
         paths = blobsExtractor.getBlobPaths(schemaManager.getDocumentType("BlobInListDocument"));
-        assertEquals(List.of("bil:files/*/file"), paths);
+        assertEquals(List.of("bil:files/*/file", "bil:multiBlobs/*"), paths);
     }
 
     @Test
@@ -129,6 +129,22 @@ public class TestBlobsExtractor {
         assertEquals("test2.pdf", ((Blob) blobs.get(1).getValue()).getFilename());
     }
 
+    /**
+     * NXP-30925.
+     *
+     * @since 2021.18
+     */
+    @Test
+    public void testGetBlobsPropertiesBlobRealList() {
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "BlobInListDocument");
+        doc.setPropertyValue("bil:multiBlobs",
+                (Serializable) Arrays.asList(createBlob("test1.pdf"), createBlob("test2.pdf")));
+        List<Property> blobs = new BlobsExtractor().getBlobsProperties(doc);
+        assertEquals(2, blobs.size());
+        assertEquals("test1.pdf", ((Blob) blobs.get(0).getValue()).getFilename());
+        assertEquals("test2.pdf", ((Blob) blobs.get(1).getValue()).getFilename());
+    }
+
     @Test
     public void testGetBlobsFromTwoSchemas() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "BlobWithTwoSchemasContainingBlob");
@@ -165,7 +181,7 @@ public class TestBlobsExtractor {
         List<String> blobPaths = new BlobsExtractor().getBlobPaths(schemaManager.getDocumentType("ComplexDoc"));
         assertEquals(new HashSet<>(Arrays.asList("file:content", "cmpf:aList/*/content",
                 "cmpf:attachedFile/vignettes/*/content", "cmpf:aComplexWithBlob/blob",
-                "cmpf:aComplexComplexWithBlob/complex/blob", "cmpf:aListComplexComplexWithBlob/*/complex/blob")),
+                "cmpf:aComplexComplexWithBlob/complex/blob", "cmpf:aListComplexComplexWithBlob/*/complex/blob", "cmpf:multiBlobs/*")),
                 new HashSet<>(blobPaths));
     }
 
