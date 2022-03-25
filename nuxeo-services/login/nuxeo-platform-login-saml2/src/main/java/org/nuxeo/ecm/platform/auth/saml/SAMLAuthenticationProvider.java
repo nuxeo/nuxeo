@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.auth.saml;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
 
 import java.io.File;
@@ -72,6 +74,7 @@ import org.opensaml.saml2.core.AuthnRequest;
 import org.opensaml.saml2.core.LogoutRequest;
 import org.opensaml.saml2.core.LogoutResponse;
 import org.opensaml.saml2.core.NameID;
+import org.opensaml.saml2.core.NameIDType;
 import org.opensaml.saml2.encryption.Decrypter;
 import org.opensaml.saml2.encryption.EncryptedElementTypeEncryptedKeyResolver;
 import org.opensaml.saml2.metadata.EntityDescriptor;
@@ -165,7 +168,7 @@ public class SAMLAuthenticationProvider
         // Initialize the User Resolver
         String userResolverClassname = parameters.get("userResolverClass");
         Class<? extends UserResolver> userResolverClass = null;
-        if (StringUtils.isBlank(userResolverClassname)) {
+        if (isBlank(userResolverClassname)) {
             UserMapperService ums = Framework.getService(UserMapperService.class);
             if (ums != null) {
                 userResolverClass = USERMAPPER_USER_RESOLVER_CLASS;
@@ -478,7 +481,7 @@ public class SAMLAuthenticationProvider
         // Store session id in a cookie
         if (credential.getSessionIndexes() != null && !credential.getSessionIndexes().isEmpty()) {
             String nameValue = credential.getNameID().getValue();
-            String nameFormat = credential.getNameID().getFormat();
+            String nameFormat = defaultIfBlank(credential.getNameID().getFormat(), NameIDType.UNSPECIFIED);
             String sessionId = credential.getSessionIndexes().get(0);
             Cookie cookie = CookieHelper.createCookie(request, SAML_SESSION_KEY,
                     String.join("|", sessionId, nameValue, nameFormat));
@@ -598,6 +601,9 @@ public class SAMLAuthenticationProvider
             String sessionId = parts[0];
             String nameValue = parts[1];
             String nameFormat = parts[2];
+            if (isBlank(nameFormat) || "null".equals(nameFormat)) {
+                nameFormat = NameIDType.UNSPECIFIED;
+            }
 
             NameID nameID = (NameID) Configuration.getBuilderFactory()
                                                   .getBuilder(NameID.DEFAULT_ELEMENT_NAME)
