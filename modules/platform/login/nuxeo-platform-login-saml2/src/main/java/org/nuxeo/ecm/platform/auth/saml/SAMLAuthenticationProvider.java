@@ -36,8 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -112,7 +112,7 @@ import org.opensaml.xml.signature.impl.ExplicitKeySignatureTrustEngine;
 public class SAMLAuthenticationProvider
         implements NuxeoAuthenticationPlugin, LoginProviderLinkComputer, NuxeoAuthenticationPluginLogoutExtension {
 
-    private static final Log log = LogFactory.getLog(SAMLAuthenticationProvider.class);
+    private static final Logger log = LogManager.getLogger(SAMLAuthenticationProvider.class);
 
     /*
      * @since 11.2
@@ -196,7 +196,7 @@ public class SAMLAuthenticationProvider
             userResolver = userResolverClass.getConstructor().newInstance();
             userResolver.init(parameters);
         } catch (ReflectiveOperationException e) {
-            log.error("Failed to initialize user resolver " + userResolverClassname);
+            log.error("Failed to initialize user resolver {}", userResolverClassname);
         }
 
         // Initialize the OpenSAML library
@@ -254,7 +254,7 @@ public class SAMLAuthenticationProvider
             }
 
         } catch (MetadataProviderException e) {
-            log.warn("Failed to register IdP: " + e.getMessage());
+            log.warn("Failed to register IdP: {}", e.getMessage(), e);
         }
 
         // contribute icon and link to the Login Screen
@@ -296,8 +296,8 @@ public class SAMLAuthenticationProvider
 
         String metadataUrl = parameters.get("metadata");
         if (metadataUrl == null) {
-            throw new MetadataProviderException("No metadata URI set for provider "
-                    + ((parameters.containsKey("name")) ? parameters.get("name") : ""));
+            throw new MetadataProviderException(
+                    "No metadata URI set for provider " + parameters.getOrDefault("name", ""));
         }
 
         int requestTimeout = parameters.containsKey("timeout") ? Integer.parseInt(parameters.get("timeout")) : 5;
@@ -386,8 +386,7 @@ public class SAMLAuthenticationProvider
         try {
             response.sendRedirect(loginURL);
         } catch (IOException e) {
-            String errorMessage = String.format("Unable to send redirect on %s", loginURL);
-            log.error(errorMessage, e);
+            log.error("Unable to send redirect on {}", loginURL, e);
             return Boolean.FALSE;
         }
         return Boolean.TRUE;
@@ -441,7 +440,7 @@ public class SAMLAuthenticationProvider
         AbstractSAMLProfile processor = getProcessor(context);
 
         if (processor == null) {
-            log.warn("Unsupported profile encountered in the context " + context.getCommunicationProfileId());
+            log.warn("Unsupported profile encountered in the context {}", context::getCommunicationProfileId);
             return null;
         }
 
@@ -481,10 +480,10 @@ public class SAMLAuthenticationProvider
             return null;
         }
 
-        Optional<String> userId  = findOrCreateNuxeoUser(userResolver, credential);
+        Optional<String> userId = findOrCreateNuxeoUser(userResolver, credential);
 
-        if (!userId.isPresent()) {
-            log.warn("Failed to resolve user with NameID \"" + credential.getNameID().getValue() + "\".");
+        if (userId.isEmpty()) {
+            log.warn("Failed to resolve user with NameID: {}", credential.getNameID().getValue());
             sendError(request, ERROR_USER);
             return null;
         }
@@ -543,7 +542,8 @@ public class SAMLAuthenticationProvider
         return null;
     }
 
-    protected void populateLocalContext(@SuppressWarnings("rawtypes") SAMLMessageContext context, HttpServletRequest request) {
+    protected void populateLocalContext(@SuppressWarnings("rawtypes") SAMLMessageContext context,
+            HttpServletRequest request) {
         // Set local info
         context.setLocalEntityId(SAMLConfiguration.getEntityId());
         context.setLocalEntityRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
@@ -639,15 +639,12 @@ public class SAMLAuthenticationProvider
             return Boolean.FALSE;
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("Send redirect to " + logoutURL);
-        }
+        log.debug("Send redirect to {}", logoutURL);
 
         try {
             response.sendRedirect(logoutURL);
         } catch (IOException e) {
-            String errorMessage = String.format("Unable to send redirect on %s", logoutURL);
-            log.error(errorMessage, e);
+            log.error("Unable to send redirect on {}", logoutURL, e);
             return Boolean.FALSE;
         }
 
@@ -672,7 +669,7 @@ public class SAMLAuthenticationProvider
     }
 
     protected Cookie getCookie(HttpServletRequest httpRequest, String cookieName) {
-        Cookie cookies[] = httpRequest.getCookies();
+        Cookie[] cookies = httpRequest.getCookies();
         if (cookies != null) {
             for (Cookie cooky : cookies) {
                 if (cookieName.equals(cooky.getName())) {
@@ -684,7 +681,7 @@ public class SAMLAuthenticationProvider
     }
 
     protected void removeCookie(HttpServletResponse httpResponse, Cookie cookie) {
-        log.debug(String.format("Removing cookie %s.", cookie.getName()));
+        log.debug("Removing cookie {}", cookie.getName());
         cookie.setMaxAge(0);
         cookie.setValue("");
         httpResponse.addCookie(cookie);
