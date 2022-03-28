@@ -28,12 +28,21 @@ import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.UNKNOWN;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.naming.NamingException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
+
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.scroll.ScrollService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
@@ -49,13 +58,14 @@ import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.kv.KeyValueStoreProvider;
 import org.nuxeo.runtime.stream.StreamService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Basic implementation of {@link BulkService}.
  *
  * @since 10.2
  */
-public class BulkServiceImpl implements BulkService {
+public class BulkServiceImpl implements BulkService, Synchronization {
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(BulkServiceImpl.class);
 
@@ -86,6 +96,12 @@ public class BulkServiceImpl implements BulkService {
     // @since 11.5
     // How long we keep the command and its status in the kv store once completed with an error
     public static final long COMPLETED_IN_ERROR_TTL_SECONDS = 86_400;
+
+    // @since 2021.18
+    protected static final ThreadLocal<Boolean> isEnlisted = ThreadLocal.withInitial(() -> Boolean.FALSE);
+
+    // @since 2021.18
+    protected static final ThreadLocal<List<BulkCommand>> transactionCommands = ThreadLocal.withInitial(ArrayList::new);
 
     @Override
     public String submit(BulkCommand command) {
@@ -313,6 +329,61 @@ public class BulkServiceImpl implements BulkService {
                  .map(BulkCodecs.getStatusCodec()::decode)
                  .filter(status -> username.equals(status.getUsername()))
                  .collect(Collectors.toList());
+    }
+
+    @Override
+    public String submitTransactional(BulkCommand command) {
+        if (!Boolean.TRUE.equals(isEnlisted.get())) {
+            log.debug("Enlisting into transaction");
+            if (!registerSynchronization(this)) {
+                log.debug("No active transaction, submit command immediately");
+                return submit(command);
+            }
+            isEnlisted.set(true);
+        }
+        transactionCommands.get().add(command);
+        return command.getId();
+    }
+
+    protected boolean registerSynchronization(Synchronization sync) {
+        try {
+            TransactionManager tm = TransactionHelper.lookupTransactionManager();
+            if (tm != null) {
+                if (tm.getTransaction() != null) {
+                    tm.getTransaction().registerSynchronization(sync);
+                    return true;
+                }
+                // no transaction found
+                return false;
+            } else {
+                throw new NuxeoException("Unable to register synchronization: no transaction manager");
+            }
+        } catch (RollbackException e) {
+            log.debug("Transaction is marked for rollback", e);
+            return true;
+        } catch (NamingException | IllegalStateException | SystemException e) {
+            throw new NuxeoException("Unable to register synchronization", e);
+        }
+    }
+
+    @Override
+    public void beforeCompletion() {
+        log.debug("Before completion");
+    }
+
+    @Override
+    public void afterCompletion(int status) {
+        try {
+            if (Status.STATUS_COMMITTED == status) {
+                log.debug("Submitting bulk commands after commit");
+                transactionCommands.get().forEach(this::submit);
+            } else {
+                log.info("Skip bulk commands, transaction status is not committed: {}", status);
+            }
+        } finally {
+            isEnlisted.set(false);
+            transactionCommands.get().clear();
+        }
     }
 
 }
