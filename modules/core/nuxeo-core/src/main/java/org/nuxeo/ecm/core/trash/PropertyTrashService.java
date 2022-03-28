@@ -143,7 +143,7 @@ public class PropertyTrashService extends AbstractTrashService {
         BulkService service = Framework.getService(BulkService.class);
         String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", model.getId());
         String user = session.getPrincipal().getName();
-        service.submit(new BulkCommand.Builder(ACTION_NAME, nxql, user).repository(session.getRepositoryName())
+        service.submitTransactional(new BulkCommand.Builder(ACTION_NAME, nxql, user).repository(session.getRepositoryName())
                                                                        .param(PARAM_NAME, value)
                                                                        .build());
     }

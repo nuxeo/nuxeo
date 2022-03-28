@@ -589,7 +589,7 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
             BulkService service = Framework.getService(BulkService.class);
             BulkCommand command = new BulkCommand.Builder(UPDATE_READ_ACLS_ACTION, nxql, SYSTEM_USERNAME).repository(
                     session.getRepositoryName()).build();
-            service.submit(command);
+            service.submitTransactional(command);
         }
     }
 

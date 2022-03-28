@@ -50,7 +50,7 @@ public class RetentionExpiredFinderListener implements EventListener {
         for (String repositoryName : repositoryService.getRepositoryNames()) {
             BulkCommand command = new BulkCommand.Builder(RetentionExpiredAction.ACTION_NAME, nxql).user(
                     SecurityConstants.SYSTEM_USERNAME).repository(repositoryName).build();
-            bulkService.submit(command);
+            bulkService.submitTransactional(command);
         }
     }
 

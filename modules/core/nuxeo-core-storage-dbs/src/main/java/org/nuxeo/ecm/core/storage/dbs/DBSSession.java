@@ -981,7 +981,7 @@ public class DBSSession extends BaseSession {
             String nxql = String.format("SELECT * FROM Document, Relation WHERE ecm:ancestorId = '%s'", rootId);
             BulkCommand command = new BulkCommand.Builder(ACTION_NAME, nxql, SYSTEM_USERNAME).repository(
                     getRepositoryName()).build();
-            Framework.getService(BulkService.class).submit(command);
+            Framework.getService(BulkService.class).submitTransactional(command);
         }
 
         // fix proxies back-pointers on proxy targets

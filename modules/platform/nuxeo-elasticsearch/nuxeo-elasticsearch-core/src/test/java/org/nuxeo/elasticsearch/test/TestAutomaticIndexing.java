@@ -1178,8 +1178,8 @@ public class TestAutomaticIndexing {
         // trigger manually instead of waiting for scheduler
         new RetentionExpiredFinderListener().handleEvent(null);
         // wait for all bulk commands to be executed
-        assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(60)));
         TransactionHelper.commitOrRollbackTransaction();
+        assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(60)));
         waitForCompletion();
         assertNumberOfCommandProcessed(1); // update
         startTransaction();
