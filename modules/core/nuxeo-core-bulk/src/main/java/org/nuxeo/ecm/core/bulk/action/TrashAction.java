@@ -45,10 +45,10 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.event.Event;
@@ -106,10 +106,14 @@ public class TrashAction implements StreamProcessorTopology {
                     proxies.add(new IdRef((String) map.get(ECM_UUID)));
                 }
             }
-            session.removeDocuments(proxies.toArray(new DocumentRef[0]));
+            try {
+                session.removeDocuments(proxies.toArray(new DocumentRef[0]));
+            } catch (DocumentSecurityException e) {
+                log.warn("Cannot remove proxies", e);
+            }
             try {
                 session.save();
-            } catch (PropertyException e) {
+            } catch (NuxeoException e) {
                 // TODO send to error stream
                 log.warn("Cannot save session", e);
             }
@@ -133,7 +137,7 @@ public class TrashAction implements StreamProcessorTopology {
                         updatedRefs.add(ref);
                     } catch (NuxeoException e) {
                         // TODO send to error stream
-                        log.warn("Cannot set system property: isTrashed on: " + ref.toString(), e);
+                        log.warn("Cannot set system property: isTrashed on: {}", ref.toString(), e);
                     }
                 }
             }
@@ -142,7 +146,7 @@ public class TrashAction implements StreamProcessorTopology {
                 if (!updatedRefs.isEmpty()) {
                     fireEvent(session, value ? DOCUMENT_TRASHED : DOCUMENT_UNTRASHED, updatedRefs);
                 }
-            } catch (PropertyException e) {
+            } catch (NuxeoException e) {
                 // TODO send to error stream
                 log.warn("Cannot save session", e);
             }
@@ -150,15 +154,20 @@ public class TrashAction implements StreamProcessorTopology {
 
         protected void fireEvent(CoreSession session, String eventId, Collection<DocumentRef> refs) {
             EventService eventService = Framework.getService(EventService.class);
+            // no risk of DocumentNotFound exception because refs have been checked before
             DocumentModelList docs = session.getDocuments(refs.toArray(new DocumentRef[0]));
             docs.forEach(d -> {
-                DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), d);
-                ctx.setProperty(REPOSITORY_NAME, session.getRepositoryName());
-                ctx.setCategory(EVENT_DOCUMENT_CATEGORY);
-                Event event = ctx.newEvent(eventId);
-                event.setImmediate(false);
-                event.setInline(false);
-                eventService.fireEvent(event);
+                try {
+                    DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), d);
+                    ctx.setProperty(REPOSITORY_NAME, session.getRepositoryName());
+                    ctx.setCategory(EVENT_DOCUMENT_CATEGORY);
+                    Event event = ctx.newEvent(eventId);
+                    event.setImmediate(false);
+                    event.setInline(false);
+                    eventService.fireEvent(event);
+                } catch (NuxeoException e) {
+                    log.warn("Cannot fire event: {} on: {}", eventId, d.getId(), e);
+                }
             });
         }
     }
