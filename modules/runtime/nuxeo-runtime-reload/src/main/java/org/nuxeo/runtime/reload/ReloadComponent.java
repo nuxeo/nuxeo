@@ -19,14 +19,19 @@
  */
 package org.nuxeo.runtime.reload;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static org.apache.commons.io.FileUtils.ONE_MB;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,7 +44,7 @@ import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -84,6 +89,13 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     public static final String RELOAD_STRATEGY_VALUE_DEFAULT = RELOAD_STRATEGY_VALUE_STANDBY;
 
     private static final Logger log = LogManager.getLogger(ReloadComponent.class);
+
+    /**
+     * The file copy buffer size (30 MB), copied from commons-io:commons-io
+     *
+     * @since 2021.19
+     */
+    private static final long FILE_COPY_BUFFER_SIZE = ONE_MB * 30;
 
     protected static Bundle bundle;
 
@@ -444,29 +456,82 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         try {
             Files.createDirectories(destinationPath);
             for (File bundle : context.bundlesToDeploy) {
-                Path bundlePath = bundle.toPath();
+                final Path srcBundlePath = bundle.toPath();
+                final Path destBundlePath;
                 // check if the bundle is located under the desired destination
                 // if not copy it to the desired destination
-                if (!bundlePath.startsWith(destinationPath)) {
-                    if (Files.isDirectory(bundlePath)) {
+                if (srcBundlePath.startsWith(destinationPath)) {
+                    destBundlePath = srcBundlePath;
+                } else {
+                    if (Files.isDirectory(srcBundlePath)) {
                         // If it's a directory, assume that it's an exploded jar
-                        bundlePath = JarUtils.zipDirectory(bundlePath,
+                        destBundlePath = JarUtils.zipDirectory(srcBundlePath,
                                 destinationPath.resolve("hotreload-bundle-" + System.currentTimeMillis() + ".jar"),
-                                StandardCopyOption.REPLACE_EXISTING);
+                                REPLACE_EXISTING);
                     } else {
-                        bundlePath = destinationPath.resolve(bundle.getName());
-                        // JDK nio Files will replace the existing file (if destination already exists) which is an
-                        // an issue on Windows cause you can't replace a file used by the JVM
-                        // so use commons-io instead because it will override the content by using a FileInputStream
-                        // instead of replacing the file
-                        FileUtils.copyFile(bundle, bundlePath.toFile(), false);
+                        destBundlePath = destinationPath.resolve(bundle.getName());
+                        if (SystemUtils.IS_OS_WINDOWS) {
+                            // JDK nio Files will replace the existing file if the destination already exists
+                            // this is an issue on Windows because you can't replace a file used by the JVM
+                            // so copy the file by using the InputStream API
+                            copyFile(bundle, destBundlePath.toFile());
+                        } else {
+                            Files.copy(srcBundlePath, destBundlePath, REPLACE_EXISTING);
+                        }
                     }
                 }
-                bundlesToDeploy.add(bundlePath.toFile());
+                bundlesToDeploy.add(destBundlePath.toFile());
             }
             return bundlesToDeploy;
         } catch (IOException e) {
             throw new BundleException("Unable to copy bundles to " + destinationPath, e);
+        }
+    }
+
+    /**
+     * Method copied from commons-io:commons-io:2.6 to handle replace if exist on Windows.
+     *
+     * @since 2021.19
+     */
+    protected void copyFile(File srcFile, File destFile) throws IOException {
+        if (!srcFile.exists()) {
+            throw new FileNotFoundException("Source '" + srcFile + "' does not exist");
+        }
+        if (srcFile.isDirectory()) {
+            throw new IOException("Source '" + srcFile + "' exists but is a directory");
+        }
+        if (srcFile.getCanonicalPath().equals(destFile.getCanonicalPath())) {
+            throw new IOException("Source '" + srcFile + "' and destination '" + destFile + "' are the same");
+        }
+        File parentFile = destFile.getParentFile();
+        if (parentFile != null) {
+            if (!parentFile.mkdirs() && !parentFile.isDirectory()) {
+                throw new IOException("Destination '" + parentFile + "' directory cannot be created");
+            }
+        }
+        if (destFile.exists() && !destFile.canWrite()) {
+            throw new IOException("Destination '" + destFile + "' exists but is read-only");
+        }
+        if (destFile.exists() && destFile.isDirectory()) {
+            throw new IOException("Destination '" + destFile + "' exists but is a directory");
+        }
+
+        try (var fis = new FileInputStream(srcFile);
+                var input = fis.getChannel();
+                var fos = new FileOutputStream(destFile);
+                var output = fos.getChannel()) {
+            long size = input.size();
+            long pos = 0;
+            long count = 0;
+            while (pos < size) {
+                final long remain = size - pos;
+                count = Math.min(remain, FILE_COPY_BUFFER_SIZE);
+                final long bytesCopied = output.transferFrom(input, pos, count);
+                if (bytesCopied == 0) { // IO-385 - can happen if file is truncated after caching the size
+                    break; // ensure we don't loop forever
+                }
+                pos += bytesCopied;
+            }
         }
     }
 
@@ -519,8 +584,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     /**
      * Gets the un-deployed bundle from given {@link ReloadResult result} and try to remove them from
-     * sun.net.www.protocol.jar.JarFileFactory otherwise we'll have resource conflict when opening
-     * {@link InputStream stream} from {@link URL url}.
+     * sun.net.www.protocol.jar.JarFileFactory otherwise we'll have resource conflict when opening {@link InputStream
+     * stream} from {@link URL url}.
      */
     @SuppressWarnings({ "unchecked" })
     protected void clearJarFileFactoryCache(ReloadResult result) {
