@@ -20,8 +20,10 @@ package org.nuxeo.ecm.core.bulk.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
+import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.UNKNOWN;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -47,6 +49,7 @@ import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 11.1
@@ -156,6 +159,41 @@ public class TestWordCountAction {
         result = (Integer) status.getResult().get("wordCount");
         assertEquals(wordCount, result);
     }
+
+    @Test
+    public void testTransactionalSubmit() throws Exception {
+        int wordCount = 42;
+        String myFile = createFile(wordCount);
+        BulkCommand command = new BulkCommand.Builder("testWordCountLimited", myFile).useGenericScroller().build();
+        String commandId = bulkService.submitTransactional(command);
+        // status of bulk command is unknown until committed
+        BulkStatus status = bulkService.getStatus(commandId);
+        assertEquals(UNKNOWN, status.getState());
+        // commit
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        status = bulkService.getStatus(commandId);
+        assertNotEquals(UNKNOWN, status.getState());
+        assertTrue(bulkService.await(commandId, Duration.ofSeconds(20)));
+        status = bulkService.getStatus(commandId);
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(wordCount, status.getResult().get("wordCount"));
+
+        // Rollback case
+        BulkCommand commandBis = new BulkCommand.Builder("testWordCountLimited", myFile).useGenericScroller().build();
+        commandId = bulkService.submitTransactional(commandBis);
+        // state of bulk command is unknown until committed
+        status = bulkService.getStatus(commandId);
+        assertEquals(UNKNOWN, status.getState());
+        // rollback
+        TransactionHelper.setTransactionRollbackOnly();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        // No bulk command executed
+        status = bulkService.getStatus(commandId);
+        assertEquals(UNKNOWN, status.getState());
+    }
+
 
     protected String createFile(int wordCount) throws IOException {
         File tempFile = testFolder.newFile("file.txt");

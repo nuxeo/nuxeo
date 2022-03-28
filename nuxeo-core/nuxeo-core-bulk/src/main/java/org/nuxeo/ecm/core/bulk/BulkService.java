@@ -48,6 +48,17 @@ public interface BulkService extends AsyncService<String, BulkStatus, Map<String
     String submit(BulkCommand command);
 
     /**
+     * Submits a {@link BulkCommand} that will be processed asynchronously only if the transaction commits
+     * successfully (nothing will be submitted in case of transaction rollback).
+     * Note that the {@link #getStatus(Serializable)} will return an unknown state until transaction is committed.
+     *
+     * @since 2021.18
+     * @param command the command to submit
+     * @return a unique bulk command identifier
+     */
+    String submitTransactional(BulkCommand command);
+
+    /**
      * Returns the command or null if the command is not found or aborted.
      */
     BulkCommand getCommand(String commandId);

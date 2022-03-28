@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.platform.picture.recompute;
 
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
 
@@ -31,6 +30,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.bulk.BulkServiceImpl;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.event.Event;
@@ -56,7 +56,7 @@ public class RecomputeViewsAction implements StreamProcessorTopology {
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                 .addComputation(RecomputeViewsComputation::new, //
-                        Arrays.asList(INPUT_1 + ":" + ACTION_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
+                        Arrays.asList(INPUT_1 + ":" + ACTION_NAME, OUTPUT_1 + ":" + BulkServiceImpl.STATUS_STREAM))
                 .build();
     }
 
