@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
-import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -84,8 +83,13 @@ public class TestPageProviderCurrentPage {
             doc.setPathInfo("/", "File " + i);
             doc.setPropertyValue("dc:source", "dummy");
             session.createDocument(doc);
+            if (i % 100 == 0) {
+                session.save();
+                transactionalFeature.nextTransaction();
+            }
         }
         session.save();
+        transactionalFeature.nextTransaction();
     }
 
     @Test
@@ -184,9 +188,9 @@ public class TestPageProviderCurrentPage {
         // default sort infos, quick filter w/o sort info
         var ppd = pps.getPageProviderDefinition(pageProviderName);
         var quickFilters = ppd.getQuickFilters()
-                                            .stream()
-                                            .filter(q -> "noFolder".equals(q.getName()))
-                                            .collect(Collectors.toList());
+                              .stream()
+                              .filter(q -> "noFolder".equals(q.getName()))
+                              .collect(Collectors.toList());
         pp = pps.getPageProvider(pageProviderName, null, 0L, 0L, props, null, quickFilters, rootFolder.getId());
         assertSortedTitles(pp, mapper, "File 1", "File 2");
 
