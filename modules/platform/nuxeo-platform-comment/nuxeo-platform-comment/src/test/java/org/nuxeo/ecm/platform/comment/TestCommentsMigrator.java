@@ -329,6 +329,8 @@ public class TestCommentsMigrator {
 
     protected void runMigration(Runnable migrator) {
         try (CapturingEventListener listener = new CapturingEventListener(DOCUMENT_UPDATED)) {
+            // wait for asynchronous completion before migration to avoid ConcurrentUpdateException
+            transactionalFeature.nextTransaction();
             migrator.run();
             List<Event> events = listener.getCapturedEvents();
 
