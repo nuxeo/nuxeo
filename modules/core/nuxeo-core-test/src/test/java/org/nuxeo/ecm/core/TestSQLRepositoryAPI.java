@@ -150,6 +150,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml")
 public class TestSQLRepositoryAPI {
 
+    protected static final int TRANSACTION_BATCH_SIZE = 50;
+
     @Inject
     protected CoreFeature coreFeature;
 
@@ -232,6 +234,12 @@ public class TestSQLRepositoryAPI {
      */
     protected void maybeSleepToNextSecond() {
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
+    }
+
+    protected void commitByBatch(int count) {
+        if (count % TRANSACTION_BATCH_SIZE == 0) {
+            transactionalFeature.nextTransaction();
+        }
     }
 
     /**
@@ -493,7 +501,7 @@ public class TestSQLRepositoryAPI {
             doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
             session.createDocument(doc);
 
-            session.save();
+            commitByBatch(i);
         }
     }
 
@@ -868,8 +876,10 @@ public class TestSQLRepositoryAPI {
             names.add(name);
             DocumentModel doc = session.createDocumentModel("/", name, "File");
             session.createDocument(doc);
+
+            commitByBatch(i);
         }
-        session.save();
+        transactionalFeature.nextTransaction();
 
         DocumentModelIterator it = session.getChildrenIterator(new PathRef("/"), "File", null, null);
         for (DocumentModel doc : it) {
@@ -897,8 +907,10 @@ public class TestSQLRepositoryAPI {
             session.createDocument(doc2);
             DocumentModel doc3 = session.createDocumentModel("/", "docNote" + i, "Note");
             session.createDocument(doc3);
+
+            commitByBatch(i);
         }
-        session.save();
+        transactionalFeature.nextTransaction();
 
         Filter filter = docModel -> docModel.getName().startsWith("doc");
         DocumentModelIterator it = session.getChildrenIterator(new PathRef("/"), "File", null, filter);
@@ -5741,4 +5753,5 @@ public class TestSQLRepositoryAPI {
         assertEquals(0L, copyFile.getPropertyValue("uid:major_version"));
         assertEquals(0L, copyFile.getPropertyValue("uid:minor_version"));
     }
+
 }
