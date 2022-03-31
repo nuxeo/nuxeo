@@ -329,7 +329,6 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testLists() {
-        DocumentModel root = session.getRootDocument();
         DocumentModel child = session.createDocumentModel("/", "domain", "MyDocType");
         child = session.createDocument(child);
         session.save();
@@ -353,7 +352,7 @@ public class TestSQLRepositoryAPI {
 
         // ----- new session -----
         reopenSession();
-        root = session.getRootDocument();
+        DocumentModel root = session.getRootDocument();
         child = session.getChild(root.getRef(), "domain");
 
         Object subjects = child.getProperty("dublincore", "subjects");
@@ -375,7 +374,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testPathWithExtraSlash() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
         session.save();
         DocumentModelList children = session.getChildren(new PathRef("/"));
         assertEquals(1, children.size());
@@ -448,7 +447,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testComplexTypeOrdering() throws Exception {
+    public void testComplexTypeOrdering() throws IOException {
         // Oracle has problems opening and closing many connections in a short time span (Listener refused the
         // connection with the following error: ORA-12519, TNS:no appropriate service handler found).
         // It seems to have something to do with how closed sessions are not immediately accounted for by Oracle's PMON
@@ -492,7 +491,7 @@ public class TestSQLRepositoryAPI {
                 vignettes.add(vignette);
             }
             doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
-            doc = session.createDocument(doc);
+            session.createDocument(doc);
 
             session.save();
         }
@@ -630,7 +629,7 @@ public class TestSQLRepositoryAPI {
 
         DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), "folder#" + generateUnique(),
                 "Folder");
-        childFolder = createChildDocument(childFolder);
+        createChildDocument(childFolder);
 
         session.cancel();
         // TODO NXP-2514, cancel unimplemented
@@ -868,7 +867,7 @@ public class TestSQLRepositoryAPI {
             String name = "doc" + i;
             names.add(name);
             DocumentModel doc = session.createDocumentModel("/", name, "File");
-            doc = session.createDocument(doc);
+            session.createDocument(doc);
         }
         session.save();
 
@@ -892,21 +891,16 @@ public class TestSQLRepositoryAPI {
             String name = "doc" + i;
             names.add(name);
             DocumentModel doc = session.createDocumentModel("/", name, "File");
-            doc = session.createDocument(doc);
+            session.createDocument(doc);
             // create spurious docs in the middle
             DocumentModel doc2 = session.createDocumentModel("/", "foo" + i, "File");
-            doc2 = session.createDocument(doc2);
+            session.createDocument(doc2);
             DocumentModel doc3 = session.createDocumentModel("/", "docNote" + i, "Note");
-            doc3 = session.createDocument(doc3);
+            session.createDocument(doc3);
         }
         session.save();
 
-        Filter filter = new Filter() {
-            @Override
-            public boolean accept(DocumentModel docModel) {
-                return docModel.getName().startsWith("doc");
-            }
-        };
+        Filter filter = docModel -> docModel.getName().startsWith("doc");
         DocumentModelIterator it = session.getChildrenIterator(new PathRef("/"), "File", null, filter);
         for (DocumentModel doc : it) {
             String name = doc.getName();
@@ -993,11 +987,11 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testGetChildrenIteratorRestrictedAccess() {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
-        doc1 = session.createDocument(doc1);
+        session.createDocument(doc1);
         DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
-        doc2 = session.createDocument(doc2);
+        session.createDocument(doc2);
         DocumentModel doc3 = session.createDocumentModel("/", "doc3", "File");
-        doc3 = session.createDocument(doc3);
+        session.createDocument(doc3);
 
         // set ACP on root
         ACP acp;
@@ -1310,9 +1304,9 @@ public class TestSQLRepositoryAPI {
         List<DocumentModel> docs;
 
         DocumentModel folder1 = session.createDocumentModel("/", "folder1", "Folder");
-        folder1 = session.createDocument(folder1);
+        session.createDocument(folder1);
         DocumentModel folder2 = session.createDocumentModel("/folder1", "folder2", "Folder");
-        folder2 = session.createDocument(folder2);
+        session.createDocument(folder2);
         DocumentModel file1 = session.createDocumentModel("/folder1/folder2", "file1", "File");
         file1 = session.createDocument(file1);
         session.save();
@@ -1377,7 +1371,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel folder2 = session.createDocumentModel("/folder1", "folder2", "Folder");
         folder2 = session.createDocument(folder2);
         DocumentModel doc1 = session.createDocumentModel("/folder1/folder2", "doc1", "File");
-        doc1 = session.createDocument(doc1);
+        session.createDocument(doc1);
         session.save();
         // now remove
         session.removeDocument(folder2.getRef());
@@ -1535,7 +1529,7 @@ public class TestSQLRepositoryAPI {
 
         // create the proxy in the folder instead
         session.removeDocument(proxy.getRef());
-        proxy = session.createProxy(doc.getRef(), folder.getRef());
+        session.createProxy(doc.getRef(), folder.getRef());
 
         // then we can remove the folder that contains both the proxy and the target
         assertTrue(session.canRemoveDocument(folder.getRef()));
@@ -1923,7 +1917,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel doc1 = session.createDocumentModel("/f1", "doc1", "File");
         doc1 = session.createDocument(doc1);
         DocumentModel doc2 = session.createDocumentModel("/f1", "doc2", "File");
-        doc2 = session.createDocument(doc2);
+        session.createDocument(doc2);
         // set ACP on root
         acp = new ACPImpl();
         acl = new ACLImpl();
@@ -2348,7 +2342,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testFacetAddRemoveWhenSchemaAlreadyPresent() throws Exception {
+    public void testFacetAddRemoveWhenSchemaAlreadyPresent() throws IOException {
         DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("hello"));
         doc = session.createDocument(doc);
@@ -2461,7 +2455,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc.addFacet("Aged");
         doc.setPropertyValue("age:age", "barbar");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
         session.save();
 
         DocumentModelList list = session.query("SELECT * FROM File WHERE age:age = 'barbar'");
@@ -2616,7 +2610,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testCopy() throws Exception {
+    public void testCopy() throws InterruptedException {
         DocumentModel root = session.getRootDocument();
         DocumentModel folder1 = session.createDocumentModel(root.getPathAsString(), "folder1", "Folder");
 
@@ -2689,7 +2683,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel folder2 = session.createDocumentModel(root.getPathAsString(), "folder2", "Folder");
         DocumentModel folder3 = session.createDocumentModel(root.getPathAsString(), "folder3", "Folder");
         DocumentModel file = session.createDocumentModel(folder1.getPathAsString(), "copyProxyAsDocument_test", "File");
-        folder1 = createChildDocument(folder1);
+        createChildDocument(folder1);
         folder2 = createChildDocument(folder2);
         folder3 = createChildDocument(folder3);
         file = createChildDocument(file);
@@ -2819,7 +2813,7 @@ public class TestSQLRepositoryAPI {
         assertTrue(session.exists(new PathRef("/folder1/fileMove")));
 
         DocumentModel file2 = session.createDocumentModel(folder2.getPathAsString(), "file2", "File");
-        file2 = createChildDocument(file2);
+        createChildDocument(file2);
         assertTrue(session.exists(new PathRef("/folder2/file2")));
         DocumentModel newFile2 = session.move(file.getRef(), folder2.getRef(), "file2"); // collision
         String newName = newFile2.getName();
@@ -2833,7 +2827,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testMoveConcurrentWithGetChild() throws Exception {
+    public void testMoveConcurrentWithGetChild() throws InterruptedException {
         assumeTrue("VCS read-committed semantics cannot enforce this", isDBS());
         prepareDocsForMoveConcurrentWithGetChildren();
         try {
@@ -2845,7 +2839,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testMoveConcurrentWithGetChildren() throws Exception {
+    public void testMoveConcurrentWithGetChildren() throws InterruptedException {
         assumeTrue("VCS read-committed semantics cannot enforce this", isDBS());
         prepareDocsForMoveConcurrentWithGetChildren();
         // should not find child moved under /folder in another transaction
@@ -2854,7 +2848,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testMoveConcurrentWithGetChildrenRefs() throws Exception {
+    public void testMoveConcurrentWithGetChildrenRefs() throws InterruptedException {
         assumeTrue("VCS read-committed semantics cannot enforce this", isDBS());
         prepareDocsForMoveConcurrentWithGetChildren();
         // should not find child moved under /folder in another transaction
@@ -2862,10 +2856,10 @@ public class TestSQLRepositoryAPI {
         assertEquals(0, children.size());
     }
 
-    protected void prepareDocsForMoveConcurrentWithGetChildren() throws Exception {
+    protected void prepareDocsForMoveConcurrentWithGetChildren() throws InterruptedException {
         // create folder
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
-        folder = session.createDocument(folder);
+        session.createDocument(folder);
         // create doc outside of folder
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
@@ -2890,7 +2884,7 @@ public class TestSQLRepositoryAPI {
         thread.start();
         thread.join();
         if (me.getValue() != null) {
-            throw new RuntimeException(me.getValue());
+            throw new NuxeoException(me.getValue());
         }
     }
 
@@ -2936,7 +2930,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testBlob() throws Exception {
+    public void testBlob() throws IOException {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
@@ -3042,7 +3036,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
         DocumentModel file = session.createDocumentModel(root.getPathAsString(), "file", "File");
 
-        file = createChildDocument(file);
+        createChildDocument(file);
 
         /*
          * AnnotatedDocument adoc = file.getAdapter(AnnotatedDocument.class); assertNotNull(adoc);
@@ -3160,7 +3154,7 @@ public class TestSQLRepositoryAPI {
 
     @SuppressWarnings({ "unchecked" })
     @Test
-    public void testCopyContent() throws Exception {
+    public void testCopyContent() throws IOException {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "original", "File");
         doc.setProperty("dublincore", "title", "t");
@@ -3348,7 +3342,7 @@ public class TestSQLRepositoryAPI {
 
         // check in a non-ordered folder
         DocumentModel parent2 = session.createDocumentModel("/", "folder", "Folder");
-        parent2 = session.createDocument(parent2);
+        session.createDocument(parent2);
         DocumentModel doc3 = session.createDocumentModel("/folder", "doc3", "MyDocType");
         doc3 = session.createDocument(doc3);
         session.save();
@@ -3363,7 +3357,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel doc1 = session.createDocumentModel("/folder", "doc1", "File");
         doc1 = session.createDocument(doc1);
         DocumentModel doc2 = session.createDocumentModel("/folder", "doc2", "File");
-        doc2 = session.createDocument(doc2);
+        session.createDocument(doc2);
 
         // copy doc1 as doc3, should be positioned last
         session.copy(doc1.getRef(), folder.getRef(), "doc3");
@@ -3497,7 +3491,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testBlob2() throws Exception {
+    public void testBlob2() throws IOException {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "mydoc", "File");
 
@@ -3671,7 +3665,7 @@ public class TestSQLRepositoryAPI {
 
         // modify proxy
         proxy.setProperty("dublincore", "title", "the title again");
-        proxy = session.saveDocument(proxy);
+        session.saveDocument(proxy);
         session.save();
 
         // check visible from live doc
@@ -3787,7 +3781,7 @@ public class TestSQLRepositoryAPI {
         session.save();
         try {
             doc.setPropertyValue("info:info", "docinfo");
-            doc = session.saveDocument(doc);
+            session.saveDocument(doc);
             session.save();
         } catch (PropertyNotFoundException e) {
             assertTrue(e.getMessage().contains("info:info"));
@@ -4094,7 +4088,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel ver = session.getDocument(verRef);
         ver.setPropertyValue("dc:title", "ver title");
         try {
-            ver = session.saveDocument(ver);
+            session.saveDocument(ver);
             if (!expectWritable) {
                 fail("should fail to save");
             }
@@ -4499,13 +4493,13 @@ public class TestSQLRepositoryAPI {
     public void testRollback3() {
         // create file 1
         DocumentModel file1 = session.createDocumentModel("/", "file1", "File");
-        file1 = session.createDocument(file1);
+        session.createDocument(file1);
         session.save();
         nextTransaction();
 
         // create file 2 and rollback
         DocumentModel file2 = session.createDocumentModel("/", "file2", "File");
-        file2 = session.createDocument(file2);
+        session.createDocument(file2);
         session.save();
         TransactionHelper.setTransactionRollbackOnly();
         nextTransaction();
@@ -4516,7 +4510,7 @@ public class TestSQLRepositoryAPI {
 
         // re-try to create file 2 and re-rollback
         file2 = session.createDocumentModel("/", "file2", "File");
-        file2 = session.createDocument(file2);
+        session.createDocument(file2);
         session.save();
         TransactionHelper.setTransactionRollbackOnly();
         nextTransaction();
@@ -4542,7 +4536,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testBinaryGC() throws Exception {
+    public void testBinaryGC() throws InterruptedException {
         // GC binaries from previous tests
         Thread.sleep(3 * 1000);
         runBinariesGC(true, false);
@@ -4610,9 +4604,7 @@ public class TestSQLRepositoryAPI {
         assertFalse(gc.isInProgress());
         gc.start();
         assertTrue(gc.isInProgress());
-        repository.markReferencedBlobs((key, repositoryName) -> {
-            gc.mark(key);
-        });
+        repository.markReferencedBlobs((key, repositoryName) -> gc.mark(key));
         if (addDuringGC) {
             // while GC is in progress, add a new binary
             addBinary("MNO", "MNO");
@@ -4630,7 +4622,7 @@ public class TestSQLRepositoryAPI {
     /** Test that stores blobs in attachments (complex list). */
     @Test
     @ConditionalIgnoreRule.Ignore(condition = IgnoreWindows.class, cause = "Not enough time granularity")
-    public void testBinaryGC2() throws Exception {
+    public void testBinaryGC2() throws InterruptedException {
         // GC binaries from previous tests
         Thread.sleep(3 * 1000);
         runBinariesGC(true, false);
@@ -4644,7 +4636,7 @@ public class TestSQLRepositoryAPI {
         session.save();
         // remove GHI
         doc.setPropertyValue("files", (Serializable) Arrays.asList(abc, def));
-        doc = session.saveDocument(doc);
+        session.saveDocument(doc);
         session.save();
         nextTransaction();
 
@@ -4995,7 +4987,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testRetentionExpiresAutomatically() throws Exception {
+    public void testRetentionExpiresAutomatically() throws InterruptedException {
         DocumentModel folder = session.createDocumentModel("/", "fold", "Folder");
         folder = session.createDocument(folder);
         DocumentModel subFolder = session.createDocumentModel("/fold", "subfold", "Folder");
@@ -5282,7 +5274,7 @@ public class TestSQLRepositoryAPI {
         // change the live document and check token
         doc.setPropertyValue("dc:title", "Doc Changed");
         maybeUpdateChangeToken(doc);
-        doc = session.saveDocument(doc);
+        session.saveDocument(doc);
         session.save();
         proxy = session.getDocument(proxy.getRef());
         String proxyToken2 = proxy.getChangeToken();
@@ -5407,7 +5399,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testOptimisticLockingWithParallelChange() throws Exception {
+    public void testOptimisticLockingWithParallelChange() throws InterruptedException {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         // create row in VCS dublincore table to avoid later concurrent update upon its creation
         doc.setPropertyValue("dc:title", "foo");
@@ -5425,21 +5417,19 @@ public class TestSQLRepositoryAPI {
 
         // in other thread, update the doc as a user change
         MutableObject<RuntimeException> me = new MutableObject<>();
-        Thread thread = new Thread(() -> {
-            TransactionHelper.runInTransaction(() -> {
-                try {
-                    CoreSession session2 = CoreInstance.getCoreSession(coreFeature.getRepositoryName());
-                    DocumentModel doc2 = session2.getDocument(docRef);
-                    doc2.setPropertyValue("dc:title", "bar parallel");
-                    doc2.putContextData(CoreSession.USER_CHANGE, Boolean.TRUE);
-                    maybeUpdateChangeToken(doc2);
-                    doc2 = session2.saveDocument(doc2);
-                    session2.save(); // save succeeds
-                } catch (RuntimeException e) {
-                    me.setValue(e);
-                }
-            });
-        });
+        Thread thread = new Thread(() -> TransactionHelper.runInTransaction(() -> {
+            try {
+                CoreSession session2 = CoreInstance.getCoreSession(coreFeature.getRepositoryName());
+                DocumentModel doc2 = session2.getDocument(docRef);
+                doc2.setPropertyValue("dc:title", "bar parallel");
+                doc2.putContextData(CoreSession.USER_CHANGE, Boolean.TRUE);
+                maybeUpdateChangeToken(doc2);
+                doc2 = session2.saveDocument(doc2);
+                session2.save(); // save succeeds
+            } catch (RuntimeException e) {
+                me.setValue(e);
+            }
+        }));
         thread.start();
         thread.join();
         if (me.getValue() != null) {
@@ -5450,7 +5440,7 @@ public class TestSQLRepositoryAPI {
         doc.setPropertyValue("dc:title", "bar");
         doc.putContextData(CoreSession.USER_CHANGE, Boolean.TRUE);
         maybeUpdateChangeToken(doc);
-        doc = session.saveDocument(doc);
+        session.saveDocument(doc);
         try {
             session.save();
             if (isChangeTokenEnabled()) { // not failing for manual change tokens
@@ -5485,20 +5475,22 @@ public class TestSQLRepositoryAPI {
                 barrier.await(5, TimeUnit.SECONDS);
                 TransactionHelper.runInTransaction(() -> {
                     try {
-                        CoreSession session = CoreInstance.getCoreSession(null);
+                        CoreSession s = CoreInstance.getCoreSession(null);
                         for (DocumentRef docRef : docRefs) {
-                            DocumentModel doc = session.getDocument(docRef);
+                            DocumentModel doc = s.getDocument(docRef);
                             doc.setPropertyValue("dc:title", "foo" + System.nanoTime());
-                            session.saveDocument(doc);
+                            s.saveDocument(doc);
                         }
                         barrier.await(5, TimeUnit.SECONDS);
-                        session.save();
+                        s.save();
                     } catch (InterruptedException | BrokenBarrierException | TimeoutException e) {
+                        Thread.currentThread().interrupt();
                         exc = e;
-                        throw new RuntimeException(e);
+                        throw new NuxeoException(e);
                     }
                 });
             } catch (Exception e) {
+                Thread.currentThread().interrupt();
                 if (exc == null) {
                     exc = new Exception(docRefs.toString(), e);
                 }
