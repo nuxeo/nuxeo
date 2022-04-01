@@ -508,7 +508,9 @@ public class SAMLAuthenticationProvider
             }
         }
 
-        return new UserIdentificationInfo(userId.get());
+        UserIdentificationInfo userIdent = new UserIdentificationInfo(userId.get());
+        userIdent.setCredentialsChecked(true);
+        return userIdent;
     }
 
     protected AbstractSAMLProfile getProcessor(@SuppressWarnings("rawtypes") SAMLMessageContext context) {
