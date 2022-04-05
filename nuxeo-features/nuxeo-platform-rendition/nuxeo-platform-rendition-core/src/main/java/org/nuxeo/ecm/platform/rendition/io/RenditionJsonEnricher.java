@@ -51,12 +51,12 @@ public class RenditionJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
-        RenditionService renditionService = Framework.getService(RenditionService.class);
-        List<Rendition> renditions = renditionService.getAvailableRenditions(document, true);
         try (SessionWrapper wrapper = ctx.getSession(document)) {
             if (!wrapper.getSession().exists(document.getRef())) {
                 return;
             }
+            RenditionService renditionService = Framework.getService(RenditionService.class);
+            List<Rendition> renditions = renditionService.getAvailableRenditions(document, true);
             jg.writeArrayFieldStart(NAME);
             for (Rendition rendition : renditions) {
                 jg.writeStartObject();
