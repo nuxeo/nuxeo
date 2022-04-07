@@ -24,7 +24,7 @@
         "type": "stop"
       },
       "word_delimiter_filter": {
-        "type": "word_delimiter",
+        "type": "word_delimiter_graph",
         "preserve_original": true
       },
       "asciifolding_filter": {
