@@ -14,7 +14,7 @@
         "type": "truncate"
       },
       "word_delimiter_filter": {
-        "type": "word_delimiter",
+        "type": "word_delimiter_graph",
         "preserve_original": true
       },
       "en_stem_filter": {
