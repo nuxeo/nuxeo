@@ -33,9 +33,16 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features({ RedisFeature.class })
 public class TestRedisWorkManager extends AbstractWorkManagerTest {
 
+    protected static final int REDIS_DEFAULT_DURATION_MILLIS = 500;
+
     @Override
     public boolean persistent() {
         return true;
+    }
+
+    @Override
+    protected int getDurationMillis() {
+        return REDIS_DEFAULT_DURATION_MILLIS;
     }
 
     @Test
