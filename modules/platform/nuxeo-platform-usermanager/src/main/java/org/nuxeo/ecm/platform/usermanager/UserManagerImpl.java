@@ -1376,7 +1376,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         if (passwordProperty.isDirty()) {
             String clearPassword = (String) passwordProperty.getValue();
             if (StringUtils.isNotBlank(clearPassword) && !validatePassword(clearPassword)) {
-                throw new InvalidPasswordException();
+                throw new InvalidPasswordException("The password doesn't meet requirements");
             }
         }
     }
