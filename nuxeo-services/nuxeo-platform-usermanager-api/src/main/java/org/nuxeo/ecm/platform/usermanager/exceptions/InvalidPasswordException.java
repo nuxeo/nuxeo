@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.platform.usermanager.exceptions;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
@@ -35,17 +37,18 @@ public class InvalidPasswordException extends NuxeoException {
     private static final long serialVersionUID = 1L;
 
     public InvalidPasswordException() {
+        super(SC_BAD_REQUEST);
     }
 
     public InvalidPasswordException(String message) {
-        super(message);
+        super(message, SC_BAD_REQUEST);
     }
 
     public InvalidPasswordException(String message, Throwable cause) {
-        super(message, cause);
+        super(message, cause, SC_BAD_REQUEST);
     }
 
     public InvalidPasswordException(Throwable cause) {
-        super(cause);
+        super(cause, SC_BAD_REQUEST);
     }
 }

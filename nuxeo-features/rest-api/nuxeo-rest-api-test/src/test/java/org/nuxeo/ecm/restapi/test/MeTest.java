@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -97,4 +98,14 @@ public class MeTest extends BaseUserTest {
         }
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-user-manager-password-pattern-config.xml")
+    public void testInvalidNewPasswordReturnsBadRequest() {
+        // When I change password with one not validating the password pattern (no special char allowed)
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/me/changepassword",
+                "{\"oldPassword\": \"" + PASSWORD + "\", \"newPassword\": \"me&%\"}")) {
+            // Then it returns a BAD_REQUEST
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        }
+    }
 }
