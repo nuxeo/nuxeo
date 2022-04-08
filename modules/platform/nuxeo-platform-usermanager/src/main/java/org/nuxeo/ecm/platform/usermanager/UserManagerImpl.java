@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2022 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -488,7 +488,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     protected DocumentModel getDigestAuthModel() {
         String schema = dirService.getDirectorySchema(digestAuthDirectory);
-        return BaseSession.createEntryModel(null, schema, null, null);
+        return BaseSession.createEntryModel(schema);
     }
 
     public static String encodeDigestAuthPassword(String username, String realm, String password) {
@@ -528,7 +528,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected NuxeoPrincipal makeTransientPrincipal(String username) {
-        DocumentModel userEntry = BaseSession.createEntryModel(null, userSchemaName, username, null);
+        DocumentModel userEntry = BaseSession.createEntryModel(userSchemaName, username, null);
         userEntry.setProperty(userSchemaName, userIdField, username);
         NuxeoPrincipal principal = makePrincipal(userEntry, false, true, null);
         String[] parts = username.split("/");
@@ -539,7 +539,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected DocumentModel makeVirtualUserEntry(String id, VirtualUser user) {
-        final DocumentModel userEntry = BaseSession.createEntryModel(null, userSchemaName, id, null);
+        final DocumentModel userEntry = BaseSession.createEntryModel(userSchemaName, id, null);
         // at least fill id field
         userEntry.setProperty(userSchemaName, userIdField, id);
         for (Entry<String, Serializable> prop : user.getProperties().entrySet()) {
@@ -632,7 +632,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     @Override
     public DocumentModel getBareUserModel() {
         String schema = dirService.getDirectorySchema(userDirectoryName);
-        return BaseSession.createEntryModel(null, schema, null, null);
+        return BaseSession.createEntryModel(schema);
     }
 
     @Override
@@ -654,7 +654,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         return getGroupModel(groupName, null);
     }
 
-    @SuppressWarnings("unchecked")
     protected NuxeoGroup makeGroup(DocumentModel groupEntry) {
         return new NuxeoGroupImpl(groupEntry, groupConfig);
     }
@@ -929,8 +928,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     @Override
     public List<String> getGroupIds() {
         try (Session groupDir = dirService.open(groupDirectoryName)) {
-            List<String> groupIds = groupDir.getProjection(Collections.<String, Serializable> emptyMap(),
-                    groupDir.getIdField());
+            List<String> groupIds = groupDir.getProjection(Map.of(), groupDir.getIdField());
             Collections.sort(groupIds);
             return groupIds;
         }
@@ -1040,7 +1038,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     @Override
     public DocumentModel getBareGroupModel() {
         String schema = dirService.getDirectorySchema(groupDirectoryName);
-        return BaseSession.createEntryModel(null, schema, null, null);
+        return BaseSession.createEntryModel(schema);
     }
 
     @Override
@@ -1049,7 +1047,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected List<String> getLeafPermissions(String perm) {
-        ArrayList<String> permissions = new ArrayList<>();
+        List<String> permissions = new ArrayList<>();
         PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
         String[] subpermissions = permissionProvider.getSubPermissions(perm);
         if (subpermissions == null || subpermissions.length <= 0) {
@@ -1189,7 +1187,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext,
             DocumentModel context) {
         filter = filter != null ? cloneMap(filter) : new HashMap<>();
-        HashSet<String> fulltextClone = fulltext != null ? cloneSet(fulltext) : new HashSet<>();
+        Set<String> fulltextClone = fulltext != null ? cloneSet(fulltext) : new HashSet<>();
         multiTenantManagement.queryTransformer(this, filter, fulltextClone, context);
 
         try (Session groupDir = dirService.open(groupDirectoryName, context)) {
@@ -1274,11 +1272,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected HashSet<String> cloneSet(Set<String> set) {
-        HashSet<String> result = new HashSet<>();
-        for (String key : set) {
-            result.add(key);
-        }
-        return result;
+        return new HashSet<>(set);
     }
 
     @Override
@@ -1317,8 +1311,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     @Override
     public List<String> getUserIds(DocumentModel context) {
         try (Session userDir = dirService.open(userDirectoryName, context)) {
-            List<String> userIds = userDir.getProjection(Collections.<String, Serializable> emptyMap(),
-                    userDir.getIdField());
+            List<String> userIds = userDir.getProjection(Map.of(), userDir.getIdField());
             Collections.sort(userIds);
             return userIds;
         }
@@ -1484,7 +1477,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         try (Session groupDir = dirService.open(groupDirectoryName, context)) {
             List<String> topLevelGroups = new LinkedList<>();
             // XXX retrieve all entries with references, can be costly.
-            DocumentModelList groups = groupDir.query(Collections.<String, Serializable> emptyMap(), null, null, true);
+            DocumentModelList groups = groupDir.query(Map.of(), null, null, true);
             for (DocumentModel group : groups) {
                 @SuppressWarnings("unchecked")
                 List<String> parents = (List<String>) group.getProperty(groupSchemaName, groupParentGroupsField);
@@ -1515,12 +1508,12 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     public String[] getUsersForPermission(String perm, ACP acp, DocumentModel context) {
         PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
         // using a hashset to avoid duplicates
-        HashSet<String> usernames = new HashSet<>();
+        Set<String> usernames = new HashSet<>();
 
         ACL merged = acp.getMergedACLs("merged");
         // The list of permission that is has "perm" as its (compound)
         // permission
-        ArrayList<ACE> filteredACEbyPerm = new ArrayList<>();
+        List<ACE> filteredACEbyPerm = new ArrayList<>();
 
         List<String> currentPermissions = getLeafPermissions(perm);
 
@@ -1570,10 +1563,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             if (ace.isGranted()) {
                 usernames.addAll(users);
             } else {
-                usernames.removeAll(users);
+                users.forEach(usernames::remove);
             }
         }
-        return usernames.toArray(new String[usernames.size()]);
+        return usernames.toArray(String[]::new);
     }
 
     @Override
