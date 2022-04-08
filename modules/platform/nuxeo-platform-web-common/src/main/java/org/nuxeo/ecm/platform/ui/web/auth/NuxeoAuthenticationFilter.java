@@ -308,6 +308,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 deputyLogin);
 
         newCachableUserIdent.getUserInfo().setAuthPluginName(cachableUserIdent.getUserInfo().getAuthPluginName());
+        newCachableUserIdent.getUserInfo().setCredentialsChecked(cachableUserIdent.getUserInfo().credentialsChecked());
 
         Principal principal = doAuthenticate(newCachableUserIdent, httpRequest);
         if (principal != null && principal != DIRECTORY_ERROR_PRINCIPAL) {
