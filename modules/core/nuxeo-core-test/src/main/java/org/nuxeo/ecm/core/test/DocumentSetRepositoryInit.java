@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 10.2
@@ -50,6 +51,8 @@ public class DocumentSetRepositoryInit extends DefaultRepositoryInit {
 
     public static final int CREATED_TOTAL;
 
+    public static final int TX_BATCH_SIZE = 10;
+
     static {
         // with SIZE = 3 AND DOC_BY_SIZE = 5, 195 documents are created
         int total = 0;
@@ -60,6 +63,8 @@ public class DocumentSetRepositoryInit extends DefaultRepositoryInit {
         CREATED_PROXY = total / DOC_BY_SIZE;
         CREATED_NON_PROXY = total / DOC_BY_SIZE * (DOC_BY_SIZE - 1);
     }
+
+    protected int count;
 
     @Override
     public void populate(CoreSession session) {
@@ -72,6 +77,7 @@ public class DocumentSetRepositoryInit extends DefaultRepositoryInit {
         acl.add(new ACE(USERNAME, "Read", true));
         acp.addACL(acl);
         test.setACP(acp, false);
+        count = 0;
         createChildren(session, test, SIZE);
     }
 
@@ -88,8 +94,19 @@ public class DocumentSetRepositoryInit extends DefaultRepositoryInit {
                 s.createProxy(child.getRef(), p.getRef());
                 DocumentModel folder = s.createDocumentModel(p.getPathAsString(), p.getName() + "folder" + i, "Folder");
                 folder = s.createDocument(folder);
+                if (++count % TX_BATCH_SIZE == 0) {
+                    // Avoid tx timeout on slow backend
+                    nextTransaction();
+                }
                 createChildren(s, folder, depth - 1);
             }
+        }
+    }
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
     }
 }
