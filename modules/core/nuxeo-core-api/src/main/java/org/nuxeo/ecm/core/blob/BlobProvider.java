@@ -62,6 +62,21 @@ public interface BlobProvider {
     void close();
 
     /**
+     * Checks whether this blob provider uses "cold storage mode".
+     * <p>
+     * Cold storage mode has the following characteristics:
+     * <ul>
+     * <li>transactional (blobs aren't actually written/deleted until the transaction commits, and transaction rollback
+     * is possible)
+     * </ul>
+     *
+     * @since 2021.19
+     */
+    default boolean isColdStorageMode() {
+        return false;
+    }
+
+    /**
      * Checks whether this blob provider uses "record mode".
      * <p>
      * Record mode has the following characteristics:

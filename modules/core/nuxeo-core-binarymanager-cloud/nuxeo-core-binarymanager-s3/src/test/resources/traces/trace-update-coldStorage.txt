@@ -1,0 +1,39 @@
+@startuml
+participant Nuxeo order 1
+participant Cache_tmp order 2
+participant S3 order 3
+== Update to Cold Storage class ==
+group tx write
+Nuxeo -> Cache_tmp: write 3 bytes
+									hnote right: bin_${TMP1}.tmp
+Cache_tmp --> Cache_tmp: rename
+									hnote right of Cache_tmp: ${TMP2}
+Nuxeo --> S3_tmp: getObjectMetadata
+									hnote right: ${TMP3}/tx/${TMP4}
+Nuxeo <-- S3_tmp: missing
+Nuxeo -> S3_tmp: write 3 bytes
+									hnote right: ${TMP3}/tx/${TMP4}
+									hnote right of Cache_tmp: ${TMP2}
+Cache_tmp --> Cache_tmp: rename
+									hnote right of Cache_tmp: ${TMP4}
+									rnote over Nuxeo: acbd18db4cc2f85cedef654fccc4a4d8
+end
+== TX commit ==
+									hnote right of Cache_tmp: ${TMP4}
+Cache_tmp -> Cache: move
+									hnote right: acbd18db4cc2f85cedef654fccc4a4d8
+Nuxeo --> S3: getObjectMetadata
+									hnote right: ${TMP3}/acbd18db4cc2f85cedef654fccc4a4d8
+Nuxeo <-- S3: missing
+Nuxeo -> S3: copyObject
+									hnote right: ${TMP3}/tx/${TMP4} to ${TMP3}/acbd18db4cc2f85cedef654fccc4a4d8
+Nuxeo <-- S3: copied
+Nuxeo -> S3: deleteObject
+									hnote right: ${TMP3}/tx/${TMP4}
+Nuxeo -> Cache_tmp: delete
+									hnote right: ${TMP4}
+Nuxeo -> S3: updateStorageClass
+									hnote right: ${TMP3}/acbd18db4cc2f85cedef654fccc4a4d8@null
+									rnote right: GLACIER
+== TX end ==
+@enduml

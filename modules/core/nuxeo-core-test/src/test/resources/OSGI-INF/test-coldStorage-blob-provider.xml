@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.blob.test-coldStorage-blob-provider" version="1.0.0">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="coldStorage">
+      <class>org.nuxeo.ecm.core.DummyBlobProvider</class>
+      <property name="coldStorage">true</property>
+    </blobprovider>
+  </extension>
+</component>

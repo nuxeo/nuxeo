@@ -49,6 +49,19 @@ public class BlobProviderDescriptor {
     public static final String TRANSIENT = "transient";
 
     /**
+     * Flags this blob provider as using "cold storage mode".
+     * <p>
+     * Cold storage mode has the following characteristics:
+     * <ul>
+     * <li>transactional (blobs aren't actually written/deleted until the transaction commits, and transaction rollback
+     * is possible)
+     * </ul>
+     *
+     * @since 2021.19
+     */
+    public static final String COLD_STORAGE = "coldStorage";
+
+    /**
      * Flags this blob provider as using "record mode".
      * <p>
      * Record mode has the following characteristics:

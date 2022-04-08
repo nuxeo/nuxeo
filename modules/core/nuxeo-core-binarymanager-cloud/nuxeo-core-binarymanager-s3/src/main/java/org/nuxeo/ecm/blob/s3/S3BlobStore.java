@@ -87,6 +87,7 @@ import com.amazonaws.services.s3.model.SSEAlgorithm;
 import com.amazonaws.services.s3.model.SSEAwsKeyManagementParams;
 import com.amazonaws.services.s3.model.SetObjectLegalHoldRequest;
 import com.amazonaws.services.s3.model.SetObjectRetentionRequest;
+import com.amazonaws.services.s3.model.StorageClass;
 import com.amazonaws.services.s3.model.VersionListing;
 import com.amazonaws.services.s3.transfer.Copy;
 import com.amazonaws.services.s3.transfer.Download;
@@ -819,6 +820,16 @@ public class S3BlobStore extends AbstractBlobStore {
                     logTrace("rnote right: " + status.toString());
                     amazonS3.setObjectLegalHold(request);
                 }
+            }
+            if (blobUpdateContext.coldStorageClass != null) {
+                StorageClass storageClass = blobUpdateContext.coldStorageClass.inColdStorage ? StorageClass.Glacier
+                        : StorageClass.Standard;
+                CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucketName, bucketKey, bucketName,
+                        bucketKey).withSourceVersionId(versionId).withStorageClass(storageClass);
+                logTrace("->", "updateStorageClass");
+                logTrace("hnote right: " + bucketKey + "@" + versionId);
+                logTrace("rnote right: " + storageClass);
+                amazonS3.copyObject(copyObjectRequest);
             }
             if (blobUpdateContext.restoreForDuration != null) {
                 Duration duration = blobUpdateContext.restoreForDuration.duration;

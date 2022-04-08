@@ -21,10 +21,13 @@ package org.nuxeo.ecm.core;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.IOUtils;
@@ -32,6 +35,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobStatus;
+import org.nuxeo.ecm.core.blob.BlobUpdateContext;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
@@ -40,6 +44,8 @@ import org.nuxeo.ecm.core.blob.apps.AppLink;
  * Dummy storage in memory.
  */
 public class DummyBlobProvider extends AbstractBlobProvider {
+
+    public final static long RESTORE_DELAY_MILLISECONDS = 1000;
 
     protected Map<String, byte[]> blobs;
 
@@ -68,6 +74,9 @@ public class DummyBlobProvider extends AbstractBlobProvider {
 
             @Override
             public InputStream getStream() throws IOException {
+                if (!getStatus(this).isDownloadable()) {
+                    throw new IOException(String.format("Blob %s is not downloadable", key));
+                }
                 int colon = key.indexOf(':');
                 String k = colon < 0 ? key : key.substring(colon + 1);
                 byte[] bytes = blobs.get(k);
@@ -100,6 +109,27 @@ public class DummyBlobProvider extends AbstractBlobProvider {
     @Override
     public BlobStatus getStatus(ManagedBlob blob) throws IOException {
         return blobsStatus.getOrDefault(getBlobKey(blob), super.getStatus(blob));
+    }
+
+    @Override
+    public void updateBlob(BlobUpdateContext blobUpdateContext) throws IOException {
+        if (blobUpdateContext != null) {
+            BlobStatus status = blobsStatus.getOrDefault(blobUpdateContext.key, new BlobStatus());
+            if (blobUpdateContext.coldStorageClass != null) {
+                status.withDownloadable(!blobUpdateContext.coldStorageClass.inColdStorage);
+            }
+            if (blobUpdateContext.restoreForDuration != null) {
+                status.withOngoingRestore(true);
+                CompletableFuture.delayedExecutor(RESTORE_DELAY_MILLISECONDS, TimeUnit.MILLISECONDS).execute(() -> {
+                    // retrieval will occur in a short delay
+                    status.withDownloadable(true);
+                    status.withOngoingRestore(false);
+                    status.withDownloadableUntil(Instant.now().plus(blobUpdateContext.restoreForDuration.duration));
+                    blobsStatus.put(blobUpdateContext.key, status);
+                });
+            }
+            blobsStatus.put(blobUpdateContext.key, status);
+        }
     }
 
     /** @since 11.1 **/
