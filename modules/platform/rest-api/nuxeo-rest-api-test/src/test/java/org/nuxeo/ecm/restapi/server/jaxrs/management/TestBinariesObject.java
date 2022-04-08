@@ -84,6 +84,7 @@ public class TestBinariesObject extends ManagementBaseTest {
 
         document.setPropertyValue("files:files", (Serializable) files);
         document = session.createDocument(document);
+        transactionalFeature.nextTransaction();
 
         List<Map<String, Blob>> createdFiles = (List<Map<String, Blob>>) document.getPropertyValue("files:files");
         long sizeOfBinaries = createdFiles.stream().flatMap(m -> m.values().stream()).mapToLong(Blob::getLength).sum();
