@@ -1,5 +1,15 @@
 persistence:
   enabled: false
+postgresqlExtendedConf:
+  # See https://doc.nuxeo.com/nxdoc/postgresql/#performance-tuning
+  checkpoint_completion_target: "0.8"
+  default_statistics_target: "500"
+  effective_cache_size: "1536MB"
+  maintenance_work_mem: "512MB"
+  max_connections: "63"
+  shared_buffers: "1GB"
+  wal_buffers: "16MB"
+  work_mem: "12MB"
 primary:
   labels:
     usage: utests
