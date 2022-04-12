@@ -1,6 +1,6 @@
 persistence:
   enabled: false
-master:
+primary:
   labels:
     usage: utests
   podLabels:

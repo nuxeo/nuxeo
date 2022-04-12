@@ -29,7 +29,7 @@ releases:
   - values/{{ $valuesDir }}/values-mongodb.yaml
 - name: postgresql
   chart: bitnami/postgresql
-  version: 9.8.4
+  version: 10.16.2 # latest chart version for app version 13
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: postgresql.enabled
   values:

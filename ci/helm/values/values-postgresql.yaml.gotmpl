@@ -11,7 +11,7 @@ resources:
   limits:
     cpu: "2"
     memory: "2Gi"
-master:
+primary:
   labels:
     {{- if (env "BRANCH_NAME") }}
     branch: {{ env "BRANCH_NAME" | quote }}

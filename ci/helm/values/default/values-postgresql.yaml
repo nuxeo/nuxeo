@@ -1,6 +1,6 @@
 persistence:
   enabled: true
-master:
+primary:
   labels:
     usage: preview
   podLabels:
