@@ -613,7 +613,19 @@ public class TransactionHelper {
      * @since 8.4
      */
     public static void runInTransaction(Runnable runnable) {
-        runInTransaction(() -> {runnable.run(); return null;});
+        runInTransaction(0, runnable);
+    }
+
+    /**
+     * Runs the given {@link Runnable} in a transactional context. Will not start a new transaction if one already
+     * exists.
+     *
+     * @param timeout the timeout in seconds, &lt;= 0 for the default
+     * @param runnable the {@link Runnable}
+     * @since 11.5
+     */
+    public static void runInTransaction(int timeout, Runnable runnable) {
+        runInTransaction(timeout, () -> {runnable.run(); return null;});
     }
 
     /**
@@ -625,9 +637,22 @@ public class TransactionHelper {
      * @since 8.4
      */
     public static <R> R runInTransaction(Supplier<R> supplier) {
+        return runInTransaction(0, supplier);
+    }
+
+    /**
+     * Calls the given {@link Supplier} in a transactional context. Will not start a new transaction if one already
+     * exists.
+     *
+     * @param timeout the timeout in seconds, &lt;= 0 for the default
+     * @param supplier the {@link Supplier}
+     * @return the supplier's result
+     * @since 11.5
+     */
+    public static <R> R runInTransaction(int timeout, Supplier<R> supplier) {
         boolean startTransaction = !isTransactionActiveOrMarkedRollback();
         if (startTransaction) {
-            if (!startTransaction()) {
+            if (!startTransaction(timeout)) {
                 throw new TransactionRuntimeException("Cannot start transaction");
             }
         }

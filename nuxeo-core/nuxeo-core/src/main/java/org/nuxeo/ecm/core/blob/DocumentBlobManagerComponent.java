@@ -447,17 +447,12 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             throw new NuxeoException("Cannot run supplier when current transaction is marked rollback.");
         }
         boolean txActive = TransactionHelper.isTransactionActive();
-        boolean txStarted = false;
         try {
             if (txActive) {
                 TransactionHelper.commitOrRollbackTransaction();
             }
-            txStarted = TransactionHelper.startTransaction(timeout);
-            return supplier.get();
+            return TransactionHelper.runInTransaction(timeout, supplier);
         } finally {
-            if (txStarted) {
-                TransactionHelper.commitOrRollbackTransaction();
-            }
             if (txActive) {
                 // go back to default transaction timeout
                 TransactionHelper.startTransaction();
