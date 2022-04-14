@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.directory.continent.test">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+    <directory name="continent" extends="template-directory">
+      <schema>vocabulary</schema>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>continent.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+  </extension>
+
+</component>

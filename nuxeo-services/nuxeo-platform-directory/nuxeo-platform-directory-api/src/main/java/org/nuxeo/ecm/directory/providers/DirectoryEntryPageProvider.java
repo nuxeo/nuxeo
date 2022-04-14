@@ -19,10 +19,14 @@
 package org.nuxeo.ecm.directory.providers;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
@@ -49,11 +53,21 @@ public class DirectoryEntryPageProvider extends AbstractPageProvider<DirectoryEn
         Directory directory = (Directory) parameters[0];
 
         try (Session session = directory.getSession()) {
-            return session.query(Collections.emptyMap(), Collections.emptySet(), Collections.emptyMap(), false,
-                    (int) getPageSize(), (int) getCurrentPageOffset())
-                          .stream()
-                          .map(dir -> new DirectoryEntry(directory.getName(), dir))
-                          .collect(Collectors.toList());
+            List<OrderByExpr> orders = getSortInfos().stream().map(this::toOrderExp).collect(Collectors.toList());
+            DocumentModelList result = session.query(new QueryBuilder().orders(orders)
+                                                                       .limit(getPageSize())
+                                                                       .offset(getCurrentPageOffset())
+                                                                       .countTotal(true),
+                    false);
+            setResultsCount(result.totalSize());
+            return result.stream()
+                         .map(dir -> new DirectoryEntry(directory.getName(), dir))
+                         .collect(Collectors.toList());
         }
+    }
+
+    protected OrderByExpr toOrderExp(SortInfo sortInfo) {
+        String sortColumn = sortInfo.getSortColumn();
+        return sortInfo.getSortAscending() ? OrderByExprs.asc(sortColumn) : OrderByExprs.desc(sortColumn);
     }
 }
