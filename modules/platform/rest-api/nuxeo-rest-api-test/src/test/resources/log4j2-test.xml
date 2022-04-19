@@ -12,6 +12,8 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
+    <Logger name="org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation" level="error" />
+    <Logger name="org.nuxeo.lib.stream.log.kafka.KafkaLogTailer" level="error" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />
