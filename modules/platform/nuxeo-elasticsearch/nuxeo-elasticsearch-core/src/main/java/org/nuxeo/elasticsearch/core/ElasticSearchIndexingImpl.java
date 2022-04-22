@@ -38,6 +38,7 @@ import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.ClearScrollRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
@@ -390,7 +391,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                     "Search with scroll request: curl -XGET 'http://localhost:9200/%s/_search?scroll=%s' -d '%s'",
                     indexName, keepAlive, query.toString()));
         }
-        for (SearchResponse response = esa.getClient().search(request); //
+        SearchResponse response;
+        for (response = esa.getClient().search(request); //
                 response.getHits().getHits().length > 0; //
                 response = runNextScroll(response, keepAlive)) {
 
@@ -405,6 +407,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             // Run bulk delete request
             esa.getClient().bulk(bulkRequest);
         }
+        // Close the scroll
+        ClearScrollRequest closeScrollRequest = new ClearScrollRequest();
+        closeScrollRequest.addScrollId(response.getScrollId());
+        esa.getClient().clearScroll(closeScrollRequest);
     }
 
     SearchResponse runNextScroll(SearchResponse response, TimeValue keepAlive) {

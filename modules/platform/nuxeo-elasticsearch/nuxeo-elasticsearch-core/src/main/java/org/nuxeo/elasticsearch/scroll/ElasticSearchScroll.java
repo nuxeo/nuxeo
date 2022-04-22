@@ -82,6 +82,10 @@ public class ElasticSearchScroll extends RepositoryScroll {
     @Override
     public void close() {
         super.close();
+        if (esScroll != null) {
+            ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
+            ess.clearScroll(esScroll);
+        }
         esScroll = null;
     }
 }
