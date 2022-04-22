@@ -37,6 +37,12 @@
       <property name="keyStrategy">managed</property>
     </blobprovider>
 
+    <blobprovider name="s3-coldStorage">
+      <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
+      <property name="bucket_prefix">coldStorage/</property>
+      <property name="coldStorage">true</property>
+    </blobprovider>
+
     <blobprovider name="s3-record">
       <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
       <property name="bucket_prefix">record/</property>

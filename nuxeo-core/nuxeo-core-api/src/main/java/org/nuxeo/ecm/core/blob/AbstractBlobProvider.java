@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.blob;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.ALLOW_BYTE_RANGE;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.COLD_STORAGE;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.CREATE_FROM_KEY_GROUPS;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.CREATE_FROM_KEY_USERS;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
@@ -66,6 +67,11 @@ public abstract class AbstractBlobProvider implements BlobProvider {
     }
 
     @Override
+    public boolean isColdStorageMode() {
+        return Boolean.parseBoolean(properties.get(COLD_STORAGE));
+    }
+
+    @Override
     public boolean isTransient() {
         return Boolean.parseBoolean(properties.get(TRANSIENT));
     }
@@ -77,7 +83,7 @@ public abstract class AbstractBlobProvider implements BlobProvider {
 
     @Override
     public boolean isTransactional() {
-        return Boolean.parseBoolean(properties.get(TRANSACTIONAL)) || isRecordMode();
+        return Boolean.parseBoolean(properties.get(TRANSACTIONAL)) || isRecordMode() || isColdStorageMode();
     }
 
     @Override
