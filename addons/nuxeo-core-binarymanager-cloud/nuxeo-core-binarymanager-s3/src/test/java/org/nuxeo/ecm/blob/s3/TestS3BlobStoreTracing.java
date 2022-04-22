@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.blob.s3;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -52,8 +53,10 @@ import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManagerFeature;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.BlobStatus;
 import org.nuxeo.ecm.core.blob.BlobStore;
 import org.nuxeo.ecm.core.blob.BlobStoreBlobProvider;
+import org.nuxeo.ecm.core.blob.BlobUpdateContext;
 import org.nuxeo.ecm.core.blob.CachingBlobStore;
 import org.nuxeo.ecm.core.blob.KeyStrategy;
 import org.nuxeo.ecm.core.blob.KeyStrategyDocId;
@@ -70,6 +73,8 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.TransactionalConfig;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.amazonaws.services.s3.model.StorageClass;
 
 @RunWith(FeaturesRunner.class)
 @Features({ BlobManagerFeature.class, WorkManagerFeature.class, TransactionalFeature.class, LogCaptureFeature.class,
@@ -103,6 +108,7 @@ public class TestS3BlobStoreTracing {
             "s3-sha256-async", //
             "s3-nocache", //
             "s3-managed", //
+            "s3-coldStorage", //
             "s3-record");
 
     @Inject
@@ -295,6 +301,30 @@ public class TestS3BlobStoreTracing {
         assertKey(DOCID1, key1);
         TransactionHelper.commitOrRollbackTransaction();
         checkTrace("trace-write-record.txt");
+    }
+
+    /**
+     * @since 2021.19
+     */
+    @Test
+    public void testUpdateToColdStoreClass() throws IOException {
+        BlobProvider bp = getBlobProvider("s3-coldStorage");
+
+        logTrace("== Update to Cold Storage class ==");
+        TransactionHelper.startTransaction();
+        BlobContext blobContext = new BlobContext(new StringBlob(FOO), DOCID1, XPATH);
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = bp.writeBlob(blobContext);
+        BlobUpdateContext blobUpdateCtx = new BlobUpdateContext(blobInfo.key).withColdStorageClass(true);
+        bp.updateBlob(blobUpdateCtx);
+        TransactionHelper.commitOrRollbackTransaction();
+
+        Blob blob = bp.readBlob(blobInfo);
+        BlobStatus status = bp.getStatus((ManagedBlob) blob);
+        assertFalse(status.isDownloadable());
+        assertEquals(StorageClass.Glacier.toString(), status.getStorageClass());
+        assertFalse(status.isOngoingRestore());
+        checkTrace("trace-update-coldStorage.txt");
     }
 
     @Test

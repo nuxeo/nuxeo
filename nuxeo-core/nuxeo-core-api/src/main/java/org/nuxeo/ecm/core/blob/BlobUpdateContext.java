@@ -37,6 +37,8 @@ public class BlobUpdateContext {
 
     public RestoreForDuration restoreForDuration;
 
+    public ColdStorageClass coldStorageClass;
+
     public BlobUpdateContext(String key) {
         this.key = key;
     }
@@ -50,6 +52,9 @@ public class BlobUpdateContext {
         }
         if (other.restoreForDuration != null) {
             restoreForDuration = other.restoreForDuration;
+        }
+        if (other.coldStorageClass != null) {
+            coldStorageClass = other.coldStorageClass;
         }
         return this;
     }
@@ -66,6 +71,11 @@ public class BlobUpdateContext {
 
     public BlobUpdateContext withRestoreForDuration(Duration duration) {
         restoreForDuration = new RestoreForDuration(duration);
+        return this;
+    }
+
+    public BlobUpdateContext withColdStorageClass(boolean inColdStorage) {
+        coldStorageClass = new ColdStorageClass(inColdStorage);
         return this;
     }
 
@@ -95,6 +105,16 @@ public class BlobUpdateContext {
 
         public RestoreForDuration(Duration duration) {
             this.duration = duration;
+        }
+
+    }
+
+    public static class ColdStorageClass {
+
+        public final boolean inColdStorage;
+
+        public ColdStorageClass(boolean inColdStorage) {
+            this.inColdStorage = inColdStorage;
         }
 
     }
