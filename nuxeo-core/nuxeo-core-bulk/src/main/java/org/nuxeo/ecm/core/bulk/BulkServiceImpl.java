@@ -335,9 +335,14 @@ public class BulkServiceImpl implements BulkService, Synchronization {
     public String submitTransactional(BulkCommand command) {
         if (!Boolean.TRUE.equals(isEnlisted.get())) {
             log.debug("Enlisting into transaction");
-            if (!registerSynchronization(this)) {
-                log.debug("No active transaction, submit command immediately");
-                return submit(command);
+            try {
+                if (!registerSynchronization(this)) {
+                    log.debug("No active transaction, submit command immediately");
+                    return submit(command);
+                }
+            } catch (RollbackException e) {
+                log.info("Transaction is marked for rollback, bulk command will not be executed", e);
+                return command.getId();
             }
             isEnlisted.set(true);
         }
@@ -345,7 +350,7 @@ public class BulkServiceImpl implements BulkService, Synchronization {
         return command.getId();
     }
 
-    protected boolean registerSynchronization(Synchronization sync) {
+    protected boolean registerSynchronization(Synchronization sync) throws RollbackException {
         try {
             TransactionManager tm = TransactionHelper.lookupTransactionManager();
             if (tm != null) {
@@ -359,8 +364,7 @@ public class BulkServiceImpl implements BulkService, Synchronization {
                 throw new NuxeoException("Unable to register synchronization: no transaction manager");
             }
         } catch (RollbackException e) {
-            log.debug("Transaction is marked for rollback", e);
-            return true;
+            throw e;
         } catch (NamingException | IllegalStateException | SystemException e) {
             throw new NuxeoException("Unable to register synchronization", e);
         }
