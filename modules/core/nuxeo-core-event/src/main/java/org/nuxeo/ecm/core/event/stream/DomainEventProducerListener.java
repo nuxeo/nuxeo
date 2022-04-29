@@ -54,7 +54,12 @@ public class DomainEventProducerListener implements EventListener, Synchronizati
     @Override
     public void handleEvent(Event event) {
         if (!Boolean.TRUE.equals(isEnlisted.get())) {
-            isEnlisted.set(registerSynchronization(this));
+            try {
+                isEnlisted.set(registerSynchronization(this));
+            } catch (RollbackException e) {
+                log.info("Transaction marked for rollback, skipping", e);
+                return;
+            }
             log.debug("Enlisted to transaction");
             initDomainEventProducers();
         }
@@ -109,7 +114,7 @@ public class DomainEventProducerListener implements EventListener, Synchronizati
         }
     }
 
-    protected boolean registerSynchronization(Synchronization sync) {
+    protected boolean registerSynchronization(Synchronization sync) throws RollbackException {
         try {
             TransactionManager tm = TransactionHelper.lookupTransactionManager();
             if (tm != null) {
@@ -122,7 +127,9 @@ public class DomainEventProducerListener implements EventListener, Synchronizati
                 log.error("Unable to register synchronization: no TransactionManager");
                 return false;
             }
-        } catch (NamingException | IllegalStateException | SystemException | RollbackException e) {
+        } catch (RollbackException e) {
+            throw e;
+        } catch (NamingException | IllegalStateException | SystemException e) {
             log.error("Unable to register synchronization", e);
             return false;
         }

@@ -72,7 +72,9 @@ public class TestDomainEventProducer {
         // event will not be appended to domain event streams because of rollback
         service.fireEvent(event1);
         TransactionHelper.setTransactionRollbackOnly();
-        transactionalFeature.nextTransaction();
+        // Not using transactionalFeature.nextTransaction() because it propagates the rollback mark
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // event #2
         service.fireEvent(event1);
