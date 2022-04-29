@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -342,6 +343,15 @@ public class ESRestClient implements ESClient {
                 throw new TooManyRequestsRetryableException(e.getResponse().getStatusLine().toString());
             }
             throw new NuxeoException(e);
+        } catch (ElasticsearchStatusException e) {
+             if (RestStatus.TOO_MANY_REQUESTS.equals(e.status())) {
+                 log.warn("Detecting overloaded Elastic bulk response: " + e.getMessage());
+                 throw new TooManyRequestsRetryableException(e.getMessage());
+             }
+             throw new NuxeoException(e);
+        } catch (SocketTimeoutException e) {
+             log.warn("Elastic timeout, might be overloaded", e);
+             throw new TooManyRequestsRetryableException(e.getMessage());
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -421,6 +431,9 @@ public class ESRestClient implements ESClient {
                 throw new TooManyRequestsRetryableException(e.getMessage());
             }
             throw new NuxeoException(e);
+        } catch (SocketTimeoutException e) {
+            log.warn("Elastic timeout, might be overloaded", e);
+            throw new TooManyRequestsRetryableException(e.getMessage());
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
