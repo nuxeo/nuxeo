@@ -4968,10 +4968,10 @@ public class TestSQLRepositoryAPI {
         // trigger manually instead of waiting for scheduler
         new RetentionExpiredFinderListener().handleEvent(null);
         // wait for all bulk commands to be executed
+        nextTransaction();
         assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(60)));
 
         // re-acquire the doc in a new transaction
-        nextTransaction();
         doc = session.getDocument(doc.getRef());
 
         // it has no retention anymore and can be deleted
