@@ -573,7 +573,7 @@ public class DBSTransactionState {
                 BulkService service = Framework.getService(BulkService.class);
                 BulkCommand command = new BulkCommand.Builder(UPDATE_READ_ACLS_ACTION, nxql).user(
                         SYSTEM_USERNAME).repository(session.getRepositoryName()).build();
-                service.submit(command);
+                service.submitTransactional(command);
             }
         }
     }
