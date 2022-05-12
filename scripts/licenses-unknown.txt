@@ -54,7 +54,7 @@
      (AL 2.0) standard (taglibs:standard:1.1.2 - no url defined)
      (AL 2.0) chronicle-queue (net.openhft:chronicle-queue:4.6.44 - no url defined)
      (AL 2.0) zookeeper (org.apache.zookeeper:zookeeper:3.4.8 - no url defined)
-     (AL 2.0) quartz-mongodb (com.novemberain:quartz-mongodb:2.0.0-NX3 - https://github.com/michaelklishin/quartz-mongodb)
+     (AL 2.0) quartz-mongodb (com.novemberain:quartz-mongodb:2.0.0-NX4 - https://github.com/michaelklishin/quartz-mongodb)
      (AL 2.0) metrics-statsd-common (com.readytalk:metrics-statsd-common:4.2.0 - https://github.com/ReadyTalk/metrics-statsd)
      (AL 2.0) metrics3-statsd (com.readytalk:metrics3-statsd:4.2.0 - https://github.com/ReadyTalk/metrics-statsd)
      (AL 2.0) kafka-avro-serializer (io.confluent:kafka-avro-serializer:5.0.0 - https://github.com/confluentinc/schema-registry)
