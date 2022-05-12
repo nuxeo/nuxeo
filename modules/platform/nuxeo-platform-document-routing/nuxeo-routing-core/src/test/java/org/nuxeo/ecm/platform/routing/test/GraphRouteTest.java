@@ -1616,6 +1616,37 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertTrue(subr.isCanceled());
     }
 
+    /**
+     * @since 2021.20
+     */
+    @Test
+    public void testParentCancelAfterSubRouteCancel() throws Exception {
+        createRouteAndSuspendingSubRoute();
+
+        // start the main workflow
+        DocumentRoute route = instantiateAndRun(session);
+
+        // check that it's suspended on node 2
+        assertFalse(route.isDone());
+        DocumentModel n2 = session.getChild(route.getDocument().getRef(), "node2");
+        assertNotNull(n2);
+        assertEquals(State.SUSPENDED.getLifeCycleState(), n2.getCurrentLifeCycleState());
+
+        // find the sub-route instance and cancel it
+        String subid = (String) n2.getPropertyValue(GraphNode.PROP_SUB_ROUTE_INSTANCE_ID);
+        assertNotNull(subid);
+        DocumentModel subrdoc = session.getDocument(new IdRef(subid));
+        DocumentRoute subr = subrdoc.getAdapter(DocumentRoute.class);
+        subr.cancel(session);
+        assertTrue(subr.isCanceled());
+
+        // cancel the main workflow
+        assertFalse(route.isCanceled());
+        route.cancel(session);
+        route.getDocument().refresh();
+        assertTrue(route.isCanceled());
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testCancelTasksWhenWorkflowDone() {
