@@ -838,7 +838,10 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         if (!StringUtils.isEmpty(subRouteInstanceId)) {
             DocumentModel subRouteDoc = getSession().getDocument(new IdRef(subRouteInstanceId));
             DocumentRoute subRoute = subRouteDoc.getAdapter(DocumentRoute.class);
-            subRoute.cancel(getSession());
+            if (!subRoute.isCanceled()) {
+                // Sub route may have been already canceled
+                subRoute.cancel(getSession());
+            }
         }
     }
 

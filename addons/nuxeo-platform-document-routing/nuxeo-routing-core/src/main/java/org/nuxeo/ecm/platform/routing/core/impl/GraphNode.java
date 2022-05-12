@@ -227,6 +227,8 @@ public interface GraphNode {
         RUNNING_INPUT,
         /** Task node is waiting for task to be done. */
         SUSPENDED("suspended", "toSuspended"),
+        /** Node is canceled. */
+        CANCELED("canceled", "toCanceled"),
         /** While executing output phase. Not persisted. */
         RUNNING_OUTPUT;
 
