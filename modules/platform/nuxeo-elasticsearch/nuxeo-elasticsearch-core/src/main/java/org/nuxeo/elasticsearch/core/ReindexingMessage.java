@@ -34,9 +34,9 @@ import org.nuxeo.runtime.pubsub.SerializableMessage;
  * @since 2021.12
  */
 public class ReindexingMessage implements SerializableMessage {
-    private static final long serialVersionUID = 20210903L;
+    private static final long serialVersionUID = 20220516L;
 
-    public final String bulkIndexCommandId;
+    public final String repository;
 
     public final String indexName;
 
@@ -49,14 +49,14 @@ public class ReindexingMessage implements SerializableMessage {
     protected static final String NUL = "null";
 
     /**
-     * @param bulkCommandId the bulk command id that is performing the re-indexation
+     * @param repository being re-indexed
      * @param indexName the name of the search index
      * @param secondIndexName the name of the second write index
      * @param state the state of the reindexing
      */
-    public ReindexingMessage(String bulkCommandId, String indexName, String secondIndexName, ReindexingState state) {
+    public ReindexingMessage(String repository, String indexName, String secondIndexName, ReindexingState state) {
         Objects.requireNonNull(state);
-        this.bulkIndexCommandId = bulkCommandId;
+        this.repository = repository;
         this.indexName = indexName;
         this.secondWriteIndexName = secondIndexName;
         this.state = state;
@@ -64,7 +64,7 @@ public class ReindexingMessage implements SerializableMessage {
 
     @Override
     public void serialize(OutputStream out) throws IOException {
-        String string = bulkIndexCommandId + SEP + indexName + SEP + secondWriteIndexName + SEP + state;
+        String string = repository + SEP + indexName + SEP + secondWriteIndexName + SEP + state;
         IOUtils.write(string, out, UTF_8);
     }
 
@@ -74,11 +74,11 @@ public class ReindexingMessage implements SerializableMessage {
         if (parts.length != 4) {
             throw new IOException("Invalid reindexing message: " + string);
         }
-        String id = valueOf(parts[0]);
+        String repo = valueOf(parts[0]);
         String index = valueOf(parts[1]);
         String writeIndex = valueOf(parts[2]);
         ReindexingState state = ReindexingState.valueOf(parts[3]);
-        return new ReindexingMessage(id, index, writeIndex, state);
+        return new ReindexingMessage(repo, index, writeIndex, state);
     }
 
     protected static String valueOf(String string) {
@@ -87,7 +87,7 @@ public class ReindexingMessage implements SerializableMessage {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + bulkIndexCommandId + ", " + indexName + ", " + secondWriteIndexName
+        return getClass().getSimpleName() + "(" + repository + ", " + indexName + ", " + secondWriteIndexName
                 + ", " + state + ")";
     }
 
@@ -100,7 +100,7 @@ public class ReindexingMessage implements SerializableMessage {
             return false;
         }
         ReindexingMessage message = (ReindexingMessage) o;
-        return new EqualsBuilder().append(bulkIndexCommandId, message.bulkIndexCommandId)
+        return new EqualsBuilder().append(repository, message.repository)
                                   .append(indexName, message.indexName)
                                   .append(secondWriteIndexName, message.secondWriteIndexName)
                                   .append(state, message.state)
@@ -109,7 +109,7 @@ public class ReindexingMessage implements SerializableMessage {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(bulkIndexCommandId)
+        return new HashCodeBuilder(17, 37).append(repository)
                                           .append(indexName)
                                           .append(secondWriteIndexName)
                                           .append(state)

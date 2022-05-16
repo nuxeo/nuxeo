@@ -433,7 +433,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             secondaryWriteIndexNames.put(conf.getName(), writeIndex);
             // notify other nodes
             reindexingPubSub.sendMessage(
-                    new ReindexingMessage(null, conf.getName(), writeIndex, ReindexingState.START));
+                    new ReindexingMessage(conf.getRepositoryName(), conf.getName(), writeIndex, ReindexingState.START));
             // save into kv store for new worker nodes
             getKvStore().put(conf.getName(), writeIndex);
         }
@@ -478,8 +478,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                     searchAlias, writeIndex, searchIndex);
             getClient().updateAlias(searchAlias, writeIndex);
             searchIndex = writeIndex;
-            secondaryWriteIndexNames.remove(conf.getName());
-            reindexingPubSub.sendMessage(new ReindexingMessage(null, conf.getName(), null, ReindexingState.END));
+            String newIndex = secondaryWriteIndexNames.remove(conf.getName());
+            reindexingPubSub.sendMessage(new ReindexingMessage(conf.getRepositoryName(), conf.getName(), newIndex, ReindexingState.END));
             getKvStore().put(conf.getName(), (String) null);
         }
         repoNames.put(searchIndex, conf.getRepositoryName());
@@ -643,6 +643,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 break;
             case END:
             case ABORT:
+                repoNames.put(message.secondWriteIndexName, message.repository);
                 secondaryWriteIndexNames.remove(message.indexName);
                 break;
             }
