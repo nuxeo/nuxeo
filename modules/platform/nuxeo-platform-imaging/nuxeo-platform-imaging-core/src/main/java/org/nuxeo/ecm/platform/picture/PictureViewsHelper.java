@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -73,10 +74,16 @@ public class PictureViewsHelper {
         }
 
         DocumentModel workingDocument = session.getDocument(new IdRef(id));
-        Property fileProp = workingDocument.getProperty(xpath);
-        Blob blob = (Blob) fileProp.getValue();
+        Blob blob = null;
+        try {
+            Property fileProp = workingDocument.getProperty(xpath);
+            blob = (Blob) fileProp.getValue();
+        } catch (PropertyNotFoundException e) {
+            log.debug("No property: {} for doc: {}", xpath, id);
+        }
         if (blob == null) {
             // do nothing
+            statusSetter.accept(NOTHING_TO_PROCESS_MESSAGE);
             log.debug("No blob for doc: {}", workingDocument);
             return;
         }
