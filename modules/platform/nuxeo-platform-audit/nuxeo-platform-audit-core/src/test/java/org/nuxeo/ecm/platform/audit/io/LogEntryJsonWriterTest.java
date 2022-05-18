@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.audit.io;
 
 import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -94,7 +95,7 @@ public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogE
     }
 
     @Test
-    public void testArrayInExtendedInfo() throws Exception {
+    public void testArrayInExtendedInfo() throws IOException {
         Map<String, ExtendedInfo> infos = new HashMap<>();
         infos.put("params", ExtendedInfoImpl.createExtendedInfo(new Object[] { "a simple string" }));
 
@@ -120,7 +121,7 @@ public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogE
     }
 
     @Test
-    public void testMapInExtendedInfo() throws Exception {
+    public void testMapInExtendedInfo() throws IOException {
         Map<String, ExtendedInfo> infos = new HashMap<>();
 
         HashMap<String, Serializable> infoMap = new HashMap<>();
