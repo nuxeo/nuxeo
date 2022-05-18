@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -649,30 +650,35 @@ public class JsonAssert {
      * @since 7.2
      */
     public JsonAssert contains(String... expecteds) {
+        return contains(JsonNode::asText, expecteds);
+    }
+
+    /**
+     * Checks the current array contains exactly the given json as integers.
+     *
+     * @param expecteds A set of integers.
+     * @return The current json assertion for chaining.
+     * @since 2021.21
+     */
+    public JsonAssert contains(Integer... expecteds) {
+        return contains(JsonNode::asInt, expecteds);
+    }
+
+    protected <T> JsonAssert contains(Function<JsonNode, T> f, @SuppressWarnings("unchecked") T... expecteds) {
         length(expecteds.length);
-        JsonNode jn = null;
         Iterator<JsonNode> it = jsonNode.elements();
-        Map<String, Integer> expectedMap = new HashMap<String, Integer>();
-        for (String value : expecteds) {
-            Integer count = expectedMap.get(value);
-            if (count == null) {
-                count = 0;
-            }
-            count++;
-            expectedMap.put(value, count);
+        Map<T, Integer> expectedMap = new HashMap<>();
+        for (T value : expecteds) {
+            expectedMap.merge(value, 1, Integer::sum);
         }
-        Map<String, Integer> foundMap = new HashMap<String, Integer>();
-        List<String> founds = new ArrayList<String>();
+        Map<T, Integer> foundMap = new HashMap<>();
+        List<T> founds = new ArrayList<>();
+        JsonNode jn;
         while (it.hasNext()) {
             jn = it.next();
-            String value = jn.isNull() ? null : jn.asText();
+            T value = jn.isNull() ? null : f.apply(jn);
             founds.add(value);
-            Integer count = foundMap.get(value);
-            if (count == null) {
-                count = 0;
-            }
-            count++;
-            foundMap.put(value, count);
+            foundMap.merge(value, 1, Integer::sum);
         }
         Assert.assertEquals("some value were not found or not expected: found=" + founds, expectedMap, foundMap);
         return this;
