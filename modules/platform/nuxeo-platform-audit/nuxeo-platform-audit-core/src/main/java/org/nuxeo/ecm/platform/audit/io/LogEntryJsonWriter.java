@@ -142,7 +142,7 @@ public class LogEntryJsonWriter extends ExtensibleEntityJsonWriter<LogEntry> {
         } else if (Boolean.class.isAssignableFrom(clazz)) {
             jg.writeBooleanField(key, (Boolean) value);
         } else if (clazz.isArray() || List.class.isAssignableFrom(clazz)) {
-            jg.writeObjectField(key, value);
+            writeValues(jg, key, value);
         } else if (Map.class.isAssignableFrom(clazz)) {
             @SuppressWarnings("unchecked")
             Map<String, Serializable> map = (Map<String, Serializable>) value;
@@ -157,6 +157,20 @@ public class LogEntryJsonWriter extends ExtensibleEntityJsonWriter<LogEntry> {
         } else {
             // mainly blobs
             jg.writeStringField(key, value.toString());
+        }
+    }
+
+    protected void writeValues(JsonGenerator jg, String key, Serializable value) throws IOException {
+        if (value.getClass().isArray()) {
+            Object[] values = (Object[]) value;
+            if (values.length == 0 || !(values[0] instanceof Blob)) {
+                jg.writeObjectField(key, value);
+            }
+        } else if (List.class.isAssignableFrom(value.getClass())) {
+            List<?> values = (List<?>) value;
+            if (values.isEmpty() || !(values.get(0) instanceof Blob)) {
+                jg.writeObjectField(key, value);
+            }
         }
     }
 

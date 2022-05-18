@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.audit.io;
 
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
 
 import java.io.IOException;
@@ -30,10 +31,12 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
@@ -99,6 +102,62 @@ public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogE
         Map<String, ExtendedInfo> infos = new HashMap<>();
         infos.put("params", ExtendedInfoImpl.createExtendedInfo(new Object[] { "a simple string" }));
 
+        JsonAssert json = assertLogEntry(infos);
+        json.has("extended").properties(1).has("params").isArray().contains("a simple string");
+    }
+
+    @Test
+    public void testIntegerArrayInExtendedInfo() throws IOException {
+        Map<String, ExtendedInfo> infos = new HashMap<>();
+        infos.put("params", ExtendedInfoImpl.createExtendedInfo(new Integer[] { 1, 2, 3 }));
+
+        JsonAssert json = assertLogEntry(infos);
+        json.has("extended").properties(1).has("params").isArray().contains(1, 2, 3);
+    }
+
+    @Test
+    public void testEmptyArrayInExtendedInfo() throws IOException {
+        Map<String, ExtendedInfo> infos = new HashMap<>();
+        infos.put("params", ExtendedInfoImpl.createExtendedInfo(new Integer[] {}));
+
+        JsonAssert json = assertLogEntry(infos);
+        json.has("extended").properties(1).has("params").isArray().length(0);
+    }
+
+    @Test
+    public void testBlobArrayInExtendedInfo() throws IOException {
+        Map<String, ExtendedInfo> infos = new HashMap<>();
+        infos.put("params",
+                ExtendedInfoImpl.createExtendedInfo(new Blob[] { Blobs.createBlob("a simple string blob") }));
+
+        JsonAssert json = assertLogEntry(infos);
+        json.has("extended").properties(0);
+    }
+
+    @Test
+    public void testBlobListInExtendedInfo() throws IOException {
+        Map<String, ExtendedInfo> infos = new HashMap<>();
+        infos.put("params",
+                ExtendedInfoImpl.createExtendedInfo((Serializable) List.of(Blobs.createBlob("a simple string blob"))));
+
+        JsonAssert json = assertLogEntry(infos);
+        json.has("extended").properties(0);
+    }
+
+    @Test
+    public void testSingleBlobInExtendedInfo() throws IOException {
+        Map<String, ExtendedInfo> infos = new HashMap<>();
+        infos.put("params", ExtendedInfoImpl.createExtendedInfo(new StringBlob("a simple string blob")));
+
+        JsonAssert json = assertLogEntry(infos);
+        assertTrue(json.has("extended")
+                       .properties(1)
+                       .has("params")
+                       .toString()
+                       .startsWith("\"org.nuxeo.ecm.core.api.impl.blob.StringBlob@"));
+    }
+
+    protected JsonAssert assertLogEntry(Map<String, ExtendedInfo> infos) throws IOException {
         LogEntry logEntry = new LogEntryImpl();
         logEntry.setExtendedInfos(infos);
 
@@ -117,7 +176,7 @@ public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogE
         json.has("logDate").isText();
         json.has("comment").isNull();
         json.has("docLifeCycle").isNull();
-        json.has("extended").properties(1).has("params").isArray().contains("a simple string");
+        return json;
     }
 
     @Test
