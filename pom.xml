@@ -1603,6 +1603,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-binarymanager-s3</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-binarymanager-azure</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
