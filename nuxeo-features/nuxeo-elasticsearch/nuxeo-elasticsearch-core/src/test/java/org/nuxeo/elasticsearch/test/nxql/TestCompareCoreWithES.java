@@ -251,6 +251,14 @@ public class TestCompareCoreWithES {
     }
 
     @Test
+    public void testSearchOnProxyTargetId() throws Exception {
+        DocumentModel proxy = session.getDocument(new PathRef(proxyPath));
+        String sourceId = proxy.getSourceId();
+        testQueries(new String[] { "select * from Document where ecm:isProxy=1 and ecm:proxyTargetId = '"
+                + sourceId + "' order by dc:title" });
+    }
+
+    @Test
     public void testSearchOnVersions() throws Exception {
         testQueries(new String[] { "select * from Document where ecm:isVersion = 0 order by dc:title",
                 "select * from Document where ecm:isVersion = 1 order by dc:title",
