@@ -21,7 +21,10 @@ package org.nuxeo.elasticsearch.audit;
 
 import static org.elasticsearch.common.xcontent.DeprecationHandler.THROW_UNSUPPORTED_OPERATION;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -81,14 +84,17 @@ import org.nuxeo.ecm.core.query.sql.model.Literals;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -127,6 +133,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     public static final String MIGRATION_DONE_EVENT = "sqlToElasticsearchMigrationDone";
 
     public static final int MIGRATION_DEFAULT_BACTH_SIZE = 1000;
+
+    // @since 2021.21
+    protected static final String AUDIT_LATEST_LOG_ID_AFTER_DATE_PROP = "audit.elasticsearch.latestLogId.afterDate";
+
+    // @since 2021.21
+    protected String latestLogIdAfterDate;
 
     protected CursorService<Iterator<SearchHit>, SearchHit, String> cursorService;
 
@@ -836,4 +848,29 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     }
 
+    @Override
+    public long getLatestLogId(String repositoryId, String... eventIds) {
+        if (getLatestLogIdAfterDate() == null) {
+            return super.getLatestLogId(repositoryId, eventIds);
+        }
+        // limit to recent events to avoid performance problem related to total hits
+        org.nuxeo.ecm.core.query.sql.model.QueryBuilder builder = new AuditQueryBuilder()
+                .predicate(Predicates.eq(LOG_REPOSITORY_ID, repositoryId))
+                .and(Predicates.in(LOG_EVENT_ID,eventIds))
+                .and(Predicates.gt(LOG_EVENT_DATE, getLatestLogIdAfterDate()))
+                .order(OrderByExprs.desc(LOG_ID))
+                .limit(1);
+        return queryLogs(builder).stream().mapToLong(LogEntry::getId).findFirst().orElse(0L);
+    }
+
+    // @since 2021.21
+    protected String getLatestLogIdAfterDate() {
+        if (latestLogIdAfterDate == null) {
+            latestLogIdAfterDate = Framework.getProperty(AUDIT_LATEST_LOG_ID_AFTER_DATE_PROP);
+            if (latestLogIdAfterDate == null) {
+                latestLogIdAfterDate = "";
+            }
+        }
+        return latestLogIdAfterDate.isEmpty() ? null : latestLogIdAfterDate;
+    }
 }
