@@ -150,6 +150,8 @@ seqgen.elasticsearch.indexName=${elasticsearch.indexName}-uidgen
 audit.elasticsearch.migration=false
 # Batch size for audit logs migration, only useful with audit.elasticsearch.migration=true
 audit.elasticsearch.migration.batchSize=1000
+# Improve performance on getLatestLogId limiting events to the past 2 weeks, using elastic date syntax
+audit.elasticsearch.latestLogId.afterDate=now-14d/d
 # Refresh interval for the health check
 nuxeo.healthcheck.refresh.interval.seconds=20
 # Default request durability means that Elasticsearch is doing one fsync per request. With async durability it is one fsync every 5s.
