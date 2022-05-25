@@ -52,6 +52,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.trash.TrashService;
@@ -93,6 +95,8 @@ import com.mongodb.QueryOperators;
  */
 
 public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
+
+    private static final Logger log = LogManager.getLogger(MongoDBRepositoryQueryBuilder.class);
 
     protected final SchemaManager schemaManager;
 
@@ -138,6 +142,10 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
         super.walk(); // computes hasFulltext
         walkOrderBy(); // computes sortOnFulltextScore
         walkProjection(); // needs hasFulltext and sortOnFulltextScore
+        if (hasFulltext) {
+            log.debug("Fulltext search on MongoDB: {}", () -> expression,
+                    () -> new Throwable("Please consider using Elastic (NXP-31003)"));
+        }
     }
 
     public Document getOrderBy() {
