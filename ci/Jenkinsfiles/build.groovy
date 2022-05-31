@@ -181,27 +181,33 @@ void dockerDeploy(String dockerRegistry, String imageName) {
 
 void helmfileTemplate(namespace, environment, outputDir) {
   withEnv(["NAMESPACE=${namespace}"]) {
-    sh """
-      ${HELMFILE_COMMAND} deps
-      ${HELMFILE_COMMAND} --environment ${environment} template --output-dir ${outputDir}
-    """
+    withCredentials([usernamePassword(credentialsId: 'nexus', usernameVariable: 'BITNAMI_USERNAME', passwordVariable: 'BITNAMI_PASSWORD')]) {
+      sh """
+        ${HELMFILE_COMMAND} deps
+        ${HELMFILE_COMMAND} --environment ${environment} template --output-dir ${outputDir}
+      """
+    }
   }
 }
 
 void helmfileSync(namespace, environment) {
   withEnv(["NAMESPACE=${namespace}"]) {
-    sh """
-      ${HELMFILE_COMMAND} deps
-      ${HELMFILE_COMMAND} --environment ${environment} sync
-    """
+    withCredentials([usernamePassword(credentialsId: 'nexus', usernameVariable: 'BITNAMI_USERNAME', passwordVariable: 'BITNAMI_PASSWORD')]) {
+      sh """
+        ${HELMFILE_COMMAND} deps
+        ${HELMFILE_COMMAND} --environment ${environment} sync
+      """
+    }
   }
 }
 
 void helmfileDestroy(namespace, environment) {
   withEnv(["NAMESPACE=${namespace}"]) {
-    sh """
-      ${HELMFILE_COMMAND} --environment ${environment} destroy
-    """
+    withCredentials([usernamePassword(credentialsId: 'nexus', usernameVariable: 'BITNAMI_USERNAME', passwordVariable: 'BITNAMI_PASSWORD')]) {
+      sh """
+        ${HELMFILE_COMMAND} --environment ${environment} destroy
+      """
+    }
   }
 }
 

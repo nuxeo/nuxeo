@@ -1,7 +1,9 @@
 {{- $valuesDir := ternary "default" "unittests" (eq .Environment.Name "default") -}}
 repositories:
 - name: bitnami
-  url: https://charts.bitnami.com/bitnami
+  url: https://nexus.platform.dev.nuxeo.com/repository/bitnami-proxy
+  username: {{ requiredEnv "BITNAMI_USERNAME" }}
+  password: {{ requiredEnv "BITNAMI_PASSWORD" }}
 - name: elastic
   url: https://helm.elastic.co/
 - name: nuxeo
