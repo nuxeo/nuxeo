@@ -1,9 +1,9 @@
 {{- $valuesDir := ternary "default" "unittests" (eq .Environment.Name "default") -}}
 repositories:
 - name: bitnami
-  url: https://nexus.platform.dev.nuxeo.com/repository/bitnami-proxy
-  username: {{ requiredEnv "BITNAMI_USERNAME" }}
-  password: {{ requiredEnv "BITNAMI_PASSWORD" }}
+  # use a former version of index.yaml from the git repository as Bitnami all removed charts older than 6 months from
+  # the index.yaml descriptor, see https://github.com/bitnami/charts/issues/10539
+  url: https://raw.githubusercontent.com/bitnami/charts/eb5f9a9513d987b519f0ecd732e7031241c50328/bitnami
 - name: elastic
   url: https://helm.elastic.co/
 - name: nuxeo
