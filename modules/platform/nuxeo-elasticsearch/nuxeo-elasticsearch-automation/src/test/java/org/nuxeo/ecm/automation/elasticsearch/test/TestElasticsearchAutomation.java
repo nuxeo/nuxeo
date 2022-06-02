@@ -96,6 +96,7 @@ public class TestElasticsearchAutomation {
 
     public void waitForIndexing() throws Exception {
         Framework.getService(WorkManager.class).awaitCompletion(20, TimeUnit.SECONDS);
+        bulkService.await(Duration.ofSeconds(20));
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         esa.refresh();
     }
@@ -135,6 +136,7 @@ public class TestElasticsearchAutomation {
     public void testIndexingFromRoot() throws Exception {
         ctx.setInput(rootRef);
         automationService.run(ctx, INDEX_CHAIN);
+        waitForIndexing();
 
         assertEquals(2, ess.query(new NxQueryBuilder(coreSession).nxql("SELECT * from Document")).totalSize());
     }
