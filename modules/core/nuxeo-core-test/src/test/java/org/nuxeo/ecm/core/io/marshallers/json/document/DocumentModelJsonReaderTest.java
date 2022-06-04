@@ -272,6 +272,20 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         testPropertyWithWrongRepresentationThrowsException(String.format("{\"my:strings\": %s}", Long.MAX_VALUE));
         testPropertyWithWrongRepresentationThrowsException("{\"my:strings\": 12.34}");
         testPropertyWithWrongRepresentationThrowsException("{\"my:strings\": {\"key\": true}}");
+        testPropertyWithAcceptedRepresentationWorks("{\"my:longs\": []}", "my:longs", new Long[] {});
+        testPropertyWithAcceptedRepresentationWorks("{\"my:longs\": [1, 2, 3]}", "my:longs", new Long[] { 1L, 2L, 3L });
+        testPropertyWithAcceptedRepresentationWorks("{\"my:longs\": [2147483648, 9223372036854775807]}", "my:longs",
+                new Long[] { 2147483648L, 9223372036854775807L });
+        testPropertyWithAcceptedRepresentationWorks("{\"my:integers\": []}", "my:integers", new Long[] {});
+        testPropertyWithAcceptedRepresentationWorks("{\"my:integers\": [4, 5, 6]}", "my:integers",
+                new Long[] { 4L, 5L, 6L });
+        testPropertyWithAcceptedRepresentationWorks("{\"my:doubles\": []}", "my:doubles", new Double[] {});
+        testPropertyWithAcceptedRepresentationWorks("{\"my:doubles\": [7, 8, 9]}", "my:doubles",
+                new Double[] { 7D, 8D, 9D });
+        testPropertyWithAcceptedRepresentationWorks("{\"my:doubles\": [7.8, 8.8, 9.8]}", "my:doubles",
+                new Double[] { 7.8D, 8.8D, 9.8D });
+        testPropertyWithAcceptedRepresentationWorks("{\"my:doubles\": [9223372036854775807]}", "my:doubles",
+                new Double[] { 9223372036854775807D });
 
         // complex
         testPropertyWithAcceptedRepresentationWorks("{\"my:name\": {\"FirstName\":\"foo\", \"LastName\":\"bar\"}}",

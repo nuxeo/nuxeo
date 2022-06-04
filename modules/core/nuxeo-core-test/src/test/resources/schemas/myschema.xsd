@@ -21,9 +21,21 @@
   <xs:element name="testDefaultLong" type="xs:long" default="0"/>
 
   <xs:element name="strings" type="nxs:stringList"/>
+  <xs:element name="longs" type="nxs:longList"/>
+  <xs:element name="doubles" type="nxs:doubleList"/>
+  <xs:element name="integers" type="nxs:integerList"/>
 
   <xs:simpleType name="stringList">
     <xs:list itemType="xs:string" />
+  </xs:simpleType>
+  <xs:simpleType name="longList">
+    <xs:list itemType="xs:long" />
+  </xs:simpleType>
+  <xs:simpleType name="doubleList">
+    <xs:list itemType="xs:double" />
+  </xs:simpleType>
+  <xs:simpleType name="integerList">
+    <xs:list itemType="xs:integer" />
   </xs:simpleType>
 
 </xs:schema>

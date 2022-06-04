@@ -184,11 +184,18 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
         } else if (type instanceof BooleanType) {
             return values.toArray((T[]) Array.newInstance(Boolean.class, values.size()));
         } else if (type instanceof LongType) {
+            if (!values.isEmpty() && values.get(0) instanceof Integer) {
+                return values.toArray((T[]) Array.newInstance(Integer.class, values.size()));
+            }
             return values.toArray((T[]) Array.newInstance(Long.class, values.size()));
         } else if (type instanceof DoubleType) {
+            if (!values.isEmpty() && values.get(0) instanceof Integer) {
+                return values.toArray((T[]) Array.newInstance(Integer.class, values.size()));
+            }
+            if (!values.isEmpty() && values.get(0) instanceof Long) {
+                return values.toArray((T[]) Array.newInstance(Long.class, values.size()));
+            }
             return values.toArray((T[]) Array.newInstance(Double.class, values.size()));
-        } else if (type instanceof IntegerType) {
-            return values.toArray((T[]) Array.newInstance(Integer.class, values.size()));
         } else if (type instanceof BinaryType) {
             return values.toArray((T[]) Array.newInstance(Byte.class, values.size()));
         } else if (type instanceof DateType) {
