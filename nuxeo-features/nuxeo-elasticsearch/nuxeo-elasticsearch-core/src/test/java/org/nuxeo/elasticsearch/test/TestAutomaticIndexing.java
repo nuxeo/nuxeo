@@ -101,6 +101,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.platform.tag")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
+// @WithFrameworkProperty(name = RECURSIVE_INDEXING_USING_BULK_SERVICE_PROPERTY, value = "true")
 public class TestAutomaticIndexing {
 
     private static final String IDX_NAME = "nxutest";
@@ -118,6 +119,9 @@ public class TestAutomaticIndexing {
 
     @Inject
     protected ElasticSearchService ess;
+
+    @Inject
+    protected BulkService bulk;
 
     @Inject
     protected TrashService trashService;
@@ -151,6 +155,7 @@ public class TestAutomaticIndexing {
      */
     public void waitForCompletion() throws Exception {
         workManager.awaitCompletion(20, TimeUnit.SECONDS);
+        bulk.await(Duration.ofSeconds(20));
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         esa.refresh();
     }
@@ -765,8 +770,6 @@ public class TestAutomaticIndexing {
         session.orderBefore(ofolder.getRef(), "testfile3", "testfile2");
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
-        // only the 4 direct children are reindexed
-        assertNumberOfCommandProcessed(4);
         startTransaction();
 
         ret = ess.query(new NxQueryBuilder(session).nxql(

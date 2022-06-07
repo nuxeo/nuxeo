@@ -99,8 +99,8 @@ public class TestTreeIndexing {
      * Wait for async worker completion then wait for indexing completion
      */
     public void waitForCompletion() throws Exception {
-        bulk.await(Duration.ofSeconds(20));
         workManager.awaitCompletion(20, TimeUnit.SECONDS);
+        bulk.await(Duration.ofSeconds(20));
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         esa.refresh();
     }
@@ -209,14 +209,6 @@ public class TestTreeIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
-        if (syncMode) {
-            // in sync we split recursive update into 2 commands:
-            // 1 sync non recurse + 1 async recursive
-            assertNumberOfCommandProcessed(9);
-        } else {
-            assertNumberOfCommandProcessed(8);
-        }
-
         startTransaction();
         SearchResponse searchResponse = searchAll();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
@@ -258,14 +250,6 @@ public class TestTreeIndexing {
 
             TransactionHelper.commitOrRollbackTransaction();
             waitForCompletion();
-            if (syncMode) {
-                // in sync we split recursive update into 2 commands:
-                // 1 sync non recurse + 1 async recursive
-                assertNumberOfCommandProcessed(9);
-            } else {
-                assertNumberOfCommandProcessed(8);
-            }
-
             startTransaction();
             docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(8, docs.totalSize());
@@ -285,11 +269,6 @@ public class TestTreeIndexing {
             session.save();
             TransactionHelper.commitOrRollbackTransaction();
             waitForCompletion();
-            if (syncMode) {
-                assertNumberOfCommandProcessed(6);
-            } else {
-                assertNumberOfCommandProcessed(5);
-            }
             startTransaction();
             docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(3, docs.totalSize());
@@ -400,16 +379,6 @@ public class TestTreeIndexing {
         TransactionHelper.commitOrRollbackTransaction();
         // let BAF do its work
         waitForCompletion();
-        // 1 moved event which triggers 1 recurse command -> 8 commands
-        // 8 trashed events -> 7 commands (one of trashed events is merged into the resulted command from moved event)
-        if (syncMode) {
-            // in sync we split recursive update into 2 commands:
-            // 1 sync non recurse + 1 async recursive
-            assertNumberOfCommandProcessed(16);
-        } else {
-            assertNumberOfCommandProcessed(15);
-        }
-
         startTransaction();
         DocumentModelList docs = ess.query(
                 new NxQueryBuilder(session).nxql("select * from Document where ecm:isTrashed = 0"));
