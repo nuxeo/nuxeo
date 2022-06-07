@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -74,7 +75,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testDefault() throws Exception {
+    public void testDefault() throws IOException {
         RenderingContext renderingContext = CtxBuilder.get();
         renderingContext.setExistingSession(session);
         DocumentModelJsonReader reader = registry.getInstance(renderingContext, DocumentModelJsonReader.class);
@@ -106,7 +107,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testScalarCreatedWithDefaultValue() throws Exception {
+    public void testScalarCreatedWithDefaultValue() throws JsonParseException, IOException {
         // given a doc json with a property with a default value not modified
         String noteJson = "{ \"entity-type\": \"document\", \"type\": \"DocDefaultValue\", \"name\": \"aDoc\" }";
 
@@ -128,7 +129,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testScalarSetOnNullDontSetDefaultValueAgain() throws Exception {
+    public void testScalarSetOnNullDontSetDefaultValueAgain() throws JsonParseException, IOException {
         // given a doc json with a property with a default value set to null
         String noteJson = "{ \"entity-type\": \"document\", \"type\": \"DocDefaultValue\", \"name\": \"aDoc\", \"properties\": {\"dv:simpleWithDefault\":null} }";
 
@@ -146,7 +147,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testMultiCreatedWithDefaultValue() throws Exception {
+    public void testMultiCreatedWithDefaultValue() throws JsonParseException, IOException {
         // given a doc json with a property with a default value not modified
         String noteJson = "{ \"entity-type\": \"document\", \"type\": \"DocDefaultValue\", \"name\": \"aDoc\" }";
 
@@ -168,7 +169,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testMultiSetOnNullDontSetDefaultValueAgain() throws Exception {
+    public void testMultiSetOnNullDontSetDefaultValueAgain() throws JsonParseException, IOException {
         // given a doc json with a property with a default value not modified
         String noteJson = "{ \"entity-type\": \"document\", \"type\": \"DocDefaultValue\", \"name\": \"aDoc\", \"properties\": {\"dv:multiWithDefault\":null} }";
 
@@ -189,7 +190,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
     // NXP-30806
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
-    public void testPropertyValuePossibilities() throws Exception {
+    public void testPropertyValuePossibilities() throws IOException {
         testPropertyWithAcceptedRepresentationWorks("{\"my:string\": \"Some string\"}", "my:string", "Some string");
         testPropertyWithAcceptedRepresentationWorks(String.format("{\"my:string\": %s}", Long.MAX_VALUE), "my:string",
                 String.valueOf(Long.MAX_VALUE));
@@ -284,8 +285,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         testPropertyWithWrongRepresentationThrowsException("{\"my:name\": [0]}");
     }
 
-    protected void testPropertyWithWrongRepresentationThrowsException(String properties)
-            throws IOException {
+    protected void testPropertyWithWrongRepresentationThrowsException(String properties) throws IOException {
         String json = '{' + //
                 "\"entity-type\": \"document\", " + //
                 "\"type\": \"MyDocType\", " + //
