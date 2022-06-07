@@ -127,6 +127,9 @@ public final class ElasticSearchConstants {
 
     public static final String REINDEX_USING_CHILDREN_TRAVERSAL_PROPERTY = "elasticsearch.reindex.useChildrenTraversal";
 
+    /** @since 2021.21 */
+    public static final String RECURSIVE_INDEXING_USING_BULK_SERVICE_PROPERTY = "elasticsearch.index.recursive.bulkService";
+
     /** @since 7.4 */
     public static final String INDEXING_QUEUE_ID = "elasticSearchIndexing";
 
