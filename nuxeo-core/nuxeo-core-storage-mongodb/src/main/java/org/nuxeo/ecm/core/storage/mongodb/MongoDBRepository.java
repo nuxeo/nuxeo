@@ -1236,8 +1236,15 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected long getMaxTimeMs() {
         long ttl = TransactionHelper.getTransactionTimeToLive();
-        // add some extra millis because 0 maxTime is not taken in account
-        return ttl < 0 ? maxTimeMS : ttl * 1000 + 250;
+        if (ttl < 0) {
+            return maxTimeMS;
+        }
+        if (ttl >= 2) {
+            // try to keep a margin to avoid transaction timeout
+            return (ttl - 1) * 1000;
+        }
+        // returns at least 100ms (0 maxTime means no limit)
+        return Math.max((ttl * 1000) - 100, 100);
     }
 
     protected long countDocuments(Bson filter) {
@@ -1245,11 +1252,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected long countDocuments(Bson filter, CountOptions options) {
-        options.maxTime(getMaxTimeMs(), MILLISECONDS);
+        long maxTime = getMaxTimeMs();
+        options.maxTime(maxTime, MILLISECONDS);
         try {
             return MongoDBCountHelper.countDocuments(databaseID, coll, filter, options);
         } catch (MongoExecutionTimeoutException | MongoSocketReadTimeoutException e) {
-            log.warn(String.format("MongoDB timed out when computing total count with filters %s", filter.toString()));
+            log.warn(String.format("MongoDB timed out, maxTime=%dms, when computing total count with filters %s",
+                    maxTime, filter.toString()));
             return -2;
         }
     }
