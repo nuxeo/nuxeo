@@ -3451,7 +3451,7 @@
       <dependency>
         <groupId>org.apache.geronimo.components</groupId>
         <artifactId>geronimo-connector</artifactId>
-        <version>2.2.1-NX1</version>
+        <version>2.2.1-NX2</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -3467,7 +3467,7 @@
       <dependency>
         <groupId>org.apache.geronimo.components</groupId>
         <artifactId>geronimo-transaction</artifactId>
-        <version>2.2.1</version>
+        <version>2.2.1-NX2</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.geronimo.specs</groupId>
