@@ -316,9 +316,8 @@ public class TestEventServiceComponent {
             getService().fireEvent(event);
             fail("should throw NuxeoException");
         } catch (NuxeoException e) {
-            assertEquals(
-                    "Exception during testRollbackListener sync listener execution, transaction will be rolled back",
-                    e.getMessage());
+            assertTrue(e.getMessage(),
+                    e.getMessage().startsWith("Exception during testRollbackListener sync listener execution"));
             assertEquals(500, e.getStatusCode());
             assertTrue(TransactionHelper.isTransactionMarkedRollback());
             Throwable cause = e.getCause();
