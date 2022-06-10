@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * Implementation of the event service.
@@ -236,8 +237,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             if (!desc.acceptEvent(ename)) {
                 continue;
             }
+            long t0 = System.currentTimeMillis();
             try {
-                long t0 = System.currentTimeMillis();
                 SequenceTracer.start("Fire sync event " + event.getName());
                 desc.asEventListener().handleEvent(event);
                 long elapsed = System.currentTimeMillis() - t0;
@@ -255,7 +256,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             } catch (RuntimeException e) {
                 // get message
                 SequenceTracer.destroy("failure");
-                String message = "Exception during " + desc.getName() + " sync listener execution, ";
+                long elapsed = System.currentTimeMillis() - t0;
+                String message = "Exception during " + desc.getName() + " sync listener execution (after " + elapsed
+                        + "ms), ";
                 if (event.isBubbleException()) {
                     message += "other listeners will be ignored";
                 } else if (event.isMarkedForRollBack()) {
@@ -263,6 +266,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                     if (event.getRollbackMessage() != null) {
                         message += " (" + event.getRollbackMessage() + ")";
                     }
+                } else if (e instanceof TransactionRuntimeException) {
+                    message += " because of transaction timeout";
+                    TransactionHelper.setTransactionRollbackOnlyIfTimedOut();
                 } else {
                     message += "continuing to run other listeners";
                 }

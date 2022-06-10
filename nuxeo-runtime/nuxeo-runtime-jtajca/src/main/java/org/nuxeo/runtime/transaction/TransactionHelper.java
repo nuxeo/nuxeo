@@ -430,20 +430,19 @@ public class TransactionHelper {
                 } catch (RollbackException | HeuristicRollbackException | HeuristicMixedException e) {
                     String msg = "Unable to commit";
                     // messages from org.apache.geronimo.transaction.manager.TransactionImpl.commit
-                    switch (e.getMessage()) {
-                    case "Unable to commit: transaction marked for rollback":
+                    String message = e.getMessage();
+                    if ("Unable to commit: transaction marked for rollback".equals(message)) {
                         // don't log as error, this happens if there's a ConcurrentUpdateException
                         // at transaction end inside VCS
                         isRollbackDuringCommit = true;
                         // $FALL-THROUGH$
-                    case "Unable to commit: Transaction timeout":
+                    } else if (message != null && message.startsWith("Unable to commit: Transaction timeout")) {
                         // don't log either
                         log.debug(msg, e);
-                        break;
-                    default:
+                    } else {
                         log.error(msg, e);
                     }
-                    throw new TransactionRuntimeException(e.getMessage(), e);
+                    throw new TransactionRuntimeException(message, e);
                 }
             } else if (status == Status.STATUS_MARKED_ROLLBACK) {
                 if (log.isDebugEnabled()) {
