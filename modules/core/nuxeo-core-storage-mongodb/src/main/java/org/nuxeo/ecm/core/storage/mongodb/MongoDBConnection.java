@@ -1072,8 +1072,15 @@ public class MongoDBConnection extends DBSConnectionBase {
 
     protected long getMaxTimeMs() {
         long ttl = TransactionHelper.getTransactionTimeToLive();
-        // add some extra millis because 0 maxTime is not taken in account
-        return ttl < 0 ? mongoDBRepository.maxTimeMS : ttl * 1000 + 250;
+        if (ttl < 0) {
+            return mongoDBRepository.maxTimeMS;
+        }
+        if (ttl >= 2) {
+            // try to keep a margin to avoid transaction timeout
+            return (ttl - 1) * 1000;
+        }
+        // returns at least 100ms (0 maxTime means no limit)
+        return Math.max((ttl * 1000) - 100, 100);
     }
 
     protected long countDocuments(Bson filter) {
@@ -1081,7 +1088,8 @@ public class MongoDBConnection extends DBSConnectionBase {
     }
 
     protected long countDocuments(Bson filter, CountOptions options) {
-        options.maxTime(getMaxTimeMs(), MILLISECONDS);
+        long maxTime = getMaxTimeMs();
+        options.maxTime(maxTime, MILLISECONDS);
         try {
             if (transactionStarted) {
                 return coll.countDocuments(clientSession, filter, options);
@@ -1090,7 +1098,8 @@ public class MongoDBConnection extends DBSConnectionBase {
             }
 
         } catch (MongoExecutionTimeoutException | MongoSocketReadTimeoutException e) {
-            log.warn("MongoDB timed out when computing total count with filters {}", filter::toString);
+            log.warn("MongoDB timed out, maxTime={}ms, when computing total count with filters {}", () -> maxTime,
+                    filter::toString);
             return -2;
         }
     }
