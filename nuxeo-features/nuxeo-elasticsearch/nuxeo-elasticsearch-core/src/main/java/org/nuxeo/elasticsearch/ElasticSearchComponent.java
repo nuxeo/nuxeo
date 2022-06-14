@@ -567,7 +567,7 @@ public class ElasticSearchComponent extends DefaultComponent
     }
 
     // misc ====================================================================
-    protected boolean isReady() {
+    public boolean isReady() {
         return (esa != null) && esa.isReady();
     }
 
