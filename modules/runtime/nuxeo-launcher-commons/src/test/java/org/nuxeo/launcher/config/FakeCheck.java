@@ -56,8 +56,15 @@ public class FakeCheck implements BackingChecker {
         @XNode("@ready")
         protected boolean ready;
 
+        @XNode("@value")
+        protected String value;
+
         public boolean isReady() {
             return ready;
+        }
+
+        public String getValue() {
+            return value;
         }
     }
 

@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationHolder;
@@ -100,7 +101,8 @@ public interface BackingChecker {
         try {
             String content = Files.readString(configPath, StandardCharsets.UTF_8);
             content = replacer.apply(content);
-            content = templateParser.processText(content);
+            // In the ctx of XML contribs, we want to escape any xml characters
+            content = templateParser.processText(content, StringEscapeUtils::escapeXml11);
             Object[] nodes = xmap.loadAll(new ByteArrayInputStream(content.getBytes()));
             for (Object node : nodes) {
                 if (node != null) {

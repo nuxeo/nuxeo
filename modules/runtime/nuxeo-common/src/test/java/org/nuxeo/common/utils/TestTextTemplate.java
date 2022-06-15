@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.text.StringEscapeUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -69,6 +70,20 @@ public class TestTextTemplate {
         assertEquals(processedText, tt.processText(templateText));
         assertEquals(processedText2, tt.processText(templateText2));
         assertEquals(processedText2, tt.processText(templateText2bis));
+    }
+
+    @Test
+    public void testEscapeXml() {
+        CryptoProperties props = new CryptoProperties();
+        props.setProperty(Environment.CRYPT_KEY, Base64.encodeBase64String("secret".getBytes()));
+        Map<String, String> testVariables = new HashMap<>();
+        testVariables.put("var", "{$$jq8vRZHtYDtiPmxfPioUBw==}"); // "some&Value"
+        TextTemplate tt = new TextTemplate(props);
+        tt.setVariables(testVariables);
+        assertEquals("test some&Value", tt.processText("test ${var}"));
+
+        assertEquals("test some&amp;Value",
+                tt.processText("test ${var}", StringEscapeUtils::escapeXml11));
     }
 
     private TextTemplate getTextTemplateWithCryptoVariables() {

@@ -119,4 +119,18 @@ public class TestCryptoFrameworkProperties extends TestFrameworkProperties {
         assertEquals("<myProp>" + aStrangeValue + "</myProp>", runtime.expandVars(testExpressions.get(2)));
     }
 
+    @Test
+    public void testExpandVarsOfXmlContent() {
+        String paramName = "a.param.name";
+        String aCryptedValueWithXmlReservedChars = "{$$jq8vRZHtYDtiPmxfPioUBw==}"; // "some&Value"
+        String expression = "<?xml version=\"1.0\"?><myProp>${a.param.name}</myProp>";
+        String expectedExpandedExp = "<?xml version=\"1.0\"?><myProp>some&amp;Value</myProp>";
+
+        System.setProperty(paramName, aCryptedValueWithXmlReservedChars);
+        assertEquals(expectedExpandedExp, runtime.expandVars(expression));
+
+        runtime.setProperty(paramName, aCryptedValueWithXmlReservedChars);
+        assertEquals(expectedExpandedExp, runtime.expandVars(expression));
+    }
+
 }

@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
@@ -430,7 +431,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
      */
     @Override
     public String expandVars(String expression) {
-        return new TextTemplate(getProperties()) {
+        TextTemplate tt = new TextTemplate(getProperties()) {
             @Override
             public String getVariable(String name) {
                 String value = super.getVariable(name);
@@ -440,7 +441,12 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                 return value;
             }
 
-        }.processText(expression);
+        };
+        if (expression != null && expression.startsWith("<?xml")) {
+            return tt.processText(expression, StringEscapeUtils::escapeXml11);
+        } else {
+            return tt.processText(expression);
+        }
     }
 
     protected void startComponents() {

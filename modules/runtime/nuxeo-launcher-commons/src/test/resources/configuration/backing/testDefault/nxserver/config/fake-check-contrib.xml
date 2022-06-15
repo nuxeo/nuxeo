@@ -1,7 +1,7 @@
 <component name="backing.fake.check.test.contrib">
 
   <extension target="not_used" point="not_used">
-    <fake ready="${backing.fake.check.ready}" />
+    <fake ready="${backing.fake.check.ready}" value="${backing.fake.check.value}"/>
   </extension>
 
 </component>

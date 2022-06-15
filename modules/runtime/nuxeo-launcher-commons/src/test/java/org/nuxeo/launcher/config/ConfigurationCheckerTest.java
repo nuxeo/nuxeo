@@ -147,6 +147,7 @@ public class ConfigurationCheckerTest {
     public void backingCheckerCanReadDescriptorWithEncryptedParameters() throws Exception {
         configHolder.put(CRYPT_KEY, CRYPT_KEY_VALUE);
         configHolder.put("backing.fake.check.ready", encrypt("true"));
+        configHolder.put("backing.fake.check.value", encrypt("String<With&Xml>CharsToBeEscaped"));
         assertEquals(0, FakeCheck.getCallCount());
         checker.checkBackingServices(configHolder);
         assertEquals(1, FakeCheck.getCallCount());

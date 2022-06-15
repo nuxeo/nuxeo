@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -188,6 +189,19 @@ public class TextTemplate {
      * @since 7.4
      */
     protected String processString(CryptoProperties props, String text) {
+        return processString(props, text, Function.identity());
+    }
+
+    /**
+     * That method is not recursive. It processes the given text only once.
+     *
+     * @param props CryptoProperties containing the variable values
+     * @param text Text to process
+     * @param transform Function to transform (quote, escape, etc.) processed vars
+     * @return the processed text
+     * @since 2021.22
+     */
+    protected String processString(CryptoProperties props, String text, Function<String, String> transform) {
         Matcher m = PATTERN.matcher(text);
         StringBuilder sb = new StringBuilder();
         while (m.find()) {
@@ -208,6 +222,7 @@ public class TextTemplate {
                     }
                 }
 
+                value = transform.apply(value);
                 // Allow use of backslash and dollars characters
                 value = Matcher.quoteReplacement(value);
                 m.appendReplacement(sb, value);
@@ -268,7 +283,19 @@ public class TextTemplate {
     /**
      * @since 7.4
      */
-    public String processText(String text) {
+    public String processText(String content) {
+        return processText(content, Function.identity());
+    }
+
+    /**
+     * It processes the given text.
+     *
+     * @param text Text to process
+     * @param transform Function to transform (quote, escape, etc.) processed variables within text
+     * @return the processed text
+     * @since 2021.22
+     */
+    public String processText(String text, Function<String, String> transform) {
         if (text == null) {
             return null;
         }
@@ -276,7 +303,7 @@ public class TextTemplate {
         int recursionLevel = 0;
         while (!doneProcessing) {
             doneProcessing = true;
-            String processedText = processString(vars, text);
+            String processedText = processString(vars, text, transform);
             if (!processedText.equals(text)) {
                 doneProcessing = false;
                 text = processedText;
