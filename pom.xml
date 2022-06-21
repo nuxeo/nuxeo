@@ -175,7 +175,7 @@
     <azure.version>8.6.6</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
     <jackson.version>2.9.10</jackson.version>
-    <jackson.databind.version>2.9.10.7</jackson.databind.version>
+    <jackson.databind.version>2.9.10.8</jackson.databind.version>
     <bouncycastle.version>1.60</bouncycastle.version>
     <avro.version>1.9.2</avro.version>
     <xz.version>1.8</xz.version>
