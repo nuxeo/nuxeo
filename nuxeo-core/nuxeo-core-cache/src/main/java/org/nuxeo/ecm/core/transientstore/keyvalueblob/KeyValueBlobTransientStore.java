@@ -275,7 +275,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
                                .flatMap(Collection::stream)
                                .mapToLong(Blob::getLength)
                                .sum();
-        log.warn("Storage size for {}: {} bytes", name, size);
+        log.info("Storage size for {}: {} bytes", name, size);
         kvs.put(STORAGE_SIZE, String.valueOf(size));
     }
 
