@@ -140,7 +140,7 @@
     <lucene.version>7.5.0</lucene.version>
     <elasticsearch.version>6.5.3</elasticsearch.version> <!-- when changing this make sure JNA version is in sync -->
     <jna.version>4.5.2</jna.version>
-    <netty-handler.version>4.1.72.Final</netty-handler.version>
+    <netty.version>4.1.78.Final</netty.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>2.7.0-NX1</gwt.version>
@@ -174,8 +174,8 @@
     <gcp.version>1.76.0</gcp.version>
     <azure.version>8.6.6</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
-    <jackson.version>2.9.10</jackson.version>
-    <jackson.databind.version>2.9.10.7</jackson.databind.version>
+    <jackson.version>2.13.2</jackson.version>
+    <jackson.databind.version>2.13.2.2</jackson.databind.version>
     <bouncycastle.version>1.60</bouncycastle.version>
     <avro.version>1.9.2</avro.version>
     <xz.version>1.8</xz.version>
@@ -2259,7 +2259,37 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-handler</artifactId>
-        <version>${netty-handler.version}</version>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-common</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-buffer</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-resolver</artifactId>
+        <version>${netty.version}</version>
       </dependency>
 
       <!-- needed for embedded mode -->
@@ -3378,7 +3408,7 @@
       <dependency>
         <groupId>org.mock-server</groupId>
         <artifactId>mockserver-netty</artifactId>
-        <version>5.11.2</version>
+        <version>5.13.2</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
