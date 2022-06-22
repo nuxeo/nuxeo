@@ -46,6 +46,8 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
 
     private static final long WARN_DOC_COUNT = 500;
 
+    protected static final int TRANSACTION_TIMEOUT_SECONDS = 3_600 * 48; // 2 days
+
     protected final String nxql;
 
     protected final boolean syncAlias;
@@ -71,6 +73,10 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
 
     @Override
     protected void doWork() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction(TRANSACTION_TIMEOUT_SECONDS);
+        }
         String jobName = getSchedulePath().getPath();
         if (log.isDebugEnabled()) {
             log.debug(String.format("Re-indexing job: %s started, NXQL: %s on repository: %s", jobName, nxql,
