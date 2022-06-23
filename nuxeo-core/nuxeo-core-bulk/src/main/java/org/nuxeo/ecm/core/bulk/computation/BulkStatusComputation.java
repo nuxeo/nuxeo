@@ -69,10 +69,10 @@ public class BulkStatusComputation extends AbstractComputation {
         } else {
             status = bulkService.getStatus(recordStatus.getId());
             if (UNKNOWN.equals(status.getState())) {
-                // this requires a manual intervention, the kv store might have been lost
-                throw new IllegalStateException(
-                        String.format("Status with unknown command: %s, offset: %s, record: %s.", recordStatus.getId(),
-                                context.getLastOffset(), record));
+                log.warn("Skipping status with unknown command: {}, offset: {}.", recordStatus.getId(),
+                        context.getLastOffset());
+                context.askForCheckpoint();
+                return;
             }
             status.merge(recordStatus);
         }
