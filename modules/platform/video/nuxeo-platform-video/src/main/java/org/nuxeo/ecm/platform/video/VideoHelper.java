@@ -199,7 +199,7 @@ public class VideoHelper {
             PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
             try {
                 picture.fillPictureViews(result.getBlob(), result.getBlob().getFilename(), docModel.getTitle(),
-                        new ArrayList<>(templates));
+                        new ArrayList<>(templates), true);
             } catch (IOException e) {
                 log.warn("failed to video compute previews for " + docModel.getTitle() + ": " + e.getMessage());
             }

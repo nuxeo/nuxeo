@@ -342,7 +342,6 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         Map<String, Object> chainParameters = new HashMap<>();
         chainParameters.put("parameters", parameters);
 
-        boolean txWasActive = false;
         try (OperationContext context = new OperationContext()) {
             if (doc != null) {
                 DocumentModel pictureDocument = doc.getCoreSession().getDocument(doc.getRef());
@@ -351,11 +350,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
             }
             context.setInput(blob);
 
-            if (TransactionHelper.isTransactionActive()) {
-                txWasActive = true;
-                TransactionHelper.commitOrRollbackTransaction();
-            }
-
+            context.handleTransaction(false);
             Blob viewBlob = (Blob) Framework.getService(AutomationService.class).run(context, chainId, chainParameters);
             if (viewBlob == null) {
                 viewBlob = wrapBlob(blob);
@@ -363,10 +358,6 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
             return viewBlob;
         } catch (OperationException e) {
             throw new NuxeoException(e);
-        } finally {
-            if (txWasActive && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                TransactionHelper.startTransaction();
-            }
         }
     }
 
