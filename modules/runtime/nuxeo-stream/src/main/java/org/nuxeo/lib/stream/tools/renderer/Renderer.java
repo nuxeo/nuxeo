@@ -84,7 +84,7 @@ public abstract class Renderer implements Consumer<LogRecord<Record>> {
         BinaryMessageDecoder<GenericRecord> decoder = new BinaryMessageDecoder<>(genericData, schema);
         try {
             GenericRecord avroRecord = decoder.decode(record.getData(), null);
-            return avroRecord.toString();
+            return "{\"avroSchema\":\"" + schema.getName() + "\"," + avroRecord.toString().substring(1);
         } catch (IOException e) {
             throw new IllegalStateException(
                     String.format("Error: %s decoding with schema: 0x%08X", e.getMessage(), fp));

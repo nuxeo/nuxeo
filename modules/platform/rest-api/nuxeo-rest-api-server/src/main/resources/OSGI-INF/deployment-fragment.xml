@@ -12,6 +12,23 @@
       <servlet-name>Nuxeo API Forward servlet</servlet-name>
       <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
+    <servlet>
+      <servlet-name>Nuxeo Stream Servlet</servlet-name>
+      <servlet-class>org.nuxeo.ecm.restapi.server.jaxrs.management.StreamServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Stream Servlet</servlet-name>
+      <url-pattern>/api/v1/management/stream/cat</url-pattern>
+    </servlet-mapping>
+  </extension>
+
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/api/v1/management/stream/cat</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
   </extension>
 
   <install>

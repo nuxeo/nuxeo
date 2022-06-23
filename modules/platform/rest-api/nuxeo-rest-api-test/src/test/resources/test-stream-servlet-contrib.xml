@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.rest.api.stream.test.contrib">
+
+  <extension target="org.nuxeo.runtime.server" point="servlet">
+    <servlet context="/">
+      <servlet-name>Nuxeo Stream Servlet</servlet-name>
+      <servlet-class>org.nuxeo.ecm.restapi.server.jaxrs.management.StreamServlet</servlet-class>
+      <url-pattern>/api/v1/management/stream/cat</url-pattern>
+    </servlet>
+  </extension>
+
+</component>
