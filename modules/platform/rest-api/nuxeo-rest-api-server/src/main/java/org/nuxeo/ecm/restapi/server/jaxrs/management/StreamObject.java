@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputati
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionConverter;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -33,8 +34,6 @@ import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Nuxeo Stream Introspection endpoint
@@ -45,18 +44,39 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Produces(APPLICATION_JSON)
 public class StreamObject extends AbstractResource<ResourceTypeImpl> {
 
-    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    protected static final String PUML_FORMAT = "puml";
 
     @GET
-    public String doGetJson() {
-        return getJson();
+    public String doGet(@QueryParam("format") String format) {
+        String json = getJson();
+        if (PUML_FORMAT.equals(format)) {
+            return new StreamIntrospectionConverter(json).getPuml();
+        }
+        return json;
     }
 
+    /**
+     * @deprecated since 2022.21 use {@link StreamObject#doGet(String)} with format=puml instead.
+     */
+    @Deprecated
     @GET
     @Path("/puml")
     public String doGetPuml() {
+        return doGet(PUML_FORMAT);
+    }
+
+    @GET
+    @Path("/streams")
+    public String listStreams() {
         String json = getJson();
-        return new StreamIntrospectionConverter(json).getPuml();
+        return new StreamIntrospectionConverter(json).getStreams();
+    }
+
+    @GET
+    @Path("/consumers")
+    public String listConsumers(@QueryParam("stream") String stream) {
+        String json = getJson();
+        return new StreamIntrospectionConverter(json).getConsumers(stream);
     }
 
     protected String getJson() {

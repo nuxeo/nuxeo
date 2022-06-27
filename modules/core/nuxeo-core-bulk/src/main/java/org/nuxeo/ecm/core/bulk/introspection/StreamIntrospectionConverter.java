@@ -20,8 +20,12 @@ package org.nuxeo.ecm.core.bulk.introspection;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.lib.stream.log.Name;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,6 +49,36 @@ public class StreamIntrospectionConverter {
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Invalid JSON: " + json, e);
         }
+    }
+
+    public String getStreams() {
+        return root.get("streams").toString();
+    }
+
+    public String getConsumers(String stream) {
+        if (StringUtils.isBlank(stream)) {
+            return "[]";
+        }
+        String match = "stream:" + stream;
+        JsonNode node = root.get("processors");
+        Set<String> consumers = new HashSet<>();
+        if (node.isArray()) {
+            for (JsonNode item : node) {
+                JsonNode topologies = item.get("topology");
+                for (JsonNode topo : topologies) {
+                    String source = topo.get(0).asText();
+                    if (match.equals(source)) {
+                        String target = topo.get(1).asText();
+                        if (target.startsWith("computation:")) {
+                            consumers.add(target.substring(12));
+                        }
+                    }
+                }
+            }
+        }
+        return consumers.stream()
+                        .map(consumer -> "{\"stream\":\"" + stream + "\",\"consumer\":\"" + consumer + "\"}")
+                        .collect(Collectors.joining(",", "[", "]"));
     }
 
     public String getPuml() {

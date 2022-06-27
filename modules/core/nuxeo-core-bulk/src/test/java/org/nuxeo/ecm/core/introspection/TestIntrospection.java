@@ -51,6 +51,25 @@ public class TestIntrospection {
         assertEquals(readFile("data/simple.puml"), puml);
     }
 
+    @Test
+    public void testStreams() throws Exception {
+        String json = readFile("data/introspection.json");
+        StreamIntrospectionConverter convert = new StreamIntrospectionConverter(json);
+        String streams = convert.getStreams();
+        assertTrue(streams.contains("bulk/command"));
+    }
+
+    @Test
+    public void testConsumers() throws Exception {
+        String json = readFile("data/introspection.json");
+        StreamIntrospectionConverter convert = new StreamIntrospectionConverter(json);
+        String consumers = convert.getConsumers("bulk/command");
+        assertTrue(consumers.contains("bulk/scroller"));
+
+        consumers = convert.getConsumers("unknown");
+        assertEquals("[]", consumers);
+    }
+
     protected String readFile(String path) throws IOException {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
             return IOUtils.toString(is, UTF_8);
