@@ -42,6 +42,20 @@ public interface PictureResourceAdapter {
             throws IOException;
 
     /**
+     * Fill this Picture views using the given {@code pictureConversions} and {@code blob} to compute the picture views.
+     * <p>
+     * The {@code blob} is converted to fit the defined {@code pictureConversions}.
+     *
+     * @param outsideTx should potential conversions be done outside a transaction
+     * @since 2021.22
+     */
+    default boolean fillPictureViews(Blob blob, String filename, String title,
+            List<Map<String, Object>> pictureConversions, boolean outsideTx) throws IOException {
+        // default implementation does not support outsideTx param
+        return fillPictureViews(blob, filename, title, pictureConversions);
+    };
+
+    /**
      * This method just delegate the job to
      * {@link PictureResourceAdapter#fillPictureViews(Blob, String, String, List)} by passing null instead of
      * statics picture templates. <br/>

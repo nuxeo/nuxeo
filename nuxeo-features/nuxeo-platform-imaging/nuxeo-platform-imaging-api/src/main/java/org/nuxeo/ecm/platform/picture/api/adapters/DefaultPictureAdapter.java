@@ -54,6 +54,12 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     @Override
     public boolean fillPictureViews(Blob blob, String filename, String title,
             List<Map<String, Object>> pictureConversions) throws IOException {
+        return fillPictureViews(blob, filename, title, pictureConversions, false);
+    }
+
+    @Override
+    public boolean fillPictureViews(Blob blob, String filename, String title,
+            List<Map<String, Object>> pictureConversions, boolean outsideTx) throws IOException {
         if (blob == null) {
             clearViews();
             return true;
@@ -95,7 +101,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
         if (width != null && height != null) {
             clearViews();
-            addViews(pictureConversions, filename, title);
+            addViews(pictureConversions, filename, title, outsideTx);
         }
         return true;
     }

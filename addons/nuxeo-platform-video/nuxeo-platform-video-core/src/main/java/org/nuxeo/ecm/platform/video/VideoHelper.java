@@ -211,7 +211,8 @@ public class VideoHelper {
                 Blob blob = Blobs.createBlob(is, "image/jpeg");
                 blob.setFilename(MISSING_PREVIEW_PICTURE.replace('/', '-'));
                 PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
-                picture.fillPictureViews(blob, blob.getFilename(), docModel.getTitle(), new ArrayList<>(templates));
+                picture.fillPictureViews(blob, blob.getFilename(), docModel.getTitle(), new ArrayList<>(templates),
+                        true);
             }
         }
     }
