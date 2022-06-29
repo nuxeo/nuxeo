@@ -92,6 +92,7 @@ import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.PictureConversion;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
@@ -276,8 +277,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         doc.getProperty(VIEWS_PROPERTY).setValue(viewsList);
     }
 
-    protected void addViews(List<Map<String, Object>> pictureConversions, String filename, String title)
-            throws IOException {
+    protected void addViews(List<Map<String, Object>> pictureConversions, String filename, String title,
+            boolean outsideTx) throws IOException {
         doc.setProperty("dublincore", "title", title);
         if (pictureConversions != null) {
             // Use PictureBook Properties
@@ -292,9 +293,21 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                         (String) view.get("title"), maxsize, filename, width, height, depth, fileContent);
             }
         } else {
-            List<PictureView> pictureViews = getImagingService().computeViewsFor(doc, fileContent, getImageInfo(),
-                    true);
-            addPictureViews(pictureViews, true);
+            boolean txWasActive = false;
+            try {
+                if (outsideTx && TransactionHelper.isTransactionActive()) {
+                    txWasActive = true;
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+
+                List<PictureView> pictureViews = getImagingService().computeViewsFor(doc, fileContent, getImageInfo(),
+                        true);
+                addPictureViews(pictureViews, true);
+            } finally {
+                if (outsideTx && txWasActive && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                    TransactionHelper.startTransaction();
+                }
+            }
         }
     }
 

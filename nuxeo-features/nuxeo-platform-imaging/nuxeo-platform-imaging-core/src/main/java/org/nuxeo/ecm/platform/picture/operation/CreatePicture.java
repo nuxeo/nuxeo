@@ -128,7 +128,7 @@ public class CreatePicture {
             } else {
                 picture.setPropertyValue("file:content", (Serializable) blob);
                 PictureResourceAdapter adapter = picture.getAdapter(PictureResourceAdapter.class);
-                adapter.fillPictureViews(blob, blob.getFilename(), picture.getTitle(), templates);
+                adapter.fillPictureViews(blob, blob.getFilename(), picture.getTitle(), templates, true);
                 picture = session.saveDocument(picture);
             }
         }
