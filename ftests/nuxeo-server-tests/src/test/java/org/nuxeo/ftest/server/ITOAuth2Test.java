@@ -171,6 +171,20 @@ public class ITOAuth2Test extends AbstractTest {
         errorPage.checkDescription(String.format(
                 "Invalid %s parameter: transform algorithm unknown not supported. The server only supports %s.",
                 CODE_CHALLENGE_METHOD_PARAM, CODE_CHALLENGE_METHODS_SUPPORTED));
+
+        // Uncaught exception - NXP-31104
+        // Create the same OAuth2 client to produce error
+        Map<String, String> properties = new HashMap<>();
+        properties.put("name", "Test Client");
+        properties.put("clientId", "test-client");
+        properties.put("redirectURIs", "http://localhost:8080/nuxeo/home.html");
+        String dirEntryId = RestHelper.createDirectoryEntry(OAUTH2CLIENT_DIRECTORY_NAME, properties);
+        try {
+            errorPage = getOAuth2ErrorPage("/oauth2/authorize?client_id=test-client&response_type=code");
+            errorPage.checkDescription("More than one client registered for the 'test-client' id");
+        } finally {
+            RestHelper.deleteDirectoryEntry(OAUTH2CLIENT_DIRECTORY_NAME, dirEntryId);
+        }
     }
 
     @Test

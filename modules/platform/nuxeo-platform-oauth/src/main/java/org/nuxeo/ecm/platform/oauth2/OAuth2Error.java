@@ -20,6 +20,12 @@
 
 package org.nuxeo.ecm.platform.oauth2;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.SC_SERVICE_UNAVAILABLE;
+
+import org.nuxeo.ecm.core.api.NuxeoException;
+
 /**
  * @since 9.2
  */
@@ -49,9 +55,17 @@ public class OAuth2Error {
 
     protected final String description;
 
+    // @since 2021.23
+    protected final int statusCode;
+
     protected OAuth2Error(String id, String description) {
+        this(id, description, SC_INTERNAL_SERVER_ERROR);
+    }
+
+    protected OAuth2Error(String id, String description, int statusCode) {
         this.id = id;
         this.description = description;
+        this.statusCode = statusCode;
     }
 
     public String getId() {
@@ -62,8 +76,22 @@ public class OAuth2Error {
         return description;
     }
 
+    /**
+     * @since 2021.23
+     */
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    /**
+     * @since 2021.23
+     */
+    public static OAuth2Error invalidRequest(String description, int statusCode) {
+        return new OAuth2Error(INVALID_REQUEST, description, statusCode);
+    }
+
     public static OAuth2Error invalidRequest(String description) {
-        return new OAuth2Error(INVALID_REQUEST, description);
+        return invalidRequest(description, SC_BAD_REQUEST);
     }
 
     public static OAuth2Error invalidRequest() {
@@ -71,7 +99,7 @@ public class OAuth2Error {
     }
 
     public static OAuth2Error unauthorizedClient(String description) {
-        return new OAuth2Error(UNAUTHORIZED_CLIENT, description);
+        return new OAuth2Error(UNAUTHORIZED_CLIENT, description, SC_BAD_REQUEST);
     }
 
     public static OAuth2Error unauthorizedClient() {
@@ -79,7 +107,7 @@ public class OAuth2Error {
     }
 
     public static OAuth2Error accessDenied(String description) {
-        return new OAuth2Error(ACCESS_DENIED, description);
+        return new OAuth2Error(ACCESS_DENIED, description, SC_BAD_REQUEST);
     }
 
     public static OAuth2Error accessDenied() {
@@ -87,7 +115,7 @@ public class OAuth2Error {
     }
 
     public static OAuth2Error unsupportedResponseType(String description) {
-        return new OAuth2Error(UNSUPPORTED_RESPONSE_TYPE, description);
+        return new OAuth2Error(UNSUPPORTED_RESPONSE_TYPE, description, SC_BAD_REQUEST);
     }
 
     public static OAuth2Error unsupportedResponseType() {
@@ -95,7 +123,7 @@ public class OAuth2Error {
     }
 
     public static OAuth2Error invalidScope(String description) {
-        return new OAuth2Error(INVALID_SCOPE, description);
+        return new OAuth2Error(INVALID_SCOPE, description, SC_BAD_REQUEST);
     }
 
     public static OAuth2Error invalidScope() {
@@ -103,7 +131,7 @@ public class OAuth2Error {
     }
 
     public static OAuth2Error serverError(String description) {
-        return new OAuth2Error(SERVER_ERROR, description);
+        return new OAuth2Error(SERVER_ERROR, description, SC_INTERNAL_SERVER_ERROR);
     }
 
     public static OAuth2Error serverError() {
@@ -111,7 +139,7 @@ public class OAuth2Error {
     }
 
     public static OAuth2Error temporarilyUnavailable(String description) {
-        return new OAuth2Error(TEMPORARILY_UNAVAILABLE, description);
+        return new OAuth2Error(TEMPORARILY_UNAVAILABLE, description, SC_SERVICE_UNAVAILABLE);
     }
 
     public static OAuth2Error temporarilyUnavailable() {
@@ -119,7 +147,7 @@ public class OAuth2Error {
     }
 
     public static OAuth2Error invalidClient(String description) {
-        return new OAuth2Error(INVALID_CLIENT, description);
+        return new OAuth2Error(INVALID_CLIENT, description, SC_BAD_REQUEST);
     }
 
     public static OAuth2Error invalidClient() {
@@ -127,7 +155,7 @@ public class OAuth2Error {
     }
 
     public static OAuth2Error invalidGrant(String description) {
-        return new OAuth2Error(INVALID_GRANT, description);
+        return new OAuth2Error(INVALID_GRANT, description, SC_BAD_REQUEST);
     }
 
     public static OAuth2Error invalidGrant() {
@@ -135,11 +163,18 @@ public class OAuth2Error {
     }
 
     public static OAuth2Error unsupportedGrantType(String description) {
-        return new OAuth2Error(UNSUPPORTED_GRANT_TYPE, description);
+        return new OAuth2Error(UNSUPPORTED_GRANT_TYPE, description, SC_BAD_REQUEST);
     }
 
     public static OAuth2Error unsupportedGrantType() {
         return unsupportedGrantType(null);
+    }
+
+    /**
+     * @since 2021.23
+     */
+    public static OAuth2Error from(NuxeoException e) {
+        return new OAuth2Error(SERVER_ERROR, e.getMessage(), e.getStatusCode());
     }
 
     @Override
