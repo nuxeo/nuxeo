@@ -19,9 +19,11 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunFileChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
@@ -44,6 +47,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -69,6 +73,7 @@ public class OperationsAndTxTests {
 
     @Before
     public void before() throws Exception {
+        service.putOperation(OperationFailure.class);
         service.putOperation(RunOnListItemWithTx.class);
         ctx = new OperationContext(session);
     }
@@ -77,6 +82,7 @@ public class OperationsAndTxTests {
     public void after() {
         ctx.close();
         service.removeOperation(RunOnListItemWithTx.class);
+        service.removeOperation(OperationFailure.class);
     }
 
     @Test
@@ -174,6 +180,21 @@ public class OperationsAndTxTests {
         assertNotNull(result);
         assertNotEquals(txids.get(0), txids.get(1));
         assertEquals(sids.get(0), sids.get(1));
+    }
+
+    // NXP-30897
+    @Test
+    public void testTransactionCanBeHandledByCaller() {
+        ctx.handleTransaction(false);
+        ctx.setInput(SimpleDocumentModel.empty());
+        try {
+            service.run(ctx, OperationFailure.ID);
+            fail("Operation execution should throw exception.");
+        } catch(OperationException e) {
+            //expected
+            assertTrue(e.getCause() instanceof NullPointerException);
+            assertFalse(TransactionHelper.isTransactionMarkedRollback());
+        }
     }
 
     @SuppressWarnings("unchecked")
