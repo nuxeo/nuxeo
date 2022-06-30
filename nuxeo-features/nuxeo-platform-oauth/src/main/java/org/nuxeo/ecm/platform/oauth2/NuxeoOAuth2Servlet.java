@@ -54,6 +54,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.jwt.JWTService;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
@@ -107,14 +108,18 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
-        if (pathInfo.endsWith(ENDPOINT_AUTH)) {
-            doGetAuthorize(request, response);
-        } else if (pathInfo.endsWith(ENDPOINT_AUTH_SUBMIT)) {
-            doGetNotAllowed(ENDPOINT_AUTH_SUBMIT, request, response);
-        } else if (pathInfo.endsWith(ENDPOINT_TOKEN)) {
-            doGetNotAllowed(ENDPOINT_TOKEN, request, response);
-        } else {
-            response.sendError(SC_NOT_FOUND);
+        try {
+            if (pathInfo.endsWith(ENDPOINT_AUTH)) {
+                doGetAuthorize(request, response);
+            } else if (pathInfo.endsWith(ENDPOINT_AUTH_SUBMIT)) {
+                doGetNotAllowed(ENDPOINT_AUTH_SUBMIT, request, response);
+            } else if (pathInfo.endsWith(ENDPOINT_TOKEN)) {
+                doGetNotAllowed(ENDPOINT_TOKEN, request, response);
+            } else {
+                response.sendError(SC_NOT_FOUND);
+            }
+        } catch (NuxeoException e) {
+            handleError(OAuth2Error.from(e), request, response);
         }
     }
 
@@ -122,12 +127,20 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
-        if (pathInfo.endsWith(ENDPOINT_AUTH_SUBMIT)) {
-            doPostAuthorizeSubmit(request, response);
-        } else if (pathInfo.endsWith(ENDPOINT_TOKEN)) {
-            doPostToken(request, response);
-        } else {
-            response.sendError(SC_NOT_FOUND);
+        OAuth2ErrorHandler errorHandler = e -> {
+        };
+        try {
+            if (pathInfo.endsWith(ENDPOINT_AUTH_SUBMIT)) {
+                errorHandler = e -> handleError(e, request, response);
+                doPostAuthorizeSubmit(request, response);
+            } else if (pathInfo.endsWith(ENDPOINT_TOKEN)) {
+                errorHandler = e -> handleJsonError(e, response);
+                doPostToken(request, response);
+            } else {
+                response.sendError(SC_NOT_FOUND);
+            }
+        } catch (NuxeoException e) {
+            errorHandler.accept(OAuth2Error.from(e));
         }
     }
 
@@ -190,8 +203,8 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     protected void doGetNotAllowed(String endpoint, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         OAuth2Error error = OAuth2Error.invalidRequest(
-                String.format("The /oauth2/%s endpoint only accepts POST requests.", endpoint));
-        handleError(error, SC_METHOD_NOT_ALLOWED, request, response);
+                String.format("The /oauth2/%s endpoint only accepts POST requests.", endpoint), SC_METHOD_NOT_ALLOWED);
+        handleError(error, request, response);
     }
 
     protected void doPostAuthorizeSubmit(HttpServletRequest request, HttpServletResponse response)
@@ -407,23 +420,27 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     protected void handleError(OAuth2Error error, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        handleError(error, SC_BAD_REQUEST, request, response);
-    }
-
-    protected void handleError(OAuth2Error error, int status, HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
         log.warn(String.format("OAuth2 authorization request error: %s", error));
         response.reset();
-        response.setStatus(status);
+        response.setStatus(error.getStatusCode());
         request.setAttribute("error", error);
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(ERROR_JSP_PAGE_PATH);
         requestDispatcher.forward(request, response);
     }
 
+    /**
+     * @deprecated since 2021.23, OAuth2Error now contains the status code to give to the response
+     */
+    @Deprecated
+    protected void handleError(OAuth2Error error, int status, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        handleError(new OAuth2Error(error.getId(), error.getDescription(), status), request, response);
+    }
+
     protected void handleJsonError(OAuth2Error error, HttpServletResponse response) throws IOException {
         log.warn(String.format("OAuth2 token request error: %s", error));
         response.setHeader("Content-Type", "application/json");
-        response.setStatus(SC_BAD_REQUEST);
+        response.setStatus(error.getStatusCode());
 
         Map<String, String> object = new HashMap<>();
         object.put(ERROR_PARAM, error.getId());
@@ -443,5 +460,14 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
         String url = URIUtils.addParametersToURIQuery(redirectURI, params);
         response.sendRedirect(url);
+    }
+
+    /**
+     * @since 2021.23
+     */
+    @FunctionalInterface
+    interface OAuth2ErrorHandler {
+
+        void accept(OAuth2Error e) throws IOException, ServletException;
     }
 }
