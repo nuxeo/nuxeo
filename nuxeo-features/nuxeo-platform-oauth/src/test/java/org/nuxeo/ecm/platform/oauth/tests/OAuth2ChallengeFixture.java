@@ -76,8 +76,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
-import org.nuxeo.ecm.jwt.JWTService;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.jwt.JWTFeature;
+import org.nuxeo.ecm.jwt.JWTService;
 import org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
@@ -113,6 +115,9 @@ public class OAuth2ChallengeFixture {
     protected static final String REDIRECT_URI = "https://redirect.uri";
 
     protected static final String STATE = "testState";
+
+    @Inject
+    protected DirectoryService directoryService;
 
     @Inject
     protected TransientStoreService transientStoreService;
@@ -281,6 +286,22 @@ public class OAuth2ChallengeFixture {
         }
     }
 
+    // NXP-31104
+    @Test
+    public void authorizeShouldHandleUncaughtExceptions() {
+        // Create the same OAuth2 client to produce error
+        duplicateDummyClientForErrors();
+
+        Map<String, String> params = getAuthorizationRequestParams();
+        try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
+            assertEquals(500, cr.getStatus());
+            // assertTrue due to charset
+            String contentTypeHeader = cr.getHeaders().getFirst("Content-Type");
+            assertTrue(String.format("Content type=%s is incorrect", contentTypeHeader),
+                    contentTypeHeader.startsWith("text/html"));
+        }
+    }
+
     @Test
     public void authorizeShouldDenyAccess() throws UnsupportedEncodingException {
         initValidAuthorizeRequestCall(STATE);
@@ -298,6 +319,24 @@ public class OAuth2ChallengeFixture {
             assertEquals(STATE, state);
             // ensure no authorization request has been stored
             assertStoreIsEmpty();
+        }
+    }
+
+    // NXP-31104
+    @Test
+    public void postAuthorizeWithShouldHandleUncaughtExceptions() {
+        initValidAuthorizeRequestCall();
+
+        // Create the same OAuth2 client to produce error
+        duplicateDummyClientForErrors();
+
+        Map<String, String> params = getAuthorizationRequestParams();
+        try (CloseableClientResponse cr = responseFromPostAuthorizeWith(params)) {
+            assertEquals(500, cr.getStatus());
+            // assertTrue due to charset
+            String contentTypeHeader = cr.getHeaders().getFirst("Content-Type");
+            assertTrue(String.format("Content type=%s is incorrect", contentTypeHeader),
+                    contentTypeHeader.startsWith("text/html"));
         }
     }
 
@@ -326,7 +365,7 @@ public class OAuth2ChallengeFixture {
         }
 
         // ask for an access token with the returned code, should get the one previously acquired
-        params = getTokenRequestParams(code, null);
+        params = getTokenRequestParams(code);
         try (CloseableClientResponse cr = responseFromTokenWith(params)) {
             assertEquals(200, cr.getStatus());
             String json = cr.getEntity(String.class);
@@ -355,7 +394,7 @@ public class OAuth2ChallengeFixture {
 
         // ask for an access token with the returned code, should get a refreshed token
         String refreshedAccessToken;
-        params = getTokenRequestParams(newCode, null);
+        params = getTokenRequestParams(newCode);
         try (CloseableClientResponse cr = responseFromTokenWith(params)) {
             assertEquals(200, cr.getStatus());
             String json = cr.getEntity(String.class);
@@ -685,13 +724,36 @@ public class OAuth2ChallengeFixture {
         }
 
         // Test with null secret
-        hotDeployer.undeploy("org.nuxeo.ecm.jwt.tests:OSGI-INF/test-jwt-config.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.oauth.test:OSGI-INF/test-jwt-empty-secret-config.xml");
         try (CloseableClientResponse cr = responseFromTokenWith(params)) {
             assertEquals(400, cr.getStatus());
             String json = cr.getEntity(String.class);
             Map<String, Serializable> error = new ObjectMapper().readValue(json, Map.class);
             assertEquals(INVALID_CLIENT, error.get(ERROR_PARAM));
             assertEquals("Secret not configured or invalid token", error.get(ERROR_DESCRIPTION_PARAM));
+        }
+    }
+
+    // NXP-31104
+    @Test
+    public void postTokenShouldHandleUncaughtExceptions() throws IOException {
+        initValidAuthorizeRequestCall();
+        String code = getAuthorizationCode();
+
+        // Create the same OAuth2 client to produce error
+        duplicateDummyClientForErrors();
+
+        ObjectMapper obj = new ObjectMapper();
+        Map<String, String> params = getTokenRequestParams(code);
+        try (CloseableClientResponse cr = responseFromTokenWith(params)) {
+            assertEquals(500, cr.getStatus());
+            String contentTypeHeader = cr.getHeaders().getFirst("Content-Type");
+            // assertTrue due to charset
+            assertTrue(String.format("Content type=%s is incorrect", contentTypeHeader),
+                    contentTypeHeader.startsWith("application/json"));
+            Map<?, ?> body = obj.readValue(cr.getEntityInputStream(), Map.class);
+            assertEquals("server_error", body.get(ERROR_PARAM));
+            assertEquals("More than one client registered for the 'testClient' id", body.get(ERROR_DESCRIPTION_PARAM));
         }
     }
 
@@ -813,6 +875,10 @@ public class OAuth2ChallengeFixture {
         return cr;
     }
 
+    protected Map<String, String> getTokenRequestParams(String code) {
+        return getTokenRequestParams(code, null);
+    }
+
     protected Map<String, String> getTokenRequestParams(String code, String codeVerifier) {
         Map<String, String> params = new HashMap<>();
         params.put(GRANT_TYPE_PARAM, AUTHORIZATION_CODE_GRANT_TYPE);
@@ -875,6 +941,18 @@ public class OAuth2ChallengeFixture {
 
     protected void assertStoreIsEmpty() {
         assertEquals(0, transientStore.keySet().size());
+    }
+
+    protected void duplicateDummyClientForErrors() {
+        try (Session session = directoryService.getDirectory("oauth2Clients").getSession()) {
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("name", "Dummy");
+            properties.put("clientId", CLIENT_ID);
+            properties.put("clientSecret", CLIENT_SECRET);
+            properties.put("redirectURIs", REDIRECT_URI);
+            session.createEntry(properties);
+        }
+        txFeature.nextTransaction();
     }
 
 }
