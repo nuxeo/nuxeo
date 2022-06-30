@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2022 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,35 +33,29 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
-@Operation(id = "runOnListItemWithTx")
+@Operation(id = RunOnListItemWithTx.ID)
 public class RunOnListItemWithTx {
 
-    @Context
-    OperationContext ctx;
+    public static final String ID = "runOnListItemWithTx";
 
     @Context
     CoreSession session;
 
+    @Context
+    protected OperationContext ctx;
+
+    @SuppressWarnings("unchecked")
     protected List<String> getOrCreateList(String name) {
-        List<String> list = (List<String>) ctx.get(name);
-        if (list == null) {
-            list = new ArrayList<String>();
-            ctx.put(name, list);
-        }
-        return list;
+        return (List<String>) ctx.computeIfAbsent(name, k -> new ArrayList<>());
     }
 
     @OperationMethod
     public void printInfo() throws Exception {
-
-        // session.query("select * from Document");
-
         String user = (String) ctx.get("item");
         Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
         getOrCreateList("result").add(user);
         getOrCreateList("sids").add(session.getSessionId());
         getOrCreateList("txids").add(tx.toString());
-
     }
 
 }
