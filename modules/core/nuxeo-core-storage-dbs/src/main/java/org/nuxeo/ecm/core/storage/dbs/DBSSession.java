@@ -1409,6 +1409,10 @@ public class DBSSession extends BaseSession {
             }
             ACL acl = new ACLImpl(name);
             for (Serializable aceSer : aceList) {
+                if (aceSer == null) {
+                    log.warn("A null ACE has been detected on document: {}, continuing", docId);
+                    continue;
+                }
                 State aceMap = (State) aceSer;
                 var granted = (Boolean) aceMap.get(KEY_ACE_GRANT);
                 if (granted == null) {
