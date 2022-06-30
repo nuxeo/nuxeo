@@ -71,6 +71,13 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
     protected boolean commit = true;
 
     /**
+     * Whether this context should handle the transaction.
+     *
+     * @since 2021.18
+     */
+    protected boolean handleTransaction = true;
+
+    /**
      * The context variables.
      */
     protected final Map<String, Object> vars;
@@ -124,7 +131,15 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
     }
 
     public boolean isCommit() {
-        return commit && !TransactionHelper.isTransactionMarkedRollback();
+        return commit && handleTransaction && !TransactionHelper.isTransactionMarkedRollback();
+    }
+
+    /**
+     * @since 2021.18
+     */
+    public OperationContext handleTransaction(boolean handleTransaction) {
+        this.handleTransaction = handleTransaction;
+        return this;
     }
 
     public CoreSession getCoreSession() {
@@ -204,7 +219,10 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
      */
     public void setRollback() {
         setCommit(false);
-        TransactionHelper.setTransactionRollbackOnly();
+        if (handleTransaction) {
+            setCommit(false);
+            TransactionHelper.setTransactionRollbackOnly();
+        }
     }
 
     public Map<String, Object> getVars() {
