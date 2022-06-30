@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2022 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,6 @@ import static org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest.MISSING
 import static org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore.DIRECTORY_NAME;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -277,7 +276,7 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     @Test
-    public void testAuthorizationDenied() throws MalformedURLException {
+    public void testAuthorizationDenied() {
         LoginPage loginPage = getLoginPage();
         loginPage.login(TEST_USERNAME, TEST_PASSWORD);
 
@@ -294,7 +293,7 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     @Test
-    public void testAuthorizationGranted() throws MalformedURLException {
+    public void testAuthorizationGranted() {
         LoginPage loginPage = getLoginPage();
         loginPage.login(TEST_USERNAME, TEST_PASSWORD);
 
@@ -381,7 +380,7 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     @Test
-    public void testAuthorizationWithAutoGrant() throws IOException {
+    public void testAuthorizationWithAutoGrant() {
         // Set auto-grant on the client
         setAutoGrant(true);
 

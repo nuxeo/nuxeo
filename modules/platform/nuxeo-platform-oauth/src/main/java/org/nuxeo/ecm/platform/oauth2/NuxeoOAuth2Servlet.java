@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2020 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2022 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -384,9 +384,9 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         NuxeoOAuth2Token token = tokenStore.getToken(clientId, username);
         if (token == null) {
             long expirationTime = Framework.getService(ConfigurationService.class)
-                                                   .getDuration(ACCESS_TOKEN_EXPIRATION_DURATION_PROPERTY)
-                                                   .map(Duration::toMillis)
-                                                   .orElse((long) ACCESS_TOKEN_EXPIRATION_TIME);
+                                           .getDuration(ACCESS_TOKEN_EXPIRATION_DURATION_PROPERTY)
+                                           .map(Duration::toMillis)
+                                           .orElse((long) ACCESS_TOKEN_EXPIRATION_TIME);
             final NuxeoOAuth2Token newToken = new NuxeoOAuth2Token(expirationTime, clientId);
             TransactionHelper.runInTransaction(() -> tokenStore.store(username, newToken));
             token = newToken;
