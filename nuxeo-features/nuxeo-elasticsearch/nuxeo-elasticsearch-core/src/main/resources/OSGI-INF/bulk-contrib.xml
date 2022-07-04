@@ -16,7 +16,13 @@
       <stream name="index" partitions="${nuxeo.bulk.action.reindex.index.partitions:=4}" />
       <!-- submit requests to elastic -->
       <computation name="bulkIndex" concurrency="${nuxeo.bulk.action.reindex.bulkIndex.concurrency:=2}" />
-      <stream name="bulkIndex" partitions="${nuxeo.bulk.action.reindex.bulkIndex.partitions:=4}" />
+      <stream name="bulkIndex" partitions="${nuxeo.bulk.action.reindex.bulkIndex.partitions:=4}">
+        <filter name="overflow" class="org.nuxeo.ecm.core.transientstore.computation.TransientStoreOverflowRecordFilter">
+          <option name="storeName">default</option>
+          <option name="prefix">index</option>
+          <option name="thresholdSize">990000</option>
+        </filter>
+      </stream>
       <computation name="indexCompletion" concurrency="1" />
       <!-- optimal size of the elasticsearch bulk request -->
       <option name="esBulkSizeBytes">5242880</option>
