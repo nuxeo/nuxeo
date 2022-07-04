@@ -1049,6 +1049,45 @@ public class TestAutomaticIndexing {
         assertTrue(ret.get(0).isTrashed());
     }
 
+    // NXP-31007
+    @Test
+    public void shouldIndexProxyAfterVersionUpdate() throws Exception {
+        startTransaction();
+        DocumentModel folder1 = session.createDocumentModel("/", "testfolder1", "Folder");
+        folder1 = session.createDocument(folder1);
+
+        DocumentModel file1 = session.createDocumentModel("/", "testfile1", "File");
+        file1.setPropertyValue("dc:description", "An old description");
+        file1 = session.createDocument(file1);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // Publish the document
+        DocumentModel proxy = session.publishDocument(file1, folder1);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // Update the version
+        DocumentModel version = session.getLastDocumentVersion(file1.getRef());
+        version.setPropertyValue("dc:description", "A new description");
+        version.putContextData(CoreSession.ALLOW_VERSION_WRITE, Boolean.TRUE);
+        session.saveDocument(version);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // Check the proxy is updated
+        proxy = session.getDocument(proxy.getRef());
+        assertEquals("A new description", proxy.getPropertyValue("dc:description"));
+
+        // Check the proxy is indexed
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE dc:description = 'A new description' AND ecm:isProxy = 1"));
+        assertEquals(1, docs.totalSize());
+    }
+
     @Test
     public void shouldIndexComplexCase() throws Exception {
         startTransaction();
