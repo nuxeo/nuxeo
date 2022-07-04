@@ -13,6 +13,7 @@
       <sourceMimeType>image/png</sourceMimeType>
       <sourceMimeType>image/gif</sourceMimeType>
       <sourceMimeType>image/tiff</sourceMimeType>
+      <sourceMimeType>image/bmp</sourceMimeType>
       <destinationMimeType>image/png</destinationMimeType>
     </converter>
 
@@ -32,6 +33,7 @@
       <sourceMimeType>image/png</sourceMimeType>
       <sourceMimeType>image/gif</sourceMimeType>
       <sourceMimeType>image/tiff</sourceMimeType>
+      <sourceMimeType>image/bmp</sourceMimeType>
 
       <sourceMimeType>text/xml</sourceMimeType>
       <sourceMimeType>text/html</sourceMimeType>
@@ -46,6 +48,8 @@
       <sourceMimeType>application/msword</sourceMimeType>
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-excel.sheet.macroEnabled.12</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-word.document.macroEnabled.12</sourceMimeType>
 
       <!-- Microsoft office 2007 documents -->
       <sourceMimeType>
@@ -91,6 +95,12 @@
       <sourceMimeType>
         application/vnd.oasis.opendocument.graphics-template
       </sourceMimeType>
+
+      <!-- Iwork -->
+      <sourceMimeType>application/vnd.apple.iwork</sourceMimeType>
+      <sourceMimeType>application/vnd.apple.pages</sourceMimeType>
+      <sourceMimeType>application/vnd.apple.numbers</sourceMimeType>
+      <sourceMimeType>application/vnd.apple.keynote</sourceMimeType>
 
       <!-- WordPerfect -->
       <sourceMimeType>application/wordperfect</sourceMimeType>
@@ -108,6 +118,8 @@
       <sourceMimeType>application/msword</sourceMimeType>
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-excel.sheet.macroEnabled.12</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-word.document.macroEnabled.12</sourceMimeType>
 
       <!-- Microsoft office 2007 documents -->
       <sourceMimeType>
@@ -153,6 +165,12 @@
       <sourceMimeType>
         application/vnd.oasis.opendocument.graphics-template
       </sourceMimeType>
+
+      <!-- Iwork -->
+      <sourceMimeType>application/vnd.apple.iwork</sourceMimeType>
+      <sourceMimeType>application/vnd.apple.pages</sourceMimeType>
+      <sourceMimeType>application/vnd.apple.numbers</sourceMimeType>
+      <sourceMimeType>application/vnd.apple.keynote</sourceMimeType>
 
       <!-- WordPerfect -->
       <sourceMimeType>application/wordperfect</sourceMimeType>

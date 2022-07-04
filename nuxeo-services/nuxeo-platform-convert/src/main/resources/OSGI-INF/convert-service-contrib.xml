@@ -143,6 +143,8 @@
       <sourceMimeType>application/msword</sourceMimeType>
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-excel.sheet.macroEnabled.12</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-word.document.macroEnabled.12</sourceMimeType>
 
       <!-- Microsoft office 2007 documents -->
       <sourceMimeType>
@@ -213,6 +215,8 @@
       <sourceMimeType>application/msword</sourceMimeType>
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-excel.sheet.macroEnabled.12</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-word.document.macroEnabled.12</sourceMimeType>
 
       <!-- Microsoft office 2007 documents -->
       <sourceMimeType>
