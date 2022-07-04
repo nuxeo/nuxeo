@@ -19,6 +19,7 @@
  */
 package org.nuxeo.elasticsearch.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
@@ -147,7 +148,7 @@ public class TestAutomaticIndexing {
 
     // Number of processed command since the startTransaction
     public void assertNumberOfCommandProcessed(int processed) throws Exception {
-        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
+        assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
     }
 
     /**
@@ -179,7 +180,7 @@ public class TestAutomaticIndexing {
         if (!TransactionHelper.isTransactionActive()) {
             TransactionHelper.startTransaction();
         }
-        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        assertEquals(0, esa.getPendingWorkerCount());
         commandProcessed = esa.getTotalCommandProcessed();
     }
 
@@ -207,7 +208,7 @@ public class TestAutomaticIndexing {
         // check no root document from search response
         startTransaction();
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        assertEquals(0, searchResponse.getHits().getTotalHits());
     }
 
     protected SearchResponse searchAll() {
@@ -240,7 +241,7 @@ public class TestAutomaticIndexing {
         // check no root document from search response
         startTransaction();
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        assertEquals(0, searchResponse.getHits().getTotalHits());
     }
 
     @Test
@@ -264,7 +265,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
+        assertEquals(10, searchResponse.getHits().getTotalHits());
     }
 
     @Test
@@ -284,7 +285,7 @@ public class TestAutomaticIndexing {
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
                                                            .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 
     @Test
@@ -309,7 +310,7 @@ public class TestAutomaticIndexing {
                                                            .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
 
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        assertEquals(0, searchResponse.getHits().getTotalHits());
         Assert.assertFalse(esa.isIndexingInProgress());
     }
 
@@ -328,7 +329,7 @@ public class TestAutomaticIndexing {
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
                                                            .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        assertEquals(1, searchResponse.getHits().getTotalHits());
 
         // now delete the document
         session.removeDocument(doc.getRef());
@@ -338,7 +339,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         searchResponse = esa.getClient().search(request);
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        assertEquals(0, searchResponse.getHits().getTotalHits());
     }
 
     @Test
@@ -359,7 +360,7 @@ public class TestAutomaticIndexing {
         startTransaction();
 
         SearchResponse searchResponse = search(QueryBuilders.matchQuery("dc:nature", "A"));
-        Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
+        assertEquals(10, searchResponse.getHits().getTotalHits());
 
         int i = 0;
         for (SearchHit hit : searchResponse.getHits()) {
@@ -378,10 +379,10 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         searchResponse = search(QueryBuilders.matchQuery("dc:nature", "A"));
-        Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
+        assertEquals(2, searchResponse.getHits().getTotalHits());
 
         searchResponse = search(QueryBuilders.matchQuery("dc:nature", "B"));
-        Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
+        assertEquals(8, searchResponse.getHits().getTotalHits());
     }
 
     @Test
@@ -401,10 +402,10 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext='search'"));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
     }
 
     @Test
@@ -424,9 +425,9 @@ public class TestAutomaticIndexing {
         startTransaction();
         DocumentModelList ret = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext='search'"));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext='foo'"));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
     }
 
     protected String createBigString(int length, char c) {
@@ -452,9 +453,9 @@ public class TestAutomaticIndexing {
         startTransaction();
         DocumentModelList ret = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'search'"));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'bar'"));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
 
     }
 
@@ -475,19 +476,19 @@ public class TestAutomaticIndexing {
         startTransaction();
         SearchResponse searchResponse = searchAll();
         // folder, version, file and proxy
-        Assert.assertEquals(4, searchResponse.getHits().getTotalHits());
+        assertEquals(4, searchResponse.getHits().getTotalHits());
 
         // unpublish
         session.removeDocument(proxy.getRef());
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
-        Assert.assertEquals(4, docs.totalSize());
+        assertEquals(4, docs.totalSize());
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
         searchResponse = searchAll();
-        Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
+        assertEquals(3, searchResponse.getHits().getTotalHits());
 
     }
 
@@ -506,7 +507,7 @@ public class TestAutomaticIndexing {
         startTransaction();
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:fulltext = 'foo' AND ecm:isVersion = 0"));
-        Assert.assertEquals(2, docs.totalSize());
+        assertEquals(2, docs.totalSize());
 
         doc.setPropertyValue("dc:description", "bar");
         session.saveDocument(doc);
@@ -517,7 +518,7 @@ public class TestAutomaticIndexing {
 
         docs = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:fulltext = 'bar' AND ecm:isVersion = 0"));
-        Assert.assertEquals(2, docs.totalSize());
+        assertEquals(2, docs.totalSize());
     }
 
     @Test
@@ -558,7 +559,7 @@ public class TestAutomaticIndexing {
         startTransaction();
         DocumentModelList ret = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isTrashed = 0"));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
         doc = session.getDocument(doc.getRef());
         trashService.untrashDocument(doc);
 
@@ -568,10 +569,10 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isTrashed = 0"));
-        Assert.assertEquals(2, ret.totalSize());
+        assertEquals(2, ret.totalSize());
 
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
+        assertEquals(2, searchResponse.getHits().getTotalHits());
 
         trashService.purgeDocuments(session, Collections.singletonList(doc.getRef()));
 
@@ -581,7 +582,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         searchResponse = searchAll();
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 
     @Test
@@ -606,7 +607,7 @@ public class TestAutomaticIndexing {
         startTransaction();
 
         SearchResponse searchResponse = searchAll();
-        Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
+        assertEquals(3, searchResponse.getHits().getTotalHits());
     }
 
     @Test
@@ -638,7 +639,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         searchResponse = search(QueryBuilders.termQuery("ecm:tag", "mytagbis"));
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        assertEquals(1, searchResponse.getHits().getTotalHits());
 
         tagService.untag(session, doc.getId(), "mytag");
         session.save();
@@ -648,9 +649,9 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         searchResponse = search(QueryBuilders.termQuery("ecm:tag", "mytagbis"));
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        assertEquals(1, searchResponse.getHits().getTotalHits());
         searchResponse = search(QueryBuilders.termQuery("ecm:tag", "mytag"));
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        assertEquals(0, searchResponse.getHits().getTotalHits());
     }
 
     @Test
@@ -696,7 +697,7 @@ public class TestAutomaticIndexing {
         startTransaction();
         DocumentModelList docs = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document Where dc:title='NewTitle'"));
-        Assert.assertEquals(1, docs.totalSize());
+        assertEquals(1, docs.totalSize());
     }
 
     @Test
@@ -720,7 +721,7 @@ public class TestAutomaticIndexing {
         startTransaction();
         DocumentModelList docs = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document Where dc:title='NewTitle'"));
-        Assert.assertEquals(1, docs.totalSize());
+        assertEquals(1, docs.totalSize());
     }
 
     @Test
@@ -762,10 +763,10 @@ public class TestAutomaticIndexing {
 
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(
                 String.format("SELECT * FROM Document WHERE ecm:parentId='%s' ORDER BY ecm:pos", ofolder.getId())));
-        Assert.assertEquals(4, ret.totalSize());
-        Assert.assertEquals(file1.getId(), ret.get(0).getId());
-        Assert.assertEquals(file2.getId(), ret.get(1).getId());
-        Assert.assertEquals(file3.getId(), ret.get(2).getId());
+        assertEquals(4, ret.totalSize());
+        assertEquals(file1.getId(), ret.get(0).getId());
+        assertEquals(file2.getId(), ret.get(1).getId());
+        assertEquals(file3.getId(), ret.get(2).getId());
 
         session.orderBefore(ofolder.getRef(), "testfile3", "testfile2");
         TransactionHelper.commitOrRollbackTransaction();
@@ -774,10 +775,10 @@ public class TestAutomaticIndexing {
 
         ret = ess.query(new NxQueryBuilder(session).nxql(
                 String.format("SELECT * FROM Document WHERE ecm:parentId='%s' ORDER BY ecm:pos", ofolder.getId())));
-        Assert.assertEquals(4, ret.totalSize());
-        Assert.assertEquals(file1.getId(), ret.get(0).getId());
-        Assert.assertEquals(file3.getId(), ret.get(1).getId());
-        Assert.assertEquals(file2.getId(), ret.get(2).getId());
+        assertEquals(4, ret.totalSize());
+        assertEquals(file1.getId(), ret.get(0).getId());
+        assertEquals(file3.getId(), ret.get(1).getId());
+        assertEquals(file2.getId(), ret.get(2).getId());
     }
 
     @Test
@@ -804,7 +805,7 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(5);
         startTransaction();
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
-        Assert.assertEquals(5, ret.totalSize());
+        assertEquals(5, ret.totalSize());
 
         // delete the first version
         session.removeDocument(v1);
@@ -814,7 +815,7 @@ public class TestAutomaticIndexing {
         startTransaction();
 
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
-        Assert.assertEquals(4, ret.totalSize());
+        assertEquals(4, ret.totalSize());
     }
 
     @Test
@@ -822,19 +823,19 @@ public class TestAutomaticIndexing {
         createADocumentWith3Versions();
 
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
-        Assert.assertEquals(4, ret.totalSize());
+        assertEquals(4, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestVersion = 1"));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 1"));
-        Assert.assertEquals(1, ret.totalSize());
-        Assert.assertEquals("v3", ret.get(0).getTitle());
+        assertEquals(1, ret.totalSize());
+        assertEquals("v3", ret.get(0).getTitle());
         String versionSeriesId = ret.get(0).getVersionSeriesId();
 
         ret = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:versionVersionableId = '" + versionSeriesId + "'"));
-        Assert.assertEquals(3, ret.totalSize());
+        assertEquals(3, ret.totalSize());
     }
 
     /**
@@ -850,14 +851,14 @@ public class TestAutomaticIndexing {
         }
 
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
-        Assert.assertEquals(4, ret.totalSize());
+        assertEquals(4, ret.totalSize());
 
         // but isLatestVersion and isLatestMajorVersion are not updated
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestVersion = 1"));
-        Assert.assertEquals(3, ret.totalSize());
+        assertEquals(3, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 1"));
-        Assert.assertEquals(3, ret.totalSize());
+        assertEquals(3, ret.totalSize());
 
     }
 
@@ -870,14 +871,14 @@ public class TestAutomaticIndexing {
 
         DocumentModelList ret = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isVersion = 0 AND dc:title='v3'"));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
         DocumentModel doc = ret.get(0);
-        Assert.assertEquals("v3", doc.getTitle());
+        assertEquals("v3", doc.getTitle());
 
         // document in ES is the last version
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 1"));
-        Assert.assertEquals(1, ret.totalSize());
-        Assert.assertEquals("v3", ret.get(0).getTitle());
+        assertEquals(1, ret.totalSize());
+        assertEquals("v3", ret.get(0).getTitle());
 
         // restore the document to v2 and check version in ES
         VersionModel v2VM = new VersionModelImpl();
@@ -890,8 +891,8 @@ public class TestAutomaticIndexing {
 
         ret = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isVersion = 0 AND dc:title='v2'"));
-        Assert.assertEquals(1, ret.totalSize());
-        Assert.assertEquals("v2", ret.get(0).getTitle());
+        assertEquals(1, ret.totalSize());
+        assertEquals("v2", ret.get(0).getTitle());
     }
 
     /*
@@ -914,7 +915,7 @@ public class TestAutomaticIndexing {
 
         // publish
         DocumentModel proxy = session.publishDocument(doc, folder);
-        Assert.assertEquals("0.1", proxy.getVersionLabel());
+        assertEquals("0.1", proxy.getVersionLabel());
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
@@ -932,8 +933,8 @@ public class TestAutomaticIndexing {
         // check ES - document might have v1.1
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:path = '/file' and ecm:isVersion = 0 AND dc:title='v0.2'"));
-        Assert.assertEquals(1, ret.totalSize());
-        Assert.assertEquals("v0.2", ret.get(0).getTitle());
+        assertEquals(1, ret.totalSize());
+        assertEquals("v0.2", ret.get(0).getTitle());
 
         // restore document to 1.0
         VersionModel versionModel = new VersionModelImpl();
@@ -948,8 +949,8 @@ public class TestAutomaticIndexing {
         // check ES - document might have v1.0
         ret = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:path = '/file' and ecm:isVersion = 0 AND dc:title='v0.1'"));
-        Assert.assertEquals(1, ret.totalSize());
-        Assert.assertEquals("v0.1", ret.get(0).getTitle());
+        assertEquals(1, ret.totalSize());
+        assertEquals("v0.1", ret.get(0).getTitle());
     }
 
     protected void createADocumentWith3Versions() throws Exception {
@@ -1030,7 +1031,7 @@ public class TestAutomaticIndexing {
         try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "user1")) {
             DocumentModelList result = ess.query(
                     new NxQueryBuilder(userSession).nxql("SELECT * FROM Document WHERE ecm:uuid ='" + id + "'"));
-            Assert.assertEquals(1, result.totalSize());
+            assertEquals(1, result.totalSize());
         }
     }
 
@@ -1064,19 +1065,19 @@ public class TestAutomaticIndexing {
         startTransaction();
 
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
-        Assert.assertEquals(3, ret.totalSize());
+        assertEquals(3, ret.totalSize());
 
         // Check that proxy was updated in ES
         ret = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:isProxy = 1 and dc:title='Title after proxy update'"));
-        Assert.assertEquals(1, ret.totalSize());
-        Assert.assertEquals("Title after proxy update", ret.get(0).getTitle());
+        assertEquals(1, ret.totalSize());
+        assertEquals("Title after proxy update", ret.get(0).getTitle());
 
         // Check that live document was updated in ES
         ret = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:isProxy = 0 and dc:title='Title after proxy update'"));
-        Assert.assertEquals(1, ret.totalSize());
-        Assert.assertEquals("Title after proxy update", ret.get(0).getTitle());
+        assertEquals(1, ret.totalSize());
+        assertEquals("Title after proxy update", ret.get(0).getTitle());
 
     }
 
@@ -1106,19 +1107,58 @@ public class TestAutomaticIndexing {
         startTransaction();
 
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
-        Assert.assertEquals(3, ret.totalSize());
+        assertEquals(3, ret.totalSize());
 
         // Check that live document was updated in ES
         ret = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isProxy = 0 and ecm:isTrashed = 1"));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
         Assert.assertTrue(ret.get(0).isTrashed());
 
         // Check that proxy was updated in ES
         ret = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isProxy = 1 and ecm:isTrashed = 1"));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
         Assert.assertTrue(ret.get(0).isTrashed());
+    }
+
+    // NXP-31007
+    @Test
+    public void shouldIndexProxyAfterVersionUpdate() throws Exception {
+        startTransaction();
+        DocumentModel folder1 = session.createDocumentModel("/", "testfolder1", "Folder");
+        folder1 = session.createDocument(folder1);
+
+        DocumentModel file1 = session.createDocumentModel("/", "testfile1", "File");
+        file1.setPropertyValue("dc:description", "An old description");
+        file1 = session.createDocument(file1);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // Publish the document
+        DocumentModel proxy = session.publishDocument(file1, folder1);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // Update the version
+        DocumentModel version = session.getLastDocumentVersion(file1.getRef());
+        version.setPropertyValue("dc:description", "A new description");
+        version.putContextData(CoreSession.ALLOW_VERSION_WRITE, Boolean.TRUE);
+        session.saveDocument(version);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // Check the proxy is updated
+        proxy = session.getDocument(proxy.getRef());
+        assertEquals("A new description", proxy.getPropertyValue("dc:description"));
+
+        // Check the proxy is indexed
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE dc:description = 'A new description' AND ecm:isProxy = 1"));
+        assertEquals(1, docs.totalSize());
     }
 
     @Test
@@ -1159,11 +1199,11 @@ public class TestAutomaticIndexing {
         // sort on a field that does not exist on the mapping and not present in the index
         DocumentModelList ret = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document ORDER BY dc:source"));
-        Assert.assertEquals(0, ret.totalSize());
+        assertEquals(0, ret.totalSize());
 
         // sort on internal field
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document ORDER BY ecm:pos"));
-        Assert.assertEquals(0, ret.totalSize());
+        assertEquals(0, ret.totalSize());
 
     }
 
@@ -1203,7 +1243,7 @@ public class TestAutomaticIndexing {
         // no record found in index
         String nxql = "SELECT * FROM Document WHERE ecm:isRecord = 1";
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(nxql));
-        Assert.assertEquals(0, ret.totalSize());
+        assertEquals(0, ret.totalSize());
 
         // make the doc a record
         session.makeRecord(doc.getRef());
@@ -1216,7 +1256,7 @@ public class TestAutomaticIndexing {
 
         // record is now found
         ret = ess.query(new NxQueryBuilder(session).nxql(nxql));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
 
     }
 
@@ -1230,7 +1270,7 @@ public class TestAutomaticIndexing {
         // no retention found in index
         String nxql1 = "SELECT * FROM Document WHERE ecm:retainUntil IS NOT NULL";
         DocumentModelList ret1 = ess.query(new NxQueryBuilder(session).nxql(nxql1));
-        Assert.assertEquals(0, ret1.totalSize());
+        assertEquals(0, ret1.totalSize());
 
         // set retention to five seconds in the future
         Calendar fiveSeconds = Calendar.getInstance();
@@ -1246,7 +1286,7 @@ public class TestAutomaticIndexing {
 
         // retention is now found
         ret1 = ess.query(new NxQueryBuilder(session).nxql(nxql1));
-        Assert.assertEquals(1, ret1.totalSize());
+        assertEquals(1, ret1.totalSize());
 
         // wait 8s to pass retention expiration date
         Thread.sleep(8_000);
@@ -1261,7 +1301,7 @@ public class TestAutomaticIndexing {
 
         // null retention is not found anymore
         ret1 = ess.query(new NxQueryBuilder(session).nxql(nxql1));
-        Assert.assertEquals(0, ret1.totalSize());
+        assertEquals(0, ret1.totalSize());
     }
 
     @Test
@@ -1274,7 +1314,7 @@ public class TestAutomaticIndexing {
         // no retention found in index
         String nxql = "SELECT * FROM Document WHERE ecm:hasLegalHold = 1";
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(nxql));
-        Assert.assertEquals(0, ret.totalSize());
+        assertEquals(0, ret.totalSize());
 
         // set legal hold
         session.makeRecord(doc.getRef());
@@ -1288,7 +1328,7 @@ public class TestAutomaticIndexing {
 
         // legal hold is now found
         ret = ess.query(new NxQueryBuilder(session).nxql(nxql));
-        Assert.assertEquals(1, ret.totalSize());
+        assertEquals(1, ret.totalSize());
 
         // remove legal hold
         session.setLegalHold(doc.getRef(), false, null);
@@ -1301,7 +1341,7 @@ public class TestAutomaticIndexing {
 
         // legal hold is not found anymore
         ret = ess.query(new NxQueryBuilder(session).nxql(nxql));
-        Assert.assertEquals(0, ret.totalSize());
+        assertEquals(0, ret.totalSize());
     }
 
 }

@@ -1658,7 +1658,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (proxies != null && !proxies.isEmpty()) {
             proxies.forEach(proxy -> {
                 DocumentModel docProxy = readModel(proxy);
-                if (!docProxy.isImmutable()) {
+                if (!docProxy.isImmutable() || allowVersionWrite) {
                     notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, docProxy, options, null, null, true, false);
                 }
             });
@@ -2577,10 +2577,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         List<Document> proxies = getSession().getProxies(doc);
         proxies.forEach(proxy -> {
             DocumentModel docProxy = readModel(proxy);
-            if (!docProxy.isImmutable()) {
-                notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, docProxy, new HashMap<>(), null, null, true,
-                        false);
-            }
+            notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, docProxy, new HashMap<>(), null, null, true, false);
         });
     }
 
