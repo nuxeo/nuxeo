@@ -58,7 +58,6 @@ import org.nuxeo.runtime.api.Framework;
 public class IndexRequestComputation extends AbstractBulkComputation {
     private static final Log log = LogFactory.getLog(IndexRequestComputation.class);
 
-    // we want to avoid record bigger than 1MB because they requires specific configuration and impact performance
     protected static final long MAX_RECORD_SIZE = 900_000;
 
     protected static final String INDEX_OPTION = "indexName";
@@ -106,8 +105,9 @@ public class IndexRequestComputation extends AbstractBulkComputation {
                 bulkRequest = new BulkRequest();
             }
             if (indexRequest.source().length() > MAX_RECORD_SIZE) {
-                log.warn(String.format("Indexing request for doc: %s, is too large: %d, max record size: %d",
-                        indexRequest.id(), indexRequest.source().length(), MAX_RECORD_SIZE));
+                // Record overflow is handled by stream filter, warn because it is a performance concern
+                log.warn(String.format("Indexing request for doc: %s, is very large: %d", indexRequest.id(),
+                        indexRequest.source().length()));
             }
         }
         bulkRequest.add(indexRequest);

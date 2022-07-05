@@ -65,6 +65,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestBulkIndex {
 
+    // field bigger than a record
+    protected static final int BIG_FIELD_SIZE = 1_200_000;
+
     @Inject
     protected CoreSession session;
 
@@ -88,7 +91,12 @@ public class TestBulkIndex {
         for (int i = 0; i < 20; i++) {
             String name = "file" + i;
             DocumentModel doc = session.createDocumentModel("/", name, "File");
-            doc.setPropertyValue("dc:title", "File" + i);
+            if (i == 0) {
+                // create a huge field to make the doc bigger than a record
+                doc.setPropertyValue("dc:title", new String(new char[BIG_FIELD_SIZE]).replace('\0', 'X'));
+            } else {
+                doc.setPropertyValue("dc:title", "File" + i);
+            }
             session.createDocument(doc);
         }
         txFeature.nextTransaction();
