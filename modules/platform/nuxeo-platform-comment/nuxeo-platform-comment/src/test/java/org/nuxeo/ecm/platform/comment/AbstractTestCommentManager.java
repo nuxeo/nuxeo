@@ -138,6 +138,7 @@ public abstract class AbstractTestCommentManager {
         assertEquals(commentedDocModel.getId(), comment.getParentId());
         assertNotNull(comment.getCreationDate());
         assertNotNull(comment.getModificationDate());
+        assertEquals(comment.getCreationDate().toEpochMilli(), comment.getModificationDate().toEpochMilli());
 
         // check james can create (because he has READ on commentedDocModel)
         CoreSession jamesSession = coreFeature.getCoreSession(JAMES);

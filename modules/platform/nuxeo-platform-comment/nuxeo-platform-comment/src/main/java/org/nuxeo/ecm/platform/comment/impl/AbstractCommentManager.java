@@ -248,7 +248,7 @@ public abstract class AbstractCommentManager implements CommentManager {
 
         // Initiate Modification Date if it is not done yet
         if (comment.getModificationDate() == null) {
-            comment.setModificationDate(Instant.now());
+            comment.setModificationDate(comment.getCreationDate());
         }
     }
 
