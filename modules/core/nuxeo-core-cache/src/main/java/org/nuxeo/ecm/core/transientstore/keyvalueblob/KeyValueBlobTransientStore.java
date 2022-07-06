@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
@@ -272,6 +273,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
     protected void computeStorageSize() {
         KeyValueStore kvs = getKeyValueStore();
         long size = keyStream().map(this::getBlobs) //
+                               .filter(Objects::nonNull)
                                .flatMap(Collection::stream)
                                .mapToLong(Blob::getLength)
                                .sum();
