@@ -21,6 +21,7 @@ package org.nuxeo.elasticsearch.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.elasticsearch.action.get.GetRequest;
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * Low level test on ESClient
@@ -48,7 +50,7 @@ import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
  */
 public abstract class TestESClient {
     @ClassRule
-    public static TemporaryFolder folder = new TemporaryFolder();
+    public static TemporaryFolder folder = new TemporaryFolder(new File(FeaturesRunner.getBuildDirectory()));
 
     protected static ElasticSearchEmbeddedNode embeddedNode;
 
