@@ -19,6 +19,7 @@
 package org.nuxeo.lib.stream.computation;
 
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.lib.stream.log.LogOffset;
 
@@ -27,7 +28,7 @@ import org.nuxeo.lib.stream.log.LogOffset;
  *
  * @since 11.1
  */
-public interface StreamManager {
+public interface StreamManager extends AutoCloseable {
     /**
      * Registers a processor and initializes the underlying streams, this is needed before creating a processor or
      * appending record in source streams.
@@ -58,4 +59,22 @@ public interface StreamManager {
      * Appends a record to a processor's source stream.
      */
     LogOffset append(String stream, Record record);
+
+    /**
+     * Gets a set of processor names.
+     *
+     * @since 2021.25
+     */
+    Set<String> getProcessorNames();
+
+    /**
+     * Gets a processor.
+     *
+     * @return null if the processor doesn't exist
+     * @since 2021.25
+     */
+    StreamProcessor getProcessor(String processorName);
+
+    @Override
+    void close();
 }

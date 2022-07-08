@@ -22,9 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
@@ -70,8 +68,6 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     protected LogManager logManager;
 
     protected StreamManager streamManager;
-
-    protected final Map<String, StreamProcessor> processors = new HashMap<>();
 
     /**
      * @since 11.2
@@ -172,11 +168,11 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     }
 
     protected void initProcessor(StreamProcessorDescriptor descriptor) {
-        if (! descriptor.isEnabled()) {
+        if (!descriptor.isEnabled()) {
             log.info("Processor {} disabled", descriptor.getId());
             return;
         }
-        if (processors.containsKey(descriptor.getId())) {
+        if (streamManager.getProcessorNames().contains(descriptor.getId())) {
             log.error("Processor already initialized: {}", descriptor.getId());
             return;
         }
@@ -190,12 +186,9 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         Settings settings = getSettings(descriptor);
         log.debug("Starting computation topology: {}\n{}", descriptor::getId, () -> topology.toPlantuml(settings));
         if (!isProcessingDisabled() && descriptor.isStart()) {
-            StreamProcessor streamProcessor = streamManager.registerAndCreateProcessor(descriptor.getId(), topology,
-                    settings);
-            processors.put(descriptor.getId(), streamProcessor);
+            streamManager.registerAndCreateProcessor(descriptor.getId(), topology, settings);
         } else {
             streamManager.register(descriptor.getId(), topology, settings);
-            processors.put(descriptor.getId(), null);
         }
     }
 
@@ -223,14 +216,15 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     @Override
     public void stop(ComponentContext context) throws InterruptedException {
         super.stop(context);
+        streamManager.close();
         logManager.close();
     }
 
     protected void startProcessors() {
         log.debug("Start processors");
         getDescriptors(XP_STREAM_PROCESSOR).forEach(d -> {
-            StreamProcessor processor = processors.get(d.getId());
-            if (processor != null) {
+            StreamProcessor processor = streamManager.getProcessor(d.getId());
+            if (processor != null && ((StreamProcessorDescriptor) d).isStart()) {
                 processor.start();
             }
         });
@@ -239,24 +233,30 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     @Override
     public void stopProcessors() {
         log.debug("Stop processors");
-        processors.forEach((name, processor) -> {
+        getDescriptors(XP_STREAM_PROCESSOR).forEach(d -> {
+            StreamProcessor processor = streamManager.getProcessor(d.getId());
             if (processor != null) {
                 processor.stop(Duration.ofSeconds(1));
             }
         });
-        processors.clear();
     }
 
     @Override
     public boolean stopComputation(Name computation) {
         log.debug("Stop computation: {}", computation);
-        return processors.values().stream().filter(processor -> processor != null && processor.stopComputation(computation)).count() > 0;
+        return streamManager.getProcessorNames()
+                            .stream()
+                            .anyMatch(name -> streamManager.getProcessor(name) != null
+                                    && streamManager.getProcessor(name).stopComputation(computation));
     }
 
     @Override
     public boolean restartComputation(Name computation) {
         log.debug("Restart computation: {}", computation);
-        return processors.values().stream().filter(processor -> processor != null && processor.startComputation(computation)).count() > 0;
+        return streamManager.getProcessorNames()
+                            .stream()
+                            .anyMatch(name -> streamManager.getProcessor(name) != null
+                                    && streamManager.getProcessor(name).startComputation(computation));
     }
 
 

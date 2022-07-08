@@ -23,6 +23,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -84,10 +85,16 @@ public class LogStreamManager implements StreamManager {
         filters.put(stream, RecordFilterChainImpl.NONE);
     }
 
+    // processorName -> processor
+    protected final Map<String, StreamProcessor> processors = new HashMap<>();
+
+    // processorName -> topology
     protected final Map<String, Topology> topologies = new HashMap<>();
 
+    // processorName -> settings
     protected final Map<String, Settings> settings = new HashMap<>();
 
+    // stream -> filter
     protected final Map<Name, RecordFilterChain> filters = new HashMap<>();
 
     protected final Set<Name> streams = new HashSet<>();
@@ -116,6 +123,7 @@ public class LogStreamManager implements StreamManager {
         }
         LogStreamProcessor processor = new LogStreamProcessor(this);
         processor.init(topologies.get(processorName), settings.get(processorName));
+        processors.put(processorName, processor);
         Map<String, String> meta = new HashMap<>();
         meta.put("processorName",  processorName);
         meta.putAll(getSystemMetadata());
@@ -156,6 +164,22 @@ public class LogStreamManager implements StreamManager {
         LogOffset offset = logManager.getAppender(stream).append(record.getKey(), record);
         filter.afterAppend(record, offset);
         return offset;
+    }
+
+    @Override
+    public Set<String> getProcessorNames() {
+        return Collections.unmodifiableSet(processors.keySet());
+    }
+
+    @Override
+    public StreamProcessor getProcessor(String processorName) {
+        return processors.get(processorName);
+    }
+
+    @Override
+    public void close() {
+        processors.values().forEach(StreamProcessor::shutdown);
+        processors.clear();
     }
 
     public boolean supportSubscribe() {

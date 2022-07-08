@@ -187,7 +187,7 @@ public class LogStreamProcessor implements StreamProcessor {
             return false;
         }
         if (pool.isTerminated()) {
-            log.debug("computation pool already terminated");
+            log.debug("Computation pool already terminated");
             return false;
         }
         log.warn("Stopping computation thread pool: " + computation);
