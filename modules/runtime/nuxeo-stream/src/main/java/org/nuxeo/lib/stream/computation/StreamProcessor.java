@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import org.nuxeo.lib.stream.log.Latency;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * Run a topology of computations according to some settings.
@@ -106,4 +107,20 @@ public interface StreamProcessor {
      * @since 11.5
      */
     String toJson(Map<String, String> meta);
+
+    /**
+     * Stop a computation thread pool.
+     *
+     * @return true if computation thread pool was found and stopped.
+     * @since 2021.25
+     */
+    boolean stopComputation(Name computation);
+
+    /**
+     * Start a computation thread pool that has been stopped using {@link #stopComputation(Name)}
+     *
+     * @return true if computation thread pool has been started.
+     * @since 2021.25
+     */
+    boolean startComputation(Name computation);
 }

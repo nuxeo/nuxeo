@@ -176,6 +176,56 @@ public class LogStreamProcessor implements StreamProcessor {
         }
     }
 
+    @Override
+    public boolean stopComputation(Name computation) {
+        ComputationPool pool = pools.stream()
+                                    .filter(comp -> computation.getUrn().equals(comp.getComputationName()))
+                                    .findFirst()
+                                    .orElse(null);
+        if (pool == null) {
+            log.debug("Unknown computation, nothing to stop");
+            return false;
+        }
+        if (pool.isTerminated()) {
+            log.debug("computation pool already terminated");
+            return false;
+        }
+        log.warn("Stopping computation thread pool: " + computation);
+        pool.stop(Duration.ofSeconds(1));
+        return true;
+    }
+
+    @Override
+    public boolean startComputation(Name computation) {
+        synchronized (pools) {
+            ComputationPool pool = pools.stream()
+                                        .filter(comp -> computation.getUrn().equals(comp.getComputationName()))
+                                        .findFirst()
+                                        .orElse(null);
+            if (pool == null) {
+                log.debug("Unknown computation, nothing to restart");
+                return false;
+            }
+            if (!pool.isTerminated()) {
+                log.debug("Computation is already started");
+                return false;
+            }
+
+            pools.remove(pool);
+            log.warn("Starting computation thread pool: " + computation);
+            ComputationMetadataMapping meta = topology.metadataList()
+                                                      .stream()
+                                                      .filter(m -> m.name().equals(computation.getUrn()))
+                                                      .findFirst()
+                                                      .orElseThrow();
+            pool = new ComputationPool(topology.getSupplier(meta.name()), meta, getDefaultAssignments(meta),
+                    streamManager, settings.getPolicy(meta.name()));
+            pools.add(pool);
+            pool.start();
+        }
+        return true;
+    }
+
     protected String getEdgeName(Topology.Vertex edge) {
         return (edge.getType().equals(Topology.VertexType.COMPUTATION) ? "computation:" : "stream:") + edge.getName();
     }
@@ -241,11 +291,10 @@ public class LogStreamProcessor implements StreamProcessor {
         ancestorsComputations.forEach(
                 comp -> topology.getMetadata(comp)
                                 .inputStreams()
-                                .forEach(stream -> latencies.add(
-                                        manager.getLatency(Name.ofUrn(stream), Name.ofUrn(comp),
-                                                settings.getCodec(comp),
-                                                (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()),
-                                                (Record::getKey)))));
+                                .forEach(stream -> latencies.add(manager.getLatency(Name.ofUrn(stream),
+                                        Name.ofUrn(comp), settings.getCodec(comp),
+                                        (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()),
+                                        (Record::getKey)))));
         return Latency.of(latencies);
     }
 
@@ -274,8 +323,7 @@ public class LogStreamProcessor implements StreamProcessor {
         return topology.metadataList()
                        .stream()
                        .map(meta -> new ComputationPool(topology.getSupplier(meta.name()), meta,
-                               getDefaultAssignments(meta), streamManager,
-                               settings.getPolicy(meta.name())))
+                               getDefaultAssignments(meta), streamManager, settings.getPolicy(meta.name())))
                        .collect(Collectors.toList());
     }
 

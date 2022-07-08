@@ -19,6 +19,7 @@
 package org.nuxeo.lib.stream.tests.computation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -698,6 +699,72 @@ public abstract class TestStreamProcessor {
                 assertTrue(json, json.contains("{\"name\":\"s1\",\"partitions\":2,\"codec\":\"avro\"}"));
                 assertTrue(json, json.contains("{\"name\":\"C1\",\"threads\":2,\"continueOnFailure\":false"));
             } finally {
+                processor.shutdown();
+            }
+        }
+    }
+
+    @Test
+    public void testStopStartComputation() throws Exception {
+        final int concurrency = 1;
+        final int nbRecords = 10;
+
+        final long targetTimestamp = System.currentTimeMillis();
+        final long targetWatermark = Watermark.ofTimestamp(targetTimestamp).getValue();
+        Topology topology = Topology.builder()
+                                    .addComputation(
+                                            () -> new ComputationSource("GENERATOR", 1, nbRecords, 5, targetTimestamp),
+                                            Collections.singletonList("o1:s1"))
+                                    .addComputation(() -> new ComputationForward("C1", 1, 1),
+                                            Arrays.asList("i1:s1", "o1:s2"))
+                                    .addComputation(
+                                            () -> new ComputationRecordCounter("COUNTER", Duration.ofMillis(100)),
+                                            Arrays.asList("i1:s2", "o1:" + OUTPUT_STREAM))
+                                    .build();
+        // one thread for each computation
+        Settings settings = new Settings(concurrency, concurrency, codec).setConcurrency("GENERATOR", 1);
+        try (LogManager manager = getLogManager()) {
+            StreamManager streamManager = new LogStreamManager(manager);
+            StreamProcessor processor = streamManager.registerAndCreateProcessor("processor", topology, settings);
+
+            processor.start();
+            assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
+
+            assertTrue(processor.stopComputation(Name.ofUrn("C1")));
+            assertFalse(processor.stopComputation(Name.ofUrn("C1")));
+            Latency latency = processor.getLatency("C1");
+            assertTrue(latency.toString(), latency.latency() > 0);
+
+            Thread.sleep(1000);
+            Latency latency2 = processor.getLatency("C1");
+            assertEquals(latency.lag(), latency2.lag());
+
+            assertTrue(processor.startComputation(Name.ofUrn("C1")));
+            assertFalse(processor.startComputation(Name.ofUrn("C1")));
+
+            while (!processor.isDone(targetTimestamp)) {
+                Thread.sleep(30);
+                long lowWatermark = processor.getLowWatermark();
+                log.info("low: " + lowWatermark + " dist: " + (targetWatermark - lowWatermark));
+            }
+            processor.shutdown();
+
+            latency = processor.getLatency("COUNTER");
+            assertEquals(latency.toString(), 0, latency.latency());
+
+            int result = readOutputCounter(manager);
+            int expected = nbRecords * settings.getConcurrency("GENERATOR");
+            if (result != expected) {
+                processor = streamManager.createStreamProcessor("processor");
+                processor.start();
+                int waiter = 200;
+                log.warn("FAILURE DEBUG TRACE ========================");
+                do {
+                    waiter -= 10;
+                    Thread.sleep(10);
+                    long lowWatermark = processor.getLowWatermark();
+                    log.warn("low: " + lowWatermark + " dist: " + (targetWatermark - lowWatermark));
+                } while (waiter > 0);
                 processor.shutdown();
             }
         }

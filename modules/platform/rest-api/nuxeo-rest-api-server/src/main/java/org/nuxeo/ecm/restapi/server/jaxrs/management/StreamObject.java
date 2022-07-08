@@ -18,22 +18,29 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.management;
 
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation.INTROSPECTION_KEY;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation.INTROSPECTION_KV_STORE;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionConverter;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
+import org.nuxeo.lib.stream.computation.StreamManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
+import org.nuxeo.runtime.stream.StreamService;
 
 /**
  * Nuxeo Stream Introspection endpoint
@@ -78,6 +85,21 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
         String json = getJson();
         return new StreamIntrospectionConverter(json).getConsumers(stream);
     }
+
+    @DELETE
+    @Path("/consumer/stop")
+    public void stopConsumer(@QueryParam("consumer") String consumer) {
+        // TODO: handle global param and use pub sub to stop all consumer in the cluster
+        Framework.getService(StreamService.class).stopComputation(Name.ofUrn(consumer));
+    }
+
+    @PUT
+    @Path("/consumer/start")
+    public void startConsumer(@QueryParam("consumer") String consumer) {
+        // TODO: handle global param and use pub sub to stop all consumer in the cluster
+        Framework.getService(StreamService.class).restartComputation(Name.ofUrn(consumer));
+    }
+
 
     protected String getJson() {
         return getKvStore().getString(INTROSPECTION_KEY);

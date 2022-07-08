@@ -20,6 +20,7 @@ package org.nuxeo.runtime.stream;
 
 import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * @since 9.3
@@ -54,4 +55,18 @@ public interface StreamService {
 
     // exposed for test
     void stopProcessors();
+
+    /**
+     * Stop computation consumer threads immediately.
+     *
+     * @since 2021.23
+     */
+    boolean stopComputation(Name computation);
+
+    /**
+     * Restart computation pool.
+     *
+     * @since 2021.23
+     */
+    boolean restartComputation(Name computation);
 }

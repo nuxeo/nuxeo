@@ -95,11 +95,11 @@ public abstract class AbstractLogManager implements LogManager {
     public <M extends Externalizable> LogTailer<M> createTailer(Name group, Collection<LogPartition> partitions,
             Codec<M> codec) {
         Objects.requireNonNull(codec);
+        cleanTailers();
         partitions.forEach(partition -> checkInvalidAssignment(group, partition));
         Codec<M> tailerCodec = NO_CODEC.equals(codec) ? guessCodec(partitions) : codec;
         partitions.forEach(partition -> checkInvalidCodec(partition, tailerCodec));
         LogTailer<M> ret = doCreateTailer(partitions, group, tailerCodec);
-        cleanTailers();
         partitions.forEach(partition -> tailersAssignments.put(new LogPartitionGroup(group, partition), ret));
         tailers.add(ret);
         return ret;

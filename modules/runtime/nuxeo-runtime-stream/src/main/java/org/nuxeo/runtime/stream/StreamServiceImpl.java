@@ -247,6 +247,19 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         processors.clear();
     }
 
+    @Override
+    public boolean stopComputation(Name computation) {
+        log.debug("Stop computation: {}", computation);
+        return processors.values().stream().filter(processor -> processor != null && processor.stopComputation(computation)).count() > 0;
+    }
+
+    @Override
+    public boolean restartComputation(Name computation) {
+        log.debug("Restart computation: {}", computation);
+        return processors.values().stream().filter(processor -> processor != null && processor.startComputation(computation)).count() > 0;
+    }
+
+
     protected class ComponentsLifeCycleListener implements ComponentManager.Listener {
         @Override
         public void afterStart(ComponentManager mgr, boolean isResume) {
