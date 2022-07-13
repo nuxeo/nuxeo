@@ -18,12 +18,15 @@
  */
 package org.nuxeo.runtime.stream;
 
+import java.io.Externalizable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.lib.stream.StreamRuntimeException;
@@ -36,9 +39,13 @@ import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.log.LogStreamManager;
 import org.nuxeo.lib.stream.log.LogConfig;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.LogOffset;
+import org.nuxeo.lib.stream.log.LogPartition;
+import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.UnifiedLogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogConfig;
+import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.codec.CodecService;
@@ -259,6 +266,79 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
                                     && streamManager.getProcessor(name).startComputation(computation));
     }
 
+    @Override
+    public boolean setComputationPositionToEnd(Name computation, Name stream) {
+        log.debug("Set computation position for {} to end", computation);
+        try (LogTailer<Externalizable> tailer = logManager.createTailer(computation, stream)) {
+            tailer.toEnd();
+            tailer.commit();
+        } catch (CommitFailedException e) {
+            if (e.getMessage().contains("assigned the partitions to another member")) {
+                // existing consumers prevent to change position
+                return false;
+            }
+            throw e;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean setComputationPositionToBeginning(Name computation, Name stream) {
+        log.debug("Set computation position for {} to beginning", computation);
+        try (LogTailer<Externalizable> tailer = logManager.createTailer(computation, stream)) {
+            tailer.reset();
+            tailer.commit();
+        } catch (CommitFailedException e) {
+            if (e.getMessage().contains("assigned the partitions to another member")) {
+                // existing consumers prevent to change position
+                return false;
+            }
+            throw e;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean setComputationPositionToOffset(Name computation, Name stream, int partition, long offset) {
+        log.debug("Set computation position for {} to partition: {}, offset: {}", computation, partition, offset);
+        try (LogTailer<Externalizable> tailer = logManager.createTailer(computation, stream)) {
+            tailer.seek(new LogOffsetImpl(stream, partition, offset));
+            tailer.commit();
+        } catch (CommitFailedException e) {
+            if (e.getMessage().contains("assigned the partitions to another member")) {
+                // existing consumers prevent to change position
+                return false;
+            }
+            throw e;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean setComputationPositionAfterDate(Name computation, Name stream, Instant after) {
+        log.debug("Set computation position for {} after date: {}", computation, after);
+        try (LogTailer<Externalizable> tailer = logManager.createTailer(computation, stream)) {
+            boolean moved = false;
+            for (LogPartition partition: tailer.assignments()) {
+                LogOffset offset = tailer.offsetForTimestamp(partition, after.toEpochMilli());
+                if (offset != null) {
+                    tailer.seek(offset);
+                    moved = true;
+                }
+            }
+            if (moved) {
+                tailer.commit();
+                return true;
+            }
+        } catch (CommitFailedException e) {
+            if (e.getMessage().contains("assigned the partitions to another member")) {
+                // existing consumers prevent to change position
+                return false;
+            }
+            throw e;
+        }
+        return false;
+    }
 
     protected class ComponentsLifeCycleListener implements ComponentManager.Listener {
         @Override

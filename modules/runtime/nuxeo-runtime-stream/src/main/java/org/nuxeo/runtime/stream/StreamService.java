@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.stream;
 
+import java.time.Instant;
+
 import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.Name;
@@ -57,16 +59,50 @@ public interface StreamService {
     void stopProcessors();
 
     /**
-     * Stop computation consumer threads immediately.
+     * Stop computation thread pool immediately.
      *
-     * @since 2021.23
+     * @since 2021.25
      */
     boolean stopComputation(Name computation);
 
     /**
-     * Restart computation pool.
+     * Restart the computation thread pool.
+     * Do nothing if the computation thread pool is already started.
      *
-     * @since 2021.23
+     * @since 2021.25
      */
     boolean restartComputation(Name computation);
+
+    /**
+     * Moving computation position to the end of stream.
+     * The computation thread pool must be stopped using {@link #stopComputation(Name)} before changing its position.
+     *
+     * @since 2021.25
+     */
+    boolean setComputationPositionToEnd(Name computation, Name stream);
+
+    /**
+     * Moving computation position to the beginning of stream.
+     * The computation thread pool must be stopped using {@link #stopComputation(Name)} before changing its position.
+     *
+     * @since 2021.25
+     */
+    boolean setComputationPositionToBeginning(Name computation, Name stream);
+
+    /**
+     * Moving computation position to a specific offset for a partition.
+     * The computation thread pool must be stopped using {@link #stopComputation(Name)} before changing its position.
+     *
+     * @since 2021.25
+     */
+    boolean setComputationPositionToOffset(Name computation, Name stream, int partition, long offset);
+
+    /**
+     * Moving computation position after a date.
+     * The computation thread pool must be stopped using {@link #stopComputation(Name)} before changing its position.
+     *
+     * @since 2021.25
+     */
+    boolean setComputationPositionAfterDate(Name computation, Name stream, Instant dateTime);
+
 }
