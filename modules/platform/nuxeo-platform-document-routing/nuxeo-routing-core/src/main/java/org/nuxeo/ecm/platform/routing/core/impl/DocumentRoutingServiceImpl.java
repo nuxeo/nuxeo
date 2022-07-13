@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.LockHelper;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -823,16 +824,18 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public void endTask(CoreSession session, Task task, Map<String, Object> data, String status) {
-        String comment = (String) data.get(GraphNode.NODE_VARIABLE_COMMENT);
-        TaskService taskService = Framework.getService(TaskService.class);
-        taskService.endTask(session, session.getPrincipal(), task, comment, null, false);
-
         Map<String, String> taskVariables = task.getVariables();
         String routeInstanceId = taskVariables.get(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
         if (StringUtils.isEmpty(routeInstanceId)) {
             throw new DocumentRouteException("Can not resume workflow, no related route");
         }
-        completeTask(routeInstanceId, null, task, data, status, session);
+        // Avoid concurrent task completion for a given workflow instance
+        LockHelper.doAtomically(routeInstanceId, () -> {
+            String comment = (String) data.get(GraphNode.NODE_VARIABLE_COMMENT);
+            TaskService taskService = Framework.getService(TaskService.class);
+            taskService.endTask(session, session.getPrincipal(), task, comment, null, false);
+            completeTask(routeInstanceId, null, task, data, status, session);
+        });
     }
 
     @Override
