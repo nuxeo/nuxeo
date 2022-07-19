@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.restapi.service" version="1.0">
+
+  <documentation>
+    An internal service used to propagate endpoint action to all nodes in the cluster.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.restapi.server.RestAPIServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.restapi.server.RestAPIService" />
+  </service>
+
+</component>

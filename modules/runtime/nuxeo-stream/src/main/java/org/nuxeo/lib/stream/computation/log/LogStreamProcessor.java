@@ -178,6 +178,10 @@ public class LogStreamProcessor implements StreamProcessor {
 
     @Override
     public boolean stopComputation(Name computation) {
+        if (pools == null) {
+            log.debug("Processor not started, nothing to stop");
+            return false;
+        }
         ComputationPool pool = pools.stream()
                                     .filter(comp -> computation.getUrn().equals(comp.getComputationName()))
                                     .findFirst()
@@ -197,6 +201,10 @@ public class LogStreamProcessor implements StreamProcessor {
 
     @Override
     public boolean startComputation(Name computation) {
+        if (pools == null) {
+            log.debug("Processor not started, nothing to start");
+            return false;
+        }
         synchronized (pools) {
             ComputationPool pool = pools.stream()
                                         .filter(comp -> computation.getUrn().equals(comp.getComputationName()))

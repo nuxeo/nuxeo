@@ -21,6 +21,8 @@ package org.nuxeo.ecm.restapi.server.jaxrs.management;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation.INTROSPECTION_KEY;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation.INTROSPECTION_KV_STORE;
+import static org.nuxeo.ecm.restapi.server.ClusterActionPubSub.START_CONSUMER_ACTION;
+import static org.nuxeo.ecm.restapi.server.ClusterActionPubSub.STOP_CONSUMER_ACTION;
 
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -29,7 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -40,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionConverter;
+import org.nuxeo.ecm.restapi.server.RestAPIService;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
@@ -99,18 +101,18 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
         return new StreamIntrospectionConverter(json).getConsumers(stream);
     }
 
-    @DELETE
+    @PUT
     @Path("/consumer/stop")
     public void stopConsumer(@QueryParam("consumer") String consumer) {
-        // TODO: handle global param and use pub sub to stop all consumer in the cluster
         Framework.getService(StreamService.class).stopComputation(Name.ofUrn(consumer));
+        Framework.getService(RestAPIService.class).propagateAction(STOP_CONSUMER_ACTION, consumer);
     }
 
     @PUT
     @Path("/consumer/start")
     public void startConsumer(@QueryParam("consumer") String consumer) {
-        // TODO: handle global param and use pub sub to stop all consumer in the cluster
         Framework.getService(StreamService.class).restartComputation(Name.ofUrn(consumer));
+        Framework.getService(RestAPIService.class).propagateAction(START_CONSUMER_ACTION, consumer);
     }
 
     @GET
@@ -132,7 +134,8 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
 
     @PUT
     @Path("/consumer/position/end")
-    public String setConsumerPositionToEnd(@QueryParam("consumer") String consumer, @QueryParam("stream") String stream) {
+    public String setConsumerPositionToEnd(@QueryParam("consumer") String consumer,
+            @QueryParam("stream") String stream) {
         if (StringUtils.isBlank(stream)) {
             throw new NuxeoException("Missing stream param", HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -282,4 +285,5 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
     protected KeyValueStore getKvStore() {
         return Framework.getService(KeyValueService.class).getKeyValueStore(INTROSPECTION_KV_STORE);
     }
+
 }
