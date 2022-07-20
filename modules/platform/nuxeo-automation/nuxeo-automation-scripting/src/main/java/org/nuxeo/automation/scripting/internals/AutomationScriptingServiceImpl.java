@@ -23,6 +23,7 @@ import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.DE
 import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.NASHORN_JAVA_VERSION;
 import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.NASHORN_WARN_CACHE;
 import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.NASHORN_WARN_CLASS_FILTER;
+import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.NASHORN_WARN_ENGINE;
 import static org.nuxeo.launcher.config.ConfigurationChecker.checkJavaVersion;
 
 import java.io.InputStream;
@@ -31,14 +32,12 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.Invocable;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
+import javax.script.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
@@ -46,9 +45,6 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
-import jdk.nashorn.api.scripting.ClassFilter;
-import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 public class AutomationScriptingServiceImpl implements AutomationScriptingService {
 
@@ -83,7 +79,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
         final AutomationMapper mapper;
 
-        final ScriptObjectMirror global;
+        final Map global;
 
         Bridge(OperationContext operationContext) {
             mapper = new AutomationMapper(operationContext);
@@ -92,7 +88,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
             } catch (ScriptException cause) {
                 throw new NuxeoException("Cannot execute mapper " + mapperScript, cause);
             }
-            global = (ScriptObjectMirror) mapper.get("nashorn.global");
+            global = (Map) mapper.get("nashorn.global");
             scriptContext.setBindings(mapper, ScriptContext.ENGINE_SCOPE);
         }
 
@@ -174,17 +170,20 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     protected ScriptEngine getScriptEngine(boolean cache, boolean filter) {
-        NashornScriptEngineFactory nashorn = new NashornScriptEngineFactory();
-        String[] args = cache
-                ? new String[] { "-strict", "--optimistic-types=true", "--persistent-code-cache",
-                        "--class-cache-size=50" }
-                : new String[] { "-strict" };
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        ClassFilter classFilter = filter ? getClassFilter() : null;
-        return nashorn.getScriptEngine(args, classLoader, classFilter);
+        ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+        if (engine == null) {
+            throw new UnsupportedOperationException(NASHORN_WARN_ENGINE);
+        }
+        Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+        bindings.put("polyglot.js.allowHostAccess", true);
+        Predicate<String> classFilter = filter ? getClassFilter() : null;
+        if (classFilter != null) {
+            bindings.put("polyglot.js.allowHostClassLookup", classFilter);
+        }
+        return engine;
     }
 
-    protected ClassFilter getClassFilter() {
+    protected Predicate<String> getClassFilter() {
         return className -> allowedClassNames.contains(className);
     }
 

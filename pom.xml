@@ -162,6 +162,9 @@
     <metrics.version>5.0.0-rc3</metrics.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.27.1</opencensus.version>
+
+    <!-- GraalVM -->
+    <graalvm.version>22.1.0.1</graalvm.version>
   </properties>
 
   <dependencyManagement>
@@ -4847,6 +4850,18 @@
         <groupId>com.datadoghq</groupId>
         <artifactId>dd-trace-api</artifactId>
         <version>0.93.0</version>
+      </dependency>
+
+      <!-- GraalVM -->
+      <dependency>
+        <groupId>org.graalvm.js</groupId>
+        <artifactId>js</artifactId>
+        <version>${graalvm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.graalvm.js</groupId>
+        <artifactId>js-scriptengine</artifactId>
+        <version>${graalvm.version}</version>
       </dependency>
 
     </dependencies>

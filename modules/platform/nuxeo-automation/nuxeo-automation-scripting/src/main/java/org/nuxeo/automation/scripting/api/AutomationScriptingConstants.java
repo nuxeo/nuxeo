@@ -49,6 +49,6 @@ public class AutomationScriptingConstants {
 
     public static final String NASHORN_WARN_CACHE = "Nashorn cache is not available. jdk8u25 is required to optimize Automation Javascript performances.";
 
-    public static final String NASHORN_WARN_VERSION = "Cannot use Nashorn. jdk8 is required to activate Automation Javascript.";
+    public static final String NASHORN_WARN_ENGINE = "Cannot use Nashorn. jdk8-jdk15 is required to activate Automation Javascript, or GraalVM must be installed.";
 
 }
