@@ -45,6 +45,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import hidden.org.eclipse.core.runtime.AssertionFailedException;
+
 /**
  * Tests the {@link ContentDiffAdapter}.
  *
@@ -86,6 +88,17 @@ public class TestContentDiffAdapter {
 
         // Check content diff
         checkContentDiff("plain_text_content_diff.html", contentDiffBlob);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.diff.content:content-diff-config.xml")
+    public void testHTMLFilesContentDiffLimit() {
+        try {
+            testHTMLFilesContentDiff();
+            fail("The diff should have been interrupted because it is bigger than the accepted limit");
+        } catch (AssertionFailedException e) {
+            // success
+        }
     }
 
     /**
