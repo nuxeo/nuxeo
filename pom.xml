@@ -4640,7 +4640,7 @@
         <groupId>org.outerj.daisy</groupId>
         <artifactId>daisydiff</artifactId>
         <classifier>shaded</classifier>
-        <version>1.2-NX2</version>
+        <version>1.2-NX5</version>
         <exclusions>
           <exclusion>
             <groupId>org.eclipse.core.runtime</groupId>

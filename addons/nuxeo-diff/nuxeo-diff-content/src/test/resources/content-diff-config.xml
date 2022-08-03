@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.settings.test">
+  <require>org.nuxeo.ecm.diff.settings</require>
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.diff.limit">1</property>
+  </extension>
+</component>

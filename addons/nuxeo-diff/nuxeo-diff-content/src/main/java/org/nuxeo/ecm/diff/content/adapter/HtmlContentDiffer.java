@@ -45,6 +45,8 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.outerj.daisy.diff.HtmlCleaner;
 import org.outerj.daisy.diff.XslFilter;
 import org.outerj.daisy.diff.html.HTMLDiffer;
@@ -65,6 +67,8 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
     private static final Log LOGGER = LogFactory.getLog(HtmlContentDiffer.class);
 
     protected static final String NUXEO_DEFAULT_CONTEXT_PATH = "/nuxeo";
+
+    protected static final String DIFF_LIMIT_CONFIGURATION_PROPERTY = "nuxeo.diff.limit";
 
     @Override
     public List<Blob> getContentDiff(DocumentModel leftDoc, DocumentModel rightDoc, String xpath, Locale locale)
@@ -137,7 +141,8 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
             HtmlSaxDiffOutput output = new HtmlSaxDiffOutput(postProcess, prefix);
 
             HTMLDiffer differ = new HTMLDiffer(output);
-            differ.diff(leftComparator, rightComparator);
+            long diffLimit = Framework.getService(ConfigurationService.class).getLong(DIFF_LIMIT_CONFIGURATION_PROPERTY, -1);
+            differ.diff(leftComparator, rightComparator, diffLimit);
 
             postProcess.endElement("", "diff", "diff");
             postProcess.endElement("", "diffreport", "diffreport");
