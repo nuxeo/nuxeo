@@ -292,10 +292,7 @@ public abstract class MongoDBAbstractQueryBuilder {
 
         // we have a common prefix for all underlying references, extract it into an $elemMatch node
 
-        // info.prefix is the DBS common prefix, ex: foo/bar/*1; ecm:acp/*1/acl/*1
-        // compute MongoDB prefix: foo.bar.; ecm:acp.acl.
-        String prefix = SLASH_WILDCARD_SLASH.matcher(info.prefix).replaceAll(".");
-        // remove current prefix and trailing . for actual field match
+        String prefix = getMongoDBPrefix(info.prefix);
         String fieldBase = stripElemMatchPrefix(prefix.substring(0, prefix.length() - 1));
 
         String previousElemMatchPrefix = elemMatchPrefix;
@@ -306,6 +303,20 @@ public abstract class MongoDBAbstractQueryBuilder {
         return new Document(fieldBase, new Document(QueryOperators.ELEM_MATCH, new Document(op, list)));
     }
 
+    /**
+     * Computes the MongoDB prefix from the DBS common prefix.
+     *
+     * <pre>{@code
+     * foo/bar/*1 -> foo.bar.
+     * ecm:acp/*1/acl/*1 -> ecm:acp.acl.
+     * }</pre>
+     */
+    // overridden for repository to also strip prefix from unprefixed schemas (files:files/*1 -> files.)
+    protected String getMongoDBPrefix(String prefix) {
+        return SLASH_WILDCARD_SLASH.matcher(prefix).replaceAll(".");
+    }
+
+    // remove current prefix and trailing . for actual field match
     protected String stripElemMatchPrefix(String field) {
         if (elemMatchPrefix != null && field.startsWith(elemMatchPrefix)) {
             field = field.substring(elemMatchPrefix.length());
