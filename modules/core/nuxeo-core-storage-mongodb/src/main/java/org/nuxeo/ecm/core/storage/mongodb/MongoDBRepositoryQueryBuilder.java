@@ -82,6 +82,7 @@ import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
+import org.nuxeo.ecm.core.storage.QueryOptimizer.PrefixInfo;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBOperators;
@@ -518,6 +519,37 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
         } else {
             return NON_CANON_INDEX.matcher(xpath).replaceAll("$1");
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Also strips prefix from unprefixed schemas.
+     *
+     * <pre>{@code
+     * files:files/*1 -> files.
+     * }</pre>
+     */
+    @Override
+    protected String getMongoDBPrefix(String prefix) {
+        String mongoPrefix = super.getMongoDBPrefix(prefix);
+        String first = mongoPrefix.split("\\.")[0];
+        int i = first.indexOf(':');
+        if (i > 0) {
+            // there is a prefix
+            Field field = schemaManager.getField(first);
+            if (field != null) {
+                Type type = field.getDeclaringType();
+                if (type instanceof Schema) {
+                    Schema schema = (Schema) type;
+                    if (StringUtils.isBlank(schema.getNamespace().prefix)) {
+                        // schema without prefix, strip it
+                        mongoPrefix = mongoPrefix.substring(i + 1);
+                    }
+                }
+            }
+        }
+        return mongoPrefix;
     }
 
     @Override

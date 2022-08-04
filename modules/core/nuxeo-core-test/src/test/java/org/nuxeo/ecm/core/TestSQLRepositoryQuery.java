@@ -2833,6 +2833,20 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
+    public void testQueryComplexCorrelationForSchemaWithNoPrefix() {
+        DocumentModel doc = session.createDocumentModel("/", "testfile", "File");
+        Blob blob1 = Blobs.createBlob("foo", "text/plain", null, "foo.txt");
+        Blob blob2 = Blobs.createBlob("bar", "text/plain", null, "bar.txt");
+        doc.setPropertyValue("files:files", (Serializable) List.of(Map.of("file", blob1), Map.of("file", blob2)));
+        doc = session.createDocument(doc);
+        session.save();
+
+        String clause = "files:files/*1/file/name = 'foo.txt' AND files:files/*1/file/length = 3";
+        DocumentModelList res = session.query("SELECT * FROM File WHERE ecm:isProxy = 0 AND " + clause);
+        assertEquals(1, res.size());
+    }
+
+    @Test
     public void testQueryComplexPrefix() {
         DocumentModel doc = makeComplexDoc();
         String docId = doc.getId();
