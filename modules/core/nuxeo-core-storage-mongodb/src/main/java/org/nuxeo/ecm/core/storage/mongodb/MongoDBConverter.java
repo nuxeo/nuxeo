@@ -250,6 +250,10 @@ public class MongoDBConverter {
         if (valueIsId(key)) {
             return bsonToId(val);
         }
+        // NXP-31148: numbers is sometime returned as Integer whereas we only deal Long
+        if (val instanceof Integer) {
+            return ((Integer) val).longValue();
+        }
         return (Serializable) val;
     }
 
@@ -259,6 +263,10 @@ public class MongoDBConverter {
         }
         if (valueIsId(key)) {
             return String.class;
+        }
+        // NXP-31148: numbers is sometime returned as Integer whereas we only deal Long
+        if (Integer.class.isAssignableFrom(klass)) {
+            return Long.class;
         }
         return klass;
     }
