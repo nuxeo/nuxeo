@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.mimetype.service;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNullElse;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -225,7 +226,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
                 // sub-sub-...-submatches make this as recursive ?
                 Collection<MagicMatch> possibilities = match.getSubMatches();
                 Iterator<MagicMatch> iter = possibilities.iterator();
-                MagicMatch m = iter.next();
+                MagicMatch m = requireNonNullElse(iter.next(), match);
                 mimeType = m.getMimeType();
                 // need to clean for subsequent calls
                 possibilities.clear();
