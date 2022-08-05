@@ -22,8 +22,10 @@
 package org.nuxeo.ecm.restapi.test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_IMPLEMENTED;
+import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -1069,17 +1071,7 @@ public class BatchUploadFixture extends BaseTest {
 
     /** NXP-29246: Fix import of MHTML file using Chrome */
     @Test
-    public void testUploadMHTMLMultipartEnabled() throws Exception {
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + initializeNewBatch() + "/0",
-                "dummy", Collections.singletonMap("Content-Type", "multipart/related"))) {
-            assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-        }
-    }
-
-    /** NXP-29246: Fix import of MHTML file using Chrome */
-    @Test
-    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-batch-upload-properties.xml")
-    public void testUploadMHTMLMultipartDisabled() throws Exception {
+    public void testUploadMHTML() throws IOException {
         String batchId = initializeNewBatch();
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "multipart/related");
@@ -1092,6 +1084,16 @@ public class BatchUploadFixture extends BaseTest {
             assertEquals(batchId, node.get("batchId").asText());
             assertEquals("0", node.get("fileIdx").asText());
             assertEquals("normal", node.get("uploadType").asText());
+        }
+    }
+
+    /** NXP-31123: Reject multipart uploads */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-batch-upload-properties.xml")
+    public void testRejectMultipartFormDataUpload() throws IOException {
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + initializeNewBatch() + "/0",
+                "dummy", Collections.singletonMap("Content-Type", MULTIPART_FORM_DATA))) {
+            assertEquals(SC_BAD_REQUEST, response.getStatus());
         }
     }
 

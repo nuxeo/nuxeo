@@ -21,6 +21,9 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -235,10 +238,14 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         // TODO NXP-18247: should be set to the actual number of bytes uploaded instead of relying on the Content-Length
         // header which is not necessarily set
         long uploadedSize = getUploadedSize(request);
-        boolean isMultipart = isMultipartEnabled() && contentType != null && contentType.contains("multipart");
+        boolean isMultipartFormData = contentType != null && contentType.contains(MULTIPART_FORM_DATA);
 
         // Handle multipart case: mainly MSIE with jQueryFileupload
-        if (isMultipart) {
+        if (isMultipartFormData) {
+            if (!isMultipartFormDataEnabled()) {
+                throw new NuxeoException(String.format("Content-Type: \"%s\" is not supported", MULTIPART_FORM_DATA),
+                        SC_BAD_REQUEST);
+            }
             FormData formData = new FormData(request);
             Blob blob = formData.getFirstBlob();
             if (blob == null) {
@@ -297,11 +304,11 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
                 }
             }
         }
-        return buildResponse(status, result, isMultipart);
+        return buildResponse(status, result, isMultipartFormData);
     }
 
     /** @since 10.10-HF30 */
-    protected boolean isMultipartEnabled() {
+    protected boolean isMultipartFormDataEnabled() {
         return Framework.getService(ConfigurationService.class).isBooleanFalse(MULTIPART_DISABLED_CONFIG_KEY);
     }
 
