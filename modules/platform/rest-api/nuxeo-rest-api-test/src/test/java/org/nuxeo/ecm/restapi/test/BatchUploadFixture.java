@@ -22,8 +22,10 @@
 package org.nuxeo.ecm.restapi.test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_IMPLEMENTED;
+import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -1059,6 +1061,15 @@ public class BatchUploadFixture extends BaseTest {
             assertEquals(batchId, node.get("batchId").asText());
             assertEquals("0", node.get("fileIdx").asText());
             assertEquals("normal", node.get("uploadType").asText());
+        }
+    }
+
+    /** NXP-31123: Reject multipart uploads */
+    @Test
+    public void testRejectMultipartFormDataUpload() throws IOException {
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + initializeNewBatch() + "/0",
+                "dummy", Map.of("Content-Type", MULTIPART_FORM_DATA))) {
+            assertEquals(SC_BAD_REQUEST, response.getStatus());
         }
     }
 

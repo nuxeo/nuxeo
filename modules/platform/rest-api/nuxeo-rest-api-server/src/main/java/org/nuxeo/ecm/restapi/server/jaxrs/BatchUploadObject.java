@@ -21,6 +21,9 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -199,6 +202,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         }
 
         // Parameters are passed as request header, the request body is the stream
+        String contentType = request.getHeader("Content-Type");
         String uploadType = request.getHeader("X-Upload-Type");
         // Use non chunked mode by default if X-Upload-Type header is not provided
         if (!UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
@@ -229,7 +233,11 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         // TODO NXP-18247: should be set to the actual number of bytes uploaded instead of relying on the Content-Length
         // header which is not necessarily set
         long uploadedSize = getUploadedSize(request);
-        if (Framework.isBooleanPropertyTrue(NginxConstants.X_ACCEL_ENABLED)
+        boolean isMultipartFormData = contentType != null && contentType.contains(MULTIPART_FORM_DATA);
+        if (isMultipartFormData) {
+            throw new NuxeoException(String.format("Content-Type: \"%s\" is not supported", MULTIPART_FORM_DATA),
+                    SC_BAD_REQUEST);
+        } else if (Framework.isBooleanPropertyTrue(NginxConstants.X_ACCEL_ENABLED)
                 && StringUtils.isNotEmpty(requestBodyFile)) {
             if (StringUtils.isNotEmpty(fileName)) {
                 fileName = URLDecoder.decode(fileName, "UTF-8");
