@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.platform.mimetype.service;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -228,7 +231,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
                 // sub-sub-...-submatches make this as recursive ?
                 Collection<MagicMatch> possibilities = match.getSubMatches();
                 Iterator<MagicMatch> iter = possibilities.iterator();
-                MagicMatch m = iter.next();
+                MagicMatch m = firstNonNull(iter.next(), match);
                 mimeType = m.getMimeType();
                 // need to clean for subsequent calls
                 possibilities.clear();
@@ -249,7 +252,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
                 }
                 // MagicMatch wrongly parses XML with attributes in the xml declaration as text/plain
                 // MagicMatch is old and not maintained so this is a frugal effort to patch things up.
-                if (new String(bytes, java.nio.charset.StandardCharsets.UTF_8).startsWith("<?xml ")) {
+                if (new String(bytes, UTF_8).startsWith("<?xml ")) {
                     return XML_MIMETYPE;
                 }
             }
