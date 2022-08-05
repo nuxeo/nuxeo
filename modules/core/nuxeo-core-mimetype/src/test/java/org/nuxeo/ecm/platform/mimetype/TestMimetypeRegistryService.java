@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2019 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2022 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.DEFAULT_MIMETYPE;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -109,7 +108,7 @@ public class TestMimetypeRegistryService {
     }
 
     @Test
-    public void testGetMimetypeFromFile() throws Exception {
+    public void testGetMimetypeFromFile() {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistryService.registerMimetype(mimetypeEntry);
 
@@ -126,10 +125,12 @@ public class TestMimetypeRegistryService {
     public void testGetMimetypeFromBigBlob() {
         Blob fakeBigBlob = new AbstractBlob() {
             private static final long serialVersionUID = 1L;
+
             @Override
             public long getLength() {
                 return MimetypeRegistryService.MAX_SIZE_FOR_SCAN + 1;
             }
+
             @Override
             public InputStream getStream() {
                 fail();
@@ -145,7 +146,7 @@ public class TestMimetypeRegistryService {
     }
 
     @Test
-    public void testGetMimetypeFromBlob() throws Exception {
+    public void testGetMimetypeFromBlob() {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistryService.registerMimetype(mimetypeEntry);
         String mimetype = mimetypeRegistry.getMimetypeFromBlob(getWordBlob());
@@ -155,16 +156,16 @@ public class TestMimetypeRegistryService {
         assertTrue(extensions.contains("doc"));
     }
 
-    protected Blob getWordBlob() throws FileNotFoundException {
+    protected Blob getWordBlob() {
         return new URLBlob(getClass().getResource("/test-data/hello.doc"));
     }
 
-    protected Blob getWordMLBlob() throws FileNotFoundException {
+    protected Blob getWordMLBlob() {
         return new URLBlob(getClass().getResource("/test-data/wordml-sample.xml"));
     }
 
     @Test
-    public void testGetMimetypeFromFilnameAndBlobWithDefault() throws Exception {
+    public void testGetMimetypeFromFilenameAndBlobWithDefault() {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistryService.registerMimetype(mimetypeEntry);
 
@@ -217,7 +218,7 @@ public class TestMimetypeRegistryService {
     }
 
     @Test
-    public void testGetMimetypeFromFilenameWithBlobMimetypeFallback() throws Exception {
+    public void testGetMimetypeFromFilenameWithBlobMimetypeFallback() {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistryService.registerMimetype(mimetypeEntry);
 
@@ -313,7 +314,7 @@ public class TestMimetypeRegistryService {
     }
 
     @Test
-    public void iCanDetectXMLwithAttributes() {
+    public void iCanDetectXMLWithAttributes() {
         File file = FileUtils.getResourceFileFromContext("test-data/xmlSimple.bin");
         assertEquals("text/xml", mimetypeRegistryService.getMimetypeFromFile(file));
         file = FileUtils.getResourceFileFromContext("test-data/xml.bin");

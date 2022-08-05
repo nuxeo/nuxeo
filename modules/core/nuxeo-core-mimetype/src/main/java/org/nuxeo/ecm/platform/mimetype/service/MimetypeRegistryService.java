@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2022 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
  *     Nuxeo - initial API and implementation
  */
 package org.nuxeo.ecm.platform.mimetype.service;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -198,16 +200,14 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public String getMimetypeFromFile(File file) {
         if (file.length() > MAX_SIZE_FOR_SCAN) {
-            String exceptionMessage = "Not able to determine mime type from filename and file is too big for binary scan.";
-            if (file.getAbsolutePath() == null) {
-                throw new MimetypeNotFoundException(exceptionMessage);
-            }
             try {
                 return getMimetypeFromFilename(file.getAbsolutePath());
             } catch (MimetypeNotFoundException e) {
-                throw new MimetypeNotFoundException(exceptionMessage, e);
+                throw new MimetypeNotFoundException(
+                        "Not able to determine mime type from filename and file is too big for binary scan.", e);
             }
         }
         try {
@@ -235,7 +235,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
                 // check we didn't mis-detect files with zeroes
                 // check first 16 bytes
                 byte[] bytes = new byte[16];
-                int n = 0;
+                int n;
                 try (FileInputStream is = new FileInputStream(file)) {
                     n = is.read(bytes);
                 }
@@ -246,18 +246,15 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
                 }
                 // MagicMatch wrongly parses XML with attributes in the xml declaration as text/plain
                 // MagicMatch is old and not maintained so this is a frugal effort to patch things up.
-                if (new String(bytes, java.nio.charset.StandardCharsets.UTF_8).startsWith("<?xml ")) {
+                if (new String(bytes, UTF_8).startsWith("<?xml ")) {
                     return XML_MIMETYPE;
                 }
             }
             return mimeType;
         } catch (MagicMatchNotFoundException e) {
-            if (file.getAbsolutePath() != null) {
-                return getMimetypeFromFilename(file.getAbsolutePath());
-            }
-            throw new MimetypeNotFoundException(e.getMessage(), e);
+            return getMimetypeFromFilename(file.getAbsolutePath());
         } catch (MagicException | MagicParseException | IOException e) {
-            throw new MimetypeDetectionException(e.getMessage(), e);
+            throw new MimetypeDetectionException("Not able to determine mimetype from binary scan", e);
         }
     }
 
