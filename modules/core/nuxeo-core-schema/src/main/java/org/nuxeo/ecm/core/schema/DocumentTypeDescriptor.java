@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.schema;
 
+import static java.lang.Boolean.FALSE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -97,7 +99,7 @@ public class DocumentTypeDescriptor {
 
     @Override
     public String toString() {
-        return "DocType: " + name;
+        return "DocType(" + name + (FALSE.equals(enabled) ? ", disabled)" : ")");
     }
 
     @Override

@@ -115,6 +115,8 @@ public class SchemaManagerImpl implements SchemaManager {
 
     protected Set<String> disabledSchemas = new HashSet<>();
 
+    protected Set<String> disabledTypes = new HashSet<>();
+
     protected final Map<String, Schema> prefixToSchema = new HashMap<>();
 
     /** Effective facets. */
@@ -582,6 +584,7 @@ public class SchemaManagerImpl implements SchemaManager {
         // effective descriptors with override
         // linked hash map to keep order for reproducibility
         Map<String, DocumentTypeDescriptor> dtds = new LinkedHashMap<>();
+        disabledTypes.clear();
         for (DocumentTypeDescriptor dtd : allDocumentTypes) {
             String name = dtd.name;
             DocumentTypeDescriptor newDtd = dtd;
@@ -591,6 +594,7 @@ public class SchemaManagerImpl implements SchemaManager {
             if (newDtd.enabled) {
                 dtds.put(name, newDtd);
             } else {
+                disabledTypes.add(name);
                 dtds.remove(name);
             }
         }
@@ -637,7 +641,7 @@ public class SchemaManagerImpl implements SchemaManager {
         }
         DocumentTypeDescriptor dtd = dtds.get(name);
         if (dtd == null) {
-            log.error("Document type: {} does not exist, used as parent by type: {}", name, stack);
+            log.error("Document type: {} does not exist, used as parent by type: {}", () -> name, () -> stack.toString());
             return null;
         }
 
@@ -713,8 +717,14 @@ public class SchemaManagerImpl implements SchemaManager {
         // create doctype
         PrefetchInfo prefetch = dtd.prefetch == null ? prefetchInfo : new PrefetchInfo(dtd.prefetch);
         DocumentTypeImpl docType = new DocumentTypeImpl(name, parent, docTypeSchemas, facetNames, prefetch);
-        docType.setSubtypes(subtypes);
-        docType.setForbiddenSubtypes(forbidden);
+        docType.setSubtypes(subtypes
+                .stream()
+                .filter(st -> !disabledTypes.contains(st))
+                .collect(Collectors.toList()));
+        docType.setForbiddenSubtypes(forbidden
+                .stream()
+                .filter(st -> !disabledTypes.contains(st))
+                .collect(Collectors.toList()));
         registerDocumentType(docType);
 
         return docType;

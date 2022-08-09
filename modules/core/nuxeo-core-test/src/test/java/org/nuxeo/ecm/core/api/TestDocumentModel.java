@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -49,9 +50,10 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({CoreFeature.class, LogCaptureFeature.class})
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestDocumentModel {
 
@@ -63,6 +65,9 @@ public class TestDocumentModel {
 
     @Inject
     protected HotDeployer hotDeployer;
+
+    @Inject
+    protected LogCaptureFeature.Result logResult;
 
     /**
      * Tests on a DocumentModel that hasn't been created in the session yet.
@@ -259,10 +264,16 @@ public class TestDocumentModel {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-doctype-disableable-contrib.xml")
+    @LogCaptureFeature.FilterOn(loggerClass = SchemaManagerImpl.class, logLevel = "ERROR")
     public void testDocumentTypeDisabled() throws Exception {
         assertNotNull(schemaManager.getDocumentType("disabledDoctype"));
         hotDeployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-doctype-disableable-disable-contrib.xml");
         assertNull(schemaManager.getDocumentType("disabledDoctype"));
+        assertNotNull(schemaManager.getDocumentType("childOfDisabled"));
+        List<String> caughtEvents = logResult.getCaughtEventMessages();
+        assertEquals(1, caughtEvents.size());
+        assertEquals("Document type: disabledDoctype does not exist, used as parent by type: [childOfDisabled]",
+                caughtEvents.get(0));
     }
 
     /**

@@ -92,6 +92,13 @@ public class SubtypesJsonEnricherTest extends AbstractJsonWriterTest.Local<Docum
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.types:test-disable-sub-type-bundle.xml")
+    public void testDisabledSubtype() throws Exception {
+        DocumentModel doc1 = session.getDocument(new PathRef("/doc1"));
+        assertSubtypes(doc1, 3, "RefDoc", "File", "CSDoc");
+    }
+
+    @Test
     public void testLocalConfigurationAllowedSubtypes() throws Exception {
         DocumentModel folderRoot = session.getDocument(new PathRef("/folder_root"));
         folderRoot.addFacet(UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET);
