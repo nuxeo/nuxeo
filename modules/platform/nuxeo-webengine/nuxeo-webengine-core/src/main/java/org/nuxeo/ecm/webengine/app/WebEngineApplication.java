@@ -25,6 +25,7 @@ import javax.ws.rs.core.Application;
 
 import org.nuxeo.ecm.webengine.model.io.BlobWriter;
 import org.nuxeo.ecm.webengine.model.io.DocumentBlobHolderWriter;
+import org.nuxeo.ecm.webengine.model.io.DownloadContextBlobHolderWriter;
 import org.nuxeo.ecm.webengine.model.io.FileWriter;
 import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
 import org.nuxeo.ecm.webengine.model.io.TemplateViewWriter;
@@ -48,6 +49,7 @@ public class WebEngineApplication extends Application {
         result.add(new TemplateWriter());
         result.add(new ScriptFileWriter());
         result.add(new DocumentBlobHolderWriter());
+        result.add(new DownloadContextBlobHolderWriter());
         result.add(new BlobWriter());
         result.add(new FileWriter());
         result.add(new URLWriter());

@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.restapi.test;
 
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.junit.Assert.assertEquals;
@@ -98,6 +99,34 @@ public class RenditionTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "path" + doc.getPathAsString() + "/@rendition/unexistingRendition")) {
             assertEquals(SC_INTERNAL_SERVER_ERROR, response.getStatus()); // should be 404?
+        }
+    }
+
+    // NXP-31166
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.test:download-permission-contrib.xml")
+    public void shouldRetrieveRenditionsBasedOnDoc() {
+        var doc = session.createDocumentModel("/", "downloadable", "Folder");
+        doc = session.createDocument(doc);
+
+        doc = session.createDocumentModel("/downloadable", "reachable", "File");
+        doc = session.createDocument(doc);
+
+        doc = session.createDocumentModel("/", "unreachable", "File");
+        doc = session.createDocument(doc);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path/downloadable/reachable/@rendition/dummyRendition")) {
+            assertEquals(SC_OK, response.getStatus());
+            assertEquals("reachable", response.getEntity(String.class));
+        }
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path/unreachable/@rendition/dummyRendition")) {
+            assertEquals(SC_FORBIDDEN, response.getStatus());
         }
     }
 
