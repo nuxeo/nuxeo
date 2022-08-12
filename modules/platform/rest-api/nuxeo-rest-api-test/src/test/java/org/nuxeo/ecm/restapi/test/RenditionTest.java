@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.restapi.test;
 
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -61,9 +63,9 @@ public class RenditionTest extends BaseTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CloseableClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString()
-                + "/@rendition/dummyRendition")) {
-            assertEquals(200, response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path" + doc.getPathAsString() + "/@rendition/dummyRendition")) {
+            assertEquals(SC_OK, response.getStatus());
             assertEquals("adoc", response.getEntity(String.class));
         }
     }
@@ -73,7 +75,7 @@ public class RenditionTest extends BaseTest {
     public void shouldRetrieveTheImageToPdfRendition() throws IOException {
         DocumentModel doc = session.createDocumentModel("/", "adoc", "File");
         Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"), "image/jpeg",
-                                     StandardCharsets.UTF_8.name(), "test.jpg");
+                StandardCharsets.UTF_8.name(), "test.jpg");
         doc.setPropertyValue("file:content", (Serializable) blob);
         doc.putContextData(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION, true); // not useful for us
         doc = session.createDocument(doc);
@@ -81,8 +83,8 @@ public class RenditionTest extends BaseTest {
         TransactionHelper.startTransaction();
 
         try (CloseableClientResponse response = getResponse(RequestType.GET,
-                                                            "path" + doc.getPathAsString() + "/@rendition/pdf")) {
-            assertEquals(200, response.getStatus());
+                "path" + doc.getPathAsString() + "/@rendition/pdf")) {
+            assertEquals(SC_OK, response.getStatus());
         }
     }
 
@@ -93,9 +95,9 @@ public class RenditionTest extends BaseTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CloseableClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString()
-                + "/@rendition/unexistingRendition")) {
-            assertEquals(500, response.getStatus()); // should be 404?
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path" + doc.getPathAsString() + "/@rendition/unexistingRendition")) {
+            assertEquals(SC_INTERNAL_SERVER_ERROR, response.getStatus()); // should be 404?
         }
     }
 

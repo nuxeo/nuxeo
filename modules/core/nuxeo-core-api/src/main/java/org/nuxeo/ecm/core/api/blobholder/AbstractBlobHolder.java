@@ -23,7 +23,6 @@ package org.nuxeo.ecm.core.api.blobholder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -34,9 +33,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * Base class for {@link BlobHolder} implementers
  */
 public abstract class AbstractBlobHolder implements BlobHolder {
-
-    @Override
-    public abstract Blob getBlob();
 
     @Override
     public void setBlob(Blob blob) {
@@ -92,8 +88,5 @@ public abstract class AbstractBlobHolder implements BlobHolder {
             throw new NuxeoException(e);
         }
     }
-
-    @Override
-    public abstract Calendar getModificationDate();
 
 }
