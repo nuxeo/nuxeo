@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreHelper;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Listener that listens for MailReceivedEvent.
@@ -96,6 +97,8 @@ public class MailEventListener implements EventListener {
                     log.warn("Error connecting to email account", e);
                     continue;
                 }
+                TransactionHelper.commitOrRollbackTransaction();
+                TransactionHelper.startTransaction();
             }
         } catch (MessagingException e) {
             log.error("MailEventListener error...", e);
