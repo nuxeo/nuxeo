@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.download.permission.test">
+  <extension target="org.nuxeo.ecm.core.io.download.DownloadService" point="permissions">
+    <permission name="test">
+      <script><![CDATA[
+        function run() {
+          return Document != null && Document.getPathAsString().startsWith("/downloadable");
+        }
+      ]]></script>
+    </permission>
+  </extension>
+</component>
