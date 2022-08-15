@@ -106,6 +106,12 @@ public class TestFileUtils {
     }
 
     @Test
+    public void testGetMissingRessourceFromUrl() {
+        File file = FileUtils.getResourceFileFromContext("theFileThatDoesNotExist.xml");
+        assertNull(file);
+    }
+
+    @Test
     public void testFilePathMethods() {
         String path, testPath;
         if (SystemUtils.IS_OS_WINDOWS) {

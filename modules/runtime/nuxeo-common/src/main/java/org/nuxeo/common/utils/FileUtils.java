@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
 
 public final class FileUtils {
 
@@ -214,17 +215,17 @@ public final class FileUtils {
      * Retrieves the total path of a resource from the Thread Context.
      *
      * @param resource the resource name to be retrieved.
-     * @return the decoded path.
+     * @return the decoded path or null if the resource doesn't exist.
      */
     public static String getResourcePathFromContext(String resource) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(resource);
-        return getFilePathFromUrl(url);
+        return url != null ? getFilePathFromUrl(url) : null;
     }
 
     public static File getResourceFileFromContext(String resource) {
         File file;
         String filename = getResourcePathFromContext(resource);
-        if (filename.equals("")) {
+        if (StringUtils.isBlank(filename)) {
             file = null;
         } else {
             file = new File(filename);
