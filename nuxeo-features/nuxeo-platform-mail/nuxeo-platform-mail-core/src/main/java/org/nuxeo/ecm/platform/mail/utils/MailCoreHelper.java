@@ -97,6 +97,12 @@ public final class MailCoreHelper {
 
     protected static final CopyOnWriteArrayList<String> processingMailBoxes = new CopyOnWriteArrayList<>();
 
+    // @since 2021.25
+    protected static final String MESSAGE_LIMIT_OPTION = "org.nuxeo.mail.message.limit";
+
+    // @since 2021.25
+    protected static final int DEFAULT_MESSAGE_LIMIT = 2_000;
+
     private MailCoreHelper() {
     }
 
@@ -217,7 +223,7 @@ public final class MailCoreHelper {
                 // need RW access to update message flags
                 rootFolder.open(Folder.READ_WRITE);
 
-                Message[] allMessages = rootFolder.getMessages();
+                Message[] allMessages = rootFolder.getMessages(1, getMessageLimit(rootFolder));
                 // VDU
                 log.debug("nbr of messages in folder:" + allMessages.length);
 
@@ -272,6 +278,22 @@ public final class MailCoreHelper {
                 }
             }
         }
+    }
+
+    // @since 2021.25
+    protected static int getMessageLimit(Folder mailbox) throws MessagingException {
+        int messageCount = mailbox.getMessageCount();
+        int limit = Integer.parseInt(
+                Framework.getProperty(MESSAGE_LIMIT_OPTION, Integer.toString(DEFAULT_MESSAGE_LIMIT)));
+        if (log.isDebugEnabled()) {
+            log.debug("Mailbox: " + mailbox.getName() + " contains: " + messageCount + " messages, limit: " + limit);
+        }
+        if (messageCount > limit) {
+            log.warn("Too many messages in mailbox: " + mailbox.getName() + " limit to " + limit + " out of "
+                    + messageCount);
+            return limit;
+        }
+        return messageCount;
     }
 
 }
