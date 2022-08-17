@@ -1,4 +1,4 @@
-{{- $valuesDir := ternary "default" "unittests" (eq .Environment.Name "default") -}}
+{{- $valuesDir := ternary "unittests" .Environment.Name (regexMatch "^.*UnitTests$" .Environment.Name) -}}
 repositories:
 - name: bitnami
   # use a former version of index.yaml from the git repository as Bitnami all removed charts older than 6 months from
@@ -10,7 +10,7 @@ repositories:
   url: https://chartmuseum.platform.dev.nuxeo.com/
 
 helmDefaults:
-  timeout: 300
+  timeout: 600
   wait: true
 
 releases:
@@ -20,6 +20,7 @@ releases:
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: nuxeo.enabled
   values:
+  - values/values-nuxeo.yaml.gotmpl
   - values/{{ $valuesDir }}/values-nuxeo.yaml.gotmpl
 - name: mongodb
   chart: bitnami/mongodb
@@ -79,3 +80,6 @@ environments:
   postgresqlUnitTests:
     values:
     - environments/unit-tests-postgresql.yaml
+  benchmark:
+    values:
+    - environments/benchmark.yaml

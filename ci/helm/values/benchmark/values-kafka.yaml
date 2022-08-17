@@ -1,0 +1,80 @@
+replicaCount: 2
+resources:
+  requests:
+    cpu: "3"
+    memory: "8Gi"
+  limits:
+    cpu: "3"
+    memory: "8Gi"
+podLabels:
+  usage: benchmark
+  app: kafka
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - kafka
+          - elasticsearch-master
+          - mongodb
+      topologyKey: "kubernetes.io/hostname"
+  podAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - kafka-zookeeper
+      topologyKey: "kubernetes.io/hostname"
+tolerations:
+- key: team
+  operator: Equal
+  value: platform
+  effect: NoSchedule
+- key: usage
+  operator: Equal
+  value: benchmark
+  effect: NoSchedule
+nodeSelector:
+  team: platform
+  usage: benchmark
+zookeeper:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+  podLabels:
+    usage: benchmark
+    app: kafka-zookeeper
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - kafka-zookeeper
+            - elasticsearch-master
+            - mongodb
+        topologyKey: "kubernetes.io/hostname"
+  tolerations:
+  - key: team
+    operator: Equal
+    value: platform
+    effect: NoSchedule
+  - key: usage
+    operator: Equal
+    value: benchmark
+    effect: NoSchedule
+  nodeSelector:
+    team: platform
+    usage: benchmark

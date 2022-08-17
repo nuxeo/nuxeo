@@ -1,0 +1,38 @@
+useStatefulSet: true
+resources:
+  requests:
+    cpu: "15"
+    memory: "56Gi"
+  limits:
+    cpu: "15"
+    memory: "56Gi"
+labels:
+  usage: benchmark
+podLabels:
+  usage: benchmark
+  app: mongodb
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - kafka
+          - kafka-zookeeper
+          - elasticsearch-master
+          - mongodb
+      topologyKey: "kubernetes.io/hostname"
+tolerations:
+- key: team
+  operator: Equal
+  value: platform
+  effect: NoSchedule
+- key: usage
+  operator: Equal
+  value: benchmark
+  effect: NoSchedule
+nodeSelector:
+  team: platform
+  usage: benchmark

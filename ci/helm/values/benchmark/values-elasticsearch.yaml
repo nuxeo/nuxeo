@@ -1,0 +1,25 @@
+resources:
+  requests:
+    cpu: "15"
+    memory: "56Gi"
+  limits:
+    cpu: "15"
+    memory: "56Gi"
+esJavaOpts: "-Xmx32g -Xms32g"
+labels:
+  usage: benchmark
+service:
+  labels:
+    usage: benchmark
+tolerations:
+- key: team
+  operator: Equal
+  value: platform
+  effect: NoSchedule
+- key: usage
+  operator: Equal
+  value: benchmark
+  effect: NoSchedule
+nodeSelector:
+  team: platform
+  usage: benchmark

@@ -1,0 +1,75 @@
+architecture: "api-worker"
+replicaCount: 1
+workerCount: 1
+resources:
+  requests:
+    cpu: "12"
+    memory: "48Gi"
+  limits:
+    cpu: "12"
+    memory: "48Gi"
+podLabels:
+  usage: benchmark
+  app: nuxeo
+service:
+  labels:
+    usage: benchmark
+amazonS3:
+  enabled: true
+  accessKeyId: {{ requiredEnv "AWS_ACCESS_KEY_ID" }}
+  secretAccessKey: {{ requiredEnv "AWS_SECRET_ACCESS_KEY" }}
+  region: us-east-1
+  bucket: nuxeo-platform-benchmark
+  ## The bucket prefix needs to end with /
+  bucketPrefix: {{ env "BUCKET_PREFIX" | default "benchmark-tests/" }}
+customEnvs:
+- name: NUXEO_CLID
+  valueFrom:
+    secretKeyRef:
+      name: instance-clid
+      key: instance.clid
+customProperties:
+  benchmark: |
+    nuxeo.append.templates.benchmark=perf
+    nuxeo.core.binarymanager=org.nuxeo.ecm.blob.s3.S3BlobProvider
+    nuxeo.db.transactiontimeout=3600
+    JAVA_OPTS=$JAVA_OPTS -XX:SoftRefLRUPolicyMSPerMB=0
+    JAVA_OPTS=$JAVA_OPTS -XX:-OmitStackTraceInFastThrow
+packages: amazon-s3-online-storage nuxeo-platform-importer nuxeo-web-ui
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - nuxeo
+          - elasticsearch-master
+          - mongodb
+      topologyKey: "kubernetes.io/hostname"
+  podAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - kafka
+      topologyKey: "kubernetes.io/hostname"
+ingress:
+  annotations:
+    # set a timeout of 4 hours as we have a long running import
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "14400"
+tolerations:
+- effect: NoSchedule
+  key: team
+  operator: Equal
+  value: platform
+- key: usage
+  operator: Equal
+  value: benchmark
+  effect: NoSchedule
+nodeSelector:
+  team: platform
+  usage: benchmark
