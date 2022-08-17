@@ -69,7 +69,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     protected static final int CHECKPOINT_MAX_RETRY = 3;
 
     // @since 2021.13
-    protected static final int CHECKPOINT_PAUSE_MS = 30_000;
+    protected static final int CHECKPOINT_PAUSE_MS = 45_000;
 
     // @since 2021.15
     public static final long SLOW_COMPUTATION_THRESHOLD_NS = 10 * 60 * 1_000_000_000L;
@@ -198,19 +198,26 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         computation.init(context);
         log.debug(metadata.name() + ": Start");
         try {
-            int i = 0;
+            int checkpointErrorCounter = 0;
+            long checkpointErrorOffset = -1;
             do {
                 returnCode = runOnce();
                 if (ReturnCode.CHECKPOINT_ERROR.equals(returnCode)) {
-                    i++;
-                    if (i >= CHECKPOINT_MAX_RETRY) {
-                        log.error(metadata.name() + ": Terminate computation because too many checkpoint errors");
-                    } else {
-                        log.warn("Wait a bit after checkpoint error, retry #" + i);
+                    long offset = context.getLastOffset().offset();
+                    if (offset != checkpointErrorOffset) {
+                        checkpointErrorCounter = 0;
+                        checkpointErrorOffset = offset;
+                    }
+                    checkpointErrorCounter++;
+                    if (checkpointErrorCounter <= CHECKPOINT_MAX_RETRY) {
+                        log.warn("Wait a bit after checkpoint error, retry #" + checkpointErrorCounter);
                         Thread.sleep(CHECKPOINT_PAUSE_MS);
+                    } else {
+                        log.error(metadata.name() + ": Terminate computation because too many checkpoint errors on: "
+                                + context.getLastOffset());
                     }
                 }
-            } while (ReturnCode.CHECKPOINT_ERROR.equals(returnCode) && i < CHECKPOINT_MAX_RETRY);
+            } while (ReturnCode.CHECKPOINT_ERROR.equals(returnCode) && checkpointErrorCounter <= CHECKPOINT_MAX_RETRY);
         } catch (InterruptedException e) {
             returnCode = ReturnCode.INTERRUPTED;
         } finally {
