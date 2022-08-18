@@ -17,6 +17,7 @@
     <nuxeo.ftests.tier5>false</nuxeo.ftests.tier5>
     <nuxeo.ftests.tier6>false</nuxeo.ftests.tier6>
     <nuxeo.ftests.tier7>false</nuxeo.ftests.tier7>
+    <nuxeo.bench.itests>true</nuxeo.bench.itests>
   </properties>
 
   <profiles>
@@ -83,29 +84,55 @@
         <module>nuxeo-tree-snapshot-ftests</module>
         <module>nuxeo-wopi-ftests</module>
       </modules>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-server-tomcat</artifactId>
+          <type>zip</type>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-functional-tests</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.nuxeo</groupId>
+          <artifactId>nuxeo-ftest</artifactId>
+          <scope>test</scope>
+          <type>zip</type>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>bench-itests</id>
+      <activation>
+        <property>
+          <name>nuxeo.bench.itests</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-server-tomcat</artifactId>
+          <type>zip</type>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-functional-tests</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.nuxeo</groupId>
+          <artifactId>nuxeo-ftest</artifactId>
+          <scope>test</scope>
+          <type>zip</type>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-server-tomcat</artifactId>
-      <type>zip</type>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-functional-tests</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo</groupId>
-      <artifactId>nuxeo-ftest</artifactId>
-      <scope>test</scope>
-      <type>zip</type>
-    </dependency>
-  </dependencies>
 
   <build>
     <plugins>

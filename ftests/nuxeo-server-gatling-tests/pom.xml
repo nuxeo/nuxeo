@@ -11,6 +11,7 @@
   <description>Gatling bench on Nuxeo Server</description>
 
   <properties>
+    <nuxeo.bench.itests>true</nuxeo.bench.itests>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -30,12 +31,6 @@
     <dependency>
       <groupId>io.gatling.highcharts</groupId>
       <artifactId>gatling-charts-highcharts</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-server-tomcat</artifactId>
-      <type>zip</type>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 
@@ -61,7 +56,6 @@
       </plugin>
     </plugins>
   </build>
-
 
   <profiles>
     <profile>
@@ -204,24 +198,27 @@
               </execution>
             </executions>
           </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>integration-test</goal>
-                  <goal>verify</goal>
-                </goals>
-                <configuration>
-                  <argLine>
-                    -DconnectPassword=${connect.password}
-                    ${it.failsafe.argLine}
-                  </argLine>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>bench-itests</id>
+      <activation>
+        <property>
+          <name>nuxeo.bench.itests</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-server-tomcat</artifactId>
+          <type>zip</type>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
           <plugin>
             <groupId>org.nuxeo.build</groupId>
             <artifactId>ant-assembly-maven-plugin</artifactId>
@@ -255,6 +252,24 @@
                   <targets>
                     <target>stop</target>
                   </targets>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+                <configuration>
+                  <argLine>
+                    -DconnectPassword=${connect.password}
+                    ${it.failsafe.argLine}
+                  </argLine>
                 </configuration>
               </execution>
             </executions>
