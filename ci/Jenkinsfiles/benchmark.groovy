@@ -77,12 +77,12 @@ void copySecret(String secretName) {
 }
 
 void gatling(String parameters) {
-  sh "mvn ${MAVEN_ARGS} test gatling:test -Durl=https://${BENCHMARK_NAMESPACE}.platform.dev.nuxeo.com/nuxeo -Dgatling.simulationClass=${parameters}"
+  sh "mvn ${MAVEN_ARGS} test gatling:test -Durl=https://${BENCHMARK_NAMESPACE}.platform.dev.nuxeo.com/nuxeo -Dgatling.simulationClass=${parameters} -DredisHost=localhost -DredisPort=6379 -DredisDb=0"
 }
 
 pipeline {
   agent {
-    label 'jenkins-nuxeo-package-lts-2021'
+    label 'jenkins-nuxeo-benchmark-lts-2021'
   }
   options {
     timeout(time: 12, unit: 'HOURS')
@@ -98,6 +98,7 @@ pipeline {
     HELMFILE_COMMAND = "helmfile --file ci/helm/helmfile.yaml --helm-binary /usr/bin/helm3"
     MAVEN_ARGS = '-B -nsu -P-nexus,nexus-private,bench -Dnuxeo.bench.itests=false'
     VERSION = "${params.NUXEO_BUILD_VERSION}"
+    DATA_URL = "https://maven-eu.nuxeo.org/nexus/service/local/repositories/vendor-releases/content/content/org/nuxeo/tools/testing/data-test-les-arbres-redis-1.1.gz/1.1/data-test-les-arbres-redis-1.1.gz-1.1.gz"
   }
 
   stages {
@@ -113,6 +114,22 @@ pipeline {
           sh """
             kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME}
           """
+        }
+      }
+    }
+
+    stage("Prepare data") {
+      steps {
+        container('maven') {
+          echo """
+            ----------------------------------------
+            Load benchmark data into Redis
+            ----------------------------------------
+            """
+          echo "Download data..."
+          sh "curl -o /tmp/data.gz ${DATA_URL}"
+          echo "Loading data into Redis..."
+          sh "gunzip -c /tmp/data.gz | nc localhost 6379 > /dev/null"
         }
       }
     }
@@ -155,9 +172,21 @@ pipeline {
               }
               dir('ftests/nuxeo-server-gatling-tests') {
                 gatling('org.nuxeo.cap.bench.Sim00Setup')
-                gatling( "org.nuxeo.cap.bench.Sim10MassImport -DnbNodes=${BENCHMARK_NB_DOCS}")
-                gatling( "org.nuxeo.cap.bench.Sim20CSVExport")
-                gatling( "org.nuxeo.cap.bench.Sim80ReindexAll")
+                gatling("org.nuxeo.cap.bench.Sim10MassImport -DnbNodes=${BENCHMARK_NB_DOCS}")
+                gatling("org.nuxeo.cap.bench.Sim20CSVExport")
+                gatling("org.nuxeo.cap.bench.Sim15BulkUpdateDocuments")
+                gatling("org.nuxeo.cap.bench.Sim10CreateFolders")
+                gatling("org.nuxeo.cap.bench.Sim20CreateDocuments -Dusers=32")
+                gatling("org.nuxeo.cap.bench.Sim25WaitForAsync")
+                gatling("org.nuxeo.cap.bench.Sim25BulkUpdateFolders -Dusers=32 -Dduration=180 -Dpause_ms=0")
+                gatling("org.nuxeo.cap.bench.Sim30UpdateDocuments -Dusers=32 -Dduration=180")
+                gatling("org.nuxeo.cap.bench.Sim35WaitForAsync")
+                gatling("org.nuxeo.cap.bench.Sim30Navigation -Dusers=48 -Dduration=180")
+                gatling("org.nuxeo.cap.bench.Sim30Search -Dusers=48 -Dduration=180")
+                gatling("org.nuxeo.cap.bench.Sim50Bench -Dnav.users=80 -Dupd.user=15 -Dduration=180")
+                gatling("org.nuxeo.cap.bench.Sim50CRUD -Dusers=32 -Dduration=120")
+                gatling("org.nuxeo.cap.bench.Sim55WaitForAsync")
+                gatling("org.nuxeo.cap.bench.Sim80ReindexAll")
               }
             } catch (err) {
               echo "Gatling tests error: ${err}"
