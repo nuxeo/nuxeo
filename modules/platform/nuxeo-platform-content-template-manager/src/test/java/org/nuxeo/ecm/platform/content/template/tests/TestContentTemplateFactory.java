@@ -69,7 +69,7 @@ public class TestContentTemplateFactory {
     protected HotDeployer hotDeployer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         service.executeFactoryForType(session.getRootDocument());
     }
 
@@ -300,7 +300,8 @@ public class TestContentTemplateFactory {
     @Deploy("org.nuxeo.ecm.platform.content.template.tests:test-dummy-content-template-contrib.xml")
     public void testDisableTemplate() throws Exception {
         assertNotNull(service.getFactoryForType("chocolat"));
-        hotDeployer.deploy("org.nuxeo.ecm.platform.content.template.tests:test-dummy-content-template-disable-contrib.xml");
+        hotDeployer.deploy(
+                "org.nuxeo.ecm.platform.content.template.tests:test-dummy-content-template-disable-contrib.xml");
         assertNull(service.getFactoryForType("chocolat"));
     }
 
