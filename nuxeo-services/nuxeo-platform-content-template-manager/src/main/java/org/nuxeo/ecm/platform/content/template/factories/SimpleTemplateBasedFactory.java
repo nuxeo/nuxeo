@@ -24,6 +24,7 @@ package org.nuxeo.ecm.platform.content.template.factories;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -76,22 +77,26 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
     }
 
     protected void setAcl(List<ACEDescriptor> aces, DocumentRef ref) {
-        if (aces != null && !aces.isEmpty()) {
-            ACP acp = session.getACP(ref);
-            ACL existingACL = acp.getOrCreateACL();
+        // Templates are created programmatically with their ACLs from a listener, according to static xml contribs.
+        // The origin of the call doesn't matter.
+        CoreInstance.doPrivileged(session, session -> {
+            if (aces != null && !aces.isEmpty()) {
+                ACP acp = session.getACP(ref);
+                ACL existingACL = acp.getOrCreateACL();
 
-            // clean any existing ACL (should a merge strategy be adopted
-            // instead?)
-            existingACL.clear();
+                // clean any existing ACL (should a merge strategy be adopted
+                // instead?)
+                existingACL.clear();
 
-            // add the the ACL defined in the descriptor
-            for (ACEDescriptor ace : aces) {
-                existingACL.add(new ACE(ace.getPrincipal(), ace.getPermission(), ace.getGranted()));
+                // add the the ACL defined in the descriptor
+                for (ACEDescriptor ace : aces) {
+                    existingACL.add(new ACE(ace.getPrincipal(), ace.getPermission(), ace.getGranted()));
+                }
+                // read the acl to invalidate the ACPImpl cache
+                acp.addACL(existingACL);
+                session.setACP(ref, acp, true);
             }
-            // read the acl to invalidate the ACPImpl cache
-            acp.addACL(existingACL);
-            session.setACP(ref, acp, true);
-        }
+        });
     }
 
     public boolean initFactory(Map<String, String> options, List<ACEDescriptor> rootAcl,
