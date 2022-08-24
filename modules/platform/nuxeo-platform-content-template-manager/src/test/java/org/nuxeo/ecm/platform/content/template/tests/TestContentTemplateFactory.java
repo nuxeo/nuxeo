@@ -24,6 +24,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.core.api.security.ACL.LOCAL_ACL;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -58,6 +62,9 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
 @Deploy("org.nuxeo.ecm.platform.content.template.tests:test-content-template-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.content.template.tests:test-content-template-listener.xml")
 public class TestContentTemplateFactory {
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected ContentTemplateService service;
@@ -179,8 +186,12 @@ public class TestContentTemplateFactory {
         assertEquals(1, children.size());
         assertEquals("defaut domain", domain.getTitle());
 
+        checkCreatedDomain(domain);
+    }
+
+    protected void checkCreatedDomain(DocumentModel domain) {
         // check that the default domain has the template layout
-        children = session.getChildren(domain.getRef());
+        var children = session.getChildren(domain.getRef());
         assertEquals(3, children.size());
         children = session.getChildren(domain.getRef(), "WorkspaceRoot");
         assertEquals(1, children.size());
@@ -191,9 +202,26 @@ public class TestContentTemplateFactory {
         assertEquals(1, children.size());
         DocumentModel sectionRoot = children.get(0);
         assertEquals("Sections", sectionRoot.getTitle());
+
         children = session.getChildren(sectionRoot.getRef(), "Section");
         assertEquals(1, children.size());
         assertEquals("Section", children.get(0).getTitle());
+
+        var basePath = domain.getPathAsString();
+        checkLocalACLs(basePath + "/Templates");
+        checkLocalACLs(basePath + "/Workspaces");
+        checkLocalACLs(basePath + "/Sections");
+        checkLocalACLs(basePath + "/Sections/Section");
+    }
+
+    protected void checkLocalACLs(String path) {
+        var doc = session.getDocument(new PathRef(path));
+        var acl = doc.getACP().getACL(LOCAL_ACL);
+        assertNotNull(acl);
+        assertEquals("Administrator", acl.get(0).getUsername());
+        assertEquals("Everything", acl.get(0).getPermission());
+        assertEquals("Danny", acl.get(1).getUsername());
+        assertEquals("Dream", acl.get(1).getPermission());
     }
 
     @Test
@@ -210,6 +238,24 @@ public class TestContentTemplateFactory {
         children = session.getChildren(testDom.getRef(), "WorkspaceRoot");
         assertEquals(1, children.size());
         assertEquals("Workspaces", children.get(0).getTitle());
+    }
+
+    @Test
+    public void testDomainCreationByUser() {
+        // Grant foo ReadWrite on Root
+        var root = session.getRootDocument();
+        var acp = root.getACP();
+        acp.addACE(LOCAL_ACL, new ACE("foo", READ_WRITE, true));
+        root.setACP(acp, true);
+
+        // Create a Domain with foo
+        var userSession = coreFeature.getCoreSession("foo");
+        var domain = userSession.createDocumentModel("/", "TestDomain", "Domain");
+        domain.setPropertyValue("dc:title", "MyTestDomain");
+        domain = userSession.createDocument(domain);
+        userSession.save();
+
+        checkCreatedDomain(domain);
     }
 
     @Test
