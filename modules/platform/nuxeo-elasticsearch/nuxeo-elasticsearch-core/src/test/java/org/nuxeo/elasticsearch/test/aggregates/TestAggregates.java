@@ -22,7 +22,6 @@ package org.nuxeo.elasticsearch.test.aggregates;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeFalse;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_CARDINALITY;
 
 import java.io.ByteArrayInputStream;
@@ -453,7 +452,6 @@ public class TestAggregates {
 
     @Test
     public void testPageProviderBooleanAggregate() throws Exception {
-        assumeFalse("Test is failing on MongoDB - NXP-30338", coreFeature.getStorageConfiguration().isDBSMongoDB());
         buildDocs();
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
@@ -464,6 +462,8 @@ public class TestAggregates {
 
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] trashedStates = { "true", "false" };
+        String[] sources = { "Source1", "Source2" };
+        model.setProperty("advanced_search", "source_agg", sources);
         model.setProperty("advanced_search", "trashed_agg", trashedStates);
 
         HashMap<String, Serializable> props = new HashMap<>();
@@ -472,9 +472,9 @@ public class TestAggregates {
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
         assertEquals(8, pp.getAggregates().size());
-        assertEquals(10, pp.getResultsCount());
-        assertEquals("Aggregate(trashed, terms, ecm:isTrashed, [true, false], [BucketTerm(false, 10)])",
-                pp.getAggregates().get("trashed").toString());
+        String trashed = pp.getAggregates().get("trashed").toString();
+        assertEquals(2, pp.getResultsCount());
+        assertTrue(trashed, trashed.contains("BucketTerm(false, 2)"));
     }
 
     @Test
