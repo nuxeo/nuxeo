@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
@@ -78,8 +79,13 @@ public class TestPageProviders extends BaseTest {
     @Inject
     protected TransactionalFeature tf;
 
+    @Inject
+    protected ElasticSearchAdmin esa;
+
     @Before
     public void before() {
+        esa.initIndexes(true);
+
         DocumentModel doc = session.createDocumentModel("/default-domain/workspaces", "test", "Workspace");
         doc = session.createDocument(doc);
         session.save();
