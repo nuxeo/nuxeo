@@ -144,9 +144,11 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
             result = future.get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new StreamRuntimeException("Unable to send record: " + record, e);
+            throw new StreamRuntimeException(
+                    String.format("Unable to send record with key: %s on %s-%02d", key, name, partition), e);
         } catch (ExecutionException e) {
-            throw new StreamRuntimeException("Unable to send record: " + record, e);
+            throw new StreamRuntimeException(
+                    String.format("Unable to send record with key: %s on %s-%02d", key, name, partition), e);
         }
         LogOffset ret = new LogOffsetImpl(name, partition, result.offset());
         if (log.isDebugEnabled()) {
