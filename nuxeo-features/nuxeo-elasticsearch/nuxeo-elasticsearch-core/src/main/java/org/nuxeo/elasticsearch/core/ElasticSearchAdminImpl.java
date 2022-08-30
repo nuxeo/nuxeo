@@ -522,7 +522,16 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             if (log.isDebugEnabled()) {
                 log.debug("Using settings: " + conf.getSettings());
             }
-            getClient().createIndex(indexName, conf.getSettings());
+            try {
+                getClient().createIndex(indexName, conf.getSettings());
+            } catch (NuxeoException e) {
+                String message = e.getMessage();
+                if (message != null && message.contains("resource_already_exists_exception")) {
+                    log.warn("Index: " + indexName + " has been concurrently created");
+                } else {
+                    throw e;
+                }
+            }
         }
         if (!mappingExists) {
             log.info(String.format("Creating mapping type: %s on index: %s", indexName, conf.getName()));
