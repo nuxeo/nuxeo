@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019-2022 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -336,7 +336,7 @@ void archiveKafkaLogs(namespace, logFile) {
 
 pipeline {
   agent {
-    label 'jenkins-nuxeo-platform-lts-2021'
+    label 'jenkins-nuxeo-platform-lts-2023'
   }
   options {
     timeout(time: 12, unit: 'HOURS')
@@ -979,7 +979,7 @@ pipeline {
           -----------------------------------------------------------
           """
           build(
-            job: "nuxeo/lts/nuxeo-hf-2021",
+            job: "nuxeo/lts/nuxeo-hf-2023",
             parameters: parameters,
             wait: false
           )
