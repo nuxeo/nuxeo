@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.io.marshallers.json.document;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
@@ -293,7 +294,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
             value = jn.binaryValue();
         } else if (jn.isTextual()) {
             if (type instanceof BooleanType) {
-                value = Boolean.parseBoolean(jn.asText());
+                value = tryParse(Boolean::parseBoolean, jn.asText(), property);
             } else if (type instanceof LongType) {
                 value = tryParse(Long::parseLong, jn.asText(), property);
             } else if (type instanceof DoubleType) {
@@ -316,6 +317,9 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
     }
 
     private Object tryParse(Function<String, Object> parser, String value, Property property) {
+        if (isEmpty(value)) {
+            return null;
+        }
         try {
             return parser.apply(value);
         } catch (IllegalArgumentException e) {

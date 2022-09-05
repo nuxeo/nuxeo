@@ -188,6 +188,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
 
     // NXP-30680
     // NXP-30806
+    // NXP-31199
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
     public void testPropertyValuePossibilities() throws IOException {
@@ -198,6 +199,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         testPropertyWithAcceptedRepresentationWorks("{\"my:string\": 12.34}", "my:string", "12.34");
         testPropertyWithAcceptedRepresentationWorks("{\"my:string\": true}", "my:string", "true");
         testPropertyWithAcceptedRepresentationWorks("{\"my:string\": null}", "my:string", null);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:string\": \"\"}", "my:string", "");
         testPropertyWithWrongRepresentationThrowsException("{\"my:string\": {\"key\": true}}");
         testPropertyWithWrongRepresentationThrowsException("{\"my:string\": [0]}");
 
@@ -207,6 +209,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
                 Long.MAX_VALUE);
         testPropertyWithAcceptedRepresentationWorks("{\"my:integer\": \"1234\"}", "my:integer", 1234L);
         testPropertyWithAcceptedRepresentationWorks("{\"my:integer\": null}", "my:integer", null);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:integer\": \"\"}", "my:integer", null);
         testPropertyWithWrongRepresentationThrowsException("{\"my:integer\": \"Some string\"}");
         testPropertyWithWrongRepresentationThrowsException("{\"my:integer\": \"12.34\"}");
         testPropertyWithWrongRepresentationThrowsException("{\"my:integer\": true}");
@@ -219,6 +222,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         testPropertyWithAcceptedRepresentationWorks("{\"my:long\": 1234}", "my:long", 1234L);
         testPropertyWithAcceptedRepresentationWorks("{\"my:long\": \"1234\"}", "my:long", 1234L);
         testPropertyWithAcceptedRepresentationWorks("{\"my:long\": null}", "my:long", null);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:long\": \"\"}", "my:long", null);
         testPropertyWithWrongRepresentationThrowsException("{\"my:long\": \"Some string\"}");
         testPropertyWithWrongRepresentationThrowsException("{\"my:long\": \"12.34\"}");
         testPropertyWithWrongRepresentationThrowsException("{\"my:long\": true}");
@@ -235,6 +239,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         testPropertyWithAcceptedRepresentationWorks("{\"my:boolean\": 1}", "my:boolean", true);
         testPropertyWithAcceptedRepresentationWorks("{\"my:boolean\": 0}", "my:boolean", false);
         testPropertyWithAcceptedRepresentationWorks("{\"my:boolean\": null}", "my:boolean", null);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:boolean\": \"\"}", "my:boolean", null);
         testPropertyWithWrongRepresentationThrowsException("{\"my:boolean\": 12.34}");
         testPropertyWithWrongRepresentationThrowsException("{\"my:boolean\": {\"key\": true}}");
         testPropertyWithWrongRepresentationThrowsException("{\"my:boolean\": [0]}");
@@ -245,6 +250,7 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         testPropertyWithAcceptedRepresentationWorks("{\"my:double\": 12.34}", "my:double", 12.34);
         testPropertyWithAcceptedRepresentationWorks("{\"my:double\": \"12.34\"}", "my:double", 12.34);
         testPropertyWithAcceptedRepresentationWorks("{\"my:double\": null}", "my:double", null);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:double\": \"\"}", "my:double", null);
         testPropertyWithWrongRepresentationThrowsException("{\"my:double\": \"Some string\"}");
         testPropertyWithWrongRepresentationThrowsException("{\"my:double\": true}");
         testPropertyWithWrongRepresentationThrowsException("{\"my:double\": {\"key\": true}}");
@@ -254,7 +260,8 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         var cal = Calendar.getInstance();
         cal.setTime(date);
         testPropertyWithAcceptedRepresentationWorks("{\"my:date\": \"2022-01-18T17:20:21.123\"}", "my:date", cal);
-        testPropertyWithAcceptedRepresentationWorks("{\"my:long\": null}", "my:date", null);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:date\": null}", "my:date", null);
+        testPropertyWithAcceptedRepresentationWorks("{\"my:date\": \"\"}", "my:date", null);
         testPropertyWithWrongRepresentationThrowsException("{\"my:date\": \"Some string\"}");
         testPropertyWithWrongRepresentationThrowsException("{\"my:date\": true}");
         testPropertyWithWrongRepresentationThrowsException("{\"my:date\": 1234}");
