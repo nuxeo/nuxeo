@@ -63,7 +63,7 @@ String getVersion() {
 
 pipeline {
   agent {
-    label 'jenkins-nuxeo-package-lts-2021'
+    label 'jenkins-nuxeo-package-lts-2023'
   }
   options {
     timeout(time: 3, unit: 'HOURS')

@@ -50,7 +50,7 @@ RUN yum -y update \
   && yum -y --setopt=skip_missing_names_on_install=False install \
     epel-release \
     # install java first to provide it for depend packages (such as libreoffice)
-    zulu11-jdk \
+    zulu17-jdk \
   # install downloaded rpms
   && yum -y localinstall /tmp/rpms/* \
   && rm -rf /tmp/rpms \

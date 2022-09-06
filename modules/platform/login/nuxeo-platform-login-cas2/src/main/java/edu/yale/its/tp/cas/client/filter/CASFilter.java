@@ -58,7 +58,7 @@ import org.xml.sax.SAXException;
  * if <code>serviceUrl</code> is not specified)</li>
  * <li><code>edu.yale.its.tp.cas.client.filter.authorizedProxy</code>: whitespace-delimited list of valid proxies
  * through which authentication may have proceeded. One one proxy must match. (Optional. If nothing is specified, the
- * filter will only accept service tickets &#150; not proxy tickets.)</li>
+ * filter will only accept service tickets - not proxy tickets.)</li>
  * <li><code>edu.yale.its.tp.cas.client.filter.renew</code>: value of CAS "renew" parameter. Bypasses single sign-on and
  * requires user to provide CAS with his/her credentials again. (Optional. If nothing is specified, this defaults to
  * false.)</li>

@@ -82,7 +82,7 @@ void gatling(String parameters) {
 
 pipeline {
   agent {
-    label 'jenkins-nuxeo-benchmark-lts-2021'
+    label 'jenkins-nuxeo-benchmark-lts-2023'
   }
   options {
     timeout(time: 12, unit: 'HOURS')

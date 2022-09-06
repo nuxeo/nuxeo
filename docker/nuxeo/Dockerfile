@@ -7,7 +7,7 @@
 ARG BASE_IMAGE
 # ------------------------------------------------------------------------
 # Build stage
-FROM azul/zulu-openjdk:11 as builder
+FROM azul/zulu-openjdk:17 as builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   procps \

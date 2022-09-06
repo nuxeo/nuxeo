@@ -111,7 +111,7 @@ JAVA_TOOLS=$JAVA_HOME/lib/tools.jar
 PATH="$JAVA_HOME/bin:$PATH"
 
 # Check Java Version
-: ${REQUIRED_JAVA_VERSION:=1.8}
+: ${REQUIRED_JAVA_VERSION:=17}
 # Check 'java' bin
 command -v $JAVA >/dev/null 2>&1 || die "Nuxeo requires Java $REQUIRED_JAVA_VERSION+. No $JAVA command detected in the PATH (including JAVA_HOME)."
 # Check Java version
@@ -183,14 +183,9 @@ JUL_CONFIG="-Djava.util.logging.config.file=conf/logging.properties -Djava.util.
 JAVA_OPTS="$JAVA_OPTS $JUL_CONFIG"
 
 ## Jigsaw modules
-case $JAVA_VERSION in
-  1.*) # Java < 11
-     ;;
-  *) # Java 11
-     MODULE_OPTS="--illegal-access=permit" # use =warn for more diagnostics
-     JAVA_OPTS="$MODULE_OPTS $JAVA_OPTS"
-     ;;
-esac
+# Opens/Exports for hotreload
+MODULE_OPTS="--add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
+JAVA_OPTS="$MODULE_OPTS $JAVA_OPTS"
 
 ## nuxeo.log.dir
 LOG_DIR=$(grep "^nuxeo.log.dir=" "$NUXEO_CONF" | cut -d= -f2- | tail -n 1)
