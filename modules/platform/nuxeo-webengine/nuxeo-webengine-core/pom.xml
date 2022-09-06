@@ -102,6 +102,12 @@
       <artifactId>nuxeo-platform-usermanager</artifactId>
     </dependency>
 
+    <!-- needed by Scripting -->
+    <dependency>
+      <groupId>org.openjdk.nashorn</groupId>
+      <artifactId>nashorn-core</artifactId>
+    </dependency>
+
     <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

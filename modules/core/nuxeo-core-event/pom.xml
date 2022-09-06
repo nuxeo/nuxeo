@@ -89,6 +89,11 @@
       <groupId>io.opencensus</groupId>
       <artifactId>opencensus-impl</artifactId>
     </dependency>
+    <!-- needed by ScriptingEventListener and ScriptingPostCommitEventListener -->
+    <dependency>
+      <groupId>org.openjdk.nashorn</groupId>
+      <artifactId>nashorn-core</artifactId>
+    </dependency>
     <!-- only for tests -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

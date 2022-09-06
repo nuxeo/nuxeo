@@ -4921,6 +4921,12 @@
         <version>0.93.0</version>
       </dependency>
 
+      <!-- Nashorn -->
+      <dependency>
+        <groupId>org.openjdk.nashorn</groupId>
+        <artifactId>nashorn-core</artifactId>
+        <version>15.4</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

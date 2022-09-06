@@ -35,8 +35,7 @@ import javax.script.ScriptException;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 
 public class TestScriptObjectMirrors {
 
