@@ -18,15 +18,40 @@
  */
 package org.mockito.configuration;
 
-import org.nuxeo.runtime.mockito.NuxeoInjectingAnnotationEngine;
+import java.lang.annotation.Annotation;
+import java.util.Map;
+
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.mockito.Mock;
+import org.mockito.internal.configuration.FieldAnnotationProcessor;
+import org.mockito.internal.configuration.IndependentAnnotationEngine;
+import org.mockito.internal.configuration.InjectingAnnotationEngine;
+import org.nuxeo.runtime.mockito.NuxeoServiceMockAnnotationProcessor;
 
 /**
+ * Mockito loads this with reflection, so this class might appear unused.
+ *
  * @since 5.7.8
  */
 public class MockitoConfiguration extends DefaultMockitoConfiguration {
 
     @Override
+    @SuppressWarnings("deprecation")
     public AnnotationEngine getAnnotationEngine() {
-        return new NuxeoInjectingAnnotationEngine();
+        // these classes are hard to subclass as they have many private methods
+        // so instead we use reflection to set our NuxeoServiceMockAnnotationProcessor
+        InjectingAnnotationEngine engine = new InjectingAnnotationEngine();
+        NuxeoServiceMockAnnotationProcessor annotationProcessor = new NuxeoServiceMockAnnotationProcessor();
+        try {
+            IndependentAnnotationEngine delegate = (IndependentAnnotationEngine) FieldUtils.readField(engine,
+                    "delegate", true);
+            @SuppressWarnings("unchecked")
+            Map<Class<? extends Annotation>, FieldAnnotationProcessor<?>> annotationProcessorMap = (Map<Class<? extends Annotation>, FieldAnnotationProcessor<?>>) FieldUtils.readField(
+                    delegate, "annotationProcessorMap", true);
+            annotationProcessorMap.put(Mock.class, annotationProcessor);
+        } catch (ReflectiveOperationException e) {
+            throw new UnsupportedOperationException(e);
+        }
+        return engine;
     }
 }

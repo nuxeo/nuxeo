@@ -244,13 +244,6 @@
 </suppress>
 <suppress>
    <notes><![CDATA[
-   file name: jgiven-html-app-0.16.0.jar (only used in tests)
-   ]]></notes>
-   <gav regex="true">^com\.tngtech\.jgiven:jgiven-html-app:.*$</gav>
-   <cpe>cpe:/a:app_project:app</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
    file name: gatling-app-2.3.1.jar (only used in tests)
    ]]></notes>
    <gav regex="true">^io\.gatling:gatling-app:.*$</gav>

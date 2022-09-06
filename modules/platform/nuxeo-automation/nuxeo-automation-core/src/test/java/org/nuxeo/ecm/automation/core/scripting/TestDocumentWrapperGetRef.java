@@ -17,8 +17,8 @@
  */
 package org.nuxeo.ecm.automation.core.scripting;
 
-import static com.tngtech.jgiven.impl.util.AssertionUtil.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import javax.inject.Inject;

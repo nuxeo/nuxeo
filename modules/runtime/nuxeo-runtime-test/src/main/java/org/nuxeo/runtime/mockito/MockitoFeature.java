@@ -15,9 +15,9 @@
  */
 package org.nuxeo.runtime.mockito;
 
-import static org.mockito.MockitoAnnotations.initMocks;
-
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.runners.model.FrameworkMethod;
+import org.mockito.MockitoAnnotations;
 import org.mockito.configuration.IMockitoConfiguration;
 import org.mockito.internal.configuration.GlobalConfiguration;
 import org.nuxeo.runtime.api.DefaultServiceProvider;
@@ -28,6 +28,8 @@ public class MockitoFeature implements RunnerFeature {
 
     protected final MockProvider provider = new MockProvider();
 
+    protected AutoCloseable openedMocks;
+
     @Override
     public void start(FeaturesRunner runner) {
         provider.installSelf();
@@ -36,7 +38,12 @@ public class MockitoFeature implements RunnerFeature {
     @Override
     public void testCreated(Object test) {
         DefaultServiceProvider.setProvider(provider);
-        initMocks(test);
+        openedMocks = MockitoAnnotations.openMocks(test);
+    }
+
+    @Override
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        openedMocks.close();
     }
 
     @Override
@@ -50,7 +57,7 @@ public class MockitoFeature implements RunnerFeature {
     }
 
     protected void cleanupThread() throws ReflectiveOperationException {
-        ThreadLocal<IMockitoConfiguration> holder = (ThreadLocal<IMockitoConfiguration>) FieldUtils.readStaticField(GlobalConfiguration.class, "globalConfiguration", true);
+        ThreadLocal<IMockitoConfiguration> holder = (ThreadLocal<IMockitoConfiguration>) FieldUtils.readStaticField(GlobalConfiguration.class, "GLOBAL_CONFIGURATION", true);
         holder.remove();
     }
 }
