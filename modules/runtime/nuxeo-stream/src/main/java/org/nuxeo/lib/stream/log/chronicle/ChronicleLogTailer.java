@@ -188,7 +188,7 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
     public void toStart() {
         log.debug(String.format("toStart: %s", id));
         cqTailer.toStart();
-        if (!cqTailer.state().equals(TailerState.FOUND_CYCLE)) {
+        if (!cqTailer.state().equals(TailerState.FOUND_IN_CYCLE)) {
             log.info("Unable to move to start because the tailer is not initialized, " + this);
         }
         initialized = true;

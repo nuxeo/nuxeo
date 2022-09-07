@@ -28,11 +28,9 @@ import java.util.NavigableSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 
 import net.openhft.chronicle.queue.impl.StoreFileListener;
-import net.openhft.chronicle.queue.impl.WireStore;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueStore;
 
@@ -125,7 +123,7 @@ public class ChronicleRetentionListener implements StoreFileListener {
 
     protected boolean checkPurge() {
         // there is no need to purge more than the cycle length (which is duration in ms)
-        if (System.currentTimeMillis() - purgedStamp >= retention.getRollCycle().length()) {
+        if (System.currentTimeMillis() - purgedStamp >= retention.getRollCycle().lengthInMillis()) {
             return true;
         }
         log.debug("Skipping purge already done in within cycle duration: {}", purgedStamp);

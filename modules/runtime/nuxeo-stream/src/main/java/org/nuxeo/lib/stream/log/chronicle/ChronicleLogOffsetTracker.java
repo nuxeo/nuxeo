@@ -127,7 +127,7 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
     protected long doReadLastCommittedOffset() {
         try(ExcerptTailer offsetTailer = offsetQueue.createTailer().direction(TailerDirection.BACKWARD).toEnd()) {
             switch (offsetTailer.state()) {
-                case FOUND_CYCLE:
+                case FOUND_IN_CYCLE:
                     // expected case continue
                     break;
                 case UNINITIALISED:

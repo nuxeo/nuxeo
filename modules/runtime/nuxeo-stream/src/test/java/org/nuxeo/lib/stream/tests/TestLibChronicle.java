@@ -131,7 +131,7 @@ public class TestLibChronicle implements StoreFileListener {
             put(app, srcNode);
 
             KeyValueMessage receiveNode = poll(tailer);
-            assertEquals(TailerState.FOUND_CYCLE, tailer.state());
+            assertEquals(TailerState.FOUND_IN_CYCLE, tailer.state());
             assertEquals(srcNode, receiveNode);
         }
     }
@@ -261,7 +261,7 @@ public class TestLibChronicle implements StoreFileListener {
         // a state of a tailer on a non empty queue is FOUND_CYCLE
         try (ChronicleQueue queue = openQueue(path)) {
             ExcerptTailer tailer = queue.createTailer().direction(TailerDirection.BACKWARD).toEnd();
-            assertEquals(TailerState.FOUND_CYCLE, tailer.state());
+            assertEquals(TailerState.FOUND_IN_CYCLE, tailer.state());
             KeyValueMessage ret = poll(tailer, 1, TimeUnit.SECONDS);
             assertNotNull(ret);
         }
@@ -269,7 +269,7 @@ public class TestLibChronicle implements StoreFileListener {
         // even if we change cycle the queue is initialized
         try (ChronicleQueue queue = openQueue(path)) {
             ExcerptTailer tailer = queue.createTailer().direction(TailerDirection.BACKWARD).toEnd();
-            assertEquals(TailerState.FOUND_CYCLE, tailer.state());
+            assertEquals(TailerState.FOUND_IN_CYCLE, tailer.state());
         }
     }
 

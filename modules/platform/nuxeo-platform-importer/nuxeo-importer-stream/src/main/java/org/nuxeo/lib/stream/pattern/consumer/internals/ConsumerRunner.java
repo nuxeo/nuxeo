@@ -49,7 +49,6 @@ import io.dropwizard.metrics5.Counter;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
-
 import net.jodah.failsafe.Execution;
 
 /**
@@ -68,6 +67,8 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
     protected final ConsumerPolicy policy;
 
     protected final LogTailer<M> tailer;
+
+    private final java.util.function.Consumer<LogTailer<M>> setTailerPosition;
 
     protected String consumerId;
 
@@ -121,7 +122,7 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
         this.tailer = createTailer(manager, codec, defaultAssignments);
         consumerId = tailer.toString();
         globalConsumersCounter = registry.counter(MetricRegistry.name("nuxeo", "importer", "stream", "consumers"));
-        setTailerPosition(manager);
+        setTailerPosition = setTailerPosition(manager);
         log.debug("Consumer thread created tailing on: " + consumerId);
     }
 
@@ -140,6 +141,7 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
     public ConsumerStatus call() throws Exception {
         threadName = currentThread().getName();
         setMetrics();
+        setTailerPosition.accept(tailer);
         globalConsumersCounter.inc();
         long start = System.currentTimeMillis();
         consumer = factory.createConsumer(consumerId);
@@ -177,22 +179,17 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
         alreadySalted = true;
     }
 
-    protected void setTailerPosition(LogManager manager) {
+    protected java.util.function.Consumer<LogTailer<M>> setTailerPosition(LogManager manager) {
         ConsumerPolicy.StartOffset seekPosition = policy.getStartOffset();
         if (manager.supportSubscribe() && seekPosition != ConsumerPolicy.StartOffset.LAST_COMMITTED) {
             throw new UnsupportedOperationException(
                     "Tailer startOffset to " + seekPosition + " is not supported in subscribe mode");
         }
-        switch (policy.getStartOffset()) {
-        case BEGIN:
-            tailer.toStart();
-            break;
-        case END:
-            tailer.toEnd();
-            break;
-        default:
-            tailer.toLastCommitted();
-        }
+        return switch (policy.getStartOffset()) {
+            case BEGIN -> LogTailer::toStart;
+            case END -> LogTailer::toEnd;
+            default -> LogTailer::toLastCommitted;
+        };
     }
 
     protected void consumerLoop() throws InterruptedException {

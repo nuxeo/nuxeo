@@ -143,6 +143,17 @@
 
     <!-- for use in maven-surefire-plugin, maven-failsafe-plugin, jacoco-maven-plugin -->
     <it.failsafe.argLine></it.failsafe.argLine>
+    <it.modules.argLine>
+      --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED
+      --add-exports=java.base/sun.nio.ch=ALL-UNNAMED
+      --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED
+      --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED
+      --add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED
+      --add-opens=java.base/java.lang=ALL-UNNAMED
+      --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+      --add-opens=java.base/java.io=ALL-UNNAMED
+      --add-opens=java.base/java.util=ALL-UNNAMED
+    </it.modules.argLine>
 
     <!-- Sonar & JaCoCo (related profile: sonar)-->
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -159,8 +170,10 @@
     <snappy.version>1.1.8.4</snappy.version>
     <kafka.version>2.6.0</kafka.version>
     <confluent.version>6.0.0</confluent.version>
-    <chronicle.bom.version>2.20.40</chronicle.bom.version>
+    <chronicle.bom.version>2.22.157</chronicle.bom.version>
     <chronicle.threads.version>2.17.25</chronicle.threads.version>
+    <chronicle.jnr.constants.version>0.10.2</chronicle.jnr.constants.version>
+    <chronicle.jnr.jffi.version>2.2.6</chronicle.jnr.jffi.version>
     <metrics.version>5.0.0-rc3</metrics.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.27.1</opencensus.version>
@@ -4842,6 +4855,18 @@
         </exclusions>
       </dependency>
       <dependency>
+        <!-- transitive dependency, declared to avoid collision with our packaging mechanism -->
+        <groupId>com.github.jnr</groupId>
+        <artifactId>jnr-ffi</artifactId>
+        <version>${chronicle.jnr.jffi.version}</version>
+      </dependency>
+      <dependency>
+        <!-- transitive dependency, declared to avoid collision with our packaging mechanism -->
+        <groupId>com.github.jnr</groupId>
+        <artifactId>jnr-constants</artifactId>
+        <version>${chronicle.jnr.constants.version}</version>
+      </dependency>
+      <dependency>
         <groupId>net.jodah</groupId>
         <artifactId>failsafe</artifactId>
         <version>1.1.0</version>
@@ -5026,7 +5051,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Xmx1g -Dfile.encoding=UTF-8 -XX:-OmitStackTraceInFastThrow ${it.failsafe.argLine}</argLine>
+          <argLine>-Xmx1g -Dfile.encoding=UTF-8 -XX:-OmitStackTraceInFastThrow ${it.failsafe.argLine} ${it.modules.argLine}</argLine>
           <skipTests>${skip.surefire.tests}</skipTests>
           <systemPropertyVariables>
             <net.sourceforge.cobertura.datafile>
@@ -5414,7 +5439,7 @@
             </dependency>
           </dependencies>
           <configuration>
-            <argLine>${it.failsafe.argLine}</argLine>
+            <argLine>${it.failsafe.argLine} ${it.modules.argLine}</argLine>
             <trimStackTrace>false</trimStackTrace>
           </configuration>
         </plugin>
@@ -6831,7 +6856,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-              <argLine>-Xmx1g -Dfile.encoding=UTF-8 -XX:-OmitStackTraceInFastThrow @{it.failsafe.argLine}</argLine>
+              <argLine>-Xmx1g -Dfile.encoding=UTF-8 -XX:-OmitStackTraceInFastThrow @{it.failsafe.argLine} @{it.modules.argLine}</argLine>
             </configuration>
           </plugin>
         </plugins>

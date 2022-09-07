@@ -28,7 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -121,12 +120,14 @@ public class TestLogChronicle extends TestLog {
         // cycle 4
         // purge is done
         appender.append(0, msg);
+        Thread.sleep(1010);
         assertEquals(4, Files.list(queuePath).count());
         Thread.sleep(1010);
 
         // cycle 5:
         // purge is done
         appender.append(0, msg);
+        Thread.sleep(1010);
         assertEquals(4, Files.list(queuePath).count());
     }
 
