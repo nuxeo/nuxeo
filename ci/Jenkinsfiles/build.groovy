@@ -336,7 +336,7 @@ void archiveKafkaLogs(namespace, logFile) {
 
 pipeline {
   agent {
-    label 'jenkins-nuxeo-platform-lts-2023'
+    label 'jenkins-nuxeo-platform-lts-2021'
   }
   options {
     timeout(time: 12, unit: 'HOURS')
