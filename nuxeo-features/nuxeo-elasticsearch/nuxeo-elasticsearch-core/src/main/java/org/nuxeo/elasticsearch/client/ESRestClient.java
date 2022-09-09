@@ -399,12 +399,12 @@ public class ESRestClient implements ESClient {
 
     @Override
     public IndexResponse index(IndexRequest request) {
-        // 3 retries with backoff of 2s jitter 0.5:
-        // retry 1: 2s +/-1 [t+1, t+3]
-        // retry 2: 4s +/-2 [t+3, t+9]
-        // retry 3: 8s +/-4 [t+7, t+21]
+        // 3 retries with backoff of 20s jitter 0.5:
+        // retry 1: 20s +/-10 [t+10, t+30]
+        // retry 2: 40s +/-20 [t+30 t+90]
+        // retry 3: 80S +/-40 [t+70, t+210]
         RetryPolicy policy = new RetryPolicy().withMaxRetries(3)
-                                              .withBackoff(2, 30, TimeUnit.SECONDS)
+                                              .withBackoff(20, 200, TimeUnit.SECONDS)
                                               .withJitter(0.5)
                                               .retryOn(TooManyRequestsRetryableException.class);
         AtomicReference<IndexResponse> response = new AtomicReference<>();
