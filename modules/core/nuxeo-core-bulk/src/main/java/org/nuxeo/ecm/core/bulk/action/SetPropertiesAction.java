@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
@@ -111,7 +112,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
                 }
                 try {
                     session.saveDocument(doc);
-                } catch (PropertyException e) {
+                } catch (PropertyException | DocumentValidationException e) {
                     // TODO send to error stream
                     log.warn("Cannot save document: {}", doc.getId(), e);
                 }
