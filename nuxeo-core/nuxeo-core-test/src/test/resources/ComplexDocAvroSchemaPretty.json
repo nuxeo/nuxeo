@@ -32,7 +32,10 @@
             "type" : [ "null", "string" ]
           }, {
             "name" : "foo",
-            "type" : [ "null", "string" ]
+            "type" : [ "null", {
+              "type" : "string",
+              "logicalType" : "stringLimited"
+            } ]
           } ]
         } ]
       }, {

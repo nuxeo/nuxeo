@@ -5,10 +5,15 @@
 
    <xs:element name="complex" type="nxs:complex"/>
    <xs:element name="complex2" type="nxs:complex"/>
+   <xs:simpleType name="stringLimited">
+      <xs:restriction base="xs:string">
+         <xs:maxLength value="20" />
+      </xs:restriction>
+   </xs:simpleType>
 
    <xs:complexType name="complex">
       <xs:sequence>
-         <xs:element name="foo" type="xs:string"/>
+         <xs:element name="foo" type="nxs:stringLimited"/>
          <xs:element name="bar" type="xs:string"/>
       </xs:sequence>
    </xs:complexType>
