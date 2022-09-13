@@ -5,23 +5,6 @@ This repo hosts the source code of a Keycloak plugin for Nuxeo Platform.
 About Keycloak: Keycloak is an brand new integrated SSO and IDM for browser apps and RESTful web services.
 Built on top of the OAuth 2.0, Open ID Connect, JSON Web Token (JWT) and SAML 2.0 specifications
 
-## Building and deploying
-
-- Install a Nuxeo server, version 6.x or higher.
-
-- Download [keycloak tomcat 7 adpaters](http://sourceforge.net/projects/keycloak/files/1.3.1.Final/adapters)
-  and unpack everything in your ${NUXEO_CONF}/templates/keycloak/nxserver/plugins directory (see "Sample" directory of this repository)
-
-- Install maven 3+ and build _nuxeo-platform-login-keycloak_ by running:
-
-        mvn clean install
-
-- Copy _nuxeo-platform-login-keycloak_ your ${NUXEO_CONF}/templates/keycloak/nxserver/plugins directory by running:
-
-        cp target/nuxeo-platform-login-keycloak-*.jar ${NUXEO_CONF}/templates/keycloak/nxserver/nxserver/plugins/
-
-- Start Nuxeo and have a try!
-
 ## Goal
 
 The main goal of this module is to allow a user or a client API that is registered in keycloak to acces nuxeo without log-in.
@@ -30,7 +13,7 @@ This plugin does multiple checking and operations to achieve this goal:
 - Check authentication:
     - Either user's authentication using AOuth2 protocol
     - Or either a client api's authentication using HTTP Request header "Authorization: Bearer _token_"
-- Retrieve current keycloak user using [keycloak's provided tomcat adapter](https://docs.jboss.org/keycloak/docs/1.2.0.CR1/userguide/html/ch08.html#tomcat-adapter)
+- Retrieve current keycloak user using [keycloak's provided tomcat adapter](https://www.keycloak.org/docs/latest/securing_apps/#_tomcat_adapter)
 - Map user's roles defined in keycloak to nuxeo roles
 
 A user that has signed in keycloak then cas browser nuxeo's client application or use nuxeo Rest Api in another client.
@@ -83,19 +66,6 @@ Hope you'll enjoy keycloak SSO with Keycloak!
 
 ## About Nuxeo
 
-Nuxeo provides a modular, extensible Java-based [open source software
-platform for enterprise content management] [5] and packaged applications
-for [document management] [6], [digital asset management] [7] and
-[case management] [8]. Designed by developers for developers, the Nuxeo
-platform offers a modern architecture, a powerful plug-in model and
-extensive packaging capabilities for building content applications.
+The [Nuxeo Platform](http://www.nuxeo.com/products/content-management-platform/) is an open source customizable and extensible content management platform for building business applications. It provides the foundation for developing [document management](http://www.nuxeo.com/solutions/document-management/), [digital asset management](http://www.nuxeo.com/solutions/digital-asset-management/), [case management application](http://www.nuxeo.com/solutions/case-management/) and [knowledge management](http://www.nuxeo.com/solutions/advanced-knowledge-base/). You can easily add features using ready-to-use addons or by extending the platform using its extension point system.
 
-More information on: <http://www.nuxeo.com/>
-
-[1]: https://jira.nuxeo.com/browse/NXP-10268
-[2]: https://github.com/nuxeo/nuxeo-drive
-[3]: https://jira.nuxeo.com/browse/NXP-10269
-[5]: http://www.nuxeo.com/en/products/ep
-[6]: http://www.nuxeo.com/en/products/document-management
-[7]: http://www.nuxeo.com/en/products/dam
-[8]: http://www.nuxeo.com/en/products/case-management
+The Nuxeo Platform is developed and supported by Nuxeo, with contributions from the community.
