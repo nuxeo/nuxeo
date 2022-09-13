@@ -9,7 +9,7 @@
   <artifactId>nuxeo-platform-login-keycloak</artifactId>
   <name>Nuxeo Login Module for JBoss Keycloak</name>
   <properties>
-    <keycloak.version>4.6.0.Final</keycloak.version>
+    <keycloak.version>19.0.1</keycloak.version>
   </properties>
   <dependencies>
     <!-- #############################################################################  JAVAX -->
@@ -58,9 +58,10 @@
     <!-- #############################################################################  KEYCLOAK -->
     <dependency>
       <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-tomcat8-adapter</artifactId>
+      <artifactId>keycloak-tomcat-adapter-dist</artifactId>
       <version>${keycloak.version}</version>
       <scope>compile</scope>
+      <type>pom</type>
     </dependency>
     <!-- #############################################################################  TEST -->
     <dependency>

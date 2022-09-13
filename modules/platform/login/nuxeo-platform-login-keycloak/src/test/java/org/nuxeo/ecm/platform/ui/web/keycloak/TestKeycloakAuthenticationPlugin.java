@@ -158,7 +158,7 @@ public class TestKeycloakAuthenticationPlugin {
         Mockito.verify(responseMock).setStatus(302);
         Mockito.verify(responseMock)
                .setHeader(Matchers.matches("Location"),
-                       Matchers.startsWith("https://127.0.0.1:8443/auth/realms/demo/protocol/openid-connect/auth?"
+                       Matchers.startsWith("https://example.com/auth/realms/demo/protocol/openid-connect/auth?"
                                + "response_type=code&" + "client_id=customer-portal&"
                                + "redirect_uri=https%3A%2F%2Fexample.com%3A443%2Ffoo%2Fpath%2Fto%2Fresource"));
     }
@@ -177,7 +177,7 @@ public class TestKeycloakAuthenticationPlugin {
         assertNotNull(result);
         assertEquals(true, result);
 
-        String location = "https://127.0.0.1:8443/auth/realms/demo/protocol/openid-connect/logout?redirect_uri=https://example.com:443/foo/home.html";
+        String location = "https://example.com/auth/realms/demo/protocol/openid-connect/logout?redirect_uri=https://example.com:443/foo/home.html";
         Mockito.verify(responseMock).sendRedirect(location);
     }
 
