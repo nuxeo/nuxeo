@@ -53,6 +53,7 @@ String backgroundPath = LoginScreenHelper.getValueWithDefault(screenConfig.getBa
 String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + backgroundPath + "') center no-repeat #f2f2f2;");
 String loginButtonBackgroundColor = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginButtonBackgroundColor(), "#0066ff");
 String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "#fff");
+String loginBoxWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxWidth(), "500px");
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
 boolean disableBackgroundSizeCover = Boolean.TRUE.equals(screenConfig.getDisableBackgroundSizeCover());
 String fieldAutocomplete = screenConfig.getFieldAutocomplete() ? "on" : "off";
@@ -222,7 +223,7 @@ if (selectedLanguage != null) { %>
   }
   section > div {
     margin: 0 56px;
-    max-width: 500px;
+    max-width: <%=loginBoxWidth%>;
     width: 100%;
   }
 
