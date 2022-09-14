@@ -89,6 +89,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
         @Override
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
+            long errorCount = 0;
             for (DocumentModel doc : loadDocuments(session, ids)) {
                 if (disableAudit) {
                     doc.putContextData(PARAM_DISABLE_AUDIT, TRUE);
@@ -98,23 +99,34 @@ public class SetPropertiesAction implements StreamProcessorTopology {
                     doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
                 }
                 // update properties
+                boolean updated = false;
                 for (Entry<String, Serializable> es : properties.entrySet()) {
                     if (!PARAM_DISABLE_AUDIT.equals(es.getKey()) && !PARAM_VERSIONING_OPTION.equals(es.getKey())) {
                         try {
                             doc.setPropertyValue(es.getKey(), es.getValue());
+                            updated = true;
                         } catch (PropertyException e) {
                             // TODO send to error stream
                             log.warn("Cannot write property: {} of document: {}", es.getKey(), doc.getId(), e);
+                            delta.inError(String.format("Cannot set property: %s of document: %s, %s", es.getKey(),
+                                    doc.getId(), e.getMessage()));
                         }
                     }
+                }
+                if (!updated) {
+                    errorCount++;
+                    continue;
                 }
                 try {
                     session.saveDocument(doc);
                 } catch (PropertyException | DocumentValidationException e) {
                     // TODO send to error stream
                     log.warn("Cannot save document: {}", doc.getId(), e);
+                    delta.inError(String.format("Cannot save document: %s, %s", doc.getId(), e.getMessage()));
+                    errorCount++;
                 }
             }
+            delta.setErrorCount(errorCount);
         }
     }
 

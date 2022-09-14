@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.bulk;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -116,6 +117,8 @@ public class TestSetPropertiesAction {
         assertNotNull(status);
         assertEquals(COMPLETED, status.getState());
         assertEquals(DOC_BY_LEVEL, status.getProcessed());
+        assertFalse(status.hasError());
+        assertEquals(0, status.getErrorCount());
 
         List<BulkStatus> statuses = service.getStatuses(username);
         assertEquals(1, statuses.size() - oldSize);
@@ -168,6 +171,8 @@ public class TestSetPropertiesAction {
         assertNotNull(status);
         assertEquals(COMPLETED, status.getState());
         assertEquals(3, status.getProcessed());
+        assertTrue(status.hasError());
+        assertEquals(2, status.getErrorCount());
 
         List<BulkStatus> statuses = service.getStatuses(session.getPrincipal().getName());
         assertEquals(1, statuses.size() - oldSize);
@@ -199,6 +204,8 @@ public class TestSetPropertiesAction {
         assertNotNull(status);
         assertEquals(COMPLETED, status.getState());
         assertEquals(1, status.getProcessed());
+        assertTrue(status.hasError());
+        assertEquals(1, status.getErrorCount());
 
         // because of the constraint violation the property is not set
         txFeature.nextTransaction();
