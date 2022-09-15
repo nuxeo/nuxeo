@@ -1,0 +1,137 @@
+{
+  "realm" : "${nuxeo.keycloak.realm}",
+  "resource" : "${nuxeo.keycloak.resource}",
+  <#if "${nuxeo.keycloak.realmPublicKey}" != "">
+  "realm-public-key" : "${nuxeo.keycloak.realmPublicKey}",
+  </#if>
+  "auth-server-url" : "${nuxeo.keycloak.authServerUrl}",
+  <#if "${nuxeo.keycloak.sslRequired}" != "">
+  "ssl-required" : "${nuxeo.keycloak.sslRequired}",
+  </#if>
+  <#if "${nuxeo.keycloak.confidentialPort}" != "">
+  "confidential-port" : ${nuxeo.keycloak.confidentialPort},
+  </#if>
+  <#if "${nuxeo.keycloak.useResourceRoleMappings}" != "">
+  "use-resource-role-mappings" : ${nuxeo.keycloak.useResourceRoleMappings},
+  </#if>
+  <#if "${nuxeo.keycloak.publicClient}" != "">
+  "public-client" : ${nuxeo.keycloak.publicClient},
+  </#if>
+  <#if "${nuxeo.keycloak.enableCors}" != "">
+  "enable-cors" : ${nuxeo.keycloak.enableCors},
+  </#if>
+  <#if "${nuxeo.keycloak.corsMaxAge}" != "">
+  "cors-max-age" : ${nuxeo.keycloak.corsMaxAge},
+  </#if>
+  <#if "${nuxeo.keycloak.corsAllowedMethods}" != "">
+  "cors-allowed-methods" : "${nuxeo.keycloak.corsAllowedMethods}",
+  </#if>
+  <#if "${nuxeo.keycloak.corsAllowedHeaders}" != "">
+  "cors-allowed-headers" : "${nuxeo.keycloak.corsAllowedHeaders}",
+  </#if>
+  <#if "${nuxeo.keycloak.corsExposedHeaders}" != "">
+  "cors-exposed-headers" : "${nuxeo.keycloak.corsExposedHeaders}",
+  </#if>
+  <#if "${nuxeo.keycloak.bearerOnly}" != "">
+  "bearer-only" : ${nuxeo.keycloak.bearerOnly},
+  </#if>
+  <#if "${nuxeo.keycloak.autodetectBearerOnly}" != "">
+  "autodetect-bearer-only" : ${nuxeo.keycloak.autodetectBearerOnly},
+  </#if>
+  <#if "${nuxeo.keycloak.enableBasicAuth}" != "">
+  "enable-basic-auth" : ${nuxeo.keycloak.enableBasicAuth},
+  </#if>
+  <#if "${nuxeo.keycloak.exposeToken}" != "">
+  "expose-token" : ${nuxeo.keycloak.exposeToken},
+  </#if>
+  <#if "${nuxeo.keycloak.credentials.secret}" != "">
+  "credentials" : {
+    "secret" : "${nuxeo.keycloak.credentials.secret}"
+  },
+  </#if>
+  <#if "${nuxeo.keycloak.credentials.jwt.clientKeystoreFile}" != "">
+  "credentials" : {
+    "jwt" : {
+      "client-keystore-file": "${nuxeo.keycloak.credentials.jwt.clientKeystoreFile}",
+      "client-keystore-type": "${nuxeo.keycloak.credentials.jwt.clientKeystoreType}",
+      "client-keystore-password": "${nuxeo.keycloak.credentials.jwt.clientKeystorePassword}",
+      "client-key-password": "${nuxeo.keycloak.credentials.jwt.clientKeyPassword}",
+      "client-key-alias": "${nuxeo.keycloak.credentials.jwt.clientKeyAlias}",
+      "token-expiration": ${nuxeo.keycloak.credentials.jwt.tokenExpiration}
+    }"
+  },
+  </#if>
+  <#if "${nuxeo.keycloak.connectionPoolSize}" != "">
+  "connection-pool-size" : ${nuxeo.keycloak.connectionPoolSize},
+  </#if>
+  <#if "${nuxeo.keycloak.socketTimeoutMillis}" != "">
+  "socket-timeout-millis" : ${nuxeo.keycloak.socketTimeoutMillis},
+  </#if>
+  <#if "${nuxeo.keycloak.connectionTimeoutMillis}" != "">
+  "connection-timeout-millis" : ${nuxeo.keycloak.connectionTimeoutMillis},
+  </#if>
+  <#if "${nuxeo.keycloak.connectionTtlMillis}" != "">
+  "connection-ttl-millis" : ${nuxeo.keycloak.connectionTtlMillis},
+  </#if>
+  <#if "${nuxeo.keycloak.disableTrustManager}" != "">
+  "disable-trust-manager" : ${nuxeo.keycloak.disableTrustManager},
+  </#if>
+  <#if "${nuxeo.keycloak.allowAnyHostname}" != "">
+  "allow-any-hostname" : ${nuxeo.keycloak.allowAnyHostname},
+  </#if>
+  <#if "${nuxeo.keycloak.proxyUrl}" != "">
+  "proxy-url" : "${nuxeo.keycloak.proxyUrl}",
+  </#if>
+  <#if "${nuxeo.keycloak.truststore}" != "">
+  "truststore" : "${nuxeo.keycloak.truststore}",
+  </#if>
+  <#if "${nuxeo.keycloak.truststorePassword}" != "">
+  "truststore-password" : "${nuxeo.keycloak.truststorePassword}",
+  </#if>
+  <#if "${nuxeo.keycloak.clientKeystore}" != "">
+  "client-keystore" : "${nuxeo.keycloak.clientKeystore}",
+  </#if>
+  <#if "${nuxeo.keycloak.clientKeystorePassword}" != "">
+  "client-keystore-password" : "${nuxeo.keycloak.clientKeystorePassword}",
+  </#if>
+  <#if "${nuxeo.keycloak.clientKeyPassword}" != "">
+  "client-key-password" : "${nuxeo.keycloak.clientKeyPassword}",
+  </#if>
+  <#if "${nuxeo.keycloak.alwaysRefreshToken}" != "">
+  "always-refresh-token" : ${nuxeo.keycloak.alwaysRefreshToken},
+  </#if>
+  <#if "${nuxeo.keycloak.registerNodeAtStartup}" != "">
+  "register-node-at-startup" : ${nuxeo.keycloak.registerNodeAtStartup},
+  </#if>
+  <#if "${nuxeo.keycloak.registerNodePeriod}" != "">
+  "register-node-period" : ${nuxeo.keycloak.registerNodePeriod},
+  </#if>
+  <#if "${nuxeo.keycloak.tokenStore}" != "">
+  "token-store" : "${nuxeo.keycloak.tokenStore}",
+  </#if>
+  <#if "${nuxeo.keycloak.tokenCookiePath}" != "">
+  "token-cookie-path" : "${nuxeo.keycloak.tokenCookiePath}",
+  </#if>
+  <#if "${nuxeo.keycloak.principalAttribute}" != "">
+  "principal-attribute" : "${nuxeo.keycloak.principalAttribute}",
+  </#if>
+  <#if "${nuxeo.keycloak.turnOffChangeSessionIdOnLogin}" != "">
+  "turn-off-change-session-id-on-login" : ${nuxeo.keycloak.turnOffChangeSessionIdOnLogin},
+  </#if>
+  <#if "${nuxeo.keycloak.tokenMinimumTimeToLive}" != "">
+  "token-minimum-time-to-live" : ${nuxeo.keycloak.tokenMinimumTimeToLive},
+  </#if>
+  <#if "${nuxeo.keycloak.minTimeBetweenJwksRequests}" != "">
+  "min-time-between-jwks-requests" : ${nuxeo.keycloak.minTimeBetweenJwksRequests},
+  </#if>
+  <#if "${nuxeo.keycloak.publicKeyCacheTtl}" != "">
+  "public-key-cache-ttl" : ${nuxeo.keycloak.publicKeyCacheTtl},
+  </#if>
+  <#if "${nuxeo.keycloak.ignoreOauthQueryParameter}" != "">
+  "ignore-oauth-query-parameter" : ${nuxeo.keycloak.ignoreOauthQueryParameter},
+  </#if>
+  <#if "${nuxeo.keycloak.verifyTokenAudience}" != "">
+  "verify-token-audience" : ${nuxeo.keycloak.verifyTokenAudience}
+  }
+  </#if>
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package type="addon" name="nuxeo-keycloak" version="@VERSION@">
+  <title>Nuxeo Keycloack</title>
+  <description>
+    <p>Nuxeo Login Module for JBoss Keycloak</p>
+  </description>
+  <vendor>Nuxeo</vendor>
+  <platforms>
+    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
+  </platforms>
+  <license>Apache 2.0</license>
+  <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+</package>

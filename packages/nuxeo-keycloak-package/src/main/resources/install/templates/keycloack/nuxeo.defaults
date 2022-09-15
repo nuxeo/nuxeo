@@ -1,0 +1,59 @@
+## Edit this file to customize your configuration ##
+## See http://doc.nuxeo.com/x/LANc
+keycloak.target=.
+
+# Set list of templates to include, comma separated values.
+nuxeo.template.includes=common
+
+# Customize default values associated with this template
+# Required
+nuxeo.keycloak.realm=
+nuxeo.keycloak.authServerUrl=
+nuxeo.keycloak.resource=
+
+# Optional
+nuxeo.keycloak.realmPublicKey=
+nuxeo.keycloak.sslRequired=
+nuxeo.keycloak.confidentialPort=
+nuxeo.keycloak.useResourceRoleMappings=
+nuxeo.keycloak.publicClient=
+nuxeo.keycloak.enableCors=
+nuxeo.keycloak.corsMaxAge=
+nuxeo.keycloak.corsAllowedMethods=
+nuxeo.keycloak.corsAllowedHeaders=
+nuxeo.keycloak.corsExposedHeaders=
+nuxeo.keycloak.bearerOnly=
+nuxeo.keycloak.autodetectBearerOnly=
+nuxeo.keycloak.enableBasicAuth=
+nuxeo.keycloak.exposeToken=
+nuxeo.keycloak.credentials.secret=
+nuxeo.keycloak.credentials.jwt.clientKeystoreFile=
+nuxeo.keycloak.credentials.jwt.clientKeystoreType=
+nuxeo.keycloak.credentials.jwt.clientKeystorePassword=
+nuxeo.keycloak.credentials.jwt.clientKeyPassword=
+nuxeo.keycloak.credentials.jwt.clientKeyAlias=
+nuxeo.keycloak.credentials.jwt.tokenExpiration=
+nuxeo.keycloak.connectionPoolSize=
+nuxeo.keycloak.socketTimeoutMillis=
+nuxeo.keycloak.connectionTimeoutMillis=
+nuxeo.keycloak.connectionTtlMillis=
+nuxeo.keycloak.disableTrustManager=
+nuxeo.keycloak.allowAnyHostname=
+nuxeo.keycloak.proxyUrl=
+nuxeo.keycloak.truststore=
+nuxeo.keycloak.truststorePassword=
+nuxeo.keycloak.clientKeystore=
+nuxeo.keycloak.clientKeystorePassword=
+nuxeo.keycloak.clientKeyPassword=
+nuxeo.keycloak.alwaysRefreshToken=
+nuxeo.keycloak.registerNodeAtStartup=
+nuxeo.keycloak.registerNodePeriod=
+nuxeo.keycloak.tokenStore=
+nuxeo.keycloak.tokenCookiePath=
+nuxeo.keycloak.principalAttribute=
+nuxeo.keycloak.turnOffChangeSessionIdOnLogin=
+nuxeo.keycloak.tokenMinimumTimeToLive=
+nuxeo.keycloak.minTimeBetweenJwksRequests=
+nuxeo.keycloak.publicKeyCacheTtl=
+nuxeo.keycloak.ignoreOauthQueryParameter=
+nuxeo.keycloak.verifyTokenAudience=
