@@ -163,6 +163,7 @@
     <metrics.version>5.0.0-rc3</metrics.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.27.1</opencensus.version>
+    <protobuf.java.version>3.7.1</protobuf.java.version>
   </properties>
 
   <dependencyManagement>
@@ -4837,6 +4838,13 @@
         <groupId>io.prometheus</groupId>
         <artifactId>simpleclient_httpserver</artifactId>
         <version>0.9.0</version>
+      </dependency>
+      <dependency>
+        <!-- unused dependency, declared to fix version conflict between opencensus-exporter-stats-stackdriver
+        and mysql-connector -->
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>${protobuf.java.version}</version>
       </dependency>
 
       <dependency>
