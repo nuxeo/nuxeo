@@ -8,7 +8,7 @@
 # RPM download stage
 FROM centos:7 as rpm-download
 
-ARG EXIFTOOL_VERSION=12.25
+ARG EXIFTOOL_VERSION=12.42
 
 # Add Nexus Private Yum Release Repository
 COPY target/nuxeo-private.repo /etc/yum.repos.d/
