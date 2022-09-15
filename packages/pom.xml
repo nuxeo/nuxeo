@@ -28,6 +28,7 @@
     <module>nuxeo-importer-package</module>
     <module>nuxeo-jsf-to-web-ui-package</module>
     <module>nuxeo-kerberos-authentication-package</module>
+    <module>nuxeo-keycloak-package</module>
     <module>nuxeo-lang-ext-incomplete-package</module>
     <module>nuxeo-liveconnect-package</module>
     <module>nuxeo-microsoft-azure-package</module>
