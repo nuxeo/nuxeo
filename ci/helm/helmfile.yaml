@@ -45,7 +45,7 @@ releases:
   condition: elasticsearch.enabled
   values:
   - values/values-elasticsearch.yaml.gotmpl
-  - values/{{ $valuesDir }}/values-mongodb.yaml
+  - values/{{ $valuesDir }}/values-elasticsearch.yaml
 - name: kafka
   chart: bitnami/kafka
   version: 11.8.8

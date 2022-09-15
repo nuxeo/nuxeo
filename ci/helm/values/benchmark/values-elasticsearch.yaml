@@ -6,6 +6,18 @@ resources:
     cpu: "15"
     memory: "56Gi"
 esJavaOpts: "-Xmx32g -Xms32g"
+podAnnotations:
+  ad.datadoghq.com/elasticsearch.checks: |
+    {
+      "elastic": {
+        "init_config": {},
+        "instances": [
+          {
+            "url": "http://%%host%%:9200"
+          }
+        ]
+      }
+    }
 labels:
   usage: benchmark
 service:
