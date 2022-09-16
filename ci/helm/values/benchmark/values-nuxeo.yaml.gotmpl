@@ -1,6 +1,6 @@
 architecture: "api-worker"
-replicaCount: 1
-workerCount: 1
+replicaCount: {{ env "NX_REPLICA_COUNT" | default 1 }}
+workerCount: {{ env "NX_WORKER_COUNT" | default 1 }}
 resources:
   requests:
     cpu: "12"

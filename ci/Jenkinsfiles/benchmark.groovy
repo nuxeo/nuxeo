@@ -99,6 +99,8 @@ pipeline {
     MAVEN_ARGS = '-B -nsu -P-nexus,nexus-private,bench -Dnuxeo.bench.itests=false'
     VERSION = "${params.NUXEO_BUILD_VERSION}"
     DATA_URL = "https://maven-eu.nuxeo.org/nexus/service/local/repositories/vendor-releases/content/content/org/nuxeo/tools/testing/data-test-les-arbres-redis-1.1.gz/1.1/data-test-les-arbres-redis-1.1.gz-1.1.gz"
+    NX_REPLICA_COUNT = "${params.NUXEO_NB_APP_NODE.toInteger()}"
+    NX_WORKER_COUNT = "${params.NUXEO_NB_WORKER_NODE.toInteger()}"
   }
 
   stages {

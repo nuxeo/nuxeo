@@ -53,7 +53,7 @@ releases:
   condition: kafka.enabled
   values:
   - values/values-kafka.yaml.gotmpl
-  - values/{{ $valuesDir }}/values-kafka.yaml
+  - values/{{ $valuesDir }}/values-kafka.yaml.gotmpl
 - name: redis
   chart: bitnami/redis
   version: 11.2.1
