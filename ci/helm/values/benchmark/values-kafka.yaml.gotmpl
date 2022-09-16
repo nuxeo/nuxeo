@@ -1,4 +1,7 @@
-replicaCount: 2
+{{- $nxReplicaCount := env "NX_REPLICA_COUNT" | default 1 -}}
+{{- $nxWorkerCount := env "NX_WORKER_COUNT" | default 1 -}}
+{{- $replicaCount := add $nxReplicaCount $nxWorkerCount -}}
+replicaCount: {{ $replicaCount }}
 resources:
   requests:
     cpu: "3"
@@ -43,7 +46,7 @@ nodeSelector:
   team: platform
   usage: benchmark
 zookeeper:
-  replicaCount: 2
+  replicaCount: {{ $replicaCount }}
   resources:
     requests:
       cpu: "500m"
