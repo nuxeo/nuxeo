@@ -1748,7 +1748,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         checkPermission(doc, READ_VERSION);
         Document headDocument = doc.getSourceDocument();
         if (headDocument == null) {
-            throw new DocumentNotFoundException("Source document has been deleted");
+            throw new DocumentNotFoundException("Source document has been deleted for doc: " + docRef);
         }
         return readModel(headDocument);
     }
