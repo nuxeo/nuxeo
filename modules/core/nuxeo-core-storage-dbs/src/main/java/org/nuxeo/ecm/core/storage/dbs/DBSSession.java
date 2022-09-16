@@ -338,7 +338,7 @@ public class DBSSession extends BaseSession {
         DBSDocumentState docState = transaction.getChildState(parentId, name);
         DBSDocument doc = getDocument(docState);
         if (doc == null) {
-            throw new DocumentNotFoundException(name);
+            throw new DocumentNotFoundException("parent: " + parentId + ", name: " + name);
         }
         return doc;
     }
@@ -445,7 +445,7 @@ public class DBSSession extends BaseSession {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         DocumentType type = schemaManager.getDocumentType(typeName);
         if (type == null) {
-            throw new DocumentNotFoundException("Unknown document type: " + typeName);
+            throw new DocumentNotFoundException("Unknown document type: " + typeName + " for doc: " + docState.getId());
         }
 
         boolean isProxy = TRUE.equals(docState.get(KEY_IS_PROXY));
@@ -453,7 +453,7 @@ public class DBSSession extends BaseSession {
             String targetId = (String) docState.get(KEY_PROXY_TARGET_ID);
             DBSDocumentState targetState = transaction.getStateForUpdate(targetId);
             if (targetState == null) {
-                throw new DocumentNotFoundException("Proxy has null target");
+                throw new DocumentNotFoundException("Proxy has null target for doc: " + docState.getId());
             }
         }
 

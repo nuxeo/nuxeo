@@ -774,7 +774,7 @@ public class TestSQLRepositoryAPI {
             session.getChild(root.getRef(), "nosuchchild");
             fail("Should fail with DocumentNotFoundException");
         } catch (DocumentNotFoundException e) {
-            assertEquals("nosuchchild", e.getMessage());
+            assertTrue(e.getMessage(), e.getMessage().contains("nosuchchild"));
         }
     }
 
@@ -2846,7 +2846,7 @@ public class TestSQLRepositoryAPI {
             session.getChild(new PathRef("/folder"), "doc");
             fail("should not find child moved under /folder in another transaction");
         } catch (DocumentNotFoundException e) {
-            assertEquals("doc", e.getMessage());
+            assertTrue(e.getMessage(), e.getMessage().contains("doc"));
         }
     }
 
