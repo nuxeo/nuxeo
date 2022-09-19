@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -37,8 +38,11 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkBucket;
@@ -188,6 +192,34 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
         if (documentIds == null || documentIds.isEmpty()) {
             return new DocumentModelListImpl(0);
         }
-        return session.query(String.format(SELECT_DOCUMENTS_IN, String.join("', '", documentIds)));
+        try {
+            DocumentModelList ret = session.query(String.format(SELECT_DOCUMENTS_IN, String.join("', '", documentIds)));
+            if (log.isDebugEnabled() && ret.size() < documentIds.size()) {
+                // some documents might have been deleted since scroller projection
+                List<String> notFound = new ArrayList<>(documentIds);
+                ret.forEach(doc -> notFound.remove(doc.getId()));
+                log.debug("Some documents are not accessible: " + notFound);
+            }
+            return ret;
+        } catch (DocumentNotFoundException | PropertyConversionException e) {
+            // A corrupted document prevents to load the batch of docs
+            log.warn("Fail to loadDocuments on bulk command: {}, because of: {}, retrying without batching",
+                    command.getId(), e.getMessage());
+            return loadDocumentsOneByOne(session, documentIds);
+        }
+    }
+
+    public DocumentModelList loadDocumentsOneByOne(CoreSession session, List<String> documentIds) {
+        DocumentModelList ret = new DocumentModelListImpl(documentIds.size());
+        for (String documentId : documentIds) {
+            try {
+                ret.add(session.getDocument(new IdRef(documentId)));
+            } catch (DocumentNotFoundException | PropertyConversionException e) {
+                String message = "Unable to read document id: " + documentId + ", because of: " + e.getMessage();
+                log.warn(message);
+                log.debug(message, e);
+            }
+        }
+        return ret;
     }
 }
