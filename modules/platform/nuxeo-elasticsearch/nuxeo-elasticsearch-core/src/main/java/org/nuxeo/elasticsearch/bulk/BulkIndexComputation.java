@@ -132,6 +132,9 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
             }
             BulkStatus delta = BulkStatus.deltaOf(in.getCommandId());
             delta.setProcessed(in.getCount());
+            if (bulkRequest.numberOfActions() == 0) {
+                delta.inError(in.getCount(), "Some documents were not accessible", 0);
+            }
             AbstractBulkComputation.updateStatus(context, delta);
         }
         updates = true;
