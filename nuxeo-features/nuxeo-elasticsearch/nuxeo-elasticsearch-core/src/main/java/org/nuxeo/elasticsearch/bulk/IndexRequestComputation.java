@@ -128,6 +128,7 @@ public class IndexRequestComputation extends AbstractBulkComputation {
             count += request.numberOfActions();
         }
         if (count < bucketSize) {
+            // documents might have been deleted otherwise there are warning logs (corrupted docs)
             log.warn(String.format("Command: %s offset: %s created %d documents out of %d, %d not accessible",
                     commandId, context.getLastOffset(), count, bucketSize, bucketSize - count));
             DataBucket dataBucket = new DataBucket(commandId, bucketSize - count, toBytes(new BulkRequest()));
