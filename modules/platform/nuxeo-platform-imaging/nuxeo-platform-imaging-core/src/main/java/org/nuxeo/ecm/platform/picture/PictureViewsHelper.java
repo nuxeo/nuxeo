@@ -25,13 +25,19 @@ import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTOMA
 import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTO_CHECKOUT;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.PARAM_DISABLE_AUDIT;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
+import static org.nuxeo.ecm.platform.picture.api.PictureView.FIELD_FILENAME;
 import static org.nuxeo.ecm.platform.picture.listener.PictureViewsGenerationListener.DISABLE_PICTURE_VIEWS_GENERATION_LISTENER;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,6 +48,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -56,6 +63,10 @@ public class PictureViewsHelper {
     public static final String PICTURE_VIEWS_TX_TIMEOUT_PROPERTY = "nuxeo.picture.views.transaction.timeout.seconds";
 
     public static final int DEFAULT_TX_TIMEOUT_SECONDS = 300;
+
+    public static final String DEFAULT_PICTURE_VIEW_PATH = "nuxeo.war/img/empty_picture.png";
+
+    public static final String EMPTY_PICTURE_VIEW_PATH = "nuxeo.picture.views.empty.picture.view";
 
     protected static final String NOTHING_TO_PROCESS_MESSAGE = "Nothing to process";
 
@@ -141,6 +152,27 @@ public class PictureViewsHelper {
             transactionTimeout = Integer.parseInt(maxDurationStr);
         }
         return transactionTimeout;
+    }
+
+    /** @since 2021.27 */
+    public Path getEmptyPicturePath() {
+        String path = Framework.getService(ConfigurationService.class)
+                               .getString(EMPTY_PICTURE_VIEW_PATH, DEFAULT_PICTURE_VIEW_PATH);
+        return new Path(path);
+    }
+
+    /** @since 2021.27 */
+    @SuppressWarnings("unchecked")
+    public boolean hasPrefillPictureViews(DocumentModel doc) {
+        String prefillName = getEmptyPicturePath().lastSegment();
+        var views = Objects.requireNonNullElseGet((List<?>) doc.getPropertyValue("picture:views"), List::of);
+        for (Object view : views) {
+            var map = (Map<String, Serializable>) view;
+            if (prefillName.equals(map.get(FIELD_FILENAME))) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

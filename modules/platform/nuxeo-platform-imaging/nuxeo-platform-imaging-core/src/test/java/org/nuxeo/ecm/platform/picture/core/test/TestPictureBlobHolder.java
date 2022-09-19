@@ -109,7 +109,7 @@ public class TestPictureBlobHolder {
         assertNotNull(bh);
         blob = bh.getBlob();
         assertNotNull(blob);
-        assertEquals(1, bh.getBlobs().size());
+        assertEquals(6, bh.getBlobs().size());
 
         // test blob content
         assertEquals("mysample.jpg", blob.getFilename());

@@ -19,17 +19,18 @@
 
 package org.nuxeo.ecm.platform.picture.listener;
 
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CHECKIN;
+import static org.nuxeo.common.function.ThrowableFunction.asFunction;
+import static org.nuxeo.common.function.ThrowableSupplier.asSupplier;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.CTX_FORCE_VIEWS_GENERATION;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +47,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.picture.PictureViewsHelper;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
@@ -60,7 +62,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PictureChangedListener implements EventListener {
 
-    public static final String EMPTY_PICTURE_PATH = "nuxeo.war/img/empty_picture.png";
+    /**
+     * @deprecated since 2021.27, use {@link PictureViewsHelper#DEFAULT_PICTURE_VIEW_PATH} instead
+     */
+    @Deprecated
+    public static final String EMPTY_PICTURE_PATH = PictureViewsHelper.DEFAULT_PICTURE_VIEW_PATH;
+
+    protected PictureViewsHelper pvh = new PictureViewsHelper();
 
     private static final Log log = LogFactory.getLog(PictureChangedListener.class);
 
@@ -77,8 +85,6 @@ public class PictureChangedListener implements EventListener {
         if (doc.hasFacet(PICTURE_FACET) && !doc.isProxy()) {
             if (triggersPictureViewsGeneration(event, doc)) {
                 preFillPictureViews(docCtx.getCoreSession(), doc);
-            } else {
-                docCtx.setProperty(PictureViewsGenerationListener.DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, true);
             }
         }
     }
@@ -91,19 +97,26 @@ public class PictureChangedListener implements EventListener {
         boolean emptyPictureViews = viewsProp.size() == 0;
         boolean emptyOrNotDirtyPictureViews = !viewsProp.isDirty() || emptyPictureViews;
         boolean fileChanged = ABOUT_TO_CREATE.equals(event.getName()) || fileProp.isDirty();
-        boolean aboutToCheckIn = ABOUT_TO_CHECKIN.equals(event.getName());
 
-        return forceGeneration || (emptyOrNotDirtyPictureViews && fileChanged) || (emptyPictureViews && aboutToCheckIn);
+        return forceGeneration || (emptyOrNotDirtyPictureViews && fileChanged);
     }
 
+    @SuppressWarnings("unchecked")
     protected void preFillPictureViews(CoreSession session, DocumentModel doc) {
         try {
-            URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(getEmptyPicturePath());
-            if (fileUrl == null) {
-                return;
-            }
-
-            Blob blob = Blobs.createBlob(FileUtils.getFileFromURL(fileUrl));
+            Blob blob = Optional.ofNullable(
+                    Thread.currentThread().getContextClassLoader().getResource(getEmptyPicturePath()))
+                                .map(FileUtils::getFileFromURL)
+                                .map(asFunction(Blobs::createBlob))
+                                .orElseGet(asSupplier(() -> {
+                                    try (var is = Thread.currentThread()
+                                                        .getContextClassLoader()
+                                                        .getResourceAsStream(getEmptyPicturePath())) {
+                                        var b = Blobs.createBlob(is);
+                                        b.setFilename(pvh.getEmptyPicturePath().lastSegment());
+                                        return b;
+                                    }
+                                }));
             MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
             String mimeType = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob,
                     null);
@@ -134,7 +147,7 @@ public class PictureChangedListener implements EventListener {
     }
 
     protected String getEmptyPicturePath() {
-        return EMPTY_PICTURE_PATH;
+        return pvh.getEmptyPicturePath().toString();
     }
 
     protected DocumentModel getParentDocument(CoreSession session, DocumentModel doc) {

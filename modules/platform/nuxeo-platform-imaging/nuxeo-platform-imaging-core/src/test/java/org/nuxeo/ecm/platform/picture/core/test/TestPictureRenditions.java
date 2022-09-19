@@ -59,7 +59,6 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.ecm.platform.rendition.api")
 @Deploy("org.nuxeo.ecm.platform.rendition.core")
 @Deploy("org.nuxeo.ecm.platform.convert")
-@Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestPictureRenditions {
 
     public static final List<String> EXPECTED_ALL_RENDITION_DEFINITION_NAMES = Arrays.asList("xmlExport", "zipExport",

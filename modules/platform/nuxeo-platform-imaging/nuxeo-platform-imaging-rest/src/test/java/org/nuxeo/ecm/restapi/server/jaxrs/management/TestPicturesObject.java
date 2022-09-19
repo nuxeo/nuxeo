@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.platform.picture.PictureViewsHelper;
 import org.nuxeo.ecm.platform.picture.core.ImagingFeature;
 import org.nuxeo.ecm.platform.picture.listener.PictureViewsGenerationListener;
 import org.nuxeo.ecm.restapi.test.ManagementBaseTest;
@@ -69,6 +70,8 @@ public class TestPicturesObject extends ManagementBaseTest {
     protected CoreSession session;
 
     protected DocumentRef docRef;
+
+    protected PictureViewsHelper pvh = new PictureViewsHelper();
 
     @Before
     public void createDocument() throws IOException {
@@ -120,16 +123,17 @@ public class TestPicturesObject extends ManagementBaseTest {
         // waiting for the asynchronous picture views recompute task
         txFeature.nextTransaction();
 
+        var pictureViewsRecomputed = query != null;
         try (CloseableClientResponse response = httpClientRule.get("/management/bulk/" + commandId)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(SC_OK, response.getStatus());
 
             assertBulkStatusCompleted(node);
             if (success) {
-                assertEquals(1, node.get(STATUS_PROCESSED).asInt());
+                assertEquals(pictureViewsRecomputed ? 1 : 0, node.get(STATUS_PROCESSED).asInt());
                 assertFalse(node.get(STATUS_HAS_ERROR).asBoolean());
                 assertEquals(0, node.get(STATUS_ERROR_COUNT).asInt());
-                assertEquals(1, node.get(STATUS_TOTAL).asInt());
+                assertEquals(pictureViewsRecomputed ? 1 : 0, node.get(STATUS_TOTAL).asInt());
             } else {
                 assertEquals(0, node.get(STATUS_PROCESSED).asInt());
                 assertTrue(node.get(STATUS_HAS_ERROR).asBoolean());
@@ -143,6 +147,11 @@ public class TestPicturesObject extends ManagementBaseTest {
         @SuppressWarnings("unchecked")
         List<Serializable> pictureViews = (List<Serializable>) doc.getPropertyValue(VIEWS_PROPERTY);
         assertNotNull(pictureViews);
-        assertEquals(success, !pictureViews.isEmpty());
+        assertFalse(pictureViews.isEmpty());
+        if (success && pictureViewsRecomputed) {
+            assertFalse(pvh.hasPrefillPictureViews(doc));
+        } else {
+            assertTrue(pvh.hasPrefillPictureViews(doc));
+        }
     }
 }
