@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.picture.PictureViewsHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,6 +43,8 @@ import org.nuxeo.runtime.api.Framework;
 public class PictureViewsGenerationListener implements PostCommitEventListener {
 
     public static final String DISABLE_PICTURE_VIEWS_GENERATION_LISTENER = "disablePictureViewsGenerationListener";
+
+    protected PictureViewsHelper pvh = new PictureViewsHelper();
 
     @Override
     public void handleEvent(EventBundle events) {
@@ -62,7 +65,7 @@ public class PictureViewsGenerationListener implements PostCommitEventListener {
 
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc.hasFacet(PICTURE_FACET) && !doc.isProxy()) {
+        if (doc.hasFacet(PICTURE_FACET) && pvh.hasPrefillPictureViews(doc) && !doc.isProxy()) {
             String query = "SELECT * FROM Document WHERE ecm:uuid='" + doc.getId() + "'";
             BulkService service = Framework.getService(BulkService.class);
             String username = ctx.getPrincipal().getName();

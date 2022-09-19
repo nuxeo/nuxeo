@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.picture.views.helper.test">
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.picture.views.empty.picture.view">web/nuxeo.war/img/empty_picture.png</property>
+  </extension>
+</component>
