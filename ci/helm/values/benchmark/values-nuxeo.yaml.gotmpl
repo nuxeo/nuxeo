@@ -73,3 +73,13 @@ tolerations:
 nodeSelector:
   team: platform
   usage: benchmark
+customProperties:
+  metrics: |
+    metrics.enabled=true
+    metrics.datadog.enabled=true
+    metrics.datadog.pollInterval=60
+    metrics.datadog.tags=nuxeo
+    metrics.datadog.udp=true
+    metrics.datadog.host=datadog-platform.platform.svc.cluster.local
+    metrics.datadog.port=8125
+
