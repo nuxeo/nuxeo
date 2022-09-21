@@ -237,15 +237,25 @@ public class ConfigurationMarshaller {
                 if (PARAM_FORCE_GENERATION.equals(key) || PARAM_TEMPLATES_NAME.equals(key)) {
                     continue;
                 }
-                // ignore user parameters not modified by generator
                 String userValue = content.properties.get(key);
                 String generatorValue = content.configuratorProperties.get(key);
                 String valueToSet = StringUtils.trimToEmpty(configHolder.getRawProperty(key));
-                if (content.properties.containsKey(key) && valueToSet.equals(userValue)) {
+                // ignore user parameters not modified by generator
+                if (content.properties.containsKey(key) && isConfigurationValueEquals(userValue, valueToSet)) {
                     continue;
                 }
-                if (generatorValue != null) {
+                boolean hasPreviousGeneratorValue = generatorValue != null;
+                boolean generatorValueChanged = !isConfigurationValueEquals(generatorValue, valueToSet);
+                if (hasPreviousGeneratorValue && generatorValueChanged) {
+                    // comment the original value
                     writer.append("#").append(key).append("=").append(generatorValue).append(System.lineSeparator());
+                }
+                if (hasPreviousGeneratorValue && !generatorValueChanged) {
+                    // keep generatorValue as it contains backslash for escaping
+                    valueToSet = generatorValue;
+                } else {
+                    // escape real backslash
+                    valueToSet = valueToSet.replace("\\", "\\\\");
                 }
                 writer.append(key).append("=").append(valueToSet).append(System.lineSeparator());
             }
@@ -260,6 +270,20 @@ public class ConfigurationMarshaller {
         } catch (IOException e) {
             throw new ConfigurationException("Error writing: " + configHolder.getNuxeoConfPath(), e);
         }
+    }
+
+    /**
+     * This method checks the equality of the two given values by taking care that backslash escaping hasn't been
+     * performed on {@code userValue}.
+     * 
+     * @param userValue the value as it is written in {@code nuxeo.conf}
+     * @param valueToSet the value coming from {@link ConfigurationHolder}
+     * @return whether both values are equals regarding the method description.
+     */
+    protected boolean isConfigurationValueEquals(String userValue, String valueToSet) {
+        return userValue != null && (userValue.equals(valueToSet)
+                // remove backslash from userValue, if it is an escaped backslash then remove only one backslash
+                || userValue.replaceAll("\\\\(\\\\)?", "$1").equals(valueToSet));
     }
 
     /**

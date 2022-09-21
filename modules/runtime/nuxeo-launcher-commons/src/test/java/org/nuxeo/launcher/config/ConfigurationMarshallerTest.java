@@ -19,6 +19,7 @@
 
 package org.nuxeo.launcher.config;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,6 +36,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.ComparisonFailure;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -115,9 +117,24 @@ public class ConfigurationMarshallerTest {
         assertNuxeoConf();
     }
 
+    // NXP-31197
+    @Test
+    public void testPersistNuxeoConfWithBackslash() throws Exception {
+        marshaller.persistNuxeoConf(configHolder);
+
+        assertNuxeoConf();
+    }
+
     protected void assertNuxeoConf() throws IOException {
         var expectedNuxeoConf = testDirectory.resolve("expected-nuxeo.conf");
-        assertTrue(FileUtils.contentEquals(expectedNuxeoConf.toFile(), nuxeoConf.toFile()));
+        var expectedNuxeoConfFile = expectedNuxeoConf.toFile();
+        var actualNuxeoConfFile = nuxeoConf.toFile();
+        if (!FileUtils.contentEquals(expectedNuxeoConfFile, actualNuxeoConfFile)) {
+            throw new ComparisonFailure(
+                    name.getMethodName() + "/expected-nuxeo.conf file is not equal to marshalled one",
+                    FileUtils.readFileToString(expectedNuxeoConfFile, UTF_8),
+                    FileUtils.readFileToString(actualNuxeoConfFile, UTF_8));
+        }
     }
 
     // --------------
