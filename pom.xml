@@ -75,6 +75,7 @@
     <jna.version>4.5.2</jna.version>
     <netty.version>4.1.78.Final</netty.version>
     <netty.boringssl.version>2.0.54.Final</netty.boringssl.version>
+    <grpc-netty.version>1.28.0</grpc-netty.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <guice.version>3.0</guice.version>
@@ -4845,6 +4846,27 @@
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
         <version>${protobuf.java.version}</version>
+      </dependency>
+      <!-- unused dependencies, transitive dependencies from opencensus-exporter-stats-stackdriver to upgrade -->
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-auth</artifactId>
+        <version>${grpc-netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-core</artifactId>
+        <version>${grpc-netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-netty-shaded</artifactId>
+        <version>${grpc-netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-stub</artifactId>
+        <version>${grpc-netty.version}</version>
       </dependency>
 
       <dependency>
