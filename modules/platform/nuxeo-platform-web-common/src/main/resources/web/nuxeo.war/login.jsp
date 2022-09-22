@@ -81,7 +81,9 @@ if (selectedLanguage != null) { %>
 
 <head>
 <meta charset="utf-8">
-<title><%=productName%></title>
+<title>
+  <fmt:message bundle="${messages}" key="label.userSession.login" /> - <%=productName%>
+</title>
 <link rel="icon" type="image/png" href="<%=context%>/icons/favicon.png" />
 <link rel="shortcut icon" type="image/x-icon" href="<%=context%>/icons/favicon.ico" />
 <script type="text/javascript" src="<%=context%>/scripts/detect_timezone.js"></script>
