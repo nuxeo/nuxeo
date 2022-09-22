@@ -28,13 +28,6 @@ customEnvs:
     secretKeyRef:
       name: instance-clid
       key: instance.clid
-customProperties:
-  benchmark: |
-    nuxeo.append.templates.benchmark=perf
-    nuxeo.core.binarymanager=org.nuxeo.ecm.blob.s3.S3BlobProvider
-    nuxeo.db.transactiontimeout=3600
-    JAVA_OPTS=$JAVA_OPTS -XX:SoftRefLRUPolicyMSPerMB=0
-    JAVA_OPTS=$JAVA_OPTS -XX:-OmitStackTraceInFastThrow
 packages: amazon-s3-online-storage nuxeo-platform-importer nuxeo-web-ui
 affinity:
   podAntiAffinity:
@@ -74,6 +67,12 @@ nodeSelector:
   team: platform
   usage: benchmark
 customProperties:
+  benchmark: |
+    nuxeo.append.templates.benchmark=perf
+    nuxeo.core.binarymanager=org.nuxeo.ecm.blob.s3.S3BlobProvider
+    nuxeo.db.transactiontimeout=3600
+    JAVA_OPTS=$JAVA_OPTS -XX:SoftRefLRUPolicyMSPerMB=0
+    JAVA_OPTS=$JAVA_OPTS -XX:-OmitStackTraceInFastThrow
   metrics: |
     metrics.enabled=true
     metrics.datadog.enabled=true
@@ -82,4 +81,3 @@ customProperties:
     metrics.datadog.udp=true
     metrics.datadog.host=datadog-platform.platform.svc.cluster.local
     metrics.datadog.port=8125
-
