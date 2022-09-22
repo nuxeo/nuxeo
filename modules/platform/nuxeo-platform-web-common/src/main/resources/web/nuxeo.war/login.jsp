@@ -71,7 +71,7 @@ String loop = screenConfig.getVideoLoop() ? "loop " : "";
 boolean displayMobileBanner = LoginScreenHelper.getDisplayMobileBanner(request);
 %>
 
-<html class="no-js">
+<html class="no-js" lang="<%= selectedLanguage %>">
 <%
 if (selectedLanguage != null) { %>
 <fmt:setLocale value="<%= selectedLanguage %>"/>
