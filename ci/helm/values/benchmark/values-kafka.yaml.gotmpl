@@ -12,6 +12,8 @@ resources:
 podLabels:
   usage: benchmark
   app: kafka
+podAnnotations:
+  ad.datadoghq.com/tags: '{"source": "kafka", "service":"benchmark-{{ env "BUILD_NUMBER" | default "local" }}"}'
 affinity:
   podAntiAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
@@ -57,6 +59,8 @@ zookeeper:
   podLabels:
     usage: benchmark
     app: kafka-zookeeper
+  podAnnotations:
+    ad.datadoghq.com/tags: '{"source": "zookeeper", "service":"benchmark-{{ env "BUILD_NUMBER" | default "local" }}"}'
   affinity:
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:

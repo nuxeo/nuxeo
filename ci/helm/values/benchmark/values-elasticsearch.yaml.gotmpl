@@ -18,6 +18,7 @@ podAnnotations:
         ]
       }
     }
+  ad.datadoghq.com/tags: '{"source": "elasticsearch", "service":"benchmark-{{ env "BUILD_NUMBER" | default "local" }}"}'
 labels:
   usage: benchmark
 service:
