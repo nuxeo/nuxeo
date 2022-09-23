@@ -164,7 +164,7 @@
     <metrics.version>5.0.0-rc3</metrics.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.27.1</opencensus.version>
-    <protobuf.java.version>3.7.1</protobuf.java.version>
+    <protobuf.java.version>3.19.4</protobuf.java.version>
   </properties>
 
   <dependencyManagement>
