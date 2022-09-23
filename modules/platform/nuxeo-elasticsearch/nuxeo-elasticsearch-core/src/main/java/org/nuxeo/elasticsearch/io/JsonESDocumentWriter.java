@@ -38,8 +38,8 @@ import org.nuxeo.ecm.automation.core.util.JSONPropertyWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -225,8 +225,8 @@ public class JsonESDocumentWriter {
             try {
                 writer.writeProperty(jg, p);
             } catch (ClassCastException e) {
-                throw new NuxeoException(
-                        String.format("writing JSON property failed on document: %s for property: %s", doc, p), e);
+                throw new PropertyConversionException(String.format("Corrupted property: %s, on document: %s", p, doc),
+                        e);
             }
         }
     }

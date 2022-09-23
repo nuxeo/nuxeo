@@ -230,8 +230,8 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
             try {
                 ret.add(session.getDocument(new IdRef(documentId)));
             } catch (DocumentNotFoundException | PropertyConversionException e) {
-                String message = "Unable to read document id: " + documentId + ", because of: " + e.getMessage();
-                log.warn(message);
+                String message = "Skipping corrupted doc: " + documentId + ", because of: " + e.getMessage();
+                log.error(message);
                 log.debug(message, e);
             }
         }
