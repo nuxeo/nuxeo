@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.BlobNotFoundException;
+import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
@@ -466,6 +467,9 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             return request;
         } catch (IOException e) {
             throw new NuxeoException("Unable to create index request for Document " + cmd.getTargetDocumentId(), e);
+        } catch (PropertyConversionException e) {
+            log.error("Skipping indexing of a corrupted doc: " + cmd.getTargetDocumentId(), e);
+            return null;
         }
     }
 
