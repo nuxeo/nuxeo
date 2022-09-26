@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -93,6 +94,8 @@ public class IndexRequestComputation extends AbstractBulkComputation {
                                                                          .version(now));
             } catch (IOException e) {
                 throw new NuxeoException("Cannot build source for document: " + doc.getId(), e);
+            } catch (PropertyConversionException e) {
+                log.error("Skipping indexing of corrupted doc: " + doc.getId(), e);
             }
         }
     }

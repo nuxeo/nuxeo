@@ -29,6 +29,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.elasticsearch.Timestamp;
@@ -115,7 +118,27 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
         sb.append(")");
         // read invalidation
         session.save();
-        return session.query(sb.toString());
+        try {
+            return session.query(sb.toString());
+        } catch (DocumentNotFoundException | PropertyConversionException e) {
+            // A corrupted document prevents to load the batch of docs
+            log.warn("Fail to fetchDocuments because of: " + e.getMessage() + ", retrying without batching");
+            return loadDocumentsOneByOne(session, ids);
+        }
+    }
+
+    protected List<DocumentModel> loadDocumentsOneByOne(CoreSession session, List<String> documentIds) {
+        List<DocumentModel> ret = new ArrayList<>(documentIds.size());
+        for (String documentId : documentIds) {
+            try {
+                ret.add(session.getDocument(new IdRef(documentId)));
+            } catch (DocumentNotFoundException | PropertyConversionException e) {
+                String message = "Skipping a corrupted doc: " + documentId + ", because of: " + e.getMessage();
+                log.error(message);
+                log.debug(message, e);
+            }
+        }
+        return ret;
     }
 
     protected int getBucketSize() {
