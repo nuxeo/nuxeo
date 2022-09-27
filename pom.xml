@@ -103,8 +103,7 @@
     <aws.version>1.12.261</aws.version>
     <gcp.version>1.76.0</gcp.version>
     <jackson1.version>1.8.1</jackson1.version>
-    <jackson.version>2.11.3</jackson.version>
-    <jackson.dataformat.cbor.version>2.13.0</jackson.dataformat.cbor.version>
+    <jackson.version>2.12.7</jackson.version>
     <bouncycastle.version>1.69</bouncycastle.version>
     <avro.version>1.9.2</avro.version>
     <xz.version>1.8</xz.version>
@@ -3075,7 +3074,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-cbor</artifactId>
-        <version>${jackson.dataformat.cbor.version}</version>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -3095,6 +3094,11 @@
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-xml</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jsr310</artifactId>
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
