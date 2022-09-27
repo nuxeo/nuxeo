@@ -60,6 +60,16 @@ nuxeo.keycloak.verifyTokenAudience=
 ```
 See https://www.keycloak.org/docs/latest/securing_apps/#_java_adapter_config for more information.
 
+### Example
+
+```
+nuxeo.keycloak.realm=nuxeo
+nuxeo.keycloak.authServerUrl=http://localhost:8085/
+nuxeo.keycloak.resource=mynuxeo
+nuxeo.keycloak.publicClient=true
+nuxeo.keycloak.sslRequired=external
+```
+
 ## About Nuxeo
 
 The [Nuxeo Platform](http://www.nuxeo.com/products/content-management-platform/) is an open source customizable and extensible content management platform for building business applications. It provides the foundation for developing [document management](http://www.nuxeo.com/solutions/document-management/), [digital asset management](http://www.nuxeo.com/solutions/digital-asset-management/), [case management application](http://www.nuxeo.com/solutions/case-management/) and [knowledge management](http://www.nuxeo.com/solutions/advanced-knowledge-base/). You can easily add features using ready-to-use addons or by extending the platform using its extension point system.
