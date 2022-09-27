@@ -6,7 +6,7 @@
     <version>2021.27-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-keycloack-package</artifactId>
+  <artifactId>nuxeo-keycloak-package</artifactId>
   <packaging>zip</packaging>
   <name>Nuxeo Keycloack Package</name>
 
