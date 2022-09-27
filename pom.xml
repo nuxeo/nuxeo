@@ -1960,6 +1960,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-keycloak-package</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
         <artifactId>nuxeo-lang-ext-incomplete-package</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>zip</type>

@@ -70,6 +70,7 @@
         <module>nuxeo-importer-ftests</module>
         <module>nuxeo-jsf-to-web-ui-ftests</module>
         <module>nuxeo-kerberos-authentication-ftests</module>
+        <module>nuxeo-keycloak-ftests</module>
         <module>nuxeo-lang-ext-incomplete-ftests</module>
         <module>nuxeo-liveconnect-ftests</module>
         <module>nuxeo-microsoft-azure-ftests</module>
