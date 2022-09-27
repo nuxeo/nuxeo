@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.io.marshallers.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * Provides a {@link JsonFactory} with {@link ObjectMapper}.
@@ -43,7 +44,9 @@ public final class JsonFactoryProvider {
      */
     public static JsonFactory get() {
         if (jsonFactory == null) {
-            jsonFactory = new JsonFactory(new ObjectMapper());
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            jsonFactory = new JsonFactory(objectMapper);
         }
         return jsonFactory;
     }
