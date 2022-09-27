@@ -4804,6 +4804,7 @@
       <dependency>
         <groupId>org.keycloak</groupId>
         <artifactId>keycloak-common</artifactId>
+        <version>${keycloak.version}</version>
         <exclusions>
           <exclusion>
             <!-- use com.sun.activation:javax.activation-api instead -->
