@@ -90,6 +90,11 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.packages</groupId>
+      <artifactId>nuxeo-keycloak-package</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.packages</groupId>
       <artifactId>nuxeo-lang-ext-incomplete-package</artifactId>
       <type>zip</type>
     </dependency>
