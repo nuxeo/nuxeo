@@ -1,10 +1,7 @@
 {
-  "realm" : "${nuxeo.keycloak.realm}",
-  "resource" : "${nuxeo.keycloak.resource}",
   <#if "${nuxeo.keycloak.realmPublicKey}" != "">
   "realm-public-key" : "${nuxeo.keycloak.realmPublicKey}",
   </#if>
-  "auth-server-url" : "${nuxeo.keycloak.authServerUrl}",
   <#if "${nuxeo.keycloak.sslRequired}" != "">
   "ssl-required" : "${nuxeo.keycloak.sslRequired}",
   </#if>
@@ -131,7 +128,9 @@
   "ignore-oauth-query-parameter" : ${nuxeo.keycloak.ignoreOauthQueryParameter},
   </#if>
   <#if "${nuxeo.keycloak.verifyTokenAudience}" != "">
-  "verify-token-audience" : ${nuxeo.keycloak.verifyTokenAudience}
-  }
+  "verify-token-audience" : ${nuxeo.keycloak.verifyTokenAudience},
   </#if>
+  "realm" : "${nuxeo.keycloak.realm}",
+  "resource" : "${nuxeo.keycloak.resource}",
+  "auth-server-url" : "${nuxeo.keycloak.authServerUrl}"
 }
