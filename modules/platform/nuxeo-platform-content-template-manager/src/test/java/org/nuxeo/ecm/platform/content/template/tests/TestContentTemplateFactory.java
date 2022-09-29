@@ -54,9 +54,10 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.content.template.tests:test-content-template-framework.xml")
 @Deploy("org.nuxeo.ecm.platform.content.template.tests:test-content-template-contrib.xml")
@@ -74,6 +75,9 @@ public class TestContentTemplateFactory {
 
     @Inject
     protected HotDeployer hotDeployer;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     @Before
     public void setUp() {
@@ -256,6 +260,16 @@ public class TestContentTemplateFactory {
         userSession.save();
 
         checkCreatedDomain(domain);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR")
+    public void testTemplateInPlacelessDoc() {
+        var placelessDoc = session.createDocumentModel(null, "placelessFile", "Domain");
+
+        session.createDocument(placelessDoc);
+
+        assertTrue(logCaptureResult.getCaughtEvents().isEmpty());
     }
 
     @Test
