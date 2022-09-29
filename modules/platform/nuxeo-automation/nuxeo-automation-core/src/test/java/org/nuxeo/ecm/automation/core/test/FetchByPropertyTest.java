@@ -46,7 +46,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 2023 since {@link FetchByProperty} deprecation.
  */
+@Deprecated(since = "2023")
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
