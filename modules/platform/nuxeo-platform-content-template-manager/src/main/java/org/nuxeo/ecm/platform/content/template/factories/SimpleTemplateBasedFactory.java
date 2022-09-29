@@ -80,7 +80,8 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
         // Templates are created programmatically with their ACLs from a listener, according to static xml contribs.
         // The origin of the call doesn't matter.
         CoreInstance.doPrivileged(session, session -> {
-            if (aces != null && !aces.isEmpty()) {
+            var isNotPlaceless = session.getDocument(ref).getPathAsString().startsWith("/");
+            if (aces != null && !aces.isEmpty() && isNotPlaceless) {
                 ACP acp = session.getACP(ref);
                 ACL existingACL = acp.getOrCreateACL();
 
