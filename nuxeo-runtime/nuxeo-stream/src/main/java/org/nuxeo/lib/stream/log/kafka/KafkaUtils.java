@@ -47,6 +47,7 @@ import org.apache.kafka.clients.consumer.internals.PartitionAssignor;
 import org.apache.kafka.common.Cluster;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.TopicPartitionInfo;
 import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.nuxeo.lib.stream.StreamRuntimeException;
@@ -171,15 +172,19 @@ public class KafkaUtils implements AutoCloseable {
             throw new StreamRuntimeException(e);
         } catch (ExecutionException e) {
             if (e.getCause() instanceof TopicExistsException) {
-                log.info("topic: " + topic + " exists");
+                log.warn("Cannot create topic, it already exists: " + topic);
             } else {
                 throw new StreamRuntimeException(e);
             }
         } catch (TimeoutException e) {
             throw new StreamRuntimeException("Unable to create topic " + topic + " within the timeout", e);
         }
+        if (!topicReady(topic)) {
+            waitForTopicCreation(topic, Duration.ofMinutes(3));
+        }
         if (partitions(topic) != partitions) {
-            waitForTopicCreation(topic, Duration.ofMinutes(2));
+            log.warn("Topic: " + topic + " created with different partitioning, expected: " + partitions + ", actual: "
+                    + partitions(topic));
         }
     }
 
@@ -197,12 +202,41 @@ public class KafkaUtils implements AutoCloseable {
                 Thread.currentThread().interrupt();
                 throw new StreamRuntimeException("Interrupted while waiting for topic creation " + topic, e);
             }
-        } while (!topicExists(topic));
+        } while (!topicReady(topic));
         log.debug("Topic is now available");
     }
 
     public boolean topicExists(String topic) {
         return partitions(topic) > 0;
+    }
+
+    public boolean topicReady(String topic) {
+        try {
+            TopicDescription desc = adminClient.describeTopics(Collections.singletonList(topic))
+                                               .values()
+                                               .get(topic)
+                                               .get();
+            if (desc.partitions().size() < 1) {
+                log.warn("Topic: " + topic + ", without partition");
+                return false;
+            }
+            for (TopicPartitionInfo info : desc.partitions()) {
+                if (info.leader().isEmpty()) {
+                    log.warn("Topic: " + topic + " not ready, no leader for partition: " + info);
+                    return false;
+                }
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new StreamRuntimeException(e);
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof UnknownTopicOrPartitionException) {
+                log.info("Topic: " + topic + " unknown");
+                return false;
+            }
+            throw new StreamRuntimeException(e);
+        }
+        return true;
     }
 
     public int partitions(String topic) {
