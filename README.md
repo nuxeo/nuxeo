@@ -1,7 +1,7 @@
 
 # Nuxeo Platform
 
-[![Build Status](https://jenkins.platform.dev.nuxeo.com/buildStatus/icon?job=nuxeo/LTS/nuxeo/2021)](https://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/LTS/job/nuxeo/job/2021/)
+[![Build Status](https://jenkins.platform.dev.nuxeo.com/buildStatus/icon?job=nuxeo/lts/nuxeo/2021)](https://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/lts/job/nuxeo/job/2021/)
 
 ## About the Nuxeo Platform
 
