@@ -64,7 +64,7 @@
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.1.5</ant.assembly.version>
     <nuxeo.ftest.version>1.8.10</nuxeo.ftest.version>
-    <nuxeo.java.client.version>3.2.0</nuxeo.java.client.version>
+    <nuxeo.java.client.version>3.13.0</nuxeo.java.client.version>
 
     <servlet-api.version>4.0.1</servlet-api.version>
     <jaxb-api.version>2.3.3</jaxb-api.version>
