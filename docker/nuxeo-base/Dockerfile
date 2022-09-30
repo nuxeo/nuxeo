@@ -61,7 +61,7 @@ RUN yum -y update \
   && rm -rf /tmp/LibreOffice_${LIBREOFFICE_VERSION}* \
   && yum -y --setopt=skip_missing_names_on_install=False install \
     ghostscript \
-    ImageMagick-6.9.10.68-3.el7 \
+    ImageMagick-6.9.10.68-6.el7_9 \
     less \
     libwpd-tools \
     # required by exiftool to extract binary metadata from open office document
