@@ -164,6 +164,7 @@
     <metrics.version>5.0.0-rc3</metrics.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.31.1</opencensus.version>
+    <okhttp.version>4.10.0</okhttp.version>
     <protobuf.java.version>3.19.4</protobuf.java.version>
   </properties>
 
@@ -4738,6 +4739,11 @@
         <artifactId>nuxeo-java-client</artifactId>
         <version>${nuxeo.java.client.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>${okhttp.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.pdfbox</groupId>
