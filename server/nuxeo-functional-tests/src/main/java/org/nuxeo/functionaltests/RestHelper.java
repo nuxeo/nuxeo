@@ -456,7 +456,7 @@ public class RestHelper {
      * @since 9.3
      */
     public static int countQueryPageProvider(String providerName) {
-        Documents result = CLIENT.repository().queryByProvider(providerName, "1", "0", "-1", "dc:title", "ASC", null);
+        Documents result = CLIENT.repository().queryByProvider(providerName, "1", "0", "-1", "dc:title", "ASC");
         return result.getTotalSize();
     }
 
