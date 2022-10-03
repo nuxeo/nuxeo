@@ -4860,6 +4860,12 @@
         <artifactId>opencensus-contrib-http-servlet</artifactId>
         <version>${opencensus.version}</version>
       </dependency>
+      <!-- defined to avoid dependency graph conflict due to opencensus-exporter-trace-stackdriver which depends on it -->
+      <dependency>
+        <groupId>io.opencensus</groupId>
+        <artifactId>opencensus-contrib-http-util</artifactId>
+        <version>${opencensus.version}</version>
+      </dependency>
       <dependency>
         <groupId>io.opencensus</groupId>
         <artifactId>opencensus-exporter-trace-datadog</artifactId>
