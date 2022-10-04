@@ -43,6 +43,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -89,6 +90,11 @@ public class TestAggregates {
 
     @Inject
     protected ElasticSearchAdmin esa;
+
+    @Before
+    public void setupIndex() throws Exception {
+        esa.initIndexes(true);
+    }
 
     protected void buildDocs() throws Exception {
         DateTime yesterdayNoon = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().minusDays(1).plusHours(12);
