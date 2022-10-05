@@ -184,4 +184,10 @@ object Redis {
     map
   }
 
+  def set(key: String, value: String) = {
+    pool.withClient(
+      client => {
+        client.set(key, value)
+      })
+  }
 }

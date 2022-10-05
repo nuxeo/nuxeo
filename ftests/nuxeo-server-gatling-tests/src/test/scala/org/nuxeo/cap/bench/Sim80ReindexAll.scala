@@ -26,7 +26,9 @@ object ScnReindexAll {
   def get = () => {
     scenario("ReindexAll")
       .feed(Feeders.admins)
-      .exec(NuxeoRest.reindexAll())
+      .exec(NuxeoBulk.reindexAll())
+      .exec(session => {Redis.set("reindexTotal", session("reindexTotal").as[String])
+                        session})
   }
 
 
