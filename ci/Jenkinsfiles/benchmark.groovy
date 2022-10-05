@@ -300,6 +300,11 @@ pipeline {
                 benchmark_duration=\$(echo \$(( \$t2 - \$t1 + \${dd%.*} )) );
                 echo \"benchmark_duration: \$benchmark_duration\" >> ${REPORT_PATH}/data.yml
               """
+              // Get total documents re-indexed from redis
+              sh """
+                total=\$(echo -e 'get reindexTotal\nquit\n' | nc localhost 6379 | grep -o '^[[:digit:]]*');
+                echo \"reindex_docs: \$total\" >> ${REPORT_PATH}/data.yml
+              """
               sh "echo >> ${REPORT_PATH}/data.yml"
             }
           }
