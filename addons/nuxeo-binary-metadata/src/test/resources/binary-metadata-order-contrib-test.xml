@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.binary.metadata.contribs.order.test">
+  <require>org.nuxeo.binary.metadata.contribs.tests.rules</require>
+  <extension target="org.nuxeo.binary.metadata" point="metadataRules">
+    <rule id="default" enabled="false" async="false" />
+  </extension>
+</component>
