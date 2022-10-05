@@ -19,6 +19,12 @@ releases:
   version: 3.0.1
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: nuxeo.enabled
+  {{ if eq .Environment.Name "benchmark" }}
+  needs:
+  - mongodb
+  - elasticsearch
+  - kafka
+  {{ end }}
   values:
   - values/values-nuxeo.yaml.gotmpl
   - values/{{ $valuesDir }}/values-nuxeo.yaml.gotmpl
