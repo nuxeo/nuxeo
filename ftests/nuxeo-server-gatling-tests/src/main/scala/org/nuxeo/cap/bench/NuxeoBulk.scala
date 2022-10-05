@@ -58,4 +58,24 @@ object NuxeoBulk {
       .body(StringBody( """{"params":{"timeoutSecond": "3600", "commandId": "${commandId}"},"context":{}}"""))
   }
 
+  def reindexAll = () => {
+    exitBlockOnFail {
+      exec(
+        http("Reindex All repository")
+          .post(Constants.AUTOMATION_PATH + "/Elasticsearch.BulkIndex")
+          .basicAuth("${adminId}", "${adminPassword}")
+          .headers(Headers.base)
+          .header("content-type", "application/json")
+          .body(StringBody( """{"params":{},"context":{}}"""))
+          .check(jsonPath("$.commandId").saveAs("commandId")))
+      .exec(waitForAction("${commandId}"))
+      .exec(
+        http("Get Reindex Status")
+          .get(Constants.API_BULK + "/${commandId}")
+          .basicAuth("${adminId}", "${adminPassword}")
+          .headers(Headers.base)
+          .check(jsonPath("$.state").ofType[String].is("COMPLETED"))
+          .check(jsonPath("$.total").saveAs("reindexTotal")))
+    }
+  }
 }
