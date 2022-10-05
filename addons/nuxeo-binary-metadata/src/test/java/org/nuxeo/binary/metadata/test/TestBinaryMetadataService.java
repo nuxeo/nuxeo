@@ -230,6 +230,28 @@ public class TestBinaryMetadataService extends BaseBinaryMetadataTest {
     }
 
     @Test
+    @Deploy("org.nuxeo.binary.metadata:binary-metadata-order-contrib-test.xml")
+    public void itShouldHandleMetadataRuleDescriptorContributionWithMissingOrder() {
+        // Get the document with PDF attached.
+        DocumentModel pdfDoc = BinaryMetadataServerInit.getFile(1, session);
+
+        // Copy into the document according to metadata mapping contribution.
+        binaryMetadataService.writeMetadata(pdfDoc);
+        session.saveDocument(pdfDoc);
+
+        // Check the document has not been overwritten by binary metadata.
+        pdfDoc = BinaryMetadataServerInit.getFile(1, session);
+        assertEquals("file 1", pdfDoc.getPropertyValue("dc:title"));
+        assertNull(pdfDoc.getPropertyValue("dc:source"));
+        assertEquals("Writer", pdfDoc.getPropertyValue("dc:coverage"));
+        assertNull(pdfDoc.getPropertyValue("dc:creator"));
+        assertNull(pdfDoc.getPropertyValue("dc:subjects"));
+
+        // Test if description has been overriden by higher order contribution
+        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:description"));
+    }
+
+    @Test
     public void itShouldAcceptQuoteInMetadataAndAllASCII() {
         // Get the document with MP3 attached
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
