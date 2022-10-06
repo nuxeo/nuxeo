@@ -106,6 +106,12 @@ pipeline {
   environment {
     CURRENT_NAMESPACE = getCurrentNamespace()
 
+    BRANCH_NAME = "${params.NUXEO_BRANCH}"
+    NUXEO_DOCKER_IMAGE_WITH_VERSION = "${params.NUXEO_DOCKER_IMAGE}"
+    INSTALL_NEEDED_PACKAGES = "${params.INSTALL_NEEDED_PACKAGES}"
+    NX_REPLICA_COUNT = "${params.NUXEO_NB_APP_NODE.toInteger()}"
+    NX_WORKER_COUNT = "${params.NUXEO_NB_WORKER_NODE.toInteger()}"
+
     AWS_ACCESS_KEY_ID = getAWSCredential('access_key_id')
     AWS_SECRET_ACCESS_KEY = getAWSCredential('secret_access_key')
     AWS_REGION = 'eu-west-3'
@@ -113,15 +119,13 @@ pipeline {
     BENCHMARK_CATEGORY = 'workbench'
     BENCHMARK_NAMESPACE = "${CURRENT_NAMESPACE}-benchmark"
     BENCHMARK_NB_DOCS = '100000'
-    BRANCH_NAME = "${params.NUXEO_BRANCH}"
     HELMFILE_COMMAND = "helmfile --file ci/helm/helmfile.yaml --helm-binary /usr/bin/helm3"
     MAVEN_ARGS = '-B -nsu -P-nexus,nexus-private,bench -Dnuxeo.bench.itests=false'
-    VERSION = "${params.NUXEO_BUILD_VERSION}"
+    NUXEO_DOCKER_IMAGE = "${NUXEO_DOCKER_IMAGE_WITH_VERSION.replaceAll(':.*', '')}"
     DATA_URL = "https://maven-eu.nuxeo.org/nexus/service/local/repositories/vendor-releases/content/content/org/nuxeo/tools/testing/data-test-les-arbres-redis-1.1.gz/1.1/data-test-les-arbres-redis-1.1.gz-1.1.gz"
-    NX_REPLICA_COUNT = "${params.NUXEO_NB_APP_NODE.toInteger()}"
-    NX_WORKER_COUNT = "${params.NUXEO_NB_WORKER_NODE.toInteger()}"
     GATLING_TESTS_PATH = "${WORKSPACE}/ftests/nuxeo-server-gatling-tests"
     REPORT_PATH = "${GATLING_TESTS_PATH}/target/reports"
+    VERSION = "${NUXEO_DOCKER_IMAGE_WITH_VERSION.replaceAll('.*:', '')}"
   }
 
   stages {
@@ -162,12 +166,11 @@ pipeline {
         container('maven') {
           script {
             try {
-              // TODO correct Docker Registry when integrating with Nuxeo Build
               echo """
               ----------------------------------------
               Deploy Benchmark environment
-                - Nuxeo Docker Image Version: ${VERSION}
-                - Docker Registry: docker-private.packages.nuxeo.com
+                - Nuxeo Docker Image : ${NUXEO_DOCKER_IMAGE}
+                - Nuxeo Docker Tag : ${VERSION}
               ----------------------------------------
               """
               sh "kubectl create namespace ${BENCHMARK_NAMESPACE}"
@@ -178,7 +181,6 @@ pipeline {
 
               withEnv([
                   "BUCKET_PREFIX=benchmark-tests-${BRANCH_NAME}-BUILD-${BUILD_NUMBER}/",
-                  "DOCKER_REGISTRY=docker-private.packages.nuxeo.com", // TODO to remove when integrating into Nuxeo build
               ]) {
                 helmfileSync("${BENCHMARK_NAMESPACE}", "benchmark")
               }
