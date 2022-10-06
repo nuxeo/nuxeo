@@ -35,9 +35,15 @@ public class MetadataRuleRegistry extends SimpleContributionRegistry<MetadataRul
 
         @Override
         public int compare(MetadataRuleDescriptor o1, MetadataRuleDescriptor o2) {
-            int order = o1.getOrder().compareTo(o2.getOrder());
-            if (order != 0) {
-                return order;
+            if (o1.getOrder() != null && o2.getOrder() == null) {
+                return 1;
+            } else if (o1.getOrder() == null && o2.getOrder() != null) {
+                return -1;
+            } else if (o1.getOrder() != null && o2.getOrder() != null) {
+                int order = o1.getOrder().compareTo(o2.getOrder());
+                if (order != 0) {
+                    return order;
+                }
             }
             return o1.getId().compareTo(o2.getId());
         }
