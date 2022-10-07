@@ -12,7 +12,7 @@ podLabels:
   usage: benchmark
   app: mongodb
 podAnnotations:
-  ad.datadoghq.com/tags: '{"source": "mongodb", "service":"benchmark-{{ env "BUILD_NUMBER" | default "local" }}"}'
+  ad.datadoghq.com/tags: '{"source": "mongodb", "service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
 affinity:
   podAntiAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:

@@ -118,6 +118,7 @@ pipeline {
     BENCHMARK_BUILD_NUMBER = "${CURRENT_NAMESPACE}-${BUILD_NUMBER}"
     BENCHMARK_CATEGORY = 'workbench'
     BENCHMARK_NAMESPACE = "${CURRENT_NAMESPACE}-benchmark"
+    SERVICE_TAG = "benchmark-${BUILD_NUMBER}"
     BENCHMARK_NB_DOCS = '100000'
     HELMFILE_COMMAND = "helmfile --file ci/helm/helmfile.yaml --helm-binary /usr/bin/helm3"
     MAVEN_ARGS = '-B -nsu -P-nexus,nexus-private,bench -Dnuxeo.bench.itests=false'
@@ -279,6 +280,8 @@ pipeline {
 
               sh "echo >> ${REPORT_PATH}/data.yml"
               sh "echo 'build_number: ${BENCHMARK_BUILD_NUMBER}' >> ${REPORT_PATH}/data.yml"
+              sh "echo 'service: ${SERVICE_TAG}' >> ${REPORT_PATH}/data.yml"
+              sh "echo 'docker_image: ${NUXEO_DOCKER_IMAGE_WITH_VERSION}' >> ${REPORT_PATH}/data.yml"
               sh "echo 'build_url: \"${BUILD_URL}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo 'job_name: \"${JOB_NAME}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo 'dbprofile: \"mongodb\"' >> ${REPORT_PATH}/data.yml"
