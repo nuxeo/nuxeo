@@ -40,8 +40,6 @@ ARG BUILD_TAG
 ARG SCM_REF
 ARG VERSION
 
-ARG LIBREOFFICE_VERSION=7.1.1
-
 LABEL org.nuxeo.build-tag=$BUILD_TAG
 LABEL org.nuxeo.scm-ref=$SCM_REF
 LABEL org.nuxeo.version=$VERSION

@@ -30,6 +30,7 @@ void setGitHubBuildStatus(String context, String message, String state) {
     step([
       $class: 'GitHubCommitStatusSetter',
       reposSource: [$class: 'ManuallyEnteredRepositorySource', url: repositoryUrl],
+      commitShaSource: [$class: 'ManuallyEnteredShaSource', sha: "${SCM_REF}"],
       contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: context],
       statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]],
     ])
@@ -39,6 +40,17 @@ void setGitHubBuildStatus(String context, String message, String state) {
 String getCurrentNamespace() {
   container('maven') {
     return sh(returnStdout: true, script: "kubectl get pod ${NODE_NAME} -ojsonpath='{..namespace}'")
+  }
+}
+
+String getScmRef() {
+  container('maven') {
+    script {
+      if (params.NUXEO_SHA?.trim()) {
+        return "${params.NUXEO_SHA?.trim()}"
+      }
+      return "${env.GIT_COMMIT}"
+    }
   }
 }
 
@@ -105,6 +117,7 @@ pipeline {
   }
   environment {
     CURRENT_NAMESPACE = getCurrentNamespace()
+    SCM_REF = getScmRef()
 
     BRANCH_NAME = "${params.NUXEO_BRANCH}"
     NUXEO_DOCKER_IMAGE_WITH_VERSION = "${params.NUXEO_DOCKER_IMAGE}"
@@ -115,6 +128,7 @@ pipeline {
     AWS_ACCESS_KEY_ID = getAWSCredential('access_key_id')
     AWS_SECRET_ACCESS_KEY = getAWSCredential('secret_access_key')
     AWS_REGION = 'eu-west-3'
+    BENCHMARK_BENCH_SUITE = "${NUXEO_BRANCH}"
     BENCHMARK_BUILD_NUMBER = "${CURRENT_NAMESPACE}-${BUILD_NUMBER}"
     BENCHMARK_CATEGORY = 'workbench'
     BENCHMARK_NAMESPACE = "${CURRENT_NAMESPACE}-benchmark"
@@ -133,6 +147,7 @@ pipeline {
     stage('Set labels') {
       steps {
         container('maven') {
+          setGitHubBuildStatus('benchmark/tests', 'Benchmark tests', 'PENDING')
           echo """
           ----------------------------------------
           Set Kubernetes resource labels
@@ -285,7 +300,7 @@ pipeline {
               sh "echo 'build_url: \"${BUILD_URL}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo 'job_name: \"${JOB_NAME}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo 'dbprofile: \"mongodb\"' >> ${REPORT_PATH}/data.yml"
-              sh "echo 'bench_suite: \"${BRANCH_NAME}\"' >> ${REPORT_PATH}/data.yml"
+              sh "echo 'bench_suite: \"${BENCHMARK_BENCH_SUITE}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo \"nuxeonodes: \$(( \${NX_REPLICA_COUNT} + \${NX_WORKER_COUNT} ))\" >> ${REPORT_PATH}/data.yml"
               sh "echo 'esnodes: 1' >> ${REPORT_PATH}/data.yml"
               sh "echo 'classifier: \"\"' >> ${REPORT_PATH}/data.yml"
@@ -360,6 +375,21 @@ pipeline {
           }
         }
       }
+    }
+  }
+
+  post {
+    success {
+      setGitHubBuildStatus('benchmark/tests', 'Benchmark tests', 'SUCCESS')
+      container('benchmark') {
+        withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+          // this step can fail because a PR for the current branch may not exist
+          sh(returnStatus: true, script: "gh pr comment ${NUXEO_BRANCH} --body \"The Benchmark tests has succeeded to run on ${NUXEO_SHA}.\nThe results are located there: https://benchmarks.nuxeo.com/${BENCHMARK_CATEGORY}/${BENCHMARK_BUILD_NUMBER}/index.html\"")
+        }
+      }
+    }
+    unsuccessful {
+      setGitHubBuildStatus('benchmark/tests', 'Benchmark tests', 'FAILURE')
     }
   }
 }
