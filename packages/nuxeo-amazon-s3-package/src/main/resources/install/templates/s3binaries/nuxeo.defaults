@@ -39,6 +39,7 @@ nuxeo.s3storage.user.agent.prefix=
 nuxeo.s3storage.user.agent.suffix=
 
 nuxeo.s3storage.useDirectUpload=false
+nuxeo.s3storage.s3DirectUpload.bucket_prefix=s3DirectUpload
 
 # mandatory
 nuxeo.s3storage.transient.bucket=

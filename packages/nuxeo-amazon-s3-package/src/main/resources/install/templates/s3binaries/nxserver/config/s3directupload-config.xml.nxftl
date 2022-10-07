@@ -52,7 +52,7 @@
       <property name="awstoken">${nuxeo.s3storage.awstoken}</property>
       <property name="bucket">${nuxeo.s3storage.bucket}</property>
       <property name="region">${nuxeo.s3storage.region}</property>
-      <property name="bucket_prefix">s3DirectUpload</property>
+      <property name="bucket_prefix">$nuxeo.s3storage.s3DirectUpload.bucket_prefix}</property>
       <property name="crypt.serverside">${nuxeo.s3storage.crypt.serverside}</property>
       <property name="cachesize">${nuxeo.s3storage.cachesize}</property>
       <property name="connection.max">${nuxeo.s3storage.connection.max}</property>
