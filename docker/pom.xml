@@ -17,6 +17,7 @@
   <modules>
     <module>nuxeo-base</module>
     <module>nuxeo</module>
+    <module>nuxeo-benchmark</module>
   </modules>
 
 </project>

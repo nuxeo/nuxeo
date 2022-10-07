@@ -9,18 +9,23 @@
     <version>2023.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-docker-image</artifactId>
-  <name>Nuxeo Docker Image</name>
+  <artifactId>nuxeo-benchmark-docker-image</artifactId>
+  <name>Nuxeo Benchmark Docker Image</name>
   <packaging>pom</packaging>
 
   <properties>
-    <docker.base.image>nuxeo/nuxeo-base:latest-lts</docker.base.image>
+    <docker.base.image>nuxeo/nuxeo:latest-lts</docker.base.image>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-server-tomcat</artifactId>
+      <groupId>org.nuxeo.packages</groupId>
+      <artifactId>nuxeo-amazon-s3-package</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.packages</groupId>
+      <artifactId>nuxeo-importer-package</artifactId>
       <type>zip</type>
     </dependency>
   </dependencies>
@@ -32,13 +37,13 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>copy-distrib</id>
+            <id>copy-packages</id>
             <goals>
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <includeArtifactIds>nuxeo-server-tomcat</includeArtifactIds>
-              <outputDirectory>${project.build.directory}/distrib</outputDirectory>
+              <includeGroupIds>org.nuxeo.packages</includeGroupIds>
+              <outputDirectory>${project.build.directory}/packages</outputDirectory>
               <overWriteIfNewer>true</overWriteIfNewer>
             </configuration>
           </execution>
@@ -59,11 +64,11 @@
         <configuration>
           <images>
             <image>
-              <name>nuxeo/nuxeo:latest-lts</name>
+              <name>nuxeo/nuxeo-benchmark:latest-lts</name>
               <build>
                 <args>
                   <BASE_IMAGE>${docker.base.image}</BASE_IMAGE>
-                  <BUILD_TAG>local-nuxeo-nuxeo</BUILD_TAG>
+                  <BUILD_TAG>local-nuxeo-nuxeo-benchmark</BUILD_TAG>
                   <SCM_REF>built-locally</SCM_REF>
                   <VERSION>latest-lts</VERSION>
                 </args>

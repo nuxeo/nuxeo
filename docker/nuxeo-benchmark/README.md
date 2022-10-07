@@ -1,9 +1,9 @@
-# Nuxeo Base Docker Image
+# Nuxeo Benchmark Docker Image
 
-To pull the image, run:
+This image is intended to be used in our CI to run [Benchmark tests](../../ftests/nuxeo-server-gatling-tests). To pull the image, run:
 
 ```bash
-docker pull <DOCKER_REGISTRY>/nuxeo/nuxeo-base:<TAG>
+docker pull <DOCKER_REGISTRY>/nuxeo/nuxeo-benchmark:<TAG>
 ```
 
 ## Build the Image
@@ -18,10 +18,16 @@ There are several ways to build the image, depending on the context:
 
 ### With Maven
 
-To build the `nuxeo/nuxeo-base` image locally, run:
+To build the `nuxeo/nuxeo-benchmark` image locally, you need to have built the `nuxeo/nuxeo:latest-lts` image first, see its [README](../nuxeo/README.md), then run:
 
 ```bash
-mvn -nsu -DYUM_REPO_USERNAME=... -DYUM_REPO_PASSWORD=... install
+mvn -nsu install
+```
+
+To build the `nuxeo/nuxeo-benchmark` image locally by leveraging the `nuxeo/nuxeo:<TAG>` from another registry, run:
+
+```bash
+mvn -nsu -Ddocker.base.image=<DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG> install
 ```
 
 ### With Skaffold
@@ -39,10 +45,10 @@ It also requires the following environment variables:
 - `DOCKER_REGISTRY`: the Docker registry to push the image to.
 - `VERSION`: the image tag, for instance `latest-lts`.
 
-To build the `nuxeo/nuxeo-base` image with Skaffold, you first need to give your credentials to packages.nuxeo.com and make it available for the Docker build with Maven:
+To build the `nuxeo/nuxeo-benchmark` image with Skaffold, you first need to fetch the needed Nuxeo packages and make it available for the Docker build with Maven:
 
 ```bash
-mvn -nsu -DYUM_REPO_USERNAME=... -DYUM_REPO_PASSWORD=... process-resources
+mvn -nsu process-resources
 ```
 
 Then, from the module directory, run:
@@ -53,14 +59,14 @@ skaffold build -f skaffold.yaml
 
 ### With Docker
 
-To build the `nuxeo/nuxeo-base` image with Docker, you first need to give your credentials to packages.nuxeo.com and make it available for the Docker build with Maven:
+To build the `nuxeo/nuxeo-benchmark` image with Docker, you first need to fetch the the needed Nuxeo packages and make it available for the Docker build with Maven:
 
 ```bash
-mvn -nsu -DYUM_REPO_USERNAME=... -DYUM_REPO_PASSWORD=... process-resources
+mvn -nsu process-resources
 ```
 
 Then, run:
 
 ```bash
-docker build -t nuxeo/nuxeo-base:latest-lts .
+docker build --build-arg BASE_IMAGE=<DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG> -t nuxeo/nuxeo-benchmark:latest-lts .
 ```

@@ -354,6 +354,7 @@ pipeline {
     TEST_KAFKA_POD_NAME = "${TEST_KAFKA_K8S_OBJECT}-0"
     BASE_IMAGE_NAME = 'nuxeo-base'
     NUXEO_IMAGE_NAME = 'nuxeo'
+    NUXEO_BENCHMARK_IMAGE_NAME = 'nuxeo-benchmark'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     MAVEN_ARGS = getMavenArgs()
     MAVEN_FAIL_ARGS = getMavenFailArgs()
@@ -418,7 +419,7 @@ pipeline {
       when {
         allOf {
           not {
-            branch 'PR-*'
+            changeRequest()
           }
           not {
             environment name: 'DRY_RUN', value: 'true'
@@ -471,6 +472,145 @@ pipeline {
         }
         unsuccessful {
           setGitHubBuildStatus('maven/build', 'Build', 'FAILURE')
+        }
+      }
+    }
+
+    stage('Build Docker image') {
+      steps {
+        setGitHubBuildStatus('docker/build', 'Build Docker image', 'PENDING')
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Build Docker image
+          ----------------------------------------
+          Image tag: ${VERSION}
+          """
+
+          dir('docker/nuxeo-base') {
+            withCredentials([usernamePassword(credentialsId: 'packages.nuxeo.com-auth', usernameVariable: 'YUM_REPO_USERNAME', passwordVariable: 'YUM_REPO_PASSWORD')]) {
+              sh """
+                mkdir -p target
+                envsubst < nuxeo-private.repo > target/nuxeo-private.repo
+              """
+            }
+            echo "Build and push Base Docker image to internal Docker registry ${DOCKER_REGISTRY}"
+            sh """
+              envsubst < skaffold.yaml > skaffold.yaml~gen
+              skaffold build -f skaffold.yaml~gen
+            """
+          }
+          dir('docker/nuxeo') {
+            echo 'Fetch locally built Nuxeo Tomcat Server with Maven'
+            sh "mvn ${MAVEN_ARGS} -T4C process-resources"
+
+            echo "Build and push Nuxeo Docker image to internal Docker registry ${DOCKER_REGISTRY}"
+            sh """
+              envsubst < skaffold.yaml > skaffold.yaml~gen
+              skaffold build -f skaffold.yaml~gen
+            """
+          }
+          script {
+            if (!isPullRequest()) {
+              dockerPushFixedVersion("${BASE_IMAGE_NAME}")
+              dockerPushFixedVersion("${NUXEO_IMAGE_NAME}")
+            }
+          }
+        }
+      }
+      post {
+        success {
+          setGitHubBuildStatus('docker/build', 'Build Docker image', 'SUCCESS')
+        }
+        unsuccessful {
+          setGitHubBuildStatus('docker/build', 'Build Docker image', 'FAILURE')
+        }
+      }
+    }
+
+    stage('Test Docker image') {
+      steps {
+        setGitHubBuildStatus('docker/test', 'Test Docker image', 'PENDING')
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Test Docker image
+          ----------------------------------------
+          """
+          script {
+            image = "${DOCKER_REGISTRY}/${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
+            echo "Test ${image}"
+            dockerPull(image)
+            echo 'Run image as root (0)'
+            dockerRun(image, 'nuxeoctl start')
+            echo 'Run image as an arbitrary user (800)'
+            dockerRun(image, 'nuxeoctl start', '800')
+          }
+        }
+      }
+      post {
+        success {
+          setGitHubBuildStatus('docker/test', 'Test Docker image', 'SUCCESS')
+        }
+        unsuccessful {
+          setGitHubBuildStatus('docker/test', 'Test Docker image', 'FAILURE')
+        }
+      }
+    }
+
+    stage('Build Benchmark Docker image and trigger tests') {
+      when {
+        allOf {
+          changeRequest()
+          expression {
+            return pullRequest.labels.contains('benchmark')
+          }
+        }
+      }
+      steps {
+        container('maven') {
+          echo "Build needed packages for the benchmark tests"
+          // build packages defined in the pom and nuxeo-packages as it is needed when processing resources
+          sh """
+            benchmark_packages=\$(sed -n '/<dependency>/,/<\\/dependency>/{//b;p}' docker/nuxeo-benchmark/pom.xml | grep artifactId | sed -E 's/\\s*<artifactId>(.*)<\\/artifactId>/:\\1/' |  tr '\\n' ','  | head -c -1);
+            mvn ${MAVEN_ARGS} -Pdistrib -T4C -pl :nuxeo-packages,\${benchmark_packages} install
+          """
+
+          echo """
+          ----------------------------------------
+          Build Benchmark Docker image
+          ----------------------------------------
+          Image tag: ${VERSION}
+          """
+
+          dir('docker/nuxeo-benchmark') {
+            echo 'Fetch locally built Nuxeo Packages with Maven'
+            sh "mvn ${MAVEN_ARGS} -T4C process-resources"
+
+            echo "Build and push Nuxeo Benchmark Docker image to internal Docker registry ${DOCKER_REGISTRY}"
+            sh """
+              envsubst < skaffold.yaml > skaffold.yaml~gen
+              skaffold build -f skaffold.yaml~gen
+            """
+          }
+          script {
+            def parameters = [
+              string(name: 'NUXEO_BRANCH', value: "${CHANGE_BRANCH}"),
+              string(name: 'NUXEO_DOCKER_IMAGE', value: "${DOCKER_REGISTRY}/${dockerNamespace}/${NUXEO_BENCHMARK_IMAGE_NAME}:${VERSION}"),
+              booleanParam(name: 'INSTALL_NEEDED_PACKAGES', value: false),
+              string(name: 'NUXEO_SHA', value: "${GIT_COMMIT}"),
+            ]
+            echo """
+            -----------------------------------------------------------
+            Trigger benchmark tests with parameters: ${parameters}
+            -----------------------------------------------------------
+            """
+            build(
+                job: "nuxeo/lts/nuxeo-benchmark",
+                parameters: parameters,
+                wait: false
+            )
+          }
         }
       }
     }
@@ -625,88 +765,6 @@ pipeline {
       }
     }
 
-    stage('Build Docker image') {
-      steps {
-        setGitHubBuildStatus('docker/build', 'Build Docker image', 'PENDING')
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Build Docker image
-          ----------------------------------------
-          Image tag: ${VERSION}
-          """
-
-          dir('docker/nuxeo-base') {
-            withCredentials([usernamePassword(credentialsId: 'packages.nuxeo.com-auth', usernameVariable: 'YUM_REPO_USERNAME', passwordVariable: 'YUM_REPO_PASSWORD')]) {
-              sh """
-                mkdir -p target
-                envsubst < nuxeo-private.repo > target/nuxeo-private.repo
-              """
-            }
-            echo "Build and push Base Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-            sh """
-              envsubst < skaffold.yaml > skaffold.yaml~gen
-              skaffold build -f skaffold.yaml~gen
-            """
-          }
-          dir('docker/nuxeo') {
-            echo 'Fetch locally built Nuxeo Tomcat Server with Maven'
-            sh "mvn ${MAVEN_ARGS} -T4C process-resources"
-
-            echo "Build and push Nuxeo Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-            sh """
-              envsubst < skaffold.yaml > skaffold.yaml~gen
-              skaffold build -f skaffold.yaml~gen
-            """
-          }
-          script {
-            if (!isPullRequest()) {
-              dockerPushFixedVersion("${BASE_IMAGE_NAME}")
-              dockerPushFixedVersion("${NUXEO_IMAGE_NAME}")
-            }
-          }
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('docker/build', 'Build Docker image', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('docker/build', 'Build Docker image', 'FAILURE')
-        }
-      }
-    }
-
-    stage('Test Docker image') {
-      steps {
-        setGitHubBuildStatus('docker/test', 'Test Docker image', 'PENDING')
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Test Docker image
-          ----------------------------------------
-          """
-          script {
-            image = "${DOCKER_REGISTRY}/${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
-            echo "Test ${image}"
-            dockerPull(image)
-            echo 'Run image as root (0)'
-            dockerRun(image, 'nuxeoctl start')
-            echo 'Run image as an arbitrary user (800)'
-            dockerRun(image, 'nuxeoctl start', '800')
-          }
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('docker/test', 'Test Docker image', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('docker/test', 'Test Docker image', 'FAILURE')
-        }
-      }
-    }
-
     stage('Trigger REST API tests') {
       steps {
         echo """
@@ -735,7 +793,7 @@ pipeline {
       when {
         allOf {
           not {
-            branch 'PR-*'
+            changeRequest()
           }
           not {
             environment name: 'DRY_RUN', value: 'true'
@@ -767,7 +825,7 @@ pipeline {
       when {
         allOf {
           not {
-            branch 'PR-*'
+            changeRequest()
           }
           not {
             environment name: 'DRY_RUN', value: 'true'
@@ -805,7 +863,7 @@ pipeline {
       when {
         allOf {
           not {
-            branch 'PR-*'
+            changeRequest()
           }
           not {
             environment name: 'DRY_RUN', value: 'true'
@@ -843,7 +901,7 @@ pipeline {
       when {
         allOf {
           not {
-            branch 'PR-*'
+            changeRequest()
           }
           not {
             environment name: 'DRY_RUN', value: 'true'
@@ -877,7 +935,7 @@ pipeline {
     stage('Deploy Server Preview') {
       when {
         not {
-          branch 'PR-*'
+          changeRequest()
         }
       }
       steps {
@@ -965,7 +1023,7 @@ pipeline {
       when {
         allOf {
           not {
-            branch 'PR-*'
+            changeRequest()
           }
           expression {
             // check that minor version is greater than 0

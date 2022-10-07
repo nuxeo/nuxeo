@@ -1,5 +1,6 @@
 image:
   repository: {{ requiredEnv "NUXEO_DOCKER_IMAGE" | quote }}
+  pullPolicy: Always
 architecture: "api-worker"
 replicaCount: {{ env "NX_REPLICA_COUNT" | default 1 }}
 workerCount: {{ env "NX_WORKER_COUNT" | default 1 }}
