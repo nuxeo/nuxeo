@@ -118,7 +118,8 @@
 
     this.$textarea.css({
       height: $(this.TD).height(),
-      'min-width': $(this.TD).outerWidth()
+      'min-width': $(this.TD).width(),
+      width: $(this.TD).width(),
     });
 
     //display the list
