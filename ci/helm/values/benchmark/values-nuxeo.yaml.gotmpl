@@ -14,8 +14,8 @@ podLabels:
   usage: benchmark
   app: nuxeo
 podAnnotations:
-  ad.datadoghq.com/nuxeo.logs: '[{"source":"nuxeo","service":"benchmark-{{ env "BUILD_NUMBER" | default "local" }}"}]'
-  ad.datadoghq.com/tags: '{"source": "nuxeo", "service":"benchmark-{{ env "BUILD_NUMBER" | default "local" }}"}'
+  ad.datadoghq.com/nuxeo.logs: '[{"source":"nuxeo","service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}]'
+  ad.datadoghq.com/tags: '{"source": "nuxeo", "service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
 service:
   labels:
     usage: benchmark
