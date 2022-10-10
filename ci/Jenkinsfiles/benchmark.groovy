@@ -179,7 +179,7 @@ pipeline {
               }
               dir("${GATLING_TESTS_PATH}") {
                 gatling('org.nuxeo.cap.bench.Sim00Setup')
-                gatling("org.nuxeo.cap.bench.Sim10MassImport -DnbNodes=${BENCHMARK_NB_DOCS}")
+                gatling("org.nuxeo.cap.bench.Sim10MassStreamImport -DnbNodes=${BENCHMARK_NB_DOCS}")
                 gatling("org.nuxeo.cap.bench.Sim20CSVExport")
                 gatling("org.nuxeo.cap.bench.Sim15BulkUpdateDocuments")
                 gatling("org.nuxeo.cap.bench.Sim10CreateFolders")
@@ -255,7 +255,7 @@ pipeline {
               // build stats
               sh 'java -jar ${GAT_REPORT_JAR} -f -o ${REPORT_PATH} -n data.yml -t ${MUSTACHE_TEMPLATE} ' +
                   '-m import,bulk,mbulk,exportcsv,create,createasync,nav,search,update,updateasync,bench,crud,crudasync,reindex ' +
-                  '${REPORT_PATH}/sim10massimport/detail/simulation.log.gz ' +
+                  '${REPORT_PATH}/sim10massstreamimport/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim15bulkupdatedocuments/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim25bulkupdatefolders/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim20csvexport/detail/simulation.log.gz ' +
