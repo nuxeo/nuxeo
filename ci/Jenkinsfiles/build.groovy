@@ -963,8 +963,14 @@ pipeline {
 
     stage('Trigger hotfix build') {
       when {
-        not {
-          branch 'PR-*'
+        allOf {
+          not {
+            branch 'PR-*'
+          }
+          expression {
+            // check that minor version is greater than 0
+            return "${VERSION}".split("\\.")[1] != '0'
+          }
         }
       }
       steps {
