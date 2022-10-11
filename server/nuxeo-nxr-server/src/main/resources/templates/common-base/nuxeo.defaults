@@ -224,9 +224,6 @@ kafka.zkServers=localhost:2181
 confluent.schema_registry.enabled=false
 confluent.schema_registry.urls=http://localhost:8081
 
-# Stream default retention with Chronicle Queue
-nuxeo.stream.chronicle.retention.duration=4d
-
 # Stream WorkManager
 nuxeo.stream.work.enabled=false
 nuxeo.stream.work.log.codec=avro
@@ -394,4 +391,3 @@ nuxeo.bulk.action.unholdDocumentsAction.defaultConcurrency=2
 nuxeo.bulk.action.unholdDocumentsAction.defaultPartitions=4
 nuxeo.bulk.action.updateReadAcls.defaultConcurrency=1
 nuxeo.bulk.action.updateReadAcls.defaultPartitions=1
-

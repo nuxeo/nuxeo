@@ -32,10 +32,10 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
- * The runtime stream feature provides a Chronicle or Kafka stream implementation depending on test configuration.
+ * The runtime stream feature provides a Memory, Chronicle or Kafka stream implementation depending on test configuration.
  * <p>
- * To run your unit tests on a Chronicle or Kafka you need to declare {@code nuxeo.test.stream} to either
- * {@link #STREAM_CHRONICLE chronicle} or {@link #STREAM_KAFKA kafka} in your system properties.
+ * To run your unit tests on a Memory, Chronicle or Kafka you need to declare {@code nuxeo.test.stream} to either
+ * {@link #STREAM_MEM mem}, {@link #STREAM_CHRONICLE chronicle} or {@link #STREAM_KAFKA kafka} in your system properties.
  * <p>
  *
  * @since 10.3
@@ -50,6 +50,8 @@ public class RuntimeStreamFeature implements RunnerFeature {
     public static final String BUNDLE_TEST_NAME = "org.nuxeo.runtime.stream.test";
 
     public static final String STREAM_PROPERTY = "nuxeo.test.stream";
+
+    public static final String STREAM_MEM = "mem";
 
     public static final String STREAM_CHRONICLE = "chronicle";
 
@@ -84,6 +86,9 @@ public class RuntimeStreamFeature implements RunnerFeature {
             System.out.println(getClass().getSimpleName() + ": " + msg); // NOSONAR
             log.info(msg);
             switch (streamType) {
+            case STREAM_MEM:
+                initMem(harness);
+                break;
             case STREAM_CHRONICLE:
                 initChronicle(harness);
                 break;
@@ -96,6 +101,12 @@ public class RuntimeStreamFeature implements RunnerFeature {
         } catch (Exception e) {
             throw new RuntimeServiceException("Unable to configure the stream implementation", e);
         }
+    }
+
+    protected void initMem(RuntimeHarness harness) throws Exception {
+        log.debug("Deploy Mem config");
+        harness.deployContrib(BUNDLE_TEST_NAME, "OSGI-INF/test-stream-mem-contrib.xml");
+        cleanupTopics = true;
     }
 
     protected void initChronicle(RuntimeHarness harness) throws Exception {

@@ -47,6 +47,7 @@ import org.nuxeo.lib.stream.log.UnifiedLogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogConfig;
 import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogConfig;
+import org.nuxeo.lib.stream.log.mem.MemLogConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.kafka.KafkaConfigService;
@@ -151,11 +152,17 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
             }
             if ("kafka".equalsIgnoreCase(desc.type)) {
                 ret.add(createKafkaLogConfig(desc));
-            } else {
+            } else if ("mem".equalsIgnoreCase(desc.type)) {
+                ret.add(createMemLogConfig(desc));
+            }  else {
                 ret.add(createChronicleLogConfig(desc));
             }
         }
         return ret;
+    }
+
+    protected LogConfig createMemLogConfig(LogConfigDescriptor desc) {
+        return new MemLogConfig(desc.getId(), desc.isDefault(), desc.getPatterns());
     }
 
     protected LogConfig createKafkaLogConfig(LogConfigDescriptor desc) {

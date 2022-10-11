@@ -32,6 +32,8 @@ import org.nuxeo.lib.stream.log.chronicle.ChronicleLogConfig;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogConfig;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
+import org.nuxeo.lib.stream.log.mem.MemLogConfig;
+import org.nuxeo.lib.stream.log.mem.MemLogManager;
 
 /**
  * @since 11.1
@@ -39,6 +41,8 @@ import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 public class UnifiedLogManager implements LogManager {
 
     protected final List<LogConfig> configs;
+
+    protected LogManager memManager;
 
     protected LogManager cqManager;
 
@@ -55,9 +59,21 @@ public class UnifiedLogManager implements LogManager {
             throw new IllegalArgumentException("No LogConfig provided");
         }
         this.configs = configs;
+        createMemLogManager();
         createCQLogManager();
         createKafkaLogManager();
         findDefaultLogManger();
+    }
+
+    protected void createMemLogManager() {
+        List<MemLogConfig> memConfigs = configs.stream()
+                                               .filter(MemLogConfig.class::isInstance)
+                                               .map(MemLogConfig.class::cast)
+                                               .toList();
+        if (!memConfigs.isEmpty()) {
+            memManager = new MemLogManager(); // configs unused
+            memConfigs.forEach(config -> managers.put(config, memManager));
+        }
     }
 
     protected void createCQLogManager() {
@@ -90,7 +106,9 @@ public class UnifiedLogManager implements LogManager {
         } else {
             defaultConfig = defaultConfigs.get(defaultConfigs.size() - 1);
         }
-        if (defaultConfig instanceof ChronicleLogConfig) {
+        if (defaultConfig instanceof MemLogConfig) {
+            defaultManager = memManager;
+        } else if (defaultConfig instanceof ChronicleLogConfig) {
             defaultManager = cqManager;
         } else {
             defaultManager = kafkaManager;
@@ -173,6 +191,9 @@ public class UnifiedLogManager implements LogManager {
     @Override
     public List<Name> listAllNames() {
         List<Name> names = new ArrayList<>();
+        if (memManager != null) {
+            names.addAll(memManager.listAllNames());
+        }
         if (kafkaManager != null) {
             names.addAll(kafkaManager.listAllNames());
         }
@@ -189,6 +210,9 @@ public class UnifiedLogManager implements LogManager {
 
     @Override
     public void close() {
+        if (memManager != null) {
+            memManager.close();
+        }
         if (kafkaManager != null) {
             kafkaManager.close();
         }

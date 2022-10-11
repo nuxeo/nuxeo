@@ -24,11 +24,9 @@
       <match name="bulk/" />
     </logConfig>
   <#else>
-    <logConfig name="default" type="chronicle" default="true">
-      <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
+    <logConfig name="default" type="mem" default="true">
     </logConfig>
-    <logConfig name="bulk" type="chronicle">
-      <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
+    <logConfig name="bulk" type="mem">
       <log name="bulk/command" size="${nuxeo.core.bulk.scroller.concurrencyMax}" />
       <log name="bulk/status" size="${nuxeo.core.bulk.status.concurrencyMax}" />
       <log name="bulk/done" size="${nuxeo.core.bulk.done.concurrencyMax}" />
@@ -52,8 +50,7 @@
       <match name="work/" />
     </logConfig>
   <#else>
-    <logConfig name="work" type="chronicle">
-      <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
+    <logConfig name="work" type="mem">
       <match name="work/" />
     </logConfig>
   </#if>
@@ -77,8 +74,7 @@
        <match name="audit/" />
      </logConfig>
   <#else>
-     <logConfig name="audit" type="chronicle">
-       <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
+     <logConfig name="audit" type="mem">
        <match name="audit/" />
      </logConfig>
   </#if>
@@ -98,7 +94,7 @@
        <match name="pubsub/" />
      </logConfig>
   <#else>
-     <logConfig name="pubsub" type="chronicle">
+     <logConfig name="pubsub" type="mem">
        <option name="retention">4h</option>
        <log name="pubsub/pubsub" size="1" />
        <match name="pubsub/" />
