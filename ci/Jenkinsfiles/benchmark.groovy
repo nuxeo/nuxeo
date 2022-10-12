@@ -244,7 +244,7 @@ pipeline {
         GAT_REPORT_VERSION = '6.1'
         GAT_REPORT_URL = "https://maven-eu.nuxeo.org/nexus/service/local/repositories/vendor-releases/content/org/nuxeo/tools/gatling-report/${GAT_REPORT_VERSION}/gatling-report-${GAT_REPORT_VERSION}-capsule-fat.jar"
         GAT_REPORT_JAR = "${GATLING_TESTS_PATH}/target/gatling-report-capsule-fat.jar"
-
+        JAVA_MODULES_ARGLINE = '--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED --add-opens=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED'
         MUSTACHE_TEMPLATE = "${GATLING_TESTS_PATH}/target/report-template.mustache"
       }
       steps {
@@ -268,7 +268,7 @@ pipeline {
               sh 'mkdir -p ${REPORT_PATH}'
               sh 'mv target/gatling/* ${REPORT_PATH}'
               // build stats
-              sh 'java -jar ${GAT_REPORT_JAR} -f -o ${REPORT_PATH} -n data.yml -t ${MUSTACHE_TEMPLATE} ' +
+              sh 'java ${JAVA_MODULES_ARGLINE} -jar ${GAT_REPORT_JAR} -f -o ${REPORT_PATH} -n data.yml -t ${MUSTACHE_TEMPLATE} ' +
                   '-m import,bulk,mbulk,exportcsv,create,createasync,nav,search,update,updateasync,bench,crud,crudasync,reindex ' +
                   '${REPORT_PATH}/sim10massstreamimport/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim15bulkupdatedocuments/detail/simulation.log.gz ' +
