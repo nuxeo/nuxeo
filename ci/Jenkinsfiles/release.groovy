@@ -16,11 +16,6 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-properties([
-  [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/nuxeo/nuxeo-lts'],
-  [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5']],
-  disableConcurrentBuilds(),
-])
 
 void getCurrentVersion() {
   return readMavenPom().getVersion()

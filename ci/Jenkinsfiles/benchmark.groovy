@@ -17,19 +17,11 @@
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
 
-repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
-
-properties([
-  [$class: 'GithubProjectProperty', projectUrlStr: repositoryUrl],
-  [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5']],
-  disableConcurrentBuilds(),
-])
-
 void setGitHubBuildStatus(String context, String message, String state) {
   if (env.DRY_RUN != "true") {
     step([
       $class: 'GitHubCommitStatusSetter',
-      reposSource: [$class: 'ManuallyEnteredRepositorySource', url: repositoryUrl],
+      reposSource: [$class: 'ManuallyEnteredRepositorySource', url: 'https://github.com/nuxeo/nuxeo-lts'],
       contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: context],
       statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]],
     ])
