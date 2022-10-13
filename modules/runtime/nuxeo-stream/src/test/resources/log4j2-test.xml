@@ -13,15 +13,8 @@
   <Loggers>
     <Logger name="org.nuxeo" level="warn" />
     <Logger name="org.nuxeo.lib.stream" level="debug" />
-    <!-- debug to debug chronicle queue -->
-    <Logger name="net.openhft.chronicle" level="warn" />
     <!-- debug to view schema registry request -->
     <Logger name="io.confluent.kafka" level="info" />
-    <!-- Hide unimportant warnings -->
-    <Logger name="net.openhft.chronicle.queue.impl.single.SCQIndexing" level="error" />
-    <Logger name="net.openhft.chronicle.core.io.BackgroundResourceReleaser" level="error" />
-    <Logger name="net.openhft.chronicle.queue.impl.single.QueueFileShrinkManager" level="error" />
-    <Logger name="net.openhft.chronicle.queue.impl.single.ReferenceCountedCache" level="error" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />

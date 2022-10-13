@@ -46,7 +46,7 @@ This service enable to define Log configurations and to register stream processo
 
 There are 2 types of Log configurations:
 
-- Chronicle: limited for single node: all producers and consumers must be on the same node.
+- In-Memory: limited for single node: all producers and consumers must be on the same node. No persistence.
 - Kafka: required for distributed producers and consumers.
 
 You can define a Log configuration with the following Nuxeo extension point:
@@ -55,43 +55,12 @@ You can define a Log configuration with the following Nuxeo extension point:
 <?xml version="1.0"?>
 <component name="my.project.stream.log.contrib">
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
-    <!-- Chronicle impl, default storage under default directory, default retention -->
-    <logConfig name="default" />
-    <!-- Chronicle impl, storage in /tmp/imp, a week of retention -->
-    <logConfig name="import" type="chronicle">
-      <option name="directory">imp</option>
-      <option name="basePath">/tmp</option>
-      <option name="retention">7d</option>
-    </logConfig>
-    <!-- Chronicle impl, default storage and retention,
-         create a Log named myStream with 7 partitions if it does not exist. -->
-    <logConfig name="custom">
-      <log name="myStream" size="7" />
-    </logConfig>
-    <!-- Kafka impl, referencing the default Kafka config -->
-    <logConfig name="work" type="kafka">
-      <option name="kafkaConfig">default</option>
-    </logConfig>
-    <!-- Kafka impl,
-         create a Log named pubSub if it does not exist. -->
-    <logConfig name="nuxeo" type="kafka">
-      <option name="kafkaConfig">default</option>
-      <log name="pubSub" size="1" />
-    </logConfig>
-
-
+    ... (see documentation) ...
   </extension>
 </component>
 ```
 
-The default Log type is Chronicle.
-
-The default retention for Chronicle is 4 days, this can be changed using the `nuxeo.conf` option: `nuxeo.stream.chronicle.retention.duration`.
-
-The retention value is expressed as a string like: `12h` or `7d`, respectively for 12 hours and 7 days.
-
-The default storage for Chronicle is: `${nuxeo.data.dir}/data/stream`, this path can be changed using the `nuxeo.conf` option: `nuxeo.stream.chronicle.dir`.
-
+The default Log type is In-Memory.
 
 #### Using Log from Nuxeo
 

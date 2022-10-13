@@ -5,7 +5,7 @@ nuxeo-stream
 
  This module provides a log based broker message passing system with a computation stream pattern.
 
- The underlying log solution relies on Chronicle Queue or Kafka.
+ The underlying log solution relies on an In-Memory implementation or Kafka.
 
  This module has no dependency on Nuxeo framework to ease integration with third parties.
 
@@ -44,61 +44,15 @@ nuxeo-stream
 
 ### Log implementation
 
-This module is an abstraction layer that enables to use 2 different log implementations: Chronicle Queue and Kafka.
+This module is an abstraction layer that enables to use 2 different log implementations: In-Memory and Kafka.
 
 The first implementation is handy for standalone application and is highly efficient,
 the second is dedicated for cluster deployment.
 
-#### Chronicle Queue
-
-  [Chronicle Queues](https://github.com/OpenHFT/Chronicle-Queue) is a high performance off-Heap queue library,
-  there is no broker to install, it relies entirely on OS memory mapped file.
-
-  Each partition is materialized with a Chronicle Queue.
-  There is an additional Chronicle Queue created for each consumer group to persist the consumer's offsets.
-
-  Each partition is persisted on disk and a retention policy can be applied to keep only the last `n` cycles.
-  The default retention is to keep the messages of the last 4 days.
-
-  For instance a directory layout for a Log with 4 partitions looks like:
-   ```
-   basePath                     # The base path of the LogManager
-    └── logName                 # The name of the Log
-        ├── metadata.properties # Internal metadata about the Log
-        ├── P-00                # Chronicle Queue for partition 00
-        │   ├── 20171114.cq4    # Cycle for day 2017-11-14
-        │   ├── 20171115.cq4
-        │   ├── 20171116.cq4
-        │   ├── 20171117.cq4
-        │   └── metadata.cq4t  # Chronicle queue interal file
-        ├── P-01               # Chronicle Queue for partition 01
-        │   ├── 20171113.cq4   # Retention keep the last 4 cycles
-        │   ├── 20171114.cq4
-        │   ├── 20171116.cq4   # There was no record on this partition 2017-11-15
-        │   ├── 20171117.cq4
-        │   └── metadata.cq4t
-        ├── P-02               # Chronicle Queue for partition 02
-        │   ├── 20171115.cq4
-        │   ├── 20171117.cq4
-        │   └── metadata.cq4t
-        ├── P-03               # Chronicle Queue for partition 03
-        │   ├── 20171116.cq4
-        │   ├── 20171117.cq4
-        │   └── metadata.cq4t
-        └── offset-myGroup     # Chronicle Queue for consumer offset of group myGroup
-            ├── 20171114.cq4
-            ├── 20171115.cq4
-            ├── 20171116.cq4
-            ├── 20171117.cq4
-            └── metadata.cq4t
-  ```
-
   Note that this implementation has some important limitations:
 
-  - It is limited to a single node because Chronicle Queue can not be distributed using the open source version.
+  - It is in memory so does not survive a restart and it's limited by the JVM Heap size, the processing is not distributed and should not be used in cluster mode.
   - The dynamic assignment is not supported, hopefully as we are limited to a single node static assignment is easy to setup.
-  - There is no replication, so even if the Log is crash resistant you need to backup the data directory and make sure you never run out of disk.
-  - The maximum message size is determined by the Chronicle Queue blockSize which is 4M and enable a message of 1MB.
 
 #### Kafka
 

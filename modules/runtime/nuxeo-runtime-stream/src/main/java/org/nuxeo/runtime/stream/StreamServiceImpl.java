@@ -19,8 +19,6 @@
 package org.nuxeo.runtime.stream;
 
 import java.io.Externalizable;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,7 +26,6 @@ import java.util.List;
 
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.common.Environment;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
@@ -44,7 +41,6 @@ import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.UnifiedLogManager;
-import org.nuxeo.lib.stream.log.chronicle.ChronicleLogConfig;
 import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogConfig;
 import org.nuxeo.lib.stream.log.mem.MemLogConfig;
@@ -62,10 +58,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class StreamServiceImpl extends DefaultComponent implements StreamService {
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(StreamServiceImpl.class);
-
-    public static final String NUXEO_STREAM_DIR_PROP = "nuxeo.stream.chronicle.dir";
-
-    public static final String NUXEO_STREAM_RET_DURATION_PROP = "nuxeo.stream.chronicle.retention.duration";
 
     public static final String DEFAULT_CODEC = "avro";
 
@@ -99,25 +91,6 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     @Override
     public StreamManager getStreamManager() {
         return streamManager;
-    }
-
-    protected String getChronicleRetention(String retention) {
-        return retention != null ? retention : Framework.getProperty(NUXEO_STREAM_RET_DURATION_PROP, "4d");
-    }
-
-    protected Path getChroniclePath(String basePath) {
-        if (basePath != null) {
-            return Paths.get(basePath).toAbsolutePath();
-        }
-        basePath = Framework.getProperty(NUXEO_STREAM_DIR_PROP);
-        if (basePath != null) {
-            return Paths.get(basePath).toAbsolutePath();
-        }
-        basePath = Framework.getProperty(Environment.NUXEO_DATA_DIR);
-        if (basePath != null) {
-            return Paths.get(basePath, "stream").toAbsolutePath();
-        }
-        return Paths.get(Framework.getRuntime().getHome().getAbsolutePath(), "data", "stream").toAbsolutePath();
     }
 
     protected void createLogIfNotExists(LogConfigDescriptor config) {
@@ -154,8 +127,6 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
                 ret.add(createKafkaLogConfig(desc));
             } else if ("mem".equalsIgnoreCase(desc.type)) {
                 ret.add(createMemLogConfig(desc));
-            } else if ("chronicle".equalsIgnoreCase(desc.type)) {
-                ret.add(createChronicleLogConfig(desc));
             } else {
                 ret.add(createMemLogConfig(desc));
             }
@@ -174,13 +145,6 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
                 service.getTopicPrefix(kafkaConfig),
                 service.getAdminProperties(kafkaConfig), service.getProducerProperties(kafkaConfig),
                 service.getConsumerProperties(kafkaConfig));
-    }
-
-    protected LogConfig createChronicleLogConfig(LogConfigDescriptor desc) {
-        String basePath = desc.options.getOrDefault("basePath", null);
-        Path path = getChroniclePath(basePath);
-        String retention = getChronicleRetention(desc.options.getOrDefault("retention", null));
-        return new ChronicleLogConfig(desc.getId(), desc.isDefault(), desc.getPatterns(), path, retention);
     }
 
     protected void initProcessor(StreamProcessorDescriptor descriptor) {

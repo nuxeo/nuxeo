@@ -1,4 +1,4 @@
 /**
- * The Log interface with Chronicle and Kafka implementation.
+ * The Log interface with In-Memory and Kafka implementation.
  */
 package org.nuxeo.lib.stream.log;

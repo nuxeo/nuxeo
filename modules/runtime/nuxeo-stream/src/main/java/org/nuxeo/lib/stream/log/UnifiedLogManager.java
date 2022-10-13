@@ -28,8 +28,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.nuxeo.lib.stream.codec.Codec;
-import org.nuxeo.lib.stream.log.chronicle.ChronicleLogConfig;
-import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogConfig;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.lib.stream.log.mem.MemLogConfig;
@@ -43,8 +41,6 @@ public class UnifiedLogManager implements LogManager {
     protected final List<LogConfig> configs;
 
     protected LogManager memManager;
-
-    protected LogManager cqManager;
 
     protected LogManager kafkaManager;
 
@@ -60,7 +56,6 @@ public class UnifiedLogManager implements LogManager {
         }
         this.configs = configs;
         createMemLogManager();
-        createCQLogManager();
         createKafkaLogManager();
         findDefaultLogManger();
     }
@@ -73,17 +68,6 @@ public class UnifiedLogManager implements LogManager {
         if (!memConfigs.isEmpty()) {
             memManager = new MemLogManager(); // configs unused
             memConfigs.forEach(config -> managers.put(config, memManager));
-        }
-    }
-
-    protected void createCQLogManager() {
-        List<ChronicleLogConfig> cqConfigs = configs.stream()
-                                                    .filter(config -> config instanceof ChronicleLogConfig)
-                                                    .map(config -> (ChronicleLogConfig) config)
-                                                    .collect(Collectors.toList());
-        if (!cqConfigs.isEmpty()) {
-            cqManager = new ChronicleLogManager(cqConfigs);
-            cqConfigs.forEach(config -> managers.put(config, cqManager));
         }
     }
 
@@ -108,8 +92,6 @@ public class UnifiedLogManager implements LogManager {
         }
         if (defaultConfig instanceof MemLogConfig) {
             defaultManager = memManager;
-        } else if (defaultConfig instanceof ChronicleLogConfig) {
-            defaultManager = cqManager;
         } else {
             defaultManager = kafkaManager;
         }
@@ -197,9 +179,6 @@ public class UnifiedLogManager implements LogManager {
         if (kafkaManager != null) {
             names.addAll(kafkaManager.listAllNames());
         }
-        if (cqManager != null) {
-            names.addAll(cqManager.listAllNames());
-        }
         return names;
     }
 
@@ -215,9 +194,6 @@ public class UnifiedLogManager implements LogManager {
         }
         if (kafkaManager != null) {
             kafkaManager.close();
-        }
-        if (cqManager != null) {
-            cqManager.close();
         }
     }
 }

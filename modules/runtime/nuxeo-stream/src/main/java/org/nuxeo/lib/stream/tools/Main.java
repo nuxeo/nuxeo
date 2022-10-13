@@ -33,7 +33,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.log.LogManager;
-import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.lib.stream.tools.command.Command;
 import org.nuxeo.lib.stream.tools.command.HelpCommand;
@@ -47,8 +46,6 @@ public class Main {
     protected static final String NUXEO_KAFKA_FILE_CONF = "nxserver/config/kafka-config.xml";
 
     protected static final String NUXEO_KAFKA_CONF = "default";
-
-    protected static final String CHRONICLE_OPT = "chronicle";
 
     protected static final String KAFKA_OPT = "kafka";
 
@@ -100,13 +97,11 @@ public class Main {
         if (cmd instanceof HelpCommand) {
             return;
         }
-        if (cmdLine.hasOption(CHRONICLE_OPT)) {
-            createChronicleManager(cmdLine.getOptionValue(CHRONICLE_OPT));
-        } else if (cmdLine.hasOption(KAFKA_OPT) || cmdLine.hasOption("k")) {
+        if (cmdLine.hasOption(KAFKA_OPT) || cmdLine.hasOption("k")) {
             String contribPath = cmdLine.getOptionValue(KAFKA_OPT, NUXEO_KAFKA_FILE_CONF);
             createKafkaManager(contribPath, cmdLine.getOptionValue("kafka-config", NUXEO_KAFKA_CONF));
         } else {
-            throw new IllegalArgumentException("Missing required option: --chronicle or --kafka");
+            throw new IllegalArgumentException("Missing required option: --kafka");
         }
     }
 
@@ -114,10 +109,6 @@ public class Main {
         KafkaConfigParser config = new KafkaConfigParser(Paths.get(kafkaContribution), kafkaConfig);
         manager = new KafkaLogManager(config.getPrefix(), config.getProducerProperties(),
                 config.getConsumerProperties());
-    }
-
-    protected void createChronicleManager(String basePath) {
-        manager = new ChronicleLogManager(Paths.get(basePath));
     }
 
     protected Command getCommand() {
@@ -133,12 +124,6 @@ public class Main {
     }
 
     protected void initDefaultOptions() {
-        options.addOption(Option.builder()
-                                .longOpt(CHRONICLE_OPT)
-                                .desc("Base path of the Chronicle Queue LogManager")
-                                .hasArg()
-                                .argName("PATH")
-                                .build());
         options.addOption(Option.builder()
                                 .longOpt(KAFKA_OPT)
                                 .desc("Nuxeo Kafka configuration contribution file: nxserver/config/kafka-config.xml")

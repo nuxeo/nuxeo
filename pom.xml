@@ -171,10 +171,6 @@
     <snappy.version>1.1.8.4</snappy.version>
     <kafka.version>2.6.0</kafka.version>
     <confluent.version>6.0.0</confluent.version>
-    <chronicle.bom.version>2.22.157</chronicle.bom.version>
-    <chronicle.threads.version>2.17.25</chronicle.threads.version>
-    <chronicle.jnr.constants.version>0.10.2</chronicle.jnr.constants.version>
-    <chronicle.jnr.jffi.version>2.2.6</chronicle.jnr.jffi.version>
     <metrics.version>5.0.0-rc3</metrics.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.31.1</opencensus.version>
@@ -2402,7 +2398,7 @@
         <version>2.10.6</version>
       </dependency>
 
-      <!-- JNA, required by Elasticsearch and Chronicle Queue -->
+      <!-- JNA, required by Elasticsearch -->
       <dependency>
         <groupId>net.java.dev.jna</groupId>
         <artifactId>jna</artifactId>
@@ -4803,14 +4799,6 @@
       </dependency>
 
       <dependency>
-        <groupId>net.openhft</groupId>
-        <artifactId>chronicle-bom</artifactId>
-        <version>${chronicle.bom.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-
-      <dependency>
         <groupId>org.keycloak</groupId>
         <artifactId>keycloak-tomcat-adapter-dist</artifactId>
         <version>${keycloak.version}</version>
@@ -4925,30 +4913,6 @@
         <version>${grpc-netty.version}</version>
       </dependency>
 
-      <dependency>
-        <!-- unused dependency, declared to exclude affinity -->
-        <groupId>net.openhft</groupId>
-        <artifactId>chronicle-threads</artifactId>
-        <version>${chronicle.threads.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>net.openhft</groupId>
-            <artifactId>affinity</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <!-- transitive dependency, declared to avoid collision with our packaging mechanism -->
-        <groupId>com.github.jnr</groupId>
-        <artifactId>jnr-ffi</artifactId>
-        <version>${chronicle.jnr.jffi.version}</version>
-      </dependency>
-      <dependency>
-        <!-- transitive dependency, declared to avoid collision with our packaging mechanism -->
-        <groupId>com.github.jnr</groupId>
-        <artifactId>jnr-constants</artifactId>
-        <version>${chronicle.jnr.constants.version}</version>
-      </dependency>
       <dependency>
         <groupId>net.jodah</groupId>
         <artifactId>failsafe</artifactId>

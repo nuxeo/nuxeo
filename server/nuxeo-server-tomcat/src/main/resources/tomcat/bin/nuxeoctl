@@ -185,16 +185,6 @@ JAVA_OPTS="$JAVA_OPTS $JUL_CONFIG"
 ## Jigsaw modules
 # Opens/Exports for hotreload
 MODULE_OPTS="--add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
-# Opens/Exports some JDK modules (for Chronicle at least)
-MODULE_OPTS+=" --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED"
-MODULE_OPTS+=" --add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
-MODULE_OPTS+=" --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED"
-MODULE_OPTS+=" --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED"
-MODULE_OPTS+=" --add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED"
-MODULE_OPTS+=" --add-opens=java.base/java.lang=ALL-UNNAMED"
-MODULE_OPTS+=" --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
-MODULE_OPTS+=" --add-opens=java.base/java.io=ALL-UNNAMED"
-MODULE_OPTS+=" --add-opens=java.base/java.util=ALL-UNNAMED"
 JAVA_OPTS="$MODULE_OPTS $JAVA_OPTS"
 
 ## nuxeo.log.dir
