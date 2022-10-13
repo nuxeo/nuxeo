@@ -22,16 +22,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.lib.stream.tests.TestLibChronicle.IS_WIN;
 
-import java.io.File;
 import java.time.Duration;
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.RecordFilter;
 import org.nuxeo.lib.stream.computation.Settings;
@@ -44,21 +39,12 @@ import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.Name;
-import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
+import org.nuxeo.lib.stream.log.mem.MemLogManager;
 
 /**
  * @since 11.1
  */
 public class TestRecordFilter {
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder(new File("target"));
-
-    protected File basePath;
-
-    @Before
-    public void skipWindowsThatDoNotCleanTempFolder() {
-        org.junit.Assume.assumeFalse(IS_WIN);
-    }
 
     class SkipFilter implements RecordFilter {
 
@@ -99,8 +85,7 @@ public class TestRecordFilter {
     }
 
     public LogManager getLogManager() throws Exception {
-        this.basePath = folder.newFolder();
-        return new ChronicleLogManager(basePath.toPath());
+        return new MemLogManager();
     }
 
     @Test

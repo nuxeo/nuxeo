@@ -79,7 +79,7 @@ public class TestStreamService {
         assertTrue(manager.exists(Name.ofUrn("input")));
         assertTrue(manager.exists(Name.ofUrn("output")));
         assertTrue(manager.exists(Name.ofUrn("myLog")));
-        assertTrue(manager.exists(Name.ofUrn("cq/cq-foo")));
+        assertTrue(manager.exists(Name.ofUrn("mem/mem-foo")));
         assertFalse(manager.exists(Name.ofUrn("aLogThatShouldNotBeCreated")));
         assertFalse(manager.exists(Name.ofUrn("unexisting")));
     }

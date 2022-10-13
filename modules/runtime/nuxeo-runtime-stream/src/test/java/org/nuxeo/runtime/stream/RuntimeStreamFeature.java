@@ -79,7 +79,7 @@ public class RuntimeStreamFeature implements RunnerFeature {
     @Override
     public void start(FeaturesRunner runner) {
         RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
-        streamType = defaultProperty(STREAM_PROPERTY, STREAM_CHRONICLE);
+        streamType = defaultProperty(STREAM_PROPERTY, STREAM_MEM);
         try {
             String msg = "Deploying Nuxeo Stream using " + StringUtils.capitalize(streamType.toLowerCase());
             // System.out used on purpose, don't remove
@@ -129,7 +129,7 @@ public class RuntimeStreamFeature implements RunnerFeature {
         if (!cleanupTopics) {
             return;
         }
-        log.debug("Cleaning Streams"); // not working with Chronicle Queue under Windows: NXP-30741
+        log.debug("Cleaning Streams");
         StreamService service = Framework.getService(StreamService.class);
         service.stopProcessors();
         LogManager manager = service.getLogManager();

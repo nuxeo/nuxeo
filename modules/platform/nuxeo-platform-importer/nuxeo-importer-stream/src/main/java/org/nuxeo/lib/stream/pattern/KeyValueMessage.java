@@ -118,11 +118,7 @@ public class KeyValueMessage implements Message {
             this.value = null;
         } else {
             this.value = new byte[dataLength];
-            // not using in.readFully because it is not impl by Chronicle WireObjectInput
-            int pos = 0;
-            while (pos < dataLength) {
-                pos += in.read(this.value, pos, dataLength - pos);
-            }
+            in.readFully(this.value);
         }
     }
 

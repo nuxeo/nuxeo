@@ -154,8 +154,10 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
                 ret.add(createKafkaLogConfig(desc));
             } else if ("mem".equalsIgnoreCase(desc.type)) {
                 ret.add(createMemLogConfig(desc));
-            }  else {
+            } else if ("chronicle".equalsIgnoreCase(desc.type)) {
                 ret.add(createChronicleLogConfig(desc));
+            } else {
+                ret.add(createMemLogConfig(desc));
             }
         }
         return ret;

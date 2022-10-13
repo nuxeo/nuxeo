@@ -10,13 +10,13 @@
       <match name="imp-" />
     </logConfig>
 
-    <logConfig name="chronicle">
+    <logConfig name="mem">
       <log name="myLog" size="1" />
-      <log name="cq/cq-foo" size="1" />
-      <match name="cq/cq-" />
+      <log name="mem/mem-foo" size="1" />
+      <match name="mem/mem-" />
     </logConfig>
 
-    <logConfig name="customDisabled" type="chronicle" enabled="false">
+    <logConfig name="customDisabled" type="mem" enabled="false">
       <log name="aLogThatShouldNotBeCreated" size="1" />
       <option name="directory">disabled</option>
       <option name="basePath">/tmp</option>

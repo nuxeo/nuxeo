@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -74,6 +75,7 @@ public class TestLogStreamProcessorChronicle extends TestStreamProcessor {
     // This test is based on static counter and should not be run multiple times
     // run it only with CQ impl
     @Test
+    @Ignore
     public void testComputationRecoveryPolicy() throws Exception {
         // Define a topology that fails
         Topology topology = Topology.builder()

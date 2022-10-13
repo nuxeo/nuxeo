@@ -18,46 +18,31 @@ package org.nuxeo.lib.stream.tests.pattern;
 
 import static org.junit.Assume.assumeFalse;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.log.LogManager;
-import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.lib.stream.log.mem.MemLogManager;
 
-public class TestPatternQueuingChronicle extends TestPatternQueuing {
+public class TestPatternQueuingInMemory extends TestPatternQueuing {
     protected final static String OS = System.getProperty("os.name").toLowerCase();
 
     public final static boolean IS_WIN = OS.startsWith("win");
-
-    protected Path basePath;
 
     @Before
     public void skipWindowsThatDontCleanTempFolder() {
         assumeFalse(IS_WIN);
     }
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder(new File(FeaturesRunner.getBuildDirectory()));
-
     @After
-    public void resetBasePath() throws IOException {
-        basePath = null;
+    public void clear() {
+        MemLogManager.clear();
     }
 
     @Override
     public LogManager createManager() throws Exception {
-        if (basePath == null) {
-            basePath = folder.newFolder().toPath();
-        }
-        return new ChronicleLogManager(basePath);
+        return new MemLogManager();
     }
 
     @Override

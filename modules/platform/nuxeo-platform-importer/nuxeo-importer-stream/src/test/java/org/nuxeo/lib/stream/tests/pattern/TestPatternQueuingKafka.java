@@ -18,17 +18,13 @@
  */
 package org.nuxeo.lib.stream.tests.pattern;
 
+import static org.junit.Assume.assumeTrue;
+
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
-import org.nuxeo.runtime.stream.IgnoreChronicle;
 import org.nuxeo.runtime.stream.IgnoreKafka;
-import org.nuxeo.runtime.stream.RuntimeStreamFeature;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
-
-import static org.junit.Assume.assumeTrue;
 
 /**
  * @since 9.2

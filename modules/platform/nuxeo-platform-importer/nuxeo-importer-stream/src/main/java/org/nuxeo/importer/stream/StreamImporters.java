@@ -16,7 +16,7 @@ import org.nuxeo.runtime.codec.CodecService;
 public final class StreamImporters {
 
     // use java codec because it was already used with kafka and because avro has difficulties to serialize BlobMessage
-    // due to Blob interface. Using codec allow us to not use chronicle serialization which could be limited
+    // due to Blob interface.
     public static final String DEFAULT_CODEC = "java";
 
     public static final String DEFAULT_LOG_CONFIG = "default";
