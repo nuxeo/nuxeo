@@ -498,10 +498,28 @@ pipeline {
               skaffold build -f skaffold.yaml~gen
             """
           }
+          echo "Build needed packages for the benchmark image"
+          // build packages defined in the pom and nuxeo-packages as it is needed when processing resources
+          sh """
+            benchmark_packages=\$(sed -n '/<dependency>/,/<\\/dependency>/{//b;p}' docker/nuxeo-benchmark/pom.xml | grep artifactId | sed -E 's/\\s*<artifactId>(.*)<\\/artifactId>/:\\1/' |  tr '\\n' ','  | head -c -1);
+            mvn ${MAVEN_ARGS} -Pdistrib -T4C -pl :nuxeo-packages,\${benchmark_packages} install
+          """
+
+          dir('docker/nuxeo-benchmark') {
+            echo 'Fetch locally built Nuxeo Packages with Maven'
+            sh "mvn ${MAVEN_ARGS} -T4C process-resources"
+
+            echo "Build and push Benchmark Docker image to internal Docker registry ${DOCKER_REGISTRY}"
+            sh """
+              envsubst < skaffold.yaml > skaffold.yaml~gen
+              skaffold build -f skaffold.yaml~gen
+            """
+          }
           script {
             if (!isPullRequest()) {
               dockerPushFixedVersion("${BASE_IMAGE_NAME}")
               dockerPushFixedVersion("${NUXEO_IMAGE_NAME}")
+              dockerPushFixedVersion("${NUXEO_BENCHMARK_IMAGE_NAME}")
             }
           }
         }
@@ -546,7 +564,7 @@ pipeline {
       }
     }
 
-    stage('Build Benchmark Docker image and trigger tests') {
+    stage('Trigger Benchmark tests') {
       when {
         allOf {
           changeRequest()
@@ -557,30 +575,6 @@ pipeline {
       }
       steps {
         container('maven') {
-          echo "Build needed packages for the benchmark tests"
-          // build packages defined in the pom and nuxeo-packages as it is needed when processing resources
-          sh """
-            benchmark_packages=\$(sed -n '/<dependency>/,/<\\/dependency>/{//b;p}' docker/nuxeo-benchmark/pom.xml | grep artifactId | sed -E 's/\\s*<artifactId>(.*)<\\/artifactId>/:\\1/' |  tr '\\n' ','  | head -c -1);
-            mvn ${MAVEN_ARGS} -Pdistrib -T4C -pl :nuxeo-packages,\${benchmark_packages} install
-          """
-
-          echo """
-          ----------------------------------------
-          Build Benchmark Docker image
-          ----------------------------------------
-          Image tag: ${VERSION}
-          """
-
-          dir('docker/nuxeo-benchmark') {
-            echo 'Fetch locally built Nuxeo Packages with Maven'
-            sh "mvn ${MAVEN_ARGS} -T4C process-resources"
-
-            echo "Build and push Nuxeo Benchmark Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-            sh """
-              envsubst < skaffold.yaml > skaffold.yaml~gen
-              skaffold build -f skaffold.yaml~gen
-            """
-          }
           script {
             def parameters = [
               string(name: 'NUXEO_BRANCH', value: "${CHANGE_BRANCH}"),
@@ -908,6 +902,7 @@ pipeline {
           echo "Push Docker images to Docker registry ${PRIVATE_DOCKER_REGISTRY}"
           dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${BASE_IMAGE_NAME}")
           dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
+          dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_BENCHMARK_IMAGE_NAME}")
         }
       }
       post {
