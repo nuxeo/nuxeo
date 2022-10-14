@@ -112,12 +112,9 @@ public class WorkCatCommand extends Command {
             ret += "," + category;
             ret += "," + work.toString().replace(",", ".");
             return ret;
-        } catch (IOException | ClassNotFoundException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | ClassNotFoundException | NoSuchMethodException | IllegalAccessException
+                | InvocationTargetException | IllegalStateException e) {
+            return e.getClass().getSimpleName() + "," + e.getClass().getCanonicalName() + ",ERROR,NA";
         } finally {
             try {
                 if (in != null) {
