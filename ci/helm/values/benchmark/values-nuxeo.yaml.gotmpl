@@ -34,6 +34,10 @@ customEnvs:
     secretKeyRef:
       name: instance-clid
       key: instance.clid
+- name: DD_AGENT_HOST
+  valueFrom:
+    fieldRef:
+      fieldPath: status.hostIP
 customProperties:
   benchmark: |
     nuxeo.append.templates.benchmark=docker-json,perf
@@ -47,7 +51,7 @@ customProperties:
     metrics.datadog.pollInterval=60
     metrics.datadog.tags=source:nuxeo,service:benchmark-{{ env "BUILD_NUMBER" | default "local" }},pod_name:${env:POD_NAME}
     metrics.datadog.udp=true
-    metrics.datadog.host=datadog-platform.platform.svc.cluster.local
+    metrics.datadog.host=${env:DD_AGENT_HOST}
     metrics.datadog.port=8125
 {{- if eq (env "INSTALL_NEEDED_PACKAGES") "true" }}
 packages: amazon-s3-online-storage nuxeo-platform-importer nuxeo-web-ui
