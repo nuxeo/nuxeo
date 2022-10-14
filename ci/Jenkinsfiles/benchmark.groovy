@@ -37,12 +37,16 @@ String getCurrentNamespace() {
 
 String getScmRef() {
   container('maven') {
-    script {
-      if (params.NUXEO_SHA?.trim()) {
-        return "${params.NUXEO_SHA?.trim()}"
-      }
-      return "${env.GIT_COMMIT}"
+    return sh(returnStdout: true, script: "skopeo inspect docker://${params.NUXEO_DOCKER_IMAGE} | jq '.Labels.\"org.nuxeo.scm-ref\"'").replaceAll('"', '').trim()
+  }
+}
+
+String resolveDockerImageVersion(String dockerImage) {
+  container('maven') {
+    if (dockerImage.endsWith('.x')) {
+      return dockerImage.replaceAll(':.*', ':') + sh(returnStdout: true, script: "skopeo inspect docker://${dockerImage} | jq '.Labels.\"org.nuxeo.version\"'").replaceAll('"', '').trim()
     }
+    return dockerImage
   }
 }
 
@@ -51,6 +55,24 @@ String getAWSCredential(String dataKey) {
     // always read AWS credentials from secret in the platform namespace, even when running in platform-staging:
     // credentials rotation is disabled in platform-staging to prevent double rotation on the same keys
     return sh(returnStdout: true, script: "kubectl get secret aws-credentials -n platform -o=jsonpath='{.data.${dataKey}}' | base64 --decode")
+  }
+}
+
+String getBenchmarkBenchSuite() {
+  container('maven') {
+    if (currentBuild.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause')) {
+      return sh(returnStdout: true, script: 'date +%yw%V').trim() + " CI Weekly Benchmark - Build ${params.NUXEO_DOCKER_IMAGE.replaceAll('.*:', '')}"
+    }
+    return "${params.NUXEO_BRANCH}"
+  }
+}
+
+String getBenchmarkCategory() {
+  container('maven') {
+    if (currentBuild.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause')) {
+      return 'continuous'
+    }
+    return 'workbench'
   }
 }
 
@@ -112,7 +134,7 @@ pipeline {
     SCM_REF = getScmRef()
 
     BRANCH_NAME = "${params.NUXEO_BRANCH}"
-    NUXEO_DOCKER_IMAGE_WITH_VERSION = "${params.NUXEO_DOCKER_IMAGE}"
+    NUXEO_DOCKER_IMAGE_WITH_VERSION = resolveDockerImageVersion("${params.NUXEO_DOCKER_IMAGE}")
     INSTALL_NEEDED_PACKAGES = "${params.INSTALL_NEEDED_PACKAGES}"
     NX_REPLICA_COUNT = "${params.NUXEO_NB_APP_NODE.toInteger()}"
     NX_WORKER_COUNT = "${params.NUXEO_NB_WORKER_NODE.toInteger()}"
@@ -120,9 +142,9 @@ pipeline {
     AWS_ACCESS_KEY_ID = getAWSCredential('access_key_id')
     AWS_SECRET_ACCESS_KEY = getAWSCredential('secret_access_key')
     AWS_REGION = 'eu-west-3'
-    BENCHMARK_BENCH_SUITE = "${NUXEO_BRANCH}"
+    BENCHMARK_BENCH_SUITE = getBenchmarkBenchSuite()
     BENCHMARK_BUILD_NUMBER = "${CURRENT_NAMESPACE}-${BUILD_NUMBER}"
-    BENCHMARK_CATEGORY = 'workbench'
+    BENCHMARK_CATEGORY = getBenchmarkCategory()
     BENCHMARK_NAMESPACE = "${CURRENT_NAMESPACE}-benchmark"
     SERVICE_TAG = "benchmark-${BUILD_NUMBER}"
     BENCHMARK_NB_DOCS = '100000'
@@ -136,6 +158,7 @@ pipeline {
   }
 
   stages {
+
     stage('Set labels') {
       steps {
         container('maven') {
@@ -376,7 +399,7 @@ pipeline {
       container('benchmark') {
         withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
           // this step can fail because a PR for the current branch may not exist
-          sh(returnStatus: true, script: "gh pr comment ${NUXEO_BRANCH} --body \"The Benchmark tests has succeeded to run on ${NUXEO_SHA}.\nThe results are located there: https://benchmarks.nuxeo.com/${BENCHMARK_CATEGORY}/${BENCHMARK_BUILD_NUMBER}/index.html\"")
+          sh(returnStatus: true, script: "gh pr comment ${NUXEO_BRANCH} --body \"The Benchmark tests has succeeded to run on ${SCM_REF}.\nThe results are located there: https://benchmarks.nuxeo.com/${BENCHMARK_CATEGORY}/${BENCHMARK_BUILD_NUMBER}/index.html\"")
         }
       }
     }
