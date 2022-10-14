@@ -29,25 +29,9 @@ void getLatestVersion(version) {
   return version.split('\\.')[0];
 }
 
-void dockerPull(String image) {
-  sh "docker pull ${image}"
-}
-
-void dockerTag(String image, String tag) {
-  sh "docker tag ${image} ${tag}"
-}
-
-void dockerPush(String image) {
-  sh "docker push ${image}"
-}
-
-void dockerPullPush(String from, String... tos) {
-  echo "Pull ${from}"
-  dockerPull(from)
+void dockerCopyImage(String from, String... tos) {
   for (String to : tos) {
-    echo "Push ${to}"
-    dockerTag(from, to);
-    dockerPush(to)
+    sh "skopeo copy docker://${from} docker://${to}"
   }
 }
 
@@ -56,7 +40,7 @@ void promoteDockerImage(String dockerRegistry, String imageName, String buildVer
   String releaseImage = "${dockerRegistry}/${DOCKER_NAMESPACE}/${imageName}:${releaseVersion}"
   String latestImage = "${dockerRegistry}/${DOCKER_NAMESPACE}/${imageName}:${latestVersion}"
 
-  dockerPullPush(buildImage, releaseImage, latestImage)
+  dockerCopyImage(buildImage, releaseImage, latestImage)
 }
 
 pipeline {

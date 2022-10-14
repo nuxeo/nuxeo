@@ -144,21 +144,9 @@ void dockerRun(String image, String command, String user = null) {
   sh "docker run --rm ${userOption} ${image} ${command}"
 }
 
-void dockerTag(String image, String tag) {
-  sh "docker tag ${image} ${tag}"
-}
-
-void dockerPush(String image) {
-  sh "docker push ${image}"
-}
-
-void dockerPullPush(String from, String... tos) {
-  echo "Pull ${from}"
-  dockerPull(from)
+void dockerCopyImage(String from, String... tos) {
   for (String to : tos) {
-    echo "Push ${to}"
-    dockerTag(from, to);
-    dockerPush(to)
+    sh "skopeo copy docker://${from} docker://${to}"
   }
 }
 
@@ -167,7 +155,7 @@ void dockerPushFixedVersion(String imageName) {
   String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
   String latestInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
 
-  dockerPullPush(fixedVersionInternalImage, latestInternalImage)
+  dockerCopyImage(fixedVersionInternalImage, latestInternalImage)
 }
 
 void dockerDeploy(String dockerRegistry, String imageName) {
@@ -176,7 +164,7 @@ void dockerDeploy(String dockerRegistry, String imageName) {
   String fixedVersionPublicImage = "${dockerRegistry}/${fullImageName}:${VERSION}"
   String latestPublicImage = "${dockerRegistry}/${fullImageName}:${DOCKER_TAG}"
 
-  dockerPullPush(fixedVersionInternalImage, fixedVersionPublicImage, latestPublicImage)
+  dockerCopyImage(fixedVersionInternalImage, fixedVersionPublicImage, latestPublicImage)
 }
 
 void helmfileTemplate(namespace, environment, outputDir) {
