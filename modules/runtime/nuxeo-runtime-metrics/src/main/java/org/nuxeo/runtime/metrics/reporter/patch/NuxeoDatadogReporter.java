@@ -73,7 +73,7 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
 
     private static final Expansion[] STATS_EXPANSIONS = { Expansion.MAX, Expansion.MEAN, Expansion.MIN,
             Expansion.STD_DEV, Expansion.MEDIAN, Expansion.P75, Expansion.P95, Expansion.P98, Expansion.P99,
-            Expansion.P999 };
+            Expansion.P999, Expansion.SUM };
 
     private static final Expansion[] RATE_EXPANSIONS = { Expansion.RATE_1_MINUTE, Expansion.RATE_5_MINUTE,
             Expansion.RATE_15_MINUTE, Expansion.RATE_MEAN };
@@ -254,9 +254,9 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
     }
 
     public static enum Expansion {
-        COUNT("count"), RATE_MEAN("meanRate"), RATE_1_MINUTE("1MinuteRate"), RATE_5_MINUTE(
-                "5MinuteRate"), RATE_15_MINUTE("15MinuteRate"), MIN("min"), MEAN("mean"), MAX("max"), STD_DEV(
-                        "stddev"), MEDIAN("median"), P75("p75"), P95("p95"), P98("p98"), P99("p99"), P999("p999");
+        COUNT("count"), RATE_MEAN("meanRate"), RATE_1_MINUTE("1MinuteRate"), RATE_5_MINUTE("5MinuteRate"),
+        RATE_15_MINUTE("15MinuteRate"), MIN("min"), MEAN("mean"), MAX("max"), STD_DEV("stddev"),
+        MEDIAN("median"), P75("p75"), P95("p95"), P98("p98"), P99("p99"), P999("p999"), SUM("sum");
 
         public static EnumSet<Expansion> ALL = EnumSet.allOf(Expansion.class);
 

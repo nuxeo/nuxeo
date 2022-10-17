@@ -141,6 +141,8 @@ public class DatadogReporter extends AbstractMetricsReporter {
                     return !deniedExpansions.contains(MetricAttribute.M5_RATE);
                 case RATE_15_MINUTE:
                     return !deniedExpansions.contains(MetricAttribute.M15_RATE);
+                case SUM:
+                    return !deniedExpansions.contains(MetricAttribute.SUM);
                 default:
                     return false;
                 }
