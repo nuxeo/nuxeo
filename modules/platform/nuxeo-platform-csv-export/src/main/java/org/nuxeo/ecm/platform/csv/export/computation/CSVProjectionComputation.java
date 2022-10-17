@@ -79,7 +79,7 @@ public class CSVProjectionComputation extends AbstractBulkComputation {
     protected RenderingContext renderingCtx;
 
     public CSVProjectionComputation() {
-        super(CSVExportAction.ACTION_FULL_NAME);
+        super(CSVExportAction.ACTION_FULL_NAME, 2);
     }
 
     @Override
@@ -116,8 +116,11 @@ public class CSVProjectionComputation extends AbstractBulkComputation {
         DataBucket dataBucket = new DataBucket(commandId, delta.getProcessed(), data.getBytes(UTF_8),
                 header.getBytes(UTF_8), new byte[0]);
         Record record = Record.of(commandId, BulkCodecs.getDataBucketCodec().encode(dataBucket));
-        context.produceRecord(OUTPUT_1, record);
+        context.produceRecord(OUTPUT_2, record);
         out = null;
+        // send processing stats
+        delta.setProcessed(0);
+        updateStatus(context, delta);
     }
 
     protected String getHeader(String csv, String recordSeparator) {
