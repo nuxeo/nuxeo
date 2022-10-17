@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.bulk;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -127,11 +128,13 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
         DataBucket in = codec.decode(record.getData());
         if (in.getCount() > 0) {
             BulkRequest bulkRequest = decodeRequest(in);
+            BulkStatus delta = BulkStatus.deltaOf(in.getCommandId());
+            delta.setProcessingStartTime(Instant.now());
             for (DocWriteRequest<?> request : bulkRequest.requests()) {
                 bulkProcessor.add(request);
             }
-            BulkStatus delta = BulkStatus.deltaOf(in.getCommandId());
             delta.setProcessed(in.getCount());
+            delta.setProcessingEndTime(Instant.now());
             if (bulkRequest.numberOfActions() == 0) {
                 delta.inError(in.getCount(), "Some documents were not accessible", 0);
             }

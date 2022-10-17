@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.DONE_STREAM;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_2;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,7 +66,7 @@ public class IndexAction implements StreamProcessorTopology {
         int esBulkFlushInterval = getOptionAsInteger(options, BULK_FLUSH_INTERVAL_OPTION, BULK_FLUSH_INTERVAL_DEFAULT);
         return Topology.builder()
                        .addComputation(IndexRequestComputation::new, Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, //
-                               OUTPUT_1 + ":" + BulkIndexComputation.NAME))
+                               OUTPUT_1 + ":" + STATUS_STREAM, OUTPUT_2 + ":" + BulkIndexComputation.NAME))
                        .addComputation(() -> new BulkIndexComputation(esBulkSize, esBulkActions, esBulkFlushInterval),
                                Arrays.asList(INPUT_1 + ":" + BulkIndexComputation.NAME, //
                                        OUTPUT_1 + ":" + STATUS_STREAM))
