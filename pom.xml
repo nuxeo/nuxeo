@@ -2056,7 +2056,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
-        <version>1.4</version>
+        <version>1.10.0</version>
       </dependency>
       <!-- Keep the dependency for external libraries -->
       <dependency>
