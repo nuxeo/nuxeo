@@ -129,6 +129,9 @@ public class TestBulkIndex {
         assertTrue("command timeout", bulkService.await(commandId, Duration.ofSeconds(60)));
         BulkStatus status = bulkService.getStatus(commandId);
         assertEquals(BulkStatus.State.COMPLETED, status.getState());
+        assertTrue(status.getProcessingStartTime() != null);
+        assertTrue(status.getProcessingEndTime() != null);
+        assertTrue(status.getProcessingDurationMillis() > 0);
     }
 
     @Test

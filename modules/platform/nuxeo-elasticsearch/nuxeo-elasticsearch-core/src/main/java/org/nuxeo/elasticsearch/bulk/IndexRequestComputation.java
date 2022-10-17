@@ -70,7 +70,7 @@ public class IndexRequestComputation extends AbstractBulkComputation {
     protected String bucketKey;
 
     public IndexRequestComputation() {
-        super(ACTION_FULL_NAME, 1);
+        super(ACTION_FULL_NAME, 2);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class IndexRequestComputation extends AbstractBulkComputation {
             DataBucket dataBucket = new DataBucket(commandId, request.numberOfActions(), toBytes(request));
             // use distinct key to distribute the message evenly between partitions
             String key = bucketKey + "-" + i++;
-            context.produceRecord(OUTPUT_1, Record.of(key, BulkCodecs.getDataBucketCodec().encode(dataBucket)));
+            context.produceRecord(OUTPUT_2, Record.of(key, BulkCodecs.getDataBucketCodec().encode(dataBucket)));
             count += request.numberOfActions();
         }
         if (count < bucketSize) {
@@ -135,11 +135,14 @@ public class IndexRequestComputation extends AbstractBulkComputation {
             log.warn(String.format("Command: %s offset: %s created %d documents out of %d, %d not accessible",
                     commandId, context.getLastOffset(), count, bucketSize, bucketSize - count));
             DataBucket dataBucket = new DataBucket(commandId, bucketSize - count, toBytes(new BulkRequest()));
-            context.produceRecord(OUTPUT_1,
+            context.produceRecord(OUTPUT_2,
                     Record.of(bucketKey + "-missing", BulkCodecs.getDataBucketCodec().encode(dataBucket)));
         }
         bulkRequest = null;
         bulkRequests.clear();
+        // send processing stats
+        delta.setProcessed(0);
+        updateStatus(context, delta);
     }
 
     protected String getIndexName(CoreSession session, Map<String, Serializable> properties) {
