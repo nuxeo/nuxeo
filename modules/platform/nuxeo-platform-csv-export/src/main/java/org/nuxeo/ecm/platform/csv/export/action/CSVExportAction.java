@@ -52,7 +52,8 @@ public class CSVExportAction implements StreamProcessorTopology {
         return Topology.builder()
                        .addComputation(CSVProjectionComputation::new, //
                                Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, //
-                                       OUTPUT_1 + ":" + MakeBlob.NAME))
+                                       OUTPUT_1 + ":" + STATUS_STREAM, //
+                                       OUTPUT_2 + ":" + MakeBlob.NAME))
                        .addComputation(() -> new MakeBlob(produceImmediate), //
                                Arrays.asList(INPUT_1 + ":" + MakeBlob.NAME, //
                                        OUTPUT_1 + ":" + SortBlob.NAME, //

@@ -189,6 +189,9 @@ public class TestCSVExportAction {
             Collections.sort(sortedContent);
             assertEquals(content, sortedContent);
         }
+        assertTrue(status.getProcessingStartTime() != null);
+        assertTrue(status.getProcessingEndTime() != null);
+        assertTrue(status.getProcessingDurationMillis() > 0);
     }
 
     @Test
