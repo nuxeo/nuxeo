@@ -29,6 +29,14 @@ void setGitHubBuildStatus(String context, String message, String state) {
   }
 }
 
+boolean isTriggeredByCron() {
+  return currentBuild.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause') != null
+}
+
+boolean isTriggeredByNuxeoPromotion() {
+  return "${params.NUXEO_BRANCH}".matches('^v(\\d){4}\\.(\\d)+$')
+}
+
 String getCurrentNamespace() {
   container('maven') {
     return sh(returnStdout: true, script: "kubectl get pod ${NODE_NAME} -ojsonpath='{..namespace}'")
@@ -43,7 +51,8 @@ String getScmRef() {
 
 String resolveDockerImageVersion(String dockerImage) {
   container('maven') {
-    if (dockerImage.endsWith('.x')) {
+    // resolve the real nuxeo version if the given docker image has a moving tag such as 2021, 2021.x, 2021.28
+    if (dockerImage.matches('^.*:(\\d){4}(\\.(x|\\d+))?$')) {
       return dockerImage.replaceAll(':.*', ':') + sh(returnStdout: true, script: "skopeo inspect docker://${dockerImage} | jq '.Labels.\"org.nuxeo.version\"'").replaceAll('"', '').trim()
     }
     return dockerImage
@@ -60,8 +69,10 @@ String getAWSCredential(String dataKey) {
 
 String getBenchmarkBenchSuite() {
   container('maven') {
-    if (currentBuild.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause')) {
+    if (isTriggeredByCron()) {
       return sh(returnStdout: true, script: 'date +%yw%V').trim() + " CI Weekly Benchmark - Build ${params.NUXEO_DOCKER_IMAGE.replaceAll('.*:', '')}"
+    } else if (isTriggeredByNuxeoPromotion()) {
+      return "Nuxeo LTS ${params.NUXEO_BRANCH.replace('v', '')}";
     }
     return "${params.NUXEO_BRANCH}"
   }
@@ -69,8 +80,10 @@ String getBenchmarkBenchSuite() {
 
 String getBenchmarkCategory() {
   container('maven') {
-    if (currentBuild.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause')) {
+    if (isTriggeredByCron()) {
       return 'continuous'
+    } else if (isTriggeredByNuxeoPromotion()) {
+      return 'milestone'
     }
     return 'workbench'
   }
