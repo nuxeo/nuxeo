@@ -59,6 +59,7 @@ pipeline {
     DOCKER_NAMESPACE = 'nuxeo'
     BASE_IMAGE_NAME = 'nuxeo-base'
     NUXEO_IMAGE_NAME = 'nuxeo'
+    NUXEO_BENCHMARK_IMAGE_NAME = 'nuxeo-benchmark'
     SLACK_CHANNEL = 'platform-notifs'
     REFERENCE_BRANCH = '2021'
   }
@@ -249,27 +250,53 @@ pipeline {
       }
     }
 
-    stage('Trigger JSF UI release') {
+    stage('Trigger downstream jobs') {
       when {
         not {
           environment name: 'DRY_RUN', value: 'true'
         }
       }
-      steps {
-        script {
-          def parameters = [
-            string(name: 'NUXEO_BUILD_VERSION', value: "${NUXEO_BUILD_VERSION}"),
-          ]
-          echo """
-          -----------------------------------------------------
-          Trigger JSF UI release with parameters: ${parameters}
-          -----------------------------------------------------
-          """
-          build(
-            job: "nuxeo/lts/release-nuxeo-jsf-ui-2021",
-            parameters: parameters,
-            wait: false
-          )
+      parallel {
+        stage('Trigger JSF UI release') {
+          steps {
+            script {
+              def parameters = [
+                string(name: 'NUXEO_BUILD_VERSION', value: "${NUXEO_BUILD_VERSION}"),
+              ]
+              echo """
+              -----------------------------------------------------
+              Trigger JSF UI release with parameters: ${parameters}
+              -----------------------------------------------------
+              """
+              build(
+                job: "nuxeo/lts/release-nuxeo-jsf-ui-2021",
+                parameters: parameters,
+                wait: false
+              )
+            }
+          }
+        }
+
+        stage('Trigger Benchmark tests') {
+          steps {
+            script {
+              def parameters = [
+                string(name: 'NUXEO_BRANCH', value: "v${RELEASE_VERSION}"),
+                string(name: 'NUXEO_DOCKER_IMAGE', value: "${PRIVATE_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${NUXEO_BENCHMARK_IMAGE_NAME}:${NUXEO_BUILD_VERSION}"),
+                booleanParam(name: 'INSTALL_NEEDED_PACKAGES', value: false),
+              ]
+              echo """
+              -----------------------------------------------------
+              Trigger benchmark tests with parameters: ${parameters}
+              -----------------------------------------------------
+              """
+              build(
+                job: "nuxeo/lts/nuxeo-benchmark",
+                parameters: parameters,
+                wait: false
+              )
+            }
+          }
         }
       }
     }
