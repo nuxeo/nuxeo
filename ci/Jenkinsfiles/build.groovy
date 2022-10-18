@@ -580,7 +580,6 @@ pipeline {
               string(name: 'NUXEO_BRANCH', value: "${CHANGE_BRANCH}"),
               string(name: 'NUXEO_DOCKER_IMAGE', value: "${DOCKER_REGISTRY}/${dockerNamespace}/${NUXEO_BENCHMARK_IMAGE_NAME}:${VERSION}"),
               booleanParam(name: 'INSTALL_NEEDED_PACKAGES', value: false),
-              string(name: 'NUXEO_SHA', value: "${GIT_COMMIT}"),
             ]
             echo """
             -----------------------------------------------------------
