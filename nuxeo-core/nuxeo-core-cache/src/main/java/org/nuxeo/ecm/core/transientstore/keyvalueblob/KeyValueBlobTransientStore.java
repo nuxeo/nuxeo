@@ -284,9 +284,13 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
     // also recomputes the exact storage size
     @Override
     public void doGC() {
-        TransactionHelper.commitOrRollbackTransaction();
         BlobProvider bp = getBlobProvider();
         BinaryGarbageCollector gc = bp.getBinaryGarbageCollector();
+        if (gc.isInProgress()) {
+            log.info("GC {} on storage {} already in progress", gc.getId(), name);
+            return;
+        }
+        TransactionHelper.commitOrRollbackTransaction();
         boolean delete = false;
         log.debug("Starting GC on storage {}, listing blob on {}", name, gc.getId());
         try {
@@ -301,7 +305,11 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         } finally {
             // don't delete if there's an exception, but still stop the GC
             log.debug("GC delete={}", delete);
-            gc.stop(delete);
+            if (gc.isInProgress()) {
+                gc.stop(delete);
+            } else {
+                log.debug("No GC in progress");
+            }
             TransactionHelper.startTransaction();
         }
         computeStorageSize();
