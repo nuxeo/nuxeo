@@ -44,6 +44,7 @@ import org.nuxeo.lib.stream.log.UnifiedLogManager;
 import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogConfig;
 import org.nuxeo.lib.stream.log.mem.MemLogConfig;
+import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.kafka.KafkaConfigService;
@@ -135,6 +136,12 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     }
 
     protected LogConfig createMemLogConfig(LogConfigDescriptor desc) {
+        if (!Framework.isTestModeSet()) {
+            String message = "In-Memory type for log config \"%s\" is ONLY for testing purpose. Use Kafka for production.".formatted(
+                    desc.getId());
+            log.warn(message);
+            addRuntimeMessage(Level.WARNING, message);
+        }
         return new MemLogConfig(desc.getId(), desc.isDefault(), desc.getPatterns());
     }
 
