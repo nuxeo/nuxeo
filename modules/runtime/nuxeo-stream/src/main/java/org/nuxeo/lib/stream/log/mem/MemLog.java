@@ -15,8 +15,8 @@
  */
 package org.nuxeo.lib.stream.log.mem;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import org.nuxeo.lib.stream.log.Name;
@@ -54,7 +54,7 @@ public class MemLog {
     }
 
     public List<Name> getGroups() {
-        return Stream.of(partitions).map(MemLogPartition::getGroups).flatMap(Set::stream).toList();
+        return Stream.of(partitions).map(MemLogPartition::getGroups).flatMap(Collection::stream).distinct().toList();
     }
 
 }
