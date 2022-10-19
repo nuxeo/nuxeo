@@ -157,7 +157,8 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
 
         double[] values = { snapshot.getMax(), snapshot.getMean(), snapshot.getMin(), snapshot.getStdDev(),
                 snapshot.getMedian(), snapshot.get75thPercentile(), snapshot.get95thPercentile(),
-                snapshot.get98thPercentile(), snapshot.get99thPercentile(), snapshot.get999thPercentile() };
+                snapshot.get98thPercentile(), snapshot.get99thPercentile(), snapshot.get999thPercentile(),
+                timer.getSum() };
 
         for (int i = 0; i < STATS_EXPANSIONS.length; i++) {
             if (expansions.contains(STATS_EXPANSIONS[i])) {
