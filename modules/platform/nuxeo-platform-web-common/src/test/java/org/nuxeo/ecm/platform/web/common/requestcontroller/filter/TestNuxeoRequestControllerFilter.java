@@ -44,7 +44,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -53,6 +52,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.io.DummyServletOutputStream;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfigImpl;
@@ -79,17 +79,6 @@ public class TestNuxeoRequestControllerFilter {
     protected DummyFilterChain chain;
 
     protected Exception chainException;
-
-    protected static abstract class DummyServletOutputStream extends ServletOutputStream {
-        @Override
-        public boolean isReady() {
-            return true;
-        }
-
-        @Override
-        public void setWriteListener(WriteListener writeListener) {
-        }
-    }
 
     public class DummyFilterChain implements FilterChain {
 
@@ -164,12 +153,7 @@ public class TestNuxeoRequestControllerFilter {
 
         HttpServletResponse response = mock(HttpServletResponse.class);
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        ServletOutputStream out = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                bout.write(b);
-            }
-        };
+        ServletOutputStream out = new DummyServletOutputStream(bout);
         when(response.getOutputStream()).thenReturn(out);
         Map<String, List<String>> responseHeaders = mockResponseHeaders(response);
 
@@ -212,12 +196,7 @@ public class TestNuxeoRequestControllerFilter {
 
         HttpServletResponse response = mock(HttpServletResponse.class);
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        ServletOutputStream out = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) {
-                bout.write(b);
-            }
-        };
+        ServletOutputStream out = new DummyServletOutputStream(bout);
         when(response.getOutputStream()).thenReturn(out);
 
         RequestFilterConfig filterConfig = new RequestFilterConfigImpl(false, true, true, false, false, "");

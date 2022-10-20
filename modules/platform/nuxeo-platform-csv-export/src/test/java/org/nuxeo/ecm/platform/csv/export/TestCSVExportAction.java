@@ -47,7 +47,6 @@ import java.util.function.Predicate;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -67,6 +66,7 @@ import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand.Builder;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
+import org.nuxeo.ecm.core.io.DummyServletOutputStream;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DocumentSetRepositoryInit;
@@ -106,17 +106,6 @@ public class TestCSVExportAction {
 
     @Inject
     protected TransactionalFeature txFeature;
-
-    protected static abstract class DummyServletOutputStream extends ServletOutputStream {
-        @Override
-        public boolean isReady() {
-            return true;
-        }
-
-        @Override
-        public void setWriteListener(WriteListener writeListener) {
-        }
-    }
 
     @Test
     public void testSimple() throws Exception {
@@ -371,12 +360,7 @@ public class TestCSVExportAction {
             when(request.getMethod()).thenReturn("GET");
 
             HttpServletResponse response = mock(HttpServletResponse.class);
-            ServletOutputStream sos = new DummyServletOutputStream() {
-                @Override
-                public void write(int b) throws IOException {
-                    out.write(b);
-                }
-            };
+            ServletOutputStream sos = new DummyServletOutputStream(out);
             @SuppressWarnings("resource")
             PrintWriter printWriter = new PrintWriter(sos);
             when(response.getOutputStream()).thenReturn(sos);
