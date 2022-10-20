@@ -29,7 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.Principal;
-import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
@@ -60,7 +60,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 public class TestAnonymousDownload {
 
-    protected class TestHttpServletRequestWrapper extends HttpServletRequestWrapper {
+    protected static class TestHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
         protected final Principal principal;
 
@@ -141,8 +141,7 @@ public class TestAnonymousDownload {
             fail("The user has to authenticate before downloading the blob");
         } catch (IOException e) {
             assertEquals("Authentication is needed for downloading the blob", e.getCause().getMessage());
-            NuxeoPrincipal principal = new UserPrincipal("johnnotdoe", Collections.singletonList("members"), false,
-                    false);
+            NuxeoPrincipal principal = new UserPrincipal("johnnotdoe", List.of("members"), false, false);
             LoginComponent.pushPrincipal(principal);
             try {
                 downloadService.handleDownload(new TestHttpServletRequestWrapper(request, principal), response, baseUrl,

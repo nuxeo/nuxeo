@@ -19,13 +19,14 @@
  */
 package org.nuxeo.ecm.core.io.download;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Calendar;
@@ -214,14 +215,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             }
         }
         if (StringUtils.isNotEmpty(changeToken)) {
-            try {
-                sb.append("?")
-                  .append(CoreSession.CHANGE_TOKEN)
-                  .append("=")
-                  .append(URLEncoder.encode(changeToken, "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                log.error("Cannot append changeToken", e);
-            }
+            sb.append("?").append(CoreSession.CHANGE_TOKEN).append("=").append(URLEncoder.encode(changeToken, UTF_8));
         }
         return sb.toString();
     }
@@ -264,21 +258,16 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
         String type = path.substring(0, slash);
         String downloadPath = path.substring(slash + 1);
-        switch (type) {
-        case NXDOWNLOADINFO:
+        // @formatter:off old eclipse version doesn't properly format enhanced switch
+        return switch (type) {
             // used by nxdropout.js
-            return Pair.of(downloadPath, Action.INFO);
-        case NXFILE:
-        case NXBIGFILE:
-            return Pair.of(downloadPath, Action.DOWNLOAD_FROM_DOC);
-        case NXBIGZIPFILE:
-        case NXBIGBLOB:
-            return Pair.of(downloadPath, Action.DOWNLOAD);
-        case NXBLOBSTATUS:
-            return Pair.of(downloadPath, Action.BLOBSTATUS);
-        default:
-            return null;
-        }
+            case NXDOWNLOADINFO -> Pair.of(downloadPath, Action.INFO);
+            case NXFILE, NXBIGFILE -> Pair.of(downloadPath, Action.DOWNLOAD_FROM_DOC);
+            case NXBIGBLOB, NXBIGZIPFILE -> Pair.of(downloadPath, Action.DOWNLOAD);
+            case NXBLOBSTATUS -> Pair.of(downloadPath, Action.BLOBSTATUS);
+            default -> null;
+        };
+        // @formatter:on
     }
 
     @Override
@@ -316,29 +305,23 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
         String downloadPath = pair.getLeft();
         Action action = pair.getRight();
+        // @formatter:off old eclipse version doesn't properly format enhanced switch
         switch (action) {
-        case INFO:
-            handleDownload(req, resp, downloadPath, baseUrl, true);
-            break;
-        case DOWNLOAD_FROM_DOC:
-            handleDownload(req, resp, downloadPath, baseUrl, false);
-            break;
-        case DOWNLOAD:
-            downloadBlob(req, resp, downloadPath, "download");
-            break;
-        case BLOBSTATUS:
-            downloadBlobStatus(req, resp, downloadPath, "download");
-            break;
-        default:
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid URL syntax");
+            case INFO -> handleDownload(req, resp, downloadPath, baseUrl, true);
+            case DOWNLOAD_FROM_DOC -> handleDownload(req, resp, downloadPath, baseUrl, false);
+            case DOWNLOAD -> downloadBlob(req, resp, downloadPath, "download");
+            case BLOBSTATUS -> downloadBlobStatus(req, resp, downloadPath, "download");
+            default -> resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid URL syntax");
         }
+        // @formatter:on
     }
 
     /* Needed because Chemistry wraps HEAD requests to pretend they are GET requests. */
     protected static final String CHEMISTRY_HEAD_REQUEST_CLASS = "HEADHttpServletRequestWrapper";
 
     protected static boolean isHead(HttpServletRequest request) {
-        return "HEAD".equals(request.getMethod()) || request.getClass().getSimpleName().equals(CHEMISTRY_HEAD_REQUEST_CLASS);
+        return "HEAD".equals(request.getMethod())
+                || request.getClass().getSimpleName().equals(CHEMISTRY_HEAD_REQUEST_CLASS);
     }
 
     protected void handleDownload(HttpServletRequest req, HttpServletResponse resp, String downloadPath, String baseUrl,
@@ -380,7 +363,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                     return;
                 }
                 String downloadUrl = baseUrl + getDownloadUrl(doc, xpath, filename);
-                String result = blob.getMimeType() + ':' + URLEncoder.encode(blob.getFilename(), "UTF-8") + ':'
+                String result = blob.getMimeType() + ':' + URLEncoder.encode(blob.getFilename(), UTF_8) + ':'
                         + downloadUrl;
                 resp.setContentType("text/plain");
                 if (!isHead(req)) {
@@ -453,10 +436,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             blob = blobs.get(0);
         }
         try {
-            DownloadContext context = DownloadContext.builder(request, response)
-                                                     .blob(blob)
-                                                     .reason(reason)
-                                                     .build();
+            DownloadContext context = DownloadContext.builder(request, response).blob(blob).reason(reason).build();
             downloadBlob(context);
         } finally {
             if (!status && !isHead(request)) {
@@ -761,7 +741,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     protected Set<String> getWantDigests(HttpServletRequest request) {
         Enumeration<String> values = request.getHeaders("Want-Digest");
         if (values == null) {
-            return Collections.emptySet();
+            return Set.of();
         }
         Set<String> wantDigests = new HashSet<>();
         for (String value : Collections.list(values)) {
@@ -887,7 +867,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
         xpath = fixXPath(xpath);
         Map<String, Object> context = new HashMap<>();
-        Map<String, Serializable> ei = extendedInfos == null ? Collections.emptyMap() : extendedInfos;
+        Map<String, Serializable> ei = extendedInfos == null ? Map.of() : extendedInfos;
         NuxeoPrincipal currentUser = NuxeoPrincipal.getCurrent();
         context.put("Document", doc);
         context.put("XPath", xpath);
@@ -906,25 +886,23 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 throw new NuxeoException("Engine " + engine.getClass().getName() + " not Invocable for language: "
                         + descriptor.getScriptLanguage() + " in permission: " + descriptor.name);
             }
-            Object result;
             try {
                 engine.eval(descriptor.script);
                 engine.getBindings(ScriptContext.ENGINE_SCOPE).putAll(context);
-                result = ((Invocable) engine).invokeFunction(RUN_FUNCTION);
+                Object result = ((Invocable) engine).invokeFunction(RUN_FUNCTION);
+                if (result instanceof Boolean allow) {
+                    if (!allow) {
+                        return false;
+                    }
+                } else {
+                    log.error("Failed to get boolean result from permission: {} ({})", descriptor.name, result);
+                }
             } catch (NoSuchMethodException e) {
-                throw new NuxeoException("Script does not contain function: " + RUN_FUNCTION + "() in permission: "
-                        + descriptor.name, e);
+                throw new NuxeoException(
+                        "Script does not contain function: " + RUN_FUNCTION + "() in permission: " + descriptor.name,
+                        e);
             } catch (ScriptException e) {
                 log.error("Failed to evaluate script: {}", descriptor.name, e);
-                continue;
-            }
-            if (!(result instanceof Boolean)) {
-                log.error("Failed to get boolean result from permission: {} ({})", descriptor.name, result);
-                continue;
-            }
-            boolean allow = ((Boolean) result).booleanValue();
-            if (!allow) {
-                return false;
             }
         }
         return true;
@@ -952,7 +930,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
         if (userAgent != null && userAgent.contains("MSIE") && (secure || forceNoCacheOnMSIE())) {
             String cacheControl = "max-age=15, must-revalidate";
-            log.debug("Setting Cache-Control: {}",  cacheControl);
+            log.debug("Setting Cache-Control: {}", cacheControl);
             response.setHeader("Cache-Control", cacheControl);
         }
     }

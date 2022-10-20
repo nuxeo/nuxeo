@@ -23,9 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -35,8 +35,6 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,7 +129,7 @@ public class TestNuxeoRequestControllerFilter {
         doAnswer(i -> {
             String key = (String) i.getArguments()[0];
             String value = (String) i.getArguments()[1];
-            headers.put(key, new ArrayList<>(Arrays.asList(value)));
+            headers.put(key, new ArrayList<>(List.of(value)));
             return null;
         }).when(response).setHeader(anyString(), any());
         // addHeader
@@ -151,7 +149,7 @@ public class TestNuxeoRequestControllerFilter {
         doAnswer(i -> {
             String key = (String) i.getArguments()[0];
             List<String> values = headers.get(key);
-            return values == null ? Collections.emptyList() : values;
+            return values == null ? List.of() : values;
         }).when(response).getHeaders(anyString());
         // getHeaderNames
         doAnswer(i -> headers.keySet()).when(response).getHeaderNames();
@@ -188,8 +186,8 @@ public class TestNuxeoRequestControllerFilter {
         verify(response, never()).sendError(anyInt(), anyString());
 
         Map<String, List<String>> expectedResponseHeaders = new HashMap<>();
-        expectedResponseHeaders.put("MyHeader", Arrays.asList("my-header-value"));
-        expectedResponseHeaders.put("Cache-Control", Arrays.asList("private, max-age=123"));
+        expectedResponseHeaders.put("MyHeader", List.of("my-header-value"));
+        expectedResponseHeaders.put("Cache-Control", List.of("private, max-age=123"));
         assertNotNull(responseHeaders.remove("Expires"));
         assertEquals(expectedResponseHeaders, responseHeaders);
 
@@ -198,17 +196,17 @@ public class TestNuxeoRequestControllerFilter {
     }
 
     @Test
-    public void testNuxeoException() throws IOException, ServletException {
+    public void testNuxeoException() throws IOException {
         doTestException(new NuxeoException(456), 456);
     }
 
     @Test
-    public void testRuntimeException() throws IOException, ServletException {
+    public void testRuntimeException() throws IOException {
         doTestException(new RuntimeException(), SC_INTERNAL_SERVER_ERROR);
     }
 
     @SuppressWarnings("resource")
-    protected void doTestException(Exception exc, int expectedStatus) throws IOException, ServletException {
+    protected void doTestException(Exception exc, int expectedStatus) throws IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
 

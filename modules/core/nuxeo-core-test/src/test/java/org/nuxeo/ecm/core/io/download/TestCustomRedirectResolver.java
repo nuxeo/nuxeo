@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.io.download;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -95,22 +95,23 @@ public class TestCustomRedirectResolver {
                                                  .build();
         downloadService.downloadBlob(context);
         // Verify we are redirect to Nuxeo website
-        verify(response).sendRedirect(Matchers.eq("http://www.nuxeo.org"));
+        verify(response).sendRedirect(eq("http://www.nuxeo.org"));
         // Verify there is no output
         assertEquals("", out.toString());
     }
+
     @Test
-    public void testFullDownloadUrlWithoutRedirect() throws IOException {
+    public void testFullDownloadUrlWithoutRedirect() {
         doTestFullDownloadUrl("http://example.com/nuxeo/nxfile/myrepo/myid/my:xpath?changeToken=mytoken");
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-url-redirect.xml")
-    public void testFullDownloadUrlWithRedirect() throws IOException {
+    public void testFullDownloadUrlWithRedirect() {
         doTestFullDownloadUrl("http://www.nuxeo.org");
     }
 
-    protected void doTestFullDownloadUrl(String expectedUrl) throws IOException {
+    protected void doTestFullDownloadUrl(String expectedUrl) {
         DocumentModel doc = mock(DocumentModel.class);
         when(doc.getRepositoryName()).thenReturn("myrepo");
         when(doc.getId()).thenReturn("myid");

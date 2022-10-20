@@ -146,7 +146,7 @@ public class TestBufferingServletResponse {
             buf.write('K');
         }
         byte[] bytes = buf.toByteArray();
-        if (size > 0)  {
+        if (size > 0) {
             out.write(bytes);
         }
         out.flush();
@@ -190,9 +190,8 @@ public class TestBufferingServletResponse {
 
     protected HttpServletResponse getFakeResponse(ResponseProxy responseProxy) {
         ClassLoader cl = getClass().getClassLoader();
-        HttpServletResponse response = (HttpServletResponse) Proxy.newProxyInstance(cl,
-                new Class[] { HttpServletResponse.class }, responseProxy);
-        return response;
+        return (HttpServletResponse) Proxy.newProxyInstance(cl, new Class[] { HttpServletResponse.class },
+                responseProxy);
     }
 
     protected static abstract class DummyServletOutputStream extends ServletOutputStream {
