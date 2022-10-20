@@ -97,12 +97,8 @@ public class Main {
         if (cmd instanceof HelpCommand) {
             return;
         }
-        if (cmdLine.hasOption(KAFKA_OPT) || cmdLine.hasOption("k")) {
-            String contribPath = cmdLine.getOptionValue(KAFKA_OPT, NUXEO_KAFKA_FILE_CONF);
-            createKafkaManager(contribPath, cmdLine.getOptionValue("kafka-config", NUXEO_KAFKA_CONF));
-        } else {
-            throw new IllegalArgumentException("Missing required option: --kafka");
-        }
+        String contribPath = cmdLine.getOptionValue(KAFKA_OPT, NUXEO_KAFKA_FILE_CONF);
+        createKafkaManager(contribPath, cmdLine.getOptionValue("kafka-config", NUXEO_KAFKA_CONF));
     }
 
     protected void createKafkaManager(String kafkaContribution, String kafkaConfig) {
@@ -136,7 +132,7 @@ public class Main {
                                 .hasArg()
                                 .argName("CONFIG")
                                 .build());
-        options.addOption("k", "nuxeo-kafka", false, "Use the default Nuxeo Kafka configuration");
+        options.addOption("k", "nuxeo-kafka", false, "Deprecated: stream.sh now only supports Kafka implementation.");
     }
 
     public LogManager getLogManager(String[] args) {
