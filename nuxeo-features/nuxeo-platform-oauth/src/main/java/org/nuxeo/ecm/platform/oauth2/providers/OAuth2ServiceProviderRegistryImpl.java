@@ -99,7 +99,9 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     public OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL,
             String authorizationServerURL, String userAuthorizationURL, String clientId, String clientSecret,
             List<String> scopes, Boolean isEnabled) {
-
+        if (StringUtils.isBlank(serviceName)) {
+            throw new IllegalArgumentException("The provider's service name cannot be blank!");
+        }
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
             DocumentModel creationEntry = BaseSession.createEntryModel(null, SCHEMA, null, null);
