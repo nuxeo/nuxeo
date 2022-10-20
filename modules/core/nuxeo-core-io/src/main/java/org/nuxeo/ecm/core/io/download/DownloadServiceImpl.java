@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -530,13 +531,12 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         if (filename == null) {
             filename = blob.getFilename();
         }
-        String reason = context.getReason();
-        String requestReason = (String) request.getAttribute(REQUEST_ATTR_DOWNLOAD_REASON);
-        if (requestReason != null) {
-            reason = requestReason;
-        }
-        Map<String, Serializable> extendedInfos = context.getExtendedInfos();
-        extendedInfos = extendedInfos == null ? new HashMap<>() : new HashMap<>(extendedInfos);
+        String downloadReason = Optional.ofNullable((String) request.getAttribute(REQUEST_ATTR_DOWNLOAD_REASON))
+                                        .orElseGet(context::getReason);
+        var extendedInfos = new HashMap<>(context.getExtendedInfos());
+        Optional.ofNullable(request.getHeader(REQUEST_HEADER_CLIENT_REASON))
+                .or(() -> Optional.ofNullable(request.getParameter(REQUEST_QUERY_PARAM_CLIENT_REASON)))
+                .ifPresent(clientReason -> extendedInfos.put(EXTENDED_INFO_CLIENT_REASON, clientReason));
         String requestRendition = (String) request.getAttribute(REQUEST_ATTR_DOWNLOAD_RENDITION);
         if (requestRendition != null) {
             extendedInfos.put(EXTENDED_INFO_RENDITION, requestRendition);
@@ -557,7 +557,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
 
         // check blob permissions
-        if (!checkPermission(doc, xpath, blob, reason, extendedInfos)) {
+        if (!checkPermission(doc, xpath, blob, downloadReason, extendedInfos)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Permission denied");
             return;
         }
@@ -567,7 +567,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         if (uri != null) {
             try {
                 extendedInfos.put("redirect", uri.toString());
-                logDownload(request, doc, xpath, filename, reason, extendedInfos);
+                logDownload(request, doc, xpath, filename, downloadReason, extendedInfos);
                 response.sendRedirect(uri.toString());
             } catch (IOException ioe) {
                 DownloadHelper.handleClientDisconnect(ioe);
@@ -685,7 +685,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
             // log the download but not if it's a random byte range
             if (byteRange == null || byteRange.getStart() == 0) {
-                logDownload(request, doc, xpath, filename, reason, extendedInfos);
+                logDownload(request, doc, xpath, filename, downloadReason, extendedInfos);
             }
 
             String xAccelLocation = request.getHeader(NginxConstants.X_ACCEL_LOCATION_HEADER);

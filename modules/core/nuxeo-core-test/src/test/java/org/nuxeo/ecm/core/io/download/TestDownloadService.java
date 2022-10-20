@@ -38,9 +38,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.nuxeo.ecm.core.io.download.DownloadService.EVENT_NAME;
+import static org.nuxeo.ecm.core.io.download.DownloadService.EXTENDED_INFO_CLIENT_REASON;
 import static org.nuxeo.ecm.core.io.download.DownloadService.EXTENDED_INFO_RENDITION;
 import static org.nuxeo.ecm.core.io.download.DownloadService.REQUEST_ATTR_DOWNLOAD_REASON;
 import static org.nuxeo.ecm.core.io.download.DownloadService.REQUEST_ATTR_DOWNLOAD_RENDITION;
+import static org.nuxeo.ecm.core.io.download.DownloadService.REQUEST_HEADER_CLIENT_REASON;
+import static org.nuxeo.ecm.core.io.download.DownloadService.REQUEST_QUERY_PARAM_CLIENT_REASON;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -776,12 +780,12 @@ public class TestDownloadService {
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
 
-        try (CapturingEventListener listener = new CapturingEventListener(DownloadService.EVENT_NAME)) {
+        try (CapturingEventListener listener = new CapturingEventListener(EVENT_NAME)) {
             DownloadContext context = DownloadContext.builder(req, resp).blob(blob).reason("test").build();
             downloadService.downloadBlob(context);
 
             assertEquals(expectedResult, out.toString(UTF_8));
-            assertEquals(expectedSize, listener.getCapturedEventCount(DownloadService.EVENT_NAME));
+            assertEquals(expectedSize, listener.getCapturedEventCount(EVENT_NAME));
         }
     }
 
@@ -827,6 +831,97 @@ public class TestDownloadService {
         verify(resp).setContentLengthLong(eq(blob.getLength()));
         // assert we end the download
         verifyNoMoreInteractions(resp);
+    }
+
+    // NXP-31279
+    @Test
+    public void testDownloadWithHTTPRequestParamReason() throws IOException {
+        // Given a blob
+        Blob blob = Blobs.createBlob("Hello World");
+        // Given a reason
+        String reason = "view";
+
+        // When I send a request with a given reason
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.getMethod()).thenReturn("GET");
+        when(req.getParameter(REQUEST_QUERY_PARAM_CLIENT_REASON)).thenReturn(reason);
+
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+        ServletOutputStream sos = new DummyServletOutputStream(out);
+        @SuppressWarnings("resource")
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(resp.getOutputStream()).thenReturn(sos);
+        when(resp.getWriter()).thenReturn(printWriter);
+
+        // I have the reason in the download event
+        downloadBlobAndAssertClientReason(req, resp, blob, reason);
+    }
+
+    // NXP-31279
+    @Test
+    public void testDownloadWithHTTPRequestHeaderReason() throws IOException {
+        // Given a blob
+        Blob blob = Blobs.createBlob("Hello World");
+        // Given a reason
+        String reason = "view";
+
+        // When I send a request with a given reason
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.getMethod()).thenReturn("GET");
+        when(req.getHeader(REQUEST_HEADER_CLIENT_REASON)).thenReturn(reason);
+
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+        ServletOutputStream sos = new DummyServletOutputStream(out);
+        @SuppressWarnings("resource")
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(resp.getOutputStream()).thenReturn(sos);
+        when(resp.getWriter()).thenReturn(printWriter);
+
+        // I have the reason in the download event
+        downloadBlobAndAssertClientReason(req, resp, blob, reason);
+    }
+
+    // NXP-31279
+    @Test
+    public void testDownloadWithHTTPRequestParamAndHeaderReasonPriority() throws IOException {
+        // Given a blob
+        Blob blob = Blobs.createBlob("Hello World");
+        // Given different reasons
+        String paramReason = "paramView";
+        String headerReason = "headerView";
+
+        // When I send a request with the given reasons
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.getMethod()).thenReturn("GET");
+        when(req.getParameter(REQUEST_QUERY_PARAM_CLIENT_REASON)).thenReturn(paramReason);
+        when(req.getHeader(REQUEST_HEADER_CLIENT_REASON)).thenReturn(headerReason);
+
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+        ServletOutputStream sos = new DummyServletOutputStream(out);
+        @SuppressWarnings("resource")
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(resp.getOutputStream()).thenReturn(sos);
+        when(resp.getWriter()).thenReturn(printWriter);
+
+        // I have the header reason in the download event
+        downloadBlobAndAssertClientReason(req, resp, blob, headerReason);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void downloadBlobAndAssertClientReason(HttpServletRequest req, HttpServletResponse resp, Blob blob,
+            String expectedReason) throws IOException {
+        try (var listener = new CapturingEventListener(EVENT_NAME)) {
+            // download the blob
+            DownloadContext context = DownloadContext.builder(req, resp).blob(blob).build();
+            downloadService.downloadBlob(context);
+            // assert the reason
+            var eventCtx = listener.findFirstCapturedEventContextOrElseThrow();
+            var extendedInfos = (Map<String, Serializable>) eventCtx.getProperty("extendedInfos");
+            assertEquals(expectedReason, extendedInfos.get(EXTENDED_INFO_CLIENT_REASON));
+        }
     }
 
 }
