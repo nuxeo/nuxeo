@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.io.download;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -50,7 +51,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -139,7 +139,8 @@ public class TestDownloadService {
         doTestBasicDownload(head, filename, filenameInHeader, true);
     }
 
-    protected void doTestBasicDownload(boolean head, String filename, String filenameInHeader, boolean empty) throws Exception {
+    protected void doTestBasicDownload(boolean head, String filename, String filenameInHeader, boolean empty)
+            throws Exception {
         // blob to download
         String blobValue = "Hello World Caf\u00e9";
         String mimeType = "text/plain";
@@ -247,9 +248,7 @@ public class TestDownloadService {
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
 
-        DownloadContext context = DownloadContext.builder(req, resp)
-                                                 .blob(blob)
-                                                 .build();
+        DownloadContext context = DownloadContext.builder(req, resp).blob(blob).build();
         downloadService.downloadBlob(context);
 
         verify(req, atLeast(1)).getHeader("If-None-Match");
@@ -287,10 +286,7 @@ public class TestDownloadService {
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
 
-        DownloadContext context = DownloadContext.builder(req, resp)
-                                                 .blob(blob)
-                                                 .reason("test")
-                                                 .build();
+        DownloadContext context = DownloadContext.builder(req, resp).blob(blob).reason("test").build();
         downloadService.downloadBlob(context);
 
         verify(req, atLeastOnce()).getHeader("If-None-Match");
@@ -300,23 +296,22 @@ public class TestDownloadService {
 
     @Test
     public void testWantDigestMD5() throws Exception {
-        doTestWantDigest(Arrays.asList("MD5"), "MD5=sQqNsWTgdUEFt6mb5y4/5Q==", null);
+        doTestWantDigest(List.of("MD5"), "MD5=sQqNsWTgdUEFt6mb5y4/5Q==", null);
     }
 
     @Test
     public void testWantDigestContentMD5() throws Exception {
-        doTestWantDigest(Arrays.asList("contentMD5"), null, "sQqNsWTgdUEFt6mb5y4/5Q==");
+        doTestWantDigest(List.of("contentMD5"), null, "sQqNsWTgdUEFt6mb5y4/5Q==");
     }
 
     @Test
     public void testWantDigestMD5AndContentMD5() throws Exception {
-        doTestWantDigest(Arrays.asList("MD5", "contentMD5"), "MD5=sQqNsWTgdUEFt6mb5y4/5Q==",
-                "sQqNsWTgdUEFt6mb5y4/5Q==");
+        doTestWantDigest(List.of("MD5", "contentMD5"), "MD5=sQqNsWTgdUEFt6mb5y4/5Q==", "sQqNsWTgdUEFt6mb5y4/5Q==");
     }
 
     @Test
     public void testWantDigestUnknown() throws Exception {
-        doTestWantDigest(Arrays.asList("nosuchalgo"), null, null);
+        doTestWantDigest(List.of("nosuchalgo"), null, null);
     }
 
     protected void doTestWantDigest(List<String> wanted, String expectedDigest, String expectedContentMD5)
@@ -342,9 +337,7 @@ public class TestDownloadService {
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
 
-        DownloadContext context = DownloadContext.builder(req, resp)
-                                                 .blob(blob)
-                                                 .build();
+        DownloadContext context = DownloadContext.builder(req, resp).blob(blob).build();
         downloadService.downloadBlob(context);
 
         verify(resp).setHeader(eq("ETag"), eq("\"b10a8db164e0754105b7a99be72e3fe5\""));
@@ -403,7 +396,7 @@ public class TestDownloadService {
         if (!useRequestAttribute) {
             // reason/rendition passed explicitly to downloadBlob method
             reason = "rendition";
-            extendedInfos = Collections.singletonMap(EXTENDED_INFO_RENDITION, "myrendition");
+            extendedInfos = Map.of(EXTENDED_INFO_RENDITION, "myrendition");
         } else {
             // reason/rendition passed in request attribute
             reason = null;
@@ -413,7 +406,7 @@ public class TestDownloadService {
         }
 
         // principal
-        NuxeoPrincipal principal = new UserPrincipal("bob", Collections.singletonList("members"), false, false);
+        NuxeoPrincipal principal = new UserPrincipal("bob", List.of("members"), false, false);
 
         // do tests while logged in
         LoginComponent.pushPrincipal(principal);
@@ -474,9 +467,7 @@ public class TestDownloadService {
         when(doc.getPropertyValue("file:content")).thenReturn((Serializable) blob);
 
         // send download request permission denied
-        DownloadContext context = DownloadContext.builder(request, response)
-                                                 .doc(doc)
-                                                 .build();
+        DownloadContext context = DownloadContext.builder(request, response).doc(doc).build();
         downloadService.downloadBlob(context);
         assertEquals("", out.toString());
         verify(response, atLeastOnce()).sendError(403, "Permission denied");
@@ -491,6 +482,7 @@ public class TestDownloadService {
      * @since 9.3
      */
     @Test
+    @SuppressWarnings("deprecation")
     public void testAsyncDownload() throws IOException {
         // blob to download
         String blobValue = "Hello World";
@@ -517,9 +509,9 @@ public class TestDownloadService {
         when(response.getWriter()).thenReturn(printWriter);
 
         // principal
-        NuxeoPrincipal principal = new UserPrincipal("bob", Collections.singletonList("members"), false, false);
+        NuxeoPrincipal principal = new UserPrincipal("bob", List.of("members"), false, false);
 
-        String key = downloadService.storeBlobs(Collections.singletonList(blob));
+        String key = downloadService.storeBlobs(List.of(blob));
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
         ts.setCompleted(key, false);
@@ -563,9 +555,9 @@ public class TestDownloadService {
         HttpServletResponse response = mock(HttpServletResponse.class);
 
         // principal
-        NuxeoPrincipal principal = new UserPrincipal("bob", Collections.singletonList("members"), false, false);
+        NuxeoPrincipal principal = new UserPrincipal("bob", List.of("members"), false, false);
 
-        String key = downloadService.storeBlobs(Collections.emptyList());
+        String key = downloadService.storeBlobs(List.of());
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
         ts.setCompleted(key, false);
@@ -587,14 +579,14 @@ public class TestDownloadService {
 
     @Test
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
-    public void testTransientCleanup() throws IOException, InterruptedException {
-        // transfert temporary file into a blob
+    public void testTransientCleanup() throws IOException {
+        // transfer temporary file into a blob
         Path path = Files.createTempFile("pfouh", "pfouh");
         FileBlob blob = new FileBlob("pfouh");
         Files.move(path, blob.getFile().toPath(), REPLACE_EXISTING);
 
         // store the blob for downloading
-        String key = downloadService.storeBlobs(Collections.singletonList(blob));
+        String key = downloadService.storeBlobs(List.of(blob));
 
         // mock request
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -614,7 +606,7 @@ public class TestDownloadService {
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
 
-        NuxeoPrincipal principal = new UserPrincipal("bob", Collections.singletonList("members"), false, false);
+        NuxeoPrincipal principal = new UserPrincipal("bob", List.of("members"), false, false);
 
         // do tests while logged in
         LoginComponent.pushPrincipal(principal);
@@ -632,7 +624,7 @@ public class TestDownloadService {
     public void testDownloadTransientWithHeadBeforeGet() throws IOException {
         // store a blob in the transient store
         Blob blob = Blobs.createBlob("hello");
-        String key = downloadService.storeBlobs(Collections.singletonList(blob));
+        String key = downloadService.storeBlobs(List.of(blob));
 
         // === do a HEAD first ===
 
@@ -748,9 +740,7 @@ public class TestDownloadService {
         doThrow(new IllegalArgumentException()).when(response).setCharacterEncoding(encoding);
 
         // send download request
-        DownloadContext context = DownloadContext.builder(request, response)
-                                                 .blob(blob)
-                                                 .build();
+        DownloadContext context = DownloadContext.builder(request, response).blob(blob).build();
         downloadService.downloadBlob(context);
 
         // check that the blob gets returned even though the encoding was illegal
@@ -853,13 +843,10 @@ public class TestDownloadService {
         when(resp.getWriter()).thenReturn(printWriter);
 
         try (CapturingEventListener listener = new CapturingEventListener(DownloadService.EVENT_NAME)) {
-            DownloadContext context = DownloadContext.builder(req, resp)
-                                                     .blob(blob)
-                                                     .reason("test")
-                                                     .build();
+            DownloadContext context = DownloadContext.builder(req, resp).blob(blob).reason("test").build();
             downloadService.downloadBlob(context);
 
-            assertEquals(expectedResult, out.toString("UTF-8"));
+            assertEquals(expectedResult, out.toString(UTF_8));
             assertEquals(expectedSize, listener.getCapturedEventCount(DownloadService.EVENT_NAME));
         }
     }
@@ -870,8 +857,8 @@ public class TestDownloadService {
     public void testDownloadWithNginxAccel() throws IOException {
         // create a temporary FileBlob
         DefaultBinaryManager binaryManager = new DefaultBinaryManager();
-        binaryManager.initialize("repo", Collections.emptyMap());
-        Blob source = new FileBlob(new ByteArrayInputStream(CONTENT.getBytes("UTF-8")));
+        binaryManager.initialize("repo", Map.of());
+        Blob source = new FileBlob(new ByteArrayInputStream(CONTENT.getBytes(UTF_8)));
         Binary binary = binaryManager.getBinary(source);
         String digest = binary.getDigest();
         String filename = "cafe.txt";
@@ -894,10 +881,7 @@ public class TestDownloadService {
         when(resp.getWriter()).thenReturn(printWriter);
 
         // download it
-        DownloadContext context = DownloadContext.builder(req, resp)
-                                                 .blob(blob)
-                                                 .reason("test")
-                                                 .build();
+        DownloadContext context = DownloadContext.builder(req, resp).blob(blob).reason("test").build();
         downloadService.downloadBlob(context);
 
         // assert headers (mockito wants us to assert all header in same order they were set)

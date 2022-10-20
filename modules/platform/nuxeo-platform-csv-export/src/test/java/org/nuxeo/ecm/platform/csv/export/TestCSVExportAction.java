@@ -42,8 +42,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -157,7 +155,7 @@ public class TestCSVExportAction {
         assertEquals(url, status.getResult().get("url"));
 
         Blob blob = getBlob(command.getId());
-        // file is ziped
+        // file is zipped
         boolean zipped = command.getParam(ZIP_PARAMETER);
         String extension = zipped ? "zip" : "csv";
         assertEquals(extension, FilenameUtils.getExtension(blob.getFilename()));
@@ -186,7 +184,7 @@ public class TestCSVExportAction {
         if (sorted) {
             List<String> content = lines.subList(1, lines.size());
             List<String> sortedContent = new ArrayList<>(content);
-            Collections.sort(sortedContent);
+            sortedContent.sort(null);
             assertEquals(content, sortedContent);
         }
         assertTrue(status.getProcessingStartTime() != null);
@@ -261,7 +259,7 @@ public class TestCSVExportAction {
 
         List<String> lines = Files.lines(file.toPath()).collect(Collectors.toList());
         // Check header
-        List<String> header = Arrays.asList(lines.get(0).split(","));
+        List<String> header = List.of(lines.get(0).split(","));
         // Check that the given schemas and properties are present after the system properties
 
         int systemHeaderSize = SYSTEM_PROPERTIES_HEADER_FIELDS.length;
@@ -278,7 +276,7 @@ public class TestCSVExportAction {
         for (String doc : content) {
             // There should be headerSize - 1 number of commas for headerSize number of properties
             assertEquals(headerSize - 1, StringUtils.countMatches(doc, ","));
-            List<String> properties = Arrays.asList(doc.split(","));
+            List<String> properties = List.of(doc.split(","));
             if (properties.contains("ComplexDoc")) {
                 assertTrue(properties.contains("Article FR"));
             }

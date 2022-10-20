@@ -19,13 +19,14 @@
  */
 package org.nuxeo.ecm.core.io.download;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Calendar;
@@ -214,14 +215,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             }
         }
         if (StringUtils.isNotEmpty(changeToken)) {
-            try {
-                sb.append("?")
-                  .append(CoreSession.CHANGE_TOKEN)
-                  .append("=")
-                  .append(URLEncoder.encode(changeToken, "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                log.error("Cannot append changeToken", e);
-            }
+            sb.append("?").append(CoreSession.CHANGE_TOKEN).append("=").append(URLEncoder.encode(changeToken, UTF_8));
         }
         return sb.toString();
     }
@@ -338,7 +332,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     protected static final String CHEMISTRY_HEAD_REQUEST_CLASS = "HEADHttpServletRequestWrapper";
 
     protected static boolean isHead(HttpServletRequest request) {
-        return "HEAD".equals(request.getMethod()) || request.getClass().getSimpleName().equals(CHEMISTRY_HEAD_REQUEST_CLASS);
+        return "HEAD".equals(request.getMethod())
+                || request.getClass().getSimpleName().equals(CHEMISTRY_HEAD_REQUEST_CLASS);
     }
 
     protected void handleDownload(HttpServletRequest req, HttpServletResponse resp, String downloadPath, String baseUrl,
@@ -380,7 +375,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                     return;
                 }
                 String downloadUrl = baseUrl + getDownloadUrl(doc, xpath, filename);
-                String result = blob.getMimeType() + ':' + URLEncoder.encode(blob.getFilename(), "UTF-8") + ':'
+                String result = blob.getMimeType() + ':' + URLEncoder.encode(blob.getFilename(), UTF_8) + ':'
                         + downloadUrl;
                 resp.setContentType("text/plain");
                 if (!isHead(req)) {
@@ -453,10 +448,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             blob = blobs.get(0);
         }
         try {
-            DownloadContext context = DownloadContext.builder(request, response)
-                                                     .blob(blob)
-                                                     .reason(reason)
-                                                     .build();
+            DownloadContext context = DownloadContext.builder(request, response).blob(blob).reason(reason).build();
             downloadBlob(context);
         } finally {
             if (!status && !isHead(request)) {
@@ -761,7 +753,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     protected Set<String> getWantDigests(HttpServletRequest request) {
         Enumeration<String> values = request.getHeaders("Want-Digest");
         if (values == null) {
-            return Collections.emptySet();
+            return Set.of();
         }
         Set<String> wantDigests = new HashSet<>();
         for (String value : Collections.list(values)) {
@@ -887,7 +879,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
         xpath = fixXPath(xpath);
         Map<String, Object> context = new HashMap<>();
-        Map<String, Serializable> ei = extendedInfos == null ? Collections.emptyMap() : extendedInfos;
+        Map<String, Serializable> ei = extendedInfos == null ? Map.of() : extendedInfos;
         NuxeoPrincipal currentUser = NuxeoPrincipal.getCurrent();
         context.put("Document", doc);
         context.put("XPath", xpath);
@@ -952,7 +944,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
         if (userAgent != null && userAgent.contains("MSIE") && (secure || forceNoCacheOnMSIE())) {
             String cacheControl = "max-age=15, must-revalidate";
-            log.debug("Setting Cache-Control: {}",  cacheControl);
+            log.debug("Setting Cache-Control: {}", cacheControl);
             response.setHeader("Cache-Control", cacheControl);
         }
     }
