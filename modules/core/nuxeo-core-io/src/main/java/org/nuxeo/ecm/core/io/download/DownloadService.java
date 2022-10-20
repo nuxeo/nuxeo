@@ -85,6 +85,13 @@ public interface DownloadService {
     String EXTENDED_INFO_RENDITION = "rendition";
 
     /**
+     * The extended info containing the client reason.
+     *
+     * @since 2023.0
+     */
+    String EXTENDED_INFO_CLIENT_REASON = "clientReason";
+
+    /**
      * Internal request attribute recording the reason to use for the download.
      *
      * @since 11.1
@@ -97,6 +104,20 @@ public interface DownloadService {
      * @since 11.1
      */
     String REQUEST_ATTR_DOWNLOAD_RENDITION = "nuxeo.download.rendition";
+
+    /**
+     * Public request query parameter recording the client reason to use for the download.
+     *
+     * @since 2023.0
+     */
+    String REQUEST_QUERY_PARAM_CLIENT_REASON = "clientReason";
+
+    /**
+     * Public request header recording the client reason to use for the download.
+     *
+     * @since 2023.0
+     */
+    String REQUEST_HEADER_CLIENT_REASON = "X-Client-Reason";
 
     /**
      * Download context.
@@ -172,7 +193,7 @@ public interface DownloadService {
         }
 
         public Map<String, Serializable> getExtendedInfos() {
-            return extendedInfos;
+            return extendedInfos == null ? Map.of() : extendedInfos;
         }
 
         public Boolean getInline() {
