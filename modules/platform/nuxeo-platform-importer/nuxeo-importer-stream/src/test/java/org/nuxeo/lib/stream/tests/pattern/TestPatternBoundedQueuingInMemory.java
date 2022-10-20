@@ -16,22 +16,11 @@
  */
 package org.nuxeo.lib.stream.tests.pattern;
 
-import static org.junit.Assume.assumeFalse;
-
-import java.nio.file.Path;
-
 import org.junit.After;
-import org.junit.Before;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.mem.MemLogManager;
 
 public class TestPatternBoundedQueuingInMemory extends TestPatternBoundedQueuing {
-    protected Path basePath;
-
-    @Before
-    public void skipWindowsThatDontCleanTempFolder() {
-        assumeFalse(TestPatternQueuingInMemory.IS_WIN);
-    }
 
     @After
     public void clear() {

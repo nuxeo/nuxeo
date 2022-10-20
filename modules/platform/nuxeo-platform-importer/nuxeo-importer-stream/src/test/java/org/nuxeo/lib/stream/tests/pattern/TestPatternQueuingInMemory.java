@@ -16,24 +16,13 @@
  */
 package org.nuxeo.lib.stream.tests.pattern;
 
-import static org.junit.Assume.assumeFalse;
-
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.mem.MemLogManager;
 
 public class TestPatternQueuingInMemory extends TestPatternQueuing {
-    protected final static String OS = System.getProperty("os.name").toLowerCase();
-
-    public final static boolean IS_WIN = OS.startsWith("win");
-
-    @Before
-    public void skipWindowsThatDontCleanTempFolder() {
-        assumeFalse(IS_WIN);
-    }
 
     @After
     public void clear() {
