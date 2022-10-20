@@ -174,6 +174,30 @@ public class OAuth2ObjectTest extends BaseTest {
     }
 
     @Test
+    public void iCantCreateProviderWithBlankServiceName() throws IOException {
+        String data = "{\n" + //
+                "   \"authorizationServerURL\": \"https://test.oauth2.provider/authorization\",\n" + //
+                "   \"clientId\": \"clientId\",\n" + //
+                "   \"clientSecret\": \"123secret321\",\n" + //
+                "   \"description\": \"My Service\",\n" + //
+                "   \"entity-type\": \"nuxeoOAuth2ServiceProvider\",\n" + //
+                "   \"isEnabled\": true,\n" + //
+                "   \"scopes\": [\n" + //
+                "      \"https://test.oauth2.provider/scopes/scope0\",\n" + //
+                "      \"https://test.oauth2.provider/scopes/scope1\"\n" + //
+                "   ],\n" + //
+                "   \"serviceName\": \" \",\n" + //
+                "   \"tokenServerURL\": \"https://test.oauth2.provider/token\"\n" + //
+                "}";
+        try (CloseableClientResponse response = getResponse(RequestType.POST, PROVIDER_PATH, data)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("java.lang.IllegalArgumentException: The provider's service name cannot be blank!",
+                    node.get("message").textValue());
+        }
+    }
+
+    @Test
     public void iCanUpdateProvider() throws IOException {
         try (CloseableClientResponse response = getResponse(RequestType.GET, getProviderPath(TEST_OAUTH2_PROVIDER_2))) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
