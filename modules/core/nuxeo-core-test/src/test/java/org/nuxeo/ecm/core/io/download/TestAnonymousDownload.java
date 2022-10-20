@@ -33,7 +33,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +46,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.io.DummyServletOutputStream;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
@@ -74,17 +74,6 @@ public class TestAnonymousDownload {
             return principal;
         }
 
-    }
-
-    protected static abstract class DummyServletOutputStream extends ServletOutputStream {
-        @Override
-        public boolean isReady() {
-            return true;
-        }
-
-        @Override
-        public void setWriteListener(WriteListener writeListener) {
-        }
     }
 
     @Inject
@@ -119,12 +108,7 @@ public class TestAnonymousDownload {
         when(request.getMethod()).thenReturn("GET");
 
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);

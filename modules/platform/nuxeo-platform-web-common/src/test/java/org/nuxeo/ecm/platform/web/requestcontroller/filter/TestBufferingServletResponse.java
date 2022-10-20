@@ -32,7 +32,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.io.DummyServletOutputStream;
 import org.nuxeo.ecm.core.io.download.BufferingServletOutputStream;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
 
@@ -194,28 +194,12 @@ public class TestBufferingServletResponse {
                 responseProxy);
     }
 
-    protected static abstract class DummyServletOutputStream extends ServletOutputStream {
-        @Override
-        public boolean isReady() {
-            return true;
-        }
-
-        @Override
-        public void setWriteListener(WriteListener writeListener) {
-        }
-    }
-
     public static class ResponseProxy implements InvocationHandler {
 
         public ServletOutputStream sout;
 
         public ResponseProxy(final OutputStream out) {
-            sout = new DummyServletOutputStream() {
-                @Override
-                public void write(int b) throws IOException {
-                    out.write(b);
-                }
-            };
+            sout = new DummyServletOutputStream(out);
         }
 
         @Override

@@ -30,7 +30,6 @@ import java.io.PrintWriter;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.DummyServletOutputStream;
 import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -56,17 +56,6 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-with-resolver.xml")
 public class TestCustomRedirectResolver {
 
-    protected static abstract class DummyServletOutputStream extends ServletOutputStream {
-        @Override
-        public boolean isReady() {
-            return true;
-        }
-
-        @Override
-        public void setWriteListener(WriteListener writeListener) {
-        }
-    }
-
     @Inject
     protected DownloadService downloadService;
 
@@ -79,12 +68,7 @@ public class TestCustomRedirectResolver {
         when(request.getMethod()).thenReturn("GET");
 
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                out.write(b);
-            }
-        };
+        ServletOutputStream sos = new DummyServletOutputStream(out);
         @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
