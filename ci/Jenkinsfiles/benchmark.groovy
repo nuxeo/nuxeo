@@ -30,7 +30,7 @@ void setGitHubBuildStatus(String context, String message, String state) {
 }
 
 boolean isTriggeredByCron() {
-  return currentBuild.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause') != null
+  return currentBuild.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause')
 }
 
 boolean isTriggeredByNuxeoPromotion() {
@@ -181,9 +181,9 @@ pipeline {
           Set Kubernetes resource labels
           ----------------------------------------
           """
-          echo "Set label 'branch: ${BRANCH_NAME}' on pod ${NODE_NAME}"
+          echo "Set label 'branch: ${BRANCH_NAME.replaceAll('/', '-')}' on pod ${NODE_NAME}"
           sh """
-            kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME}
+            kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME.replaceAll('/', '-')}
           """
         }
       }
