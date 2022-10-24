@@ -66,7 +66,7 @@ public class TestMakeBlob {
         Record record2 = createRecord(command, "cdef", 4);
 
         // init the computation
-        MakeBlob comp = new MakeBlob();
+        MakeBlob comp = new MakeBlob(false);
         ComputationContextImpl context = new ComputationContextImpl(
                 new ComputationMetadataMapping(comp.metadata(), Collections.emptyMap()));
         comp.init(context);
@@ -128,7 +128,7 @@ public class TestMakeBlob {
         Record c2r4 = createRecord(command2, "qr", 2);
 
         // init the computation
-        MakeBlob comp = new MakeBlob();
+        MakeBlob comp = new MakeBlob(false);
         ComputationContextImpl context = new ComputationContextImpl(
                 new ComputationMetadataMapping(comp.metadata(), Collections.emptyMap()));
         comp.init(context);

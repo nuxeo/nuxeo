@@ -23,7 +23,7 @@
           <option name="thresholdSize">990000</option>
         </filter>
       </stream>
-      <option name="produceImmediate">false</option>
+      <option name="produceImmediate">true</option>
     </streamProcessor>
   </extension>
 
