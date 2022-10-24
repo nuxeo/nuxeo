@@ -1,6 +1,6 @@
-# Nuxeo platform 10.10-HF67-SNAPSHOT
+# Nuxeo platform 10.10-HF67
 
-Welcome to the Nuxeo Platform 10.10-HF67-SNAPSHOT.
+Welcome to the Nuxeo Platform 10.10-HF67.
 
 You can always download the latest releases of Nuxeo packages (distributions, 
 installers, virtual machine images, ...) from [https://www.nuxeo.com/downloads/][1].
