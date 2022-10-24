@@ -146,7 +146,7 @@ pipeline {
     CURRENT_NAMESPACE = getCurrentNamespace()
     SCM_REF = getScmRef()
 
-    BRANCH_NAME = "${params.NUXEO_BRANCH}"
+    BRANCH_NAME = "${params.NUXEO_BRANCH.replaceAll('/', '-')}"
     NUXEO_DOCKER_IMAGE_WITH_VERSION = resolveDockerImageVersion("${params.NUXEO_DOCKER_IMAGE}")
     INSTALL_NEEDED_PACKAGES = "${params.INSTALL_NEEDED_PACKAGES}"
     NX_REPLICA_COUNT = "${params.NUXEO_NB_APP_NODE.toInteger()}"
@@ -181,9 +181,9 @@ pipeline {
           Set Kubernetes resource labels
           ----------------------------------------
           """
-          echo "Set label 'branch: ${BRANCH_NAME.replaceAll('/', '-')}' on pod ${NODE_NAME}"
+          echo "Set label 'branch: ${BRANCH_NAME}' on pod ${NODE_NAME}"
           sh """
-            kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME.replaceAll('/', '-')}
+            kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME}
           """
         }
       }
