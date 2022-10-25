@@ -11,6 +11,7 @@
       <maxThreads>${nuxeo.work.queue.common.threads}</maxThreads>
       <category>aceStatusUpdatedListener</category>
       <category>binary_metadata_work</category>
+      <category>blobManagerDeleteMarkedBlobsListener</category>
       <category>checkedInCommentListener</category>
       <category>cleanOpenTasksOnWorkflowDone</category>
       <category>ConversionWork</category>
@@ -24,6 +25,7 @@
       <category>nuxeoDriveGroupUpdateListener</category>
       <category>nuxeoDriveVirtualEventLoggerListener</category>
       <category>opchainpclistener</category>
+      <category>orphanVersionRemoverListener</category>
       <category>permissionNotificationListener</category>
       <category>removeDocumentRoutesForDeletedDocument</category>
       <category>removeTasksForDeletedDocumentRoute</category>
