@@ -4718,7 +4718,7 @@
       <dependency>
         <groupId>org.codehaus.jettison</groupId>
         <artifactId>jettison</artifactId>
-        <version>1.4.1</version>
+        <version>1.5.1</version>
         <!-- exposes a package conflicting with JDK -->
         <exclusions>
           <exclusion>
