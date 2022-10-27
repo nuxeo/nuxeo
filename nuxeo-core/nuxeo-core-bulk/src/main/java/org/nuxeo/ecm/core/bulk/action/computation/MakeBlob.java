@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.ComputationContext;
@@ -57,6 +58,10 @@ public class MakeBlob extends AbstractTransientBlobComputation {
 
     protected static final long CHECK_DELAY_MS = 1000;
 
+    protected static final long FLUSH_UNFINISHED_BLOBS_DELAY_MS = 15 * 60_000L;
+
+    protected static final String FLUSH_UNFINISHED_BLOBS_TIMER = "flushUnfinishedBlobs";
+
     protected static final String SORT_STREAM = OUTPUT_1;
 
     protected static final String ZIP_STREAM = OUTPUT_2;
@@ -74,7 +79,7 @@ public class MakeBlob extends AbstractTransientBlobComputation {
     protected final boolean produceImmediate;
 
     public MakeBlob() {
-        this(false);
+        this(true);
     }
 
     public MakeBlob(boolean produceImmediate) {
@@ -99,6 +104,18 @@ public class MakeBlob extends AbstractTransientBlobComputation {
                                         .collect(Collectors.toList());
         commands.forEach(commandId -> finishBlob(context, commandId));
         context.setTimer("check", System.currentTimeMillis() + CHECK_DELAY_MS);
+        if (FLUSH_UNFINISHED_BLOBS_TIMER.equals(key) && !counters.isEmpty()) {
+            counters.keySet().forEach(commandId -> {
+                BulkService service = Framework.getService(BulkService.class);
+                BulkStatus status = service.getStatus(commandId);
+                BulkCommand command = service.getCommand(commandId);
+                log.error("Flushing unfinished blob after {}s, actual: {}, expected: {}, command: {}, status: {}",
+                        FLUSH_UNFINISHED_BLOBS_DELAY_MS /1000, counters.get(commandId), status.getTotal(),
+                        command, status);
+                finishBlob(context, commandId);
+            });
+        }
+
     }
 
     @Override
@@ -117,6 +134,7 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         }
         lastBuckets.put(commandId, in);
         if (counters.get(commandId) < getTotal(commandId)) {
+            context.setTimer(FLUSH_UNFINISHED_BLOBS_TIMER, System.currentTimeMillis() + FLUSH_UNFINISHED_BLOBS_DELAY_MS);
             return;
         }
         finishBlob(context, commandId);
