@@ -45,7 +45,7 @@ public class CSVExportAction implements StreamProcessorTopology {
 
     @Override
     public Topology getTopology(Map<String, String> options) {
-        boolean produceImmediate = getOptionAsBoolean(options, PRODUCE_IMMEDIATE_OPTION, false);
+        boolean produceImmediate = getOptionAsBoolean(options, PRODUCE_IMMEDIATE_OPTION, true);
         return Topology.builder()
                        .addComputation(CSVProjectionComputation::new, //
                                Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
