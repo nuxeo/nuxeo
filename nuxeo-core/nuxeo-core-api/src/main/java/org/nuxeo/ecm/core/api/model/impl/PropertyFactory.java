@@ -105,9 +105,8 @@ public class PropertyFactory {
         // check if property to create has flags to inherit from parent or configuration
         if (parent instanceof AbstractProperty) { // should always be the case
             // compute inherit flags from parent
-            flags |= IntStream.of(IS_SECURED, IS_DEPRECATED)
-                              .filter(((AbstractProperty) parent)::areFlagsSet)
-                              .reduce(0, (f1, f2) -> f1 | f2);
+            flags |= ((AbstractProperty) parent).areFlagsSet(IS_SECURED) ? IS_SECURED : 0;
+            flags |= ((AbstractProperty) parent).areFlagsSet(IS_DEPRECATED) ? IS_DEPRECATED : 0;
             // if parent is not secured or deprecated, compute characteristics for current property
             if ((flags & IS_SECURED) == 0 || (flags & IS_DEPRECATED) == 0) {
                 String schemaName = parent.getSchema().getName();
