@@ -991,6 +991,9 @@ public class SchemaManagerImpl implements SchemaManager {
      */
     @Override
     public boolean isSecured(String schema, String path) {
+        if (securedProperties.isEmpty()) {
+            return false;
+        }
         for (String key = computePropertyKey(schema, cleanPath(path)); //
              StringUtils.isNotBlank(key); key = key.substring(0, Math.max(key.lastIndexOf('/'), 0))) {
             if (securedProperties.contains(key)) {
