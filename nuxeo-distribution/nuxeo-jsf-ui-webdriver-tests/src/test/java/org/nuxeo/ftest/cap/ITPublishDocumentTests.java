@@ -65,11 +65,11 @@ import org.openqa.selenium.WebElement;
 @Features({ FakeSmtpMailServerFeature.class })
 public class ITPublishDocumentTests extends AbstractTest {
 
-    protected final static String TEST_SECTION_TITLE = "Test Section " + new Date().getTime();
+    protected final static String TEST_SECTION_TITLE = "Test Section " + (new Date().getTime() % 10000);
 
-    protected final static String OTHER_TEST_SECTION_TITLE = "Other Test Section " + new Date().getTime();
+    protected final static String OTHER_TEST_SECTION_TITLE = "Other Test Section " + (new Date().getTime() % 10000);
 
-    protected final static String TEST_NOTE_TITLE = "Test note to be versionned";
+    protected final static String TEST_NOTE_TITLE = "Test note to version";
 
     protected final static String TEST_SECTION_URL = String.format(Constants.NXPATH_URL_FORMAT,
             SECTIONS_PATH + TEST_SECTION_TITLE);
