@@ -42,11 +42,13 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This object basically overrides the default DocumentObject that doesn't know how to produce/consume JSON
@@ -93,8 +95,9 @@ public class JSONDocumentObject extends DocumentObject {
         if (StringUtils.isBlank(inputDoc.getType()) || StringUtils.isBlank(inputDoc.getName())) {
             throw new NuxeoException("type or name property is missing", Status.BAD_REQUEST.getStatusCode());
         }
-        DocumentModel createdDoc = session.createDocumentModel(doc.getPathAsString(), inputDoc.getName(),
-                inputDoc.getType());
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
+        DocumentModel createdDoc = session.createDocumentModel(doc.getPathAsString(),
+                pss.generatePathSegment(inputDoc.getName()), inputDoc.getType());
         DocumentModelJsonReader.applyPropertyValues(inputDoc, createdDoc);
         versioningDocFromHeaderIfExists(createdDoc, headers);
         createdDoc = session.createDocument(createdDoc);

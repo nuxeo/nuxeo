@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.WILDCARD_VALUE
 
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
@@ -37,6 +38,7 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.jersey.api.client.ClientResponse;
@@ -52,20 +54,30 @@ import com.sun.jersey.api.client.ClientResponse;
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-validation-contrib.xml")
 public class DocumentValidationTest extends BaseTest {
 
+    @Inject
+    protected TransactionalFeature txFeature;
+
     private static final String VALID_DOC = createDocumentJSON("\"Bill\"", "\"Boquet\"");
 
     private static final String INVALID_DOC = createDocumentJSON("\"   \"", "\"   \"");
 
     private static final String INVALID_DOC_NOT_DIRTY = createDocumentJSON(null, "\"Missing\"", "\"Mydescription\"");
 
+    private static final String INVALID_DOC_NAME_SEGMENT_LIMIT_EXCEEDED = createDocumentJSON(
+            "\"123456789_123456789_123456789\"", "\"The mandatory description\"", "\"Bill\"", "\"Boquet\"");
+
     private static String createDocumentJSON(String firstname, String lastname) {
-        return createDocumentJSON("\"The mandatory description\"", firstname, lastname);
+        return createDocumentJSON("\"doc1\"", "\"The mandatory description\"", firstname, lastname);
     }
 
     private static String createDocumentJSON(String description, String firstname, String lastname) {
+        return createDocumentJSON("\"doc1\"", description, firstname, lastname);
+    }
+
+    private static String createDocumentJSON(String docName, String description, String firstname, String lastname) {
         String doc = "{";
         doc += "\"entity-type\":\"document\" ,";
-        doc += "\"name\":\"doc1\" ,";
+        doc += "\"name\":" + docName + " ,";
         doc += "\"type\":\"ValidatedDocument\" ,";
         doc += "\"properties\" : {";
         if (description != null) {
@@ -88,6 +100,25 @@ public class DocumentValidationTest extends BaseTest {
     public void testCreateValidDocumentEndpointPath() {
         try (CloseableClientResponse response = getResponse(RequestType.POST, "path/", VALID_DOC)) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        }
+    }
+
+    @Test
+    public void testCreateDocumentWithSegmentLimitViolationInName() throws IOException {
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path/",
+                INVALID_DOC_NAME_SEGMENT_LIMIT_EXCEEDED)) {
+            // create a doc whose name is too long
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+            // check the path in the response
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("/123456789_123456789_1234", node.get("path").asText());
+
+            // refresh the session
+            txFeature.nextTransaction();
+
+            // the created doc's name has been truncated to match the path segment limit
+            assertTrue(session.exists(new PathRef("/123456789_123456789_1234")));
         }
     }
 
