@@ -22,10 +22,15 @@ package org.nuxeo.ecm.restapi.test;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.nuxeo.ecm.core.io.download.DownloadService.EXTENDED_INFO_RENDITION;
+import static org.nuxeo.ecm.core.io.download.DownloadService.REQUEST_ATTR_DOWNLOAD_RENDITION;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,18 +40,22 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class })
+@Features({ RestServerFeature.class, AuditFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.actions")
 @Deploy("org.nuxeo.ecm.platform.rendition.api")
@@ -55,6 +64,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.platform.convert")
 @Deploy("org.nuxeo.ecm.platform.thumbnail")
 public class RenditionTest extends BaseTest {
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Test
     public void shouldRetrieveTheRendition() {
@@ -85,6 +97,16 @@ public class RenditionTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.GET,
                                                             "path" + doc.getPathAsString() + "/@rendition/pdf")) {
             assertEquals(200, response.getStatus());
+        }
+
+        // NXP-31383
+        txFeature.nextTransaction();
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path" + doc.getPathAsString() + "/@audit")) {
+            assertEquals(SC_OK, response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("\"pdf\"", node.get("entries").get(0).get("extended").get(EXTENDED_INFO_RENDITION).toString());
+            assertNull(node.get("entries").get(0).get("extended").get(REQUEST_ATTR_DOWNLOAD_RENDITION));
         }
     }
 
