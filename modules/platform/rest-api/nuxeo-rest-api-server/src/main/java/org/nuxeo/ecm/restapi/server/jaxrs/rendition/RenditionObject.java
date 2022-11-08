@@ -20,7 +20,7 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.rendition;
 
-import static org.nuxeo.ecm.core.io.download.DownloadService.REQUEST_ATTR_DOWNLOAD_RENDITION;
+import static org.nuxeo.ecm.core.io.download.DownloadService.EXTENDED_INFO_RENDITION;
 
 import java.util.Map;
 
@@ -86,7 +86,7 @@ public class RenditionObject extends DefaultObject {
         DownloadContextBlobHolder blobHolder = new DownloadContextBlobHolder(blob);
         blobHolder.setDocument(doc);
         blobHolder.setReason("rendition");
-        blobHolder.setExtendedInfos(Map.of(REQUEST_ATTR_DOWNLOAD_RENDITION, renditionName));
+        blobHolder.setExtendedInfos(Map.of(EXTENDED_INFO_RENDITION, renditionName));
         return blobHolder;
     }
 }
