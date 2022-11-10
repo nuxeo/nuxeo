@@ -691,7 +691,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             throw new NuxeoException("Can not import document " + file);
         }
         // remove model from cache if any model with the same id existed
-        modelsCache.invalidate(doc.getName());
+        modelsCache.invalidate(session.getRepositoryName() + ":" + doc.getName());
 
         return doc.getAdapter(DocumentRoute.class);
     }
@@ -792,7 +792,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public String getRouteModelDocIdWithId(CoreSession session, String id) {
-        return modelsCache.computeIfAbsent(id, () ->  {
+        return modelsCache.computeIfAbsent(session.getRepositoryName() + ":" + id, () ->  {
             String query = String.format(ROUTE_MODEL_DOC_ID_WITH_ID_QUERY, NXQL.escapeString(id));
             List<String> routeIds = new ArrayList<>();
             try (IterableQueryResult results = session.queryAndFetch(query, "NXQL")) {

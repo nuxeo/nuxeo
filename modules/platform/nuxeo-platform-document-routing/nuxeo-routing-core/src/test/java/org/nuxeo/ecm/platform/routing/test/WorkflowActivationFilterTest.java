@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -62,7 +63,7 @@ public class WorkflowActivationFilterTest extends AbstractGraphRouteTest {
         doc = session.createDocument(doc);
     }
 
-    public void setRoute(String routeName, String activationFiltername) {
+    public void setRoute(String routeName, String activationFiltername, CoreSession session) {
         routeDoc = createRoute(routeName, session);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
@@ -77,7 +78,7 @@ public class WorkflowActivationFilterTest extends AbstractGraphRouteTest {
 
     @Test
     public void testWorkflowWithoutFilterCanBeStarted() {
-        setRoute("testWorkflowWithoutFilterCanBeStarted", null);
+        setRoute("testWorkflowWithoutFilterCanBeStarted", null, session);
         assertTrue(routing.canCreateInstance(session, List.of(doc.getId()), routeDoc.getName()));
     }
 
@@ -88,27 +89,48 @@ public class WorkflowActivationFilterTest extends AbstractGraphRouteTest {
 
     @Test
     public void testWorkflowIsRunnable() {
-        setRoute("testWorkflowIsRunnable", "test_wf_pass");
+        setRoute("testWorkflowIsRunnable", "test_wf_pass", session);
         List<DocumentRoute> runnables = routing.getRunnableWorkflows(session, List.of(doc.getId()));
+        assertEquals(1, runnables.size());
+    }
+
+    /**
+     * NXP-31351
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-document-routing-multi-repository-contrib.xml")
+    public void testWorkflowIsRunnableMultiRepo() {
+        setRoute("testWorkflowIsRunnable", "test_wf_pass", session);
+        List<DocumentRoute> runnables = routing.getRunnableWorkflows(session, List.of(doc.getId()));
+        assertEquals(1, runnables.size());
+
+        // Create another doc in the other repository
+        CoreSession otherRepositorySession = CoreInstance.getCoreSession("other");
+        DocumentModel doc2 = session.createDocumentModel("/", "file2", "File");
+        doc2 = otherRepositorySession.createDocument(doc2);
+        setRoute("testWorkflowIsRunnable", "test_wf_pass", otherRepositorySession);
+
+        // Check we are able to retrieve the workflow model from the other repository
+        runnables = routing.getRunnableWorkflows(otherRepositorySession, List.of(doc2.getId()));
         assertEquals(1, runnables.size());
     }
 
     @Test
     public void testWorkflowCanBeStarted() {
-        setRoute("testWorkflowCanBeStarted", "test_wf_pass");
+        setRoute("testWorkflowCanBeStarted", "test_wf_pass", session);
         assertTrue(routing.canCreateInstance(session, List.of(doc.getId()), routeDoc.getName()));
     }
 
     @Test
     public void testWorkflowIsNotRunnable() {
-        setRoute("testWorkflowIsNotRunnable", "test_wf_fail");
+        setRoute("testWorkflowIsNotRunnable", "test_wf_fail", session);
         List<DocumentRoute> runnables = routing.getRunnableWorkflows(session, List.of(doc.getId()));
         assertEquals(0, runnables.size());
     }
 
     @Test
     public void testWorkflowCannotBeStarted() {
-        setRoute("testWorkflowCannotBeStarted", "test_wf_fail");
+        setRoute("testWorkflowCannotBeStarted", "test_wf_fail", session);
         assertFalse(routing.canCreateInstance(session, List.of(doc.getId()), routeDoc.getName()));
     }
 }
