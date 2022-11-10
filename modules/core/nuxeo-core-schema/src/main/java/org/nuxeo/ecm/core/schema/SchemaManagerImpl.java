@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -72,6 +73,8 @@ import org.xml.sax.SAXException;
 public class SchemaManagerImpl implements SchemaManager {
 
     private static final Logger log = LogManager.getLogger(SchemaManagerImpl.class);
+
+    protected static final Pattern PATH_INDEX_PATTERN = Pattern.compile("/-?\\d+/");
 
     /**
      * Whether there have been changes to the registered schemas, facets or document types that require recomputation of
@@ -1068,18 +1071,32 @@ public class SchemaManagerImpl implements SchemaManager {
     }
 
     protected boolean checkPropertyCharacteristic(String schema, String path, Predicate<PropertyDescriptor> predicate) {
-        Map<String, PropertyDescriptor> properties = propertyCharacteristics.getOrDefault(schema, Map.of());
+        Map<String, PropertyDescriptor> properties = propertyCharacteristics.get(schema);
+        if (properties == null || properties.isEmpty()) {
+            return false;
+        }
+        String cleanPath = cleanPath(path);
+        if (!cleanPath.contains("/")) {
+            // avoid heavy cost of Stream#iterate
+            return properties.containsKey(cleanPath) && predicate.test(properties.get(cleanPath));
+        }
         // iterate on path to check if a parent matches the given predicate
-        return !properties.isEmpty()
-                && Stream.iterate(cleanPath(path), StringUtils::isNotBlank,
-                        key -> key.substring(0, Math.max(key.lastIndexOf('/'), 0)))
-                         .anyMatch(p -> properties.containsKey(p) && predicate.test(properties.get(p)));
+        return Stream.iterate(cleanPath, StringUtils::isNotBlank, key -> key.substring(0, Math.max(key.lastIndexOf('/'), 0)))
+                     .anyMatch(p -> properties.containsKey(p) && predicate.test(properties.get(p)));
     }
 
     protected String cleanPath(String path) {
-        // remove prefix if exist, then
-        // remove index from path - we're only interested in sth/index/sth because we can't add info on sth/* property
-        return path.substring(path.lastIndexOf(':') + 1).replaceAll("/-?\\d+/", "/*/");
+        // remove prefix if it exists
+        String ret = path.substring(path.lastIndexOf(':') + 1);
+        // remove /item used in list property item
+        if (ret.endsWith("/item")) {
+            ret = ret.substring(0, ret.length() - 5);
+        }
+        if (ret.contains("/")) {
+            // we're only interested in sth/index/sth because we can't add info on sth/* property
+            ret = PATH_INDEX_PATTERN.matcher(ret).replaceAll("/*/");
+        }
+        return ret;
     }
 
     @Override
