@@ -164,7 +164,7 @@
     <sonar.jacoco.reportPaths>${it.jacoco.destFile}</sonar.jacoco.reportPaths>
 
     <!-- MongoDB -->
-    <mongo.java.driver.version>4.1.1</mongo.java.driver.version>
+    <mongo.java.driver.version>4.7.2</mongo.java.driver.version>
     <quartz.mongodb.version>2.2.0-rc2</quartz.mongodb.version>
 
     <!-- snappy version required for ARM, to remove if kafka is updated to 3.1.0 or higher -->
