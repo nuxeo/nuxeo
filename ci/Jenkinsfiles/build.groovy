@@ -17,16 +17,7 @@
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  *     Thomas Roger <troger@nuxeo.com>
  */
-
-def abortRunningBuilds() {
-  // see https://issues.jenkins.io/browse/JENKINS-43353
-  def buildNumber = BUILD_NUMBER as int
-  if (buildNumber > 1) {
-    milestone(buildNumber - 1)
-  }
-  milestone(buildNumber)
-}
-abortRunningBuilds()
+library identifier: "platform-ci-shared-library@v0.0.3"
 
 dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
@@ -36,47 +27,21 @@ testEnvironments = [
   'postgresql',
 ]
 
-properties([
-  [$class: 'GithubProjectProperty', projectUrlStr: repositoryUrl],
-  [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5']],
-])
-
-void setGitHubBuildStatus(String context, String message, String state) {
-  if (env.DRY_RUN != "true") {
-    step([
-      $class: 'GitHubCommitStatusSetter',
-      reposSource: [$class: 'ManuallyEnteredRepositorySource', url: repositoryUrl],
-      contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: context],
-      statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]],
-    ])
-  }
-}
-
-String getCurrentNamespace() {
-  container('maven') {
-    return sh(returnStdout: true, script: "kubectl get pod ${NODE_NAME} -ojsonpath='{..namespace}'")
-  }
-}
-
 String getMavenArgs() {
   def args = '-B -nsu -Dnuxeo.skip.enforcer=true -P-nexus,nexus-private'
-  if (!isPullRequest()) {
+  if (!nxUtils.isPullRequest()) {
     args += ' -Prelease'
   }
   return args
 }
 
 String getMavenFailArgs() {
-  return (isPullRequest() && pullRequest.labels.contains('failatend')) ? '--fail-at-end' : ' '
+  return (nxUtils.isPullRequest() && pullRequest.labels.contains('failatend')) ? '--fail-at-end' : ' '
 }
 
 String getMavenJavadocArgs() {
   // set Xmx/Xms to 1g for javadoc command, to avoid the pod being OOMKilled with an exit code 137
-  return isPullRequest() ? ' ' : '-Pjavadoc  -DadditionalJOption=-J-Xmx1g -DadditionalJOption=-J-Xms1g'
-}
-
-def isPullRequest() {
-  return BRANCH_NAME =~ /PR-.*/
+  return nxUtils.isPullRequest() ? ' ' : '-Pjavadoc  -DadditionalJOption=-J-Xmx1g -DadditionalJOption=-J-Xms1g'
 }
 
 String getCurrentVersion() {
@@ -84,7 +49,7 @@ String getCurrentVersion() {
 }
 
 String getVersion() {
-  return isPullRequest() ? getPullRequestVersion() : getReleaseVersion()
+  return nxUtils.isPullRequest() ? getPullRequestVersion() : getReleaseVersion()
 }
 
 String getReleaseVersion() {
@@ -144,18 +109,12 @@ void dockerRun(String image, String command, String user = null) {
   sh "docker run --rm ${userOption} ${image} ${command}"
 }
 
-void dockerCopyImage(String from, String... tos) {
-  for (String to : tos) {
-    sh "skopeo copy docker://${from} docker://${to}"
-  }
-}
-
 void dockerPushFixedVersion(String imageName) {
   String fullImageName = "${dockerNamespace}/${imageName}"
   String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
   String latestInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
 
-  dockerCopyImage(fixedVersionInternalImage, latestInternalImage)
+  nxDocker.copy(from: fixedVersionInternalImage, to: latestInternalImage)
 }
 
 void dockerDeploy(String dockerRegistry, String imageName) {
@@ -164,7 +123,7 @@ void dockerDeploy(String dockerRegistry, String imageName) {
   String fixedVersionPublicImage = "${dockerRegistry}/${fullImageName}:${VERSION}"
   String latestPublicImage = "${dockerRegistry}/${fullImageName}:${DOCKER_TAG}"
 
-  dockerCopyImage(fixedVersionInternalImage, fixedVersionPublicImage, latestPublicImage)
+  nxDocker.copy(from: fixedVersionInternalImage, tos: [fixedVersionPublicImage, latestPublicImage])
 }
 
 void helmfileTemplate(namespace, environment, outputDir) {
@@ -185,14 +144,6 @@ void helmfileSync(namespace, environment) {
   }
 }
 
-void helmfileDestroy(namespace, environment) {
-  withEnv(["NAMESPACE=${namespace}"]) {
-    sh """
-      ${HELMFILE_COMMAND} --environment ${environment} destroy
-    """
-  }
-}
-
 def buildUnitTestStage(env) {
   def isDev = env == 'dev'
   def testNamespace = "${TEST_NAMESPACE_PREFIX}-${env}"
@@ -207,105 +158,77 @@ def buildUnitTestStage(env) {
         // TODO NXP-29512: on a PR, make the build continue even if there is a test error
         // on other environments than the dev one
         // to remove when all test environments will be mandatory
-        catchError(buildResult: isPullRequest() && "dev" != env ? 'SUCCESS' : 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
-          script {
-            setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'PENDING')
-            sh "kubectl create namespace ${testNamespace}"
-            try {
-              echo """
-              ----------------------------------------
-              Run ${env} unit tests
-              ----------------------------------------"""
-
-              echo "${env} unit tests: install external services"
-              helmfileSync("${testNamespace}", "${environment}")
-
-              echo "${env} unit tests: run Maven"
-              if (isDev) {
-                // empty file required by the read-project-properties goal of the properties-maven-plugin with the
-                // customEnvironment profile
-                sh "touch ${HOME}/nuxeo-test-${env}.properties"
-              } else {
-                // prepare test framework system properties
-                // prefix sample: nuxeo-lts-pr-48-3-mongodb
-                def bucketPrefix = "$GITHUB_REPO-$BRANCH_NAME-$BUILD_NUMBER-${env}".toLowerCase()
-                def testBlobProviderPrefix = "$bucketPrefix-test"
-                def otherBlobProviderPrefix = "$bucketPrefix-other"
-
-                sh """
-                  cat ci/mvn/nuxeo-test-${env}.properties \
-                    ci/mvn/nuxeo-test-elasticsearch.properties \
-                    ci/mvn/nuxeo-test-s3.properties \
-                    > ci/mvn/nuxeo-test-${env}.properties~gen
-                  BUCKET_PREFIX=${bucketPrefix} \
-                    TEST_BLOB_PROVIDER_PREFIX=${testBlobProviderPrefix} \
-                    OTHER_BLOB_PROVIDER_PREFIX=${otherBlobProviderPrefix} \
-                    NAMESPACE=${testNamespace} \
-                    DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
-                    envsubst < ci/mvn/nuxeo-test-${env}.properties~gen > ${HOME}/nuxeo-test-${env}.properties
-                """
-              }
-              // run unit tests:
-              // - in modules/core and dependent projects only (modules/runtime is run in a dedicated stage)
-              // - for the given environment (see the customEnvironment profile in pom.xml):
-              //   - in an alternative build directory
-              //   - loading some test framework system properties
-              def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
-              def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
-              def mvnCommand = """                 
-                mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
-                  -Dcustom.environment=${env} \
-                  -Dcustom.environment.log.dir=target-${env} \
-                  -Dnuxeo.test.core=${testCore} \
-                  -Dnuxeo.test.redis.host=${redisHost} \
-                  ${kafkaOptions} \
-                  test
-              """
-
-              retry(2) {
-                if (isDev) {
-                  sh "${mvnCommand}"
-                } else {
-                  // always read AWS credentials from secret in the platform namespace, even when running in platform-staging:
-                  // credentials rotation is disabled in platform-staging to prevent double rotation on the same keys
-                  def awsCredentialsNamespace = 'platform'
-                  def awsAccessKeyId = sh(
-                    script: "kubectl get secret ${AWS_CREDENTIALS_SECRET} -n ${awsCredentialsNamespace} -o=jsonpath='{.data.access_key_id}' | base64 --decode",
-                    returnStdout: true
-                  )
-                  def awsSecretAccessKey = sh(
-                    script: "kubectl get secret ${AWS_CREDENTIALS_SECRET} -n ${awsCredentialsNamespace} -o=jsonpath='{.data.secret_access_key}' | base64 --decode",
-                    returnStdout: true
-                  )
-                  withEnv([
-                    "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
-                    "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
-                    "AWS_REGION=${AWS_REGION}",
-                    "AWS_ROLE_ARN=${AWS_ROLE_ARN}"
-                  ]) {
-                    sh "${mvnCommand}"
-                  }
-                }
-              }
-
-              setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
-            } catch(err) {
-              echo "${env} unit tests error: ${err}"
-              setGitHubBuildStatus("utests/${env}", "Unit tests - ${env} environment", 'FAILURE')
-              throw err
-            } finally {
-              try {
-                junit allowEmptyResults: true, testResults: "**/target-${env}/surefire-reports/*.xml"
-                if (!isDev) {
-                  archiveKafkaLogs(testNamespace, "${env}-kafka.log")
-                }
-              } finally {
-                echo "${env} unit tests: clean up test namespace"
+        catchError(buildResult: nxUtils.isPullRequest() && "dev" != env ? 'SUCCESS' : 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+          nxWithGitHubStatus(context: "utests/${env}", message: "Unit tests - ${env} environment") {
+            echo """
+            ----------------------------------------
+            Run ${env} unit tests
+            ----------------------------------------"""
+            echo "${env} unit tests: install external services"
+            nxWithHelmfileDeployment(namespace: testNamespace, environment: environment) {
+              script {
                 try {
-                  helmfileDestroy("${testNamespace}", "${environment}")
+                  echo "${env} unit tests: run Maven"
+                  if (isDev) {
+                    // empty file required by the read-project-properties goal of the properties-maven-plugin with the
+                    // customEnvironment profile
+                    sh "touch ${HOME}/nuxeo-test-${env}.properties"
+                  } else {
+                    // prepare test framework system properties
+                    // prefix sample: nuxeo-lts-pr-48-3-mongodb
+                    def bucketPrefix = "$GITHUB_REPO-$BRANCH_NAME-$BUILD_NUMBER-${env}".toLowerCase()
+                    def testBlobProviderPrefix = "$bucketPrefix-test"
+                    def otherBlobProviderPrefix = "$bucketPrefix-other"
+
+                    sh """
+                      cat ci/mvn/nuxeo-test-${env}.properties \
+                        ci/mvn/nuxeo-test-elasticsearch.properties \
+                        ci/mvn/nuxeo-test-s3.properties \
+                        > ci/mvn/nuxeo-test-${env}.properties~gen
+                      BUCKET_PREFIX=${bucketPrefix} \
+                        TEST_BLOB_PROVIDER_PREFIX=${testBlobProviderPrefix} \
+                        OTHER_BLOB_PROVIDER_PREFIX=${otherBlobProviderPrefix} \
+                        NAMESPACE=${testNamespace} \
+                        DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
+                        envsubst < ci/mvn/nuxeo-test-${env}.properties~gen > ${HOME}/nuxeo-test-${env}.properties
+                    """
+                  }
+                  // run unit tests:
+                  // - in modules/core and dependent projects only (modules/runtime is run in a dedicated stage)
+                  // - for the given environment (see the customEnvironment profile in pom.xml):
+                  //   - in an alternative build directory
+                  //   - loading some test framework system properties
+                  def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
+                  def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
+                  def mvnCommand = """                 
+                    mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
+                      -Dcustom.environment=${env} \
+                      -Dcustom.environment.log.dir=target-${env} \
+                      -Dnuxeo.test.core=${testCore} \
+                      -Dnuxeo.test.redis.host=${redisHost} \
+                      ${kafkaOptions} \
+                      test
+                  """
+                  retry(2) {
+                    if (isDev) {
+                      sh "${mvnCommand}"
+                    } else {
+                      // always read AWS credentials from secret in the platform namespace, even when running in platform-staging:
+                      // credentials rotation is disabled in platform-staging to prevent double rotation on the same keys
+                      def awsAccessKeyId = nxK8s.getSecretData(namespace: 'platform', name: "${AWS_CREDENTIALS_SECRET}", key: 'access_key_id')
+                      def awsSecretAccessKey = nxK8s.getSecretData(namespace: 'platform', name: "${AWS_CREDENTIALS_SECRET}", key: 'secret_access_key')
+                      withEnv([
+                        "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+                        "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+                        "AWS_REGION=${AWS_REGION}",
+                        "AWS_ROLE_ARN=${AWS_ROLE_ARN}"
+                      ]) {
+                        sh "${mvnCommand}"
+                      }
+                    }
+                  }
                 } finally {
-                  // clean up test namespace
-                  sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
+                  junit allowEmptyResults: true, testResults: "**/target-${env}/surefire-reports/*.xml"
                 }
               }
             }
@@ -316,30 +239,26 @@ def buildUnitTestStage(env) {
   }
 }
 
-void archiveKafkaLogs(namespace, logFile) {
-  // don't fail if pod doesn't exist
-  sh "kubectl logs ${TEST_KAFKA_POD_NAME} --namespace=${namespace} > ${logFile} || true"
-  archiveArtifacts allowEmptyArchive: true, artifacts: "${logFile}"
-}
-
 pipeline {
   agent {
     label 'jenkins-nuxeo-platform-lts-2021'
   }
   options {
+    buildDiscarder(logRotator(daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5'))
+    disableConcurrentBuilds(abortPrevious: true)
+    githubProjectProperty(projectUrlStr: repositoryUrl)
     timeout(time: 12, unit: 'HOURS')
   }
   environment {
     // force ${HOME}=/root - for an unexplained reason, ${HOME} is resolved as /home/jenkins though sh 'env' shows HOME=/root
     HOME = '/root'
     HELMFILE_COMMAND = "helmfile --file ci/helm/helmfile.yaml --helm-binary /usr/bin/helm3"
-    CURRENT_NAMESPACE = getCurrentNamespace()
+    CURRENT_NAMESPACE = nxK8s.getCurrentNamespace()
     TEST_NAMESPACE_PREFIX = "$CURRENT_NAMESPACE-nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
     TEST_REDIS_K8S_OBJECT = 'redis-master'
     TEST_KAFKA_K8S_OBJECT = 'kafka'
     TEST_KAFKA_PORT = '9092'
-    TEST_KAFKA_POD_NAME = "${TEST_KAFKA_K8S_OBJECT}-0"
     BASE_IMAGE_NAME = 'nuxeo-base'
     NUXEO_IMAGE_NAME = 'nuxeo'
     NUXEO_BENCHMARK_IMAGE_NAME = 'nuxeo-benchmark'
@@ -353,7 +272,6 @@ pipeline {
     CHANGE_BRANCH = "${env.CHANGE_BRANCH != null ? env.CHANGE_BRANCH : BRANCH_NAME}"
     CHANGE_TARGET = "${env.CHANGE_TARGET != null ? env.CHANGE_TARGET : BRANCH_NAME}"
     CONNECT_PREPROD_URL = 'https://nos-preprod-connect.nuxeocloud.com/nuxeo'
-    SLACK_CHANNEL = 'platform-notifs'
     GITHUB_REPO = 'nuxeo-lts'
     AWS_REGION = 'eu-west-3'
     AWS_ROLE_ARN= 'arn:aws:iam::783725821734:role/nuxeo-s3directupload-role'
@@ -364,15 +282,9 @@ pipeline {
     stage('Set labels') {
       steps {
         container('maven') {
-          echo """
-          ----------------------------------------
-          Set Kubernetes resource labels
-          ----------------------------------------
-          """
-          echo "Set label 'branch: ${BRANCH_NAME}' on pod ${NODE_NAME}"
-          sh """
-            kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME}
-          """
+          script {
+            nxK8s.setPodLabel()
+          }
         }
       }
     }
@@ -405,14 +317,7 @@ pipeline {
 
     stage('Git commit') {
       when {
-        allOf {
-          not {
-            changeRequest()
-          }
-          not {
-            environment name: 'DRY_RUN', value: 'true'
-          }
-        }
+        expression { nxUtils.isNotPullRequestAndNotDryRun() }
       }
       steps {
         container('maven') {
@@ -431,8 +336,8 @@ pipeline {
     stage('Hotfix Protection') {
       steps {
         container('maven') {
-          withCredentials([usernameColonPassword(credentialsId: 'jx-pipeline-git-github-git', variable: 'GITHUB_CREDENTIALS')]) {
-            sh 'git clone --branch $CHANGE_TARGET https://$GITHUB_CREDENTIALS@github.com/nuxeo/nuxeo-hf-protection.git nuxeo-patches'
+          script {
+            nxGit.cloneRepository(name: 'nuxeo-hf-protection', branch: env.CHANGE_TARGET, relativePath: 'nuxeo-patches')
           }
           dir('nuxeo-patches') {
             sh './prepare-patches'
@@ -443,135 +348,101 @@ pipeline {
 
     stage('Build') {
       steps {
-        setGitHubBuildStatus('maven/build', 'Build', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Compile
-          ----------------------------------------"""
-          echo "MAVEN_OPTS=$MAVEN_OPTS"
-          sh "mvn ${MAVEN_ARGS} ${MAVEN_JAVADOC_ARGS} -V -T4C -DskipTests install"
-          sh "mvn ${MAVEN_ARGS} ${MAVEN_JAVADOC_ARGS} -f server/pom.xml -DskipTests install"
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('maven/build', 'Build', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('maven/build', 'Build', 'FAILURE')
+          nxWithGitHubStatus(context: 'maven/build', message: 'Build') {
+            echo """
+            ----------------------------------------
+            Compile
+            ----------------------------------------"""
+            echo "MAVEN_OPTS=$MAVEN_OPTS"
+            sh "mvn ${MAVEN_ARGS} ${MAVEN_JAVADOC_ARGS} -V -T4C -DskipTests install"
+            sh "mvn ${MAVEN_ARGS} ${MAVEN_JAVADOC_ARGS} -f server/pom.xml -DskipTests install"
+          }
         }
       }
     }
 
     stage('Build Docker image') {
       steps {
-        setGitHubBuildStatus('docker/build', 'Build Docker image', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Build Docker image
-          ----------------------------------------
-          Image tag: ${VERSION}
-          """
-
-          dir('docker/nuxeo-base') {
-            withCredentials([usernamePassword(credentialsId: 'packages.nuxeo.com-auth', usernameVariable: 'YUM_REPO_USERNAME', passwordVariable: 'YUM_REPO_PASSWORD')]) {
-              sh """
-                mkdir -p target
-                envsubst < nuxeo-private.repo > target/nuxeo-private.repo
+          nxWithGitHubStatus(context: 'docker/build', message: 'Build Docker images') {
+            script {
+              echo """
+              ----------------------------------------
+              Build Docker image
+              ----------------------------------------
+              Image tag: ${VERSION}
               """
+
+              dir('docker/nuxeo-base') {
+                withCredentials([usernamePassword(credentialsId: 'packages.nuxeo.com-auth', usernameVariable: 'YUM_REPO_USERNAME', passwordVariable: 'YUM_REPO_PASSWORD')]) {
+                  sh """
+                    mkdir -p target
+                    envsubst < nuxeo-private.repo > target/nuxeo-private.repo
+                  """
+                }
+                echo "Build and push Base Docker image to internal Docker registry ${DOCKER_REGISTRY}"
+                nxDocker.build(skaffoldFile: 'skaffold.yaml')
+              }
+              dir('docker/nuxeo') {
+                echo 'Fetch locally built Nuxeo Tomcat Server with Maven'
+                sh "mvn ${MAVEN_ARGS} -T4C process-resources"
+
+                echo "Build and push Nuxeo Docker image to internal Docker registry ${DOCKER_REGISTRY}"
+                nxDocker.build(skaffoldFile: 'skaffold.yaml')
+              }
+              echo "Build needed packages for the benchmark image"
+              // build packages defined in the pom and nuxeo-packages as it is needed when processing resources
+              sh """
+                benchmark_packages=\$(sed -n '/<dependency>/,/<\\/dependency>/{//b;p}' docker/nuxeo-benchmark/pom.xml | grep artifactId | sed -E 's/\\s*<artifactId>(.*)<\\/artifactId>/:\\1/' |  tr '\\n' ','  | head -c -1);
+                mvn ${MAVEN_ARGS} -Pdistrib -T4C -pl :nuxeo-packages,\${benchmark_packages} install
+              """
+
+              dir('docker/nuxeo-benchmark') {
+                echo 'Fetch locally built Nuxeo Packages with Maven'
+                sh "mvn ${MAVEN_ARGS} -T4C process-resources"
+
+                echo "Build and push Benchmark Docker image to internal Docker registry ${DOCKER_REGISTRY}"
+                nxDocker.build(skaffoldFile: 'skaffold.yaml')
+              }
+
+              if (!nxUtils.isPullRequest()) {
+                dockerPushFixedVersion("${BASE_IMAGE_NAME}")
+                dockerPushFixedVersion("${NUXEO_IMAGE_NAME}")
+                dockerPushFixedVersion("${NUXEO_BENCHMARK_IMAGE_NAME}")
+              }
             }
-            echo "Build and push Base Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-            sh """
-              envsubst < skaffold.yaml > skaffold.yaml~gen
-              skaffold build -f skaffold.yaml~gen
-            """
           }
-          dir('docker/nuxeo') {
-            echo 'Fetch locally built Nuxeo Tomcat Server with Maven'
-            sh "mvn ${MAVEN_ARGS} -T4C process-resources"
-
-            echo "Build and push Nuxeo Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-            sh """
-              envsubst < skaffold.yaml > skaffold.yaml~gen
-              skaffold build -f skaffold.yaml~gen
-            """
-          }
-          echo "Build needed packages for the benchmark image"
-          // build packages defined in the pom and nuxeo-packages as it is needed when processing resources
-          sh """
-            benchmark_packages=\$(sed -n '/<dependency>/,/<\\/dependency>/{//b;p}' docker/nuxeo-benchmark/pom.xml | grep artifactId | sed -E 's/\\s*<artifactId>(.*)<\\/artifactId>/:\\1/' |  tr '\\n' ','  | head -c -1);
-            mvn ${MAVEN_ARGS} -Pdistrib -T4C -pl :nuxeo-packages,\${benchmark_packages} install
-          """
-
-          dir('docker/nuxeo-benchmark') {
-            echo 'Fetch locally built Nuxeo Packages with Maven'
-            sh "mvn ${MAVEN_ARGS} -T4C process-resources"
-
-            echo "Build and push Benchmark Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-            sh """
-              envsubst < skaffold.yaml > skaffold.yaml~gen
-              skaffold build -f skaffold.yaml~gen
-            """
-          }
-          script {
-            if (!isPullRequest()) {
-              dockerPushFixedVersion("${BASE_IMAGE_NAME}")
-              dockerPushFixedVersion("${NUXEO_IMAGE_NAME}")
-              dockerPushFixedVersion("${NUXEO_BENCHMARK_IMAGE_NAME}")
-            }
-          }
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('docker/build', 'Build Docker image', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('docker/build', 'Build Docker image', 'FAILURE')
         }
       }
     }
 
     stage('Test Docker image') {
       steps {
-        setGitHubBuildStatus('docker/test', 'Test Docker image', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Test Docker image
-          ----------------------------------------
-          """
-          script {
-            image = "${DOCKER_REGISTRY}/${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
-            echo "Test ${image}"
-            dockerPull(image)
-            echo 'Run image as root (0)'
-            dockerRun(image, 'nuxeoctl start')
-            echo 'Run image as an arbitrary user (800)'
-            dockerRun(image, 'nuxeoctl start', '800')
+          nxWithGitHubStatus(context: 'docker/test', message: 'Test Docker image') {
+            echo """
+            ----------------------------------------
+            Test Docker image
+            ----------------------------------------
+            """
+            script {
+              image = "${DOCKER_REGISTRY}/${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
+              echo "Test ${image}"
+              dockerPull(image)
+              echo 'Run image as root (0)'
+              dockerRun(image, 'nuxeoctl start')
+              echo 'Run image as an arbitrary user (800)'
+              dockerRun(image, 'nuxeoctl start', '800')
+            }
           }
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('docker/test', 'Test Docker image', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('docker/test', 'Test Docker image', 'FAILURE')
         }
       }
     }
 
     stage('Trigger Benchmark tests') {
       when {
-        allOf {
-          changeRequest()
-          expression {
-            return pullRequest.labels.contains('benchmark')
-          }
-        }
+        expression { nxUtils.isPullRequest() && pullRequest.labels.contains('benchmark') }
       }
       steps {
         container('maven') {
@@ -599,51 +470,31 @@ pipeline {
     stage('Run runtime unit tests') {
       steps {
         container('maven') {
-          script {
-            setGitHubBuildStatus('utests/runtime', 'Unit tests - runtime', 'PENDING')
-            def testNamespace = "${TEST_NAMESPACE_PREFIX}-runtime"
-            // Helmfile environment
-            def environment = 'runtimeUnitTests'
-            def redisHost = "${TEST_REDIS_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
-            def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
-            sh "kubectl create namespace ${testNamespace}"
-            try {
+          nxWithGitHubStatus(context: 'utests/runtime', message: 'Unit tests - runtime') {
+            script {
+              def testNamespace = "${TEST_NAMESPACE_PREFIX}-runtime"
+              def redisHost = "${TEST_REDIS_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
+              def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
               echo """
-              ----------------------------------------
-              Run runtime unit tests
-              ----------------------------------------"""
-
+                ----------------------------------------
+                Run runtime unit tests
+                ----------------------------------------"""
               echo 'runtime unit tests: install external services'
-              helmfileSync("${testNamespace}", "${environment}")
-
-              echo 'runtime unit tests: run Maven'
-              dir('modules/runtime') {
-                retry(2) {
-                  sh """
-                    mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} \
-                      -Dnuxeo.test.redis.host=${redisHost} \
-                      -Pkafka -Dkafka.bootstrap.servers=${kafkaHost} \
-                      test
-                  """
-                }
-              }
-
-              setGitHubBuildStatus('utests/runtime', 'Unit tests - runtime', 'SUCCESS')
-            } catch(err) {
-              echo "runtime unit tests error: ${err}"
-              setGitHubBuildStatus('utests/runtime', 'Unit tests - runtime', 'FAILURE')
-              throw err
-            } finally {
-              try {
-                junit testResults: '**/target/surefire-reports/*.xml'
-                archiveKafkaLogs(testNamespace, 'runtime-kafka.log')
-              } finally {
-                echo 'runtime unit tests: clean up test namespace'
+              nxWithHelmfileDeployment(namespace: testNamespace, environment: 'runtimeUnitTests') {
                 try {
-                  helmfileDestroy("${testNamespace}", "${environment}")
+                  echo 'runtime unit tests: run Maven'
+                  dir('modules/runtime') {
+                    retry(2) {
+                      sh """
+                        mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} \
+                          -Dnuxeo.test.redis.host=${redisHost} \
+                          -Pkafka -Dkafka.bootstrap.servers=${kafkaHost} \
+                          test
+                      """
+                    }
+                  }
                 } finally {
-                  // clean up test namespace
-                  sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
+                  junit testResults: '**/target/surefire-reports/*.xml'
                 }
               }
             }
@@ -666,67 +517,52 @@ pipeline {
 
     stage('Run server unit tests') {
       steps {
-        setGitHubBuildStatus('utests/server', 'Unit tests - server', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Run server unit tests
-          ----------------------------------------"""
-          // run server tests
-          dir('server') {
-            sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} test"
+          nxWithGitHubStatus(context: 'utests/server', message: 'Unit tests - server') {
+            echo """
+            ----------------------------------------
+            Run server unit tests
+            ----------------------------------------"""
+            // run server tests
+            dir('server') {
+              sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} test"
+            }
           }
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('utests/server', 'Unit tests - server', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('utests/server', 'Unit tests - server', 'FAILURE')
         }
       }
     }
 
     stage('Build Nuxeo Packages') {
       steps {
-        setGitHubBuildStatus('packages/build', 'Build Nuxeo packages', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Package
-          ----------------------------------------"""
-          sh "mvn ${MAVEN_ARGS} -Dnuxeo.skip.enforcer=false -f packages/pom.xml -DskipTests install"
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('packages/build', 'Build Nuxeo packages', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('packages/build', 'Build Nuxeo packages', 'FAILURE')
+          nxWithGitHubStatus(context: 'packages/build', message: 'Build Nuxeo packages') {
+            echo """
+            ----------------------------------------
+            Package
+            ----------------------------------------"""
+            sh "mvn ${MAVEN_ARGS} -Dnuxeo.skip.enforcer=false -f packages/pom.xml -DskipTests install"
+          }
         }
       }
     }
 
     stage('Run "dev" functional tests') {
       steps {
-        setGitHubBuildStatus('ftests/dev', 'Functional tests - dev environment', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Run "dev" functional tests
-          ----------------------------------------"""
-          withCredentials([string(credentialsId: 'instance-clid', variable: 'INSTANCE_CLID')]) {
-            sh(
-              script: '''#!/bin/bash +x
+          nxWithGitHubStatus(context: 'ftests/dev', message: 'Functional tests - dev environment') {
+            echo """
+            ----------------------------------------
+            Run "dev" functional tests
+            ----------------------------------------"""
+            withCredentials([string(credentialsId: 'instance-clid', variable: 'INSTANCE_CLID')]) {
+              sh(script: '''#!/bin/bash +x
                 echo -e "$INSTANCE_CLID" >| /tmp/instance.clid
-              '''
-            )
-            withEnv(["TEST_CLID_PATH=/tmp/instance.clid"]) {
-              runFunctionalTests('ftests', 'nuxeo.ftests.tier5')
-              runFunctionalTests('ftests', 'nuxeo.ftests.tier6')
-              runFunctionalTests('ftests', 'nuxeo.ftests.tier7')
+              ''')
+              withEnv(["TEST_CLID_PATH=/tmp/instance.clid"]) {
+                runFunctionalTests('ftests', 'nuxeo.ftests.tier5')
+                runFunctionalTests('ftests', 'nuxeo.ftests.tier6')
+                runFunctionalTests('ftests', 'nuxeo.ftests.tier7')
+              }
             }
           }
         }
@@ -735,11 +571,7 @@ pipeline {
         always {
           junit testResults: '**/target/failsafe-reports/*.xml'
         }
-        success {
-          setGitHubBuildStatus('ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
-        }
         unsuccessful {
-          setGitHubBuildStatus('ftests/dev', 'Functional tests - dev environment', 'FAILURE')
           // findText does mark the build in FAILURE but doesn't stop the pipeline, error does
           error "Errors were found!"
         }
@@ -757,7 +589,7 @@ pipeline {
           def parameters = [
             string(name: 'NUXEO_VERSION', value: "${VERSION}"),
           ]
-          if (isPullRequest()) {
+          if (nxUtils.isPullRequest()) {
             parameters.add(string(name: 'NUXEO_REPOSITORY', value: "${repositoryUrl}"))
             parameters.add(string(name: 'NUXEO_SHA', value: "${GIT_COMMIT}"))
           }
@@ -772,219 +604,151 @@ pipeline {
 
     stage('Git tag and push') {
       when {
-        allOf {
-          not {
-            changeRequest()
-          }
-          not {
-            environment name: 'DRY_RUN', value: 'true'
-          }
-        }
+        expression { !nxUtils.isPullRequest() }
       }
       steps {
         container('maven') {
-          echo """
-          ----------------------------------------
-          Git tag and push
-          ----------------------------------------
-          """
-          sh """
-            #!/usr/bin/env bash -xe
-            # create the Git credentials
-            jx step git credentials
-            git config credential.helper store
-
-            # Git tag
-            git tag -a v${VERSION} -m "Release ${VERSION}"
-            git push origin v${VERSION}
-          """
+          script {
+            echo """
+            ----------------------------------------
+            Git tag and push
+            ----------------------------------------
+            """
+            nxGit.tagPush()
+          }
         }
       }
     }
 
     stage('Deploy Maven artifacts') {
       when {
-        allOf {
-          not {
-            changeRequest()
-          }
-          not {
-            environment name: 'DRY_RUN', value: 'true'
-          }
-        }
+        expression { nxUtils.isNotPullRequestAndNotDryRun() }
       }
       steps {
-        setGitHubBuildStatus('maven/deploy', 'Deploy Maven artifacts', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Deploy Maven artifacts
-          ----------------------------------------"""
-          sh """
-            mvn ${MAVEN_ARGS} -Pdistrib -DskipTests deploy
-            mvn ${MAVEN_ARGS} -f parent/pom.xml deploy
-
-            # update back nuxeo-parent version to CURRENT_VERSION version
-            mvn ${MAVEN_ARGS} -f parent/pom.xml versions:set -DnewVersion=${CURRENT_VERSION} -DgenerateBackupPoms=false
-            mvn ${MAVEN_ARGS} -f parent/pom.xml deploy
-          """
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('maven/deploy', 'Deploy Maven artifacts', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('maven/deploy', 'Deploy Maven artifacts', 'FAILURE')
+          nxWithGitHubStatus(context: 'maven/deploy', message: 'Deploy Maven artifacts') {
+            echo """
+            ----------------------------------------
+            Deploy Maven artifacts
+            ----------------------------------------"""
+            sh """
+              mvn ${MAVEN_ARGS} -Pdistrib -DskipTests deploy
+              mvn ${MAVEN_ARGS} -f parent/pom.xml deploy
+  
+              # update back nuxeo-parent version to CURRENT_VERSION version
+              mvn ${MAVEN_ARGS} -f parent/pom.xml versions:set -DnewVersion=${CURRENT_VERSION} -DgenerateBackupPoms=false
+              mvn ${MAVEN_ARGS} -f parent/pom.xml deploy
+            """
+          }
         }
       }
     }
 
     stage('Deploy Nuxeo Packages') {
       when {
-        allOf {
-          not {
-            changeRequest()
-          }
-          not {
-            environment name: 'DRY_RUN', value: 'true'
-          }
-        }
+        expression { nxUtils.isNotPullRequestAndNotDryRun() }
       }
       steps {
-        setGitHubBuildStatus('packages/deploy', 'Deploy Nuxeo Packages', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Upload Nuxeo Packages to ${CONNECT_PREPROD_URL}
-          ----------------------------------------"""
-          withCredentials([usernameColonPassword(credentialsId: 'connect-preprod', variable: 'CONNECT_PASS')]) {
-            sh '''
-              PACKAGES_TO_UPLOAD="packages/nuxeo-*-package/target/nuxeo-*-package-*.zip"
-              for file in \$PACKAGES_TO_UPLOAD ; do
-                curl --fail -i -u $CONNECT_PASS -F package=@\$(ls \$file) $CONNECT_PREPROD_URL/site/marketplace/upload?batch=true ;
-              done
-            '''
+          nxWithGitHubStatus(context: 'packages/deploy', message: 'Deploy Nuxeo Packages') {
+            echo """
+            ----------------------------------------
+            Upload Nuxeo Packages to ${CONNECT_PREPROD_URL}
+            ----------------------------------------"""
+            withCredentials([usernameColonPassword(credentialsId: 'connect-preprod', variable: 'CONNECT_PASS')]) {
+              sh '''
+                PACKAGES_TO_UPLOAD="packages/nuxeo-*-package/target/nuxeo-*-package-*.zip"
+                for file in \$PACKAGES_TO_UPLOAD ; do
+                  curl --fail -i -u $CONNECT_PASS -F package=@\$(ls \$file) $CONNECT_PREPROD_URL/site/marketplace/upload?batch=true ;
+                done
+              '''
+            }
           }
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('packages/deploy', 'Deploy Nuxeo Packages', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('packages/deploy', 'Deploy Nuxeo Packages', 'FAILURE')
         }
       }
     }
 
     stage('Deploy Docker image') {
       when {
-        allOf {
-          not {
-            changeRequest()
-          }
-          not {
-            environment name: 'DRY_RUN', value: 'true'
-          }
-        }
+        expression { nxUtils.isNotPullRequestAndNotDryRun() }
       }
       steps {
-        setGitHubBuildStatus('docker/deploy', 'Deploy Docker image', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Deploy Docker image
-          ----------------------------------------
-          Image tag: ${VERSION}
-          """
-          echo "Push Docker images to Docker registry ${PRIVATE_DOCKER_REGISTRY}"
-          dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${BASE_IMAGE_NAME}")
-          dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
-          dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_BENCHMARK_IMAGE_NAME}")
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('docker/deploy', 'Deploy Docker image', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('docker/deploy', 'Deploy Docker image', 'FAILURE')
+          nxWithGitHubStatus(context: 'docker/deploy', message: 'Deploy Docker image') {
+            echo """
+            ----------------------------------------
+            Deploy Docker image
+            ----------------------------------------
+            Image tag: ${VERSION}
+            """
+            echo "Push Docker images to Docker registry ${PRIVATE_DOCKER_REGISTRY}"
+            dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${BASE_IMAGE_NAME}")
+            dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
+            dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_BENCHMARK_IMAGE_NAME}")
+          }
         }
       }
     }
 
     stage('Deploy Server Preview') {
       when {
-        not {
-          changeRequest()
-        }
+        expression { !nxUtils.isPullRequest() }
       }
       steps {
-        setGitHubBuildStatus('server/preview', 'Deploy server preview', 'PENDING')
         container('maven') {
-          script {
-            echo """
-            ----------------------------------------
-            Deploy Preview environment
-            ----------------------------------------"""
-            // Kubernetes namespace, requires lower case alphanumeric characters
-            def previewNamespace = "${CURRENT_NAMESPACE}-nuxeo-preview-${BRANCH_NAME.toLowerCase()}"
-            def previewEnvironment = 'default'
-            def previewHelmRelease = 'nuxeo'
-            boolean nsExists = sh(returnStatus: true, script: "kubectl get namespace ${previewNamespace}") == 0
-            if (!nsExists) {
-              echo 'Create preview namespace'
-              sh "kubectl create namespace ${previewNamespace}"
+          nxWithGitHubStatus(context: 'server/preview', message: 'Deploy server preview') {
+            script {
+              echo """
+              ----------------------------------------
+              Deploy Preview environment
+              ----------------------------------------"""
+              // Kubernetes namespace, requires lower case alphanumeric characters
+              def previewNamespace = "${CURRENT_NAMESPACE}-nuxeo-preview-${BRANCH_NAME.toLowerCase()}"
+              def previewEnvironment = 'default'
+              def previewHelmRelease = 'nuxeo'
+              boolean nsExists = sh(returnStatus: true, script: "kubectl get namespace ${previewNamespace}") == 0
+              if (!nsExists) {
+                echo 'Create preview namespace'
+                sh "kubectl create namespace ${previewNamespace}"
+                nxK8s.copySecret(fromNamespace: 'platform', toNamespace: previewNamespace, name: 'kubernetes-docker-cfg')
+                nxK8s.copySecret(fromNamespace: 'platform', toNamespace: previewNamespace, name: 'platform-cluster-tls')
+              }
 
-              echo 'Deploy TLS secret replicator to preview namespace'
-              sh """
-                kubectl apply -f ci/helm/templates/empty-tls-secret-for-kubernetes-replicator.yaml \
-                  --namespace=${previewNamespace}
-              """
+              if (nsExists) {
+                // scale down nuxeo preview deployment, otherwise K8s won't be able to mount the binaries volume for the pods
+                // TODO: rely on a statefulset in the nuxeo Helm chart, as in mongodb
+                echo 'Scale down nuxeo preview deployment before release upgrade'
+                sh """
+                  kubectl scale deployment ${previewHelmRelease} \
+                    --namespace=${previewNamespace} \
+                    --replicas=0
+                """
+              }
 
-              echo 'Copy image pull secret to preview namespace'
-              sh "kubectl --namespace=platform get secret kubernetes-docker-cfg -ojsonpath='{.data.\\.dockerconfigjson}' | base64 --decode > /tmp/config.json"
-              sh """kubectl create secret generic kubernetes-docker-cfg \
+              echo 'Upgrade external service and nuxeo preview releases'
+              helmfileTemplate("${previewNamespace}", "${previewEnvironment}", 'target')
+              try {
+                helmfileSync("${previewNamespace}", "${previewEnvironment}")
+              } catch (e) {
+                sh """
+                  kubectl --namespace=${previewNamespace} get event --sort-by .lastTimestamp
+                  kubectl --namespace=${previewNamespace} get all,configmaps,secrets
+                  kubectl --namespace=${previewNamespace} describe pod --selector=app=${previewHelmRelease}
+                  kubectl --namespace=${previewNamespace} logs --selector=app=${previewHelmRelease} --tail=1000
+                """
+                throw e
+              }
+
+              host = sh(returnStdout: true, script: """
+                kubectl get ingress ${previewHelmRelease} \
                   --namespace=${previewNamespace} \
-                  --from-file=.dockerconfigjson=/tmp/config.json \
-                  --type=kubernetes.io/dockerconfigjson --dry-run -o yaml | kubectl apply -f -"""
-            }
-
-            if (nsExists) {
-              // scale down nuxeo preview deployment, otherwise K8s won't be able to mount the binaries volume for the pods
-              // TODO: rely on a statefulset in the nuxeo Helm chart, as in mongodb
-              echo 'Scale down nuxeo preview deployment before release upgrade'
-              sh """
-                kubectl scale deployment ${previewHelmRelease} \
-                  --namespace=${previewNamespace} \
-                  --replicas=0
-              """
-            }
-
-            echo 'Upgrade external service and nuxeo preview releases'
-            helmfileTemplate("${previewNamespace}", "${previewEnvironment}", 'target')
-            try {
-              helmfileSync("${previewNamespace}", "${previewEnvironment}")
-            } catch (e) {
-              sh """
-                kubectl --namespace=${previewNamespace} get event --sort-by .lastTimestamp
-                kubectl --namespace=${previewNamespace} get all,configmaps,secrets
-                kubectl --namespace=${previewNamespace} describe pod --selector=app=${previewHelmRelease}
-                kubectl --namespace=${previewNamespace} logs --selector=app=${previewHelmRelease} --tail=1000
-              """
-              throw e
-            }
-
-            host = sh(returnStdout: true, script: """
-              kubectl get ingress ${previewHelmRelease} \
-                --namespace=${previewNamespace} \
-                -ojsonpath='{.spec.rules[*].host}'
-            """)
-            echo """
+                  -ojsonpath='{.spec.rules[*].host}'
+              """)
+              echo """
               -----------------------------------------------
               Preview available at: https://${host}
               -----------------------------------------------"""
+            }
           }
         }
       }
@@ -992,20 +756,12 @@ pipeline {
         always {
           archiveArtifacts allowEmptyArchive: true, artifacts: '**/target/**/*.yaml'
         }
-        success {
-          setGitHubBuildStatus('server/preview', 'Deploy server preview', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('server/preview', 'Deploy server preview', 'FAILURE')
-        }
       }
     }
 
     stage('Trigger hotfix build') {
       when {
-        not {
-          changeRequest()
-        }
+        expression { !nxUtils.isPullRequest() }
       }
       steps {
         script {
@@ -1031,29 +787,24 @@ pipeline {
   post {
     always {
       script {
-        if (!isPullRequest()) {
-          // update JIRA issue
-          step([$class: 'JiraIssueUpdater', issueSelector: [$class: 'DefaultIssueSelector'], scm: scm])
-        }
+        nxJira.updateIssues()
       }
     }
     success {
       script {
-        if (!isPullRequest()) {
+        if (!nxUtils.isPullRequest()) {
           currentBuild.description = "Build ${VERSION}"
-          if (env.DRY_RUN != 'true'
-            && !hudson.model.Result.SUCCESS.toString().equals(currentBuild.getPreviousBuild()?.getResult())) {
-            slackSend(channel: "${SLACK_CHANNEL}", color: 'good', message: "Successfully built nuxeo/nuxeo-lts ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
+          if (!hudson.model.Result.SUCCESS.toString().equals(currentBuild.getPreviousBuild()?.getResult())) {
+            nxSlack.success(message: "Successfully built nuxeo/nuxeo-lts ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
           }
         }
       }
     }
     unsuccessful {
       script {
-        if (!isPullRequest()
-          && env.DRY_RUN != 'true'
+        if (!nxUtils.isPullRequest()
           && ![hudson.model.Result.ABORTED.toString(), hudson.model.Result.NOT_BUILT.toString()].contains(currentBuild.result)) {
-          slackSend(channel: "${SLACK_CHANNEL}", color: 'danger', message: "Failed to build nuxeo/nuxeo-lts ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
+          nxSlack.error(message: "Failed to build nuxeo/nuxeo-lts ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
         }
       }
     }

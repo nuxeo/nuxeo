@@ -16,18 +16,7 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-
-void setGitHubBuildStatus(String context, String message, String state) {
-  if (env.DRY_RUN != "true") {
-    step([
-      $class: 'GitHubCommitStatusSetter',
-      reposSource: [$class: 'ManuallyEnteredRepositorySource', url: 'https://github.com/nuxeo/nuxeo-lts'],
-      commitShaSource: [$class: 'ManuallyEnteredShaSource', sha: "${SCM_REF}"],
-      contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: context],
-      statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]],
-    ])
-  }
-}
+library identifier: "platform-ci-shared-library@v0.0.3"
 
 boolean isTriggeredByCron() {
   return currentBuild.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause')
@@ -37,33 +26,13 @@ boolean isTriggeredByNuxeoPromotion() {
   return "${params.NUXEO_BRANCH}".matches('^v(\\d){4}\\.(\\d)+$')
 }
 
-String getCurrentNamespace() {
-  container('maven') {
-    return sh(returnStdout: true, script: "kubectl get pod ${NODE_NAME} -ojsonpath='{..namespace}'")
-  }
-}
-
-String getScmRef() {
-  container('maven') {
-    return sh(returnStdout: true, script: "skopeo inspect docker://${params.NUXEO_DOCKER_IMAGE} | jq '.Labels.\"org.nuxeo.scm-ref\"'").replaceAll('"', '').trim()
-  }
-}
-
 String resolveDockerImageVersion(String dockerImage) {
   container('maven') {
     // resolve the real nuxeo version if the given docker image has a moving tag such as 2021, 2021.x, 2021.28
     if (dockerImage.matches('^.*:(\\d){4}(\\.(x|\\d+))?$')) {
-      return dockerImage.replaceAll(':.*', ':') + sh(returnStdout: true, script: "skopeo inspect docker://${dockerImage} | jq '.Labels.\"org.nuxeo.version\"'").replaceAll('"', '').trim()
+      return dockerImage.replaceAll(':.*', ':') + nxDocker.getLabel(image: dockerImage, label: 'org.nuxeo.version')
     }
     return dockerImage
-  }
-}
-
-String getAWSCredential(String dataKey) {
-  container('maven') {
-    // always read AWS credentials from secret in the platform namespace, even when running in platform-staging:
-    // credentials rotation is disabled in platform-staging to prevent double rotation on the same keys
-    return sh(returnStdout: true, script: "kubectl get secret aws-credentials -n platform -o=jsonpath='{.data.${dataKey}}' | base64 --decode")
   }
 }
 
@@ -89,48 +58,6 @@ String getBenchmarkCategory() {
   }
 }
 
-def cloneRepo(name, branch, relativePath = name) {
-  checkout([$class: 'GitSCM',
-    branches: [[name: branch]],
-    browser: [$class: 'GithubWeb', repoUrl: 'https://github.com/nuxeo/' + name],
-    doGenerateSubmoduleConfigurations: false,
-    extensions: [
-      [$class: 'RelativeTargetDirectory', relativeTargetDir: relativePath],
-      [$class: 'WipeWorkspace'],
-      [$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 60],
-      [$class: 'CheckoutOption', timeout: 60],
-      [$class: 'LocalBranch']
-    ],
-    submoduleCfg: [],
-    userRemoteConfigs: [[credentialsId: 'jx-pipeline-git-github-git', url: 'https://github.com/nuxeo/' + name]]
-  ])
-}
-
-void helmfileSync(namespace, environment) {
-  withEnv(["NAMESPACE=${namespace}"]) {
-    sh """
-      ${HELMFILE_COMMAND} deps
-      ${HELMFILE_COMMAND} --environment ${environment} sync
-    """
-  }
-}
-
-void helmfileDestroy(namespace, environment) {
-  withEnv(["NAMESPACE=${namespace}"]) {
-    sh """
-      ${HELMFILE_COMMAND} --environment ${environment} destroy
-    """
-  }
-}
-
-void copySecret(String secretName) {
-  sh """
-    kubectl --namespace=platform get secret ${secretName} -oyaml | \
-    sed 's/namespace: platform/namespace: ${BENCHMARK_NAMESPACE}/g' | \
-    kubectl --namespace=${BENCHMARK_NAMESPACE} apply -f -
-  """
-}
-
 void gatling(String parameters) {
   sh "mvn ${MAVEN_ARGS} test gatling:test -Durl=https://${BENCHMARK_NAMESPACE}.platform.dev.nuxeo.com/nuxeo -Dgatling.simulationClass=${parameters} -DredisHost=localhost -DredisPort=6379 -DredisDb=0"
 }
@@ -143,8 +70,8 @@ pipeline {
     timeout(time: 12, unit: 'HOURS')
   }
   environment {
-    CURRENT_NAMESPACE = getCurrentNamespace()
-    SCM_REF = getScmRef()
+    CURRENT_NAMESPACE = nxK8s.getCurrentNamespace()
+    SCM_REF = nxDocker.getLabel(image: params.NUXEO_DOCKER_IMAGE, label: 'org.nuxeo.scm-ref')
 
     BRANCH_NAME = "${params.NUXEO_BRANCH.replaceAll('/', '-')}"
     NUXEO_DOCKER_IMAGE_WITH_VERSION = resolveDockerImageVersion("${params.NUXEO_DOCKER_IMAGE}")
@@ -152,8 +79,10 @@ pipeline {
     NX_REPLICA_COUNT = "${params.NUXEO_NB_APP_NODE.toInteger()}"
     NX_WORKER_COUNT = "${params.NUXEO_NB_WORKER_NODE.toInteger()}"
 
-    AWS_ACCESS_KEY_ID = getAWSCredential('access_key_id')
-    AWS_SECRET_ACCESS_KEY = getAWSCredential('secret_access_key')
+    // always read AWS credentials from secret in the platform namespace, even when running in platform-staging:
+    // credentials rotation is disabled in platform-staging to prevent double rotation on the same keys
+    AWS_ACCESS_KEY_ID = nxK8s.getSecretData(namespace: 'platform', name: 'aws-credentials', key: 'access_key_id')
+    AWS_SECRET_ACCESS_KEY = nxK8s.getSecretData(namespace: 'platform', name: 'aws-credentials', key: 'secret_access_key')
     AWS_REGION = 'eu-west-3'
     BENCHMARK_BENCH_SUITE = getBenchmarkBenchSuite()
     BENCHMARK_BUILD_NUMBER = "${CURRENT_NAMESPACE}-${BUILD_NUMBER}"
@@ -175,16 +104,10 @@ pipeline {
     stage('Set labels') {
       steps {
         container('maven') {
-          setGitHubBuildStatus('benchmark/tests', 'Benchmark tests', 'PENDING')
-          echo """
-          ----------------------------------------
-          Set Kubernetes resource labels
-          ----------------------------------------
-          """
-          echo "Set label 'branch: ${BRANCH_NAME}' on pod ${NODE_NAME}"
-          sh """
-            kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME}
-          """
+          script {
+            nxGitHub.setStatus(context: 'benchmark/tests', message: 'Benchmark tests', state: 'PENDING', commitSha: env.SCM_REF)
+            nxK8s.setPodLabel()
+          }
         }
       }
     }
@@ -208,49 +131,37 @@ pipeline {
     stage("Run Gatling tests") {
       steps {
         container('maven') {
-          script {
-            try {
-              echo """
-              ----------------------------------------
-              Deploy Benchmark environment
-                - Nuxeo Docker Image : ${NUXEO_DOCKER_IMAGE}
-                - Nuxeo Docker Tag : ${VERSION}
-              ----------------------------------------
-              """
-              sh "kubectl create namespace ${BENCHMARK_NAMESPACE}"
-              echo 'Copy required secrets to deploy the stack'
-              copySecret("instance-clid")
-              copySecret("kubernetes-docker-cfg")
-              copySecret("platform-cluster-tls")
-
-              withEnv([
-                  "BUCKET_PREFIX=benchmark-tests-${BRANCH_NAME}-BUILD-${BUILD_NUMBER}/",
-              ]) {
-                helmfileSync("${BENCHMARK_NAMESPACE}", "benchmark")
-              }
-              dir("${GATLING_TESTS_PATH}") {
-                gatling('org.nuxeo.cap.bench.Sim00Setup')
-                gatling("org.nuxeo.cap.bench.Sim10MassStreamImport -DnbNodes=${BENCHMARK_NB_DOCS}")
-                gatling("org.nuxeo.cap.bench.Sim20CSVExport")
-                gatling("org.nuxeo.cap.bench.Sim15BulkUpdateDocuments")
-                gatling("org.nuxeo.cap.bench.Sim10CreateFolders")
-                gatling("org.nuxeo.cap.bench.Sim20CreateDocuments -Dusers=32")
-                gatling("org.nuxeo.cap.bench.Sim25WaitForAsync")
-                gatling("org.nuxeo.cap.bench.Sim25BulkUpdateFolders -Dusers=32 -Dduration=180 -Dpause_ms=0")
-                gatling("org.nuxeo.cap.bench.Sim30UpdateDocuments -Dusers=32 -Dduration=180")
-                gatling("org.nuxeo.cap.bench.Sim35WaitForAsync")
-                gatling("org.nuxeo.cap.bench.Sim30Navigation -Dusers=48 -Dduration=180")
-                gatling("org.nuxeo.cap.bench.Sim30Search -Dusers=48 -Dduration=180")
-                gatling("org.nuxeo.cap.bench.Sim50Bench -Dnav.users=80 -Dupd.user=15 -Dduration=180")
-                gatling("org.nuxeo.cap.bench.Sim50CRUD -Dusers=32 -Dduration=120")
-                gatling("org.nuxeo.cap.bench.Sim55WaitForAsync")
-                gatling("org.nuxeo.cap.bench.Sim80ReindexAll")
-              }
-            } catch (err) {
-              echo "Gatling tests error: ${err}"
-              throw err
-            } finally {
+          echo """
+          ----------------------------------------
+          Deploy Benchmark environment
+            - Nuxeo Docker Image : ${NUXEO_DOCKER_IMAGE}
+            - Nuxeo Docker Tag : ${VERSION}
+          ----------------------------------------
+          """
+          nxWithHelmfileDeployment(namespace: "${BENCHMARK_NAMESPACE}", environment: 'benchmark',
+              secrets: [[name: 'platform-cluster-tls', namespace: 'platform'], [name: 'instance-clid', namespace: 'platform']],
+              envVars: ["BUCKET_PREFIX=benchmark-tests-${BRANCH_NAME}-BUILD-${BUILD_NUMBER}/"]) {
+            script {
               try {
+                dir("${GATLING_TESTS_PATH}") {
+                  gatling('org.nuxeo.cap.bench.Sim00Setup')
+                  gatling("org.nuxeo.cap.bench.Sim10MassStreamImport -DnbNodes=${BENCHMARK_NB_DOCS}")
+                  gatling("org.nuxeo.cap.bench.Sim20CSVExport")
+                  gatling("org.nuxeo.cap.bench.Sim15BulkUpdateDocuments")
+                  gatling("org.nuxeo.cap.bench.Sim10CreateFolders")
+                  gatling("org.nuxeo.cap.bench.Sim20CreateDocuments -Dusers=32")
+                  gatling("org.nuxeo.cap.bench.Sim25WaitForAsync")
+                  gatling("org.nuxeo.cap.bench.Sim25BulkUpdateFolders -Dusers=32 -Dduration=180 -Dpause_ms=0")
+                  gatling("org.nuxeo.cap.bench.Sim30UpdateDocuments -Dusers=32 -Dduration=180")
+                  gatling("org.nuxeo.cap.bench.Sim35WaitForAsync")
+                  gatling("org.nuxeo.cap.bench.Sim30Navigation -Dusers=48 -Dduration=180")
+                  gatling("org.nuxeo.cap.bench.Sim30Search -Dusers=48 -Dduration=180")
+                  gatling("org.nuxeo.cap.bench.Sim50Bench -Dnav.users=80 -Dupd.user=15 -Dduration=180")
+                  gatling("org.nuxeo.cap.bench.Sim50CRUD -Dusers=32 -Dduration=120")
+                  gatling("org.nuxeo.cap.bench.Sim55WaitForAsync")
+                  gatling("org.nuxeo.cap.bench.Sim80ReindexAll")
+                }
+              } finally {
                 // archiveArtifacts doesn't support absolute path so do not use GATLING_TESTS_PATH
                 archiveArtifacts allowEmptyArchive: true, artifacts: 'ftests/nuxeo-server-gatling-tests/target/gatling/**/*'
                 if (params.DEBUG.toBoolean()) {
@@ -260,13 +171,6 @@ pipeline {
                   ----------------------------------------
                   """
                   sleep time: 1, unit: "HOURS"
-                }
-              } finally {
-                echo "Gatling tests: clean up benchmark namespace"
-                try {
-                  helmfileDestroy("${BENCHMARK_NAMESPACE}", "benchmark")
-                } finally {
-                  sh "kubectl delete namespace ${BENCHMARK_NAMESPACE} --ignore-not-found=true"
                 }
               }
             }
@@ -375,9 +279,9 @@ pipeline {
       }
       steps {
         container('benchmark') {
-          cloneRepo("${BENCH_SITE_REPO}", 'master');
-          dir("${BENCH_SITE_REPO}") {
-            script {
+          script {
+            nxGit.cloneRepository(name: "${BENCH_SITE_REPO}", branch: 'master')
+            dir("${BENCH_SITE_REPO}") {
               // configure git credentials & master branch
               sh """
                 jx step git credentials
@@ -408,16 +312,15 @@ pipeline {
 
   post {
     success {
-      setGitHubBuildStatus('benchmark/tests', 'Benchmark tests', 'SUCCESS')
-      container('benchmark') {
-        withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-          // this step can fail because a PR for the current branch may not exist
-          sh(returnStatus: true, script: "gh pr comment ${NUXEO_BRANCH} --body \"The Benchmark tests has succeeded to run on ${SCM_REF}.\nThe results are located there: https://benchmarks.nuxeo.com/${BENCHMARK_CATEGORY}/${BENCHMARK_BUILD_NUMBER}/index.html\"")
-        }
+      script {
+        nxGitHub.setStatus(context: 'benchmark/tests', message: 'Benchmark tests', state: 'SUCCESS', commitSha: env.SCM_REF)
+        nxGitHub.commentPullRequest(branch: params.NUXEO_BRANCH, body: "The Benchmark tests has succeeded to run on ${SCM_REF}.\nThe results are located there: https://benchmarks.nuxeo.com/${BENCHMARK_CATEGORY}/${BENCHMARK_BUILD_NUMBER}/index.html")
       }
     }
     unsuccessful {
-      setGitHubBuildStatus('benchmark/tests', 'Benchmark tests', 'FAILURE')
+      script {
+        nxGitHub.setStatus(context: 'benchmark/tests', message: 'Benchmark tests', state: 'FAILURE', commitSha: env.SCM_REF)
+      }
     }
   }
 }

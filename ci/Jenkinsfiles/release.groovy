@@ -16,6 +16,7 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
+library identifier: "platform-ci-shared-library@v0.0.3"
 
 void getCurrentVersion() {
   return readMavenPom().getVersion()
@@ -29,18 +30,12 @@ void getLatestVersion(version) {
   return version.split('\\.')[0];
 }
 
-void dockerCopyImage(String from, String... tos) {
-  for (String to : tos) {
-    sh "skopeo copy docker://${from} docker://${to}"
-  }
-}
-
 void promoteDockerImage(String dockerRegistry, String imageName, String buildVersion, String releaseVersion, String latestVersion) {
   String buildImage = "${dockerRegistry}/${DOCKER_NAMESPACE}/${imageName}:${buildVersion}"
   String releaseImage = "${dockerRegistry}/${DOCKER_NAMESPACE}/${imageName}:${releaseVersion}"
   String latestImage = "${dockerRegistry}/${DOCKER_NAMESPACE}/${imageName}:${latestVersion}"
 
-  dockerCopyImage(buildImage, releaseImage, latestImage)
+  nxDocker.copy(from: buildImage, tos: [releaseImage, latestImage])
 }
 
 pipeline {
@@ -69,9 +64,7 @@ pipeline {
     stage('Notify promotion start on slack') {
       steps {
         script {
-          if (env.DRY_RUN != 'true') {
-            slackSend(channel: "${SLACK_CHANNEL}", color: '#0167FF', message: "Starting to release nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}: ${BUILD_URL}")
-          }
+          nxSlack.send(color: '#0167FF', message: "Starting to release nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}: ${BUILD_URL}")
         }
       }
     }
@@ -98,15 +91,9 @@ pipeline {
     stage('Set Kubernetes labels') {
       steps {
         container('maven') {
-          echo """
-          ----------------------------------------
-          Set Kubernetes labels
-          ----------------------------------------
-          """
-          echo "Set label 'branch: ${REFERENCE_BRANCH}' on pod ${NODE_NAME}"
-          sh """
-            kubectl label pods ${NODE_NAME} branch=${REFERENCE_BRANCH}
-          """
+          script {
+            nxK8s.setPodLabel()
+          }
         }
       }
     }
@@ -125,19 +112,8 @@ pipeline {
 
               mvn ${MAVEN_ARGS} -f parent/pom.xml versions:set -DnewVersion=${RELEASE_VERSION} -DgenerateBackupPoms=false
               mvn ${MAVEN_ARGS} -f parent/pom.xml validate
-
-              git commit -a -m "Release ${RELEASE_VERSION}"
-              git tag -a v${RELEASE_VERSION} -m "Release ${RELEASE_VERSION}"
             """
-
-            if (env.DRY_RUN != 'true') {
-              sh """
-                jx step git credentials
-                git config credential.helper store
-
-                git push origin v${RELEASE_VERSION}
-              """
-            }
+            nxGit.commitTagPush(version: env.RELEASE_VERSION)
           }
         }
       }
@@ -145,9 +121,7 @@ pipeline {
 
     stage('Deploy nuxeo-parent POM') {
       when {
-        not {
-          environment name: 'DRY_RUN', value: 'true'
-        }
+        expression { !nxUtils.isDryRun() }
       }
       steps {
         container('maven') {
@@ -162,9 +136,7 @@ pipeline {
 
     stage('Upload Nuxeo Packages') {
       when {
-        not {
-          environment name: 'DRY_RUN', value: 'true'
-        }
+        expression { !nxUtils.isDryRun() }
       }
       steps {
         container('maven') {
@@ -190,9 +162,7 @@ pipeline {
 
     stage('Promote Docker image') {
       when {
-        not {
-          environment name: 'DRY_RUN', value: 'true'
-        }
+        expression { !nxUtils.isDryRun() }
       }
       steps {
         container('maven') {
@@ -232,19 +202,8 @@ pipeline {
 
               # nuxeo-promote-packages POM
               perl -i -pe 's|<version>.*?</version>|<version>${nextVersion}</version>|' ci/release/pom.xml
-
-              git commit -a -m "Release ${RELEASE_VERSION}, update ${CURRENT_VERSION} to ${nextVersion}"
             """
-
-            if (env.DRY_RUN != 'true') {
-              sh """
-                jx step git credentials
-                git config credential.helper store
-
-                git pull --rebase origin ${REFERENCE_BRANCH}
-                git push origin ${REFERENCE_BRANCH}
-              """
-            }
+            nxGit.commitPush(message: "Release ${RELEASE_VERSION}, update ${CURRENT_VERSION} to ${nextVersion}", branch: env.REFERENCE_BRANCH)
           }
         }
       }
@@ -252,9 +211,7 @@ pipeline {
 
     stage('Trigger downstream jobs') {
       when {
-        not {
-          environment name: 'DRY_RUN', value: 'true'
-        }
+        expression { !nxUtils.isDryRun() }
       }
       parallel {
         stage('Trigger JSF UI release') {
@@ -305,17 +262,13 @@ pipeline {
   post {
     success {
       script {
-        if (env.DRY_RUN != 'true') {
-          currentBuild.description = "Release ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}"
-          slackSend(channel: "${SLACK_CHANNEL}", color: 'good', message: "Successfully released nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}: ${BUILD_URL}")
-        }
+        currentBuild.description = "Release ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}"
+        nxSlack.success(message: "Successfully released nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}: ${BUILD_URL}")
       }
     }
     unsuccessful {
       script {
-        if (env.DRY_RUN != 'true') {
-          slackSend(channel: "${SLACK_CHANNEL}", color: 'danger', message: "Failed to release nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}: ${BUILD_URL}")
-        }
+        nxSlack.error(message: "Failed to release nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}: ${BUILD_URL}")
       }
     }
   }
