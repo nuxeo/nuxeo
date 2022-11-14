@@ -18,65 +18,33 @@
  *     Thomas Roger <troger@nuxeo.com>
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
+library identifier: "platform-ci-shared-library@v0.0.3"
 
 /**
  * This pipeline is intended to be executed on Pull Requests only
  */
 
-def abortRunningBuilds() {
-  // see https://issues.jenkins.io/browse/JENKINS-43353
-  def buildNumber = BUILD_NUMBER as int
-  if (buildNumber > 1) {
-    milestone(buildNumber - 1)
-  }
-  milestone(buildNumber)
-}
-abortRunningBuilds()
-
 repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
-
-properties([
-  [$class: 'GithubProjectProperty', projectUrlStr: repositoryUrl],
-  [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5']],
-])
-
-void setGitHubBuildStatus(String context, String message, String state) {
-  if (env.DRY_RUN != "true") {
-    step([
-      $class: 'GitHubCommitStatusSetter',
-      reposSource: [$class: 'ManuallyEnteredRepositorySource', url: repositoryUrl],
-      contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: context],
-      statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]],
-    ])
-  }
-}
-
-String getCurrentNamespace() {
-  container('maven') {
-    return sh(returnStdout: true, script: "kubectl get pod ${NODE_NAME} -ojsonpath='{..namespace}'")
-  }
-}
-
-String getVersion() {
-  return "${BRANCH_NAME}-" + readMavenPom().getVersion()
-}
 
 pipeline {
   agent {
     label 'jenkins-nuxeo-package-lts-2023'
   }
   options {
+    buildDiscarder(logRotator(daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5'))
+    disableConcurrentBuilds(abortPrevious: true)
+    githubProjectProperty(projectUrlStr: repositoryUrl)
     timeout(time: 3, unit: 'HOURS')
   }
   environment {
-    CURRENT_NAMESPACE = getCurrentNamespace()
+    CURRENT_NAMESPACE = nxK8s.getCurrentNamespace()
     // force ${HOME}=/root - for an unexplained reason, ${HOME} is resolved as /home/jenkins though sh 'env' shows HOME=/root
     HOME = '/root'
     // set Xmx lower than pod memory limit of 3Gi, to leave some memory for javadoc command
     MAVEN_OPTS = "$MAVEN_OPTS -Xms1g -Xmx2g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     // set Xmx/Xms to 1g for javadoc command, to avoid the pod being OOMKilled with an exit code 137
     MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true -DadditionalJOption=-J-Xmx1g -DadditionalJOption=-J-Xms1g'
-    VERSION = getVersion()
+    VERSION = nxUtils.getVersion()
     // jx step helm install's --name and --namespace options require alphabetic chars to be lowercase
     PREVIEW_NAMESPACE = "nuxeo-preview-${BRANCH_NAME.toLowerCase()}"
   }
@@ -84,31 +52,20 @@ pipeline {
   stages {
     stage('Set labels') {
       when {
-        branch 'PR-*'
+        expression { nxUtils.isPullRequest() }
       }
       steps {
         container('maven') {
-          echo """
-          ----------------------------------------
-          Set Kubernetes resource labels
-          ----------------------------------------
-          """
-          echo "Set label 'branch: ${BRANCH_NAME}' on pod ${NODE_NAME}"
-          sh """
-            kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME}
-          """
-          // output pod description
-          echo "Describe pod ${NODE_NAME}"
-          sh """
-            kubectl describe pod ${NODE_NAME}
-          """
+          script {
+            nxK8s.setPodLabel()
+          }
         }
       }
     }
 
     stage('Update version') {
       when {
-        branch 'PR-*'
+        expression { nxUtils.isPullRequest() }
       }
       steps {
         container('maven') {
@@ -130,135 +87,102 @@ pipeline {
 
     stage('Build Javadoc') {
       when {
-        branch 'PR-*'
+        expression { nxUtils.isPullRequest() }
       }
       steps {
-        setGitHubBuildStatus('javadoc/build', 'Build Javadoc', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Build Javadoc
-          ----------------------------------------"""
-          echo "MAVEN_OPTS=$MAVEN_OPTS"
-          sh "mvn ${MAVEN_ARGS} -V -Pjavadoc -DskipTests install"
-          sh "mvn ${MAVEN_ARGS} -f server/pom.xml -Pjavadoc -DskipTests install"
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('javadoc/build', 'Build Javadoc', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('javadoc/build', 'Build Javadoc', 'FAILURE')
+          nxWithGitHubStatus(context: 'javadoc/build', message: 'Build Javadoc') {
+            echo """
+            ----------------------------------------
+            Build Javadoc
+            ----------------------------------------"""
+            echo "MAVEN_OPTS=$MAVEN_OPTS"
+            sh "mvn ${MAVEN_ARGS} -V -Pjavadoc -DskipTests install"
+            sh "mvn ${MAVEN_ARGS} -f server/pom.xml -Pjavadoc -DskipTests install"
+          }
         }
       }
     }
 
     stage('Generate Nuxeo ECM Javadoc') {
       when {
-        branch 'PR-*'
+        expression { nxUtils.isPullRequest() }
       }
       steps {
-        setGitHubBuildStatus('javadoc/site', 'Generate Javadoc site', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Generate Nuxeo ECM Javadoc
-          ----------------------------------------"""
-          sh "mvn ${MAVEN_ARGS} -Pjavadoc site"
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('javadoc/site', 'Generate Javadoc site', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('javadoc/site', 'Generate Javadoc site', 'FAILURE')
+          nxWithGitHubStatus(context: 'javadoc/site', message: 'Generate Javadoc site') {
+            echo """
+            ----------------------------------------
+            Generate Nuxeo ECM Javadoc
+            ----------------------------------------"""
+            sh "mvn ${MAVEN_ARGS} -Pjavadoc site"
+          }
         }
       }
     }
 
     stage('Deploy Nuxeo ECM Javadoc') {
       when {
-        branch 'PR-*'
-        expression {
-          return pullRequest.labels.contains('preview-javadoc')
-        }
-        not {
-          environment name: 'DRY_RUN', value: 'true'
-        }
+        expression { nxUtils.isPullRequest() && pullRequest.labels.contains('preview-javadoc') && !nxUtils.isDryRun() }
       }
       steps {
-        setGitHubBuildStatus('javadoc/preview', 'Deploy Javadoc environment', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Build Nuxeo ECM Javadoc Docker Image ${VERSION}
-          ----------------------------------------
-          Image tag: ${VERSION}"""
-          sh "mv target/site/apidocs ci/docker/javadoc/apidocs"
-          dir('ci/docker/javadoc') {
-            sh '''
-              envsubst < skaffold.yaml > skaffold.yaml~gen
-              skaffold build -f skaffold.yaml~gen
-            '''
-          }
-
-          echo """
-          ----------------------------------------
-          Deploy Nuxeo ECM Javadoc Environment
-          ----------------------------------------
-          Image tag: ${VERSION}
-          Namespace: ${PREVIEW_NAMESPACE}"""
-          dir('ci/helm/javadoc') {
+          nxWithGitHubStatus(context: 'javadoc/preview', message: 'Deploy Javadoc environment') {
             script {
-              // first substitute environment variables in chart values
-              sh """
-                mv values.yaml values.yaml.tosubst
-                envsubst < values.yaml.tosubst > values.yaml
-              """
-              // second create target namespace (if doesn't exist) and copy secrets to target namespace
-              boolean nsExists = sh(returnStatus: true, script: "kubectl get namespace ${PREVIEW_NAMESPACE}") == 0
-              if (!nsExists) {
-                sh "kubectl create namespace ${PREVIEW_NAMESPACE}"
-              }
-              sh "kubectl --namespace platform get secret kubernetes-docker-cfg -ojsonpath='{.data.\\.dockerconfigjson}' | base64 --decode > /tmp/config.json"
-              sh """kubectl create secret generic kubernetes-docker-cfg \
-                  --namespace=${PREVIEW_NAMESPACE} \
-                  --from-file=.dockerconfigjson=/tmp/config.json \
-                  --type=kubernetes.io/dockerconfigjson --dry-run -o yaml | kubectl apply -f -"""
-              // third build and deploy the chart
-              sh """
-                helm init --client-only --stable-repo-url=https://charts.helm.sh/stable
-                helm repo add jenkins-x https://jenkins-x-charts.github.io/v2/
-                helm dependency update .
-                APP_NAME=javadoc ORG=nuxeo jx preview \
-                  --name javadoc \
-                  --namespace ${PREVIEW_NAMESPACE} \
-                  --source-url="${repositoryUrl}" \
-                  --preview-health-timeout 15m \
-                  --no-comment \
-                  --verbose
-              """
-              host = sh(returnStdout: true, script: "kubectl get ingress --namespace=${PREVIEW_NAMESPACE} javadoc -ojsonpath='{.items[*].spec.rules[*].host}'")
               echo """
               ----------------------------------------
-              Javadoc Environment available at: https://${host}
-              ----------------------------------------"""
-              // comment the PR if it is the first time
-              if (!nsExists) {
-                pullRequest.comment("Preview Javadoc environment available [here](https://${host}).")
+              Build Nuxeo ECM Javadoc Docker Image ${VERSION}
+              ----------------------------------------
+              Image tag: ${VERSION}"""
+              sh "mv target/site/apidocs ci/docker/javadoc/apidocs"
+              dir('ci/docker/javadoc') {
+                nxDocker.build(skaffoldFile: 'skaffold.yaml')
+              }
+
+              echo """
+              ----------------------------------------
+              Deploy Nuxeo ECM Javadoc Environment
+              ----------------------------------------
+              Image tag: ${VERSION}
+              Namespace: ${PREVIEW_NAMESPACE}"""
+              dir('ci/helm/javadoc') {
+                // first substitute environment variables in chart values
+                sh """
+                  mv values.yaml values.yaml.tosubst
+                  envsubst < values.yaml.tosubst > values.yaml
+                """
+                // second create target namespace (if doesn't exist) and copy secrets to target namespace
+                boolean nsExists = sh(returnStatus: true, script: "kubectl get namespace ${PREVIEW_NAMESPACE}") == 0
+                if (!nsExists) {
+                  sh "kubectl create namespace ${PREVIEW_NAMESPACE}"
+                  nxK8s.copySecret(fromNamespace: 'platform', toNamespace: env.PREVIEW_NAMESPACE, name: 'kubernetes-docker-cfg')
+                  nxK8s.copySecret(fromNamespace: 'platform', toNamespace: env.PREVIEW_NAMESPACE, name: 'platform-cluster-tls')
+                }
+                // third build and deploy the chart
+                sh """
+                  helm init --client-only --stable-repo-url=https://charts.helm.sh/stable
+                  helm repo add jenkins-x https://jenkins-x-charts.github.io/v2/
+                  helm dependency update .
+                  APP_NAME=javadoc ORG=nuxeo jx preview \
+                    --name javadoc \
+                    --namespace ${PREVIEW_NAMESPACE} \
+                    --source-url="${repositoryUrl}" \
+                    --preview-health-timeout 15m \
+                    --no-comment \
+                    --verbose
+                """
+                host = sh(returnStdout: true, script: "kubectl get ingress --namespace=${PREVIEW_NAMESPACE} javadoc -ojsonpath='{.items[*].spec.rules[*].host}'")
+                echo """
+                ----------------------------------------
+                Javadoc Environment available at: https://${host}
+                ----------------------------------------"""
+                // comment the PR if it is the first time
+                if (!nsExists) {
+                  pullRequest.comment("Preview Javadoc environment available [here](https://${host}).")
+                }
               }
             }
           }
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('javadoc/preview', 'Deploy Javadoc environment', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('javadoc/preview', 'Deploy Javadoc environment', 'FAILURE')
         }
       }
     }
