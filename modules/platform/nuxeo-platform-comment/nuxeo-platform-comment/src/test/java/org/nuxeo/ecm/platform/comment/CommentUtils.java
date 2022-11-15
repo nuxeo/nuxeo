@@ -208,6 +208,15 @@ public class CommentUtils {
     }
 
     /**
+     * @return a mutable {@link Comment} for creation
+     */
+    public static <C extends Comment> C newComment(String parentId, String text, Instant creationDate) {
+        C comment = newComment(parentId, text);
+        comment.setCreationDate(creationDate);
+        return comment;
+    }
+
+    /**
      * @return a mutable {@link Comment} made by an external system for creation
      */
     public static <C extends Comment & ExternalEntity> C newExternalComment(String parentId, String entityId) {

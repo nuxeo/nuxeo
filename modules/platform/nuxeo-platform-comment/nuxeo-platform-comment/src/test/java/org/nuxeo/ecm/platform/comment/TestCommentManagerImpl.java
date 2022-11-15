@@ -78,6 +78,12 @@ public class TestCommentManagerImpl extends AbstractTestCommentManager {
 
     @Test
     @Override
+    @Ignore("CommentManagerImpl doesn't support this case - paging needs ordering and ordering not supported")
+    public void testGetCommentsPagination() {
+    }
+
+    @Test
+    @Override
     @Ignore("CommentManagerImpl doesn't support this case - ordering not supported")
     public void testGetCommentsPaginationOrdering() {
     }

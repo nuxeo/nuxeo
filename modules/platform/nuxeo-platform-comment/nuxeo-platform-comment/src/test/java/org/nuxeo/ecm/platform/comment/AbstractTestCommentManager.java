@@ -301,16 +301,21 @@ public abstract class AbstractTestCommentManager {
         // getComments uses a page provider -> wait indexation
         transactionalFeature.nextTransaction();
 
-        assertEquals(List.of(c1, c2, c3, c4), commentManager.getComments(session, commentedDocModel.getId()));
+        assertEquals(Set.of(c1, c2, c3, c4),
+                new HashSet<>(commentManager.getComments(session, commentedDocModel.getId())));
     }
 
     @Test
     public void testGetCommentsOrdering() {
-        Comment c1 = commentManager.createComment(session, newComment(commentedDocModel.getId(), "I am a comment!"));
-        Comment c2 = commentManager.createComment(session, newComment(commentedDocModel.getId(), "Me too!"));
+        Instant now = Instant.now();
+        Comment c1 = commentManager.createComment(session,
+                newComment(commentedDocModel.getId(), "I am a comment!", now.minusSeconds(4)));
+        Comment c2 = commentManager.createComment(session,
+                newComment(commentedDocModel.getId(), "Me too!", now.minusSeconds(3)));
         Comment c3 = commentManager.createComment(session,
-                newComment(commentedDocModel.getId(), "I am the last comment!"));
-        Comment c4 = commentManager.createComment(session, newComment(commentedDocModel.getId(), "No sorry, it's me!"));
+                newComment(commentedDocModel.getId(), "I am the last comment!", now.minusSeconds(2)));
+        Comment c4 = commentManager.createComment(session,
+                newComment(commentedDocModel.getId(), "No sorry, it's me!", now.minusSeconds(1)));
         // getComments uses a page provider -> wait indexation
         transactionalFeature.nextTransaction();
 
@@ -321,10 +326,12 @@ public abstract class AbstractTestCommentManager {
 
     @Test
     public void testGetCommentsPagination() {
-        List<Comment> comments = IntStream.rangeClosed(1, 10)
+        Instant now = Instant.now();
+        int nbComments = 10;
+        List<Comment> comments = IntStream.rangeClosed(1, nbComments)
                                           // type inference issue
                                           .mapToObj(i -> (Comment) newComment(commentedDocModel.getId(),
-                                                  "I am the " + i + "  comment!"))
+                                                  "I am the " + i + "  comment!", now.minusSeconds(nbComments - i)))
                                           .map(c -> commentManager.createComment(session, c))
                                           .collect(toList());
         // getComments uses a page provider -> wait indexation
@@ -337,10 +344,12 @@ public abstract class AbstractTestCommentManager {
 
     @Test
     public void testGetCommentsPaginationOrdering() {
+        Instant now = Instant.now();
+        int nbComments = 10;
         List<Comment> comments = IntStream.rangeClosed(1, 10)
                                           // type inference issue
                                           .mapToObj(i -> (Comment) newComment(commentedDocModel.getId(),
-                                                  "I am the " + i + "  comment!"))
+                                                  "I am the " + i + "  comment!", now.minusSeconds(nbComments - i)))
                                           .map(c -> commentManager.createComment(session, c))
                                           .collect(toList());
         // getComments uses a page provider -> wait indexation
