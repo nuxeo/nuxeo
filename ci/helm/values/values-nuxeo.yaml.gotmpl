@@ -26,7 +26,7 @@ mongodb:
   host: {{ printf "mongodb.%s" $localDomain }}
 elasticsearch:
   enabled: true
-  host: {{ printf "elasticsearch-master.%s" $localDomain }}
+  host: {{ printf "opensearch-cluster-master.%s" $localDomain }}
 kafka:
   enabled: true
   host: {{ printf "kafka.%s" $localDomain }}

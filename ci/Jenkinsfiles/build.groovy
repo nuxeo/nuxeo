@@ -182,7 +182,7 @@ def buildUnitTestStage(env) {
 
                     sh """
                       cat ci/mvn/nuxeo-test-${env}.properties \
-                        ci/mvn/nuxeo-test-elasticsearch.properties \
+                        ci/mvn/nuxeo-test-opensearch.properties \
                         ci/mvn/nuxeo-test-s3.properties \
                         > ci/mvn/nuxeo-test-${env}.properties~gen
                       BUCKET_PREFIX=${bucketPrefix} \

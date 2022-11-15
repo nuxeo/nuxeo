@@ -5,7 +5,7 @@ resources:
   limits:
     cpu: "15"
     memory: "56Gi"
-esJavaOpts: "-Xmx32g -Xms32g"
+opensearchJavaOpts: "-Xmx32g -Xms32g"
 podAnnotations:
   ad.datadoghq.com/elasticsearch.checks: |
     {
@@ -18,9 +18,10 @@ podAnnotations:
         ]
       }
     }
-  ad.datadoghq.com/tags: '{"source": "elasticsearch", "service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
+  ad.datadoghq.com/tags: '{"source": "opensearch", "service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
 labels:
   usage: benchmark
+  app: opensearch
 service:
   labels:
     usage: benchmark

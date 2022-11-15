@@ -4,7 +4,7 @@ mongodb:
   enabled: false
 postgresql:
   enabled: true
-elasticsearch:
+opensearch:
   enabled: true
 kafka:
   enabled: true

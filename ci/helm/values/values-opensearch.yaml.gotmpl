@@ -1,15 +1,21 @@
-image: "docker.elastic.co/elasticsearch/elasticsearch-oss"
-clusterName: elasticsearch
+image:
+  tag: 1.3.6
+clusterName: opensearch
 replicas: 1
-minimumMasterNodes: 1
+singleNode: true
 resources:
   requests:
     cpu: "250m"
-    memory: "1024Mi"
+    memory: "1Gi"
   limits:
     cpu: "500m"
-    memory: "1024Mi"
-esJavaOpts: "-Xmx380m -Xms380m"
+    memory: "2Gi"
+opensearchJavaOpts: "-Xmx1g -Xms1g"
+config:
+  opensearch.yml:
+    plugins:
+      security:
+        disabled: true
 labels:
   {{- if (env "BRANCH_NAME") }}
   branch: {{ env "BRANCH_NAME" | quote }}

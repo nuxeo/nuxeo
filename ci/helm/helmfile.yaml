@@ -4,8 +4,8 @@ repositories:
   # use a former version of index.yaml from the git repository as Bitnami all removed charts older than 6 months from
   # the index.yaml descriptor, see https://github.com/bitnami/charts/issues/10539
   url: https://raw.githubusercontent.com/bitnami/charts/eb5f9a9513d987b519f0ecd732e7031241c50328/bitnami
-- name: elastic
-  url: https://helm.elastic.co/
+- name: opensearch
+  url: https://opensearch-project.github.io/helm-charts/
 - name: nuxeo
   url: https://chartmuseum.platform.dev.nuxeo.com/
 
@@ -22,7 +22,7 @@ releases:
   {{ if eq .Environment.Name "benchmark" }}
   needs:
   - mongodb
-  - elasticsearch
+  - opensearch
   - kafka
   {{ end }}
   values:
@@ -44,14 +44,14 @@ releases:
   values:
   - values/values-postgresql.yaml.gotmpl
   - values/{{ $valuesDir }}/values-postgresql.yaml
-- name: elasticsearch
-  chart: elastic/elasticsearch
-  version: 7.9.2
+- name: opensearch
+  chart: opensearch/opensearch
+  version: 1.16.0
   namespace: {{ requiredEnv "NAMESPACE" }}
-  condition: elasticsearch.enabled
+  condition: opensearch.enabled
   values:
-  - values/values-elasticsearch.yaml.gotmpl
-  - values/{{ $valuesDir }}/values-elasticsearch.yaml.gotmpl
+  - values/values-opensearch.yaml.gotmpl
+  - values/{{ $valuesDir }}/values-opensearch.yaml.gotmpl
 - name: kafka
   chart: bitnami/kafka
   version: 11.8.8

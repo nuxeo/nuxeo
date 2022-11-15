@@ -23,7 +23,7 @@ affinity:
           operator: In
           values:
           - kafka
-          - elasticsearch-master
+          - opensearch
           - mongodb
       topologyKey: "kubernetes.io/hostname"
   podAffinity:
@@ -70,7 +70,7 @@ zookeeper:
             operator: In
             values:
             - kafka-zookeeper
-            - elasticsearch-master
+            - opensearch
             - mongodb
         topologyKey: "kubernetes.io/hostname"
   tolerations:
