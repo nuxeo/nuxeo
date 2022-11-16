@@ -1,0 +1,37 @@
+version: 2
+updates:
+  # Default branch: 10.10
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Disable version updates, we only want security updates on this maintenance branch
+    open-pull-requests-limit: 0
+    ignore:
+      # Major security updates
+      - dependency-name: "org.jboss.remoting:jboss-remoting"
+        versions: ["[3.0,)"]
+      - dependency-name: "org.hibernate*:*"
+        versions: ["[4.0,)"]
+      - dependency-name: "com.h2database:h2"
+        versions: ["[2.0,)"]
+
+      # Major and minor security update for jackson-databind, breaking changes
+      - dependency-name: "com.fasterxml.jackson.core:jackson-databind"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+      # Minor security update for Elasticsearch
+      - dependency-name: "org.elasticsearch*:*"
+        versions: [">6.5.3"]
+
+      # Security updates for Chronicle Queue
+      - dependency-name: "net.openhft:chronicle-bom"
+        versions: [">2.17.92"]
+
+  # Ignore pip dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    ignore:
+      - dependency-name: "*"
