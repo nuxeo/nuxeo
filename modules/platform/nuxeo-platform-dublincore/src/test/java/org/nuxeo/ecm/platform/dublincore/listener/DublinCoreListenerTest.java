@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2022 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,16 @@
  * Contributors:
  *     Nuno Cunha (ncunha@nuxeo.com)
  */
-
 package org.nuxeo.ecm.platform.dublincore.listener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.DOCUMENT_DIRTY;
@@ -42,7 +41,6 @@ import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DU
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -80,7 +78,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.dublincore")
 public class DublinCoreListenerTest {
 
-    protected final List<String> events = Arrays.asList(ABOUT_TO_CREATE, BEFORE_DOC_UPDATE, TRANSITION_EVENT,
+    protected final List<String> events = List.of(ABOUT_TO_CREATE, BEFORE_DOC_UPDATE, TRANSITION_EVENT,
             DOCUMENT_PUBLISHED, DOCUMENT_CREATED_BY_COPY);
 
     @Inject
@@ -120,7 +118,7 @@ public class DublinCoreListenerTest {
         EventContext ctx = new EventContextImpl(session, session.getPrincipal());
         eventService.fireEvent(ctx.newEvent(ABOUT_TO_CREATE));
 
-        verifyZeroInteractions(storageService);
+        verifyNoInteractions(storageService);
     }
 
     @Test
@@ -129,7 +127,7 @@ public class DublinCoreListenerTest {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         eventService.fireEvent(ctx.newEvent("UnknownEvent"));
 
-        verifyZeroInteractions(storageService);
+        verifyNoInteractions(storageService);
     }
 
     @Test
@@ -144,7 +142,7 @@ public class DublinCoreListenerTest {
 
         eventService.fireEvent(ctx.newEvent(ABOUT_TO_CREATE, FLAG_INLINE));
 
-        verifyZeroInteractions(storageService);
+        verifyNoInteractions(storageService);
     }
 
     @Test
@@ -155,7 +153,7 @@ public class DublinCoreListenerTest {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         eventService.fireEvent(ctx.newEvent(ABOUT_TO_CREATE, FLAG_INLINE));
 
-        verifyZeroInteractions(storageService);
+        verifyNoInteractions(storageService);
     }
 
     @Test
@@ -166,7 +164,7 @@ public class DublinCoreListenerTest {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         eventService.fireEvent(ctx.newEvent(ABOUT_TO_CREATE, FLAG_INLINE));
 
-        verifyZeroInteractions(storageService);
+        verifyNoInteractions(storageService);
     }
 
     @Test
@@ -177,7 +175,7 @@ public class DublinCoreListenerTest {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         eventService.fireEvent(ctx.newEvent(ABOUT_TO_CREATE, FLAG_INLINE));
 
-        verifyZeroInteractions(storageService);
+        verifyNoInteractions(storageService);
     }
 
     @Test
@@ -189,7 +187,7 @@ public class DublinCoreListenerTest {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         eventService.fireEvent(ctx.newEvent(ABOUT_TO_CREATE, FLAG_INLINE));
 
-        verifyZeroInteractions(storageService);
+        verifyNoInteractions(storageService);
     }
 
     @Test

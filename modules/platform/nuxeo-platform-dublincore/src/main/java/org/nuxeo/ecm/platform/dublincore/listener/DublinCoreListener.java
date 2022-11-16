@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2022 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,7 @@
  *     Nuxeo - initial API and implementation
  *     Thierry Delprat (td@nuxeo.com)
  *     Ruslan Spivak (rspivak@nuxeo.com)
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.dublincore.listener;
 
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
@@ -45,7 +42,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
@@ -72,18 +68,15 @@ public class DublinCoreListener implements EventListener {
      */
     @Override
     public void handleEvent(Event event) {
-        EventContext ctx = event.getContext();
-        if (!(ctx instanceof DocumentEventContext)) {
+        if (!(event.getContext() instanceof DocumentEventContext docCtx)) {
             return;
         }
 
-        Boolean block = (Boolean) event.getContext().getProperty(DISABLE_DUBLINCORE_LISTENER);
-        if (Boolean.TRUE.equals(block)) {
+        if (Boolean.TRUE.equals(docCtx.getProperty(DISABLE_DUBLINCORE_LISTENER))) {
             // ignore the event - we are blocked by the caller
             return;
         }
 
-        DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
 
         if (doc.isVersion()) {
@@ -149,7 +142,7 @@ public class DublinCoreListener implements EventListener {
         }
     }
 
-    protected class UnrestrictedPropertySetter extends UnrestrictedSessionRunner {
+    protected static class UnrestrictedPropertySetter extends UnrestrictedSessionRunner {
 
         DocumentRef docRef;
 
