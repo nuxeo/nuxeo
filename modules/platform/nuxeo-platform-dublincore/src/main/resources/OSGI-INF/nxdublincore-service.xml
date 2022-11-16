@@ -35,6 +35,8 @@
       <event>documentPublished</event>
       <event>lifecycle_transition_event</event>
       <event>documentCreatedByCopy</event>
+      <event>documentTrashed</event>
+      <event>documentUntrashed</event>
     </listener>
 
   </extension>
