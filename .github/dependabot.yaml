@@ -1,0 +1,85 @@
+version: 2
+updates:
+  # Default branch: 2021
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 20
+    ignore:
+      # No major version updates (doesn't work for security updates, need to list them explicitly, see below)
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+      # No major security updates
+      - dependency-name: "org.jboss.remoting:jboss-remoting"
+        versions: ["[3.0,)"]
+      - dependency-name: "org.hibernate*:*"
+        versions: ["[4.0,)"]
+      - dependency-name: "com.h2database:h2"
+        versions: ["[2.0,)"]
+
+      # No minor security updates for Elasticsearch
+      - dependency-name: "org.elasticsearch*:*"
+        versions: ["[7.9.3,)"]
+
+      # No Chronicle Queue update
+      - dependency-name: "net.openhft:chronicle-bom"
+        versions: [">=2.20.40"]
+      - dependency-name: "net.openhft:chronicle-threads"
+        versions: [">=2.17.25"]
+
+      # Versions that are upgraded too often to be useful to track with Dependabot
+      - dependency-name: "com.amazonaws:aws-java-sdk-*"
+
+      # Versions we don't want because they're actually older
+      - dependency-name: "io.dropwizard.metrics5:metrics-bom"
+        versions: ["5.0.0"]
+
+  # Ignore pip dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    ignore:
+      - dependency-name: "*"
+
+  # Branch 2023
+  - package-ecosystem: "maven"
+    target-branch: "2023"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 20
+    ignore:
+      # No major version updates (doesn't work for security updates, need to list them explicitly, see below)
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+      # No major security updates
+      - dependency-name: "org.jboss.remoting:jboss-remoting"
+        versions: ["[3.0,)"]
+      - dependency-name: "org.hibernate*:*"
+        versions: ["[4.0,)"]
+      - dependency-name: "com.h2database:h2"
+        versions: ["[2.0,)"]
+
+      # No minor security updates for Elasticsearch
+      - dependency-name: "org.elasticsearch*:*"
+        versions: ["[7.9.3,)"]
+
+      # Versions that are upgraded too often to be useful to track with Dependabot
+      - dependency-name: "com.amazonaws:aws-java-sdk-*"
+
+      # Versions we don't want because they're actually older
+      - dependency-name: "io.dropwizard.metrics5:metrics-bom"
+        versions: ["5.0.0"]
+
+  # Ignore pip dependencies
+  - package-ecosystem: "pip"
+    target-branch: "2023"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    ignore:
+      - dependency-name: "*"
