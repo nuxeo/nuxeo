@@ -1,0 +1,65 @@
+version: 2
+updates:
+  # Default branch: 2023
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Disable version updates on 2023, for now we only want security updates
+    open-pull-requests-limit: 0
+    ignore:
+      # Major security updates
+      - dependency-name: "org.jboss.remoting:jboss-remoting"
+        versions: ["[3.0,)"]
+      - dependency-name: "org.hibernate*:*"
+        versions: ["[4.0,)"]
+      - dependency-name: "com.h2database:h2"
+        versions: ["[2.0,)"]
+
+      # Minor security update for Elasticsearch
+      - dependency-name: "org.elasticsearch*:*"
+        versions: [">7.9.2"]
+
+  # Ignore pip dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    ignore:
+      - dependency-name: "*"
+
+  # Branch 2021
+  - package-ecosystem: "maven"
+    target-branch: "2021"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Disable version updates on 2021, we only want security updates on this maintenance branch
+    open-pull-requests-limit: 0
+    ignore:
+      # Major security updates
+      - dependency-name: "org.jboss.remoting:jboss-remoting"
+        versions: ["[3.0,)"]
+      - dependency-name: "org.hibernate*:*"
+        versions: ["[4.0,)"]
+      - dependency-name: "com.h2database:h2"
+        versions: ["[2.0,)"]
+
+      # Minor security update for Elasticsearch
+      - dependency-name: "org.elasticsearch*:*"
+        versions: [">7.9.2"]
+
+      # Security update for Chronicle Queue
+      - dependency-name: "net.openhft:chronicle-bom"
+        versions: [">2.20.40"]
+      - dependency-name: "net.openhft:chronicle-threads"
+        versions: [">2.17.25"]
+
+  # Ignore pip dependencies
+  - package-ecosystem: "pip"
+    target-branch: "2021"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    ignore:
+      - dependency-name: "*"
