@@ -733,11 +733,11 @@ public abstract class TestStreamProcessor {
             assertTrue(processor.stopComputation(Name.ofUrn("C1")));
             assertFalse(processor.stopComputation(Name.ofUrn("C1")));
             Latency latency = processor.getLatency("C1");
-            assertTrue(latency.toString(), latency.latency() > 0);
 
             Thread.sleep(1000);
             Latency latency2 = processor.getLatency("C1");
-            assertEquals(latency.lag(), latency2.lag());
+            assertEquals(latency.lower(), latency2.lower());
+            assertTrue(latency2.toString(), latency2.latency() > 0);
 
             assertTrue(processor.startComputation(Name.ofUrn("C1")));
             assertFalse(processor.startComputation(Name.ofUrn("C1")));
