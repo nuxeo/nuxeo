@@ -28,6 +28,8 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PUBLISHED;
+import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
+import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_UNTRASHED;
 import static org.nuxeo.ecm.core.schema.FacetNames.SYSTEM_DOCUMENT;
 import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_CONTRIBUTORS_PROPERTY;
 import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_CREATOR_PROPERTY;
@@ -128,8 +130,10 @@ public class DublinCoreListener implements EventListener {
         boolean resetCreatorProperty = Framework.getService(ConfigurationService.class)
                                                 .isBooleanPropertyTrue(RESET_CREATOR_PROPERTY);
         Boolean dirty = (Boolean) event.getContext().getProperty(CoreEventConstants.DOCUMENT_DIRTY);
+        boolean lifecycleOrTrashEvent = eventId.equals(TRANSITION_EVENT) || eventId.equals(DOCUMENT_TRASHED)
+                || eventId.equals(DOCUMENT_UNTRASHED);
         if ((eventId.equals(BEFORE_DOC_UPDATE) && Boolean.TRUE.equals(dirty))
-                || (eventId.equals(TRANSITION_EVENT) && !doc.isImmutable())) {
+                || (lifecycleOrTrashEvent && !doc.isImmutable())) {
             service.setModificationDate(doc, cEventDate);
             service.addContributor(doc, event);
         } else if (eventId.equals(ABOUT_TO_CREATE)) {

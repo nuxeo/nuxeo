@@ -35,6 +35,8 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PUBLISHED;
+import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
+import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_UNTRASHED;
 import static org.nuxeo.ecm.core.event.Event.FLAG_INLINE;
 import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_CONTRIBUTORS_PROPERTY;
 import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_CREATOR_PROPERTY;
@@ -81,7 +83,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class DublinCoreListenerTest {
 
     protected final List<String> events = Arrays.asList(ABOUT_TO_CREATE, BEFORE_DOC_UPDATE, TRANSITION_EVENT,
-            DOCUMENT_PUBLISHED, DOCUMENT_CREATED_BY_COPY);
+            DOCUMENT_PUBLISHED, DOCUMENT_CREATED_BY_COPY, DOCUMENT_TRASHED, DOCUMENT_UNTRASHED);
 
     @Inject
     protected CoreSession session;
@@ -268,6 +270,38 @@ public class DublinCoreListenerTest {
         expectedDate.setTime(new Date(event.getTime()));
 
         verify(storageService, never()).setCreationDate(eq(doc), eq(expectedDate));
+        verify(storageService).setModificationDate(eq(doc), eq(expectedDate));
+        verify(storageService).addContributor(eq(doc), eq(event));
+    }
+
+    // NXP-31388
+    @Test
+    public void shouldInvokeStorageServiceWhenEventIsDocumentTrashed() {
+        DocumentModel doc = session.createDocumentModel("File");
+
+        DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
+        Event event = ctx.newEvent(DOCUMENT_TRASHED, FLAG_INLINE);
+        eventService.fireEvent(event);
+
+        Calendar expectedDate = Calendar.getInstance();
+        expectedDate.setTime(new Date(event.getTime()));
+
+        verify(storageService).setModificationDate(eq(doc), eq(expectedDate));
+        verify(storageService).addContributor(eq(doc), eq(event));
+    }
+
+    // NXP-31388
+    @Test
+    public void shouldInvokeStorageServiceWhenEventIsDocumentUntrashed() {
+        DocumentModel doc = session.createDocumentModel("File");
+
+        DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
+        Event event = ctx.newEvent(DOCUMENT_UNTRASHED, FLAG_INLINE);
+        eventService.fireEvent(event);
+
+        Calendar expectedDate = Calendar.getInstance();
+        expectedDate.setTime(new Date(event.getTime()));
+
         verify(storageService).setModificationDate(eq(doc), eq(expectedDate));
         verify(storageService).addContributor(eq(doc), eq(event));
     }
