@@ -116,7 +116,7 @@
         <SSLHostConfig certificateVerification="none">
             <Certificate certificateKeystoreFile="${nuxeo.server.https.keystoreFile}"
                          certificateKeystorePassword="${nuxeo.server.https.keystorePass}"
-                         certificateKeyAlias="tomcat"
+                         certificateKeyAlias="${nuxeo.server.https.keyAlias}"
                          type="RSA" />
         </SSLHostConfig>
     </Connector>

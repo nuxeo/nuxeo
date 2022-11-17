@@ -7,5 +7,6 @@ https.deprecation=HTTPS will be automatically activated if you set nuxeo.server.
 nuxeo.server.https.port=443
 nuxeo.server.https.keystoreFile=/path/to/keystore
 nuxeo.server.https.keystorePass=password
+nuxeo.server.https.keyAlias=tomcat
 
 nuxeo.url=https://localhost/nuxeo
