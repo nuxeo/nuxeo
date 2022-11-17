@@ -127,11 +127,12 @@ public class TestVersioningRemovalPolicy extends AbstractTestVersioning {
         session.save();
         waitForAsyncCompletion();
 
-        long n = cleanupOrphanVersions();
-        assertEquals(0, n);
+        DocumentModelList vs = getVersion();
+        assertEquals(1, vs.size());
+        cleanupOrphanVersions();
 
         // versions found
-        DocumentModelList vs = getVersion();
+        vs = getVersion();
         assertEquals(1, vs.size());
 
         // delete folder containing the doc
@@ -139,8 +140,9 @@ public class TestVersioningRemovalPolicy extends AbstractTestVersioning {
         session.save();
         waitForAsyncCompletion();
 
-        n = cleanupOrphanVersions();
-        assertEquals(1, n);
+        vs = getVersion();
+        assertEquals(1, vs.size());
+        cleanupOrphanVersions();
 
         // versions should not be found
         vs = getVersion();
@@ -185,29 +187,34 @@ public class TestVersioningRemovalPolicy extends AbstractTestVersioning {
         session.save();
         waitForAsyncCompletion();
 
-        long n = cleanupOrphanVersions();
-        assertEquals(0, n);
+        DocumentModelList vs = getVersion();
+        int nbVersions = (N + 1) + 2 + 2;
+        assertEquals(nbVersions, vs.size());
+        cleanupOrphanVersions();
 
         // all versions found
-        DocumentModelList vs = getVersion();
-        assertEquals((N + 1) + 2 + 2, vs.size());
+        vs = getVersion();
+        assertEquals(nbVersions, vs.size());
 
         // delete folder containing the doc
         session.removeDocument(folder.getRef());
         session.save();
         waitForAsyncCompletion();
 
-        n = cleanupOrphanVersions();
-        assertEquals(N + 1, n);
+        // all versions found
+        vs = getVersion();
+        assertEquals(nbVersions, vs.size());
+        cleanupOrphanVersions();
 
         // some versions (N+1) have been cleaned up
         vs = getVersion();
         assertEquals(2 + 2, vs.size());
     }
 
-    protected long cleanupOrphanVersions() {
+    protected void cleanupOrphanVersions() {
         CoreService coreService = Framework.getService(CoreService.class);
-        return coreService.cleanupOrphanVersions(5);
+        coreService.garbageCollectOrphanVersions();
+        coreFeature.waitForAsyncCompletion();
     }
 
     @Test
