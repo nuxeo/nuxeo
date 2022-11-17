@@ -110,7 +110,11 @@ public class KafkaUtils implements AutoCloseable {
             Thread.currentThread().interrupt();
             throw new StreamRuntimeException(e);
         } catch (ExecutionException e) {
-            throw new StreamRuntimeException(e);
+            if (e.getCause() instanceof org.apache.kafka.common.errors.TimeoutException) {
+                return false;
+            } else {
+                throw new StreamRuntimeException(e);
+            }
         } catch (TimeoutException e) {
             return false;
         } finally {
@@ -175,13 +179,15 @@ public class KafkaUtils implements AutoCloseable {
             Thread.currentThread().interrupt();
             throw new StreamRuntimeException(e);
         } catch (ExecutionException e) {
-            if ((e.getCause() instanceof TopicExistsException)) {
+            if (e.getCause() instanceof TopicExistsException) {
                 log.warn("Cannot create topic, it already exists: " + topic);
+            } else if (e.getCause() instanceof org.apache.kafka.common.errors.TimeoutException) {
+                throw new StreamRuntimeException("Unable to create topic " + topic + " within the request timeout", e);
             } else {
                 throw new StreamRuntimeException(e);
             }
         } catch (TimeoutException e) {
-            throw new StreamRuntimeException("Unable to create topic " + topic + " within the timeout", e);
+            throw new StreamRuntimeException("Unable to create topic " + topic + " within the 5m code timeout", e);
         }
         if (!topicReady(topic)) {
             waitForTopicCreation(topic, Duration.ofMinutes(3));
