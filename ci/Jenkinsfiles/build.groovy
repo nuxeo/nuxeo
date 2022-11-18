@@ -150,11 +150,13 @@ pipeline {
 
     stage('Initialization') {
       steps {
-        echo 'Clone addons'
-        sh "./clone.py ${CHANGE_BRANCH} -f ${CHANGE_TARGET}"
+        container('maven') {
+          echo 'Clone addons'
+          sh "./clone.py ${CHANGE_BRANCH} -f ${CHANGE_TARGET}"
 
-        echo 'Work around bower root issue'
-        sh "echo '{ \"allow_root\": true }' > /home/jenkins/.bowerrc"
+          echo 'Work around bower root issue'
+          sh "echo '{ \"allow_root\": true }' > /home/jenkins/.bowerrc"
+        }
       }
     }
 
