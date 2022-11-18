@@ -18,40 +18,7 @@
  *     Thomas Roger <troger@nuxeo.com>
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-
-def abortRunningBuilds() {
-  // see https://issues.jenkins.io/browse/JENKINS-43353
-  def buildNumber = BUILD_NUMBER as int
-  if (buildNumber > 1) {
-    milestone(buildNumber - 1)
-  }
-  milestone(buildNumber)
-}
-abortRunningBuilds()
-
-repositoryUrl = 'https://github.com/nuxeo/nuxeo'
-
-properties([
-  [$class: 'GithubProjectProperty', projectUrlStr: repositoryUrl],
-  [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '1']]
-])
-
-def getCurrentNamespace() {
-  container('maven') {
-    return sh(returnStdout: true, script: "kubectl get pod ${NODE_NAME} -ojsonpath='{..namespace}'")
-  }
-}
-
-def setGitHubBuildStatus(String context, String message, String state) {
-  if (env.DRY_RUN != "true") {
-    step([
-      $class: 'GitHubCommitStatusSetter',
-      reposSource: [$class: 'ManuallyEnteredRepositorySource', url: repositoryUrl],
-      contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: context],
-      statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]],
-    ])
-  }
-}
+library identifier: "platform-ci-shared-library@v0.0.3"
 
 // name function differently from step to avoid 'Excessively nested closures/functions' error
 def doArchiveArtifacts(artifacts, excludes = '') {
@@ -63,55 +30,21 @@ def doArchiveArtifacts(artifacts, excludes = '') {
 }
 
 void buildWithRedis(stage, body) {
-  setGitHubBuildStatus("${stage}/build", "Build ${stage}", 'PENDING')
-
-  echo "Create unit test namespace"
-  sh "kubectl create namespace ${TEST_NAMESPACE}"
-
-  try {
+  nxWithGitHubStatus(context: "${stage}/build", message: "Build ${stage}") {
     echo """
     ----------------------------------------
     Build ${stage}
     ----------------------------------------"""
 
     echo "Install Redis for unit tests"
-    helmfileSync("${TEST_NAMESPACE}")
-
-    body.call()
-
-    setGitHubBuildStatus("${stage}/build", "Build ${stage}", 'SUCCESS')
-  } catch(err) {
-    setGitHubBuildStatus("${stage}/build", "Build ${stage}", 'FAILURE')
-    throw err
-  } finally {
-    try {
-      junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
-      doArchiveArtifacts('**/target/*.log')
-    } finally {
-      echo 'Clean up unit test namespace'
+    nxWithHelmfileDeployment(namespace: env.TEST_NAMESPACE) {
       try {
-        helmfileDestroy("${TEST_NAMESPACE}")
+        body.call()
       } finally {
-        sh "kubectl delete namespace ${TEST_NAMESPACE} --ignore-not-found=true"
+        junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+        doArchiveArtifacts('**/target/*.log')
       }
     }
-  }
-}
-
-void helmfileSync(namespace) {
-  withEnv(["NAMESPACE=${namespace}"]) {
-    sh """
-      ${HELMFILE_COMMAND} deps
-      ${HELMFILE_COMMAND} sync
-    """
-  }
-}
-
-void helmfileDestroy(namespace) {
-  withEnv(["NAMESPACE=${namespace}"]) {
-    sh """
-      ${HELMFILE_COMMAND} destroy
-    """
   }
 }
 
@@ -120,11 +53,13 @@ pipeline {
     label 'jenkins-nuxeo-platform-10'
   }
   options {
+    buildDiscarder(logRotator(daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '1'))
+    disableConcurrentBuilds(abortPrevious: true)
+    githubProjectProperty(projectUrlStr: 'https://github.com/nuxeo/nuxeo')
     timeout(time: 6, unit: 'HOURS')
   }
   environment {
-    CURRENT_NAMESPACE = getCurrentNamespace()
-    HELMFILE_COMMAND = "helmfile --file ci/helm/helmfile.yaml --helm-binary /usr/bin/helm3"
+    CURRENT_NAMESPACE = nxK8s.getCurrentNamespace()
     KILL_TOMCAT = "true"
     MAVEN_OPTS = "$MAVEN_OPTS -Xms1024m -Xmx4096m -XX:MaxPermSize=2048m -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     MAVEN_ARGS = '-B -V -nsu -P-nexus,nexus-private -fae -Dnuxeo.tests.random.mode=bypass'
@@ -194,20 +129,21 @@ pipeline {
 
     stage('Build distribution') {
       steps {
-        setGitHubBuildStatus('distribution/build', 'Build distribution', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Build distribution
-          ----------------------------------------"""
-          sh """
-            mvn ${MAVEN_ARGS} \
-              -Pdistrib \
-              -pl nuxeo-distribution \
-              -amd \
-              install
-          """
-          findText regexp: ".*ERROR.*", fileSet: 'nuxeo-distribution/**/log/server.log'
+          nxWithGitHubStatus(context: 'distribution/build', message: 'Build distribution') {
+            echo """
+            ----------------------------------------
+            Build distribution
+            ----------------------------------------"""
+            sh """
+              mvn ${MAVEN_ARGS} \
+                -Pdistrib \
+                -pl nuxeo-distribution \
+                -amd \
+                install
+            """
+            findText regexp: ".*ERROR.*", fileSet: 'nuxeo-distribution/**/log/server.log'
+          }
         }
       }
       post {
@@ -229,11 +165,7 @@ pipeline {
             **/nxserver/config/distribution.properties
           ''', 'nuxeo-distribution/nuxeo-war-tests/target/tomcat/logs/*.log')
         }
-        success {
-          setGitHubBuildStatus('distribution/build', 'Build distribution', 'SUCCESS')
-        }
         unsuccessful {
-          setGitHubBuildStatus('distribution/build', 'Build distribution', 'FAILURE')
           // findText does mark the build in FAILURE but doesn't fail the stage nor stop the pipeline
           error "Errors were found!"
         }
@@ -242,19 +174,20 @@ pipeline {
 
     stage('Build addons ftests') {
       steps {
-        setGitHubBuildStatus('addons/ftests', 'Addons ftests', 'PENDING')
         container('maven') {
-          echo """
-          ----------------------------------------
-          Run addons ftests
-          ----------------------------------------"""
-          sh """
-            mvn ${MAVEN_ARGS} \
-              -Paddons,itest \
-              -pl addons/nuxeo-platform-error-web,addons/nuxeo-platform-forms-layout-demo \
-              -amd \
-              install
-          """
+          nxWithGitHubStatus(context: 'addons/ftests', message: 'Addons ftests') {
+            echo """
+            ----------------------------------------
+            Run addons ftests
+            ----------------------------------------"""
+            sh """
+              mvn ${MAVEN_ARGS} \
+                -Paddons,itest \
+                -pl addons/nuxeo-platform-error-web,addons/nuxeo-platform-forms-layout-demo \
+                -amd \
+                install
+            """
+          }
         }
       }
       post {
@@ -263,12 +196,6 @@ pipeline {
             **/target/failsafe-reports/*.xml,
             **/target/surefire-reports/*.xml
           '''
-        }
-        success {
-          setGitHubBuildStatus('addons/ftests', 'Addons ftests', 'SUCCESS')
-        }
-        unsuccessful {
-          setGitHubBuildStatus('addons/ftests', 'Addons ftests', 'FAILURE')
         }
       }
     }
