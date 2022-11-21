@@ -46,12 +46,8 @@ public class ITRestAPITest {
     @Test
     public void testAPIServletForwardWithReservedCharacters() {
         String parentPath = "/default-domain";
+        String title = "test ; doc [with] some #, $, :, ; &? and =+";
 
-        documentExists(parentPath, "test ; doc [with] some #");
-        documentExists(parentPath, ", $, :, ; &? and =+");
-    }
-
-    protected void documentExists(String parentPath, String title) {
         RestHelper.createDocument(parentPath, "File", title, "");
 
         String encodedTitle = URIUtils.quoteURIPathComponent(title, false, false);
