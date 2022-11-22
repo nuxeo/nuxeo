@@ -7,9 +7,9 @@ updates:
       interval: "daily"
     open-pull-requests-limit: 20
     ignore:
-      # No major version updates (doesn't work for security updates, need to list them explicitly, see below)
+      # No version updates for now, we only want security updates on 2021
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types: ["version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch"]
 
       # No major security updates
       - dependency-name: "org.jboss.remoting:jboss-remoting"
