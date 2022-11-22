@@ -108,7 +108,7 @@
     <avro.version>1.9.2</avro.version>
     <xz.version>1.8</xz.version>
     <restlet.version>2.4.2</restlet.version>
-    <batik.version>1.13</batik.version>
+    <batik.version>1.16</batik.version>
     <jmock.version>2.12.0</jmock.version>
     <wro4j.version>1.9.0</wro4j.version>
 
