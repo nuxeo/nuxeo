@@ -2677,7 +2677,7 @@
       <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging-log4j</artifactId>
-        <version>2.1.0.GA</version>
+        <version>2.1.2.GA</version>
       </dependency>
 
       <!-- jboss (+ hibernate, richfaces...) -->
