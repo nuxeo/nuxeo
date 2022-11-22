@@ -2751,7 +2751,7 @@
       <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging-spi</artifactId>
-        <version>2.1.0.GA</version>
+        <version>2.1.2.GA</version>
       </dependency>
       <dependency>
         <groupId>org.jboss</groupId>
