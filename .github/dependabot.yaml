@@ -5,13 +5,10 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    open-pull-requests-limit: 20
+    # Disable version updates on 2021, for now we only want security updates
+    open-pull-requests-limit: 0
     ignore:
-      # No version updates for now, we only want security updates on 2021
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch"]
-
-      # No major security updates
+      # Major security updates
       - dependency-name: "org.jboss.remoting:jboss-remoting"
         versions: ["[3.0,)"]
       - dependency-name: "org.hibernate*:*"
@@ -19,22 +16,15 @@ updates:
       - dependency-name: "com.h2database:h2"
         versions: ["[2.0,)"]
 
-      # No minor security updates for Elasticsearch
+      # Minor security update for Elasticsearch
       - dependency-name: "org.elasticsearch*:*"
-        versions: ["[7.9.3,)"]
+        versions: [">7.9.2"]
 
-      # No Chronicle Queue update
+      # Security update for Chronicle Queue
       - dependency-name: "net.openhft:chronicle-bom"
-        versions: [">=2.20.40"]
+        versions: [">2.20.40"]
       - dependency-name: "net.openhft:chronicle-threads"
-        versions: [">=2.17.25"]
-
-      # Versions that are upgraded too often to be useful to track with Dependabot
-      - dependency-name: "com.amazonaws:aws-java-sdk-*"
-
-      # Versions we don't want because they're actually older
-      - dependency-name: "io.dropwizard.metrics5:metrics-bom"
-        versions: ["5.0.0"]
+        versions: [">2.17.25"]
 
   # Ignore pip dependencies
   - package-ecosystem: "pip"
@@ -50,13 +40,14 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    open-pull-requests-limit: 20
+    # Enable version updates along with security updates on 2023, limit to 10 to prevent CI overload
+    open-pull-requests-limit: 10
     ignore:
-      # No major version updates (doesn't work for security updates, need to list them explicitly, see below)
+      # Major version updates (doesn't work for security updates, need to list them explicitly, see below)
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
-      # No major security updates
+      # Major security updates
       - dependency-name: "org.jboss.remoting:jboss-remoting"
         versions: ["[3.0,)"]
       - dependency-name: "org.hibernate*:*"
@@ -64,14 +55,14 @@ updates:
       - dependency-name: "com.h2database:h2"
         versions: ["[2.0,)"]
 
-      # No minor security updates for Elasticsearch
+      # Minor security update for Elasticsearch
       - dependency-name: "org.elasticsearch*:*"
-        versions: ["[7.9.3,)"]
+        versions: [">7.9.2"]
 
-      # Versions that are upgraded too often to be useful to track with Dependabot
+      # Upgraded too often to be useful to track with Dependabot
       - dependency-name: "com.amazonaws:aws-java-sdk-*"
 
-      # Versions we don't want because they're actually older
+      # Actually older
       - dependency-name: "io.dropwizard.metrics5:metrics-bom"
         versions: ["5.0.0"]
 
