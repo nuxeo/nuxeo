@@ -2746,7 +2746,7 @@
       <dependency>
         <groupId>org.jboss.naming</groupId>
         <artifactId>jnp-client</artifactId>
-        <version>5.0.3.GA</version>
+        <version>5.0.5.Final</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.logging</groupId>
