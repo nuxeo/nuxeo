@@ -14,6 +14,10 @@
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
+  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat">
+    <copy file="${out.dir}/../../target/test-classes/scheduler-no-delay-config.xml" todir="${nuxeo.home}/nxserver/config/" />
+  </target>
+
   <target name="activate-custom-template">
     <echo level="info">Activate "custom" template to disable picture listeners</echo>
     <copy todir="${out.dir}/tomcat/templates/custom" verbose="true" overwrite="true">

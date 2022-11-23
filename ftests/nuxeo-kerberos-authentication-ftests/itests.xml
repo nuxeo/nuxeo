@@ -38,6 +38,7 @@
       <param name="name" value="kerberos.principal" />
       <param name="value" value="HTTP/jenkins@AD.IN.NUXEO.COM" />
     </antcall>
+    <copy file="${out.dir}/../../target/test-classes/scheduler-no-delay-config.xml" todir="${nuxeo.home}/nxserver/config/" />
   </target>
 
 </project>

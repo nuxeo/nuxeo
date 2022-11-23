@@ -20,6 +20,7 @@
       <param name="name" value="nuxeo.core.binarymanager" />
       <param name="value" value="org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager" />
     </antcall>
+    <copy file="${out.dir}/../../target/test-classes/scheduler-no-delay-config.xml" todir="${nuxeo.home}/nxserver/config/" />
   </target>
 
   <target name="prepare-packages" depends="_init">
