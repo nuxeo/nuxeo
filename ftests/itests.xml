@@ -15,6 +15,7 @@
       <param name="name" value="org.nuxeo.connect.server.reachable" />
       <param name="value" value="false" />
     </antcall>
+    <copy file="${out.dir}/../../target/test-classes/scheduler-no-delay-config.xml" todir="${nuxeo.home}/nxserver/config/" />
   </target>
 
   <target name="prepare-packages" depends="_init">

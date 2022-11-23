@@ -30,7 +30,7 @@
       <param name="name" value="nuxeo.server.sdkInstallReloadTimer" />
       <param name="value" value="false" />
     </antcall>
-    <copy file="${out.dir}/test-classes/scheduler-no-delay-config.xml" todir="${nuxeo.home}/nxserver/config/" />
+    <copy file="${out.dir}/../../target/test-classes/scheduler-no-delay-config.xml" todir="${nuxeo.home}/nxserver/config/" />
   </target>
 
 </project>

@@ -74,6 +74,7 @@
     <antcall target="tune-nuxeo" />
     <antcall target="redis-clean" />
     <antcall target="redis-inject" />
+    <copy file="${out.dir}/../../target/test-classes/scheduler-no-delay-config.xml" todir="${nuxeo.home}/nxserver/config/" />
   </target>
 
 </project>
