@@ -228,7 +228,7 @@
     <sonar.jacoco.reportPaths>${it.jacoco.destFile}</sonar.jacoco.reportPaths>
 
     <!-- MongoDB -->
-    <mongo.java.driver.version>3.12.1</mongo.java.driver.version>
+    <mongo.java.driver.version>3.12.8</mongo.java.driver.version>
     <quartz.mongodb.version>2.0.0-NX4</quartz.mongodb.version>
 
     <kafka.version>2.1.1</kafka.version>
