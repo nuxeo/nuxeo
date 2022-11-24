@@ -2640,7 +2640,7 @@
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
-        <version>2.12.0-nx1</version>
+        <version>2.12.2-nx1</version>
       </dependency>
       <dependency>
         <groupId>jmimemagic</groupId>
