@@ -43,13 +43,6 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs2.FileChangeEvent;
-import org.apache.commons.vfs2.FileListener;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.VFS;
-import org.apache.commons.vfs2.impl.DefaultFileMonitor;
-
 import org.nuxeo.launcher.NuxeoLauncher;
 import org.nuxeo.launcher.NuxeoLauncherException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
@@ -92,8 +85,6 @@ public class NuxeoLauncherGUI {
         return logsMap;
     }
 
-    private DefaultFileMonitor dumpedConfigMonitor;
-
     private Thread nuxeoFrameUpdater;
 
     /**
@@ -109,48 +100,22 @@ public class NuxeoLauncherGUI {
             System.setProperty("com.apple.macos.smallTabs", "true");
         }
         initFrame();
-        dumpedConfigMonitor = new DefaultFileMonitor(new FileListener() {
-            @Override
-            public void fileDeleted(FileChangeEvent event) {
-                // Ignore
-            }
-
-            @Override
-            public void fileCreated(FileChangeEvent event) {
-                updateNuxeoFrame();
-            }
-
-            @Override
-            public void fileChanged(FileChangeEvent event) {
-                updateNuxeoFrame();
-            }
-
-            synchronized private void updateNuxeoFrame() {
-                waitForFrameLoaded();
-                log.debug("Configuration changed. Reloading frame...");
-                launcher.init();
-                updateServerStatus();
-                try {
-                    Properties props = new Properties();
-                    try (var reader = Files.newBufferedReader(getConfigurationHolder().getDumpedConfigurationPath())) {
-                        props.load(reader);
-                    }
-                    nuxeoFrame.updateLogsTab(props.getProperty("log.id"));
-                } catch (IOException e) {
-                    log.error(e);
+        // watch the configuration.properties file to update the GUI
+        new FileWatcherThread(getConfigurationHolder().getDumpedConfigurationPath(), () -> {
+            waitForFrameLoaded();
+            log.debug("Configuration changed. Reloading frame...");
+            launcher.init();
+            updateServerStatus();
+            try {
+                Properties props = new Properties();
+                try (var reader = Files.newBufferedReader(getConfigurationHolder().getDumpedConfigurationPath())) {
+                    props.load(reader);
                 }
+                nuxeoFrame.updateLogsTab(props.getProperty("log.id"));
+            } catch (IOException e) {
+                log.error(e);
             }
-        });
-        try {
-            dumpedConfigMonitor.setRecursive(false);
-            @SuppressWarnings("resource")
-            FileObject dumpedConfig = VFS.getManager().resolveFile(
-                    getConfigurationHolder().getDumpedConfigurationPath().toString());
-            dumpedConfigMonitor.addFile(dumpedConfig);
-            dumpedConfigMonitor.start();
-        } catch (FileSystemException e) {
-            throw new RuntimeException("Couldn't find " + getConfigurationHolder().getNuxeoConfPath(), e);
-        }
+        }).start();
     }
 
     protected void initFrame() {
@@ -166,8 +131,8 @@ public class NuxeoLauncherGUI {
                 nuxeoFrame.pack();
                 // Center frame
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                nuxeoFrame.setLocation(screenSize.width / 2 - (nuxeoFrame.getWidth() / 2), screenSize.height / 2
-                        - (nuxeoFrame.getHeight() / 2));
+                nuxeoFrame.setLocation(screenSize.width / 2 - (nuxeoFrame.getWidth() / 2),
+                        screenSize.height / 2 - (nuxeoFrame.getHeight() / 2));
                 nuxeoFrame.setVisible(true);
             } catch (HeadlessException e) {
                 log.error(e);
