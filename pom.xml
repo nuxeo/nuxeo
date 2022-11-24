@@ -138,7 +138,7 @@
     <jaxb.version>2.3.0.1</jaxb.version>
     <tomcat.version>9.0.69</tomcat.version>
     <lucene.version>7.5.0</lucene.version>
-    <elasticsearch.version>6.5.3</elasticsearch.version> <!-- when changing this make sure JNA version is in sync -->
+    <elasticsearch.version>6.8.15</elasticsearch.version> <!-- when changing this make sure JNA version is in sync -->
     <jna.version>4.5.2</jna.version>
     <netty.version>4.1.78.Final</netty.version>
     <apacheds.version>1.5.1</apacheds.version>
