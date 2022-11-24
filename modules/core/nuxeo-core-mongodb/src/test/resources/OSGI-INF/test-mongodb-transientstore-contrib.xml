@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.transientstore.TransientStorageComponent.testMongoDbContrib">
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="default">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+    </blobprovider>
+    <blobprovider name="mytransient">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+      <property name="path">mytransientbinaries</property>
+      <property name="transient">true</property>
+    </blobprovider>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
+
+    <store name="default" class="org.nuxeo.ecm.core.mongodb.transientstore.MongoDBTransientStore"></store>
+
+    <store name="testStore" class="org.nuxeo.ecm.core.mongodb.transientstore.MongoDBTransientStore">
+      <property name="defaultBlobProvider">mytransient</property>
+    </store>
+
+    <store name="microStore" class="org.nuxeo.ecm.core.mongodb.transientstore.MongoDBTransientStore">
+      <!-- a store that can not store anything -->
+      <targetMaxSizeMB>0</targetMaxSizeMB>
+      <absoluteMaxSizeMB>0</absoluteMaxSizeMB>
+      <property name="defaultBlobProvider">mytransient</property>
+    </store>
+
+    <store name="miniStore" class="org.nuxeo.ecm.core.mongodb.transientstore.MongoDBTransientStore">
+      <!-- a store that deletes entries as soon as they are no longer needed -->
+      <targetMaxSizeMB>0</targetMaxSizeMB>
+      <absoluteMaxSizeMB>1</absoluteMaxSizeMB>
+      <property name="defaultBlobProvider">mytransient</property>
+    </store>
+
+  </extension>
+
+</component>

@@ -12,6 +12,9 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
+    <!--
+    <Logger name="org.nuxeo.ecm.core.mongodb.transientstore" level="trace" />
+    -->
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />
