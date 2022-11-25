@@ -776,7 +776,7 @@ pipeline {
           -----------------------------------------------------------
           """
           build(
-            job: "nuxeo/lts/2023/nuxeo-hf-2023",
+            job: "nuxeo/lts/nuxeo-hf",
             parameters: parameters,
             wait: false
           )
