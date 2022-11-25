@@ -19,13 +19,16 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength.HARD;
+import static org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength.SOFT;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.commons.collections4.map.ReferenceMap;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.storage.StateAccessor;
@@ -66,7 +69,6 @@ public class Node implements StateAccessor {
      * @param fragmentGroup the group of fragments for the node
      * @param path the path, if known at construction time
      */
-    @SuppressWarnings("unchecked")
     protected Node(PersistenceContext context, FragmentGroup fragmentGroup, String path) {
         this.context = context;
         model = context.model;
@@ -78,7 +80,7 @@ public class Node implements StateAccessor {
         }
         this.path = path;
         // memory-sensitive
-        propertyCache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
+        propertyCache = new ReferenceMap<>(HARD, SOFT);
     }
 
     // ----- basics -----

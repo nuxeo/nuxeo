@@ -21,7 +21,7 @@ package org.nuxeo.drive.service.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -86,7 +86,7 @@ public class TopLevelFolderItemFactoryRegistry
             dst.setFactoryClass(src.getFactoryClass());
         }
         // Parameters
-        if (!MapUtils.isEmpty(src.getParameters())) {
+        if (MapUtils.isNotEmpty(src.getParameters())) {
             for (String name : src.getParameters().keySet()) {
                 dst.setParameter(name, src.getparameter(name));
             }

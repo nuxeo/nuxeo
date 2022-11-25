@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -94,7 +94,7 @@ public class FileSystemItemFactoryRegistry extends ContributionFragmentRegistry<
             dst.setFactoryClass(src.getFactoryClass());
         }
         // Parameters
-        if (!MapUtils.isEmpty(src.getParameters())) {
+        if (MapUtils.isNotEmpty(src.getParameters())) {
             for (String name : src.getParameters().keySet()) {
                 dst.setParameter(name, src.getParameter(name));
             }

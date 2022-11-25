@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength.HARD;
+import static org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength.SOFT;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,8 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.map.AbstractReferenceMap;
-import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.commons.collections4.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 import org.nuxeo.runtime.metrics.MetricsService;
 
@@ -104,7 +106,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
     @SuppressWarnings("unchecked")
     public SoftRefCachingRowMapper() {
-        cache = new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.SOFT);
+        cache = new ReferenceMap<>(HARD, SOFT);
         localInvalidations = new VCSInvalidations();
         cacheQueue = new VCSInvalidationsQueue("mapper-" + this);
     }

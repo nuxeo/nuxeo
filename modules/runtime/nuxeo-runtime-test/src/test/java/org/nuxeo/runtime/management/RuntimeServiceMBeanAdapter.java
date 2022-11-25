@@ -19,20 +19,13 @@
 package org.nuxeo.runtime.management;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.collection.TransformedCollection;
-import org.apache.commons.collections.map.TransformedMap;
-import org.apache.commons.collections.set.TransformedSet;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
-import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
@@ -67,61 +60,26 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
         return doGetRuntime().getVersion().toString();
     }
 
-    private static class ComponentNameTransformer implements Transformer {
-
-        public static final ComponentNameTransformer INSTANCE = new ComponentNameTransformer();
-
-        @Override
-        public Object transform(Object input) {
-            return ((ComponentName) input).getRawName();
-        }
-    }
-
-    private static class ComponentNamesTransformer implements Transformer {
-
-        public static final ComponentNamesTransformer INSTANCE = new ComponentNamesTransformer();
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public Object transform(Object input) {
-            Set<String> output = new HashSet<>();
-            TransformedSet.decorate(output, ComponentNameTransformer.INSTANCE).addAll((Collection<?>) input);
-            return output;
-        }
-    }
-
     @Override
-    @SuppressWarnings("unchecked")
     public Map<String, Set<String>> getPendingComponents() {
-        Map<String, Set<String>> returnedMap = new HashMap<>();
-        Map<ComponentName, Set<ComponentName>> pendingRegistrations = doGetRuntime().getComponentManager().getPendingRegistrations();
-        if (pendingRegistrations.size() != 0) {
-            TransformedMap.decorate(returnedMap, ComponentNameTransformer.INSTANCE, ComponentNamesTransformer.INSTANCE).putAll(
-                    pendingRegistrations);
-        }
-        return returnedMap;
-    }
-
-    private static class RegistrationTransformer implements Transformer {
-
-        public static final RegistrationTransformer INSTANCE = new RegistrationTransformer();
-
-        @Override
-        public Object transform(Object input) {
-            return ((RegistrationInfo) input).getName().getRawName();
-        }
-
+        return doGetRuntime().getComponentManager()
+                             .getPendingRegistrations()
+                             .entrySet()
+                             .stream()
+                             .collect(Collectors.toMap(e -> e.getKey().getRawName(),
+                                     e -> e.getValue()
+                                           .stream()
+                                           .map(ComponentName::getRawName)
+                                           .collect(Collectors.toSet())));
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Set<String> getResolvedComponents() {
-        Collection<RegistrationInfo> registrations = doGetRuntime().getComponentManager().getRegistrations();
-        Set<String> returnedNames = new HashSet<>(registrations.size());
-        if (registrations.size() > 0) {
-            TransformedCollection.decorate(returnedNames, RegistrationTransformer.INSTANCE).addAll(registrations);
-        }
-        return returnedNames;
+        return doGetRuntime().getComponentManager()
+                             .getRegistrations()
+                             .stream()
+                             .map(r -> r.getName().getRawName())
+                             .collect(Collectors.toSet());
     }
 
 }

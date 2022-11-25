@@ -25,7 +25,7 @@ import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriter;
 
 import com.fasterxml.jackson.core.JsonGenerator;

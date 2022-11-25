@@ -2206,6 +2206,7 @@
       </dependency>
 
       <!-- commons -->
+      <!-- Keep the dependency for external libraries -->
       <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>

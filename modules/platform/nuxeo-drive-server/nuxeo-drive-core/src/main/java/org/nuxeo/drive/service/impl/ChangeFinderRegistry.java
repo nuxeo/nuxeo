@@ -18,7 +18,7 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
@@ -78,7 +78,7 @@ public class ChangeFinderRegistry extends ContributionFragmentRegistry<ChangeFin
             dst.setChangeFinderClass(src.getChangeFinderClass());
         }
         // Parameters
-        if (!MapUtils.isEmpty(src.getParameters())) {
+        if (MapUtils.isNotEmpty(src.getParameters())) {
             for (String name : src.getParameters().keySet()) {
                 dst.setParameter(name, src.getparameter(name));
             }

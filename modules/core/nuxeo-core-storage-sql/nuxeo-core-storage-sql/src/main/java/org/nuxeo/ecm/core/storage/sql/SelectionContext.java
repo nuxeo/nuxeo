@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength.HARD;
+import static org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength.SOFT;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,8 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.map.AbstractReferenceMap;
-import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.commons.collections4.map.ReferenceMap;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import io.dropwizard.metrics5.Counter;
@@ -72,13 +74,13 @@ public class SelectionContext {
 
     protected final Timer cacheGetTimer;
 
-    @SuppressWarnings("unchecked")
-    public SelectionContext(SelectionType selType, Serializable criterion, RowMapper mapper, PersistenceContext context) {
+    public SelectionContext(SelectionType selType, Serializable criterion, RowMapper mapper,
+            PersistenceContext context) {
         this.selType = selType;
         this.criterion = criterion;
         this.mapper = mapper;
         this.context = context;
-        softMap = new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.SOFT);
+        softMap = new ReferenceMap<>(HARD, SOFT);
         hardMap = new HashMap<>();
         modifiedInTransaction = new HashSet<>();
         modifiedInTransactionCount = registry.counter(

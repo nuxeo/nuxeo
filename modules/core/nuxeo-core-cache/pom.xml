@@ -27,11 +27,6 @@
       <artifactId>nuxeo-runtime-cluster</artifactId>
     </dependency>
 
-
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>

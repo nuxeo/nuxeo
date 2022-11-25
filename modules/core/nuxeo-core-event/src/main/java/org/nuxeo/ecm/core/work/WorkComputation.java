@@ -31,7 +31,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.collections.buffer.CircularFifoBuffer;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.ExceptionUtils;
@@ -59,7 +59,7 @@ public class WorkComputation extends AbstractComputation {
 
     protected static final int IDS_SIZE = 50;
 
-    protected final CircularFifoBuffer workIds = new CircularFifoBuffer(IDS_SIZE);
+    protected final CircularFifoQueue<String> workIds = new CircularFifoQueue<>(IDS_SIZE);
 
     protected final Timer workTimer;
 

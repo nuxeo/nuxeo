@@ -19,15 +19,14 @@
  */
 package org.nuxeo.common.codec;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.crypto.SecretKey;
-
-import org.apache.commons.collections.CollectionUtils;
 
 /**
  * @since 7.4
@@ -53,7 +52,7 @@ public class CryptoKeyStoreTest extends CryptoTest {
         for (SecretKey key : secretKeys.values()) {
             Crypto.setKeyInKeyStore(keystoreFile.getPath(), keystorePass, keyAlias + key.getAlgorithm(), keyPass, key);
         }
-        assertTrue(CollectionUtils.isEqualCollection(secretKeys.values(),
+        assertEquals(new ArrayList<>(secretKeys.values()), new ArrayList<>(
                 Crypto.getKeysFromKeyStore(keystoreFile.getPath(), keystorePass, keyAlias, keyPass).values()));
         crypto = new Crypto(keystoreFile.getPath(), keystorePass, keyAlias, keyPass);
     }

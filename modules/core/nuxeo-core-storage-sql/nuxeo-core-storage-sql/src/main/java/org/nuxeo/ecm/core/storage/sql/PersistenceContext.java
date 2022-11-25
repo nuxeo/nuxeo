@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength.HARD;
+import static org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength.WEAK;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,8 +39,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.map.AbstractReferenceMap;
-import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.commons.collections4.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -176,7 +178,6 @@ public class PersistenceContext {
      */
     protected long bigSelWarnThreshold;
 
-    @SuppressWarnings("unchecked")
     public PersistenceContext(Model model, RowMapper mapper, SessionImpl session) {
         this.model = model;
         this.mapper = mapper;
@@ -200,7 +201,7 @@ public class PersistenceContext {
         // use a weak reference for the values, we don't hold them longer than
         // they need to be referenced, as the underlying mapper also has its own
         // cache
-        pristine = new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.WEAK);
+        pristine = new ReferenceMap<>(HARD, WEAK);
         modified = new HashMap<>();
         // this has to be linked to keep creation order, as foreign keys
         // are used and need this
@@ -487,7 +488,7 @@ public class PersistenceContext {
                 }
                 // this is a deleted fragment of a complex property
                 // from a document that has not been completely deleted
-                //$FALL-THROUGH$
+                // $FALL-THROUGH$
             case CREATED:
                 PropertyType t = model.getFulltextInfoForFragment(tableName);
                 if (t == null) {

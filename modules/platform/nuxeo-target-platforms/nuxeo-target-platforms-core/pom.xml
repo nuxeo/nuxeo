@@ -64,11 +64,6 @@
       <artifactId>nuxeo-platform-login</artifactId>
       <type>test-jar</type>
     </dependency>
-    <!-- third party -->
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-    </dependency>
     <!-- tests -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
