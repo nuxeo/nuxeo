@@ -45,6 +45,7 @@ pipeline {
   }
 
   environment {
+    NUXEO_BRANCH = "${params.NUXEO_BRANCH}"
     NUXEO_BUILD_VERSION = "${params.NUXEO_BUILD_VERSION}"
     CURRENT_VERSION = getCurrentVersion()
     RELEASE_VERSION = getReleaseVersion("${CURRENT_VERSION}")
@@ -56,7 +57,6 @@ pipeline {
     NUXEO_IMAGE_NAME = 'nuxeo'
     NUXEO_BENCHMARK_IMAGE_NAME = 'nuxeo-benchmark'
     SLACK_CHANNEL = 'platform-notifs'
-    REFERENCE_BRANCH = '2021'
   }
 
   stages {
@@ -183,12 +183,12 @@ pipeline {
       steps {
         container('maven') {
           script {
-            sh 'git checkout ${REFERENCE_BRANCH}'
+            sh 'git checkout ${NUXEO_BRANCH}'
             // increment minor version
             def nextVersion = sh(returnStdout: true, script: "perl -pe 's/\\b(\\d+)(?=\\D*\$)/\$1+1/e' <<< ${CURRENT_VERSION}").trim()
             echo """
             -----------------------------------------------
-            Update ${REFERENCE_BRANCH} version from ${CURRENT_VERSION} to ${nextVersion}
+            Update ${NUXEO_BRANCH} version from ${CURRENT_VERSION} to ${nextVersion}
             -----------------------------------------------
             """
             sh """
@@ -203,7 +203,7 @@ pipeline {
               # nuxeo-promote-packages POM
               perl -i -pe 's|<version>.*?</version>|<version>${nextVersion}</version>|' ci/release/pom.xml
             """
-            nxGit.commitPush(message: "Release ${RELEASE_VERSION}, update ${CURRENT_VERSION} to ${nextVersion}", branch: env.REFERENCE_BRANCH)
+            nxGit.commitPush(message: "Release ${RELEASE_VERSION}, update ${CURRENT_VERSION} to ${nextVersion}", branch: env.NUXEO_BRANCH)
           }
         }
       }
@@ -218,6 +218,7 @@ pipeline {
           steps {
             script {
               def parameters = [
+                string(name: 'NUXEO_BRANCH', value: "${NUXEO_BRANCH}"),
                 string(name: 'NUXEO_BUILD_VERSION', value: "${NUXEO_BUILD_VERSION}"),
               ]
               echo """
@@ -226,7 +227,7 @@ pipeline {
               -----------------------------------------------------
               """
               build(
-                job: "nuxeo/lts/release-nuxeo-jsf-ui-2021",
+                job: "nuxeo/lts/release-nuxeo-jsf-ui",
                 parameters: parameters,
                 wait: false
               )
