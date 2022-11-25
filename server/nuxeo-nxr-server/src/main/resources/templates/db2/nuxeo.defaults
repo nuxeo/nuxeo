@@ -13,5 +13,5 @@ nuxeo.db.driver=com.ibm.db2.jcc.DB2Driver
 nuxeo.db.xadatasource=com.ibm.db2.jcc.DB2XADataSource
 
 ## Startup checks configuration
-db2.check.classpath=lib:nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-core-storage-sql-*.jar
+db2.check.classpath=lib:${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-core-storage-sql-*.jar
 db2.check.class=org.nuxeo.ecm.core.storage.DBCheck

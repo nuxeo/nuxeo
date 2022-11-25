@@ -14,5 +14,5 @@ nuxeo.db.driver=oracle.jdbc.OracleDriver
 nuxeo.db.xadatasource=oracle.jdbc.xa.client.OracleXADataSource
 
 ## Startup checks configuration
-oracle.check.classpath=lib:nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-core-storage-sql-*.jar
+oracle.check.classpath=lib:${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-core-storage-sql-*.jar
 oracle.check.class=org.nuxeo.ecm.core.storage.DBCheck

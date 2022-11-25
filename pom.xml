@@ -4094,6 +4094,7 @@
         </exclusions>
       </dependency>
       <dependency>
+        <!-- not used by the platform, keep it if third party leveraged it -->
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
         <version>1.7</version>
