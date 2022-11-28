@@ -40,6 +40,15 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-connect-standalone</artifactId>
       <exclusions>
+        <!-- pulled by nuxeo-runtime, used by the ConfigurationService, unneeded -->
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.dataformat</groupId>
+          <artifactId>jackson-dataformat-properties</artifactId>
+        </exclusion>
         <!-- pulled by nuxeo-runtime, included in JDK, unneeded -->
         <exclusion>
           <groupId>xerces</groupId>
