@@ -5388,7 +5388,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.0.1</version>
+          <version>3.19.0</version>
           <dependencies>
             <dependency>
               <groupId>org.nuxeo</groupId>
