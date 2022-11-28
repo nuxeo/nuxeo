@@ -13,10 +13,6 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.nuxeo.common</groupId>
-      <artifactId>nuxeo-common</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
@@ -30,11 +26,11 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core</artifactId>
+      <artifactId>nuxeo-core-cache</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage</artifactId>
+      <artifactId>nuxeo-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -60,7 +56,6 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-mongodb</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -79,7 +74,11 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-cache</artifactId>
+      <type>test-jar</type>
+    </dependency>
   </dependencies>
 
 

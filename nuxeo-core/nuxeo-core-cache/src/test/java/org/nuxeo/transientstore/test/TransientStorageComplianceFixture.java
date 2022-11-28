@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
@@ -120,17 +121,19 @@ public class TransientStorageComplianceFixture {
         TransientStore ts = tss.getStore("testStore");
         TransientStoreProvider tsm = (TransientStoreProvider) ts;
 
-        long size = ((AbstractTransientStore) ts).getStorageSize();
-        assertEquals(0, size);
-
+        if (ts instanceof AbstractTransientStore) {
+            long size = ((AbstractTransientStore) ts).getStorageSize();
+            assertEquals(0, size);
+        }
         putEntry(ts, "1");
 
         // check FS
-        File cacheDir = ((AbstractTransientStore) ts).getCachingDirectory("1");
-        assertTrue(cacheDir.exists());
-        File[] cacheEntries = cacheDir.listFiles();
-        assertTrue(cacheEntries.length > 0);
-
+        if (ts instanceof AbstractTransientStore) {
+            File cacheDir = ((AbstractTransientStore) ts).getCachingDirectory("1");
+            assertTrue(cacheDir.exists());
+            File[] cacheEntries = cacheDir.listFiles();
+            assertTrue(cacheEntries.length > 0);
+        }
         // check that entry is stored
         assertTrue(ts.exists("1"));
         assertFalse(ts.isCompleted("1"));
@@ -147,9 +150,10 @@ public class TransientStorageComplianceFixture {
         assertEquals(DigestUtils.md5Hex("FakeContent"), blob.getDigest());
         assertEquals("FakeContent", IOUtils.toString(blob.getStream(), UTF_8));
 
-        size = ((AbstractTransientStore) ts).getStorageSize();
-        assertEquals(11, size);
-
+        if (ts instanceof AbstractTransientStore) {
+            long size = ((AbstractTransientStore) ts).getStorageSize();
+            assertEquals(11, size);
+        }
         // update the entry
         Blob otherBlob = new StringBlob("FakeContent2");
         otherBlob.setFilename("fake2.txt");
@@ -166,8 +170,10 @@ public class TransientStorageComplianceFixture {
         assertEquals(2, blobs.size());
         assertEquals("fake.txt", blobs.get(0).getFilename());
         assertEquals("fake2.txt", blobs.get(1).getFilename());
-        size = ((AbstractTransientStore) ts).getStorageSize();
-        assertEquals(23, size);
+        if (ts instanceof AbstractTransientStore) {
+            long size = ((AbstractTransientStore) ts).getStorageSize();
+            assertEquals(23, size);
+        }
 
         // move to deletable entries
         // check that still here
@@ -181,8 +187,10 @@ public class TransientStorageComplianceFixture {
         assertFalse(ts.exists("1"));
         assertEquals(0, tsm.keySet().size());
 
-        size = ((AbstractTransientStore) ts).getStorageSize();
-        assertEquals(0, size);
+        if (ts instanceof AbstractTransientStore) {
+            long size = ((AbstractTransientStore) ts).getStorageSize();
+            assertEquals(0, size);
+        }
     }
 
     @Test
@@ -256,9 +264,9 @@ public class TransientStorageComplianceFixture {
 
     @Test
     public void verifyDeleteOnGC() throws Exception {
-
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
+        Assume.assumeTrue("Skipping test for this implementation", ts instanceof AbstractTransientStore);
         TransientStoreProvider tsm = (TransientStoreProvider) ts;
         putEntry(ts, "X");
 
@@ -299,6 +307,7 @@ public class TransientStorageComplianceFixture {
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
+        Assume.assumeTrue("Skipping test for this implementation", ts instanceof AbstractTransientStore);
         putEntry(ts, "X");
 
         // check that entry is stored
@@ -375,7 +384,7 @@ public class TransientStorageComplianceFixture {
         Framework.getProperties().setProperty("nuxeo.data.dir", Environment.getDefault().getData().getAbsolutePath());
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
-
+        Assume.assumeTrue("Skipping test for this implementation", tss.getStore("microStore") instanceof AbstractTransientStore);
         // Verify default behavior (store cache dir is in ${nuxeo.data.dir}/transientstores/{name}
         AbstractTransientStore ts = (AbstractTransientStore) tss.getStore("microStore");
         String sep = File.separator;
