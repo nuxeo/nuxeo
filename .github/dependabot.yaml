@@ -19,6 +19,9 @@ updates:
       # Minor security update for Elasticsearch
       - dependency-name: "org.elasticsearch*:*"
         versions: [">7.9.2"]
+      # Minor security update for Jackson (needs JAX-RS 2.x)
+      - dependency-name: "com.fasterxml.jackson*:*"
+        versions: ["[2.13.0,)"]
 
       # Security update for Chronicle Queue
       - dependency-name: "net.openhft:chronicle-bom"
@@ -58,6 +61,9 @@ updates:
       # Minor security update for Elasticsearch
       - dependency-name: "org.elasticsearch*:*"
         versions: [">7.9.2"]
+      # Minor security update for Jackson (needs JAX-RS 2.x)
+      - dependency-name: "com.fasterxml.jackson*:*"
+        versions: ["[2.13.0,)"]
 
       # Upgraded too often to be useful to track with Dependabot
       - dependency-name: "com.amazonaws:aws-java-sdk-*"
