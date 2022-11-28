@@ -19,6 +19,9 @@ updates:
       # Minor security update for Elasticsearch
       - dependency-name: "org.elasticsearch*:*"
         versions: [">7.9.2"]
+      # Minor security update for Jackson (needs JAX-RS 2.x)
+      - dependency-name: "com.fasterxml.jackson*:*"
+        versions: ["[2.13.0,)"]
 
   # Ignore pip dependencies
   - package-ecosystem: "pip"
@@ -48,6 +51,9 @@ updates:
       # Minor security update for Elasticsearch
       - dependency-name: "org.elasticsearch*:*"
         versions: [">7.9.2"]
+      # Minor security update for Jackson (needs JAX-RS 2.x)
+      - dependency-name: "com.fasterxml.jackson*:*"
+        versions: ["[2.13.0,)"]
 
       # Security update for Chronicle Queue
       - dependency-name: "net.openhft:chronicle-bom"
