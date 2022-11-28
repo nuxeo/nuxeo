@@ -36,3 +36,6 @@ nuxeo.keyvalue.provider=mongodb
 
 ## Make sure we use repository lockmanager
 nuxeo.lock.manager=mongodb
+
+## Use a MongoDB optimized transient store implementation
+# nuxeo.transientstore.provider=mongodb
