@@ -4202,7 +4202,7 @@
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr-runtime</artifactId>
-        <version>3.5.2</version>
+        <version>3.5.3</version>
       </dependency>
 
       <dependency>
