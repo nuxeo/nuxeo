@@ -3,8 +3,11 @@
 
   <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent"
     point="store">
-
+    <#if "${nuxeo.transientstore.provider}" == "mongodb">
+    <store name="default" class="org.nuxeo.ecm.core.mongodb.transientstore.MongoDBTransientStore">
+    <#else>
     <store name="default" class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
+    </#if>
       <targetMaxSizeMB>-1</targetMaxSizeMB>
       <absoluteMaxSizeMB>-1</absoluteMaxSizeMB>
       <firstLevelTTL>${nuxeo.transientstore.ttl}</firstLevelTTL>
