@@ -166,7 +166,7 @@
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.31.1</opencensus.version>
     <okhttp.version>4.10.0</okhttp.version>
-    <protobuf.java.version>3.19.4</protobuf.java.version>
+    <protobuf.java.version>3.21.9</protobuf.java.version>
   </properties>
 
   <dependencyManagement>
