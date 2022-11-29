@@ -49,6 +49,10 @@ public class ConfigurationCheckerTest {
 
     protected ConfigurationHolder configHolder;
 
+    protected Path lib;
+
+    protected Path nxserverLib;
+
     protected Path bundles;
 
     protected Path backingPath;
@@ -59,6 +63,8 @@ public class ConfigurationCheckerTest {
 
         // init configuration and service
         configHolder = new ConfigurationHolder(rule.getNuxeoHome(), rule.getNuxeoConf());
+        lib = rule.getNuxeoHome().resolve("lib");
+        nxserverLib = rule.getNuxeoHome().resolve("nxserver/lib");
         bundles = rule.getNuxeoHome().resolve("nxserver/bundles");
 
         // load backing template
@@ -107,8 +113,10 @@ public class ConfigurationCheckerTest {
     public void canUseParametersInClasspath() {
         configHolder.put("backing.check.classpath", "${nuxeo.home}/nxserver/bundles/versioned-*.jar");
         // getBackingCheckerClasspath doesn't replace the separator on Windows, getJarsFromClasspathEntry does
-        assertEquals(bundles.toString() + File.separator + "versioned-*.jar",
-                checker.getBackingCheckerClasspath(configHolder, "backing").replace('/', File.separatorChar));
+        String expected = lib.toString() + ':' + nxserverLib.toString() + ':' + bundles.toString() + File.separator
+                + "versioned-*.jar";
+        String actual = checker.getBackingCheckerClasspath(configHolder, "backing").replace('/', File.separatorChar);
+        assertEquals(expected, actual);
     }
 
     // NXP-28880
@@ -118,8 +126,10 @@ public class ConfigurationCheckerTest {
         configHolder.put("nuxeo.home.encrypted", encrypt(rule.getNuxeoHome().toString()));
         configHolder.put("backing.check.classpath", "${nuxeo.home.encrypted}/nxserver/bundles/versioned-*.jar");
         // getBackingCheckerClasspath doesn't replace the separator on Windows, getJarsFromClasspathEntry does
-        assertEquals(bundles.toString() + File.separator + "versioned-*.jar",
-                checker.getBackingCheckerClasspath(configHolder, "backing").replace('/', File.separatorChar));
+        String expected = lib.toString() + ':' + nxserverLib.toString() + ':' + bundles.toString() + File.separator
+                + "versioned-*.jar";
+        String actual = checker.getBackingCheckerClasspath(configHolder, "backing").replace('/', File.separatorChar);
+        assertEquals(expected, actual);
     }
 
     @Test

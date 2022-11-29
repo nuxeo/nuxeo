@@ -13,5 +13,5 @@ nuxeo.db.driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
 nuxeo.db.xadatasource=com.microsoft.sqlserver.jdbc.SQLServerXADataSource
 
 ## Startup checks configuration
-mssql.check.classpath=lib:${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-core-storage-sql-*.jar
+mssql.check.classpath=lib:${nuxeo.home}/nxserver/bundles/nuxeo-core-storage-sql-*.jar
 mssql.check.class=org.nuxeo.ecm.core.storage.DBCheck

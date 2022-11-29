@@ -19,6 +19,7 @@
 
 package org.nuxeo.launcher.config;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_BIND_ADDRESS;
 import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_CONTEXT_PATH;
@@ -364,12 +365,11 @@ public class ConfigurationChecker {
         for (String item : items) {
             try {
                 log.debug("Resolving checker: {}", item);
-                URLClassLoader ucl = getBackingCheckerClassLoader(configHolder, item);
-                if (ucl.getURLs().length > 0) {
-                    log.debug("Adding checker: {} with class path: {}", () -> item,
-                            () -> Arrays.toString(ucl.getURLs()));
-                    String checkClass = configHolder.getProperty(item + ".check.class");
-                    log.debug("Instantiating checker: {} class: {}", item, checkClass);
+                String checkClass = configHolder.getProperty(item + ".check.class");
+                if (isNotEmpty(checkClass)) {
+                    URLClassLoader ucl = getBackingCheckerClassLoader(configHolder, item);
+                    log.debug("Instantiating checker: {} with class: {} and class path: {}", () -> item,
+                            () -> checkClass, () -> Arrays.toString(ucl.getURLs()));
                     Class<?> klass = Class.forName(checkClass, true, ucl);
                     checkers.add((BackingChecker) klass.getDeclaredConstructor().newInstance());
                 }
@@ -390,6 +390,7 @@ public class ConfigurationChecker {
                            .flatMap(e -> getJarsFromClasspathEntry(configHolder, templatePath, e))
                            .map(this::convertToJarFileURL)
                            .filter(Objects::nonNull)
+                           .distinct()
                            .peek(u -> log.debug("Adding url: {}", u))
                            .toArray(URL[]::new);
         return new URLClassLoader(urls);
@@ -408,7 +409,12 @@ public class ConfigurationChecker {
      * form ${nuxeo.home}/nxserver/bundles/...
      */
     protected String getBackingCheckerClasspath(ConfigurationHolder configHolder, String template) {
-        String classPath = configHolder.getProperty(template + ".check.classpath");
+        String libClassPath = "${nuxeo.home}/lib:${nuxeo.home}/nxserver/lib";
+        String configClassPath = configHolder.getProperty(template + ".check.classpath");
+        String classPath = libClassPath;
+        if (isNotEmpty(configClassPath)) {
+            classPath += ':' + configClassPath;
+        }
         return trimToEmpty(configHolder.instantiateTemplateParser().keepEncryptedAsVar(false).processText(classPath));
     }
 

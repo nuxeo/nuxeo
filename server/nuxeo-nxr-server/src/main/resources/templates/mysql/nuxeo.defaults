@@ -14,5 +14,5 @@ nuxeo.db.driver=com.mysql.cj.jdbc.Driver
 nuxeo.db.xadatasource=com.mysql.jdbc.jdbc2.optional.MysqlXADataSource
 
 ## Startup checks configuration
-mysql.check.classpath=lib:${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-core-storage-sql-*.jar
+mysql.check.classpath=lib:${nuxeo.home}/nxserver/bundles/nuxeo-core-storage-sql-*.jar
 mysql.check.class=org.nuxeo.ecm.core.storage.DBCheck

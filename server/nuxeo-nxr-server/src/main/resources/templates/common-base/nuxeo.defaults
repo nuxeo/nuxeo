@@ -172,7 +172,7 @@ elasticsearch.restClient.keystore.path=
 elasticsearch.restClient.keystore.password=
 elasticsearch.restClient.keystore.type=
 
-elasticsearch.check.classpath=${nuxeo.home}/lib:${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-{common,core-api,elasticsearch-core}*.jar
+elasticsearch.check.classpath=${nuxeo.home}/nxserver/bundles/nuxeo-{common,core-api,elasticsearch-core}*.jar
 elasticsearch.check.class=org.nuxeo.elasticsearch.ElasticSearchChecker
 # Nuxeo managing index alias
 elasticsearch.manageAlias.enabled=false
@@ -186,7 +186,7 @@ elasticsearch.bulk.index.submit.partitions=8
 
 
 # Kafka
-kafka.check.classpath=${nuxeo.home}/lib:${nuxeo.home}/nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-{common,core-api,runtime-stream}*.jar
+kafka.check.classpath=${nuxeo.home}/nxserver/bundles/nuxeo-{common,core-api,runtime-stream}*.jar
 kafka.check.class=org.nuxeo.runtime.kafka.KafkaChecker
 
 kafka.enabled=false
