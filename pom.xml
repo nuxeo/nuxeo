@@ -6090,7 +6090,7 @@
               <dependency>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-compiler-jdt</artifactId>
-                <version>0.23.0</version>
+                <version>0.26.0</version>
               </dependency>
             </dependencies>
           </plugin>
