@@ -4661,7 +4661,7 @@
       <dependency>
         <groupId>org.jolokia</groupId>
         <artifactId>jolokia-core</artifactId>
-        <version>1.6.2</version>
+        <version>1.7.1</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish</groupId>
