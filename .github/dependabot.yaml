@@ -47,6 +47,8 @@ updates:
         versions: ["[4.0,)"]
       - dependency-name: "com.h2database:h2"
         versions: ["[2.0,)"]
+      - dependency-name: "org.apache.poi:*"
+        versions: ["[5.0,)"]
 
       # Minor security update for Elasticsearch
       - dependency-name: "org.elasticsearch*:*"
