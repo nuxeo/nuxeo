@@ -6162,46 +6162,6 @@
       </build>
     </profile>
     <profile>
-      <id>nightly</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-sources</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-      <repositories>
-        <repository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>nightly-staging</id>
-          <url>http://mavenin.nuxeo.com/nexus/content/repositories/nightly-staging</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>
-      </repositories>
-      <distributionManagement>
-        <repository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>nightly-staging</id>
-          <url>http://mavenin.nuxeo.com/nexus/content/repositories/nightly-staging</url>
-          <uniqueVersion>true</uniqueVersion>
-        </repository>
-      </distributionManagement>
-    </profile>
-    <profile>
       <id>javadoc</id>
       <build>
         <plugins>
@@ -6282,253 +6242,6 @@
           </plugin>
         </plugins>
       </reporting>
-    </profile>
-
-    <!-- For use by Nuxeo internal QA -->
-    <profile>
-      <id>qa</id>
-      <repositories>
-        <repository>
-          <id>maven-internal</id>
-          <url>https://packages.nuxeo.com/repository/maven-internal/</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </repository>
-        <repository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>internal-releases</id>
-          <url>
-            http://mavenin.nuxeo.com/nexus/content/groups/internal-releases
-          </url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>internal-snapshots</id>
-          <url>
-            http://mavenin.nuxeo.com/nexus/content/groups/internal-snapshots
-          </url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </repository>
-      </repositories>
-      <pluginRepositories>
-        <pluginRepository>
-          <id>maven-internal</id>
-          <url>https://packages.nuxeo.com/repository/maven-internal/</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <updatePolicy>always</updatePolicy>
-            <enabled>true</enabled>
-          </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>internal-releases</id>
-          <url>
-            http://mavenin.nuxeo.com/nexus/content/groups/internal-releases
-          </url>
-          <name>Nuxeo virtual release repository</name>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>internal-snapshots</id>
-          <url>
-            http://mavenin.nuxeo.com/nexus/content/groups/internal-snapshots
-          </url>
-          <name>Nuxeo virtual snapshot repository</name>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <updatePolicy>always</updatePolicy>
-            <enabled>true</enabled>
-          </snapshots>
-        </pluginRepository>
-      </pluginRepositories>
-      <distributionManagement>
-        <!-- NXP-28720: should use this repository
-        <repository>
-          <id>maven-internal-staging</id>
-          <url>https://packages.nuxeo.com/repository/maven-internal-staging/</url>
-          <uniqueVersion>true</uniqueVersion>
-        </repository>
-        -->
-        <snapshotRepository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>daily-snapshots</id>
-          <url>
-            http://mavenin.nuxeo.com/nexus/content/repositories/daily-snapshots
-          </url>
-          <uniqueVersion>true</uniqueVersion>
-        </snapshotRepository>
-      </distributionManagement>
-    </profile>
-
-    <profile>
-      <id>qapriv</id>
-      <repositories>
-        <repository>
-          <id>maven-private</id>
-          <url>https://packages.nuxeo.com/repository/maven-private/</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </repository>
-        <repository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>internal-releases</id>
-          <url>
-            http://mavenin.nuxeo.com/nexus/content/groups/internal-releases
-          </url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>internal-snapshots</id>
-          <url>
-            http://mavenin.nuxeo.com/nexus/content/groups/internal-snapshots
-          </url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </repository>
-        <repository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>releases</id>
-          <url>
-            https://mavenpriv.nuxeo.com/nexus/content/repositories/releases
-          </url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>snapshots</id>
-          <url>
-            https://mavenpriv.nuxeo.com/nexus/content/repositories/snapshots
-          </url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </repository>
-      </repositories>
-      <pluginRepositories>
-        <pluginRepository>
-          <id>maven-private</id>
-          <url>https://packages.nuxeo.com/repository/maven-private/</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>internal-releases</id>
-          <url>
-            http://mavenin.nuxeo.com/nexus/content/groups/internal-releases
-          </url>
-          <name>Nuxeo virtual release repository</name>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>internal-snapshots</id>
-          <url>
-            http://mavenin.nuxeo.com/nexus/content/groups/internal-snapshots
-          </url>
-          <name>Nuxeo virtual snapshot repository</name>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <updatePolicy>always</updatePolicy>
-            <enabled>true</enabled>
-          </snapshots>
-        </pluginRepository>
-      </pluginRepositories>
-      <distributionManagement>
-        <!-- NXP-28720: should use this repository
-        <repository>
-          <id>maven-private-releases</id>
-          <url>https://packages.nuxeo.com/repository/maven-private-releases/</url>
-        </repository>
-        -->
-        <repository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>releases</id>
-          <url>
-            https://mavenpriv.nuxeo.com/nexus/content/repositories/releases
-          </url>
-        </repository>
-        <!-- NXP-28720: should use this repository
-        <snapshotRepository>
-          <id>maven-private-snapshots</id>
-          <url>https://packages.nuxeo.com/repository/maven-private-snapshots/</url>
-          <uniqueVersion>true</uniqueVersion>
-        </snapshotRepository>
-        -->
-        <snapshotRepository>
-          <!-- NXP-28720: OBSOLETE -->
-          <id>snapshots</id>
-          <url>
-            https://mavenpriv.nuxeo.com/nexus/content/repositories/snapshots
-          </url>
-          <uniqueVersion>true</uniqueVersion>
-        </snapshotRepository>
-      </distributionManagement>
     </profile>
 
     <profile>
@@ -6856,33 +6569,10 @@
 
   <repositories>
     <repository>
-      <id>maven-public</id>
-      <url>https://packages.nuxeo.com/repository/maven-public/</url>
+      <id>maven-public-lts</id>
+      <url>https://packages.nuxeo.com/repository/maven-public-lts/</url>
       <releases>
         <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <!-- NXP-28720: OBSOLETE -->
-      <id>public</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <!-- NXP-28720: OBSOLETE -->
-      <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
-      <releases>
-        <enabled>false</enabled>
       </releases>
       <snapshots>
         <updatePolicy>always</updatePolicy>
@@ -6893,35 +6583,10 @@
 
   <pluginRepositories>
     <pluginRepository>
-      <id>maven-public</id>
-      <url>https://packages.nuxeo.com/repository/maven-public/</url>
+      <id>maven-public-lts</id>
+      <url>https://packages.nuxeo.com/repository/maven-public-lts/</url>
       <releases>
         <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <!-- NXP-28720: OBSOLETE -->
-      <id>public</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
-      <name>Nuxeo virtual release repository</name>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <!-- NXP-28720: OBSOLETE -->
-      <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
-      <name>Nuxeo virtual snapshot repository</name>
-      <releases>
-        <enabled>false</enabled>
       </releases>
       <snapshots>
         <updatePolicy>always</updatePolicy>
@@ -6929,36 +6594,5 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
-
-  <distributionManagement>
-    <!-- NXP-28720: should use this repository
-    <repository>
-      <id>maven-public-releases</id>
-      <url>https://packages.nuxeo.com/repository/maven-public-releases/</url>
-    </repository>
-    -->
-    <repository>
-      <!-- NXP-28720: OBSOLETE -->
-      <id>public-releases</id>
-      <url>
-        http://mavenin.nuxeo.com/nexus/content/repositories/public-releases
-      </url>
-    </repository>
-    <!-- NXP-28720: should use this repository
-    <snapshotRepository>
-      <id>maven-public-snapshots</id>
-      <url>https://packages.nuxeo.com/repository/maven-public-snapshots/</url>
-      <uniqueVersion>true</uniqueVersion>
-    </snapshotRepository>
-    -->
-    <snapshotRepository>
-      <!-- NXP-28720: OBSOLETE -->
-      <id>public-snapshots</id>
-      <url>
-        http://mavenin.nuxeo.com/nexus/content/repositories/public-snapshots
-      </url>
-      <uniqueVersion>true</uniqueVersion>
-    </snapshotRepository>
-  </distributionManagement>
 
 </project>
