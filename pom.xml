@@ -111,7 +111,7 @@
     <restlet.version>2.4.2</restlet.version>
     <batik.version>1.16</batik.version>
     <jmock.version>2.12.0</jmock.version>
-    <wro4j.version>1.9.0</wro4j.version>
+    <wro4j.version>1.10.1</wro4j.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.vfs>2.1.2.GA</version.org.jboss.vfs>
