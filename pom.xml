@@ -4835,7 +4835,7 @@
       <dependency>
         <groupId>io.prometheus</groupId>
         <artifactId>simpleclient_httpserver</artifactId>
-        <version>0.9.0</version>
+        <version>0.16.0</version>
       </dependency>
       <dependency>
         <!-- unused dependency, declared to fix version conflict between opencensus-exporter-stats-stackdriver
