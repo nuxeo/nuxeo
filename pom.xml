@@ -123,7 +123,7 @@
     <eclipseVersion>${project.version}</eclipseVersion>
     <org.ops4j.pax.version>4.13.1</org.ops4j.pax.version>
     <org.apache.log4j.version>2.19.0</org.apache.log4j.version>
-    <org.slf4j.version>1.7.32</org.slf4j.version>
+    <org.slf4j.version>1.7.36</org.slf4j.version>
     <gatling.version>3.3.1</gatling.version>
     <gatling-plugin.version>3.1.2</gatling-plugin.version>
     <scala.version>2.12.3</scala.version>
