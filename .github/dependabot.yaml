@@ -5,6 +5,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+      time: "20:00"
+      timezone: "Europe/Paris"
     # Disable version updates on 2021, for now we only want security updates
     open-pull-requests-limit: 0
     ignore:
@@ -15,6 +17,8 @@ updates:
         versions: ["[4.0,)"]
       - dependency-name: "com.h2database:h2"
         versions: ["[2.0,)"]
+      - dependency-name: "org.apache.poi:*"
+        versions: ["[5.0,)"]
 
       # Minor security update for Elasticsearch
       - dependency-name: "org.elasticsearch*:*"
@@ -71,6 +75,24 @@ updates:
       # Actually older
       - dependency-name: "io.dropwizard.metrics5:metrics-bom"
         versions: ["5.0.0"]
+
+      # Spurious major version update
+      - dependency-name: "org.jboss.el:jboss-el"
+        versions: [">1.0_02.CR6"]
+
+      # Minor version update breaking compilation
+      - dependency-name: "io.gatling*:*"
+        versions: [">3.3.1"]
+      - dependency-name: "org.bouncycastle:*"
+        versions: [">1.69"]
+
+      # Patch version update breaking compilation
+      - dependency-name: "org.apache.directory.server:*"
+        versions: [">1.5.1"]
+
+      # Not in our artifact repository
+      - dependency-name: "org.apache.maven.plugins:maven-enforcer-plugin"
+        versions: ["1.4.2.jenkins-1"]
 
   # Ignore pip dependencies
   - package-ecosystem: "pip"
