@@ -209,6 +209,9 @@ public class StreamWorkManager extends WorkManagerImpl {
         if (afterCommit && scheduleAfterCommit(work, scheduling)) {
             return;
         }
+        if (storeState) {
+            WorkStateHelper.setState(work.getId(), Work.State.SCHEDULED, stateTTL);
+        }
         WorkSchedulePath.newInstance(work);
         String key = work.getPartitionKey();
         LogOffset offset;
@@ -228,9 +231,6 @@ public class StreamWorkManager extends WorkManagerImpl {
                         work.getPartitionKey(), offset));
             }
             WorkStateHelper.addGroupJoinWork(work.getPartitionKey());
-        }
-        if (storeState) {
-            WorkStateHelper.setState(work.getId(), Work.State.SCHEDULED, stateTTL);
         }
     }
 
