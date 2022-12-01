@@ -32,16 +32,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.nuxeo.ecm.core.action.GarbageCollectOrphanVersionsAction;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.bulk.BulkService;
-import org.nuxeo.ecm.core.bulk.action.GarbageCollectOrphanVersionsAction;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
-import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.versioning.DefaultVersionRemovalPolicy;
@@ -146,7 +144,7 @@ public class CoreService extends DefaultComponent {
             return versionRemovalPolicy;
         }
     }
-    
+
     /** Gets all the orphan version removal filters registered. */
     public Collection<OrphanVersionRemovalFilter> getOrphanVersionRemovalFilters() {
         return orphanVersionRemovalFilters.values();
@@ -156,10 +154,8 @@ public class CoreService extends DefaultComponent {
      * Schedule a removal of the orphan versions through BAF.
      * <p>
      * A version stays referenced, and therefore is not removed, if any proxy points to a version in the version history
-     * of any live document.
-     * <p>
-     * Warning: this implementation does NOT take into account contribution made to the orphanVersionRemovalFilter
-     * extension point.
+     * of any live document, or in the case of tree snapshot if there is a snapshot containing a version in the version
+     * history of any live document.
      *
      * @since 2023
      */
@@ -182,8 +178,10 @@ public class CoreService extends DefaultComponent {
      * Removes the orphan versions.
      * <p>
      * A version stays referenced, and therefore is not removed, if any proxy points to a version in the version history
-     * of any live document, or in the case of tree snapshot if there is a snapshot containing a version in the version
-     * history of any live document.
+     * of any live document.
+     *
+     * Warning: this implementation does NOT take into account contribution made to the orphanVersionRemovalFilter
+     * extension point.
      *
      * @param commitSize the maximum number of orphan versions to delete in one transaction
      * @return the number of orphan versions deleted
