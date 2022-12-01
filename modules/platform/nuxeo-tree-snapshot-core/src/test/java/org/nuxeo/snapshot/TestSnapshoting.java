@@ -27,14 +27,17 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -49,6 +52,9 @@ public class TestSnapshoting extends AbstractTestSnapshot {
 
     @Inject
     protected EventService eventService;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected TransactionalFeature transactionalFeature;
@@ -318,11 +324,34 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         waitForAsyncCompletion();
         DocumentModelList sameChildren = session.getChildren(new IdRef(folder1.getId()));
         assertEquals(children.size(), sameChildren.size());
+
+        // Let's check Orphan version GC does not delete versions referenced in tree snapshot
+        session.removeDocument(doc1.getRef());
+        waitForAsyncCompletion();
+        assertEquals(9, getAllVersions().size());
+        CoreService coreService = Framework.getService(CoreService.class);
+        coreService.garbageCollectOrphanVersions();
+        waitForAsyncCompletion();
+        // GC did not delete the versions
+        DocumentModelList versions = getAllVersions();
+        assertEquals(9, versions.size());
+
+        session.removeDocument(root.getRef());
+        waitForAsyncCompletion();
+        assertEquals(6, getAllVersions().size());
+        coreService.garbageCollectOrphanVersions();
+        waitForAsyncCompletion();
+        // GC did not delete the versions
+        versions = getAllVersions();
+        assertEquals(6, versions.size());
+    }
+
+    protected DocumentModelList getAllVersions() {
+        return session.query("SELECT * FROM Document WHERE ecm:isVersion = 1");
     }
 
     protected void waitForAsyncCompletion() {
-        nextTransaction();
-        eventService.waitForAsyncCompletion();
+        coreFeature.waitForAsyncCompletion();
     }
 
     protected void nextTransaction() {

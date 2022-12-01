@@ -62,8 +62,6 @@
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
     <!-- Internal -->
     <action name="trash" inputStream="bulk/trash" bucketSize="100" batchSize="25" sequentialCommands="true" />
-    <action name="garbageCollectOrphanVersions" inputStream="bulk/garbageCollectOrphanVersions" bucketSize="100"
-      batchSize="25" />
     <action name="removeProxy" inputStream="bulk/removeProxy" bucketSize="100" batchSize="25" />
     <action name="setSystemProperties" inputStream="bulk/setSystemProperties" bucketSize="100" batchSize="25" />
     <!-- Exposed through REST API -->
@@ -84,14 +82,6 @@
     <streamProcessor name="setSystemProperties" class="org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction"
       defaultConcurrency="${nuxeo.bulk.action.setSystemProperties.defaultConcurrency:=2}"
       defaultPartitions="${nuxeo.bulk.action.setSystemProperties.defaultPartitions:=2}">
-      <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
-    </streamProcessor>
-
-    <!-- RemoveOrphanVersion processor -->
-    <streamProcessor name="garbageCollectOrphanVersions"
-      class="org.nuxeo.ecm.core.bulk.action.GarbageCollectOrphanVersionsAction"
-      defaultConcurrency="${nuxeo.bulk.action.garbageCollectOrphanVersions.defaultConcurrency:=2}"
-      defaultPartitions="${nuxeo.bulk.action.garbageCollectOrphanVersions.defaultPartitions:=2}">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
 
