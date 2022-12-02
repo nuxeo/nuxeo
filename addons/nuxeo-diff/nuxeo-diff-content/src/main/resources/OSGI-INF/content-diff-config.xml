@@ -5,6 +5,6 @@
       Allows to limit the diff count between two files.
       @since 10.10-HF64
     </documentation>
-    <property name="nuxeo.diff.limit">10000</property>
+    <property name="nuxeo.diff.limit">${nuxeo.diff.limit:=100000}</property>
   </extension>
 </component>
