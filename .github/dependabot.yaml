@@ -16,9 +16,11 @@ updates:
       - dependency-name: "com.h2database:h2"
         versions: ["[2.0,)"]
 
-      # Major and minor security update for jackson-databind, breaking changes
+      # Major or minor security updates breaking compilation
+      - dependency-name: "commons-io:commons-io"
+        versions: ["[2.7,)"]
       - dependency-name: "com.fasterxml.jackson.core:jackson-databind"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+        versions: ["[2.10,)"]
 
       # Minor security update for Elasticsearch
       - dependency-name: "org.elasticsearch*:*"
@@ -30,6 +32,14 @@ updates:
 
   # Ignore pip dependencies
   - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    ignore:
+      - dependency-name: "*"
+
+  # Ignore npm dependencies
+  - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
