@@ -79,12 +79,16 @@ updates:
       # Spurious major version update
       - dependency-name: "org.jboss.el:jboss-el"
         versions: [">1.0_02.CR6"]
+      - dependency-name: "com.google.apis:google-api-services-drive"
+        versions: [">v2-rev20201130-1.31.0"]
 
       # Minor version update breaking compilation
       - dependency-name: "io.gatling*:*"
         versions: [">3.3.1"]
       - dependency-name: "org.bouncycastle:*"
         versions: [">1.69"]
+      - dependency-name: "org.hibernate:hibernate-commons-annotations"
+        versions: [">3.1.0.GA"]
 
       # Patch version update breaking compilation
       - dependency-name: "org.apache.directory.server:*"
