@@ -93,23 +93,15 @@
       <artifactId>nuxeo-platform-tag</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.elasticsearch</groupId>
-      <artifactId>elasticsearch</artifactId>
+      <groupId>org.opensearch.client</groupId>
+      <artifactId>opensearch-rest-high-level-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.elasticsearch.client</groupId>
-      <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.elasticsearch.client</groupId>
-      <artifactId>elasticsearch-rest-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.elasticsearch.client</groupId>
+      <groupId>org.opensearch.client</groupId>
       <artifactId>transport</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.elasticsearch.plugin</groupId>
+      <groupId>org.opensearch.plugin</groupId>
       <artifactId>transport-netty4-client</artifactId>
     </dependency>
     <dependency>
@@ -209,11 +201,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-join</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
     </dependency>
@@ -223,7 +210,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codelibs.elasticsearch.module</groupId>
+      <groupId>org.opensearch.plugin</groupId>
       <artifactId>analysis-common</artifactId>
     </dependency>
     <dependency>

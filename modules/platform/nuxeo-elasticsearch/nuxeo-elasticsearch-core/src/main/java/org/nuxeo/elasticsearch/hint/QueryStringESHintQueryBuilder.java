@@ -19,9 +19,9 @@
 
 package org.nuxeo.elasticsearch.hint;
 
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.index.query.QueryStringQueryBuilder;
 import org.nuxeo.ecm.core.query.sql.model.EsHint;
 import org.nuxeo.elasticsearch.api.ESHintQueryBuilder;
 
@@ -36,7 +36,7 @@ public class QueryStringESHintQueryBuilder implements ESHintQueryBuilder {
      * {@inheritDoc}
      * <p>
      *
-     * @return {@link org.elasticsearch.index.query.QueryStringQueryBuilder}
+     * @return {@link org.opensearch.index.query.QueryStringQueryBuilder}
      */
     @Override
     public QueryBuilder make(EsHint hint, String fieldName, Object value) {

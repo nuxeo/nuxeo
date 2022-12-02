@@ -20,7 +20,7 @@ package org.nuxeo.elasticsearch.fetcher;
 
 import java.util.Map;
 
-import org.elasticsearch.action.search.SearchResponse;
+import org.opensearch.action.search.SearchResponse;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 

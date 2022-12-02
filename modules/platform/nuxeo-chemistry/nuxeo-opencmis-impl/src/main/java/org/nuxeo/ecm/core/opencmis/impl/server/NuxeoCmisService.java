@@ -124,8 +124,8 @@ import org.apache.chemistry.opencmis.server.support.wrapper.CallContextAwareCmis
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.search.SearchHits;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.search.SearchHits;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;

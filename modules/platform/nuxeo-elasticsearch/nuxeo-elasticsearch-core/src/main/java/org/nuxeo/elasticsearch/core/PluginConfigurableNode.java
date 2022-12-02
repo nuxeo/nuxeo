@@ -22,10 +22,10 @@ package org.nuxeo.elasticsearch.core;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.node.InternalSettingsPreparer;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.plugins.Plugin;
+import org.opensearch.common.settings.Settings;
+import org.opensearch.node.InternalSettingsPreparer;
+import org.opensearch.node.Node;
+import org.opensearch.plugins.Plugin;
 
 /**
  * @since 9.2

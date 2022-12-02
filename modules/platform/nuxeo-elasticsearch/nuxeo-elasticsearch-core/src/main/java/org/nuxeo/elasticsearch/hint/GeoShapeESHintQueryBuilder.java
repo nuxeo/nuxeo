@@ -19,9 +19,9 @@
 
 package org.nuxeo.elasticsearch.hint;
 
-import org.elasticsearch.common.geo.ShapeRelation;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.opensearch.common.geo.ShapeRelation;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
 import org.nuxeo.ecm.core.query.sql.model.EsHint;
 import org.nuxeo.elasticsearch.api.ESHintQueryBuilder;
 
@@ -36,7 +36,7 @@ public class GeoShapeESHintQueryBuilder extends AbstractGeoESHintQueryBuilder {
      * {@inheritDoc}
      * <p>
      *
-     * @return {@link org.elasticsearch.index.query.GeoShapeQueryBuilder}
+     * @return {@link org.opensearch.index.query.GeoShapeQueryBuilder}
      */
     @Override
     public QueryBuilder make(EsHint hint, String fieldName, Object value) {

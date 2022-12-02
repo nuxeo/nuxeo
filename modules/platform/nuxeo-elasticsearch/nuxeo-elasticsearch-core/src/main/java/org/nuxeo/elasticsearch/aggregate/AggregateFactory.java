@@ -32,7 +32,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_RANGE;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_SIGNIFICANT_TERMS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_TERMS;
 
-import org.elasticsearch.search.aggregations.Aggregation;
+import org.opensearch.search.aggregations.Aggregation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.Bucket;

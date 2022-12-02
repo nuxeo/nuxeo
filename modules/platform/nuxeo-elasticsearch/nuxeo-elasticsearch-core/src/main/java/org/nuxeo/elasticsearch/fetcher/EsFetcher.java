@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.common.text.Text;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.common.text.Text;
+import org.opensearch.search.SearchHit;
+import org.opensearch.search.fetch.subphase.highlight.HighlightField;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;

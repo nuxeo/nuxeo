@@ -20,19 +20,19 @@
 package org.nuxeo.elasticsearch.hint;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static org.elasticsearch.common.xcontent.DeprecationHandler.THROW_UNSUPPORTED_OPERATION;
+import static org.opensearch.common.xcontent.DeprecationHandler.THROW_UNSUPPORTED_OPERATION;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.elasticsearch.ElasticsearchParseException;
-import org.elasticsearch.common.geo.GeoPoint;
-import org.elasticsearch.common.geo.GeoUtils;
-import org.elasticsearch.common.xcontent.NamedXContentRegistry;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentParser;
-import org.elasticsearch.common.xcontent.json.JsonXContent;
+import org.opensearch.OpenSearchParseException;
+import org.opensearch.common.geo.GeoPoint;
+import org.opensearch.common.geo.GeoUtils;
+import org.opensearch.common.xcontent.NamedXContentRegistry;
+import org.opensearch.common.xcontent.XContentBuilder;
+import org.opensearch.common.xcontent.XContentParser;
+import org.opensearch.common.xcontent.json.JsonXContent;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESHintQueryBuilder;
 
@@ -68,7 +68,7 @@ public abstract class AbstractGeoESHintQueryBuilder implements ESHintQueryBuilde
                 parser.nextToken();
                 return GeoUtils.parseGeoPoint(parser);
             }
-        } catch (IOException | ElasticsearchParseException e) {
+        } catch (IOException | OpenSearchParseException e) {
             throw new NuxeoException(String.format("Invalid value for Geo-point: %s", value), e, SC_BAD_REQUEST);
         }
     }

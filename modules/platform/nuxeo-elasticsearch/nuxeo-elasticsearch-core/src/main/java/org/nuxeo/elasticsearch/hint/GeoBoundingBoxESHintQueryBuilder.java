@@ -19,9 +19,9 @@
 
 package org.nuxeo.elasticsearch.hint;
 
-import org.elasticsearch.common.geo.GeoPoint;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.opensearch.common.geo.GeoPoint;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
 import org.nuxeo.ecm.core.query.sql.model.EsHint;
 import org.nuxeo.elasticsearch.api.ESHintQueryBuilder;
 
@@ -37,7 +37,7 @@ public class GeoBoundingBoxESHintQueryBuilder extends AbstractGeoESHintQueryBuil
      * {@inheritDoc}
      * <p>
      *
-     * @return {@link org.elasticsearch.index.query.GeoBoundingBoxQueryBuilder}
+     * @return {@link org.opensearch.index.query.GeoBoundingBoxQueryBuilder}
      */
     @Override
     public QueryBuilder make(EsHint hint, String fieldName, Object value) {

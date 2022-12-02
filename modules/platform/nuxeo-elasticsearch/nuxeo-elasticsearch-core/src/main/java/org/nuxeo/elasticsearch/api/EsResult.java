@@ -20,7 +20,7 @@ package org.nuxeo.elasticsearch.api;
 
 import java.util.List;
 
-import org.elasticsearch.action.search.SearchResponse;
+import org.opensearch.action.search.SearchResponse;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.platform.query.api.Aggregate;

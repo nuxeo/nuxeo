@@ -20,7 +20,7 @@ package org.nuxeo.elasticsearch.status;
 
 import java.util.List;
 
-import org.elasticsearch.cluster.health.ClusterHealthStatus;
+import org.opensearch.cluster.health.ClusterHealthStatus;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;

@@ -118,11 +118,6 @@
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
     </dependency>
-    <!-- needed by H2 fulltext -->
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-    </dependency>
     <!-- needed by nuxeo-core-convert-plugins -->
     <dependency>
       <groupId>javax.mail</groupId>
@@ -143,8 +138,8 @@
     </dependency>
     <!-- scope provided -->
     <dependency>
-      <groupId>org.elasticsearch</groupId>
-      <artifactId>elasticsearch</artifactId>
+      <groupId>org.opensearch</groupId>
+      <artifactId>opensearch</artifactId>
       <scope>provided</scope>
     </dependency>
     <!-- overridden test scopes -->

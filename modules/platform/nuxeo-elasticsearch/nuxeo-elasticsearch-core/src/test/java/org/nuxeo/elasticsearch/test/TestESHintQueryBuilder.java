@@ -31,13 +31,13 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.common.geo.ShapeRelation;
-import org.elasticsearch.index.query.AbstractQueryBuilder;
-import org.elasticsearch.index.query.GeoBoundingBoxQueryBuilder;
-import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
-import org.elasticsearch.index.query.GeoShapeQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.opensearch.common.geo.ShapeRelation;
+import org.opensearch.index.query.AbstractQueryBuilder;
+import org.opensearch.index.query.GeoBoundingBoxQueryBuilder;
+import org.opensearch.index.query.GeoDistanceQueryBuilder;
+import org.opensearch.index.query.GeoShapeQueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -244,7 +244,7 @@ public class TestESHintQueryBuilder {
      * {@link org.nuxeo.elasticsearch.hint.RegexESHintQueryBuilder} has a dedicated Test and cannot be integrated in
      * {@link #shouldEnsureEqualityBetweenESQueriesAndESHintQueries}.
      * {@link org.nuxeo.elasticsearch.hint.RegexESHintQueryBuilder} is a special case as the operator NXQL
-     * <strong>"regex"</strong> and it's different from {@link org.elasticsearch.index.query.RegexpQueryBuilder#NAME}.
+     * <strong>"regex"</strong> and it's different from {@link org.opensearch.index.query.RegexpQueryBuilder#NAME}.
      * Most of the time the NXQL ESHint and the Elasticsearch operator have the same name. But sometimes they are
      * different.
      */

@@ -114,22 +114,6 @@
       <artifactId>h2</artifactId>
       <scope>compile</scope>
     </dependency>
-    <!-- Needed by H2 fulltext -->
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-queryparser</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-analyzers-common</artifactId>
-      <scope>compile</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

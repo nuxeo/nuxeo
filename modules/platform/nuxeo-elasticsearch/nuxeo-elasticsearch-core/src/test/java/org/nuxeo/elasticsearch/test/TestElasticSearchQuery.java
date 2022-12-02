@@ -27,9 +27,9 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import org.apache.lucene.search.join.ScoreMode;
-import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.opensearch.index.query.MoreLikeThisQueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

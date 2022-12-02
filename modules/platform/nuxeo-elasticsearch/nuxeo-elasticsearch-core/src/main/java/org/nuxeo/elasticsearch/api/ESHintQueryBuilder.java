@@ -19,18 +19,18 @@
 
 package org.nuxeo.elasticsearch.api;
 
-import org.elasticsearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
 import org.nuxeo.ecm.core.query.sql.model.EsHint;
 
 /**
- * Converts an NXQL Elasticsearch Hint into {@link org.elasticsearch.index.query.QueryBuilder}.
+ * Converts an NXQL Elasticsearch Hint into {@link org.opensearch.index.query.QueryBuilder}.
  *
  * @since 11.1
  */
 public interface ESHintQueryBuilder {
 
     /**
-     * Builds the Elasticsearch {@link org.elasticsearch.index.query.QueryBuilder}.
+     * Builds the Elasticsearch {@link org.opensearch.index.query.QueryBuilder}.
      *
      * @param hint the elasticsearch hint
      * @param fieldName the elasticsearch field name

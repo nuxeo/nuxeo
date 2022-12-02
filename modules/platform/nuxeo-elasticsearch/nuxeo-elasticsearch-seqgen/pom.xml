@@ -17,8 +17,8 @@
       <artifactId>nuxeo-platform-uidgen-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.elasticsearch</groupId>
-      <artifactId>elasticsearch</artifactId>
+      <groupId>org.opensearch</groupId>
+      <artifactId>opensearch</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.elasticsearch</groupId>

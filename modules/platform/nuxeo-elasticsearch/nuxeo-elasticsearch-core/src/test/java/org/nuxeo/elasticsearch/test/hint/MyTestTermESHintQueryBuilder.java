@@ -19,8 +19,8 @@
 
 package org.nuxeo.elasticsearch.test.hint;
 
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
 import org.nuxeo.ecm.core.query.sql.model.EsHint;
 import org.nuxeo.elasticsearch.api.ESHintQueryBuilder;
 
@@ -31,7 +31,7 @@ public class MyTestTermESHintQueryBuilder implements ESHintQueryBuilder {
 
     /**
      * For the purpose of Test, we choose to override the ES Hint Term Query and return a
-     * {@link org.elasticsearch.index.query.RangeQueryBuilder} instead.
+     * {@link org.opensearch.index.query.RangeQueryBuilder} instead.
      */
     @Override
     public QueryBuilder make(EsHint hint, String fieldName, Object value) {

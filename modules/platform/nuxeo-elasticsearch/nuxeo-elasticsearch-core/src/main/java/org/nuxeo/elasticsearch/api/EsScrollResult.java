@@ -18,7 +18,7 @@
  */
 package org.nuxeo.elasticsearch.api;
 
-import org.elasticsearch.action.search.SearchResponse;
+import org.opensearch.action.search.SearchResponse;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;

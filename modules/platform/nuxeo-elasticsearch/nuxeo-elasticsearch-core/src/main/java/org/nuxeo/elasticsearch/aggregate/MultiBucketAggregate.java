@@ -20,7 +20,7 @@ package org.nuxeo.elasticsearch.aggregate;
 
 import java.util.Collection;
 
-import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
+import org.opensearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.Bucket;

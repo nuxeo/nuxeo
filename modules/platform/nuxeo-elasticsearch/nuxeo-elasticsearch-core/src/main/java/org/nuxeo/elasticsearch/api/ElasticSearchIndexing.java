@@ -23,7 +23,7 @@ package org.nuxeo.elasticsearch.api;
 import java.io.IOException;
 import java.util.List;
 
-import org.elasticsearch.common.bytes.BytesReference;
+import org.opensearch.common.bytes.BytesReference;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 

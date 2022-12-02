@@ -20,9 +20,9 @@ package org.nuxeo.elasticsearch.aggregate;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.aggregations.Aggregation;
-import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.search.aggregations.Aggregation;
+import org.opensearch.search.aggregations.AggregationBuilder;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;

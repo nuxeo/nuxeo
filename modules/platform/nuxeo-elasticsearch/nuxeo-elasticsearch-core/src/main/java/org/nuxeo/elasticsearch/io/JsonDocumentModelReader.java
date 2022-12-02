@@ -28,8 +28,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.common.bytes.BytesArray;
-import org.elasticsearch.search.lookup.SourceLookup;
+import org.opensearch.common.bytes.BytesArray;
+import org.opensearch.search.lookup.SourceLookup;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;

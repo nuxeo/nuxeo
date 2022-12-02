@@ -27,16 +27,6 @@
       <artifactId>h2</artifactId>
       <optional>true</optional>
     </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-queryparser</artifactId>
-      <optional>true</optional>
-    </dependency>
   </dependencies>
 
 </project>

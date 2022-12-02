@@ -31,34 +31,34 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.apache.http.util.EntityUtils;
-import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.action.bulk.BulkItemResponse;
-import org.elasticsearch.action.bulk.BulkProcessor;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.bulk.BulkShardRequest;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.ClearScrollRequest;
-import org.elasticsearch.action.search.ClearScrollResponse;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchScrollRequest;
-import org.elasticsearch.action.support.replication.ReplicationRequest;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.ResponseException;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.cluster.health.ClusterHealthStatus;
-import org.elasticsearch.common.xcontent.XContentHelper;
-import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.rest.RestStatus;
+import org.opensearch.OpenSearchStatusException;
+import org.opensearch.action.bulk.BulkItemResponse;
+import org.opensearch.action.bulk.BulkProcessor;
+import org.opensearch.action.bulk.BulkRequest;
+import org.opensearch.action.bulk.BulkResponse;
+import org.opensearch.action.bulk.BulkShardRequest;
+import org.opensearch.action.delete.DeleteRequest;
+import org.opensearch.action.delete.DeleteResponse;
+import org.opensearch.action.get.GetRequest;
+import org.opensearch.action.get.GetResponse;
+import org.opensearch.action.index.IndexRequest;
+import org.opensearch.action.index.IndexResponse;
+import org.opensearch.action.search.ClearScrollRequest;
+import org.opensearch.action.search.ClearScrollResponse;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.action.search.SearchScrollRequest;
+import org.opensearch.action.support.replication.ReplicationRequest;
+import org.opensearch.client.Request;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.client.Response;
+import org.opensearch.client.ResponseException;
+import org.opensearch.client.RestClient;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.cluster.health.ClusterHealthStatus;
+import org.opensearch.common.xcontent.XContentHelper;
+import org.opensearch.common.xcontent.XContentType;
+import org.opensearch.rest.RestStatus;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
@@ -373,7 +373,7 @@ public class ESRestClient implements ESClient {
                 throw new TooManyRequestsRetryableException(e.getResponse().getStatusLine().toString());
             }
             throw new NuxeoException(e);
-         } catch (ElasticsearchStatusException e) {
+         } catch (OpenSearchStatusException e) {
              if (RestStatus.TOO_MANY_REQUESTS.equals(e.status())) {
                  log.warn("Detecting overloaded Elastic bulk response: " + e.getMessage());
                  throw new TooManyRequestsRetryableException(e.getMessage());
@@ -404,8 +404,8 @@ public class ESRestClient implements ESClient {
     public SearchResponse search(SearchRequest request) {
         try (Scope ignored = getScopedSpan("elastic/_search", request.toString())) {
             return client.search(request, RequestOptions.DEFAULT);
-        } catch (IOException | ElasticsearchStatusException e) {
-            // ElasticsearchStatusException is raised when using phrase prefix on keyword type
+        } catch (IOException | OpenSearchStatusException e) {
+            // OpenSearchStatusException is raised when using phrase prefix on keyword type
             throw new NuxeoException(e);
         }
     }
@@ -454,7 +454,7 @@ public class ESRestClient implements ESClient {
                 request.timeout(LONG_TIMEOUT);
             }
             return client.index(request, RequestOptions.DEFAULT);
-        } catch (ElasticsearchStatusException e) {
+        } catch (OpenSearchStatusException e) {
             if (RestStatus.CONFLICT.equals(e.status())) {
                 throw new ConcurrentUpdateException(e);
             } else if (RestStatus.TOO_MANY_REQUESTS.equals(e.status())) {
@@ -486,7 +486,7 @@ public class ESRestClient implements ESClient {
                 log.debug(String.format("Clearing scroll ids: %s", Arrays.toString(request.getScrollIds().toArray())));
             }
             return client.clearScroll(request, RequestOptions.DEFAULT);
-        } catch (ElasticsearchStatusException e) {
+        } catch (OpenSearchStatusException e) {
             if (RestStatus.NOT_FOUND.equals(e.status())) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Scroll ids not found, they have certainly been already closed: %s",
@@ -512,7 +512,7 @@ public class ESRestClient implements ESClient {
             try {
                 lowLevelClient.close();
             } catch (IOException e) {
-                log.warn("Fail to close the Elasticsearch low level RestClient: " + e.getMessage(), e);
+                log.warn("Fail to close the OpenSearch low level RestClient: " + e.getMessage(), e);
             }
             lowLevelClient = null;
         }

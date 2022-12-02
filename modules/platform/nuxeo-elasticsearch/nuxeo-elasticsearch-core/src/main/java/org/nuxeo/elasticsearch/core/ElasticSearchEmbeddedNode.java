@@ -26,12 +26,12 @@ import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeValidationException;
-import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.transport.Netty4Plugin;
+import org.opensearch.analysis.common.CommonAnalysisPlugin;
+import org.opensearch.common.settings.Settings;
+import org.opensearch.node.Node;
+import org.opensearch.node.NodeValidationException;
+import org.opensearch.plugins.Plugin;
+import org.opensearch.transport.Netty4Plugin;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;

@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.search.SearchHit;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.elasticsearch.core.EsSearchHitConverter;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;

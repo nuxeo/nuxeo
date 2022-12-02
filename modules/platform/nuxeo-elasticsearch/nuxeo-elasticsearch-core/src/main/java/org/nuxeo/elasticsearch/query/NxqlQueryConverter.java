@@ -38,12 +38,12 @@ import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.FuzzyQuery;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchPhrasePrefixQueryBuilder;
-import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.SimpleQueryStringBuilder;
+import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.MatchPhrasePrefixQueryBuilder;
+import org.opensearch.index.query.MoreLikeThisQueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.index.query.SimpleQueryStringBuilder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -554,14 +554,14 @@ public final class NxqlQueryConverter {
             name = FULLTEXT_FIELD;
         }
         String queryString = value;
-        org.elasticsearch.index.query.Operator defaultOperator;
+        org.opensearch.index.query.Operator defaultOperator;
         if (queryString.startsWith(SIMPLE_QUERY_PREFIX)) {
-            // elasticsearch-specific syntax
+            // opensearch-specific syntax
             queryString = queryString.substring(SIMPLE_QUERY_PREFIX.length());
-            defaultOperator = org.elasticsearch.index.query.Operator.OR;
+            defaultOperator = org.opensearch.index.query.Operator.OR;
         } else {
             queryString = translateFulltextQuery(queryString);
-            defaultOperator = org.elasticsearch.index.query.Operator.AND;
+            defaultOperator = org.opensearch.index.query.Operator.AND;
         }
         String analyzer = (hint != null && hint.analyzer != null) ? hint.analyzer : "fulltext";
         SimpleQueryStringBuilder query = QueryBuilders.simpleQueryStringQuery(queryString)

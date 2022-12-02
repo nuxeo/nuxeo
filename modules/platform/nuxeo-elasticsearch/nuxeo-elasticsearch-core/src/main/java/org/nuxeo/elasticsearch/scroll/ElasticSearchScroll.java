@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.OpenSearchException;
+import org.opensearch.search.SearchHit;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.scroll.RepositoryScroll;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -59,7 +59,7 @@ public class ElasticSearchScroll extends RepositoryScroll {
             } else {
                 esScroll = ess.scroll(esScroll);
             }
-        } catch (ElasticsearchException e) {
+        } catch (OpenSearchException e) {
             throw new NuxeoException("Elastic scroll failure on request: " + request, e);
         }
         SearchHit[] hits = esScroll.getElasticsearchResponse().getHits().getHits();

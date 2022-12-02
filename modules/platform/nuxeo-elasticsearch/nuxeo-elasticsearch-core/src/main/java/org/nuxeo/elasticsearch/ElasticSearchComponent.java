@@ -40,8 +40,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.common.bytes.BytesReference;
-import org.elasticsearch.index.query.QueryBuilder;
+import org.opensearch.common.bytes.BytesReference;
+import org.opensearch.index.query.QueryBuilder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;

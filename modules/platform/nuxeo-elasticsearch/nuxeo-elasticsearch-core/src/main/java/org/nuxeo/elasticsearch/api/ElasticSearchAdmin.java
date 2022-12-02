@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.elasticsearch.client.Client;
+import org.opensearch.client.Client;
 
 import com.google.common.util.concurrent.ListenableFuture;
 

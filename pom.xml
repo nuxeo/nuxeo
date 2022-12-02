@@ -70,9 +70,7 @@
     <jaxb-api.version>2.3.3</jaxb-api.version>
     <jaxb.version>2.3.3</jaxb.version>
     <tomcat.version>9.0.70</tomcat.version>
-    <lucene.version>8.7.0</lucene.version>
-    <elasticsearch.version>7.10.2</elasticsearch.version>
-    <jna.version>4.5.2</jna.version>
+    <opensearch.version>1.3.6</opensearch.version>
     <netty.version>4.1.85.Final</netty.version>
     <netty.boringssl.version>2.0.54.Final</netty.boringssl.version>
     <grpc-netty.version>1.51.0</grpc-netty.version>
@@ -2388,57 +2386,38 @@
         <version>${apache.httpcore.version}</version>
       </dependency>
 
-      <!-- joda-time, required by Elasticsearch, AWS SDK, others -->
+      <!-- joda-time, required by OpenSearch, AWS SDK, others -->
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>2.12.2</version>
       </dependency>
 
-      <!-- JNA, required by Elasticsearch -->
+      <!-- OpenSearch -->
       <dependency>
-        <groupId>net.java.dev.jna</groupId>
-        <artifactId>jna</artifactId>
-        <version>${jna.version}</version>
+        <groupId>org.opensearch</groupId>
+        <artifactId>opensearch</artifactId>
+        <version>${opensearch.version}</version>
       </dependency>
       <dependency>
-        <groupId>net.java.dev.jna</groupId>
-        <artifactId>jna-platform</artifactId>
-        <version>${jna.version}</version>
-      </dependency>
-
-      <!-- elasticsearch -->
-      <dependency>
-        <groupId>org.elasticsearch</groupId>
-        <artifactId>elasticsearch</artifactId>
-        <version>${elasticsearch.version}</version>
-        <exclusions>
-          <!-- use net.java.dev.jna:jna instead -->
-          <exclusion>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>jna</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>org.opensearch.client</groupId>
+        <artifactId>opensearch-rest-high-level-client</artifactId>
+        <version>${opensearch.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.elasticsearch.client</groupId>
-        <artifactId>elasticsearch-rest-high-level-client</artifactId>
-        <version>${elasticsearch.version}</version>
+        <groupId>org.opensearch.client</groupId>
+        <artifactId>opensearch-rest-client</artifactId>
+        <version>${opensearch.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.elasticsearch.client</groupId>
-        <artifactId>elasticsearch-rest-client</artifactId>
-        <version>${elasticsearch.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.elasticsearch.client</groupId>
+        <groupId>org.opensearch.client</groupId>
         <artifactId>transport</artifactId>
-        <version>${elasticsearch.version}</version>
+        <version>${opensearch.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.elasticsearch.plugin</groupId>
+        <groupId>org.opensearch.plugin</groupId>
         <artifactId>transport-netty4-client</artifactId>
-        <version>${elasticsearch.version}</version>
+        <version>${opensearch.version}</version>
       </dependency>
 
       <!-- need a version more recent than the one pulled by transport-netty4-client -->
@@ -2507,63 +2486,12 @@
 
       <!-- needed for embedded mode -->
       <dependency>
-        <groupId>org.codelibs.elasticsearch.module</groupId>
+        <groupId>org.opensearch.plugin</groupId>
         <artifactId>analysis-common</artifactId>
-        <version>${elasticsearch.version}</version>
+        <version>${opensearch.version}</version>
       </dependency>
 
       <!-- apache -->
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-core</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-queryparser</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-analyzers-common</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-suggest</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-join</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-spatial</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-codecs</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-queries</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-memory</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-highlighter</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-asn1</artifactId>
@@ -5598,12 +5526,6 @@
                   <exclude>javax.el:el-api</exclude> <!-- use more recent org.apache.tomcat:tomcat-el-api instead -->
                 </excludes>
                 <message>javax.el:el-api must not be used, use org.apache.tomcat:tomcat-el-api instead</message>
-              </bannedDependencies>
-              <bannedDependencies>
-                <excludes>
-                  <exclude>org.elasticsearch:jna</exclude> <!-- use official net.java.dev.jna:jna instead -->
-                </excludes>
-                <message>org.elasticsearch:jna must not be used, use net.java.dev.jna:jna instead</message>
               </bannedDependencies>
               <bannedDependencies>
                 <excludes>

@@ -22,8 +22,8 @@ package org.nuxeo.elasticsearch.hint;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
 import org.nuxeo.ecm.core.query.sql.model.EsHint;
 import org.nuxeo.elasticsearch.api.ESHintQueryBuilder;
 
@@ -38,7 +38,7 @@ public class MultiMatchESHintQueryBuilder implements ESHintQueryBuilder {
      * {@inheritDoc}
      * <p>
      *
-     * @return {@link org.elasticsearch.index.query.MultiMatchQueryBuilder}
+     * @return {@link org.opensearch.index.query.MultiMatchQueryBuilder}
      */
     @Override
     public QueryBuilder make(EsHint hint, String fieldName, Object value) {
