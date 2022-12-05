@@ -4300,7 +4300,7 @@
       <dependency>
         <groupId>org.glassfish.embedded</groupId>
         <artifactId>glassfish-embedded-all</artifactId>
-        <version>3.0-b38-nxp-web-210</version>
+        <version>3.0-Prelude-Embedded-m2</version>
       </dependency>
 
       <dependency>
