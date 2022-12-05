@@ -21,6 +21,8 @@ updates:
         versions: ["[2.7,)"]
       - dependency-name: "com.fasterxml.jackson.core:jackson-databind"
         versions: ["[2.10,)"]
+      - dependency-name: "com.google.code.gson:gson"
+        versions: ["[2.3,)"]
 
       # Minor security update for Elasticsearch
       - dependency-name: "org.elasticsearch*:*"
