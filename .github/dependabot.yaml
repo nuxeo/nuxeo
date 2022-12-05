@@ -91,6 +91,8 @@ updates:
       # Patch version update breaking compilation
       - dependency-name: "org.apache.directory.server:*"
         versions: [">1.5.1"]
+      - dependency-name: "org.apache.directory.shared:*"
+        versions: [">0.9.7"]
       - dependency-name: "io.dropwizard.metrics5:metrics-bom"
         versions: [">5.0.0-rc3"]
 
