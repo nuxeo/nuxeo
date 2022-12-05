@@ -204,6 +204,9 @@ public class StreamWorkManager extends WorkManagerImpl {
                     queueId));
             return;
         }
+        if (storeState) {
+            WorkStateHelper.setState(work.getId(), Work.State.SCHEDULED, stateTTL);
+        }
         String key = work.getPartitionKey();
         LogOffset offset = streamManager.append(queueId, Record.of(key, WorkComputation.serialize(work)));
         if (work.isCoalescing()) {
@@ -215,9 +218,6 @@ public class StreamWorkManager extends WorkManagerImpl {
                         work.getPartitionKey(), offset));
             }
             WorkStateHelper.addGroupJoinWork(work.getPartitionKey());
-        }
-        if (storeState) {
-            WorkStateHelper.setState(work.getId(), Work.State.SCHEDULED, stateTTL);
         }
     }
 
