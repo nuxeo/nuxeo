@@ -72,10 +72,6 @@ updates:
       # Upgraded too often to be useful to track with Dependabot
       - dependency-name: "com.amazonaws:aws-java-sdk-*"
 
-      # Actually older
-      - dependency-name: "io.dropwizard.metrics5:metrics-bom"
-        versions: ["5.0.0"]
-
       # Spurious major version update
       - dependency-name: "org.jboss.el:jboss-el"
         versions: [">1.0_02.CR6"]
@@ -84,15 +80,19 @@ updates:
 
       # Minor version update breaking compilation
       - dependency-name: "io.gatling*:*"
-        versions: [">3.3.1"]
+        versions: ["[3.4,)"]
       - dependency-name: "org.bouncycastle:*"
-        versions: [">1.69"]
+        versions: ["[1.70,)"]
       - dependency-name: "org.hibernate:hibernate-commons-annotations"
         versions: [">3.1.0.GA"]
+      - dependency-name: "org.scala-lang:scala-library"
+        versions: ["[2.13,)"]
 
       # Patch version update breaking compilation
       - dependency-name: "org.apache.directory.server:*"
         versions: [">1.5.1"]
+      - dependency-name: "io.dropwizard.metrics5:metrics-bom"
+        versions: [">5.0.0-rc3"]
 
       # Not in our artifact repository
       - dependency-name: "org.apache.maven.plugins:maven-enforcer-plugin"
