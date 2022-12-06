@@ -99,6 +99,8 @@ updates:
       # Not in our artifact repository
       - dependency-name: "org.apache.maven.plugins:maven-enforcer-plugin"
         versions: ["1.4.2.jenkins-1"]
+      - dependency-name: "javax.inject:javax.inject"
+        versions: ["1.0-PFD-1"]
 
   # Ignore pip dependencies
   - package-ecosystem: "pip"
