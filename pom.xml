@@ -4602,7 +4602,7 @@
       <dependency>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-sass-compiler</artifactId>
-        <version>0.9.12-NX01</version>
+        <version>0.9.13</version>
       </dependency>
 
       <dependency>
