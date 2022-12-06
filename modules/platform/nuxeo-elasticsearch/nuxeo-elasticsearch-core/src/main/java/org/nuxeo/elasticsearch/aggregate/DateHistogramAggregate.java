@@ -50,7 +50,7 @@ import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
-import org.elasticsearch.search.aggregations.bucket.histogram.ExtendedBounds;
+import org.elasticsearch.search.aggregations.bucket.histogram.LongBounds;
 import org.joda.time.DateTimeZone;
 import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -104,7 +104,7 @@ public class DateHistogramAggregate extends MultiBucketAggregate<BucketRangeDate
         }
         if (props.containsKey(AGG_EXTENDED_BOUND_MAX_PROP) && props.containsKey(AGG_EXTENDED_BOUND_MIN_PROP)) {
             ret.extendedBounds(
-                    new ExtendedBounds(props.get(AGG_EXTENDED_BOUND_MIN_PROP), props.get(AGG_EXTENDED_BOUND_MAX_PROP)));
+                    new LongBounds(props.get(AGG_EXTENDED_BOUND_MIN_PROP), props.get(AGG_EXTENDED_BOUND_MAX_PROP)));
         }
         if (props.containsKey(AGG_TIME_ZONE_PROP)) {
             ret.timeZone(DateTimeZone.forID(props.get(AGG_TIME_ZONE_PROP)).toTimeZone().toZoneId());

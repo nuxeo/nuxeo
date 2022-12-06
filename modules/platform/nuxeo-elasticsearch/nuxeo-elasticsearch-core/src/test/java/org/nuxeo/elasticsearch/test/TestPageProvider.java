@@ -240,6 +240,7 @@ public class TestPageProvider {
                 "            \"query\" : \"Test\",\n" + //
                 "            \"slop\" : 0,\n" + //
                 "            \"max_expansions\" : 50,\n" + //
+                "            \"zero_terms_query\" : \"NONE\",\n" + //
                 "            \"boost\" : 1.0\n" + //
                 "          }\n" + //
                 "        }\n" + //

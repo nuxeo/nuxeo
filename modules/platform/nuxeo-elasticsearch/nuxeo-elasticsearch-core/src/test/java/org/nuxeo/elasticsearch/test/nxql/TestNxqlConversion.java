@@ -345,6 +345,7 @@ public class TestNxqlConversion {
                 "      \"query\" : \"foo\",\n" +
                 "      \"slop\" : 0,\n" +
                 "      \"max_expansions\" : 50,\n" +
+                "      \"zero_terms_query\" : \"NONE\",\n" +
                 "      \"boost\" : 1.0\n" +
                 "    }\n" +
                 "  }\n" +
@@ -370,6 +371,7 @@ public class TestNxqlConversion {
                 "                \"query\" : \"Foo\",\n" +
                 "                \"slop\" : 0,\n" +
                 "                \"max_expansions\" : 50,\n" +
+                "                \"zero_terms_query\" : \"NONE\",\n" +
                 "                \"boost\" : 1.0\n" +
                 "              }\n" +
                 "            }\n" +
@@ -447,6 +449,7 @@ public class TestNxqlConversion {
                 "      \"query\" : \"foo\",\n" +
                 "      \"slop\" : 0,\n" +
                 "      \"max_expansions\" : 50,\n" +
+                "      \"zero_terms_query\" : \"NONE\",\n" +
                 "      \"boost\" : 1.0\n" +
                 "    }\n" +
                 "  }\n" +
@@ -472,6 +475,7 @@ public class TestNxqlConversion {
                 "                \"query\" : \"foo\",\n" +
                 "                \"slop\" : 0,\n" +
                 "                \"max_expansions\" : 50,\n" +
+                "                \"zero_terms_query\" : \"NONE\",\n" +
                 "                \"boost\" : 1.0\n" +
                 "              }\n" +
                 "            }\n" +
@@ -1124,6 +1128,7 @@ public class TestNxqlConversion {
                 "                  \"query\" : \"1\",\n" +
                 "                  \"slop\" : 0,\n" +
                 "                  \"max_expansions\" : 50,\n" +
+                "                  \"zero_terms_query\" : \"NONE\",\n" +
                 "                  \"boost\" : 1.0\n" +
                 "                }\n" +
                 "              }\n" +
@@ -1134,6 +1139,7 @@ public class TestNxqlConversion {
                 "                  \"query\" : \"2\",\n" +
                 "                  \"slop\" : 0,\n" +
                 "                  \"max_expansions\" : 50,\n" +
+                "                  \"zero_terms_query\" : \"NONE\",\n" +
                 "                  \"boost\" : 1.0\n" +
                 "                }\n" +
                 "              }\n" +
@@ -1515,6 +1521,7 @@ public class TestNxqlConversion {
                 "      \"query\" : \"this is a test\",\n" +
                 "      \"slop\" : 0,\n" +
                 "      \"max_expansions\" : 50,\n" +
+                "      \"zero_terms_query\" : \"NONE\",\n" +
                 "      \"boost\" : 1.0\n" +
                 "    }\n" +
                 "  }\n" +
@@ -1555,7 +1562,7 @@ public class TestNxqlConversion {
                 "  \"regexp\" : {\n" +
                 "    \"dc:title\" : {\n" +
                 "      \"value\" : \"s.*y\",\n" +
-                "      \"flags_value\" : 65535,\n" +
+                "      \"flags_value\" : 255,\n" +
                 "      \"max_determinized_states\" : 10000,\n" +
                 "      \"boost\" : 1.0\n" +
                 "    }\n" +
@@ -1845,6 +1852,7 @@ public class TestNxqlConversion {
                 "      \"analyzer\" : \"my_analyzer\",\n" +
                 "      \"slop\" : 0,\n" +
                 "      \"max_expansions\" : 50,\n" +
+                "      \"zero_terms_query\" : \"NONE\",\n" +
                 "      \"boost\" : 1.0\n" +
                 "    }\n" +
                 "  }\n" +
@@ -2017,6 +2025,7 @@ public class TestNxqlConversion {
                 "      \"query\" : \"foo\",\n" +
                 "      \"slop\" : 0,\n" +
                 "      \"max_expansions\" : 200,\n" +
+                "      \"zero_terms_query\" : \"NONE\",\n" +
                 "      \"boost\" : 1.0\n" +
                 "    }\n" +
                 "  }\n" +
