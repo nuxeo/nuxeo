@@ -2392,7 +2392,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.10.6</version>
+        <version>2.12.2</version>
       </dependency>
 
       <!-- JNA, required by Elasticsearch -->
