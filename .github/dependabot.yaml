@@ -96,6 +96,10 @@ updates:
       - dependency-name: "io.dropwizard.metrics5:metrics-bom"
         versions: [">5.0.0-rc3"]
 
+      # Nuxeo patch needed
+      - dependency-name: "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer"
+        versions: [">20211018.2.NX1"]
+
       # Not in our artifact repository
       - dependency-name: "org.apache.maven.plugins:maven-enforcer-plugin"
         versions: ["1.4.2.jenkins-1"]
