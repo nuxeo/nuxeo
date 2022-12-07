@@ -76,7 +76,7 @@ RUN yum -y update \
   && yum clean all
 
 # Remove setuid/setgid binaries from images for security
-RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
+RUN find / -ignore_readdir_race -perm 6000 -type f -exec chmod a-s {} \; || true
 
 # Set an UTF-8 LANG
 ENV LANG en_US.utf8
