@@ -84,7 +84,7 @@
     <apache.axiom.version>1.2.22</apache.axiom.version>
     <chemistry.opencmis.version>1.1.1-NX01</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
-    <apache.httpcore.version>4.4.13</apache.httpcore.version>
+    <apache.httpcore.version>4.4.16</apache.httpcore.version>
     <apache.httpcomponents.version>4.5.14</apache.httpcomponents.version>
     <apache.poi.version>4.1.2</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
