@@ -4,27 +4,31 @@
 #
 # It uses a multi-stage build to download RPMs from our YUM registy.
 
+ARG ROCKY_LINUX_VERSION=9.1
 # ------------------------------------------------------------------------
 # RPM download stage
-FROM centos:7 as rpm-download
+FROM rockylinux/rockylinux:$ROCKY_LINUX_VERSION as rpm-download
 
-ARG EXIFTOOL_VERSION=12.42-1.el7
+ARG EXIFTOOL_VERSION=12.42-1.el9
 
 # Add Nexus Private Yum Release Repository
 COPY target/nuxeo-private.repo /etc/yum.repos.d/
 
-RUN yum install --downloadonly --downloaddir=/rpms \
+RUN dnf -y install --downloadonly --downloaddir=/rpms \
   perl-Image-ExifTool-$EXIFTOOL_VERSION
 
 # ------------------------------------------------------------------------
 # Target stage
-FROM centos:7
+FROM rockylinux/rockylinux:$ROCKY_LINUX_VERSION
 
 ARG BUILD_TAG
 ARG SCM_REF
 ARG VERSION
 
 ARG LIBREOFFICE_VERSION=7.4.2
+ARG GHOSTSCRIPT_MAJOR_VERSION=9
+ARG GHOSTSCRIPT_MINOR_VERSION=25
+ARG GHOSTSCRIPT_VERSION=$GHOSTSCRIPT_MAJOR_VERSION.$GHOSTSCRIPT_MINOR_VERSION
 
 LABEL org.nuxeo.base.build-tag=$BUILD_TAG
 LABEL org.nuxeo.base.scm-ref=$SCM_REF
@@ -46,37 +50,46 @@ RUN rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems \
 # Copy downloaded rpms
 COPY --from=rpm-download /rpms /tmp/rpms
 
-RUN yum -y update \
-  && yum -y --setopt=skip_missing_names_on_install=False install \
+RUN dnf -y update \
+  && dnf -y --setopt=skip_missing_names_on_install=False install \
     epel-release \
     # install java first to provide it for depend packages (such as libreoffice)
     zulu17-jdk \
+    # find is not included in the base rockylinux image
+    findutils \
+    # install gzip first to allow using tar
+    gzip \
   # install downloaded rpms
-  && yum -y localinstall /tmp/rpms/* \
+  && dnf -y localinstall /tmp/rpms/* \
   && rm -rf /tmp/rpms \
   # install libreoffice
   && curl -f -L https://packages.nuxeo.com/repository/document-foundation-raw/LibreOffice_${LIBREOFFICE_VERSION}_Linux_x86-64_rpm.tar.gz | tar -C /tmp -xzv \
-  && yum -y localinstall /tmp/LibreOffice_${LIBREOFFICE_VERSION}*/RPMS/*.rpm \
+  && dnf -y localinstall /tmp/LibreOffice_${LIBREOFFICE_VERSION}*/RPMS/*.rpm \
   && ln -s /opt/libreoffice$(echo $LIBREOFFICE_VERSION | cut -f 1,2 -d ".")/program/soffice /usr/bin/soffice \
   && rm -rf /tmp/LibreOffice_${LIBREOFFICE_VERSION}* \
-  && yum -y --setopt=skip_missing_names_on_install=False install \
-    ghostscript \
-    ImageMagick-6.9.10.68-6.el7_9 \
-    less \
+  # install older version of ghostscript to avoid breaking changes on EPS to PDF conversion
+  && curl -f -L https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs$GHOSTSCRIPT_MAJOR_VERSION$GHOSTSCRIPT_MINOR_VERSION/ghostscript-$GHOSTSCRIPT_VERSION-linux-x86_64.tgz | tar -xzv \
+  && mv ghostscript-$GHOSTSCRIPT_VERSION-linux-x86_64/gs-$GHOSTSCRIPT_MAJOR_VERSION$GHOSTSCRIPT_MINOR_VERSION-linux-x86_64 /usr/bin/gs \
+  && rm -rf ghostscript-$GHOSTSCRIPT_VERSION-linux-x86_64 \
+  # devel repository required for some packages such as libwpd-tools
+  && dnf -y --setopt=skip_missing_names_on_install=False --enablerepo=devel install \
+    # don't specify ImageMagick version, the package repositories only host the latest package for Rocky Linux 9
+    ImageMagick \
     libwpd-tools \
     # required by exiftool to extract binary metadata from open office document
     perl-Archive-Zip \
     poppler-utils \
-    tar \
-    ufraw \
+    # ps is not included in the base rockylinux image
+    procps \
     unzip \
     wget \
     # Add CJK fonts
-    google-noto-cjk-fonts \
-  && yum clean all
+    google-noto-cjk-fonts-common \
+  && dnf clean all
 
 # Remove setuid/setgid binaries from images for security
 RUN find / -ignore_readdir_race -perm 6000 -type f -exec chmod a-s {} \; || true
 
 # Set an UTF-8 LANG
+RUN dnf -y install glibc-langpack-en
 ENV LANG en_US.utf8

@@ -12,7 +12,7 @@ This Docker image doesn't aim to replace the [Nuxeo Docker official image](https
 
 ## Nuxeo Image
 
-Based on CentOS 7, it includes:
+Based on Rocky Linux 9, it includes:
 
 - OpenJDK.
 - A bare Nuxeo server without any package installed.
