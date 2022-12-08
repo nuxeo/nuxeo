@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage;
 
+import static org.nuxeo.ecm.core.blob.DocumentBlobManagerComponent.MAIN_BLOB_XPATH;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -43,7 +45,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.BlobNotFoundException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -54,6 +58,7 @@ import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
@@ -887,6 +892,13 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 continue;
             }
             String xp = xpath == null ? name : xpath + '/' + name;
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            if (isUnderRetentionOrLegalHold() && (MAIN_BLOB_XPATH.equals(xp) || schemaManager.isRetainable(xp))) {
+                if (!BaseSession.canDeleteUndeletable(NuxeoPrincipal.getCurrent())) {
+                    throw new DocumentSecurityException(
+                            "Cannot change blob from document " + getUUID() + ", it is under retention / hold");
+                }
+            }
             writeContext.recordChange(xp);
             changed = true;
 

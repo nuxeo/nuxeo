@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
@@ -48,6 +49,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -58,6 +60,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.NuxeoLoginContext;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
@@ -68,6 +71,7 @@ import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.core.test.tests:test-retain-files-property.xml")
 public class TestRetentionRemove {
 
     public static final String JOHN = "John";
@@ -91,16 +95,18 @@ public class TestRetentionRemove {
         session.save();
     }
 
-    protected void checkRemoveBlob(DocumentModel doc, CoreSession session, boolean expectedToFail) {
+    protected void checkRemoveBlob(DocumentRef docRef, String xpath, CoreSession session, boolean expectedToFail) {
+        DocumentModel doc = session.getDocument(docRef);
+        assertNotNull(String.format("Property %s must not be null.", xpath), doc.getPropertyValue(xpath));
+        doc.setPropertyValue(xpath, null);
         try {
-            doc.setPropertyValue("file:content", null);
             session.saveDocument(doc);
             if (expectedToFail) {
                 fail();
             }
         } catch (DocumentSecurityException e) {
             if (expectedToFail) {
-                assertEquals(String.format("Cannot delete blob from document %s, it is under retention / hold",
+                assertEquals(String.format("Cannot change blob from document %s, it is under retention / hold",
                         doc.getRef()), e.getMessage());
             } else {
                 throw e;
@@ -108,9 +114,9 @@ public class TestRetentionRemove {
         }
     }
 
-    protected void checkRemoveDocument(DocumentModel doc, CoreSession session, boolean expectedToFail) {
+    protected void checkRemoveDocument(DocumentRef docRef, CoreSession session, boolean expectedToFail) {
         try {
-            session.removeDocument(doc.getRef());
+            session.removeDocument(docRef);
             if (expectedToFail) {
                 fail();
             }
@@ -129,7 +135,7 @@ public class TestRetentionRemove {
             if (expectedToFail) {
                 assertEquals(String.format(
                         "Permission denied: cannot remove document %s, Missing permission 'Remove' on document %s",
-                        doc.getRef(), doc.getRef()), e.getMessage());
+                        docRef, docRef), e.getMessage());
             } else {
                 throw e;
             }
@@ -140,6 +146,9 @@ public class TestRetentionRemove {
         DocumentModel documentModel = session.createDocumentModel(parent.getPathAsString(), "myDocument", "File");
         Blob blob = Blobs.createBlob("Any Content");
         documentModel.setPropertyValue("file:content", (Serializable) blob);
+        blob = Blobs.createBlob("bar", "text/plain");
+        documentModel.setPropertyValue("files:files",
+                (Serializable) Collections.singletonList(Collections.singletonMap("file", blob)));
         return session.createDocument(documentModel);
     }
 
@@ -149,13 +158,13 @@ public class TestRetentionRemove {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
             folder = notAdminSession.getDocument(folder.getRef());
-            checkRemoveDocument(folder, notAdminSession, true);
+            checkRemoveDocument(folder.getRef(), notAdminSession, true);
 
             // Add current user to records cleaner group.
             NuxeoPrincipal.getCurrent().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
 
             folder = notAdminSession.getDocument(folder.getRef());
-            checkRemoveDocument(folder, notAdminSession, true);
+            checkRemoveDocument(folder.getRef(), notAdminSession, true);
         }
     }
 
@@ -164,60 +173,181 @@ public class TestRetentionRemove {
     public void iCannotRemoveRetainedDocInCompliance() throws LoginException {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
-            documentModelUnderLegalHold = notAdminSession.getDocument(documentModelUnderLegalHold.getRef());
-            documentModelUnderRetention = notAdminSession.getDocument(documentModelUnderRetention.getRef());
-            checkRemoveBlob(documentModelUnderLegalHold, notAdminSession, true);
-            checkRemoveBlob(documentModelUnderRetention, notAdminSession, true);
-            checkRemoveDocument(documentModelUnderLegalHold, notAdminSession, true);
-            checkRemoveDocument(documentModelUnderRetention, notAdminSession, true);
-
-            // Add current use to record cleaner group.
-            NuxeoPrincipal.getCurrent().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
-
-            documentModelUnderLegalHold = notAdminSession.getDocument(documentModelUnderLegalHold.getRef());
-            documentModelUnderRetention = notAdminSession.getDocument(documentModelUnderRetention.getRef());
-            checkRemoveBlob(documentModelUnderLegalHold, notAdminSession, true);
-            checkRemoveBlob(documentModelUnderRetention, notAdminSession, true);
-            checkRemoveDocument(documentModelUnderLegalHold, notAdminSession, true);
-            checkRemoveDocument(documentModelUnderRetention, notAdminSession, true);
+            checkRemoveDocument(documentModelUnderLegalHold.getRef(), notAdminSession, true);
+            checkRemoveDocument(documentModelUnderRetention.getRef(), notAdminSession, true);
         }
     }
 
     @Test
-    public void iCanRemoveFolderWithRetainedChildrenInGovernance() throws LoginException {
+    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    public void iCannotRemoveRetainedDocInComplianceAsRecordCleaner() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            // Add current user to records cleaner group.
+            NuxeoPrincipal.getCurrent().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
+            checkRemoveDocument(documentModelUnderLegalHold.getRef(), notAdminSession, true);
+            checkRemoveDocument(documentModelUnderRetention.getRef(), notAdminSession, true);
+        }
+    }
+
+    @Test
+    public void iCannotRemoveRetainedDocInGovernance() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            checkRemoveDocument(documentModelUnderLegalHold.getRef(), notAdminSession, true);
+            checkRemoveDocument(documentModelUnderRetention.getRef(), notAdminSession, true);
+        }
+    }
+
+    @Test
+    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    public void iCannotResetAttachementsInCompliance() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            checkRemoveBlob(documentModelUnderLegalHold.getRef(), "files:files", notAdminSession, true);
+            checkRemoveBlob(documentModelUnderRetention.getRef(), "files:files", notAdminSession, true);
+        }
+    }
+
+    @Test
+    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    public void iCannotResetAttachementsInComplianceAsRecordCleaner() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            // Add current user to records cleaner group.
+            NuxeoPrincipal.getCurrent().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
+            checkRemoveBlob(documentModelUnderLegalHold.getRef(), "files:files", notAdminSession, true);
+            checkRemoveBlob(documentModelUnderRetention.getRef(), "files:files", notAdminSession, true);
+        }
+    }
+
+    @Test
+    public void iCannotResetAttachementsInGovernance() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            checkRemoveBlob(documentModelUnderLegalHold.getRef(), "files:files", notAdminSession, true);
+            checkRemoveBlob(documentModelUnderRetention.getRef(), "files:files", notAdminSession, true);
+        }
+    }
+
+    @Test
+    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    public void iCannotResetMainContentInCompliance() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            checkRemoveBlob(documentModelUnderLegalHold.getRef(), "file:content", notAdminSession, true);
+            checkRemoveBlob(documentModelUnderRetention.getRef(), "file:content", notAdminSession, true);
+        }
+    }
+
+    @Test
+    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    public void iCannotResetMainContentInComplianceAsRecordCleaner() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            // Add current user to records cleaner group.
+            NuxeoPrincipal.getCurrent().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
+            checkRemoveBlob(documentModelUnderLegalHold.getRef(), "file:content", notAdminSession, true);
+            checkRemoveBlob(documentModelUnderRetention.getRef(), "file:content", notAdminSession, true);
+        }
+    }
+
+    @Test
+    public void iCannotResetMainContentInGovernance() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            checkRemoveBlob(documentModelUnderLegalHold.getRef(), "file:content", notAdminSession, true);
+            checkRemoveBlob(documentModelUnderRetention.getRef(), "file:content", notAdminSession, true);
+        }
+    }
+
+    @Test
+    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    public void iCannotResetOneAttachementInCompliance() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            checkRemoveBlob(documentModelUnderLegalHold.getRef(), "files:files/0/file", notAdminSession, true);
+            checkRemoveBlob(documentModelUnderRetention.getRef(), "files:files/0/file", notAdminSession, true);
+        }
+    }
+
+    @Test
+    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    public void iCannotResetOneAttachementInComplianceAsRecordCleaner() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            // Add current user to records cleaner group.
+            NuxeoPrincipal.getCurrent().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
+            checkRemoveBlob(documentModelUnderLegalHold.getRef(), "files:files/0/file", notAdminSession, true);
+            checkRemoveBlob(documentModelUnderRetention.getRef(), "files:files/0/file", notAdminSession, true);
+        }
+    }
+
+    @Test
+    public void iCannotResetOneAttachementInGovernance() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            checkRemoveBlob(documentModelUnderLegalHold.getRef(), "files:files/0/file", notAdminSession, true);
+            checkRemoveBlob(documentModelUnderRetention.getRef(), "files:files/0/file", notAdminSession, true);
+        }
+    }
+
+    @Test
+    public void iCanRemoveFolderWithRetainedChildrenInGovernanceAsRecordCleaner() throws LoginException {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
             folder = notAdminSession.getDocument(folder.getRef());
-            checkRemoveDocument(folder, notAdminSession, true);
+            checkRemoveDocument(folder.getRef(), notAdminSession, true);
 
             // Add current user to records cleaner group.
             NuxeoPrincipal.getCurrent().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
 
             folder = notAdminSession.getDocument(folder.getRef());
-            checkRemoveDocument(folder, notAdminSession, false);
+            checkRemoveDocument(folder.getRef(), notAdminSession, false);
         }
     }
 
     @Test
-    public void iCanRemoveRetainedDocInGovernance() throws LoginException {
+    public void iCanRemoveRetainedDocInGovernanceAsRecordCleaner() throws LoginException {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
-            documentModelUnderLegalHold = notAdminSession.getDocument(documentModelUnderLegalHold.getRef());
-            documentModelUnderRetention = notAdminSession.getDocument(documentModelUnderRetention.getRef());
-            checkRemoveBlob(documentModelUnderLegalHold, notAdminSession, true);
-            checkRemoveBlob(documentModelUnderRetention, notAdminSession, true);
-            checkRemoveDocument(documentModelUnderLegalHold, notAdminSession, true);
-            checkRemoveDocument(documentModelUnderRetention, notAdminSession, true);
-
             // Add current user to records cleaner group.
             NuxeoPrincipal.getCurrent().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
+            checkRemoveDocument(documentModelUnderLegalHold.getRef(), notAdminSession, false);
+            checkRemoveDocument(documentModelUnderRetention.getRef(), notAdminSession, false);
+        }
+    }
 
-            documentModelUnderLegalHold = notAdminSession.getDocument(documentModelUnderLegalHold.getRef());
-            documentModelUnderRetention = notAdminSession.getDocument(documentModelUnderRetention.getRef());
-            checkRemoveBlob(documentModelUnderLegalHold, notAdminSession, false);
-            checkRemoveBlob(documentModelUnderRetention, notAdminSession, false);
-            checkRemoveDocument(documentModelUnderLegalHold, notAdminSession, false);
-            checkRemoveDocument(documentModelUnderRetention, notAdminSession, false);
+    @Test
+    public void iCanResetAttachementsInGovernanceAsRecordCleaner() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            // Add current user to records cleaner group.
+            NuxeoPrincipal.getCurrent().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
+            checkRemoveBlob(documentModelUnderLegalHold.getRef(), "files:files", notAdminSession, false);
+            checkRemoveBlob(documentModelUnderRetention.getRef(), "files:files", notAdminSession, false);
+        }
+    }
+
+    @Test
+    public void iCanResetMainContentInGovernanceAsRecordCleaner() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            // Add current user to records cleaner group.
+            NuxeoPrincipal.getCurrent().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
+            checkRemoveBlob(documentModelUnderLegalHold.getRef(), "file:content", notAdminSession, false);
+            checkRemoveBlob(documentModelUnderRetention.getRef(), "file:content", notAdminSession, false);
+        }
+    }
+
+    @Test
+    public void iCanResetOneAttachementInGovernanceAsRecordCleaner() throws LoginException {
+        try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
+            CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
+            // Add current user to records cleaner group.
+            NuxeoPrincipal.getCurrent().setGroups(Collections.singletonList(RECORDS_CLEANER_GROUP));
+            checkRemoveBlob(documentModelUnderLegalHold.getRef(), "files:files/0/file", notAdminSession, false);
+            checkRemoveBlob(documentModelUnderRetention.getRef(), "files:files/0/file", notAdminSession, false);
         }
     }
 

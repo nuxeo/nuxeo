@@ -1033,6 +1033,63 @@ public class SchemaManagerImpl implements SchemaManager {
         return checkPropertyCharacteristic(schema, path, PropertyDescriptor::isRemoved);
     }
 
+    public String getXPathSchemaName(String xpath, Set<String> docSchemas) {
+        // find first segment
+        int i = xpath.indexOf('/');
+        String prop = i == -1 ? xpath : xpath.substring(0, i);
+        int p = prop.indexOf(':');
+        if (p != -1) {
+            // prefixed
+            String prefix = prop.substring(0, p);
+            Schema schema = getSchemaFromPrefix(prefix);
+            if (schema == null) {
+                // try directly with prefix as a schema name
+                schema = getSchema(prefix);
+                if (schema == null) {
+                    return null;
+                }
+            }
+            return schema.getName();
+        } else {
+            // unprefixed
+            // search for the first matching schema having a property
+            // with the same name as the first path segment
+            for (String schemaName : docSchemas) {
+                Schema schema = getSchema(schemaName);
+                if (schema != null && schema.hasField(prop)) {
+                    return schema.getName();
+                }
+            }
+            // no property found, maybe it's a removed property
+            // search for the first matching removed property
+            // as removed schema is not yet support we can rely on docSchemas
+            for (String schemaName : docSchemas) {
+                if (isRemoved(schemaName, prop)) {
+                    return schemaName;
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * @since 2023
+     */
+    @Override
+    public boolean isRetainable(String xpath) {
+        String schemaName = getXPathSchemaName(xpath, schemas.keySet());
+        Set<String> rprops = getRetainableProperties(schemaName);
+        if (rprops == null || rprops.isEmpty()) {
+            return false;
+        }
+        String cleanPath = cleanPath(xpath);
+        return rprops.stream()
+                     .anyMatch(p -> Stream
+                                          .iterate(p, StringUtils::isNotBlank,
+                                                  key -> key.substring(0, Math.max(key.lastIndexOf('/'), 0)))
+                                          .anyMatch(sp -> sp.equals(cleanPath)));
+    }
+
     @Override
     public Set<String> getDeprecatedProperties(String schema) {
         return getPropertyCharacteristics(schema, PropertyDescriptor::isDeprecated, PropertyDescriptor::getName);
@@ -1041,6 +1098,28 @@ public class SchemaManagerImpl implements SchemaManager {
     @Override
     public Set<String> getRemovedProperties(String schema) {
         return getPropertyCharacteristics(schema, PropertyDescriptor::isRemoved, PropertyDescriptor::getName);
+    }
+
+    /**
+     * @since 2023
+     */
+    @Override
+    public Set<String> getRetainableProperties() {
+        return propertyCharacteristics.values()
+                                      .stream()
+                                      .map(Map::values)
+                                      .flatMap(Collection::stream)
+                                      .filter(PropertyDescriptor::isRetainable)
+                                      .map(PropertyDescriptor::getName)
+                                      .collect(Collectors.toSet());
+    }
+
+    /**
+     * @since 2023
+     */
+    @Override
+    public Set<String> getRetainableProperties(String schema) {
+        return getPropertyCharacteristics(schema, PropertyDescriptor::isRetainable, PropertyDescriptor::getName);
     }
 
     protected <R> Set<R> getPropertyCharacteristics(String schema, Predicate<PropertyDescriptor> predicate,

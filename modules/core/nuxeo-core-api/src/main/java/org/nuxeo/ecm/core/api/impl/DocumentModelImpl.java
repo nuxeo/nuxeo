@@ -1276,7 +1276,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (cxpath.isEmpty()) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
-        String schemaName = getXPathSchemaName(cxpath, schemas, null);
+        String schemaName = getSchemaManager().getXPathSchemaName(cxpath, schemas);
         if (schemaName == null) {
             if (cxpath.indexOf(':') != -1) {
                 throw new PropertyNotFoundException(xpath, "No such schema");
@@ -1298,53 +1298,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
+    /**
+     * @deprecated since 2023, use {@link SchemaManager#getXPathSchemaName(String, Set)} instead.
+     */
+    @Deprecated
     public static String getXPathSchemaName(String xpath, Set<String> docSchemas, String[] returnName) {
-        SchemaManager schemaManager = getSchemaManager();
-        // find first segment
-        int i = xpath.indexOf('/');
-        String prop = i == -1 ? xpath : xpath.substring(0, i);
-        int p = prop.indexOf(':');
-        if (p != -1) {
-            // prefixed
-            String prefix = prop.substring(0, p);
-            Schema schema = schemaManager.getSchemaFromPrefix(prefix);
-            if (schema == null) {
-                // try directly with prefix as a schema name
-                schema = schemaManager.getSchema(prefix);
-                if (schema == null) {
-                    return null;
-                }
-            }
-            if (returnName != null) {
-                returnName[0] = prop.substring(p + 1);
-            }
-            return schema.getName();
-        } else {
-            // unprefixed
-            // search for the first matching schema having a property
-            // with the same name as the first path segment
-            for (String schemaName : docSchemas) {
-                Schema schema = schemaManager.getSchema(schemaName);
-                if (schema != null && schema.hasField(prop)) {
-                    if (returnName != null) {
-                        returnName[0] = prop;
-                    }
-                    return schema.getName();
-                }
-            }
-            // no property found, maybe it's a removed property
-            // search for the first matching removed property
-            // as removed schema is not yet support we can rely on docSchemas
-            for (String schemaName : docSchemas) {
-                if (schemaManager.isRemoved(schemaName, prop)) {
-                    if (returnName != null) {
-                        returnName[0] = prop;
-                    }
-                    return schemaName;
-                }
-            }
-            return null;
-        }
+        return getSchemaManager().getXPathSchemaName(xpath, docSchemas);
     }
 
     @Override

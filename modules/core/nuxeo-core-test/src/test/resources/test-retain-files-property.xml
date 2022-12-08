@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="test-retain-files">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <property schema="files" name="files/*/file" retainable="true" />
+  </extension>
+
+</component>
