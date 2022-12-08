@@ -30,6 +30,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -41,7 +42,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-public class TestDocumentWrapperGetRef {
+public class TestDocumentWrapper {
 
     @Inject
     protected CoreSession session;
@@ -49,12 +50,15 @@ public class TestDocumentWrapperGetRef {
     @Inject
     protected AutomationService automationService;
 
+    @Inject
+    protected TrashService trashService;
+
     /**
      * Test the documentWrapper getRef method to be used in script. This test use the operation chain defined in the
-     * test extension src/test/resources/test-doc-wrapper.xml
+     * test extension src/test/resources/test-doc-wrapper-get-ref.xml
      */
     @Test
-    @Deploy("org.nuxeo.ecm.automation.core:test-doc-wrapper.xml")
+    @Deploy("org.nuxeo.ecm.automation.core:test-doc-wrapper-get-ref.xml")
     public void testDocumentWrapperGetRef() throws Exception {
 
         // testing scripts using document wrapper get ref method: follow
@@ -82,10 +86,24 @@ public class TestDocumentWrapperGetRef {
         assertEquals("After the test, the document currentlifecycle state is", "approved", lifecycleState);
     }
 
-    protected void runChain(DocumentModel inputDoc, String chainId) throws Exception {
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.core:test-doc-wrapper-is-trashed.xml")
+    public void testDocumentWrapperIsTrashed() throws Exception {
+        // create a trashed File document
+        DocumentModel doc = session.createDocumentModel("/", "TestFile", "File");
+        doc = session.createDocument(doc);
+        trashService.trashDocument(doc);
+
+        OperationContext ctx = runChain(doc, "checkDocIsTrashed");
+
+        assertEquals(true, ctx.get("isTrashed"));
+    }
+
+    protected OperationContext runChain(DocumentModel inputDoc, String chainId) throws Exception {
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(inputDoc);
             automationService.run(ctx, chainId);
+            return ctx;
         }
     }
 

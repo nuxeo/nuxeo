@@ -1,9 +1,9 @@
-<component name="test-doc-wrapper">
+<component name="test-doc-wrapper-is-trashed">
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
-    <chain id="followTransitionApprove">
+    <chain id="checkDocIsTrashed">
       <operation id="Context.FetchDocument" />
       <operation id="RunScript">
-        <param type="string" name="script">Session.followTransition(Document.getRef(), "approve");</param>
+        <param type="string" name="script">Context["isTrashed"] = Document.isTrashed</param>
       </operation>
     </chain>
   </extension>
