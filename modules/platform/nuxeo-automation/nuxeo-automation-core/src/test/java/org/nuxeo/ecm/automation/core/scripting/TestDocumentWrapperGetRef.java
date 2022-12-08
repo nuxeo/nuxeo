@@ -40,21 +40,21 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@Deploy("org.nuxeo.ecm.automation.core:test-doc-wrapper.xml")
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 public class TestDocumentWrapperGetRef {
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     @Inject
-    AutomationService automationService;
+    protected AutomationService automationService;
 
     /**
      * Test the documentWrapper getRef method to be used in script. This test use the operation chain defined in the
      * test extension src/test/resources/test-doc-wrapper.xml
      */
     @Test
+    @Deploy("org.nuxeo.ecm.automation.core:test-doc-wrapper.xml")
     public void testDocumentWrapperGetRef() throws Exception {
 
         // testing scripts using document wrapper get ref method: follow
@@ -82,7 +82,7 @@ public class TestDocumentWrapperGetRef {
         assertEquals("After the test, the document currentlifecycle state is", "approved", lifecycleState);
     }
 
-    private void runChain(DocumentModel inputDoc, String chainId) throws Exception {
+    protected void runChain(DocumentModel inputDoc, String chainId) throws Exception {
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(inputDoc);
             automationService.run(ctx, chainId);
