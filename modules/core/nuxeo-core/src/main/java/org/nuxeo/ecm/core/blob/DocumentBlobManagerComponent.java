@@ -31,8 +31,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
@@ -59,7 +59,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class DocumentBlobManagerComponent extends DefaultComponent implements DocumentBlobManager {
 
-    private static final Log log = LogFactory.getLog(DocumentBlobManagerComponent.class);
+    private static final Logger log = LogManager.getLogger(DocumentBlobManagerComponent.class);
 
     protected static final String XP = "configuration";
 
@@ -313,11 +313,11 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         }
         BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blob);
         if (blobProvider == null) {
-            log.error("No blob provider found for blob: " + blob.getKey());
+            log.error("No blob provider found for blob: {}", blob::getKey);
             return;
         }
         if (!blobProvider.isRecordMode()) {
-            log.debug("Blob provider of blob: " + blob.getKey() + " is not in record mode");
+            log.debug("Blob provider of blob: {} is not in record mode", blob::getKey);
             return;
         }
         try {
@@ -345,7 +345,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         if (blob instanceof ManagedBlob) {
             return (ManagedBlob) blob;
         }
-        log.error("Blob is not managed: " + blob);
+        log.error("Blob is not managed: {}", blob);
         return null;
     }
 
@@ -377,7 +377,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     public BinaryManagerStatus garbageCollectBinaries(boolean delete) {
         // do the GC in a long-running transaction to avoid timeouts
         return runInTransaction(() -> {
-            log.warn("GC Binaries starting, delete: " + delete);
+            log.warn("GC Binaries starting, delete: {}", delete);
             List<BinaryGarbageCollector> gcs = getGarbageCollectors();
             // check whether two GCs share storage
             Set<String> ids = gcs.stream().map(BinaryGarbageCollector::getId).collect(toSet());
@@ -402,31 +402,31 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
                         String skey = stripBlobKeyPrefix(key);
                         gc.mark(skey);
                     } else {
-                        log.error("Unknown binary manager for key: " + key);
+                        log.error("Unknown binary manager for key: {}", key);
                     }
                 };
             }
             // in all repositories, mark referenced binaries
             RepositoryService repositoryService = Framework.getService(RepositoryService.class);
             for (String repositoryName : repositoryService.getRepositoryNames()) {
-                log.info("Marking binaries for repository: " + repositoryName);
+                log.info("Marking binaries for repository: {}", repositoryName);
                 Repository repository = repositoryService.getRepository(repositoryName);
                 repository.markReferencedBlobs(markerCallback);
             }
             // stop gc
             BinaryManagerStatus globalStatus = new BinaryManagerStatus();
             for (BinaryGarbageCollector gc : gcs) {
-                log.info("GC Binaries: " + gc.getId());
+                log.info("GC Binaries: {}", gc::getId);
                 gc.stop(delete);
                 BinaryManagerStatus status = gc.getStatus();
-                log.info("GC Binaries status: " + status);
+                log.info("GC Binaries status: {}", status);
                 globalStatus.numBinaries += status.numBinaries;
                 globalStatus.sizeBinaries += status.sizeBinaries;
                 globalStatus.numBinariesGC += status.numBinariesGC;
                 globalStatus.sizeBinariesGC += status.sizeBinariesGC;
             }
             globalStatus.gcDuration = System.currentTimeMillis() - start;
-            log.warn("GC Binaries Completed: " + globalStatus);
+            log.warn("GC Binaries Completed: {}", globalStatus);
             return globalStatus;
         }, BINARY_GC_TX_TIMEOUT_SEC);
     }
