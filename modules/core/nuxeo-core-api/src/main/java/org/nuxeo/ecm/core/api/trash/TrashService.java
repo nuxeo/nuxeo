@@ -32,12 +32,26 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  */
 public interface TrashService {
 
+    /**
+     * Event for a document about to be trashed by the user.
+     *
+     * @since 2021.30
+     */
+    String ABOUT_TO_TRASH = "aboutToTrash";
+
     /***
      * Event for a document trashed by the user. Triggers an async listener that trashes its children too.
      *
      * @since 10.1
      */
     String DOCUMENT_TRASHED = "documentTrashed";
+
+    /**
+     * Event for a document about to be untrashed by the user.
+     *
+     * @since 2021.30
+     */
+    String ABOUT_TO_UNTRASH = "aboutToUntrash";
 
     /***
      * Event for a document untrashed by the user. Triggers an async listener that untrashes its children too.

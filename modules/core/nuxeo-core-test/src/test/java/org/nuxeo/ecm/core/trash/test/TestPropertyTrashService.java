@@ -18,6 +18,13 @@
  */
 package org.nuxeo.ecm.core.trash.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.api.trash.TrashService.ABOUT_TO_TRASH;
+import static org.nuxeo.ecm.core.api.trash.TrashService.ABOUT_TO_UNTRASH;
+
+import org.junit.Test;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
@@ -25,5 +32,24 @@ import org.nuxeo.runtime.test.runner.Deploy;
  */
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-property-override.xml")
 public class TestPropertyTrashService extends AbstractTestTrashService {
+
+    @Test
+    public void testAboutToTrashEvent() {
+        var doc = session.createDocumentModel("/", "test", "File");
+        try (CapturingEventListener listener = new CapturingEventListener(ABOUT_TO_TRASH, ABOUT_TO_UNTRASH)) {
+            doc = session.createDocument(doc);
+            trashService.trashDocument(doc);
+
+            assertEquals(1, listener.getCapturedEvents().size());
+            assertTrue(listener.getCapturedEvents().get(0).isInline());
+            assertEquals(ABOUT_TO_TRASH, listener.getCapturedEvents().get(0).getName());
+
+            trashService.untrashDocument(doc);
+
+            assertEquals(2, listener.getCapturedEvents().size());
+            assertTrue(listener.getCapturedEvents().get(1).isInline());
+            assertEquals(ABOUT_TO_UNTRASH, listener.getCapturedEvents().get(1).getName());
+        }
+    }
 
 }

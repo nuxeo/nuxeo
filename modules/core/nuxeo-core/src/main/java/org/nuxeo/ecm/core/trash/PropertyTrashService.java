@@ -85,6 +85,7 @@ public class PropertyTrashService extends AbstractTrashService {
                     docForEvent = session.getDocument(docRef);
                     docForEvent.copyContextData(doc);
                 }
+                notifyEvent(session, ABOUT_TO_TRASH, docForEvent, false, true);
                 session.setDocumentSystemProp(docRef, SYSPROP_IS_TRASHED, Boolean.TRUE);
                 notifyEvent(session, DOCUMENT_TRASHED, docForEvent);
                 if (session.hasChildren(doc.getRef())) {
@@ -120,6 +121,7 @@ public class PropertyTrashService extends AbstractTrashService {
                 docForEvent.copyContextData(doc);
             }
         }
+        notifyEvent(session, ABOUT_TO_UNTRASH, docForEvent, false, true);
         session.setDocumentSystemProp(docRef, SYSPROP_IS_TRASHED, Boolean.FALSE);
         notifyEvent(session, DOCUMENT_UNTRASHED, docForEvent);
         if (processChildren && session.hasChildren(doc.getRef())) {
