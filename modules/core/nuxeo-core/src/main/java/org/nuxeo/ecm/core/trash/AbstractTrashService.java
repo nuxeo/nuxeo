@@ -296,12 +296,16 @@ public abstract class AbstractTrashService implements TrashService {
     }
 
     protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc, boolean immediate) {
+        notifyEvent(session, eventId, doc, immediate, false);
+    }
+
+    protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc, boolean immediate, boolean inline) {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         ctx.setProperties(new HashMap<>(doc.getContextData()));
         ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
         Event event = ctx.newEvent(eventId);
-        event.setInline(false);
+        event.setInline(inline);
         event.setImmediate(immediate);
         EventService eventService = Framework.getService(EventService.class);
         eventService.fireEvent(event);
