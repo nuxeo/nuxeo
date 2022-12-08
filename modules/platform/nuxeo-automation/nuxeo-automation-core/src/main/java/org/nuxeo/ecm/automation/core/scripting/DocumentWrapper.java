@@ -166,6 +166,11 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return doc.isVersionable();
     }
 
+    /** @since 2023.0 */
+    public boolean isTrashed() {
+        return doc.isTrashed();
+    }
+
     public String getId() {
         return doc.getId();
     }
