@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.blob;
 
 import static java.util.stream.Collectors.toList;
+import static org.nuxeo.ecm.core.blob.DocumentBlobManagerComponent.MAIN_BLOB_XPATH;
 
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.BlobAccessor;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -105,12 +107,6 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     protected static final String NAME_DEFAULT = "default";
 
     protected static final String NAME_RECORDS = "records";
-
-    // this is a low-level xpath, without schema prefix
-    protected static final String MAIN_BLOB_XPATH = "content";
-
-    // name="records" is equivalent to the following clause:
-    protected static final String RECORDS_CLAUSE = "ecm:isRecord=true,blob:xpath=" + MAIN_BLOB_XPATH;
 
     protected static final Pattern NAME_PATTERN = Pattern.compile("(.*?)(=|!=|<=|<|>=|>|~|\\^)(.*)");
 
@@ -193,9 +189,17 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             String providerId = en.getValue();
             providerIds.add(providerId);
             if (clausesString.equals(NAME_RECORDS)) {
-                clausesString = RECORDS_CLAUSE;
-            }
-            if (clausesString.equals(NAME_DEFAULT)) {
+                Clause recordClause = new Clause(IS_RECORD, Op.EQ, "true");
+                Clause defaultContentClause = new Clause("blob:xpath", Op.EQ, MAIN_BLOB_XPATH);
+                rules.add(new Rule(List.of(recordClause, defaultContentClause), providerId));
+                SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+                schemaManager.getRetainableProperties()
+                             .forEach((prop) -> rules.add(new Rule(
+                                     List.of(recordClause,
+                                             getClause("blob:xpath" + (prop.contains("*") ? "~" : "=") + prop)),
+                                     providerId)));
+                rules.forEach(rule -> rule.clauses.forEach(clause -> rulesXPaths.add(clause.xpath)));
+            } else if (clausesString.equals(NAME_DEFAULT)) {
                 defaultProviderId = providerId;
             } else {
                 List<Clause> clauses = Arrays.stream(clausesString.split(","))
@@ -517,7 +521,8 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     }
 
     protected void checkBlobCanBeDeleted(Document doc, String xpath) {
-        if (MAIN_BLOB_XPATH.equals(xpath) && doc.isUnderRetentionOrLegalHold()) {
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        if (doc.isUnderRetentionOrLegalHold() && (MAIN_BLOB_XPATH.equals(xpath) || schemaManager.isRetainable(xpath))) {
             if (!BaseSession.canDeleteUndeletable(NuxeoPrincipal.getCurrent())) {
                 throw new DocumentSecurityException(
                         "Cannot remove main blob from document " + doc.getUUID() + ", it is under retention / hold");

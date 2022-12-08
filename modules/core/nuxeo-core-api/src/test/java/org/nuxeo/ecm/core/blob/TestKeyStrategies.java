@@ -28,7 +28,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collections;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -111,5 +110,16 @@ public class TestKeyStrategies {
         assertEquals(ks, ks);
         assertEquals(ks, ks2);
         assertNotEquals(ks, "foobar");
+
+        blobContext = new BlobContext(null, "docid1", "files/0/file");
+        c = ks.getBlobWriteContext(blobContext);
+        assertNull(c.writeObserver);
+        assertEquals("docid1-files-0-file", c.getKey());
+
+        blobContext = new BlobContext(null, "docid1", "files:files/0/file");
+        c = ks.getBlobWriteContext(blobContext);
+        assertNull(c.writeObserver);
+        assertEquals("docid1-files_files-0-file", c.getKey());
     }
+
 }
