@@ -62,6 +62,10 @@ public class PropertyDescriptor implements Descriptor {
     @XNode("@indexOrder")
     protected String indexOrder;
 
+    // @since 2023
+    @XNode("@retainable")
+    public Boolean retainable;
+
     @XNode("@remove")
     public boolean remove;
 
@@ -98,6 +102,13 @@ public class PropertyDescriptor implements Descriptor {
     }
 
     /**
+     * @since 2023
+     */
+    public boolean isRetainable() {
+        return Boolean.TRUE.equals(retainable);
+    }
+
+    /**
      * @since 11.5
      */
     public String getIndexOrder() {
@@ -115,6 +126,7 @@ public class PropertyDescriptor implements Descriptor {
         merged.schema = schema;
         merged.name = name;
         merged.secured = firstNonNull(other.secured, secured);
+        merged.retainable = firstNonNull(other.retainable, retainable);
         merged.deprecation = firstNonNull(other.deprecation, deprecation);
         merged.fallback = firstNonNull(other.fallback, fallback);
         merged.indexOrder = firstNonNull(other.indexOrder, indexOrder);

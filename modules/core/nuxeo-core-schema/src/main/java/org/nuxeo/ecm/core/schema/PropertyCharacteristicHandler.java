@@ -57,6 +57,15 @@ public interface PropertyCharacteristicHandler {
     boolean isRemoved(String schema, String path);
 
     /**
+     * Checks if the property represented by the given {@code xpath} can be retained.
+     *
+     * @param xpath the property xpath to test
+     * @return whether or not this property is marked as retainable
+     * @since 2023
+     */
+    boolean isRetainable(String xpath);
+
+    /**
      * The returned paths are not Nuxeo xpath as they don't have the schema prefix.
      *
      * @param schema the schema name (not the prefix)
@@ -71,6 +80,23 @@ public interface PropertyCharacteristicHandler {
      * @return a {@link Set} holding the removed property path
      */
     Set<String> getRemovedProperties(String schema);
+
+    /**
+     * The returned paths are not Nuxeo xpath as they don't have the schema prefix.
+     *
+     * @return a {@link Set} holding the retainable property path
+     * @since 2023
+     */
+    Set<String> getRetainableProperties();
+
+    /**
+     * The returned paths are not Nuxeo xpath as they don't have the schema prefix.
+     *
+     * @param schema the schema name (not the prefix)
+     * @return a {@link Set} holding the retainable property path
+     * @since 2023
+     */
+    Set<String> getRetainableProperties(String schema);
 
     /**
      * Returns the fallback associated to this property if exist. Fallbacks exist when property is deprecated or

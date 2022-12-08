@@ -256,7 +256,7 @@ public class SimpleDocumentModel implements DocumentModel {
         if (cxpath.isEmpty()) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
-        String schemaName = DocumentModelImpl.getXPathSchemaName(cxpath, schemas, null);
+        String schemaName = Framework.getService(SchemaManager.class).getXPathSchemaName(cxpath, schemas);
         if (schemaName == null) {
             if (cxpath.indexOf(':') != -1) {
                 throw new PropertyNotFoundException(xpath, "No such schema");

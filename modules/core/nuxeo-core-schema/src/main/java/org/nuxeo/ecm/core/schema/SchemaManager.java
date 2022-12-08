@@ -44,6 +44,17 @@ public interface SchemaManager extends TypeProvider, PropertyCharacteristicHandl
     Schema getSchemaFromPrefix(String schemaPrefix);
 
     /**
+     * Finds within the schemas the first matching schema having a property with the same name as the first path segment
+     * of the xpath. The xpath can be prefixed or unprefixed.
+     *
+     * @param xpath the prefixed or unprefixed xpath
+     * @param schemas the schemas to be searched
+     * @return the first schema containing a property matching the xpath
+     * @since 2023
+     */
+    String getXPathSchemaName(String xpath, Set<String> schemas);
+
+    /**
      * @deprecated since 11.1, seems unused
      */
     @Deprecated(since = "11.1")

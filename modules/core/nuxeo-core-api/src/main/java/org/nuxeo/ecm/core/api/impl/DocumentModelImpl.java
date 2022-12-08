@@ -1276,7 +1276,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (cxpath.isEmpty()) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
-        String schemaName = getXPathSchemaName(cxpath, schemas, null);
+        String schemaName = getSchemaManager().getXPathSchemaName(cxpath, schemas);
         if (schemaName == null) {
             if (cxpath.indexOf(':') != -1) {
                 throw new PropertyNotFoundException(xpath, "No such schema");
@@ -1298,6 +1298,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
+    /**
+     * @deprecated since 2023, use {@link SchemaManager#getXPathSchemaName(String, Set)} instead.
+     */
+    @Deprecated
     public static String getXPathSchemaName(String xpath, Set<String> docSchemas, String[] returnName) {
         SchemaManager schemaManager = getSchemaManager();
         // find first segment
