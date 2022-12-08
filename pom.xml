@@ -114,7 +114,7 @@
     <wro4j.version>1.10.1</wro4j.version>
 
     <!-- JBoss properties -->
-    <version.org.jboss.vfs>2.1.2.GA</version.org.jboss.vfs>
+    <version.org.jboss.vfs>2.2.3.GA</version.org.jboss.vfs>
     <version.org.jboss.cache.pojo>3.0.0.GA</version.org.jboss.cache.pojo>
     <version.org.jboss.microcontainer>2.0.6.GA</version.org.jboss.microcontainer>
     <version.org.jboss.integration>5.1.0.GA</version.org.jboss.integration>
