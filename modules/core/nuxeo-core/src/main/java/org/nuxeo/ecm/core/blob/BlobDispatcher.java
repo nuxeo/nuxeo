@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.blob;
 
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;

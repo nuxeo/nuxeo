@@ -23,9 +23,13 @@ import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -38,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.blob.BlobDispatcher.BlobDispatch;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
@@ -47,6 +52,7 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.BlobAccessor;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -66,7 +72,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     protected static final int BINARY_GC_TX_TIMEOUT_SEC = 86_400; // 1 day
 
     // in these low-level APIs we deal with unprefixed xpaths, so not file:content
-    protected static final String MAIN_BLOB_XPATH = "content";
+    public static final String MAIN_BLOB_XPATH = "content";
 
     protected volatile BlobDispatcher blobDispatcher;
 
@@ -181,8 +187,10 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
      */
     @Override
     public String writeBlob(Blob blob, Document doc, String xpath) throws IOException {
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         if (blob == null) {
-            if (MAIN_BLOB_XPATH.equals(xpath) && doc.isUnderRetentionOrLegalHold()) {
+            if ((MAIN_BLOB_XPATH.equals(xpath) || schemaManager.isRetainable(xpath))
+                    && doc.isUnderRetentionOrLegalHold()) {
                 if (!BaseSession.canDeleteUndeletable(NuxeoPrincipal.getCurrent())) {
                     throw new DocumentSecurityException(
                             "Cannot delete blob from document " + doc.getUUID() + ", it is under retention / hold");
@@ -217,7 +225,8 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         if (blobProvider == null) {
             throw new NuxeoException("No registered blob provider with id: " + dispatch.providerId);
         }
-        if (MAIN_BLOB_XPATH.equals(xpath) && blobProvider.isRecordMode() && doc.isUnderRetentionOrLegalHold()) {
+        if ((MAIN_BLOB_XPATH.equals(xpath) || schemaManager.isRetainable(xpath)) && blobProvider.isRecordMode()
+                && doc.isUnderRetentionOrLegalHold()) {
             throw new DocumentSecurityException(
                     "Cannot change blob from document " + doc.getUUID() + ", it is under retention / hold");
         }
@@ -298,16 +307,93 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
 
     @Override
     public void notifySetRetainUntil(Document doc, Calendar retainUntil) {
-        updateBlob(doc, context -> context.withUpdateRetainUntil(retainUntil));
+        updateRetainedBlobs(doc, context -> context.withUpdateRetainUntil(retainUntil));
     }
 
     @Override
     public void notifySetLegalHold(Document doc, boolean hold) {
-        updateBlob(doc, context -> context.withUpdateLegalHold(hold));
+        updateRetainedBlobs(doc, context -> context.withUpdateLegalHold(hold));
     }
 
-    public void updateBlob(Document doc, Consumer<BlobUpdateContext> contextFiller) {
-        ManagedBlob blob = getMainBlob(doc);
+    public List<ManagedBlob> getRetainableBlobs(Document doc) {
+        List<ManagedBlob> blobs = new ArrayList<>();
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        Set<String> retainableProperties = schemaManager.getRetainableProperties();
+        if (retainableProperties.isEmpty()) {
+            return blobs;
+        }
+        for (String path : retainableProperties) {
+            // split on:
+            // - "[*]" for list
+            // - "/" for complex properties
+            List<String> split = Arrays.asList(path.split("/[*]/|/"));
+            if (split.isEmpty()) {
+                throw new IllegalStateException("Path detected not well-formed: " + path);
+            }
+            Object value;
+            try {
+                value = doc.getValue(split.get(0));
+                if (value == null) {
+                    continue;
+                }
+            } catch (PropertyException e) {
+                continue;
+            }
+            List<String> subPath = split.subList(1, split.size());
+            try {
+                findBlobs(value, subPath, blobs);
+            } catch (IllegalArgumentException e) {
+                log.error("Invalid retainable property path: {}", path);
+            }
+        }
+        return blobs;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void findBlobs(Object value, List<String> split, List<ManagedBlob> blobs) {
+        if (split.isEmpty()) {
+            if (value instanceof ManagedBlob) {
+                blobs.add((ManagedBlob) value);
+            }
+        } else {
+            String name = split.get(0);
+            List<String> subPath = split.subList(1, split.size());
+            if (value instanceof List) {
+                List<Object> listValue = (List<Object>) value;
+                for (Object childValue : listValue) {
+                    if (childValue instanceof ManagedBlob) {
+                        // List of blobs
+                        findBlobs(childValue, subPath, blobs);
+                    } else {
+                        // list of complex type that could contain a blob
+                        Map<Serializable, Object> complexValue = (Map<Serializable, Object>) childValue;
+                        Object childSubValue = complexValue.get(name);
+                        findBlobs(childSubValue, subPath, blobs);
+                    }
+                }
+            } else if (value instanceof Map) { // complex type
+                Map<Serializable, Object> complexValue = (Map<Serializable, Object>) value;
+                Object childValue = complexValue.get(name);
+                findBlobs(childValue, subPath, blobs);
+            } else {
+                throw new IllegalArgumentException("Sub path: " + split + " matches a scalar property. Correct xpath.");
+            }
+        }
+    }
+
+    protected void updateRetainedBlobs(Document doc, Consumer<BlobUpdateContext> contextFiller) {
+        // Update main blob
+        updateBlob(doc, contextFiller);
+        // Update other retainable blobs
+        for (ManagedBlob blob : getRetainableBlobs(doc)) {
+            updateBlob(blob, contextFiller);
+        }
+    }
+
+    /**
+     * @since 2023
+     */
+    protected void updateBlob(ManagedBlob blob, Consumer<BlobUpdateContext> contextFiller) {
         if (blob == null) {
             return;
         }
@@ -330,10 +416,21 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         }
     }
 
+    /**
+     * Update main blob of the doc.
+     */
+    public void updateBlob(Document doc, Consumer<BlobUpdateContext> contextFiller) {
+        this.updateBlob(getMainBlob(doc), contextFiller);
+    }
+
     protected ManagedBlob getMainBlob(Document doc) {
+        return getBlob(doc, MAIN_BLOB_XPATH);
+    }
+
+    protected ManagedBlob getBlob(Document doc, String xpath) {
         Blob blob;
         try {
-            blob = (Blob) doc.getValue(MAIN_BLOB_XPATH);
+            blob = (Blob) doc.getValue(xpath);
         } catch (PropertyNotFoundException | ClassCastException e) {
             // not a standard file schema
             return null;

@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
- * Represents computation of blob keys based on the document id. Only the main blob can be written using this strategy.
+ * Represents computation of blob keys based on the document id suffixed by the xpath if not the main blob.
  *
  * @since 11.1
  */
@@ -48,10 +48,6 @@ public class KeyStrategyDocId implements KeyStrategy {
 
     @Override
     public BlobWriteContext getBlobWriteContext(BlobContext blobContext) {
-        String xpath = blobContext.xpath;
-        if (!MAIN_BLOB_XPATH.equals(xpath)) {
-            throw new NuxeoException("Cannot store blob with xpath '" + xpath + "' in record blob provider");
-        }
         String key = getKey(blobContext);
         return new BlobWriteContext(blobContext, null, () -> key, this);
     }
@@ -61,7 +57,13 @@ public class KeyStrategyDocId implements KeyStrategy {
         if (docId == null) {
             throw new NuxeoException("Missing docId for key strategy");
         }
-        return docId;
+        String xpath = blobContext.xpath;
+        if (MAIN_BLOB_XPATH.equals(xpath)) {
+            return docId;
+        }
+        // avoid uncommon chars for blob key
+        // e.g. files:files/1/file -> files_files-1-file
+        return docId + "-" + xpath.replace(':', '_').replace('/', '-');
     }
 
     @Override
@@ -76,5 +78,4 @@ public class KeyStrategyDocId implements KeyStrategy {
     public int hashCode() {
         return 0;
     }
-
 }

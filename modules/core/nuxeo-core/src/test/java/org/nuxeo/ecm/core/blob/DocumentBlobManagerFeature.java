@@ -24,6 +24,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.core:OSGI-INF/documentblobmanager-service.xml")
 public class DocumentBlobManagerFeature implements RunnerFeature {
 
