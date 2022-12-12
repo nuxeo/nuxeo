@@ -1102,6 +1102,18 @@ public class OAuth2ObjectTest extends BaseTest {
                 jsonNode);
     }
 
+    /** @since 2021.31 */
+    @Test
+    public void cannotGetClientsByUnauthorizedUsers() {
+        makeUnauthorizedOperationAndVerify(CLIENT_PATH, RequestType.GET, null);
+    }
+
+    /** @since 2021.31 */
+    @Test
+    public void cannotGetClientByUnauthorizedUsers() {
+        makeUnauthorizedOperationAndVerify(CLIENT_PATH + "/" + TEST_CLIENT, RequestType.GET, null);
+    }
+
     /**
      * @since 11.1
      */
