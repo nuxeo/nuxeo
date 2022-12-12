@@ -395,6 +395,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("client")
     public List<OAuth2Client> getClients(@Context HttpServletRequest request) {
+        checkPermission();
         return Framework.getService(OAuth2ClientService.class).getClients();
     }
 
@@ -406,6 +407,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("client/{clientId}")
     public Response getClient(@PathParam("clientId") String clientId, @Context HttpServletRequest request) {
+        checkPermission();
         OAuth2Client client = getClient(clientId);
         return Response.ok(client).build();
     }
