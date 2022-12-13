@@ -166,8 +166,6 @@
     <mongo.java.driver.version>4.7.2</mongo.java.driver.version>
     <quartz.mongodb.version>2.2.0-rc2</quartz.mongodb.version>
 
-    <!-- snappy version required for ARM, to remove if kafka is updated to 3.1.0 or higher -->
-    <snappy.version>1.1.8.4</snappy.version>
     <kafka.version>3.3.1</kafka.version>
     <confluent.version>6.2.7</confluent.version>
     <metrics.version>5.0.0-rc3</metrics.version>
@@ -4631,12 +4629,6 @@
         <version>${kafka.version}</version>
         <classifier>test</classifier>
         <scope>test</scope>
-      </dependency>
-      <!-- transitive kafka dependency -->
-      <dependency>
-        <groupId>org.xerial.snappy</groupId>
-        <artifactId>snappy-java</artifactId>
-        <version>${snappy.version}</version>
       </dependency>
 
       <!-- Confluent -->
