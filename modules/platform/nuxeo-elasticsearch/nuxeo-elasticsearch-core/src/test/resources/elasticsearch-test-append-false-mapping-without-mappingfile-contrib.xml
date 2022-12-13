@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.test.append.false.mapping.without.mappingfile.contrib">
   <extension point="elasticSearchIndex" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
-    <elasticSearchIndex name="nxutest">
+    <elasticSearchIndex name="nxutest-mapping">
       <mapping append="false">
         {
           "properties": {

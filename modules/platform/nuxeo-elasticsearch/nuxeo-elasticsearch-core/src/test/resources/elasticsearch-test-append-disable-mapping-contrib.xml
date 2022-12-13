@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.test.append.disable.mapping.contrib">
   <extension point="elasticSearchIndex" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
-    <elasticSearchIndex name="nxutest" enabled="false">
+    <elasticSearchIndex name="nxutest-mapping" enabled="false">
     </elasticSearchIndex>
   </extension>
 </component>

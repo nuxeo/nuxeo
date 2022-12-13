@@ -57,16 +57,16 @@ public class TestAppendCustomMapping {
     @Test
     public void testMappingWithMapping() throws Exception {
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-initial-mapping-without-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         ESClient client = esa.getClient();
-        String mapping = client.getMapping("nxutest");
+        String mapping = client.getMapping("nxutest-mapping");
         assertFalse(mapping.contains("ecm:"));
         assertTrue(mapping.contains("note:"));
 
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-true-mapping-without-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         client = esa.getClient();
-        mapping = client.getMapping("nxutest");
+        mapping = client.getMapping("nxutest-mapping");
         assertTrue(mapping.contains("ecm:"));
         assertTrue(mapping.contains("note:"));
 
@@ -75,16 +75,16 @@ public class TestAppendCustomMapping {
     @Test
     public void testMappingWithMappingFile() throws Exception {
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-initial-mapping-without-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         ESClient client = esa.getClient();
-        String mapping = client.getMapping("nxutest");
+        String mapping = client.getMapping("nxutest-mapping");
         assertFalse(mapping.contains("ecm:"));
         assertTrue(mapping.contains("note:"));
 
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-true-mapping-with-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         client = esa.getClient();
-        mapping = client.getMapping("nxutest");
+        mapping = client.getMapping("nxutest-mapping");
         assertTrue(mapping.contains("ecm:"));
         assertTrue(mapping.contains("note:"));
     }
@@ -92,16 +92,16 @@ public class TestAppendCustomMapping {
     @Test
     public void testMappingFileWithMapping() throws Exception {
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-initial-mapping-with-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         ESClient client = esa.getClient();
-        String mapping = client.getMapping("nxutest");
+        String mapping = client.getMapping("nxutest-mapping");
         assertFalse(mapping.contains("ecm:"));
         assertTrue(mapping.contains("note:"));
 
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-true-mapping-without-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         client = esa.getClient();
-        mapping = client.getMapping("nxutest");
+        mapping = client.getMapping("nxutest-mapping");
         assertTrue(mapping.contains("ecm:"));
         assertTrue(mapping.contains("note:"));
     }
@@ -109,16 +109,16 @@ public class TestAppendCustomMapping {
     @Test
     public void testMappingFileWithMappingFile() throws Exception {
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-initial-mapping-with-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         ESClient client = esa.getClient();
-        String mapping = client.getMapping("nxutest");
+        String mapping = client.getMapping("nxutest-mapping");
         assertFalse(mapping.contains("ecm:"));
         assertTrue(mapping.contains("note:"));
 
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-true-mapping-with-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         client = esa.getClient();
-        mapping = client.getMapping("nxutest");
+        mapping = client.getMapping("nxutest-mapping");
         assertTrue(mapping.contains("ecm:"));
         assertTrue(mapping.contains("note:"));
     }
@@ -126,16 +126,16 @@ public class TestAppendCustomMapping {
     @Test
     public void testMappingWithMappingFalseAppend() throws Exception {
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-initial-mapping-without-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         ESClient client = esa.getClient();
-        String mapping = client.getMapping("nxutest");
+        String mapping = client.getMapping("nxutest-mapping");
         assertFalse(mapping.contains("ecm:"));
         assertTrue(mapping.contains("note:"));
 
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-false-mapping-without-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         client = esa.getClient();
-        mapping = client.getMapping("nxutest");
+        mapping = client.getMapping("nxutest-mapping");
         assertTrue(mapping.contains("ecm:"));
         assertFalse(mapping.contains("note:"));
     }
@@ -143,16 +143,16 @@ public class TestAppendCustomMapping {
     @Test
     public void testMappingWithMappingFileFalseAppend() throws Exception {
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-initial-mapping-without-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         ESClient client = esa.getClient();
-        String mapping = client.getMapping("nxutest");
+        String mapping = client.getMapping("nxutest-mapping");
         assertFalse(mapping.contains("ecm:"));
         assertTrue(mapping.contains("note:"));
 
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-false-mapping-with-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         client = esa.getClient();
-        mapping = client.getMapping("nxutest");
+        mapping = client.getMapping("nxutest-mapping");
         assertTrue(mapping.contains("ecm:"));
         assertFalse(mapping.contains("note:"));
     }
@@ -160,16 +160,16 @@ public class TestAppendCustomMapping {
     @Test
     public void testMappingFileWithMappingFalseAppend() throws Exception {
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-initial-mapping-with-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         ESClient client = esa.getClient();
-        String mapping = client.getMapping("nxutest");
+        String mapping = client.getMapping("nxutest-mapping");
         assertFalse(mapping.contains("ecm:"));
         assertTrue(mapping.contains("note:"));
 
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-false-mapping-without-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         client = esa.getClient();
-        mapping = client.getMapping("nxutest");
+        mapping = client.getMapping("nxutest-mapping");
         assertTrue(mapping.contains("ecm:"));
         assertFalse(mapping.contains("note:"));
     }
@@ -177,16 +177,16 @@ public class TestAppendCustomMapping {
     @Test
     public void testMappingFileWithMappingFileFalseAppend() throws Exception {
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-initial-mapping-with-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         ESClient client = esa.getClient();
-        String mapping = client.getMapping("nxutest");
+        String mapping = client.getMapping("nxutest-mapping");
         assertFalse(mapping.contains("ecm:"));
         assertTrue(mapping.contains("note:"));
 
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-false-mapping-with-mappingfile-contrib.xml");
-        esa.dropAndInitIndex("nxutest");
+        esa.dropAndInitIndex("nxutest-mapping");
         client = esa.getClient();
-        mapping = client.getMapping("nxutest");
+        mapping = client.getMapping("nxutest-mapping");
         assertTrue(mapping.contains("ecm:"));
         assertFalse(mapping.contains("note:"));
     }
@@ -195,7 +195,7 @@ public class TestAppendCustomMapping {
     public void testOneWrongMappingFileToAppendIsImpossible() throws Exception {
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-initial-mapping-with-mappingfile-contrib.xml");
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-invalid-mapping-with-mappingfile-contrib.xml");
-        var e = assertThrows(NuxeoException.class, () -> esa.dropAndInitIndex("nxutest"));
+        var e = assertThrows(NuxeoException.class, () -> esa.dropAndInitIndex("nxutest-mapping"));
         assertTrue(e.getMessage().contains("mapper [note:note] cannot be changed from type [keyword] to [integer]"));
     }
 
@@ -203,7 +203,7 @@ public class TestAppendCustomMapping {
     public void testOneWrongMappingToAppendIsImpossible() throws Exception {
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-initial-mapping-with-mappingfile-contrib.xml");
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-invalid-mapping-without-mappingfile-contrib.xml");
-        var e = assertThrows(NuxeoException.class, () -> esa.dropAndInitIndex("nxutest"));
+        var e = assertThrows(NuxeoException.class, () -> esa.dropAndInitIndex("nxutest-mapping"));
         assertTrue(e.getMessage().contains("mapper [note:note] cannot be changed from type [keyword] to [integer]"));
     }
     
@@ -211,7 +211,7 @@ public class TestAppendCustomMapping {
     public void testMappingWithInvalidMappingFileType() throws Exception {
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-initial-mapping-without-mappingfile-contrib.xml");
         deployer.deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-append-true-mapping-with-invalid-mappingfile-contrib.xml");
-        var e = assertThrows(NuxeoException.class, () -> esa.dropAndInitIndex("nxutest"));
+        var e = assertThrows(NuxeoException.class, () -> esa.dropAndInitIndex("nxutest-mapping"));
         assertTrue(e.getMessage().contains("An error occurred while putting the mapping: append-true-invalid-mapping.txt into ElasticSearch configuration"));
     }
 }
