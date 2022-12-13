@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.test.append.true.mapping.with.invalid.mappingfile.contrib">
   <extension point="elasticSearchIndex" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
-    <elasticSearchIndex name="nxutest">
+    <elasticSearchIndex name="nxutest-mapping">
       <mapping file="append-true-invalid-mapping.txt" append="true" />
     </elasticSearchIndex>
   </extension>
