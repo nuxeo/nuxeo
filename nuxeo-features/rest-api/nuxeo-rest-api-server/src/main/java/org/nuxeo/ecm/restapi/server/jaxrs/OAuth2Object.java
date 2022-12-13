@@ -75,6 +75,8 @@ import com.google.api.client.auth.oauth2.Credential;
 @WebObject(type = "oauth2")
 public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
 
+    protected static final String ACCESS_DENIED_MESSAGE = "You do not have permissions to perform this operation.";
+
     public static final String TOKEN_DIR = "oauth2Tokens";
 
     /**
@@ -365,6 +367,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("client")
     public List<OAuth2Client> getClients(@Context HttpServletRequest request) {
+        checkPermission();
         return Framework.getService(OAuth2ClientService.class).getClients();
     }
 
@@ -377,6 +380,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @Path("client/{clientId}")
     public Response getClient(@PathParam("clientId") String clientId,
                               @Context HttpServletRequest request) {
+        checkPermission();
         OAuth2Client client = getClient(clientId);
         return Response.ok(client).build();
     }
@@ -518,9 +522,15 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
                        .build();
     }
 
+    protected void checkPermission() {
+        if (!getPrincipal().isAdministrator()) {
+            throw new WebSecurityException(ACCESS_DENIED_MESSAGE);
+        }
+    }
+
     protected void checkPermission(String nxuser) {
         if (!hasPermission(nxuser)) {
-            throw new WebSecurityException("You do not have permissions to perform this operation.");
+            throw new WebSecurityException(ACCESS_DENIED_MESSAGE);
         }
     }
 
@@ -532,8 +542,12 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     protected void checkNotAnonymousUser() {
         NuxeoPrincipal principal = getContext().getCoreSession().getPrincipal();
         if (principal.isAnonymous()) {
-            throw new WebSecurityException("You do not have permissions to perform this operation.");
+            throw new WebSecurityException(ACCESS_DENIED_MESSAGE);
         }
+    }
+
+    protected NuxeoPrincipal getPrincipal() {
+        return getContext().getCoreSession().getPrincipal();
     }
 
 }
