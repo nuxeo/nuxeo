@@ -23,7 +23,7 @@ build:
       kaniko:
         useNewRun: true
         singleSnapshot: true
-        snapshotMode: "time"
+        snapshot-mode: "time"
         buildArgs:
           BASE_IMAGE: "$DOCKER_REGISTRY/nuxeo/nuxeo-base:$VERSION"
           BUILD_TAG: "{{.BUILD_TAG}}"

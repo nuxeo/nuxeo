@@ -23,7 +23,7 @@ build:
       kaniko:
         useNewRun: true
         singleSnapshot: true
-        snapshotMode: "time"
+        snapshot-mode: "time"
         buildContext:
           localDir: {}
   cluster:

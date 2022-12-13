@@ -23,7 +23,7 @@ build:
       kaniko:
         useNewRun: true
         singleSnapshot: true
-        snapshotMode: "time"
+        snapshot-mode: "time"
         buildArgs:
           BUILD_TAG: "{{.BUILD_TAG}}"
           SCM_REF: "{{.GIT_COMMIT}}"
