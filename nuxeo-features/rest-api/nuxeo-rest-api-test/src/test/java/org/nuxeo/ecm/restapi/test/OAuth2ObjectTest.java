@@ -634,6 +634,24 @@ public class OAuth2ObjectTest extends BaseTest {
         }
     }
 
+    /** @since 10.10-HF69 */
+    @Test
+    public void cannotGetClientsByUnauthorizedUsers() {
+        service = getServiceFor("user1", "user1");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, CLIENT_PATH)) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
+    }
+
+    /** @since 10.10-HF69 */
+    @Test
+    public void cannotGetClientByUnauthorizedUsers() {
+        service = getServiceFor("user1", "user1");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, getClientPath(TEST_CLIENT))) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
+    }
+
     @Test
     public void iCantGetInvalidClient() throws IOException {
         try (CloseableClientResponse response = getResponse(RequestType.GET, getClientPath("fake"))) {
