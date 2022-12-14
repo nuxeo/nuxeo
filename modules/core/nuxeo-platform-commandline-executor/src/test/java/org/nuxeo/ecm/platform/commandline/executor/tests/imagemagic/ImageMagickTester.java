@@ -68,4 +68,46 @@ public class ImageMagickTester {
         assertEquals("PNG 48 48", lines.get(0));
     }
 
+    /**
+     * NXP-31458 - Validate that ImageMagick is able to identify/convert a raw image format such as .crw without the
+     * deprecated ufraw utility installed.
+     *
+     * @since 2023
+     */
+    @Test
+    public void testRawImageFormat() throws CommandNotAvailable {
+        File img = FileUtils.getResourceFileFromContext("Canon.crw");
+
+        // identify
+        CmdParameters params = cles.getDefaultCmdParameters();
+        params.addNamedParameter("filePath", img);
+
+        ExecResult result = cles.execCommand("identify", params);
+
+        assertTrue(result.isSuccessful());
+        assertEquals(0, result.getReturnCode());
+
+        // convert
+        params = cles.getDefaultCmdParameters();
+        params.addNamedParameter("inputFilePath", img);
+        File output = new File(img.getPath().replace("crw", "png"));
+        params.addNamedParameter("outputFilePath", output);
+
+        result = cles.execCommand("converter", params);
+
+        assertTrue(result.isSuccessful());
+        assertEquals(0, result.getReturnCode());
+
+        // check converted file is PNG
+        params = cles.getDefaultCmdParameters();
+        params.addNamedParameter("filePath", output);
+
+        result = cles.execCommand("identify", params);
+
+        assertTrue(result.isSuccessful());
+        assertEquals(0, result.getReturnCode());
+        List<String> lines = result.getOutput();
+        assertEquals("PNG 1552 1024", lines.get(0));
+    }
+
 }

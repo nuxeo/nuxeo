@@ -11,6 +11,13 @@
       <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
+    <command name="converter" enabled="true">
+      <commandLine>convert</commandLine>
+      <parameterString>-define registry:temporary-path=#{nuxeo.tmp.dir} -quiet #{inputFilePath}[0] #{outputFilePath}</parameterString>
+      <winParameterString>-define registry:temporary-path=#{nuxeo.tmp.dir} -quiet #{inputFilePath}[0] #{outputFilePath}</winParameterString>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
+    </command>
+
   </extension>
 
 </component>
