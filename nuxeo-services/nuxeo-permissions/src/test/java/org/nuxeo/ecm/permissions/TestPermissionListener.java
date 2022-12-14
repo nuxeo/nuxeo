@@ -31,6 +31,7 @@ import static org.nuxeo.ecm.permissions.Constants.COMMENT_KEY;
 import static org.nuxeo.ecm.permissions.Constants.NOTIFY_KEY;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,6 +90,9 @@ public class TestPermissionListener {
     protected void logout() throws LoginException {
         loginContext.logout();
     }
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Test
     public void shouldFillDirectory() {
@@ -190,6 +194,26 @@ public class TestPermissionListener {
             filter.put("docId", docId);
             DocumentModelList entries = session.query(filter);
             assertTrue(entries.isEmpty());
+        }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.permissions:test-aceinfo-gc-listener-contrib.xml")
+    public void shouldUpdateDirectoryOnDocumentDelete() {
+        // Create a document with an ACE
+        DocumentModel doc = createTestDocument();
+        ACP acp = doc.getACP();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("fry", "Browse", true));
+        doc.setACP(acp, true);
+
+        // Remove the document
+        session.removeDocument(doc.getRef());
+        txFeature.nextTransaction();
+
+        // Check ACE info is removed
+        try (Session dirSession = directoryService.open(ACE_INFO_DIRECTORY)) {
+            DocumentModelList entries = dirSession.query(Collections.singletonMap("docId", doc.getId()));
+            assertEquals(0, entries.size());
         }
     }
 
