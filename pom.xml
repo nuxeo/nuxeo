@@ -73,7 +73,7 @@
     <lucene.version>8.6.2</lucene.version>
     <elasticsearch.version>7.9.2</elasticsearch.version> <!-- when changing this make sure JNA version is in sync -->
     <jna.version>4.5.2</jna.version>
-    <netty.version>4.1.78.Final</netty.version>
+    <netty.version>4.1.86.Final</netty.version>
     <netty.boringssl.version>2.0.54.Final</netty.boringssl.version>
     <grpc-netty.version>1.28.0</grpc-netty.version>
     <apacheds.version>1.5.1</apacheds.version>
