@@ -31,7 +31,6 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.storage.mongodb.MongoDBIndexCreator;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Reference;
@@ -149,7 +148,7 @@ public class MongoDBDirectory extends AbstractDirectory {
             collection.createIndex(Indexes.hashed(TENANT_ID_FIELD));
         }
         var schemaManager = Framework.getService(SchemaManager.class);
-        var mongoDBIndexCreator = new MongoDBIndexCreator(schemaManager, collection);
+        var mongoDBIndexCreator = new MongoDBDirectoryIndexCreator(schemaManager, collection);
         mongoDBIndexCreator.createIndexes(schemaManager.getSchema(descriptor.schemaName));
     }
 

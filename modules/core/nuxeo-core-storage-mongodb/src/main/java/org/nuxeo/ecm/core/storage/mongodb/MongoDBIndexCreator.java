@@ -63,12 +63,11 @@ public class MongoDBIndexCreator {
     }
 
     public void createIndexes(Schema schema) {
-        var prefix = schema.getNamespace().hasPrefix() ? schema.getNamespace().prefix : schema.getName();
         var indexes = handler.getIndexedProperties(schema.getName())
                              .stream()
                              .filter(PropertyIndexOrder::isIndexNotNone)
                              // convert property path to mongoDB index property
-                             .map(p -> p.replacePath(path -> prefix + ':' + pathToIndexKey(path)))
+                             .map(p -> p.replacePath(path -> pathToIndexKey(schema, path)))
                              .map(this::toIndexModel)
                              .collect(toList());
         createIndexes(indexes);
@@ -92,6 +91,16 @@ public class MongoDBIndexCreator {
         if (!toCreate.isEmpty()) {
             collection.createIndexes(toCreate);
         }
+    }
+
+    /**
+     * Converts the given Nuxeo {@code path} to MongoDB identifier by taking into account the schema prefix.
+     * 
+     * @since 2023.0
+     */
+    protected String pathToIndexKey(Schema schema, String path) {
+        var prefix = schema.getNamespace().hasPrefix() ? schema.getNamespace().prefix : schema.getName();
+        return prefix + ':' + pathToIndexKey(path);
     }
 
     /**
@@ -151,7 +160,8 @@ public class MongoDBIndexCreator {
         result = result && checkDefinition(options.isSparse(), actualIndex, "sparse");
         result = result && checkDefinition(options.getExpireAfter(TimeUnit.SECONDS), actualIndex, "expireAfterSeconds");
         result = result && checkDefinition(options.getLanguageOverride(), actualIndex, "language_override");
-        result = result && checkDefinition(options.getPartialFilterExpression(), actualIndex, "partialFilterExpression");
+        result = result
+                && checkDefinition(options.getPartialFilterExpression(), actualIndex, "partialFilterExpression");
         result = result && checkDefinition(options.isHidden(), actualIndex, "hidden");
         return result;
     }
