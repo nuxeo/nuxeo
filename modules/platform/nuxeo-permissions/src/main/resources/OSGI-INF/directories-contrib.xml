@@ -5,6 +5,7 @@
     <schema name="aceinfo" src="schemas/aceinfo.xsd" prefix="aceinfo" />
 
     <property schema="aceinfo" name="id" indexOrder="ascending" />
+    <property schema="aceinfo" name="docId" indexOrder="ascending" />
   </extension>
 
   <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">

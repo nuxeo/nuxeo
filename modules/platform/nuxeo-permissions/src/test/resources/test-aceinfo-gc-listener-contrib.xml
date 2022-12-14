@@ -1,0 +1,6 @@
+<component name="org.nuxeo.permissions.garbace.collector.listener">
+  <require>org.nuxeo.ecm.permissions.listeners</require>
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="permissionGarbageCollectorListener" enabled="true" />
+  </extension>
+</component>

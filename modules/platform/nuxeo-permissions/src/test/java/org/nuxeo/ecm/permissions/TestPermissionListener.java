@@ -77,6 +77,9 @@ public class TestPermissionListener {
     @Inject
     protected DirectoryService directoryService;
 
+    @Inject
+    protected TransactionalFeature txFeature;
+
     @Test
     public void shouldFillDirectory() {
         DocumentModel doc = createTestDocument();
@@ -173,6 +176,26 @@ public class TestPermissionListener {
             filter.put("docId", docId);
             DocumentModelList entries = session.query(filter);
             assertTrue(entries.isEmpty());
+        }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.permissions:test-aceinfo-gc-listener-contrib.xml")
+    public void shouldUpdateDirectoryOnDocumentDelete() {
+        // Create a document with an ACE
+        var doc = createTestDocument();
+        var acp = doc.getACP();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("fry", "Browse", true));
+        doc.setACP(acp, true);
+
+        // Remove the document
+        session.removeDocument(doc.getRef());
+        txFeature.nextTransaction();
+
+        // Check ACE info is removed
+        try (Session dirSession = directoryService.open(ACE_INFO_DIRECTORY)) {
+            var entries = dirSession.query(Map.of("docId", doc.getId()));
+            assertEquals(0, entries.size());
         }
     }
 
