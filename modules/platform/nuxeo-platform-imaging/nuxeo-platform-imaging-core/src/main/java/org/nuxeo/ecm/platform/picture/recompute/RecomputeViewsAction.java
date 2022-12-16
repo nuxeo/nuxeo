@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DownloadBlobGuard;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.event.Event;
@@ -97,6 +98,8 @@ public class RecomputeViewsAction implements StreamProcessorTopology {
                 });
                 fireEvent(session, session.getDocument(new IdRef(docId)), PICTURE_VIEWS_GENERATION_DONE_EVENT);
             }
+            // Avoid triggering fulltext extractor on the generated views
+            DownloadBlobGuard.enable();
         }
 
         /**
