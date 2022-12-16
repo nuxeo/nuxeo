@@ -26,10 +26,15 @@ import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.RUNNING;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCHEDULED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.UNKNOWN;
 
+import io.opencensus.trace.AttributeValue;
+import io.opencensus.trace.Span;
+import io.opencensus.trace.Tracing;
+
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -190,6 +195,12 @@ public class BulkServiceImpl implements BulkService, Synchronization {
         }
         // send command to bulk processor
         log.debug("Submit action with command: {}", command);
+        Span span = Tracing.getTracer().getCurrentSpan();
+        Map<String, AttributeValue> map = new HashMap<>();
+        map.put("commandId", AttributeValue.stringAttributeValue(command.getId()));
+        map.put("action", AttributeValue.stringAttributeValue(command.getAction()));
+        map.put("nxql", AttributeValue.stringAttributeValue(command.getQuery()));
+        span.addAnnotation("BulkService#submit", map);
         return submit(shardKey, command.getId(), commandAsBytes);
     }
 
