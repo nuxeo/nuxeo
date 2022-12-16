@@ -63,11 +63,12 @@ public class MongoDBIndexCreator {
     }
 
     public void createIndexes(Schema schema) {
+        var prefix = schema.getNamespace().hasPrefix() ? schema.getNamespace().prefix + ':' : "";
         var indexes = handler.getIndexedProperties(schema.getName())
                              .stream()
                              .filter(PropertyIndexOrder::isIndexNotNone)
                              // convert property path to mongoDB index property
-                             .map(p -> p.replacePath(path -> pathToIndexKey(schema, path)))
+                             .map(p -> p.replacePath(path -> prefix + pathToIndexKey(path)))
                              .map(this::toIndexModel)
                              .collect(toList());
         createIndexes(indexes);
@@ -91,16 +92,6 @@ public class MongoDBIndexCreator {
         if (!toCreate.isEmpty()) {
             collection.createIndexes(toCreate);
         }
-    }
-
-    /**
-     * Converts the given Nuxeo {@code path} to MongoDB identifier by taking into account the schema prefix.
-     * 
-     * @since 2023.0
-     */
-    protected String pathToIndexKey(Schema schema, String path) {
-        var prefix = schema.getNamespace().hasPrefix() ? schema.getNamespace().prefix : schema.getName();
-        return prefix + ':' + pathToIndexKey(path);
     }
 
     /**
