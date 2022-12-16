@@ -75,6 +75,9 @@ import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import io.dropwizard.metrics5.MetricName;
+import io.opencensus.trace.AttributeValue;
+import io.opencensus.trace.Span;
+import io.opencensus.trace.Tracing;
 
 /**
  * WorkManager impl that appends works into a Log. Works are therefore immutable (no state update) and can not be listed
@@ -217,6 +220,14 @@ public class StreamWorkManager extends WorkManagerImpl {
         LogOffset offset;
         try {
             offset = streamManager.append(NAMESPACE_PREFIX + queueId, Record.of(key, WorkComputation.serialize(work)));
+            Span span = Tracing.getTracer().getCurrentSpan();
+            Map<String, AttributeValue> map = new HashMap<>();
+            map.put("work", AttributeValue.stringAttributeValue(work.getId()));
+            map.put("class", AttributeValue.stringAttributeValue(work.getClass().getSimpleName()));
+            map.put("category", AttributeValue.stringAttributeValue(work.getCategory()));
+            map.put("key", AttributeValue.stringAttributeValue(key));
+            map.put("offset", AttributeValue.stringAttributeValue(offset.toString()));
+            span.addAnnotation("WorkManager#schedule", map);
         } catch (IllegalArgumentException e) {
             log.error(String.format("Not scheduled work, unknown category: %s, mapped to %s", work.getCategory(),
                     NAMESPACE_PREFIX + queueId));

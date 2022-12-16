@@ -35,7 +35,7 @@ import java.util.Objects;
 
 import org.apache.avro.reflect.Nullable;
 
-import io.opencensus.trace.BlankSpan;
+import io.opencensus.implcore.trace.RecordEventsSpanImpl;
 import io.opencensus.trace.Tracing;
 
 /**
@@ -93,7 +93,7 @@ public class Record implements Externalizable {
         this.watermark = watermark;
         setData(data);
         setFlags(flags);
-        if (!(Tracing.getTracer().getCurrentSpan() instanceof BlankSpan)) {
+        if (Tracing.getTracer().getCurrentSpan() instanceof RecordEventsSpanImpl) {
             traceContext = Tracing.getPropagationComponent()
                                   .getBinaryFormat()
                                   .toByteArray(Tracing.getTracer().getCurrentSpan().getContext());

@@ -22,6 +22,11 @@ package org.nuxeo.ecm.platform.commandline.executor.service.executors;
 
 import static org.apache.commons.io.IOUtils.buffer;
 
+import io.opencensus.common.Scope;
+import io.opencensus.trace.AttributeValue;
+import io.opencensus.trace.Span;
+import io.opencensus.trace.Tracing;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,9 +39,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -78,13 +85,13 @@ public class ShellExecutor implements Executor {
     @Override
     public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params, EnvironmentDescriptor env) {
         String commandLine = cmdDesc.getCommand() + " " + String.join(" ", cmdDesc.getParametersString());
-        try {
-           String dbgCommandLine = String.format("command: %s, parameters: %s", commandLine,
-                    params.getParameters()
-                          .entrySet()
-                          .stream()
-                          .map(e -> String.format("%s=%s", e.getKey(), e.getValue().getValue()))
-                          .collect(Collectors.joining(", ")));
+        String dbgCommandLine = String.format("command: %s, parameters: %s", commandLine,
+                params.getParameters()
+                      .entrySet()
+                      .stream()
+                      .map(e -> String.format("%s=%s", e.getKey(), e.getValue().getValue()))
+                      .collect(Collectors.joining(", ")));
+        try (Scope ignored = getScopedSpan(cmdDesc.getName(), dbgCommandLine)) {
             log.debug("Running system {}", dbgCommandLine);
             long t0 = System.currentTimeMillis();
             ExecResult res = exec1(cmdDesc, params, env);
@@ -94,6 +101,18 @@ public class ShellExecutor implements Executor {
             return new ExecResult(commandLine, e);
         }
     }
+
+    protected Scope getScopedSpan(String name, String command) {
+        Scope scope = Tracing.getTracer()
+                             .spanBuilder("ShellExec: " + name)
+                             .setSpanKind(Span.Kind.CLIENT)
+                             .startScopedSpan();
+        Map<String, AttributeValue> map = new HashMap<>();
+        map.put("command", AttributeValue.stringAttributeValue(command));
+        Tracing.getTracer().getCurrentSpan().putAttributes(map);
+        return scope;
+    }
+
 
     protected ExecResult exec1(CommandLineDescriptor cmdDesc, CmdParameters params, EnvironmentDescriptor env)
             throws IOException {

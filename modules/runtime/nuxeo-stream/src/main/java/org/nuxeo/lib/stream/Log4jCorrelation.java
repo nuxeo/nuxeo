@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.ThreadContext;
 
-import io.opencensus.trace.BlankSpan;
+import io.opencensus.implcore.trace.RecordEventsSpanImpl;
 import io.opencensus.trace.Span;
 import io.opencensus.trace.Tracing;
 
@@ -44,7 +44,7 @@ public class Log4jCorrelation {
     }
 
     public static void start(Span span) {
-        if (span instanceof BlankSpan) {
+        if (!(span instanceof RecordEventsSpanImpl)) {
             return;
         }
         ThreadContext.put(TRACE_ID_CONTEXT_KEY, span.getContext().getTraceId().toLowerBase16());

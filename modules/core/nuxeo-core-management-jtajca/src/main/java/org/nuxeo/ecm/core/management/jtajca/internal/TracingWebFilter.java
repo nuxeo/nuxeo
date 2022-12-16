@@ -35,10 +35,12 @@ import org.apache.logging.log4j.ThreadContext;
 import org.nuxeo.lib.stream.Log4jCorrelation;
 
 import datadog.trace.api.CorrelationIdentifier;
+import io.opencensus.implcore.trace.RecordEventsSpanImpl;
 import io.opencensus.trace.AttributeValue;
-import io.opencensus.trace.BlankSpan;
 import io.opencensus.trace.Span;
 import io.opencensus.trace.Tracing;
+
+
 /**
  * Add some tags to span created by OcHttpServletFilter
  */
@@ -77,7 +79,7 @@ public class TracingWebFilter extends HttpFilter {
     }
 
     protected void addTags(Span span, HttpServletRequest httpRequest) {
-        if (span instanceof BlankSpan) {
+        if (!(span instanceof RecordEventsSpanImpl)) {
             return;
         }
         Map<String, AttributeValue> map = new HashMap<>();

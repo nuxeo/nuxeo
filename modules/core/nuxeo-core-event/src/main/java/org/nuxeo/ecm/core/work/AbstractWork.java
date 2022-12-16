@@ -405,40 +405,28 @@ public abstract class AbstractWork implements Work {
     }
 
     protected Span getSpanFromContext(byte[] traceContext) {
-        if (traceContext == null || traceContext.length == 0) {
-            return BlankSpan.INSTANCE;
+        // traceContext is propagated by the Stream Service
+        String spanName = "work/" + (getCategory() == getClass().getSimpleName() ? getCategory() : getCategory() + "/" + getClass().getSimpleName());
+        Span span = Tracing.getTracer().spanBuilder(spanName).startSpan();
+        Map<String, AttributeValue> map = new HashMap<>();
+        map.put("tx.thread", AttributeValue.stringAttributeValue(Thread.currentThread().getName()));
+        map.put("work.id", AttributeValue.stringAttributeValue(getId()));
+        map.put("work.category", AttributeValue.stringAttributeValue(getCategory()));
+        String title = getTitle();
+        if (title != null) {
+            map.put("work.title", AttributeValue.stringAttributeValue(title));
         }
-        Tracer tracer = Tracing.getTracer();
-        BinaryFormat binaryFormat = Tracing.getPropagationComponent().getBinaryFormat();
-        try {
-            // followsFrom relationship
-            SpanContext spanContext = binaryFormat.fromByteArray(traceContext);
-            Span span = tracer.spanBuilderWithRemoteParent("work/" + getClass().getSimpleName(), spanContext)
-                              .startSpan();
-            span.addLink(Link.fromSpanContext(spanContext, Link.Type.PARENT_LINKED_SPAN));
-            HashMap<String, AttributeValue> map = new HashMap<>();
-            map.put("tx.thread", AttributeValue.stringAttributeValue(Thread.currentThread().getName()));
-            map.put("work.id", AttributeValue.stringAttributeValue(getId()));
-            map.put("work.category", AttributeValue.stringAttributeValue(getCategory()));
-            String title = getTitle();
-            if (title != null) {
-                map.put("work.title", AttributeValue.stringAttributeValue(title));
-            }
-            map.put("work.parent_path", AttributeValue.stringAttributeValue(getSchedulePath().getParentPath()));
-            map.put("work.caller_thread", AttributeValue.stringAttributeValue(callerThread));
-            map.put("work.to_string", AttributeValue.stringAttributeValue(toString()));
-            if (docId != null) {
-                map.put("work.doc_id", AttributeValue.stringAttributeValue(docId));
-            }
-            if (docIds != null && !docIds.isEmpty()) {
-                map.put("work.doc_count", AttributeValue.longAttributeValue(docIds.size()));
-            }
-            span.putAttributes(map);
-            return span;
-        } catch (SpanContextParseException e) {
-            log.warn("No span context " + traceContext.length);
-            return BlankSpan.INSTANCE;
+        map.put("work.parent_path", AttributeValue.stringAttributeValue(getSchedulePath().getParentPath()));
+        map.put("work.caller_thread", AttributeValue.stringAttributeValue(callerThread));
+        map.put("work.to_string", AttributeValue.stringAttributeValue(toString()));
+        if (docId != null) {
+            map.put("work.doc_id", AttributeValue.stringAttributeValue(docId));
         }
+        if (docIds != null && !docIds.isEmpty()) {
+            map.put("work.doc_count", AttributeValue.longAttributeValue(docIds.size()));
+        }
+        span.putAttributes(map);
+        return span;
     }
 
     /**
