@@ -8,7 +8,7 @@ This module builds, packages and tests the Nuxeo products.
 
 Building Nuxeo products requires the following tools:
 
-  * JDK 8 (Oracle's JDK or OpenJDK recommended)
+  * JDK 17 (Azul's "Zulu" OpenJDK recommended)
   * Apache Maven 3.1.1+
   * Apache Ant 1.7.1+ (optional)
   * Open Source tools that will be downloaded by Maven when needed.
@@ -53,24 +53,15 @@ Ant usage: `ant package`
 ## Modules listing
 
  * nuxeo-functional-tests: Framework for testing Nuxeo distributions
- * nuxeo-jsf-ui-gatling-tests: Gatling bench on Nuxeo Server with the JSF UI package installed
- * nuxeo-jsf-ui-webdriver-tests: WebDriver functional tests on Nuxeo Server with the JSF UI package installed
  * nuxeo-launcher: Control Panel and Launcher
- * nuxeo-marketplace-jsf-ui: Package for the JSF UI
- * nuxeo-nxr-jsf-ui: JSF UI NXR
  * nuxeo-nxr-server: Server NXR
- * nuxeo-server-cmis-tests: CMIS tests on Nuxeo Server
- * nuxeo-server-tests: Functional tests on Nuxeo Server
  * nuxeo-server-tomcat: Nuxeo Server packaged with Tomcat
- * nuxeo-test-dependencies: Convenient helper POM listing the Nuxeo test dependencies
 
 ## Produced packages
 
  * NXR packages
    * Server
-   * JSF UI
  * Nuxeo Packages
-   * Nuxeo JSF UI
    * Transitional Package for Advanced Document Management (DM)
  * Tomcat packages
    * Server
@@ -102,14 +93,6 @@ This application can be used to debug, test or develop nuxeo components that nee
 Built NXR is in `nuxeo-nxr-server/target/`.
 
 This is the default application packaged within Tomcat in `nuxeo-server-tomcat/target/` (see "server").
-
-### Nuxeo JSF UI
-
-Complete user interface for the Nuxeo Server built with JSF.
-
-Built Nuxeo Package is in `nuxeo-marketplace-jsf-ui/target/`.
-
-It can be installed in a Nuxeo Server using `nuxeoctl` or from the Administration page within the Nuxeo server.
 
 ### Other applications
 
