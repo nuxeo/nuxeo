@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package type="addon" name="nuxeo-mssql-connector" version="@VERSION@">
+  <title>mssql for Nuxeo</title>
+  <description>
+    <p>The Nuxeo Package to configure your server to use mssql.</p>
+  </description>
+  <vendor>Nuxeo</vendor>
+  <platforms>
+    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
+  </platforms>
+  <conflicts>
+    <package>nuxeo-mariadb-connector</package>
+    <package>nuxeo-mysql-connector</package>
+    <package>nuxeo-oracle-connector</package>
+  </conflicts>
+  <license>Apache 2.0</license>
+  <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+</package>

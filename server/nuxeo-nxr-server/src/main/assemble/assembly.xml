@@ -47,20 +47,11 @@
     <copy todir="${nxr}/templates/default/nxserver/lib">
       <artifact:file artifactId="h2" />
     </copy>
-    <copy todir="${nxr}/templates/mssql/lib">
-      <artifact:file artifactId="mssql-jdbc" />
-    </copy>
     <copy todir="${nxr}/templates/mongodb/nxserver/lib">
       <artifact:file artifactId="bson" />
       <artifact:file artifactId="mongodb-driver-core" />
       <artifact:file artifactId="mongodb-driver-sync" />
       <artifact:file artifactId="quartz-mongodb" />
-    </copy>
-    <copy todir="${nxr}/templates/mysql/lib">
-      <artifact:file artifactId="mysql-connector-java" />
-    </copy>
-    <copy todir="${nxr}/templates/mariadb/lib">
-      <artifact:file artifactId="mariadb-java-client" />
     </copy>
     <copy todir="${nxr}/templates/postgresql/lib">
       <artifact:file artifactId="postgresql" />

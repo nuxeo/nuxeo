@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package type="addon" name="nuxeo-mariadb-connector" version="@VERSION@">
+  <title>MariaDB for Nuxeo</title>
+  <description>
+    <p>The Nuxeo Package to configure your server to use MariaDB.</p>
+  </description>
+  <vendor>Nuxeo</vendor>
+  <platforms>
+    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
+  </platforms>
+  <conflicts>
+    <package>nuxeo-mssql-connector</package>
+    <package>nuxeo-mysql-connector</package>
+    <package>nuxeo-oracle-connector</package>
+  </conflicts>
+  <license>Apache 2.0</license>
+  <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+</package>

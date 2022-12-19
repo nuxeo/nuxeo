@@ -119,9 +119,14 @@
       </filterset>
     </copy>
 
-    <nx:studioExtraction todir="${outdir}/package">
-      <fileset dir="${outdir}/package/install/bundles"/>
-    </nx:studioExtraction>
+    <if>
+      <available file="src/main/resources/bundles" />
+      <then>
+        <nx:studioExtraction todir="${outdir}/package">
+          <fileset dir="${outdir}/package/install/bundles"/>
+        </nx:studioExtraction>
+      </then>
+    </if>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${outdir}/package" />
