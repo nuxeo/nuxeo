@@ -353,7 +353,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending("drv:subscriptions.enabled"));
         coll.createIndex(Indexes.ascending("collection:documentIds"));
         coll.createIndex(Indexes.ascending("collectionMember:collectionIds"));
-        coll.createIndex(Indexes.ascending("nxtag:tags"));
+        coll.createIndex(Indexes.ascending("nxtag:tags.label"));
         // TODO remove it when PropertyCommentManager will be removed
         coll.createIndex(Indexes.ascending("comment:parentId"));
         coll.createIndex(Indexes.ascending("annotation:xpath"));
