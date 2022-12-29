@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import org.nuxeo.ecm.collections.api.FavoritesManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -56,6 +57,8 @@ public class FavoritesJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
         boolean isFavorite = false;
         try (SessionWrapper wrapper = ctx.getSession(document)) {
             isFavorite = Framework.getService(FavoritesManager.class).isFavorite(document, wrapper.getSession());
+        } catch (DocumentSecurityException e) {
+            // we lacked permission to existing docs (collision), ignore
         }
         jg.writeBooleanField(IS_FAVORITE, isFavorite);
         jg.writeEndObject();
