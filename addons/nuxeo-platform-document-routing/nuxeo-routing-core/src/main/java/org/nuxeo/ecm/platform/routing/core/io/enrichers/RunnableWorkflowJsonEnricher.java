@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -78,16 +79,21 @@ public class RunnableWorkflowJsonEnricher extends AbstractJsonEnricher<DocumentM
 
             for (Iterator<DocumentModel> it = routeModels.iterator(); it.hasNext();) {
                 DocumentModel route = it.next();
-                Object graphRouteObj = route.getAdapter(GraphRoute.class);
-                if (graphRouteObj instanceof GraphRoute) {
-                    String filter = ((GraphRoute) graphRouteObj).getAvailabilityFilter();
-                    if (!StringUtils.isBlank(filter)) {
-                        if (!actionManager.checkFilter(filter, actionContext)) {
-                            it.remove();
+                try {
+                    Object graphRouteObj = route.getAdapter(GraphRoute.class);
+                    if (graphRouteObj instanceof GraphRoute) {
+                        String filter = ((GraphRoute) graphRouteObj).getAvailabilityFilter();
+                        if (!StringUtils.isBlank(filter)) {
+                            if (!actionManager.checkFilter(filter, actionContext)) {
+                                it.remove();
+                            }
                         }
+                    } else {
+                        // old workflow document => ignore
+                        it.remove();
                     }
-                } else {
-                    // old workflow document => ignore
+                } catch (DocumentSecurityException e) {
+                    // access denied
                     it.remove();
                 }
             }
