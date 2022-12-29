@@ -10,7 +10,7 @@
     <streamProcessor name="recomputeVideoConversions" class="org.nuxeo.ecm.platform.video.action.RecomputeVideoConversionsAction"
       defaultConcurrency="${nuxeo.bulk.action.recomputeVideoConversions.defaultConcurrency:=2}"
       defaultPartitions="${nuxeo.bulk.action.recomputeVideoConversions.defaultPartitions:=6}">
-      <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
+      <policy name="default" maxRetries="${nuxeo.bulk.action.recomputeVideoConversions.maxRetries:=1}" delay="5s" maxDelay="10s" continueOnFailure="true" />
     </streamProcessor>
   </extension>
 
