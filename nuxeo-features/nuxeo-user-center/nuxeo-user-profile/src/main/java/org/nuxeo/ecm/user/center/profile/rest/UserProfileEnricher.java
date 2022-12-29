@@ -39,6 +39,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.download.DownloadService;
@@ -104,6 +105,8 @@ public class UserProfileEnricher extends AbstractJsonEnricher<NuxeoPrincipal> {
                 writeUserProfile(jg, up);
             }
             jg.writeEndObject();
+        } catch (DocumentSecurityException e) {
+            // we lacked permission to existing docs (collision), ignore
         }
     }
 

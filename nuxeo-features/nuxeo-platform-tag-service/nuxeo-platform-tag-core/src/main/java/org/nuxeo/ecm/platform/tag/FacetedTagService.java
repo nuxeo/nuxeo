@@ -159,7 +159,7 @@ public class FacetedTagService extends AbstractTagService {
     @Override
     public Set<String> doGetTags(CoreSession session, String docId) {
         DocumentRef docRef = new IdRef(docId);
-        if (!session.exists(docRef)) {
+        if (docId == null || !session.exists(docRef)) {
             return Collections.emptySet();
         }
         DocumentModel docModel = session.getDocument(docRef);

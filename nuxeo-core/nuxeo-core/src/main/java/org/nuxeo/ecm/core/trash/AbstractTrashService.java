@@ -116,6 +116,11 @@ public abstract class AbstractTrashService implements TrashService {
             return info;
         }
         CoreSession session = docs.get(0).getCoreSession();
+        if (session == null) {
+            // docs are detached, do nothing
+            info.forbidden = docs.size();
+            return info;
+        }
         for (DocumentModel doc : docs) {
             if (checkDeleted && !doc.isTrashed()) {
                 info.forbidden++;

@@ -44,7 +44,7 @@ public class PublicationJsonEnricher extends AbstractJsonEnricher<DocumentModel>
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
         try (SessionWrapper wrapper = ctx.getSession(document)) {
-            if (!wrapper.getSession().exists(document.getRef())) {
+            if (document.getId() == null || !wrapper.getSession().exists(document.getRef())) {
                 return;
             }
             jg.writeObjectFieldStart(NAME);
