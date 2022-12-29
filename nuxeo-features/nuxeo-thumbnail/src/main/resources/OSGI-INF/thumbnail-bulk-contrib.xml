@@ -12,7 +12,7 @@
       class="org.nuxeo.ecm.platform.thumbnail.action.RecomputeThumbnailsAction" logConfig="bulk"
        defaultConcurrency="${nuxeo.bulk.action.recomputeThumbnails.defaultConcurrency:=2}"
       defaultPartitions="${nuxeo.bulk.action.recomputeThumbnails.defaultPartitions:=6}">
-      <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
+      <policy name="default" maxRetries="${nuxeo.bulk.action.recomputeThumbnails.maxRetries:=1}" delay="5s" maxDelay="10s" continueOnFailure="true" />
       <option name="produceImmediate">false</option>
     </streamProcessor>
   </extension>

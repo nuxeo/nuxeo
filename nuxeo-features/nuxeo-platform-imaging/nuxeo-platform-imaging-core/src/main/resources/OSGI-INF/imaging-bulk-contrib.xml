@@ -13,7 +13,7 @@
       class="org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction" logConfig="bulk"
       defaultConcurrency="${nuxeo.bulk.action.recomputeViews.defaultConcurrency:=2}"
       defaultPartitions="${nuxeo.bulk.action.recomputeViews.defaultPartitions:=6}">
-      <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
+      <policy name="default" maxRetries="${nuxeo.bulk.action.recomputeViews.maxRetries:=1}" delay="5s" maxDelay="10s" continueOnFailure="true" />
       <option name="produceImmediate">false</option>
     </streamProcessor>
   </extension>
