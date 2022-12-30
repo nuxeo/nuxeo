@@ -912,156 +912,8 @@ class HTTPConnectionWithTimeout(httplib.HTTPConnection):
         if not self.sock:
             raise socket.error, msg
 
-class HTTPSConnectionWithTimeout(httplib.HTTPSConnection):
-    """
-    This class allows communication via SSL.
-
-    All timeouts are in seconds. If None is passed for timeout then
-    Python's default timeout for sockets will be used. See for example
-    the docs of socket.setdefaulttimeout():
-    http://docs.python.org/library/socket.html#socket.setdefaulttimeout
-    """
-    def __init__(self, host, port=None, key_file=None, cert_file=None,
-                 strict=None, timeout=None, proxy_info=None,
-                 ca_certs=None, disable_ssl_certificate_validation=False):
-        httplib.HTTPSConnection.__init__(self, host, port=port,
-                                         key_file=key_file,
-                                         cert_file=cert_file, strict=strict)
-        self.timeout = timeout
-        self.proxy_info = proxy_info
-        if ca_certs is None:
-            ca_certs = CA_CERTS
-        self.ca_certs = ca_certs
-        self.disable_ssl_certificate_validation = \
-                disable_ssl_certificate_validation
-
-    # The following two methods were adapted from https_wrapper.py, released
-    # with the Google Appengine SDK at
-    # http://googleappengine.googlecode.com/svn-history/r136/trunk/python/google/appengine/tools/https_wrapper.py
-    # under the following license:
-    #
-    # Copyright 2007 Google Inc.
-    #
-    # Licensed under the Apache License, Version 2.0 (the "License");
-    # you may not use this file except in compliance with the License.
-    # You may obtain a copy of the License at
-    #
-    #     http://www.apache.org/licenses/LICENSE-2.0
-    #
-    # Unless required by applicable law or agreed to in writing, software
-    # distributed under the License is distributed on an "AS IS" BASIS,
-    # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    # See the License for the specific language governing permissions and
-    # limitations under the License.
-    #
-
-    def _GetValidHostsForCert(self, cert):
-        """Returns a list of valid host globs for an SSL certificate.
-
-        Args:
-          cert: A dictionary representing an SSL certificate.
-        Returns:
-          list: A list of valid host globs.
-        """
-        if 'subjectAltName' in cert:
-            return [x[1] for x in cert['subjectAltName']
-                    if x[0].lower() == 'dns']
-        else:
-            return [x[0][1] for x in cert['subject']
-                    if x[0][0].lower() == 'commonname']
-
-    def _ValidateCertificateHostname(self, cert, hostname):
-        """Validates that a given hostname is valid for an SSL certificate.
-
-        Args:
-          cert: A dictionary representing an SSL certificate.
-          hostname: The hostname to test.
-        Returns:
-          bool: Whether or not the hostname is valid for this certificate.
-        """
-        hosts = self._GetValidHostsForCert(cert)
-        for host in hosts:
-            host_re = host.replace('.', '\.').replace('*', '[^.]*')
-            if re.search('^%s$' % (host_re,), hostname, re.I):
-                return True
-        return False
-
-    def connect(self):
-        "Connect to a host on a given (SSL) port."
-
-        msg = "getaddrinfo returns an empty list"
-        if self.proxy_info and self.proxy_info.isgood():
-            use_proxy = True
-            proxy_type, proxy_host, proxy_port, proxy_rdns, proxy_user, proxy_pass = self.proxy_info.astuple()
-        else:
-            use_proxy = False
-        if use_proxy and proxy_rdns:
-            host = proxy_host
-            port = proxy_port
-        else:
-            host = self.host
-            port = self.port
-
-        address_info = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
-        for family, socktype, proto, canonname, sockaddr in address_info:
-            try:
-                if use_proxy:
-                    sock = socks.socksocket(family, socktype, proto)
-
-                    sock.setproxy(proxy_type, proxy_host, proxy_port, proxy_rdns, proxy_user, proxy_pass)
-                else:
-                    sock = socket.socket(family, socktype, proto)
-                    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-
-                if has_timeout(self.timeout):
-                    sock.settimeout(self.timeout)
-                sock.connect((self.host, self.port))
-                self.sock =_ssl_wrap_socket(
-                    sock, self.key_file, self.cert_file,
-                    self.disable_ssl_certificate_validation, self.ca_certs)
-                if self.debuglevel > 0:
-                    print "connect: (%s, %s)" % (self.host, self.port)
-                    if use_proxy:
-                        print "proxy: %s" % str((proxy_host, proxy_port, proxy_rdns, proxy_user, proxy_pass))
-                if not self.disable_ssl_certificate_validation:
-                    cert = self.sock.getpeercert()
-                    hostname = self.host.split(':', 0)[0]
-                    if not self._ValidateCertificateHostname(cert, hostname):
-                        raise CertificateHostnameMismatch(
-                            'Server presented certificate that does not match '
-                            'host %s: %s' % (hostname, cert), hostname, cert)
-            except ssl_SSLError, e:
-                if sock:
-                    sock.close()
-                if self.sock:
-                    self.sock.close()
-                self.sock = None
-                # Unfortunately the ssl module doesn't seem to provide any way
-                # to get at more detailed error information, in particular
-                # whether the error is due to certificate validation or
-                # something else (such as SSL protocol mismatch).
-                if e.errno == ssl.SSL_ERROR_SSL:
-                    raise SSLHandshakeError(e)
-                else:
-                    raise
-            except (socket.timeout, socket.gaierror):
-                raise
-            except socket.error, msg:
-                if self.debuglevel > 0:
-                    print "connect fail: (%s, %s)" % (self.host, self.port)
-                    if use_proxy:
-                        print "proxy: %s" % str((proxy_host, proxy_port, proxy_rdns, proxy_user, proxy_pass))
-                if self.sock:
-                    self.sock.close()
-                self.sock = None
-                continue
-            break
-        if not self.sock:
-            raise socket.error, msg
-
 SCHEME_TO_CONNECTION = {
     'http': HTTPConnectionWithTimeout,
-    'https': HTTPSConnectionWithTimeout
 }
 
 # Use a different connection object for Google App Engine
@@ -1103,22 +955,9 @@ try:
             httplib.HTTPConnection.__init__(self, host, port=port,
                                             strict=strict, timeout=timeout)
 
-    class AppEngineHttpsConnection(httplib.HTTPSConnection):
-        """Same as AppEngineHttpConnection, but for HTTPS URIs."""
-        def __init__(self, host, port=None, key_file=None, cert_file=None,
-                     strict=None, timeout=None, proxy_info=None, ca_certs=None,
-                     disable_ssl_certificate_validation=False):
-            httplib.HTTPSConnection.__init__(self, host, port=port,
-                                             key_file=key_file,
-                                             cert_file=cert_file, strict=strict,
-                                             timeout=timeout)
-            self._fetch = _new_fixed_fetch(
-                    not disable_ssl_certificate_validation)
-
     # Update the connection classes to use the Googel App Engine specific ones.
     SCHEME_TO_CONNECTION = {
         'http': AppEngineHttpConnection,
-        'https': AppEngineHttpsConnection
     }
 except (ImportError, AttributeError):
     pass
