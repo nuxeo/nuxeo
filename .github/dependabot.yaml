@@ -85,8 +85,18 @@ updates:
         versions: ["[1.70,)"]
       - dependency-name: "org.hibernate:hibernate-commons-annotations"
         versions: [">3.1.0.GA"]
+      - dependency-name: "org.hibernate:hibernate-validator"
+        versions: [">3.1.0.GA"]
+      - dependency-name: "org.hibernate:hibernate-annotations"
+        versions: [">3.4.0.GA"]
+      - dependency-name: "org.hibernate:hibernate-entitymanager"
+        versions: [">3.4.0.GA"]
       - dependency-name: "org.scala-lang:scala-library"
         versions: ["[2.13,)"]
+      - dependency-name: "com.unboundid.product.scim:scim-sdk"
+        versions: ["[1.8,)"]
+      - dependency-name: "org.osgi:org.osgi.core"
+        versions: ["[4.3,)"]
 
       # Patch version update breaking compilation
       - dependency-name: "org.apache.directory.server:*"
