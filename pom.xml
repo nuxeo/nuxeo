@@ -4809,7 +4809,7 @@
       <dependency>
         <groupId>com.google.code.externalsortinginjava</groupId>
         <artifactId>externalsortinginjava</artifactId>
-        <version>0.6.0</version>
+        <version>0.6.1</version>
      </dependency>
 
      <dependency>
