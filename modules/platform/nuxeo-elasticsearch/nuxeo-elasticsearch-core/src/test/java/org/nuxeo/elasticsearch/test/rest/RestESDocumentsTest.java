@@ -296,9 +296,8 @@ public class RestESDocumentsTest extends BaseTest {
      */
     @Test
     public void iCanQueryESQLPageProviderAndFetchVariousAggregates() throws Exception {
-
         for (int i = 0; i < 50; i++) {
-            DocumentModel doc = session.createDocumentModel(ROOT_PATH, "aggTest" + 1, "File");
+            DocumentModel doc = session.createDocumentModel(ROOT_PATH, "aggTest" + i, "File");
             doc.setPropertyValue("dc:coverage", "europe/Spain");
             doc.setPropertyValue(DUBLINCORE_TITLE_PROPERTY, "tight_" + i % 2);
             if (i % 3 == 0) {
