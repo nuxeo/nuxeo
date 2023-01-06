@@ -69,7 +69,7 @@ public class PictureViewsHelper {
 
     public static final String EMPTY_PICTURE_VIEW_PATH = "nuxeo.picture.views.empty.picture.view";
 
-    protected static final String NOTHING_TO_PROCESS_MESSAGE = "Nothing to process";
+    public static final String NOTHING_TO_PROCESS_MESSAGE = "Nothing to process";
 
     protected Integer transactionTimeout;
 
