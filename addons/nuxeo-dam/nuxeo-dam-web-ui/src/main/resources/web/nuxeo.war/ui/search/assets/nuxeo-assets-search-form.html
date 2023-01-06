@@ -40,7 +40,7 @@ limitations under the License.
                  type="search"
                  placeholder="[[i18n('assetsSearch.fullText.placeholder')]]"
                  autofocus
-                 on-keydown="_checkForEnter">
+                 on-change="_search">
     </nuxeo-input>
 
     <!-- Asset type -->
@@ -145,12 +145,6 @@ limitations under the License.
           }
         }
       },
-
-      _checkForEnter: function(e) {
-        if (e.keyCode === 13) {
-          this._search();
-        }
-      }
 
     });
   </script>
