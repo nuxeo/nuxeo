@@ -58,7 +58,7 @@ public class PictureViewsHelper {
 
     public static final int DEFAULT_TX_TIMEOUT_SECONDS = 300;
 
-    protected static final String NOTHING_TO_PROCESS_MESSAGE = "Nothing to process";
+    public static final String NOTHING_TO_PROCESS_MESSAGE = "Nothing to process";
 
     protected Integer transactionTimeout;
 
