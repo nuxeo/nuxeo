@@ -123,7 +123,7 @@ pipeline {
           echo "Download data..."
           sh "curl -o /tmp/data.gz ${DATA_URL}"
           echo "Loading data into Redis..."
-          sh "gunzip -c /tmp/data.gz | nc localhost 6379 > /dev/null"
+          sh "gunzip -c /tmp/data.gz | nc -N localhost 6379 > /dev/null"
         }
       }
     }
