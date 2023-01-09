@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.3"
+library identifier: "platform-ci-shared-library@v0.0.13"
 
 boolean isTriggeredByCron() {
   return currentBuild.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause')
@@ -273,9 +273,7 @@ pipeline {
         BENCH_SITE_REPO = 'nuxeo-bench-site'
       }
       when {
-        not {
-          environment name: 'DRY_RUN', value: 'true'
-        }
+        expression { !nxUtils.isDryRun() }
       }
       steps {
         container('benchmark') {
