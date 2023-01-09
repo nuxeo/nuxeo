@@ -17,7 +17,7 @@
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  *     Thomas Roger <troger@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.3"
+library identifier: "platform-ci-shared-library@v0.0.13"
 
 dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
@@ -46,40 +46,6 @@ String getMavenJavadocArgs() {
 
 String getCurrentVersion() {
   return readMavenPom().getVersion();
-}
-
-String getVersion() {
-  return nxUtils.isPullRequest() ? getPullRequestVersion() : getReleaseVersion()
-}
-
-String getReleaseVersion() {
-  container('maven') {
-    String nuxeoVersion = getCurrentVersion()
-    String noSnapshot = nuxeoVersion.replace('-SNAPSHOT', '')
-    String version = noSnapshot + '.1' // first version ever
-
-    // find the latest tag if any
-    sh """
-      # create the Git credentials
-      jx step git credentials
-      git config credential.helper store
-
-      git fetch origin 'refs/tags/v${noSnapshot}*:refs/tags/v${noSnapshot}*'
-    """
-    def tag = sh(returnStdout: true, script: "git tag --sort=taggerdate --list 'v${noSnapshot}*' | tail -1 | tr -d '\n'")
-    if (tag) {
-      version = sh(returnStdout: true, script: "semver bump patch ${tag} | tr -d '\n'")
-    }
-    return version
-  }
-}
-
-String getPullRequestVersion() {
-  return "${BRANCH_NAME}-" + getCurrentVersion()
-}
-
-String getDockerTagFrom(String version) {
-  return version.tokenize('.')[0] + '.x'
 }
 
 void runFunctionalTests(String baseDir, String tier) {
@@ -124,24 +90,6 @@ void dockerDeploy(String dockerRegistry, String imageName) {
   String latestPublicImage = "${dockerRegistry}/${fullImageName}:${DOCKER_TAG}"
 
   nxDocker.copy(from: fixedVersionInternalImage, tos: [fixedVersionPublicImage, latestPublicImage])
-}
-
-void helmfileTemplate(namespace, environment, outputDir) {
-  withEnv(["NAMESPACE=${namespace}"]) {
-    sh """
-      ${HELMFILE_COMMAND} deps
-      ${HELMFILE_COMMAND} --environment ${environment} template --output-dir ${outputDir}
-    """
-  }
-}
-
-void helmfileSync(namespace, environment) {
-  withEnv(["NAMESPACE=${namespace}"]) {
-    sh """
-      ${HELMFILE_COMMAND} deps
-      ${HELMFILE_COMMAND} --environment ${environment} sync
-    """
-  }
 }
 
 def buildUnitTestStage(env) {
@@ -252,7 +200,6 @@ pipeline {
   environment {
     // force ${HOME}=/root - for an unexplained reason, ${HOME} is resolved as /home/jenkins though sh 'env' shows HOME=/root
     HOME = '/root'
-    HELMFILE_COMMAND = "helmfile --file ci/helm/helmfile.yaml --helm-binary /usr/bin/helm3"
     CURRENT_NAMESPACE = nxK8s.getCurrentNamespace()
     TEST_NAMESPACE_PREFIX = "$CURRENT_NAMESPACE-nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
@@ -267,11 +214,11 @@ pipeline {
     MAVEN_FAIL_ARGS = getMavenFailArgs()
     MAVEN_JAVADOC_ARGS = getMavenJavadocArgs()
     CURRENT_VERSION = getCurrentVersion()
-    VERSION = getVersion()
-    DOCKER_TAG = getDockerTagFrom("${VERSION}")
+    VERSION = nxUtils.getVersion()
+    // specify VERSION because otherwise Jenkins is not able to order env var initialization inside the shared library
+    DOCKER_TAG = nxUtils.getMajorMovingVersion(version: env.VERSION)
     CHANGE_BRANCH = "${env.CHANGE_BRANCH != null ? env.CHANGE_BRANCH : BRANCH_NAME}"
     CHANGE_TARGET = "${env.CHANGE_TARGET != null ? env.CHANGE_TARGET : BRANCH_NAME}"
-    CONNECT_PREPROD_URL = 'https://nos-preprod-connect.nuxeocloud.com/nuxeo'
     GITHUB_REPO = 'nuxeo-lts'
     AWS_REGION = 'eu-west-3'
     AWS_ROLE_ARN= 'arn:aws:iam::783725821734:role/nuxeo-s3directupload-role'
@@ -646,22 +593,21 @@ pipeline {
 
     stage('Deploy Nuxeo Packages') {
       when {
-        expression { nxUtils.isNotPullRequestAndNotDryRun() }
+        expression { !nxUtils.isPullRequest() }
       }
       steps {
         container('maven') {
           nxWithGitHubStatus(context: 'packages/deploy', message: 'Deploy Nuxeo Packages') {
             echo """
             ----------------------------------------
-            Upload Nuxeo Packages to ${CONNECT_PREPROD_URL}
+            Upload Nuxeo Packages to ${CONNECT_PREPROD_SITE_URL}
             ----------------------------------------"""
-            withCredentials([usernameColonPassword(credentialsId: 'connect-preprod', variable: 'CONNECT_PASS')]) {
-              sh '''
-                PACKAGES_TO_UPLOAD="packages/nuxeo-*-package/target/nuxeo-*-package-*.zip"
-                for file in \$PACKAGES_TO_UPLOAD ; do
-                  curl --fail -i -u $CONNECT_PASS -F package=@\$(ls \$file) $CONNECT_PREPROD_URL/site/marketplace/upload?batch=true ;
-                done
-              '''
+            script {
+              def nxPackages = findFiles(glob: 'packages/nuxeo-*-package/target/nuxeo-*-package-*.zip')
+              for (nxPackage in nxPackages) {
+                nxUtils.postForm(credentialsId: 'connect-preprod', url: "${CONNECT_PREPROD_SITE_URL}marketplace/upload?batch=true",
+                    form: ["package=@${nxPackage.path}"])
+              }
             }
           }
         }
@@ -726,9 +672,9 @@ pipeline {
               }
 
               echo 'Upgrade external service and nuxeo preview releases'
-              helmfileTemplate("${previewNamespace}", "${previewEnvironment}", 'target')
+              nxHelmfile.template(namespace: previewNamespace, environment: previewEnvironment, outputDir: 'target')
               try {
-                helmfileSync("${previewNamespace}", "${previewEnvironment}")
+                nxHelmfile.deploy(namespace: previewNamespace, environment: previewEnvironment)
               } catch (e) {
                 sh """
                   kubectl --namespace=${previewNamespace} get event --sort-by .lastTimestamp
@@ -792,11 +738,10 @@ pipeline {
     }
     success {
       script {
-        if (!nxUtils.isPullRequest()) {
-          currentBuild.description = "Build ${VERSION}"
-          if (!hudson.model.Result.SUCCESS.toString().equals(currentBuild.getPreviousBuild()?.getResult())) {
-            nxSlack.success(message: "Successfully built nuxeo/nuxeo-lts ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
-          }
+        currentBuild.description = "Build ${VERSION}"
+        if (!nxUtils.isPullRequest()
+          && !hudson.model.Result.SUCCESS.toString().equals(currentBuild.getPreviousBuild()?.getResult())) {
+          nxSlack.success(message: "Successfully built nuxeo/nuxeo-lts ${BRANCH_NAME} #${BUILD_NUMBER}: ${BUILD_URL}")
         }
       }
     }

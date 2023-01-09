@@ -16,18 +16,10 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.3"
+library identifier: "platform-ci-shared-library@v0.0.13"
 
 void getCurrentVersion() {
   return readMavenPom().getVersion()
-}
-
-void getReleaseVersion(version) {
-  return version.replace('-SNAPSHOT', '')
-}
-
-void getLatestVersion(version) {
-  return version.split('\\.')[0];
 }
 
 void promoteDockerImage(String dockerRegistry, String imageName, String buildVersion, String releaseVersion, String latestVersion) {
@@ -48,15 +40,13 @@ pipeline {
     NUXEO_BRANCH = "${params.NUXEO_BRANCH}"
     NUXEO_BUILD_VERSION = "${params.NUXEO_BUILD_VERSION}"
     CURRENT_VERSION = getCurrentVersion()
-    RELEASE_VERSION = getReleaseVersion("${CURRENT_VERSION}")
-    LATEST_VERSION = getLatestVersion("${RELEASE_VERSION}")
+    RELEASE_VERSION = nxUtils.getMajorDotMinorVersion(version: env.CURRENT_VERSION)
+    LATEST_VERSION = nxUtils.getMajorVersion(version: env.RELEASE_VERSION)
     MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true -P-nexus,nexus-private'
-    CONNECT_PROD_URL = 'https://connect.nuxeo.com/nuxeo'
     DOCKER_NAMESPACE = 'nuxeo'
     BASE_IMAGE_NAME = 'nuxeo-base'
     NUXEO_IMAGE_NAME = 'nuxeo'
     NUXEO_BENCHMARK_IMAGE_NAME = 'nuxeo-benchmark'
-    SLACK_CHANNEL = 'platform-notifs'
   }
 
   stages {
@@ -135,26 +125,22 @@ pipeline {
     }
 
     stage('Upload Nuxeo Packages') {
-      when {
-        expression { !nxUtils.isDryRun() }
-      }
       steps {
         container('maven') {
           echo """
           ----------------------------------------
-          Upload Nuxeo Packages to ${CONNECT_PROD_URL}
+          Upload Nuxeo Packages to ${CONNECT_PROD_SITE_URL}
           ----------------------------------------"""
-          withCredentials([usernameColonPassword(credentialsId: 'connect-prod', variable: 'CONNECT_PASS')]) {
+          script {
             sh """
               # Fetch Nuxeo packages with Maven
               mvn ${MAVEN_ARGS} -f ci/release/pom.xml process-resources
-
-              # Upload Nuxeo packages
-              PACKAGES_TO_UPLOAD="ci/release/target/packages/nuxeo-*-package-*.zip"
-              for file in \$PACKAGES_TO_UPLOAD ; do
-                curl --fail -i -u "$CONNECT_PASS" -F package=@\$(ls \$file) "$CONNECT_PROD_URL"/site/marketplace/upload?batch=true ;
-              done
             """
+            def nxPackages = findFiles(glob: 'ci/release/target/packages/nuxeo-*-package-*.zip')
+            for (nxPackage in nxPackages) {
+              nxUtils.postForm(credentialsId: 'connect-prod', url: "${CONNECT_PROD_SITE_URL}marketplace/upload?batch=true",
+                  form: ["package=@${nxPackage.path}"])
+            }
           }
         }
       }
@@ -210,9 +196,6 @@ pipeline {
     }
 
     stage('Trigger downstream jobs') {
-      when {
-        expression { !nxUtils.isDryRun() }
-      }
       parallel {
         stage('Trigger JSF UI release') {
           steps {

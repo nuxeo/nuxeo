@@ -18,7 +18,7 @@
  *     Thomas Roger <troger@nuxeo.com>
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.3"
+library identifier: "platform-ci-shared-library@v0.0.13"
 
 /**
  * This pipeline is intended to be executed on Pull Requests only
