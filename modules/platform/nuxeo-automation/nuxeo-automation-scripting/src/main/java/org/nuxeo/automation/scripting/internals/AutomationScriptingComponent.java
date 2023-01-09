@@ -64,6 +64,7 @@ public class AutomationScriptingComponent extends DefaultComponent {
                                           .isBooleanTrue("nuxeo.automation.scripting.inline-context-in-params");
 
         service.paramsInjector = AutomationScriptingParamsInjector.newInstance(inlinedContext);
+        service.clearMapperScript();
     }
 
     @Override

@@ -56,6 +56,8 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     protected final ScriptEngine engine = getScriptEngine();
 
+    protected volatile CompiledScript mapperScript;
+
     protected AutomationScriptingParamsInjector paramsInjector;
 
     // updated in-place only by extension points, so no concurrency issues
@@ -71,9 +73,22 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         return new Bridge(context);
     }
 
-    class Bridge implements Session {
+    protected CompiledScript getMapperScript() {
+        if (mapperScript == null) {
+            synchronized (this) {
+                if (mapperScript == null) {
+                    mapperScript = AutomationMapper.compile((Compilable) engine);
+                }
+            }
+        }
+        return mapperScript;
+    }
 
-        final CompiledScript mapperScript = AutomationMapper.compile((Compilable) engine);
+    protected synchronized void clearMapperScript() {
+        this.mapperScript = null;
+    }
+
+    class Bridge implements Session {
 
         final Compilable compilable = ((Compilable) engine);
 
@@ -88,7 +103,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         Bridge(OperationContext operationContext) {
             mapper = new AutomationMapper(operationContext);
             try {
-                mapperScript.eval(mapper);
+                getMapperScript().eval(mapper);
             } catch (ScriptException cause) {
                 throw new NuxeoException("Cannot execute mapper " + mapperScript, cause);
             }
