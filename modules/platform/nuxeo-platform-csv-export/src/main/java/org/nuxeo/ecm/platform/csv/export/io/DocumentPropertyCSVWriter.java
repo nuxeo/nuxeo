@@ -69,8 +69,7 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
     /** @since 2021.10 */
     protected Function<String, String> sanitizer = Function.<String> identity()
                                                            .andThen(this::replaceNewline)
-                                                           .andThen(
-                                                                   DocumentPropertyCSVWriter::removeFirstForbiddenCharacter);
+                                                           .andThen(DocumentPropertyCSVWriter::escapeInjectableValue);
 
     public DocumentPropertyCSVWriter() {
         super();
@@ -215,9 +214,18 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
         return value;
     }
 
-    /** @since 2021.10 */
+    /**
+     * @since 2021.10
+     * @deprecated since 2021.32 Use escapeInjectableValue instead to allow lighter data alteration
+     */
+    @Deprecated(since = "2021.32")
     public static String removeFirstForbiddenCharacter(String value) {
         return FORBIDDEN_CHARACTERS.matcher(value).replaceFirst("");
+    }
+
+    /** @since 2021.32 See https://owasp.org/www-community/attacks/CSV_Injection */
+    public static String escapeInjectableValue(String value) {
+        return FORBIDDEN_CHARACTERS.matcher(value).find() ? "\"'" + value.replace("\"", "\"\"") + "\"" : value;
     }
 
     /** @since 2021.10 */

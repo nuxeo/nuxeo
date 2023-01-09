@@ -178,20 +178,20 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         // check system field
         csv.has("title").isEquals("formula");
         // check property fields
-        csv.has("dc:title").isEquals("formula");
-        csv.has("dc:description").isEquals("sum");
-        csv.has("dc:rights").isEquals("substraction");
-        csv.has("dc:source").isEquals("at");
-        csv.has("dc:format").isEquals("tabulation");
-        csv.has("dc:language").isEquals("carriage return");
+        csv.has("dc:title").isEquals("\"'=formula\"");
+        csv.has("dc:description").isEquals("\"'+sum\"");
+        csv.has("dc:rights").isEquals("\"'-substraction\"");
+        csv.has("dc:source").isEquals("\"'@at\"");
+        csv.has("dc:format").isEquals("\"'	tabulation\"");
+        csv.has("dc:language").isEquals("\"'\rcarriage return\"");
 
         // check multiple forbidden characters at the beginning
         document.setPropertyValue("dc:description", "=++-@+@=\t\r\tmix");
         session.saveDocument(document);
         csv = csvAssert(document, renderingCtx);
-        csv.has("dc:description").isEquals("mix");
+        csv.has("dc:description").isEquals("\"'=++-@+@=\t\r\tmix\"");
 
-        // check that characters not at the beginning are not removed
+        // check that characters not at the beginning don't lead to sanitizing
         document.setPropertyValue("dc:description", "for=+-@\t\rmula");
         session.saveDocument(document);
         csv = csvAssert(document, renderingCtx);
