@@ -200,6 +200,13 @@ public class TestBlobsExtractor {
         assertTrue(blobs.contains(blob3));
         assertTrue(blobs.contains(blob4));
         assertTrue(blobs.contains(blob5));
+
+        doc.addFacet("DynamicFacet");
+        Blob blob6 = createBlob("file6.txt");
+        doc.setPropertyValue("dyn:blob", (Serializable) blob6);
+        blobs = extractor.getBlobs(doc);
+        assertEquals(6, blobs.size());
+        assertTrue(blobs.contains(blob6));
     }
 
     @Test

@@ -21,11 +21,13 @@ package org.nuxeo.ecm.core.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -45,7 +47,15 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BlobsExtractor {
 
+    /**
+     * Local cache of blob paths per doc type.
+     */
     protected final Map<String, List<String>> docBlobPaths = new ConcurrentHashMap<>();
+
+    /**
+     * Local cache of blob paths per schema.
+     */
+    protected final Map<String, List<String>> docBlobPathsPerSchema = new ConcurrentHashMap<>();
 
     private Set<String> includedPaths;
 
@@ -140,8 +150,14 @@ public class BlobsExtractor {
      * @return the list of blob properties
      */
     public List<Property> getBlobsProperties(DocumentModel doc) {
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        List<String> paths = Arrays.stream(doc.getSchemas())
+                                   .map(schemaManager::getSchema)
+                                   .map(this::getBlobPaths)
+                                   .flatMap(Collection::stream)
+                                   .collect(Collectors.toList());
         List<Property> properties = new ArrayList<>();
-        for (String path : getBlobPaths(doc.getDocumentType())) {
+        for (String path : paths) {
             if (!isInterestingPath(path)) {
                 continue;
             }
@@ -178,6 +194,21 @@ public class BlobsExtractor {
             docBlobPaths.put(docType, paths);
         }
         return paths;
+    }
+
+    /**
+     * Gets the blob paths of the document's schemas. Extractor properties are ignored.
+     *
+     * @param schema the schema
+     * @return the list of blob paths
+     * @since 2021.32
+     */
+    public List<String> getBlobPaths(Schema schema) {
+        return docBlobPathsPerSchema.computeIfAbsent(schema.getName(), n -> {
+            List<String> paths = new ArrayList<>();
+            findBlobPaths(schema, null, schema, paths);
+            return paths;
+        });
     }
 
     protected void findBlobsProperties(Property property, List<String> split, List<Property> properties) {
