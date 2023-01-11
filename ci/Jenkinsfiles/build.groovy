@@ -578,6 +578,11 @@ pipeline {
             ----------------------------------------
             Deploy Maven artifacts
             ----------------------------------------"""
+            // apply Hotfix protection again since the code was unpatched and recompiled in the intermediate steps
+            // otherwise, the JAR would be rebuilt from the unpatched classes in the package phase
+            dir('nuxeo-patches') {
+              sh './prepare-patches'
+            }
             sh """
               mvn ${MAVEN_ARGS} -Pdistrib -DskipTests deploy
               mvn ${MAVEN_ARGS} -f parent/pom.xml deploy
