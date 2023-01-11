@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.search.core;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,8 +28,10 @@ import java.util.Map;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
 
 /**
  * @since 8.3
@@ -43,7 +44,7 @@ public class SavedSearchRequestReader extends EntityJsonReader<SavedSearchReques
     }
 
     @Override
-    protected SavedSearchRequest readEntity(JsonNode jn) throws IOException {
+    protected SavedSearchRequest readEntity(JsonNode jn) throws JsonProcessingException {
         String id = getStringField(jn, "id");
         String title = getStringField(jn, "title");
         String queryParams = getStringField(jn, "queryParams");
@@ -64,14 +65,20 @@ public class SavedSearchRequestReader extends EntityJsonReader<SavedSearchReques
             Iterator<Map.Entry<String, JsonNode>> fields = queryParamsNode.fields();
             while (fields.hasNext()) {
                 Map.Entry<String, JsonNode> fieldEntry = fields.next();
-                params.put(
-                        fieldEntry.getKey(),
-                        fieldEntry.getValue().isTextual() ? fieldEntry.getValue().textValue()
-                                : mapper.writeValueAsString(fieldEntry.getValue()));
+                params.put(fieldEntry.getKey(), getEntryValue(mapper, fieldEntry.getValue()));
             }
         }
 
         return new SavedSearchRequest(id, title, queryParams, params, query, queryLanguage, pageProviderName, pageSize,
                 currentPageIndex, maxResults, sortBy, sortOrder, contentViewData);
+    }
+
+    protected String getEntryValue(ObjectMapper mapper, JsonNode valueObject) throws JsonProcessingException {
+        if (valueObject.isTextual()) {
+            return valueObject.textValue();
+        } else if (valueObject instanceof NullNode) {
+            return null;
+        }
+        return mapper.writeValueAsString(valueObject);
     }
 }
