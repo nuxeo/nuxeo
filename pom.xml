@@ -79,7 +79,7 @@
     <guice.version>3.0</guice.version>
     <jersey.version>1.19.4</jersey.version>
     <shindig.version>1.1-BETA5-incubating-nx2</shindig.version>
-    <apache.axiom.version>1.2.22</apache.axiom.version>
+    <apache.axiom.version>1.4.0</apache.axiom.version>
     <chemistry.opencmis.version>1.1.1-NX01</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
     <apache.httpcore.version>4.4.16</apache.httpcore.version>
