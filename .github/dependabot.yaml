@@ -97,6 +97,8 @@ updates:
         versions: ["[1.8,)"]
       - dependency-name: "org.osgi:org.osgi.core"
         versions: ["[4.3,)"]
+      - dependency-name: "org.jgrapht:jgrapht-core"
+        versions: ["[1.1,)"]
 
       # Patch version update breaking compilation
       - dependency-name: "org.apache.directory.server:*"
