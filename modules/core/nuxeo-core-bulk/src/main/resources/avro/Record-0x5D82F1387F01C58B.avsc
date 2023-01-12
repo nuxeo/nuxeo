@@ -1,0 +1,36 @@
+{
+  "type" : "record",
+  "name" : "Record",
+  "namespace" : "org.nuxeo.lib.stream.computation",
+  "fields" : [ {
+    "name" : "appenderThread",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "data",
+    "type" : [ "null", {
+      "type" : "bytes",
+      "java-class" : "[B"
+    } ],
+    "default" : null
+  }, {
+    "name" : "flagsAsByte",
+    "type" : {
+      "type" : "int",
+      "java-class" : "java.lang.Byte"
+    }
+  }, {
+    "name" : "key",
+    "type" : "string"
+  }, {
+    "name" : "traceContext",
+    "type" : [ "null", {
+      "type" : "bytes",
+      "java-class" : "[B"
+    } ],
+    "default" : null
+  }, {
+    "name" : "watermark",
+    "type" : "long"
+  } ]
+}

@@ -6,10 +6,18 @@
   <!-- ======================================================================================= -->
   <!-- Ensure backward/forward compatibility by registering schema evolution -->
   <extension point="schema" target="org.nuxeo.runtime.avro">
+    <schema name="Record-2023.0" file="avro/Record-0x5D82F1387F01C58B.avsc" />
+    <schema name="BulkCommand-2023.0" file="avro/BulkCommand-0xF032C4AB0AF8B906.avsc" />
+    <schema name="BulkStatus-2023.0" file="avro/BulkStatus-0x98004F207097EB0D.avsc" />
+    <schema name="DataBucket-2023.0" file="avro/DataBucket-0xEB04211B6C6C3B5F.avsc" />
+    <schema name="BulkBucket-2023.0" file="avro/BulkBucket-0xCC59A5FF2725F7AF.avsc" />
+    <!-- Register 2021 schemas for smooth upgrade -->
     <schema name="Record-2021.0" file="avro/Record-0xEE727BE73E8D498.avsc" />
     <schema name="BulkCommand-2021.6" file="avro/BulkCommand-0x5F64BA8BF77C9B7D.avsc" />
     <schema name="BulkStatus-2021.7" file="avro/BulkStatus-0xA58F151AC3B3DEBF.avsc" />
     <schema name="DataBucket-2021.0" file="avro/DataBucket-0xB62494C74E419198.avsc" />
+    <!-- Same schemas in 2023 -->
+    <!-- schema name="BulkBucket-2021.0" file="avro/BulkBucket-0xCC59A5FF2725F7AF.avsc" / -->
   </extension>
 
   <!-- ======================================================================================= -->
