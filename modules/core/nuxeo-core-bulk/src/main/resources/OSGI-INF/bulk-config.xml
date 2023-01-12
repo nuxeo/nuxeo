@@ -10,6 +10,15 @@
     <schema name="BulkCommand-2021.6" file="avro/BulkCommand-0x5F64BA8BF77C9B7D.avsc" />
     <schema name="BulkStatus-2021.7" file="avro/BulkStatus-0xA58F151AC3B3DEBF.avsc" />
     <schema name="DataBucket-2021.0" file="avro/DataBucket-0xB62494C74E419198.avsc" />
+    <schema name="BulkBucket-2021.0" file="avro/BulkBucket-0xCC59A5FF2725F7AF.avsc" />
+    <!-- Register 10.10 schemas for smooth upgrade -->
+    <schema name="Record-10.10-HF01" file="avro/Record-0x77EACC1CE6E293FB.avsc " />
+    <schema name="BulkCommand-10.10-HF38" file="avro/BulkCommand-0xC6615A90942CA30B.avsc" />
+    <schema name="BulkStatus-10.10-HF38" file="avro/BulkStatus-0xD8A0F490388FE2A7.avsc" />
+    <schema name="BulkStatus-10.10-HF54" file="avro/BulkStatus-0x26CF42CFBF261FBD.avsc" />
+    <!-- Same schemas in 2021 -->
+    <!-- schema name="DataBucket-10.10-HF01" file="avro/DataBucket-0xB62494C74E419198.avsc" / -->
+    <!-- schema name="BulkBucket-10.10-HF01" file="avro/BulkBucket-0xCC59A5FF2725F7AF.avsc" / -->
   </extension>
 
   <!-- ======================================================================================= -->
