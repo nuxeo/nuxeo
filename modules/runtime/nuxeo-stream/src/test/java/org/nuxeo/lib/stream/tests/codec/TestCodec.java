@@ -138,7 +138,21 @@ public class TestCodec {
         Codec<Record> codec = new AvroMessageCodec<>(Record.class);
         Record dest = testCodec(src, codec);
         assertEquals(src.toString(), dest.toString());
-        testCodecFromFile("data/record-avro-message.bin", codec);
+        testCodecFromFile("data/record-avro-message-1.11.bin", codec);
+    }
+
+    @Test
+    public void testRecordMessageAvro19() throws Exception {
+        // Schema generated with Avro 1.9 has different canonical representation and fingerprint,
+        // 1.9 messages can be read with Avro 1.11 as long as original schemas are provided.
+        Record src = getRecord();
+        FileAvroSchemaStore store = new FileAvroSchemaStore(folder.newFolder().toPath());
+        store.loadSchema(Path.of(getClass().getClassLoader().getResource("data/Record-0xEE727BE73E8D498.avsc").getPath()));
+        store.addSchema(ReflectData.get().getSchema(Record.class));
+        Codec<Record> codec = new AvroMessageCodec<>(Record.class, store);
+        Record dest = testCodec(src, codec);
+        assertEquals(src.toString(), dest.toString());
+        testCodecFromFile("data/record-avro-message-1.9.bin", codec);
     }
 
     @Test
@@ -251,7 +265,7 @@ public class TestCodec {
 
         codec = new AvroMessageCodec<>(Record.class);
         data = codec.encode(src);
-        path = Paths.get("/tmp/record-avro-message.bin");
+        path = Paths.get("/tmp/record-avro-message-1.11.bin");
         Files.write(path, data);
 
         codec = new AvroBinaryCodec<>(Record.class);

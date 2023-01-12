@@ -104,7 +104,7 @@
     <jackson.version>2.12.7</jackson.version>
     <jackson.bom.version>2.12.7.20221012</jackson.bom.version>
     <bouncycastle.version>1.69</bouncycastle.version>
-    <avro.version>1.9.2</avro.version>
+    <avro.version>1.11.1</avro.version>
     <xz.version>1.9</xz.version>
     <restlet.version>2.4.3</restlet.version>
     <batik.version>1.16</batik.version>
