@@ -11,6 +11,7 @@
     <schema name="BulkStatus-10.10-HF38" file="avro/BulkStatus-0xD8A0F490388FE2A7.avsc" />
     <schema name="BulkStatus-10.10-HF54" file="avro/BulkStatus-0x26CF42CFBF261FBD.avsc" />
     <schema name="DataBucket-10.10-HF01" file="avro/DataBucket-0xB62494C74E419198.avsc" />
+    <schema name="BulkBucket-10.10-HF01" file="avro/BulkBucket-0xCC59A5FF2725F7AF.avsc" />
   </extension>
 
   <!-- ======================================================================================= -->
