@@ -1488,6 +1488,14 @@ public interface CoreSession {
     DocumentModelList getProxies(DocumentRef docRef, DocumentRef folderRef);
 
     /**
+     * Gets the retained property xpaths of this document at the time it became a record.
+     *
+     * @return the retained properties
+     * @since 2021.32
+     */
+    List<String> getRetainedProperties(DocumentRef docRef);
+
+    /**
      * Returns the type of his parent SuperSpace (workspace, section, etc.). SuperSpace is qualified by the SuperSpace
      * facet.
      */

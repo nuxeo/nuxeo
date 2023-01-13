@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.BlobAccessor;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -190,15 +189,8 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             providerIds.add(providerId);
             if (clausesString.equals(NAME_RECORDS)) {
                 Clause recordClause = new Clause(IS_RECORD, Op.EQ, "true");
-                Clause defaultContentClause = new Clause("blob:xpath", Op.EQ, MAIN_BLOB_XPATH);
-                rules.add(new Rule(List.of(recordClause, defaultContentClause), providerId));
-                SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-                schemaManager.getRetainableProperties()
-                             .forEach((prop) -> rules.add(new Rule(
-                                     List.of(recordClause,
-                                             getClause("blob:xpath" + (prop.contains("*") ? "~" : "=") + prop)),
-                                     providerId)));
-                rules.forEach(rule -> rule.clauses.forEach(clause -> rulesXPaths.add(clause.xpath)));
+                rules.add(new Rule(List.of(recordClause), providerId));
+                rulesXPaths.add(recordClause.xpath);
             } else if (clausesString.equals(NAME_DEFAULT)) {
                 defaultProviderId = providerId;
             } else {
@@ -314,7 +306,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             return doc.getPath();
         }
         if (xpath.equals(IS_RECORD)) {
-            return doc.isRecord();
+            return doc.isRecord() && (blobXPath != null && doc.isRetainable(blobXPath));
         }
         if (xpath.startsWith(BLOB_PREFIX)) {
             switch (xpath.substring(BLOB_PREFIX.length())) {
@@ -521,8 +513,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     }
 
     protected void checkBlobCanBeDeleted(Document doc, String xpath) {
-        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        if (doc.isUnderRetentionOrLegalHold() && (MAIN_BLOB_XPATH.equals(xpath) || schemaManager.isRetainable(xpath))) {
+        if (doc.isRetained(xpath)) {
             if (!BaseSession.canDeleteUndeletable(NuxeoPrincipal.getCurrent())) {
                 throw new DocumentSecurityException(
                         "Cannot remove main blob from document " + doc.getUUID() + ", it is under retention / hold");

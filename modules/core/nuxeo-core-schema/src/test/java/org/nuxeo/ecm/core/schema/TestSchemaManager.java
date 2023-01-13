@@ -455,39 +455,26 @@ public class TestSchemaManager {
     }
 
     @Test
+    public void testDefaultRetainableProperties() {
+        Set<String> rprops = schemaManager.getRetainableProperties();
+        assertEquals(1, rprops.size());
+        // main content must be always retainable
+        assertTrue(rprops.contains("content"));
+    }
+
+    @Test
     @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-retainable-properties.xml")
     public void testRetainableProperties() {
-        assertEquals(2, schemaManager.getRetainableProperties().size());
+        Set<String> rprops = schemaManager.getRetainableProperties();
+        assertEquals(3, rprops.size());
+        // main content must be always retainable
+        assertTrue(rprops.contains("content"));
+        assertTrue(rprops.contains("complexList/*/dataList/*/file"));
+        assertTrue(rprops.contains("files/*/file"));
+        rprops = schemaManager.getRetainableProperties("complexFiles");
         assertEquals(2, schemaManager.getRetainableProperties("complexFiles").size());
-
-        // Valid
-        assertTrue(schemaManager.isRetainable("files/*/file"));
-        assertTrue(schemaManager.isRetainable("cf:files/*/file"));
-        assertTrue(schemaManager.isRetainable("complexFiles:files/*/file"));
-        assertTrue(schemaManager.isRetainable("files/1/file"));
-        assertTrue(schemaManager.isRetainable("files/2/file"));
-        assertTrue(schemaManager.isRetainable("files"));
-        assertTrue(schemaManager.isRetainable("cf:files"));
-        assertTrue(schemaManager.isRetainable("complexFiles:files:files"));
-
-        assertTrue(schemaManager.isRetainable("complexList/1/dataList/2/file"));
-        assertTrue(schemaManager.isRetainable("complexList/*/dataList/*/file"));
-        assertTrue(schemaManager.isRetainable("complexList/*/dataList/4/file"));
-        assertTrue(schemaManager.isRetainable("complexList/0/dataList/*/file"));
-        assertTrue(schemaManager.isRetainable("complexList"));
-        assertTrue(schemaManager.isRetainable("complexList/*/dataList"));
-        assertTrue(schemaManager.isRetainable("complexList/1/dataList"));
-
-        // Invalid
-        assertFalse(schemaManager.isRetainable("files/*/other"));
-        assertFalse(schemaManager.isRetainable("other:files/*/file"));
-        assertFalse(schemaManager.isRetainable("files/2/other"));
-
-        assertFalse(schemaManager.isRetainable("complexList/dataList/*/file"));
-        assertFalse(schemaManager.isRetainable("complexList/dataList/*/file"));
-        assertFalse(schemaManager.isRetainable("dataList/*/file"));
-        assertFalse(schemaManager.isRetainable("complexList/*/bar"));
-        assertFalse(schemaManager.isRetainable("complexList/1/bar"));
+        assertTrue(rprops.contains("complexList/*/dataList/*/file"));
+        assertTrue(rprops.contains("files/*/file"));
     }
 
 }

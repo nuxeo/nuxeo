@@ -57,15 +57,6 @@ public interface PropertyCharacteristicHandler {
     boolean isRemoved(String schema, String path);
 
     /**
-     * Checks if the property represented by the given {@code xpath} can be retained.
-     *
-     * @param xpath the property xpath to test
-     * @return whether or not this property is marked as retainable
-     * @since 2023
-     */
-    boolean isRetainable(String xpath);
-
-    /**
      * The returned paths are not Nuxeo xpath as they don't have the schema prefix.
      *
      * @param schema the schema name (not the prefix)

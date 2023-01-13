@@ -77,6 +77,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *   "isCheckedOut": true|false,
  *   "isRecord": true|false,
  *   "retainUntil": "RETAIN_UNTIL_DATE", &lt;-- or null
+ *   "retainedProperties": [ "file:content", "files:files\/*\/file"],
  *   "hasLegalHold": true|false,
  *   "isUnderRetentionOrLegalHold": true|false,
  *   "changeToken": null|"CHANGE_TOKEN",
@@ -146,9 +147,17 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
         jg.writeStringField("state", doc.getRef() != null ? doc.getCurrentLifeCycleState() : null);
         jg.writeStringField("parentRef", doc.getParentRef() != null ? doc.getParentRef().toString() : null);
         jg.writeBooleanField("isCheckedOut", doc.isCheckedOut());
-        jg.writeBooleanField("isRecord", doc.isRecord());
+        boolean isRecord = doc.isRecord();
+        jg.writeBooleanField("isRecord", isRecord);
         Calendar retainUntil = doc.getRetainUntil();
         jg.writeStringField("retainUntil", retainUntil == null ? null : formatISODateTime(retainUntil));
+        if (isRecord) {
+            jg.writeArrayFieldStart("retainedProperties");
+            for (String prop : doc.getRetainedProperties()) {
+                jg.writeString(schemaManager.getXPathSchemaName(prop, Set.of(doc.getSchemas())) + ":" + prop);
+            }
+            jg.writeEndArray();
+        }
         jg.writeBooleanField("hasLegalHold", doc.hasLegalHold());
         jg.writeBooleanField("isUnderRetentionOrLegalHold", doc.isUnderRetentionOrLegalHold());
         boolean isVersion = doc.isVersion();

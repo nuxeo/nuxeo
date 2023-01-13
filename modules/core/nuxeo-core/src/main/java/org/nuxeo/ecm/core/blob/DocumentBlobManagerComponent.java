@@ -187,10 +187,8 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
      */
     @Override
     public String writeBlob(Blob blob, Document doc, String xpath) throws IOException {
-        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         if (blob == null) {
-            if ((MAIN_BLOB_XPATH.equals(xpath) || schemaManager.isRetainable(xpath))
-                    && doc.isUnderRetentionOrLegalHold()) {
+            if (doc.isRetained(xpath)) {
                 if (!BaseSession.canDeleteUndeletable(NuxeoPrincipal.getCurrent())) {
                     throw new DocumentSecurityException(
                             "Cannot delete blob from document " + doc.getUUID() + ", it is under retention / hold");
@@ -225,8 +223,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         if (blobProvider == null) {
             throw new NuxeoException("No registered blob provider with id: " + dispatch.providerId);
         }
-        if ((MAIN_BLOB_XPATH.equals(xpath) || schemaManager.isRetainable(xpath)) && blobProvider.isRecordMode()
-                && doc.isUnderRetentionOrLegalHold()) {
+        if (blobProvider.isRecordMode() && doc.isRetained(xpath)) {
             throw new DocumentSecurityException(
                     "Cannot change blob from document " + doc.getUUID() + ", it is under retention / hold");
         }
@@ -317,9 +314,8 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
 
     public List<ManagedBlob> getRetainableBlobs(Document doc) {
         List<ManagedBlob> blobs = new ArrayList<>();
-        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        Set<String> retainableProperties = schemaManager.getRetainableProperties();
-        if (retainableProperties.isEmpty()) {
+        String[] retainableProperties = doc.getRetainedProperties();
+        if (retainableProperties == null || retainableProperties.length == 0) {
             return blobs;
         }
         for (String path : retainableProperties) {

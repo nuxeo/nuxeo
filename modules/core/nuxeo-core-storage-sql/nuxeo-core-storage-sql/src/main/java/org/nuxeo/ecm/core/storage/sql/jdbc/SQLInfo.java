@@ -624,6 +624,7 @@ public class SQLInfo {
                     || key.equals(Model.MAIN_BASE_VERSION_KEY) //
                     || key.equals(Model.MAIN_CHECKED_IN_KEY) //
                     || key.equals(Model.MAIN_IS_RECORD_KEY) //
+                    || key.equals(Model.MAIN_RETAINED_PROPS_KEY) //
                     || (key.equals(Model.MAIN_MINOR_VERSION_KEY) && resetVersion) //
                     || (key.equals(Model.MAIN_MAJOR_VERSION_KEY) && resetVersion) //
                     || (key.equals(Model.HIER_CHILD_NAME_KEY) && explicitName)) {

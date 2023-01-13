@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.schema;
 
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -28,6 +29,31 @@ import org.nuxeo.ecm.core.schema.types.Schema;
  * The Schema Manager manages core document types, schemas, facets and field types.
  */
 public interface SchemaManager extends TypeProvider, PropertyCharacteristicHandler {
+
+    static final Pattern PATH_INDEX_PATTERN = Pattern.compile("/-?\\d+/");
+
+    /**
+     * Remove prefix if any and replace the index of complex properties of the given path.
+     * <p>
+     * i.e. files:files/1/file -&gt; files\/*\/file
+     *
+     * @param path the path
+     * @return a normalize path
+     * @since 2021.32
+     */
+    static String normalizePath(String path) {
+        // remove prefix if it exists
+        String ret = path.substring(path.lastIndexOf(':') + 1);
+        // remove /item used in list property item
+        if (ret.endsWith("/item")) {
+            ret = ret.substring(0, ret.length() - 5);
+        }
+        if (ret.contains("/")) {
+            // we're only interested in sth/index/sth because we can't add info on sth/* property
+            ret = PATH_INDEX_PATTERN.matcher(ret).replaceAll("/*/");
+        }
+        return ret;
+    }
 
     /**
      * Returns the field with given xpath, or null if not found.

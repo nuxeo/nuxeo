@@ -29,7 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -57,6 +59,8 @@ import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.runtime.api.Framework;
 
 public class SQLDocumentLive extends BaseDocument<Node> implements SQLDocument {
+
+    private static final Logger log = LogManager.getLogger(SQLDocumentLive.class);
 
     protected final Node node;
 
@@ -400,6 +404,32 @@ public class SQLDocumentLive extends BaseDocument<Node> implements SQLDocument {
     @Override
     public void makeRecord() {
         setPropertyValue(Model.MAIN_IS_RECORD_PROP, Boolean.TRUE);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        List<String> retainedProps = new ArrayList<>();
+        for (String prop : schemaManager.getRetainableProperties()) {
+            String[] segments = prop.split("/");
+            String segment = segments[0];
+            Field field = getType().getField(segment);
+            if (field == null) {
+                // check facets
+                for (String facet : getFacets()) {
+                    CompositeType facetType = schemaManager.getFacet(facet);
+                    field = facetType.getField(segment);
+                    if (field != null) {
+                        // It exists for document
+                        break;
+                    }
+                }
+            }
+            if (field != null) {
+                retainedProps.add(prop);
+            } else if (log.isInfoEnabled()) {
+                log.info(
+                        "Property {}  cannot be put under retention or legal hold because it is not available in document {}",
+                        prop, getUUID());
+            }
+        }
+        node.setRetainedProperties(retainedProps.toArray(String[]::new));
         getDocumentBlobManager().notifyMakeRecord(this);
     }
 
@@ -685,6 +715,11 @@ public class SQLDocumentLive extends BaseDocument<Node> implements SQLDocument {
     @Override
     public String[] getFacets() {
         return getNode().getMixinTypes();
+    }
+
+    @Override
+    public String[] getRetainedProperties() {
+        return getNode().getRetainedProperties();
     }
 
     @Override

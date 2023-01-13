@@ -2173,6 +2173,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
+    public List<String> getRetainedProperties(DocumentRef docRef) {
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        return List.of(doc.getRetainedProperties());
+    }
+
+    @Override
     public void setRetainUntil(DocumentRef docRef, Calendar retainUntil, String comment) throws PropertyException {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ);

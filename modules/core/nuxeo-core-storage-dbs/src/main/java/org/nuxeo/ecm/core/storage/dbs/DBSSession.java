@@ -52,6 +52,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_MAJOR_VER
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_RECORD;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_RETAINED_PROPS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_RETENTION_ACTIVE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_TRASHED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
@@ -791,6 +792,7 @@ public class DBSSession extends BaseSession {
         if (TRUE.equals(copy.get(KEY_IS_RECORD))) {
             // unset record on the copy
             copy.put(KEY_IS_RECORD, null);
+            copy.put(KEY_RETAINED_PROPS, null);
             copy.put(KEY_RETAIN_UNTIL, null);
             copy.put(KEY_HAS_LEGAL_HOLD, null);
             DBSDocument doc = getDocument(copy);
@@ -1982,6 +1984,8 @@ public class DBSSession extends BaseSession {
             return KEY_IS_TRASHED;
         case NXQL.ECM_BLOBKEYS:
             return KEY_BLOB_KEYS;
+        case NXQL.ECM_RETAINED_PROPS:
+            return KEY_RETAINED_PROPS;
         case NXQL.ECM_FULLTEXT:
             throw new UnsupportedOperationException(name);
         }
@@ -2068,6 +2072,8 @@ public class DBSSession extends BaseSession {
             return NXQL.ECM_ISTRASHED;
         case KEY_BLOB_KEYS:
             return NXQL.ECM_BLOBKEYS;
+        case KEY_RETAINED_PROPS:
+            return NXQL.ECM_RETAINED_PROPS;
         case KEY_LIFECYCLE_POLICY:
         case KEY_ACP:
         case KEY_ANCESTOR_IDS:
@@ -2107,6 +2113,7 @@ public class DBSSession extends BaseSession {
         case KEY_PROXY_IDS:
         case KEY_READ_ACL:
         case KEY_BLOB_KEYS:
+        case KEY_RETAINED_PROPS:
             return STRING_ARRAY_TYPE;
         }
         return null;

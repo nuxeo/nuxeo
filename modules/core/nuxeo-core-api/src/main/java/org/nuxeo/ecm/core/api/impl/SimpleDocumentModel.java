@@ -715,4 +715,9 @@ public class SimpleDocumentModel implements DocumentModel {
         return DocumentPropertyObjectResolverImpl.create(this, xpath);
     }
 
+    @Override
+    public List<String> getRetainedProperties() {
+        throw new UnsupportedOperationException();
+    }
+
 }

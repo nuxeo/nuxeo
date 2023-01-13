@@ -152,7 +152,7 @@ public class Node implements StateAccessor {
         return Boolean.TRUE.equals(getSimpleProperty(model.MAIN_IS_RECORD_PROP).getValue());
     }
 
-    private static final String[] NO_MIXINS = {};
+    private static final String[] EMPTY_ARRAY = {};
 
     /**
      * Gets the instance mixins. Mixins from the type are not returned.
@@ -161,9 +161,29 @@ public class Node implements StateAccessor {
      */
     public String[] getMixinTypes() {
         String[] value = (String[]) hierFragment.get(model.MAIN_MIXIN_TYPES_KEY);
-        return value == null ? NO_MIXINS : value.clone();
+        return value == null ? EMPTY_ARRAY : value.clone();
     }
 
+    /**
+     * Gets the retained properties.
+     * <p>
+     * Never returns {@code null}.
+     * @since 2021.32
+     */
+    public String[] getRetainedProperties() {
+        String[] value = (String[]) hierFragment.get(model.MAIN_RETAINED_PROPS_KEY);
+        return value == null ? EMPTY_ARRAY : value.clone();
+    }
+
+    /**
+     * Sets the retained properties.
+     *
+     * @param retainedProps the retained properties.
+     * @since 2021.32
+     */
+    public void setRetainedProperties(String[] retainedProps) {
+        hierFragment.put(Model.MAIN_RETAINED_PROPS_KEY, retainedProps);
+    }
     /**
      * Gets the mixins. Includes mixins from the type. Returns a fresh set.
      */

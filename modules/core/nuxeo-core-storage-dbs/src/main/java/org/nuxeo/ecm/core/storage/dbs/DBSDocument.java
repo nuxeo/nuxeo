@@ -36,8 +36,9 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -83,6 +84,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.9.4
  */
 public class DBSDocument extends BaseDocument<State> {
+
+    private static final Logger log = LogManager.getLogger(DBSDocument.class);
 
     private static final Long ZERO = Long.valueOf(0);
 
@@ -211,6 +214,9 @@ public class DBSDocument extends BaseDocument<State> {
 
     /** @since 11.5 */
     public static final String KEY_BLOB_KEYS = "ecm:blobKeys";
+
+    /** @since 2021.32 */
+    public static final String KEY_RETAINED_PROPS = "ecm:retainedProperties";
 
     public static final String KEY_FULLTEXT_SIMPLE = "ecm:fulltextSimple";
 
@@ -546,6 +552,19 @@ public class DBSDocument extends BaseDocument<State> {
     public void makeRecord() {
         DBSDocumentState docState = getStateOrTarget();
         docState.put(KEY_IS_RECORD, TRUE);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        List<String> retainedProps = new ArrayList<>();
+        for (String prop : schemaManager.getRetainableProperties()) {
+            try {
+                getSchema(prop);
+                retainedProps.add(prop);
+            } catch (PropertyNotFoundException e) {
+                log.info(
+                        "Property {}  cannot be put under retention or legal hold because it is not available in document {}",
+                        prop, getUUID());
+            }
+        }
+        docState.put(KEY_RETAINED_PROPS, retainedProps.toArray(String[]::new));
         DBSDocument doc = session.getDocument(docState);
         getDocumentBlobManager().notifyMakeRecord(doc);
     }
@@ -1040,6 +1059,7 @@ public class DBSDocument extends BaseDocument<State> {
         case KEY_LIFECYCLE_POLICY:
         case KEY_LIFECYCLE_STATE:
         case KEY_BLOB_KEYS:
+        case KEY_RETAINED_PROPS:
             return "__ecm__";
         }
         if (xpath.startsWith(KEY_FULLTEXT_SIMPLE) || xpath.startsWith(KEY_FULLTEXT_BINARY)) {
@@ -1118,6 +1138,19 @@ public class DBSDocument extends BaseDocument<State> {
         } else {
             String[] res = new String[mixins.length];
             System.arraycopy(mixins, 0, res, 0, mixins.length);
+            return res;
+        }
+    }
+
+    @Override
+    public String[] getRetainedProperties() throws PropertyException {
+        DBSDocumentState docState = getStateOrTarget();
+        Object[] rProps = (Object[]) docState.get(KEY_RETAINED_PROPS);
+        if (rProps == null) {
+            return EMPTY_STRING_ARRAY;
+        } else {
+            String[] res = new String[rProps.length];
+            System.arraycopy(rProps, 0, res, 0, rProps.length);
             return res;
         }
     }

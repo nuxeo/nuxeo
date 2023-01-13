@@ -515,7 +515,11 @@ public class TestDefaultBlobDispatcher {
         assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, null));
 
         when(doc.isRecord()).thenReturn(true);
-        assertEquals(CUSTOM, dispatcher.getProviderId(doc, null, null));
+        // XXX change of behavior. If xpath is null, default provider is always returned
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, null));
+        when(doc.isRetainable("content")).thenReturn(true);
+        assertEquals(CUSTOM, dispatcher.getProviderId(doc, null, "content"));
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, "files/1/file"));
     }
 
     @Test
@@ -530,7 +534,9 @@ public class TestDefaultBlobDispatcher {
         assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, null));
 
         when(doc.isRecord()).thenReturn(true);
+        when(doc.isRetainable("content")).thenReturn(true);
         assertEquals(CUSTOM, dispatcher.getProviderId(doc, null, "content"));
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, "files/1/file"));
     }
 
 }

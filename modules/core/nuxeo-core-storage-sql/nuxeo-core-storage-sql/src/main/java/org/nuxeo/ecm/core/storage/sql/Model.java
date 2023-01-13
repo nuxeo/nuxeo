@@ -109,6 +109,12 @@ public class Model {
     /** @since 11.1 */
     public static final String MAIN_IS_RECORD_KEY = "isrecord";
 
+    /** @since 2021.32 */
+    public static final String MAIN_RETAINED_PROPS_PROP = "ecm:retainedProperties";
+
+    /** @since 2021.32 */
+    public static final String MAIN_RETAINED_PROPS_KEY = "retainedProperties";
+
     /** @since 11.1 */
     public static final String MAIN_RETAIN_UNTIL_PROP = "ecm:retainUntil";
 
@@ -1298,6 +1304,8 @@ public class Model {
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
         addPropertyInfo(MAIN_IS_RECORD_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_IS_RECORD_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
+        addPropertyInfo(MAIN_RETAINED_PROPS_PROP, PropertyType.STRING, HIER_TABLE_NAME, MAIN_RETAINED_PROPS_KEY, false, null,
+                ColumnType.SYSNAMEARRAY);
         addPropertyInfo(MAIN_RETAIN_UNTIL_PROP, PropertyType.DATETIME, HIER_TABLE_NAME, MAIN_RETAIN_UNTIL_KEY, false,
                 DateType.INSTANCE, ColumnType.TIMESTAMP);
         addPropertyInfo(MAIN_HAS_LEGAL_HOLD_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_HAS_LEGAL_HOLD_KEY, false,

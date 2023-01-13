@@ -277,6 +277,7 @@ public class DocumentModelFactory {
             refresh.versionSeriesId = doc.getVersionSeriesId();
             refresh.checkinComment = doc.getCheckinComment();
             refresh.isRecord = doc.isRecord();
+            refresh.retainedProperties = List.of(doc.getRetainedProperties());
             refresh.retainUntil = doc.getRetainUntil();
             refresh.hasLegalHold = doc.hasLegalHold();
         }
