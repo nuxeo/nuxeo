@@ -4379,7 +4379,7 @@
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-naming</artifactId>
-        <version>4.18</version>
+        <version>4.22</version>
       </dependency>
 
       <dependency>
