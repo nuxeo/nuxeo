@@ -111,6 +111,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     /** Facets including those on instance. */
     protected Set<String> facets;
 
+    /** Retained properties. */
+    protected List<String> retainedProperties;
+
     /** Instance facets. */
     public Set<String> instanceFacets;
 
@@ -499,6 +502,14 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public Set<String> getFacets() {
         return Collections.unmodifiableSet(facets);
+    }
+
+    @Override
+    public List<String> getRetainedProperties() {
+        if (!isStateLoaded && isAttached()) {
+            refresh(REFRESH_STATE, null);
+        }
+        return retainedProperties != null ? Collections.unmodifiableList(retainedProperties) : Collections.emptyList();
     }
 
     @Override
@@ -1406,6 +1417,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             isTrashed = refresh.isTrashed;
             isRecord = refresh.isRecord;
             retainUntil = refresh.retainUntil;
+            retainedProperties = refresh.retainedProperties;
             hasLegalHold = refresh.hasLegalHold;
             isStateLoaded = true;
         }

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.event.impl;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -571,6 +572,11 @@ public class ShallowDocumentModel implements DocumentModel {
     @Override
     public PropertyObjectResolver getObjectResolver(String xpath) {
         return DocumentPropertyObjectResolverImpl.create(this, xpath);
+    }
+
+    @Override
+    public List<String> getRetainedProperties() {
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -194,17 +194,41 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
 
     @Test
     public void testRetentionAndHold() throws Exception {
-        session.makeRecord(document.getRef());
+        DocumentModel record = session.createDocumentModel("/", "myRecord", "File");
+        record = session.createDocument(record);
+        session.makeRecord(record.getRef());
         Calendar retainUntil = Calendar.getInstance();
         retainUntil.add(Calendar.HOUR, -1); // one hour ago
-        session.setRetainUntil(document.getRef(), retainUntil, null);
-        session.setLegalHold(document.getRef(), true, null);
-        document.refresh();
-        JsonAssert json = jsonAssert(document);
+        session.setRetainUntil(record.getRef(), retainUntil, null);
+        session.setLegalHold(record.getRef(), true, null);
+        record.refresh();
+        JsonAssert json = jsonAssert(record);
         json.isObject();
         json.has("isRecord").isTrue();
         String expectedRetainUntil = DateUtils.formatISODateTime(retainUntil);
         json.has("retainUntil").isEquals(expectedRetainUntil);
+        json.has("retainedProperties").isArray().length(1).contains("file:content");
+        json.has("hasLegalHold").isTrue();
+        json.has("isUnderRetentionOrLegalHold").isTrue();
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-retain-files-property.xml")
+    public void testRetentionAndHoldAttachements() throws Exception {
+        DocumentModel record = session.createDocumentModel("/", "myRecord", "File");
+        record = session.createDocument(record);
+        session.makeRecord(record.getRef());
+        Calendar retainUntil = Calendar.getInstance();
+        retainUntil.add(Calendar.HOUR, -1); // one hour ago
+        session.setRetainUntil(record.getRef(), retainUntil, null);
+        session.setLegalHold(record.getRef(), true, null);
+        record.refresh();
+        JsonAssert json = jsonAssert(record);
+        json.isObject();
+        json.has("isRecord").isTrue();
+        String expectedRetainUntil = DateUtils.formatISODateTime(retainUntil);
+        json.has("retainUntil").isEquals(expectedRetainUntil);
+        json.has("retainedProperties").isArray().length(2).contains("file:content", "files:files/*/file");
         json.has("hasLegalHold").isTrue();
         json.has("isUnderRetentionOrLegalHold").isTrue();
     }

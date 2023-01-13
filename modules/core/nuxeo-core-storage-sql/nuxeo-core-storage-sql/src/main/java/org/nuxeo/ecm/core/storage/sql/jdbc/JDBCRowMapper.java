@@ -1121,6 +1121,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 } else if (key.equals(Model.MAIN_IS_RECORD_KEY)) {
                     // records are reset on copy
                     v = null;
+                } else if (key.equals(Model.MAIN_RETAINED_PROPS_KEY)) {
+                    // records are reset on copy, so are retained props
+                    v = null;
                 } else if (key.equals(Model.MAIN_BASE_VERSION_KEY) || key.equals(Model.MAIN_CHECKED_IN_KEY)) {
                     v = null;
                 } else if (key.equals(Model.MAIN_MINOR_VERSION_KEY) || key.equals(Model.MAIN_MAJOR_VERSION_KEY)) {

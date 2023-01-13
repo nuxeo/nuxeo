@@ -629,4 +629,19 @@ public class SQLDocumentProxy implements SQLDocument {
         return proxy.hashCode() + target.hashCode();
     }
 
+    @Override
+    public String[] getRetainedProperties() {
+        return target.getRetainedProperties();
+    }
+
+    @Override
+    public boolean isRetainable(String xpath) {
+        return target.isRetainable(xpath);
+    }
+
+    @Override
+    public boolean isRetained(String xpath) {
+        return target.isRetained(xpath);
+    }
+
 }

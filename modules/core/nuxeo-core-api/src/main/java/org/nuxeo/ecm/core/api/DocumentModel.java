@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.api;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -449,6 +451,16 @@ public interface DocumentModel extends Serializable {
      */
     default boolean isRecord() {
         return false;
+    }
+
+    /**
+     * Gets the retained properties of this document at the time it became a record.
+     *
+     * @return the retained properties
+     * @since 2021.32
+     */
+    default List<String> getRetainedProperties() {
+        return Collections.emptyList();
     }
 
     /**
@@ -935,6 +947,8 @@ public interface DocumentModel extends Serializable {
         public boolean isTrashed;
 
         public boolean isRecord;
+
+        public List<String> retainedProperties;
 
         public Calendar retainUntil;
 

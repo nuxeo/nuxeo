@@ -239,6 +239,33 @@ public interface Document {
     boolean isRecord();
 
     /**
+     * Gets the retained property xpaths of this document instance at the time it became a record.
+     *
+     * @return the retained properties
+     * @throws PropertyException if document is not a record
+     * @since 2021.32
+     */
+    String[] getRetainedProperties();
+
+    /**
+     * Can the property be put under retention or legal hold.
+     *
+     * @param xpath the xpath
+     * @return true if the property is retainable
+     * @since 2021.32
+     */
+    boolean isRetainable(String xpath);
+
+    /**
+     * Is the property under retention or legal hold.
+     *
+     * @param xpath the xpath
+     * @return true if the property is retained and cannot be deleted/edited
+     * @since 2021.32
+     */
+    boolean isRetained(String xpath);
+
+    /**
      * Sets a retention date for the document (a record).
      * <p>
      * If no previous retention date was set, or if the previous retention date was
