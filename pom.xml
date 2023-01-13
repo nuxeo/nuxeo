@@ -4797,7 +4797,7 @@
       <dependency>
         <groupId>com.auth0</groupId>
         <artifactId>java-jwt</artifactId>
-        <version>3.19.3</version>
+        <version>3.19.4</version>
       </dependency>
       <dependency>
         <groupId>com.beetstra.jutf7</groupId>
