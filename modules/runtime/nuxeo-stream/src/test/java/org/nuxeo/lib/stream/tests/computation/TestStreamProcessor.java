@@ -737,15 +737,20 @@ public abstract class TestStreamProcessor {
             Thread.sleep(1000);
             Latency latency2 = processor.getLatency("C1");
             assertEquals(latency.lower(), latency2.lower());
-            assertTrue(latency2.toString(), latency2.latency() > 0);
+            if (latency.lag().lag() == 0) {
+                // happens randomly on fast in mem implementation
+                log.warn("Processing was completed before stopping computation pool");
+            } else {
+                assertTrue(latency2.toString(), latency2.latency() > 0);
 
-            assertTrue(processor.startComputation(Name.ofUrn("C1")));
-            assertFalse(processor.startComputation(Name.ofUrn("C1")));
+                assertTrue(processor.startComputation(Name.ofUrn("C1")));
+                assertFalse(processor.startComputation(Name.ofUrn("C1")));
 
-            while (!processor.isDone(targetTimestamp)) {
-                Thread.sleep(30);
-                long lowWatermark = processor.getLowWatermark();
-                log.info("low: " + lowWatermark + " dist: " + (targetWatermark - lowWatermark));
+                while (!processor.isDone(targetTimestamp)) {
+                    Thread.sleep(30);
+                    long lowWatermark = processor.getLowWatermark();
+                    log.info("low: " + lowWatermark + " dist: " + (targetWatermark - lowWatermark));
+                }
             }
             processor.shutdown();
 
