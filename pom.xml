@@ -73,7 +73,7 @@
     <opensearch.version>1.3.7</opensearch.version>
     <netty.version>4.1.87.Final</netty.version>
     <netty.boringssl.version>2.0.54.Final</netty.boringssl.version>
-    <grpc-netty.version>1.51.0</grpc-netty.version>
+    <grpc-netty.version>1.52.1</grpc-netty.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <guice.version>3.0</guice.version>
