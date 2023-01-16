@@ -100,7 +100,7 @@
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
     <aws.version>1.12.261</aws.version>
     <gcp.version>1.118.1</gcp.version>
-    <jackson1.version>1.8.1</jackson1.version>
+    <jackson1.version>1.9.11</jackson1.version>
     <jackson.version>2.12.7</jackson.version>
     <jackson.bom.version>2.12.7.20221012</jackson.bom.version>
     <bouncycastle.version>1.69</bouncycastle.version>
