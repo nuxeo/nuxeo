@@ -38,6 +38,14 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.text.StringEscapeUtils;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.webdav.EscapeUtils;
+import org.nuxeo.ecm.webdav.backend.Backend;
+import org.nuxeo.ecm.webdav.jaxrs.IsFolder;
+import org.nuxeo.ecm.webdav.jaxrs.Util;
 
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 import net.java.dev.webdav.jaxrs.xml.elements.HRef;
@@ -48,15 +56,6 @@ import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
 import net.java.dev.webdav.jaxrs.xml.elements.Status;
 import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
-
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webdav.EscapeUtils;
-import org.nuxeo.ecm.webdav.backend.Backend;
-import org.nuxeo.ecm.webdav.jaxrs.IsFolder;
-import org.nuxeo.ecm.webdav.jaxrs.Util;
 
 /**
  * A resource for folder-like objects in the repository.
