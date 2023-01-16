@@ -37,6 +37,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,6 +49,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.BackendHelper;
+import org.xml.sax.SAXException;
 
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 
@@ -88,7 +90,7 @@ public class RootResource {
     @PROPFIND
     @Produces({ "application/xml", "text/xml" })
     public Object getRootPropfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth)
-            throws IOException, JAXBException, URISyntaxException {
+            throws IOException, JAXBException, URISyntaxException, ParserConfigurationException, SAXException {
         Object resource = findResource("");
         if (resource instanceof FolderResource) {
             return ((FolderResource) resource).propfind(uriInfo, depth);
