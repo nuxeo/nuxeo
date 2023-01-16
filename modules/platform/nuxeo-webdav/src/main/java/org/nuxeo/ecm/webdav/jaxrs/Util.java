@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2023 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Nuxeo
+ *     antoine.taillefer@hyland.com
  */
 
 package org.nuxeo.ecm.webdav.jaxrs;
@@ -84,7 +83,7 @@ public class Util {
 
     private static JAXBContext initJaxbContext() throws JAXBException {
         return JAXBContext.newInstance(new Class<?>[] { //
-        ActiveLock.class, //
+                ActiveLock.class, //
                 AllProp.class, //
                 CannotModifyProtectedProperty.class, //
                 Collection.class, //
