@@ -36,7 +36,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.jaxrs.Util;
+import org.xml.sax.SAXException;
 
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 import net.java.dev.webdav.jaxrs.xml.elements.HRef;
@@ -60,7 +61,6 @@ import net.java.dev.webdav.jaxrs.xml.elements.PropFind;
 import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
 import net.java.dev.webdav.jaxrs.xml.elements.Status;
 import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
-
 
 /**
  * Resource representing a file-like object in the repository. (I.e. not a folder).
@@ -118,15 +118,14 @@ public class FileResource extends ExistingResource {
 
     @PROPFIND
     @Produces({ "application/xml", "text/xml" })
-    public Response propfind(@Context UriInfo uriInfo) throws IOException, JAXBException {
-
-        Unmarshaller u = Util.getUnmarshaller();
+    public Response propfind(@Context UriInfo uriInfo)
+            throws IOException, JAXBException, ParserConfigurationException, SAXException {
 
         Prop prop = null;
         if (request.getInputStream() != null && request.getContentLength() > 0) {
             PropFind propFind;
             try {
-                propFind = (PropFind) u.unmarshal(request.getInputStream());
+                propFind = (PropFind) Util.unmarshal(request.getInputStream());
             } catch (JAXBException e) {
                 log.error(e);
                 return Response.status(400).build();

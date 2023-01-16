@@ -20,10 +20,19 @@
 
 package org.nuxeo.ecm.webdav.jaxrs;
 
+import java.io.InputStream;
+
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import net.java.dev.webdav.jaxrs.xml.conditions.CannotModifyProtectedProperty;
 import net.java.dev.webdav.jaxrs.xml.conditions.LockTokenMatchesRequestUri;
@@ -153,6 +162,24 @@ public class Util {
 
     public static Unmarshaller getUnmarshaller() throws JAXBException {
         return getJaxbContext().createUnmarshaller();
+    }
+
+    /** @since 2023 */
+    public static Object unmarshal(InputStream source)
+            throws JAXBException, ParserConfigurationException, SAXException {
+        // Disable XXE, see
+        // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#jaxb-unmarshaller
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+        // Required, otherwise parsing throws "org.xml.sax.SAXParseException; Premature end of file."
+        spf.setFeature("http://xml.org/sax/features/namespaces", true);
+
+        // Do unmarshall operation
+        Source xmlSource = new SAXSource(spf.newSAXParser().getXMLReader(), new InputSource(source));
+        return getUnmarshaller().unmarshal(xmlSource);
     }
 
 }
