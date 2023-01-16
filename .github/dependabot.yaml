@@ -57,8 +57,6 @@ updates:
       # Major security updates
       - dependency-name: "org.jboss.remoting:jboss-remoting"
         versions: ["[3.0,)"]
-      - dependency-name: "org.hibernate*:*"
-        versions: ["[4.0,)"]
       - dependency-name: "com.h2database:h2"
         versions: ["[2.0,)"]
 
@@ -83,6 +81,8 @@ updates:
         versions: ["[3.4,)"]
       - dependency-name: "org.bouncycastle:*"
         versions: ["[1.70,)"]
+      - dependency-name: "org.hibernate:hibernate-core"
+        versions: [">3.3.2.GA"]
       - dependency-name: "org.hibernate:hibernate-commons-annotations"
         versions: [">3.1.0.GA"]
       - dependency-name: "org.hibernate:hibernate-validator"
