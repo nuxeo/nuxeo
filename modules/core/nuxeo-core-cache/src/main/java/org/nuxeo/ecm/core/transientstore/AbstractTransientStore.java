@@ -187,7 +187,7 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
         String cachingDirName = getCachingDirName(key);
         try {
             File cachingDir = new File(cacheDir.getCanonicalFile(), cachingDirName);
-            if (!cachingDir.getCanonicalPath().startsWith(cacheDir.getCanonicalPath())) {
+            if (!cachingDir.getCanonicalPath().startsWith(cacheDir.getCanonicalPath() + File.separator)) {
                 throw new NuxeoException("Trying to traverse illegal path: " + cachingDir + " for key: " + key);
             }
             if (!cachingDir.exists()) {
