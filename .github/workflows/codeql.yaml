@@ -3,7 +3,8 @@ name: "CodeQL"
 on:
   push:
     branches: [ "2021", "2023" ]
-  # Not listening on pull requests while we have critical security vulnerabilities
+  pull_request:
+    branches: [ "2021", "2023" ]
   schedule:
     # At 01:00 on Sunday
     - cron: '0 1 * * SUN'
